@@ -1,14 +1,14 @@
 import { logger, task, wait } from "@trigger.dev/sdk/v3";
 
-export const helloWorldTask = task({
-  id: "hello-world",
+export const runWorkflowTask = task({
+  id: "runWorklow",
   run: async (payload: unknown, { ctx }) => {
-    logger.log("Hello, world!", { payload, ctx });
+    logger.log("Running workflow...", { payload, ctx });
 
     await wait.for({ seconds: 5 });
 
     return {
-      message: "Hello, world!",
+      message: "Workflow completed!",
     };
   },
 });

@@ -1,5 +1,9 @@
 import { App, type MessageEvent } from "@slack/bolt";
 import dotenv from "dotenv";
+import express from "express";
+
+const appExpress = express();
+const port = process.env.PORT || 3000;
 
 dotenv.config();
 
@@ -37,6 +41,9 @@ app.event("message", async ({ message: messageEvent }) => {
 
 (async () => {
   await app.start();
+  appExpress.listen(port, () => {
+    console.log(`Example app listening on port ${port}`);
+  });
 
   console.log("⚡️ Bolt app is running!");
 })();
