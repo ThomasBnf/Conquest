@@ -11,10 +11,10 @@
     "prefix": ""
   },
   "aliases": {
-    "components": "@/components",
+    "components": "@conquest/ui/components",
     "hooks": "@/hooks",
     "lib": "@/lib",
-    "ui": "@/components",
+    "ui": "@conquest/ui/components",
     "utils": "@/utils"
   }
 }

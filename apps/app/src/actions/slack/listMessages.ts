@@ -1,0 +1,101 @@
+"use server";
+
+import { authAction } from "@/lib/authAction";
+import { prisma } from "@/lib/prisma";
+import { ChannelSchema } from "@/schemas/channel.schema";
+import { WebClient } from "@slack/web-api";
+import { z } from "zod";
+import { createActivity } from "../activities/createActivity";
+import { createReaction } from "./createReaction";
+import { listReplies } from "./listReplies";
+
+export const listMessages = authAction
+  .metadata({
+    name: "listMessages",
+  })
+  .schema(
+    z.object({
+      web: z.instanceof(WebClient),
+      channel: ChannelSchema,
+    }),
+  )
+  .action(async ({ ctx, parsedInput: { web, channel } }) => {
+    const workspace_id = ctx.user.workspace_id;
+
+    let cursor: string | undefined;
+
+    do {
+      const result = await web.conversations.history({
+        channel: channel.external_id ?? "",
+        limit: 100,
+        cursor,
+      });
+
+      const { messages, response_metadata } = result;
+
+      for (const message of messages ?? []) {
+        if (!message.user) continue;
+
+        const { text, ts, user, reactions, reply_count, attachments, files } = message;
+
+        const contact = await prisma.contact.findUnique({
+          where: {
+            slack_id: user,
+            workspace_id,
+          },
+        });
+
+        if (contact) {
+          const rActivity = await createActivity({
+            details: {
+              source: "SLACK",
+              type: "MESSAGE",
+              message: text ?? "",
+              attachments: attachments?.map(({ from_url, title_link }) => ({
+                title: title_link ?? "",
+                url: from_url ?? "",
+              })),
+              files: files?.map(({ title, url_private }) => ({
+                title: title ?? "",
+                url: url_private ?? "",
+              })),
+            },
+            channel_id: channel.id,
+            contact_id: contact.id,
+            created_at: new Date(Number(ts) * 1000),
+            updated_at: new Date(Number(ts) * 1000),
+          });
+
+          const activity = rActivity?.data;
+
+          if (!activity) continue;
+
+          if (reactions?.length) {
+            for (const reaction of reactions) {
+              const { name } = reaction;
+
+              for (const user of reaction.users ?? []) {
+                await createReaction({
+                  user,
+                  message: name ?? "",
+                  reference: activity.id,
+                  channel_id: channel.id,
+                  ts: message.ts ?? "",
+                });
+              }
+            }
+          }
+
+          if (reply_count) {
+            await listReplies({
+              web,
+              channel_id: channel.external_id ?? "",
+              ts: message.thread_ts ?? "",
+            });
+          }
+        }
+      }
+
+      cursor = response_metadata?.next_cursor;
+    } while (cursor);
+  });

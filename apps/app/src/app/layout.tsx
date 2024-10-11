@@ -1,7 +1,8 @@
 import { cn } from "@conquest/ui/cn";
+import "@conquest/ui/globals.css";
+import { Toaster } from "@conquest/ui/sonner";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -18,7 +19,8 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={cn("h-dvh overflow-hidden", inter.className)}>
-        {children}
+        <main>{children}</main>
+        <Toaster />
       </body>
     </html>
   );
