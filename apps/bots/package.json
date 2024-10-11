@@ -1,5 +1,5 @@
 {
-  "name": "@conquest/slack",
+  "name": "bots",
   "scripts": {
     "dev": "tsup src/slack.ts --watch",
     "build": "tsup src/slack.ts",
