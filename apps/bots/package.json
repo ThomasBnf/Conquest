@@ -1,0 +1,16 @@
+{
+  "name": "@conquest/slack",
+  "scripts": {
+    "dev": "tsup src/slack.ts --watch",
+    "build": "tsup src/slack.ts",
+    "start": "node dist/slack.js"
+  },
+  "dependencies": {
+    "@slack/bolt": "3.5",
+    "dotenv": "^16.4.5"
+  },
+  "devDependencies": {
+    "@conquest/typescript": "workspace:*",
+    "tsup": "^8.3.0"
+  }
+}
