@@ -10,7 +10,7 @@ import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Integration } from "../icons/Integration";
-import { Route } from "./Route";
+import { Route } from "./route";
 
 export const SidebarSettings = () => {
   const { slug } = useUser();

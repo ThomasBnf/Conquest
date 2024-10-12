@@ -1,8 +1,8 @@
 import { getCurrentUser } from "@/actions/users/getCurrentUser";
-import { Sidebar } from "@/components/layouts/Sidebar";
+import { Sidebar } from "@/components/layouts/sidebar";
 import { UserProvider } from "@/context/userContext";
 import { redirect } from "next/navigation";
-import { PropsWithChildren } from "react";
+import type { PropsWithChildren } from "react";
 
 type Props = {
   params: {
@@ -14,6 +14,8 @@ export default async function Layout({
   children,
   params: { slug },
 }: PropsWithChildren<Props>) {
+  if (slug.includes("favicon")) return;
+
   const rUser = await getCurrentUser();
   const user = rUser?.data;
 

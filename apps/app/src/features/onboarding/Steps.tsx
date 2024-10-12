@@ -11,14 +11,14 @@ export const Steps = ({ step }: Props) => {
       <div className="flex items-center gap-2">
         <div
           className={cn(
-            "size-2.5 rounded-full bg-neutral-200",
-            step === 1 && "bg-primary",
+            "size-2.5 rounded-full bg-main-200",
+            step === 1 && "bg-main-600",
           )}
         />
         <div
           className={cn(
-            "size-2.5 rounded-full bg-neutral-200",
-            step === 2 && "bg-primary",
+            "size-2.5 rounded-full bg-main-200",
+            step === 2 && "bg-main-600",
           )}
         />
       </div>

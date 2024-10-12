@@ -99,7 +99,7 @@ export const LoginForm = () => {
               </p>
               <Link
                 href="/auth/signup"
-                className={buttonVariants({ variant: "link" })}
+                className={buttonVariants({ variant: "link", size: "xs" })}
               >
                 Signup
               </Link>

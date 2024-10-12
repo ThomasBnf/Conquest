@@ -1,8 +1,9 @@
+import { Providers } from "@/providers/Providers";
 import { cn } from "@conquest/ui/cn";
 import "@conquest/ui/globals.css";
-import { Toaster } from "@conquest/ui/sonner";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import Script from "next/script";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -19,8 +20,12 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={cn("h-dvh overflow-hidden", inter.className)}>
-        <main>{children}</main>
-        <Toaster />
+        <Providers>{children}</Providers>
+        <Script
+          id="initMap"
+          src={`https://maps.googleapis.com/maps/api/js?key=${process.env
+            .GOOGLE_API_KEY!}&libraries=places`}
+        />
       </body>
     </html>
   );

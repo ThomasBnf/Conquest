@@ -1,6 +1,6 @@
 "use client";
 
-import { QueryInput } from "@/components/custom/QueryInput";
+import { QueryInput } from "@/components/custom/query-input";
 import type { Tag } from "@/schemas/tag.schema";
 import { Button } from "@conquest/ui/button";
 import { useState } from "react";

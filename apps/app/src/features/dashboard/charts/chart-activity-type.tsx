@@ -40,7 +40,7 @@ export const ChartActivityType = ({ activities }: Props) => {
   return (
     <Card>
       <CardHeader className="border-b">
-        <CardTitle>Activity type</CardTitle>
+        <CardTitle className="text-lg font-medium">Activity type</CardTitle>
       </CardHeader>
       <CardContent className="px-2 pt-4 sm:px-6 sm:pt-6">
         <ChartContainer

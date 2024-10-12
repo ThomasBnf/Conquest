@@ -1,9 +1,10 @@
 "use client";
 
 import { listContacts } from "@/actions/contacts/listContacts";
-import { QueryInput } from "@/components/custom/QueryInput";
+import { QueryInput } from "@/components/custom/query-input";
 import { Loading } from "@/components/states/Loading";
 import { useUser } from "@/context/userContext";
+import { AddContact } from "@/features/contacts/add-contact";
 import { Columns } from "@/features/contacts/table/columns";
 import { useParamsContacts } from "@/hooks/useParamsContacts";
 import { ContactWithActivitiesSchema } from "@/schemas/activity.schema";
@@ -18,7 +19,6 @@ import {
 } from "@conquest/ui/table";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import {
-  type SortingState,
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
@@ -26,9 +26,8 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useInView } from "react-intersection-observer";
-import { AddContact } from "../add-contact";
 
 type Props = {
   tags: Tag[] | undefined;
@@ -38,17 +37,12 @@ type Props = {
 export const ContactsTable = ({ tags, contactsCount }: Props) => {
   const { slug } = useUser();
   const { ref, inView } = useInView();
-  const router = useRouter();
 
   const [{ search, id, desc }, setSearchParams] = useParamsContacts();
-  const [sorting, setSorting] = useState<SortingState>([
-    { id: "last_name", desc: false },
-  ]);
-  const [hasScroll, setHasScroll] = useState(false);
+  const [sorting, setSorting] = useState([{ id: "last_name", desc: false }]);
 
+  const router = useRouter();
   const columns = useMemo(() => Columns({ tags }), [tags]);
-  const container = useRef<HTMLDivElement>(null);
-  const firstCell = useRef<HTMLTableCellElement>(null);
 
   const { data, isLoading, fetchNextPage, hasNextPage } = useInfiniteQuery({
     queryKey: ["contacts", search, id, desc],
@@ -84,51 +78,38 @@ export const ContactsTable = ({ tags, contactsCount }: Props) => {
 
   useEffect(() => {
     if (inView && hasNextPage) fetchNextPage();
-  }, [inView]);
-
-  useEffect(() => {
-    const checkScroll = () => {
-      if (container.current) {
-        setHasScroll(
-          container.current.scrollHeight > container.current.clientHeight,
-        );
-      }
-    };
-
-    checkScroll();
-    window.addEventListener("resize", checkScroll);
-
-    return () => {
-      window.removeEventListener("resize", checkScroll);
-    };
-  }, [flatData]);
+  }, [inView, hasNextPage, fetchNextPage]);
 
   return (
     <div className="flex h-full flex-col divide-y">
-      <div className="flex min-h-12 shrink-0 items-center justify-between px-4">
-        <div className="flex items-center gap-2">
-          <p className="font-medium">Contacts</p>
+      <div className="divide-y">
+        <div className="flex items-center gap-2 py-2 px-4 justify-between">
+          <div className="flex gap-2">
+            <p className="text-base font-medium">Contacts</p>
+            <p className="rounded border bg-muted p-1 font-mono leading-none shadow-sm">
+              {contactsCount}
+            </p>
+          </div>
+          <AddContact />
+        </div>
+        <div className="flex py-2 px-4 ">
           <QueryInput
             query={search}
             setQuery={(value) => setSearchParams({ search: value })}
+            placeholder="Search in contacts..."
           />
         </div>
-        <AddContact />
       </div>
-      <div ref={container} className="relative overflow-auto">
+      <div className="relative overflow-auto">
         {isLoading ? (
           <Loading />
         ) : (
           <Table>
-            <TableHeader className="sticky top-0 z-10 bg-background after:absolute after:inset-x-0 after:bottom-0 after:h-px after:bg-border">
+            <TableHeader className="sticky top-0 z-10 after:absolute after:inset-x-0 after:bottom-0 after:h-px after:bg-border">
               {table.getHeaderGroups().map((headerGroup) => (
                 <TableRow key={headerGroup.id}>
-                  {headerGroup.headers.map((header, index) => (
-                    <TableHead
-                      key={header.id}
-                      ref={index === 0 ? firstCell : null}
-                      className="bg-background"
-                    >
+                  {headerGroup.headers.map((header) => (
+                    <TableHead key={header.id} className="bg-background">
                       {header.isPlaceholder
                         ? null
                         : flexRender(
@@ -172,42 +153,13 @@ export const ContactsTable = ({ tags, contactsCount }: Props) => {
                   </TableCell>
                 </TableRow>
               )}
-              {!hasScroll && (
-                <>
-                  <TableRow className="border-b after:absolute after:inset-x-0 after:bottom-0 after:h-px after:bg-border hover:bg-transparent">
-                    <TableCell>
-                      <p className="flex justify-end space-x-1 text-end">
-                        <span className="font-mono">
-                          {search
-                            ? table.getFilteredRowModel().rows.length
-                            : contactsCount}
-                        </span>
-                        <span className="text-muted-foreground">count</span>
-                      </p>
-                    </TableCell>
-                  </TableRow>
-                  <div />
-                </>
-              )}
             </TableBody>
-            <div ref={ref} />
+            <TableRow>
+              <div ref={ref} />
+            </TableRow>
           </Table>
         )}
       </div>
-      {hasScroll && (
-        <div className="flex h-[41px] shrink-0">
-          <p
-            className="flex items-center justify-end space-x-1 px-4 text-end"
-            style={{ width: firstCell.current?.offsetWidth }}
-          >
-            <span className="font-mono">
-              {search ? table.getFilteredRowModel().rows.length : contactsCount}
-            </span>
-            <span className="text-muted-foreground">count</span>
-          </p>
-          <div />
-        </div>
-      )}
     </div>
   );
 };

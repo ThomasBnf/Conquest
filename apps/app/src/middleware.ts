@@ -1,10 +1,11 @@
 import { NextResponse } from "next/server";
-import { auth as middleware } from "./src/auth";
+import { auth as middleware } from "./auth";
 
 export default middleware(async (request) => {
   const { nextUrl } = request;
 
   const isLoggedIn = request.auth;
+
   const isAuthPage = nextUrl.pathname.startsWith("/auth");
   const isOnboardingPage = nextUrl.pathname.startsWith("/onboarding");
   const isApiRoute = nextUrl.pathname.startsWith("/api");

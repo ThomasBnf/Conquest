@@ -7,11 +7,11 @@ import { LeaderBoard } from "@/components/icons/Leaderbord";
 import { Settings } from "@/components/icons/Settings";
 import { Workflows } from "@/components/icons/Workflows";
 import { useUser } from "@/context/userContext";
-import { MenuWorkspace } from "@/features/user/MenuWorkspace";
+import { WorkspaceMenu } from "@/features/user/workspace-menu";
 import { usePathname } from "next/navigation";
-import { Logout } from "./Logout";
-import { Route } from "./Route";
-import { SidebarSettings } from "./SidebarSettings";
+import { Logout } from "./log-out";
+import { Route } from "./route";
+import { SidebarSettings } from "./sidebar-settings";
 
 export const Sidebar = () => {
   const { slug } = useUser();
@@ -53,8 +53,8 @@ export const Sidebar = () => {
   ];
 
   return (
-    <div className="flex h-full w-44 flex-col divide-y bg-sidebar">
-      <MenuWorkspace />
+    <div className="flex h-full max-w-48 w-full flex-col bg-sidebar">
+      <WorkspaceMenu />
       <div className="flex flex-col gap-0.5 p-2">
         {routes.map((route) => (
           <Route key={route.label} {...route} />

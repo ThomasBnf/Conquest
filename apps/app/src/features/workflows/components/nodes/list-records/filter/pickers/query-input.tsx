@@ -12,7 +12,7 @@ export const QueryInput = ({ filter }: Props) => {
   const [value, setValue] = useState(filter.value);
 
   const onUpdateValue = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (isNaN(Number(e.target.value))) return;
+    if (Number.isNaN(Number(e.target.value))) return;
 
     const newValue = Number(e.target.value);
 

@@ -25,7 +25,7 @@ export const Contacts = async () => {
   return (
     <Card className="overflow-hidden">
       <CardHeader className="px-4 pb-2 pt-4">
-        <CardTitle className="text-sm">Contacts</CardTitle>
+        <CardTitle className="text-sm font-medium">Contacts</CardTitle>
       </CardHeader>
       <CardContent className="p-4 pt-0">
         <div className="flex items-baseline gap-2">

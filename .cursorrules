@@ -10,12 +10,12 @@ Naming Conventions:
 - Favor named exports for components
 
 TypeScript Usage:
-- Use TypeScript for all code; prefer interfaces over types
+- Use TypeScript for all code; prefer types over interfaces
 - Avoid enums; use maps instead
-- Use functional components with TypeScript interfaces
+- Use arrow function for components with TypeScript types and called "Props"
 
 Syntax and Formatting:
-- Use the "function" keyword for pure functions
+- Use the arrow function for pure functions
 - Avoid unnecessary curly braces in conditionals; use concise syntax for simple statements
 - Use declarative JSX
 

@@ -1,6 +1,6 @@
 import { cn } from "@conquest/ui/cn";
 import Link from "next/link";
-import { ReactNode } from "react";
+import type { ReactNode } from "react";
 
 type Props = {
   label: string;
@@ -16,7 +16,7 @@ export const Route = ({ label, icon, href, isActive }: Props) => {
       className={cn(
         "flex h-8 items-center gap-2 rounded-md border border-transparent px-2 transition-colors",
         isActive && "rounded-md border-border bg-background shadow-sm",
-        !isActive && "hover:bg-[#EEEFF1]",
+        !isActive && "hover:bg-active",
       )}
     >
       {icon}

@@ -29,7 +29,7 @@ export const ChartEngagement = ({ dailyEngagement }: Props) => {
   return (
     <Card>
       <CardHeader className="border-b p-4">
-        <CardTitle>Engagement</CardTitle>
+        <CardTitle className="text-lg font-medium">Engagement</CardTitle>
       </CardHeader>
       <CardContent className="px-2 pt-4 sm:px-6 sm:pt-6">
         <ChartContainer

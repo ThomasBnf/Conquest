@@ -35,7 +35,7 @@ export default function Page() {
       <Link
         href={`/${slug}/settings/integrations`}
         className={cn(
-          buttonVariants({ variant: "link", size: "none" }),
+          buttonVariants({ variant: "link", size: "xs" }),
           "flex w-fit items-center justify-start gap-1 text-foreground",
         )}
       >
@@ -60,7 +60,7 @@ export default function Page() {
               <Link
                 href=""
                 className={cn(
-                  buttonVariants({ variant: "link", size: "none" }),
+                  buttonVariants({ variant: "link", size: "xs" }),
                   "flex w-fit items-center justify-start gap-1 text-foreground",
                 )}
               >
@@ -70,7 +70,7 @@ export default function Page() {
               <Link
                 href="https://slack.com"
                 className={cn(
-                  buttonVariants({ variant: "link", size: "none" }),
+                  buttonVariants({ variant: "link", size: "xs" }),
                   "flex w-fit items-center justify-start gap-1 text-foreground",
                 )}
               >

@@ -2,8 +2,11 @@
 
 import { authAction } from "@/lib/authAction";
 import { prisma as db } from "@/lib/prisma";
-import { ContactWithActivitiesSchema } from "@/schemas/activity.schema";
-import { Prisma } from "@prisma/client";
+import {
+  type ContactWithActivities,
+  ContactWithActivitiesSchema,
+} from "@/schemas/activity.schema";
+import type { Prisma } from "@conquest/prisma";
 import { z } from "zod";
 
 export const listContacts = authAction
@@ -18,81 +21,76 @@ export const listContacts = authAction
       to: z.date().optional(),
     }),
   )
-  .action(async ({ ctx, parsedInput: { page, search, id, desc, from, to } }) => {
-    const where: Prisma.ContactWhereInput = {
-      workspace_id: ctx.user.workspace_id,
-      search: search ? { contains: search, mode: "insensitive" } : undefined,
-    };
+  .action(
+    async ({ ctx, parsedInput: { page, search, id, desc, from, to } }) => {
+      const where: Prisma.ContactWhereInput = {
+        workspace_id: ctx.user.workspace_id,
+        search: search ? { contains: search, mode: "insensitive" } : undefined,
+      };
 
-    const include: Prisma.ContactInclude = {
-      activities: {
-        orderBy: { created_at: "desc" },
-        where: {
-          created_at: {
-            gte: from ?? undefined,
-            lte: to ?? undefined,
+      const include: Prisma.ContactInclude = {
+        activities: {
+          orderBy: { created_at: "desc" },
+          where: {
+            created_at: {
+              gte: from ?? undefined,
+              lte: to ?? undefined,
+            },
           },
         },
-      },
-    };
+      };
 
-    if (id === "last_activity") {
       const contacts = await db.contact.findMany({
         where,
         include,
-        take: 20,
-        skip: (page - 1) * 20,
+        orderBy:
+          id && !["last_activity", "joined_at"].includes(id)
+            ? getOrderBy(id, desc)
+            : undefined,
+        take: 25,
+        skip: (page - 1) * 25,
       });
 
-      const parsedContacts = ContactWithActivitiesSchema.array().parse(contacts);
+      const parsedContacts =
+        ContactWithActivitiesSchema.array().parse(contacts);
 
-      return parsedContacts.sort((a, b) => {
-        const lastActivityA = a.activities[0]?.created_at?.getTime() ?? 0;
-        const lastActivityB = b.activities[0]?.created_at?.getTime() ?? 0;
-
-        return desc ? lastActivityB - lastActivityA : lastActivityA - lastActivityB;
-      });
-    }
-
-    if (id === "joined_at") {
-      const contacts = await db.contact.findMany({
-        where,
-        include,
-        take: 20,
-        skip: (page - 1) * 20,
-      });
-
-      const parsedContacts = ContactWithActivitiesSchema.array().parse(contacts);
-
-      return parsedContacts.sort((a, b) => {
-        const joinedAtA = a.joined_at;
-        const joinedAtB = b.joined_at;
-
-        if (!joinedAtA || !joinedAtB) return 0;
-
-        if (desc === true) {
-          return joinedAtB.getTime() - joinedAtA.getTime() ?? 0;
-        }
-        return joinedAtA.getTime() - joinedAtB.getTime() ?? 0;
-      });
-    }
-
-    const orderBy = (() => {
-      if (id === "activities") {
-        return { activities: { _count: desc ? "desc" : "asc" } };
+      if (id === "last_activity") {
+        return parsedContacts.sort((a, b) =>
+          desc ? sortByLastActivity(a, b) : -sortByLastActivity(a, b),
+        );
       }
-      return { [id as string]: desc ? "desc" : "asc" };
-    })() as Prisma.ContactOrderByWithAggregationInput;
 
-    const contacts = await db.contact.findMany({
-      where,
-      include,
-      orderBy,
-      take: 20,
-      skip: (page - 1) * 20,
-    });
+      if (id === "joined_at") {
+        return parsedContacts.sort((a, b) =>
+          desc ? sortByJoinedAt(a, b) : -sortByJoinedAt(a, b),
+        );
+      }
 
-    const parsedContacts = ContactWithActivitiesSchema.array().parse(contacts);
+      return parsedContacts;
+    },
+  );
 
-    return parsedContacts;
-  });
+const sortByLastActivity = (
+  a: ContactWithActivities,
+  b: ContactWithActivities,
+) => {
+  const lastActivityA = a.activities[0]?.created_at?.getTime() ?? 0;
+  const lastActivityB = b.activities[0]?.created_at?.getTime() ?? 0;
+  return lastActivityB - lastActivityA;
+};
+
+const sortByJoinedAt = (a: ContactWithActivities, b: ContactWithActivities) => {
+  const joinedAtA = a.joined_at?.getTime() ?? 0;
+  const joinedAtB = b.joined_at?.getTime() ?? 0;
+  return joinedAtB - joinedAtA;
+};
+
+const getOrderBy = (
+  id: string | undefined,
+  desc: boolean | undefined,
+): Prisma.ContactOrderByWithRelationInput => {
+  if (id === "activities") {
+    return { activities: { _count: desc ? "desc" : "asc" } };
+  }
+  return { [id as string]: desc ? "desc" : "asc" };
+};

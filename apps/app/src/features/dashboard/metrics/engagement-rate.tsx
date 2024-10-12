@@ -30,12 +30,12 @@ export const EngagementRate = async () => {
   return (
     <Card className="overflow-hidden">
       <CardHeader className="px-4 pb-2 pt-4">
-        <CardTitle className="text-sm">Engagement Rate</CardTitle>
+        <CardTitle className="text-sm font-medium">Engagement Rate</CardTitle>
       </CardHeader>
       <CardContent className="p-4 pt-0">
         <div className="flex items-baseline gap-2">
           <p className="text-3xl font-medium">
-            {isNaN(currentEngagementRate ?? 0)
+            {Number.isNaN(currentEngagementRate ?? 0)
               ? 0
               : currentEngagementRate?.toFixed(0)}
             %
@@ -47,7 +47,7 @@ export const EngagementRate = async () => {
       <CardFooter className="bg-muted p-4 py-2">
         <p>
           All time{" "}
-          {isNaN(totalEngagementRate ?? 0)
+          {Number.isNaN(totalEngagementRate ?? 0)
             ? 0
             : totalEngagementRate?.toFixed(0)}{" "}
           %

@@ -55,6 +55,25 @@ const config = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        main: {
+          50: "hsl(240 18% 96%)",
+          100: "hsl(248 20% 92%)",
+          200: "hsl(247 21% 84%)",
+          300: "hsl(248 23% 74%)",
+          400: "hsl(247 25% 62%)",
+          500: "hsl(257 80% 32%)",
+          600: "hsl(257 81% 30%)",
+          700: "hsl(257 80% 27%)",
+          800: "hsl(257 80% 24%)",
+          900: "hsl(257 79% 19%)",
+          950: "hsl(257 81% 14%)",
+        },
+        sidebar: {
+          DEFAULT: "hsl(var(--sidebar))",
+        },
+        active: {
+          DEFAULT: "hsl(var(--active))",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",

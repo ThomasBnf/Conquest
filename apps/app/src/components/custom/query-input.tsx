@@ -7,10 +7,16 @@ import { useRef, useState } from "react";
 type Props = {
   query: string;
   setQuery: (value: string) => void;
+  placeholder?: string;
   className?: string;
 };
 
-export const QueryInput = ({ query, setQuery, className }: Props) => {
+export const QueryInput = ({
+  query,
+  setQuery,
+  placeholder = "Search",
+  className,
+}: Props) => {
   const [isFocus, setIsFocus] = useState(false);
   const [value, setValue] = useState(query);
   const ref = useRef<HTMLInputElement>(null);
@@ -30,28 +36,28 @@ export const QueryInput = ({ query, setQuery, className }: Props) => {
   return (
     <div
       className={cn(
-        "relative flex w-72 items-center rounded border px-2",
+        "relative flex w-56 items-center rounded border px-2 shadow-sm",
         isFocus && "ring-2 ring-neutral-300 ring-offset-1",
         className,
       )}
     >
-      <Search size={18} className="text-muted-foreground" />
+      <Search size={15} className="text-muted-foreground shrink-0" />
       <Input
         ref={ref}
         value={value}
         onChange={handleInputChange}
         onFocus={() => setIsFocus(true)}
         onBlur={() => setIsFocus(false)}
-        placeholder="Search"
+        placeholder={placeholder}
         variant="transparent"
-        className="mr-4 h-8"
+        className="h-8"
       />
       {query && (
         <Button
           onClick={handleClear}
           variant="secondary"
           size="icon"
-          className="absolute right-1"
+          className="shrink-0"
         >
           <X size={14} />
         </Button>

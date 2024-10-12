@@ -5,7 +5,10 @@ export const useParamsContacts = () => {
     {
       id: parseAsString.withDefault("full_name"),
       desc: parseAsBoolean.withDefault(false),
-      search: parseAsString.withDefault("").withOptions({ throttleMs: 500 }),
+      search: parseAsString.withDefault("").withOptions({
+        throttleMs: 500,
+        clearOnDefault: true,
+      }),
     },
     { shallow: false },
   );

@@ -34,7 +34,7 @@ const getActiveContacts = ({ contacts, from, to }: ActiveContacts) => {
 
   const activeContacts = contacts.reduce(
     (acc, contact) => {
-      contact.activities.forEach((activity) => {
+      for (const activity of contact.activities) {
         const activityDate = new Date(activity.created_at);
         const localActivityDate = new Date(
           activityDate.toLocaleString("en-US", { timeZone: "UTC" }),
@@ -53,7 +53,7 @@ const getActiveContacts = ({ contacts, from, to }: ActiveContacts) => {
           }
           acc[dateString].add(contact.id);
         }
-      });
+      }
       return acc;
     },
     {} as Record<string, Set<string>>,
@@ -76,7 +76,7 @@ export const ChartActiveContacts = ({ contacts }: Props) => {
   return (
     <Card>
       <CardHeader className="border-b p-4">
-        <CardTitle>Active contacts</CardTitle>
+        <CardTitle className="font-medium text-lg">Active contacts</CardTitle>
       </CardHeader>
       <CardContent className="px-2 pt-4 sm:px-6 sm:pt-6">
         <ChartContainer

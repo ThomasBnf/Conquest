@@ -60,7 +60,7 @@ export const ChartContacts = ({ contacts }: Props) => {
   return (
     <Card>
       <CardHeader className="border-b p-4">
-        <CardTitle>Contacts</CardTitle>
+        <CardTitle className="text-lg font-medium">Contacts</CardTitle>
       </CardHeader>
       <CardContent className="px-2 pt-4 sm:px-6 sm:pt-6">
         <ChartContainer

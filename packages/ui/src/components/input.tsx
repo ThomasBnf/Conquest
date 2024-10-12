@@ -1,14 +1,14 @@
 import { cn } from "@conquest/ui/cn";
-import { cva, type VariantProps } from "class-variance-authority";
+import { type VariantProps, cva } from "class-variance-authority";
 import * as React from "react";
 
 const inputVariants = cva(
-  "flex h-10 w-full bg-background p-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-sm placeholder:text-muted-foreground focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50",
+  "flex h-10 w-full bg-background p-2 text-sm file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-sm placeholder:text-muted-foreground focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50",
   {
     variants: {
       variant: {
         default:
-          "border border-input rounded-md focus-visible:ring-2 focus-visible:ring-neutral-300 focus-visible:ring-offset-2",
+          "border border-input rounded-md shadow-sm focus-visible:ring-2 focus-visible:ring-neutral-200 focus-visible:ring-offset-1",
         transparent: "bg-transparent",
       },
       h: {

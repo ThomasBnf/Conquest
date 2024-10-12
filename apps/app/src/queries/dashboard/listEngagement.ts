@@ -1,5 +1,6 @@
 import { authAction } from "@/lib/authAction";
 import { prisma } from "@/lib/prisma";
+import { ContactWithActivitiesSchema } from "@/schemas/activity.schema";
 import { differenceInDays, format, subDays } from "date-fns";
 import { z } from "zod";
 
@@ -28,6 +29,7 @@ export const listEngagement = authAction
       },
     });
 
+    const parsedContacts = ContactWithActivitiesSchema.array().parse(contacts);
     const totalContacts = contacts.length;
     const dailyEngagement: { date: string; engagement: number }[] = [];
 
@@ -39,7 +41,7 @@ export const listEngagement = authAction
 
       let activeContactsCount = 0;
 
-      for (const contact of contacts) {
+      for (const contact of parsedContacts) {
         const hasActivityOnDate = contact.activities.some(
           (activity) =>
             format(activity.created_at, "yyyy-MM-dd") === formattedDate,

@@ -7,6 +7,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@conquest/ui/dropdown-menu";
+import { CaretSortIcon } from "@radix-ui/react-icons";
 import type { Column } from "@tanstack/react-table";
 import { ArrowDownIcon, ArrowUpIcon } from "lucide-react";
 
@@ -29,11 +30,16 @@ export function Header<TData, TValue>({
           <Button
             variant="ghost"
             size="sm"
-            className="h-10 flex-1 justify-start rounded-none data-[state=open]:bg-accent"
+            className="h-10 text-xs uppercase text-muted-foreground flex-1 justify-between rounded-none data-[state=open]:bg-accent"
           >
             {title}
-            {column.getIsSorted() === "desc" && <ArrowDownIcon size={14} />}
-            {column.getIsSorted() === "asc" && <ArrowUpIcon size={14} />}
+            {column.getIsSorted() === "desc" ? (
+              <ArrowDownIcon size={14} />
+            ) : column.getIsSorted() === "asc" ? (
+              <ArrowUpIcon size={14} />
+            ) : (
+              <CaretSortIcon className="size-4 ml-auto" />
+            )}
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="start">

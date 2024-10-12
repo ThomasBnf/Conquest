@@ -102,7 +102,7 @@ export const SignupForm = () => {
               <p className="text-muted-foreground">Have an account?</p>
               <Link
                 href="/auth/login"
-                className={buttonVariants({ variant: "link" })}
+                className={buttonVariants({ variant: "link", size: "xs" })}
               >
                 Login
               </Link>
