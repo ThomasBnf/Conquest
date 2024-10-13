@@ -1,0 +1,39 @@
+"use server";
+
+import { authAction } from "lib/authAction";
+import { prisma } from "lib/prisma";
+import { ActivityDetailsSchema, ActivitySchema } from "schemas/activity.schema";
+import { z } from "zod";
+
+export const createActivity = authAction
+  .metadata({
+    name: "createActivity",
+  })
+  .schema(
+    z.object({
+      details: ActivityDetailsSchema,
+      channel_id: z.string().cuid(),
+      contact_id: z.string().cuid(),
+      created_at: z.date().optional(),
+      updated_at: z.date().optional(),
+    }),
+  )
+  .action(
+    async ({
+      ctx,
+      parsedInput: { details, channel_id, contact_id, created_at, updated_at },
+    }) => {
+      const activity = await prisma.activity.create({
+        data: {
+          details,
+          channel_id,
+          contact_id,
+          created_at: created_at ?? new Date(),
+          updated_at: updated_at ?? new Date(),
+          workspace_id: ctx.user.workspace_id,
+        },
+      });
+
+      return ActivitySchema.parse(activity);
+    },
+  );

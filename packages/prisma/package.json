@@ -10,7 +10,7 @@
     "seed": "bun run prisma/seed.ts"
   },
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./index.ts"
   },
   "dependencies": {
     "@prisma/client": "^5.20.0"

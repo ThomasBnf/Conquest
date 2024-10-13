@@ -3,8 +3,8 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"],
-      "@conquest/ui/*": ["../ui/src/*"]
+      "@/*": ["./*"],
+      "@conquest/ui/*": ["../ui/*"]
     }
   },
   "include": ["."],
