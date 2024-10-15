@@ -5,11 +5,11 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@conquest/ui/dropdown-menu";
+import type { Tag } from "@conquest/zod/tag.schema";
 import { deleteTag } from "actions/tags/deleteTag";
 import { AlertDialog } from "components/custom/alert-dialog";
 import { Edit2, MoreHorizontal, Trash2 } from "lucide-react";
 import { useState } from "react";
-import type { Tag } from "schemas/tag.schema";
 import { toast } from "sonner";
 
 type Props = {
@@ -18,7 +18,7 @@ type Props = {
 };
 
 export const TagMenu = ({ tag, setIsEditing }: Props) => {
-  const [isOpen, setIsOpen] = useState(false);
+  const [open, setOpen] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
 
   const onDeleteTag = async () => {
@@ -33,11 +33,11 @@ export const TagMenu = ({ tag, setIsEditing }: Props) => {
           title={`Delete the tag "${tag.name}"?`}
           description="This action cannot be undone."
           onConfirm={onDeleteTag}
-          isOpen={showAlert}
-          setIsOpen={setShowAlert}
+          open={showAlert}
+          setOpen={setShowAlert}
         />
       )}
-      <DropdownMenu open={isOpen} onOpenChange={setIsOpen} modal>
+      <DropdownMenu open={open} onOpenChange={setOpen} modal>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" size="icon">
             <MoreHorizontal size={16} className="text-muted-foreground" />

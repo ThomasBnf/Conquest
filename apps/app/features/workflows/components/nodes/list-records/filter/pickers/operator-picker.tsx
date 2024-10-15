@@ -5,16 +5,16 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@conquest/ui/dropdown-menu";
-import { OPERATORS } from "constant/operators";
-import { useFilters } from "context/filtersContext";
-import { ChevronDown } from "lucide-react";
 import {
   BaseOperatorSchema,
   DateOperatorSchema,
   type Filter,
   NumberOperatorSchema,
   type Operator,
-} from "schemas/filters.schema";
+} from "@conquest/zod/filters.schema";
+import { OPERATORS } from "constant/operators";
+import { useFilters } from "context/filtersContext";
+import { ChevronDown } from "lucide-react";
 
 type Props = {
   filter: Filter;

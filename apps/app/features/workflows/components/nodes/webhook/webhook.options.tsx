@@ -6,10 +6,10 @@ import {
   FormLabel,
 } from "@conquest/ui/form";
 import { Input } from "@conquest/ui/input";
+import { NodeWebhookSchema } from "@conquest/zod/node.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useWorkflow } from "context/workflowContext";
 import { useForm } from "react-hook-form";
-import { NodeWebhookSchema } from "schemas/node.schema";
 import { type FormUrl, FormUrlSchema } from "./form-url.schema";
 
 export const WebhookOptions = () => {

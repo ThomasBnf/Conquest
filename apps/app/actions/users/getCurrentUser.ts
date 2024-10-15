@@ -1,8 +1,8 @@
 "use server";
 
+import { UserWithWorkspaceSchema } from "@conquest/zod/user.schema";
 import { authAction } from "lib/authAction";
 import { prisma } from "lib/prisma";
-import { UserWithWorkspaceSchema } from "schemas/user.schema";
 
 export const getCurrentUser = authAction
   .metadata({ name: "getCurrentUser" })
@@ -12,7 +12,11 @@ export const getCurrentUser = authAction
         id: ctx.user?.id,
       },
       include: {
-        workspace: true,
+        workspace: {
+          include: {
+            integrations: true,
+          },
+        },
       },
     });
 

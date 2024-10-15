@@ -1,10 +1,10 @@
 "use client";
 
 import { Button } from "@conquest/ui/button";
+import type { APIKey } from "@conquest/zod/apikey.schema";
 import { deleteApiKey } from "actions/api-keys/deleteApiKey";
 import { Check, Copy, Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
-import type { APIKey } from "schemas/apikey.schema";
 import { toast } from "sonner";
 
 type Props = {

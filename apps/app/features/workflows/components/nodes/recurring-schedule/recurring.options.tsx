@@ -15,11 +15,11 @@ import {
   SelectValue,
 } from "@conquest/ui/select";
 import { ToggleGroup, ToggleGroupItem } from "@conquest/ui/toggle-group";
+import { NodeRecurringSchema } from "@conquest/zod/node.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { weekdays } from "constant/weekdays";
 import { useWorkflow } from "context/workflowContext";
 import { useForm } from "react-hook-form";
-import { NodeRecurringSchema } from "schemas/node.schema";
 import {
   type FormRecurring,
   FormRecurringSchema,

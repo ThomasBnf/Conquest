@@ -1,4 +1,4 @@
-import { FrequencySchema, RepeatOnSchema } from "schemas/node.schema";
+import { FrequencySchema, RepeatOnSchema } from "@conquest/zod/node.schema";
 import { z } from "zod";
 
 export const FormRecurringSchema = z.object({

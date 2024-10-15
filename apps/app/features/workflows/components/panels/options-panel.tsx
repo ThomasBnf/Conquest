@@ -1,10 +1,10 @@
 import { Badge } from "@conquest/ui/badge";
 import { Button } from "@conquest/ui/button";
+import { NodeDataSchema } from "@conquest/zod/node.schema";
 import { DeleteDialog } from "components/custom/delete-dialog";
 import { Icon } from "components/icons/Icon";
 import { useWorkflow } from "context/workflowContext";
 import { ArrowLeft } from "lucide-react";
-import { NodeDataSchema } from "schemas/node.schema";
 import { Description } from "../description";
 import { ListRecordsOptions } from "../nodes/list-records/listRecords.options";
 import { RecurringScheduleOptions } from "../nodes/recurring-schedule/recurring.options";

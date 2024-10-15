@@ -34,9 +34,9 @@ export function Header<TData, TValue>({
           >
             {title}
             {column.getIsSorted() === "desc" ? (
-              <ArrowDownIcon size={14} />
+              <ArrowDownIcon size={14} className="ml-auto" />
             ) : column.getIsSorted() === "asc" ? (
-              <ArrowUpIcon size={14} />
+              <ArrowUpIcon size={14} className="ml-auto" />
             ) : (
               <CaretSortIcon className="size-4 ml-auto" />
             )}

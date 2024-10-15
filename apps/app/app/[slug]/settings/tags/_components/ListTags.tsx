@@ -1,9 +1,9 @@
 "use client";
 
 import { Button } from "@conquest/ui/button";
+import type { Tag } from "@conquest/zod/tag.schema";
 import { QueryInput } from "components/custom/query-input";
 import { useState } from "react";
-import type { Tag } from "schemas/tag.schema";
 import { useDebounceValue } from "usehooks-ts";
 import { TagCard } from "./TagCard";
 import { TagForm } from "./TagForm";

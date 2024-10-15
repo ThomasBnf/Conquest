@@ -1,9 +1,9 @@
 "use server";
 
+import { ChannelSchema } from "@conquest/zod/channel.schema";
 import { WebClient } from "@slack/web-api";
 import { authAction } from "lib/authAction";
 import { prisma } from "lib/prisma";
-import { ChannelSchema } from "schemas/channel.schema";
 import { z } from "zod";
 import { createActivity } from "../activities/createActivity";
 import { createReaction } from "./createReaction";
@@ -60,6 +60,7 @@ export const listMessages = authAction
                 title: title ?? "",
                 url: url_private ?? "",
               })),
+              ts: ts ?? "",
             },
             channel_id: channel.id,
             contact_id: contact.id,
@@ -90,7 +91,7 @@ export const listMessages = authAction
           if (reply_count) {
             await listReplies({
               web,
-              channel_id: channel.external_id ?? "",
+              channel,
               ts: message.thread_ts ?? "",
             });
           }

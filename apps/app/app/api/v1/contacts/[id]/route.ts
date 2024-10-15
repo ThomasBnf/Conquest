@@ -1,8 +1,8 @@
+import { ContactSchema } from "@conquest/zod/contact.schema";
 import { getAuthenticatedUser } from "features/auth/helpers/getAuthenticatedUser";
 import { prisma } from "lib/prisma";
 import { safeRoute } from "lib/safeRoute";
 import { NextResponse } from "next/server";
-import { ContactSchema } from "schemas/contact.schema";
 import { z } from "zod";
 
 export const PATCH = safeRoute

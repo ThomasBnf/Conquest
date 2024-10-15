@@ -7,10 +7,10 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@conquest/ui/chart";
+import type { ContactWithActivities } from "@conquest/zod/activity.schema";
 import { eachDayOfInterval, format, isWithinInterval } from "date-fns";
 import { useDateRange } from "hooks/useDateRange";
 import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";
-import type { ContactWithActivities } from "schemas/activity.schema";
 
 const chartConfig = {
   active: {

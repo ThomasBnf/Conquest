@@ -49,6 +49,7 @@ model Channel {
   id           String    @id @default(cuid())
   external_id  String?   @unique
   name         String
+  source       SOURCE
   workspace_id String
   workspace    Workspace @relation(fields: [workspace_id], references: [id], onDelete: Cascade)
   created_at   DateTime  @default(now())
@@ -84,10 +85,25 @@ model Contact {
   @@index([id, workspace_id])
 }
 
-model Organization {
-  id   String @id @default(cuid())
-  name String
+model Integration {
+  id           String    @id @default(cuid())
+  external_id  String    @unique
+  name         String
+  source       SOURCE
+  token        String
+  scopes       String
+  installed_at DateTime?
+  workspace_id String
+  workspace    Workspace @relation(fields: [workspace_id], references: [id], onDelete: Cascade)
+  created_at   DateTime  @default(now())
+  updated_at   DateTime  @updatedAt
 
+  @@index([id, workspace_id])
+}
+
+model Organization {
+  id           String    @id @default(cuid())
+  name         String
   workspace_id String
   workspace    Workspace @relation(fields: [workspace_id], references: [id], onDelete: Cascade)
   created_at   DateTime  @default(now())
@@ -97,10 +113,9 @@ model Organization {
 }
 
 model Tag {
-  id    String @id @default(cuid())
-  name  String
-  color String
-
+  id           String    @id @default(cuid())
+  name         String
+  color        String
   workspace_id String
   workspace    Workspace @relation(fields: [workspace_id], references: [id], onDelete: Cascade)
   created_at   DateTime  @default(now())
@@ -110,33 +125,31 @@ model Tag {
 }
 
 model User {
-  id              String    @id @default(cuid())
-  email           String    @unique
+  id              String     @id @default(cuid())
+  email           String     @unique
   hashed_password String
   first_name      String?
   last_name       String?
   full_name       String?
   onboarding      DateTime?
   date_range      Json?
-
-  workspace_id String
-  workspace    Workspace? @relation(fields: [workspace_id], references: [id], onDelete: Cascade)
-  created_at   DateTime   @default(now())
-  updated_at   DateTime   @updatedAt
-  apiKeys      ApiKey[]
+  workspace_id    String
+  workspace       Workspace? @relation(fields: [workspace_id], references: [id], onDelete: Cascade)
+  created_at      DateTime   @default(now())
+  updated_at      DateTime   @updatedAt
+  apiKeys         ApiKey[]
 
   @@index([id])
 }
 
 model Workflow {
-  id          String  @id @default(cuid())
-  icon        String
-  name        String
-  description String?
-  isPublished Boolean @default(false)
-  nodes       Json[]
-  edges       Json[]
-
+  id           String    @id @default(cuid())
+  icon         String
+  name         String
+  description  String?
+  isPublished  Boolean   @default(false)
+  nodes        Json[]
+  edges        Json[]
   workspace_id String
   workspace    Workspace @relation(fields: [workspace_id], references: [id], onDelete: Cascade)
   created_at   DateTime  @default(now())
@@ -146,15 +159,10 @@ model Workflow {
 }
 
 model Workspace {
-  id          String   @id @default(cuid())
-  name        String
-  slug        String   @unique
-  guild_id    String?  @unique
-  source      String?
-  slack_token String?
-  created_at  DateTime @default(now())
-  updated_at  DateTime @updatedAt
-
+  id            String         @id @default(cuid())
+  name          String
+  slug          String         @unique
+  source        String?
   users         User[]
   contacts      Contact[]
   activities    Activity[]
@@ -162,6 +170,9 @@ model Workspace {
   workflows     Workflow[]
   tags          Tag[]
   channels      Channel[]
+  integrations  Integration[]
+  created_at    DateTime       @default(now())
+  updated_at    DateTime       @updatedAt
 
   @@index([id])
 }

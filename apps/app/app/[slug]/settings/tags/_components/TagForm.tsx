@@ -3,13 +3,13 @@ import { ColorPicker } from "@conquest/ui/color-picker";
 import { Form, FormControl, FormField, FormItem } from "@conquest/ui/form";
 import { Input } from "@conquest/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@conquest/ui/popover";
+import type { Tag } from "@conquest/zod/tag.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createTag } from "actions/tags/createTag";
 import { updateTag } from "actions/tags/updateTag";
 import { colors } from "constant/colors";
 import { Check } from "lucide-react";
 import { useForm } from "react-hook-form";
-import type { Tag } from "schemas/tag.schema";
 import { type FormTag, FormTagSchema } from "../schema/form.schema";
 
 type Props = {

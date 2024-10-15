@@ -8,13 +8,13 @@ import {
   PopoverTrigger,
 } from "@conquest/ui/popover";
 import { Skeleton } from "@conquest/ui/skeleton";
+import { NodeTagContactSchema } from "@conquest/zod/node.schema";
+import type { Tag } from "@conquest/zod/tag.schema";
 import { useWorkflow } from "context/workflowContext";
 import { TagBadge } from "features/tags/tag-badge";
 import { useListTags } from "hooks/useListTags";
 import { Plus, TagIcon } from "lucide-react";
 import { useEffect, useState } from "react";
-import { NodeTagContactSchema } from "schemas/node.schema";
-import type { Tag } from "schemas/tag.schema";
 
 export const TagContactOptions = () => {
   const { tags, isLoading } = useListTags();

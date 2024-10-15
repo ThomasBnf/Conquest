@@ -1,5 +1,12 @@
 "use client";
 
+import { EdgeSchema } from "@conquest/zod/edge.schema";
+import {
+  NodeDataSchema,
+  NodeSchema,
+  type Node as NodeType,
+} from "@conquest/zod/node.schema";
+import type { Workflow } from "@conquest/zod/workflow.schema";
 import {
   type Connection,
   type Edge,
@@ -20,13 +27,6 @@ import {
   useEffect,
   useState,
 } from "react";
-import { EdgeSchema } from "schemas/edge.schema";
-import {
-  NodeDataSchema,
-  NodeSchema,
-  type Node as NodeType,
-} from "schemas/node.schema";
-import type { Workflow } from "schemas/workflow.schema";
 import { toast } from "sonner";
 
 type workflowContext = {

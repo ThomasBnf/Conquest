@@ -1,0 +1,10 @@
+{
+  "name": "@conquest/zod",
+  "version": "0.0.0",
+  "exports": {
+    "./*": "./schemas/*.ts"
+  },
+  "dependencies": {
+    "zod": "^3.23.8"
+  }
+}

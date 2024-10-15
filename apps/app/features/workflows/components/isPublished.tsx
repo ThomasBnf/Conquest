@@ -1,8 +1,8 @@
 "use client";
 
 import { Switch } from "@conquest/ui/switch";
+import type { Workflow } from "@conquest/zod/workflow.schema";
 import { publishWorkflow } from "actions/workflows/pusblishWork";
-import type { Workflow } from "schemas/workflow.schema";
 
 type Props = {
   workflow: Workflow;

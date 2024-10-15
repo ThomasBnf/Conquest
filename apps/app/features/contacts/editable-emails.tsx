@@ -9,11 +9,11 @@ import {
 } from "@conquest/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@conquest/ui/popover";
 import { Separator } from "@conquest/ui/separator";
+import type { Contact } from "@conquest/zod/contact.schema";
 import { updateContact } from "actions/contacts/updateContact";
 import cuid from "cuid";
 import { Mail, Plus } from "lucide-react";
 import { useState } from "react";
-import type { Contact } from "schemas/contact.schema";
 import { toast } from "sonner";
 import { Email } from "./email";
 

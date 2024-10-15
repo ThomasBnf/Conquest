@@ -44,12 +44,12 @@ export const SidebarSettings = () => {
   ];
 
   return (
-    <div className="flex h-full w-44 flex-col bg-sidebar p-2">
+    <div className="flex flex-col h-full max-w-48 w-full bg-secondary p-2">
       <Link
         href={`/${slug}`}
         className={cn(
           buttonVariants({ variant: "ghost" }),
-          "justify-start gap-2",
+          "justify-start gap-2 hover:bg-neutral-200",
         )}
       >
         <ArrowLeft className="size-4" />

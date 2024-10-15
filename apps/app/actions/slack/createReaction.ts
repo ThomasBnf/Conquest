@@ -40,6 +40,7 @@ export const createReaction = authAction
           type: "REACTION",
           message,
           reference,
+          ts,
         },
         channel_id,
         contact_id: contact.id,

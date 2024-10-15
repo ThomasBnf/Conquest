@@ -1,37 +1,33 @@
 import { z } from "zod";
 import { ContactSchema } from "./contact.schema";
 
-export const ActivityAttachmentsSchema = z
-  .array(
-    z.object({
-      title: z.string(),
-      url: z.string(),
-    }),
-  )
-  .default([]);
+export const TYPE = z.enum(["MESSAGE", "REACTION", "REPLY"]);
 
-export const ActivityFilesSchema = z
-  .array(
-    z.object({
-      title: z.string(),
-      url: z.string(),
-    }),
-  )
-  .default([]);
+export const AttachmentsSchema = z.object({
+  title: z.string(),
+  url: z.string(),
+});
+
+export const FilesSchema = z.object({
+  title: z.string(),
+  url: z.string(),
+});
 
 const ActivityAPISchema = z.object({
   source: z.literal("API"),
-  type: z.string(),
+  type: TYPE,
   message: z.string(),
+  ts: z.string(),
 });
 
 const ActivitySlackSchema = z.object({
   source: z.literal("SLACK"),
-  type: z.enum(["MESSAGE", "REACTION"]),
+  type: TYPE,
   message: z.string(),
-  attachments: ActivityAttachmentsSchema,
-  files: ActivityFilesSchema,
-  reference: z.string().cuid().optional(),
+  attachments: z.array(AttachmentsSchema).default([]),
+  files: z.array(FilesSchema).default([]),
+  reference: z.string().optional(),
+  ts: z.string().optional(),
 });
 
 export const ActivityDetailsSchema = z.discriminatedUnion("source", [
@@ -65,5 +61,6 @@ export type ActivityAPI = z.infer<typeof ActivityAPISchema>;
 export type ActivitySlack = z.infer<typeof ActivitySlackSchema>;
 export type ActivityDetails = z.infer<typeof ActivityDetailsSchema>;
 
-export type ActivityAttachments = z.infer<typeof ActivityAttachmentsSchema>;
-export type ActivityFiles = z.infer<typeof ActivityFilesSchema>;
+export type Attachments = z.infer<typeof AttachmentsSchema>;
+export type Files = z.infer<typeof FilesSchema>;
+export type Type = z.infer<typeof TYPE>;

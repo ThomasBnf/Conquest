@@ -1,7 +1,7 @@
 import { Input } from "@conquest/ui/input";
+import type { FilterCount } from "@conquest/zod/filters.schema";
 import { useFilters } from "context/filtersContext";
 import { useState } from "react";
-import type { FilterCount } from "schemas/filters.schema";
 
 type Props = {
   filter: FilterCount;

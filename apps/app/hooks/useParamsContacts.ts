@@ -8,6 +8,7 @@ export const useParamsContacts = () => {
       search: parseAsString.withDefault("").withOptions({
         throttleMs: 500,
         clearOnDefault: true,
+        history: "replace",
       }),
     },
     { shallow: false },

@@ -1,9 +1,9 @@
 "use server";
 
+import { WorkflowSchema } from "@conquest/zod/workflow.schema";
 import { authAction } from "lib/authAction";
 import { prisma } from "lib/prisma";
 import { revalidatePath } from "next/cache";
-import { WorkflowSchema } from "schemas/workflow.schema";
 
 export const createWorkflow = authAction
   .metadata({

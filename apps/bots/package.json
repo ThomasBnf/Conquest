@@ -1,16 +1,22 @@
 {
   "name": "bots",
+  "type": "module",
   "scripts": {
-    "dev": "tsup src/slack.ts --watch",
-    "build": "tsup src/slack.ts",
+    "dev": "bun run ./slack.ts --watch",
+    "build": "tsup ./slack.ts",
     "start": "node dist/slack.js"
   },
   "dependencies": {
-    "@slack/bolt": "3.5",
-    "dotenv": "^16.4.5"
+    "@conquest/prisma": "workspace:*",
+    "@conquest/zod": "workspace:*",
+    "@slack/bolt": "4.0.0-rc.4",
+    "dotenv": "^16.4.5",
+    "next-safe-action": "^7.9.4",
+    "zod": "^3.23.8"
   },
   "devDependencies": {
     "@conquest/typescript": "workspace:*",
+    "@conquest/prisma": "workspace:*",
     "tsup": "^8.3.0"
   }
 }

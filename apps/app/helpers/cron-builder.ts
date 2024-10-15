@@ -1,4 +1,4 @@
-import type { NodeRecurringSchedule } from "schemas/node.schema";
+import type { NodeRecurringSchedule } from "@conquest/zod/node.schema";
 
 export const cronBuilder = (node: NodeRecurringSchedule) => {
   const { repeat_on, frequency, time } = node;

@@ -11,15 +11,21 @@ import {
 } from "@conquest/ui/alert-dialog";
 import { Button, buttonVariants } from "@conquest/ui/button";
 import { Trash2 } from "lucide-react";
-import { useState } from "react";
+import { type ReactNode, useState } from "react";
 
 type Props = {
   title: string;
   description: string;
+  children?: ReactNode;
   onConfirm: () => Promise<string | number | undefined>;
 };
 
-export const DeleteDialog = ({ title, description, onConfirm }: Props) => {
+export const DeleteDialog = ({
+  title,
+  description,
+  children,
+  onConfirm,
+}: Props) => {
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -32,10 +38,14 @@ export const DeleteDialog = ({ title, description, onConfirm }: Props) => {
 
   return (
     <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
-      <AlertDialogTrigger>
+      <AlertDialogTrigger asChild>
         <Button variant="destructive">
-          <Trash2 size={16} />
-          Delete
+          {children ?? (
+            <>
+              <Trash2 size={16} />
+              Delete
+            </>
+          )}
         </Button>
       </AlertDialogTrigger>
       <AlertDialogContent>

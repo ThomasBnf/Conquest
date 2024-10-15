@@ -1,9 +1,9 @@
 "use server";
 
+import { TagSchema } from "@conquest/zod/tag.schema";
 import { authAction } from "lib/authAction";
 import { prisma } from "lib/prisma";
 import { revalidatePath } from "next/cache";
-import { TagSchema } from "schemas/tag.schema";
 import { z } from "zod";
 
 export const updateTag = authAction

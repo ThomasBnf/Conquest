@@ -1,9 +1,9 @@
 "use server";
 
+import { ContactSchema } from "@conquest/zod/contact.schema";
 import { authAction } from "lib/authAction";
 import { prisma } from "lib/prisma";
 import { revalidatePath } from "next/cache";
-import { ContactSchema } from "schemas/contact.schema";
 import { z } from "zod";
 
 const updateContactSchema = z.object({

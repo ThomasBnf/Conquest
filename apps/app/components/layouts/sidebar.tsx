@@ -53,7 +53,7 @@ export const Sidebar = () => {
   ];
 
   return (
-    <div className="flex h-full max-w-48 w-full flex-col bg-sidebar">
+    <div className="flex h-full max-w-48 w-full flex-col bg-secondary">
       <WorkspaceMenu />
       <div className="flex flex-col gap-0.5 p-2">
         {routes.map((route) => (

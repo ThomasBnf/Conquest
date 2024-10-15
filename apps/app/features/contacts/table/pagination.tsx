@@ -1,7 +1,7 @@
 import { Button } from "@conquest/ui/button";
+import type { ContactWithActivities } from "@conquest/zod/activity.schema";
 import type { Table } from "@tanstack/react-table";
 import { parseAsInteger, useQueryState } from "nuqs";
-import type { ContactWithActivities } from "schemas/activity.schema";
 
 type Props = {
   table: Table<ContactWithActivities>;

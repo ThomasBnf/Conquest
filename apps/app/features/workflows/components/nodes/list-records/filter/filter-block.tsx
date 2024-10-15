@@ -1,8 +1,8 @@
 import { Button } from "@conquest/ui/button";
+import type { Filter } from "@conquest/zod/filters.schema";
+import type { GroupFilter } from "@conquest/zod/node.schema";
 import { useFilters } from "context/filtersContext";
 import { Trash2 } from "lucide-react";
-import type { Filter } from "schemas/filters.schema";
-import type { GroupFilter } from "schemas/node.schema";
 import { DatePicker } from "./pickers/date-picker";
 import { FieldPicker } from "./pickers/field-picker";
 import { GroupOperatorPicker } from "./pickers/group-operator";

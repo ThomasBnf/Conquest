@@ -1,8 +1,9 @@
 "use server";
 
+import { ChannelSchema } from "@conquest/zod/channel.schema";
+import { SOURCE } from "@conquest/zod/source.enum";
 import { authAction } from "lib/authAction";
 import { prisma } from "lib/prisma";
-import { ChannelSchema } from "schemas/channel.schema";
 import { z } from "zod";
 
 export const createChannel = authAction
@@ -11,17 +12,19 @@ export const createChannel = authAction
   })
   .schema(
     z.object({
-      name: z.string(),
       external_id: z.string().nullable(),
+      name: z.string(),
+      source: SOURCE,
     }),
   )
-  .action(async ({ ctx, parsedInput: { name, external_id } }) => {
+  .action(async ({ ctx, parsedInput: { external_id, name, source } }) => {
     const workspace_id = ctx.user.workspace_id;
 
     const channel = await prisma.channel.create({
       data: {
-        name,
         external_id,
+        name,
+        source,
         workspace_id,
       },
     });

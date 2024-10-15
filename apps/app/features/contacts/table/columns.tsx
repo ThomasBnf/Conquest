@@ -1,8 +1,15 @@
+import { useUser } from "@/context/userContext";
 import { Avatar, AvatarFallback, AvatarImage } from "@conquest/ui/avatar";
+import { Button } from "@conquest/ui/button";
+import { Checkbox } from "@conquest/ui/checkbox";
+import type {
+  Activity,
+  ContactWithActivities,
+} from "@conquest/zod/activity.schema";
+import type { Tag } from "@conquest/zod/tag.schema";
 import type { ColumnDef } from "@tanstack/react-table";
 import { TagBadge } from "features/tags/tag-badge";
-import type { Activity, ContactWithActivities } from "schemas/activity.schema";
-import type { Tag } from "schemas/tag.schema";
+import { useRouter } from "next/navigation";
 import { DateCell } from "./date-cell";
 import { Header } from "./header";
 
@@ -14,21 +21,49 @@ export const Columns = ({
   tags,
 }: Props): ColumnDef<ContactWithActivities>[] => [
   {
+    accessorKey: "select",
+    header: ({ table }) => (
+      <div className="flex items-center justify-center bg-secondary h-full">
+        <Checkbox
+          checked={
+            table.getIsAllRowsSelected() ||
+            (table.getIsSomeRowsSelected() && "indeterminate")
+          }
+          onCheckedChange={(value) => table.toggleAllRowsSelected(!!value)}
+        />
+      </div>
+    ),
+    cell: ({ row }) => (
+      <div className="flex items-center justify-center">
+        <Checkbox
+          checked={row.getIsSelected()}
+          onCheckedChange={(value) => row.toggleSelected(!!value)}
+        />
+      </div>
+    ),
+  },
+  {
     accessorKey: "full_name",
     header: ({ column }) => <Header column={column} title="Name" />,
     cell: ({ row }) => {
+      const { slug } = useUser();
+      const router = useRouter();
       const { avatar_url, first_name, full_name } = row.original;
 
       return (
-        <div className="flex items-center gap-2">
-          <Avatar className="size-10">
+        <Button
+          variant="ghost"
+          onClick={() => router.push(`/${slug}/contacts/${row.original.id}`)}
+          className="flex items-center gap-2 px-1.5"
+        >
+          <Avatar className="size-6">
             <AvatarImage src={avatar_url ?? ""} />
             <AvatarFallback className="text-sm">
               {first_name?.charAt(0).toUpperCase()}
             </AvatarFallback>
           </Avatar>
           <p className="font-medium">{full_name}</p>
-        </div>
+        </Button>
       );
     },
   },
@@ -76,7 +111,6 @@ export const Columns = ({
     header: ({ column }) => <Header column={column} title="Last activity" />,
     cell: ({ row }) => {
       const lastActivity = row.original.activities
-        .filter((activity) => activity.details.type !== "JOIN")
         .sort((a, b) => b.created_at.getTime() - a.created_at.getTime())
         .at(0)?.created_at;
 
@@ -85,12 +119,8 @@ export const Columns = ({
     },
     sortingFn: (rowA, rowB) => {
       const getLastActivity = (activities: Activity[]) => {
-        const filteredActivities = activities.filter(
-          (activity) => activity.details.type !== "JOIN",
-        );
-
-        return filteredActivities.length > 0
-          ? Math.max(...filteredActivities.map((a) => a.created_at.getTime()))
+        return activities.length > 0
+          ? Math.max(...activities.map((a) => a.created_at.getTime()))
           : Number.NEGATIVE_INFINITY;
       };
 

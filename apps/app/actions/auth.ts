@@ -1,9 +1,9 @@
 "use server";
 
 import { signIn } from "@/auth";
+import { LoginSchema } from "@conquest/zod/auth.schema";
 import { safeAction } from "lib/safeAction";
 import { AuthError } from "next-auth";
-import { LoginSchema } from "schemas/auth.schema";
 
 export const logIn = safeAction
   .metadata({ name: "logIn" })

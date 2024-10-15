@@ -9,10 +9,10 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@conquest/ui/dropdown-menu";
+import type { Filter, FilterCount } from "@conquest/zod/filters.schema";
+import type { Category } from "@conquest/zod/node.schema";
 import { useFilters } from "context/filtersContext";
 import { Plus } from "lucide-react";
-import type { Filter, FilterCount } from "schemas/filters.schema";
-import type { Category } from "schemas/node.schema";
 
 export const CategoryPicker = () => {
   const { onAddGroupFilter } = useFilters();

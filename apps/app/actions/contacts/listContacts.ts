@@ -1,12 +1,12 @@
 "use server";
 
-import type { Prisma } from "@prisma/client";
-import { authAction } from "lib/authAction";
-import { prisma as db } from "lib/prisma";
+import { prisma } from "@/lib/prisma";
 import {
   type ContactWithActivities,
   ContactWithActivitiesSchema,
-} from "schemas/activity.schema";
+} from "@conquest/zod/activity.schema";
+import type { Prisma } from "@prisma/client";
+import { authAction } from "lib/authAction";
 import { z } from "zod";
 
 export const listContacts = authAction
@@ -40,7 +40,7 @@ export const listContacts = authAction
         },
       };
 
-      const contacts = await db.contact.findMany({
+      const contacts = await prisma.contact.findMany({
         where,
         include,
         orderBy:

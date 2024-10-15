@@ -2,12 +2,12 @@
 
 import { Avatar, AvatarFallback, AvatarImage } from "@conquest/ui/avatar";
 import { Separator } from "@conquest/ui/separator";
+import type { Contact } from "@conquest/zod/contact.schema";
+import type { Tag } from "@conquest/zod/tag.schema";
 import { updateContact } from "actions/contacts/updateContact";
 import { AddressInput } from "components/custom/address-input";
 import { EditableInput } from "components/custom/editable-input";
 import { Code } from "lucide-react";
-import type { Contact } from "schemas/contact.schema";
-import type { Tag } from "schemas/tag.schema";
 import { TagPicker } from "../tags/tag-picker";
 import { EditableEmails } from "./editable-emails";
 

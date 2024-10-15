@@ -1,8 +1,10 @@
+import { ContactSchema } from "@conquest/zod/contact.schema";
+import { GENDER } from "@conquest/zod/gender.enum";
+import { SOURCE } from "@conquest/zod/source.enum";
 import { getAuthenticatedUser } from "features/auth/helpers/getAuthenticatedUser";
 import { prisma } from "lib/prisma";
 import { safeRoute } from "lib/safeRoute";
 import { NextResponse } from "next/server";
-import { ContactSchema, GENDER, SOURCE } from "schemas/contact.schema";
 import { z } from "zod";
 
 export const POST = safeRoute

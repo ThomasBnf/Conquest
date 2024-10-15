@@ -1,5 +1,5 @@
+import type { Activity } from "@conquest/zod/activity.schema";
 import { formatDistanceStrict } from "date-fns";
-import type { Activity } from "schemas/activity.schema";
 
 type Props = {
   activity: Activity;

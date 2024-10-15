@@ -10,6 +10,8 @@ import {
   TableHeader,
   TableRow,
 } from "@conquest/ui/table";
+import { ContactWithActivitiesSchema } from "@conquest/zod/activity.schema";
+import type { Tag } from "@conquest/zod/tag.schema";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import {
   flexRender,
@@ -21,8 +23,6 @@ import { useUser } from "context/userContext";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo } from "react";
 import { useInView } from "react-intersection-observer";
-import { ContactWithActivitiesSchema } from "schemas/activity.schema";
-import type { Tag } from "schemas/tag.schema";
 import { Columns } from "./columns";
 
 type Props = {

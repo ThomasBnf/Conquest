@@ -1,8 +1,11 @@
 "use server";
 
+import {
+  ActivityDetailsSchema,
+  ActivitySchema,
+} from "@conquest/zod/activity.schema";
 import { authAction } from "lib/authAction";
 import { prisma } from "lib/prisma";
-import { ActivityDetailsSchema, ActivitySchema } from "schemas/activity.schema";
 import { z } from "zod";
 
 export const createActivity = authAction

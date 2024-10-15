@@ -11,12 +11,12 @@ import {
 import { Button } from "@conquest/ui/button";
 import { Form, FormControl, FormField, FormItem } from "@conquest/ui/form";
 import { Input } from "@conquest/ui/input";
+import type { Workflow } from "@conquest/zod/workflow.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { runWorkflow } from "actions/workflows/runWorkflow";
 import { updateWorkflow } from "actions/workflows/updateWorkflow";
 import { useUser } from "context/userContext";
 import { useForm } from "react-hook-form";
-import type { Workflow } from "schemas/workflow.schema";
 import { toast } from "sonner";
 import { type FormName, FormNameSchema } from "./panels/types/form-name.schema";
 

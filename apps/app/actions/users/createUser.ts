@@ -1,11 +1,11 @@
 "use server";
 
+import { SignupSchema } from "@conquest/zod/auth.schema";
+import { UserSchema } from "@conquest/zod/user.schema";
 import { hash } from "bcryptjs";
 import { endOfDay, startOfDay, subDays } from "date-fns";
 import { prisma } from "lib/prisma";
 import { safeAction } from "lib/safeAction";
-import { SignupSchema } from "schemas/auth.schema";
-import { UserSchema } from "schemas/user.schema";
 
 export const createUser = safeAction
   .metadata({ name: "createUser" })

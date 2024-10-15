@@ -1,10 +1,10 @@
 import { PrismaAdapter } from "@auth/prisma-adapter";
+import { LoginSchema } from "@conquest/zod/auth.schema";
+import { UserWithWorkspaceSchema } from "@conquest/zod/user.schema";
 import { compare } from "bcryptjs";
 import { prisma } from "lib/prisma";
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
-import { LoginSchema } from "schemas/auth.schema";
-import { UserWithWorkspaceSchema } from "schemas/user.schema";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   adapter: PrismaAdapter(prisma),

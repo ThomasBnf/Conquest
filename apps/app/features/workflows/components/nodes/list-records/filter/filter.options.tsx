@@ -1,7 +1,7 @@
 import { Label } from "@conquest/ui/label";
+import { NodeListRecordsSchema } from "@conquest/zod/node.schema";
 import { FiltersProvider } from "context/filtersContext";
 import { useWorkflow } from "context/workflowContext";
-import { NodeListRecordsSchema } from "schemas/node.schema";
 import { GroupFilters } from "./group-filters";
 
 export const FilterOptions = () => {

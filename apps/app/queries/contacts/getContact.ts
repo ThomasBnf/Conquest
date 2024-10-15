@@ -1,6 +1,6 @@
+import { ContactWithActivitiesSchema } from "@conquest/zod/activity.schema";
 import { authAction } from "lib/authAction";
 import { prisma } from "lib/prisma";
-import { ContactSchema } from "schemas/contact.schema";
 import { z } from "zod";
 
 export const getContact = authAction
@@ -18,7 +18,10 @@ export const getContact = authAction
         id,
         workspace_id: ctx.user.workspace_id,
       },
+      include: {
+        activities: true,
+      },
     });
 
-    return ContactSchema.parse(contact);
+    return ContactWithActivitiesSchema.parse(contact);
   });

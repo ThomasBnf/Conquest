@@ -1,6 +1,6 @@
+import { UserWithWorkspaceSchema } from "@conquest/zod/user.schema";
 import { auth } from "auth";
 import { prisma } from "lib/prisma";
-import { UserWithWorkspaceSchema } from "schemas/user.schema";
 import { safeAction } from "./safeAction";
 
 export const authAction = safeAction.use(async ({ next }) => {
@@ -15,7 +15,11 @@ export const authAction = safeAction.use(async ({ next }) => {
       id: session.user.id,
     },
     include: {
-      workspace: true,
+      workspace: {
+        include: {
+          integrations: true,
+        },
+      },
     },
   });
 

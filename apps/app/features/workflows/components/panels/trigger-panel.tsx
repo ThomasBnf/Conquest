@@ -1,7 +1,7 @@
 import { Label } from "@conquest/ui/label";
+import type { Node as NodeType } from "@conquest/zod/node.schema";
 import { Icon } from "components/icons/Icon";
 import { useWorkflow } from "context/workflowContext";
-import type { Node as NodeType } from "schemas/node.schema";
 
 export const TriggerPanel = () => {
   const { onAddNode } = useWorkflow();

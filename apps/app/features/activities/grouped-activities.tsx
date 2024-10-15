@@ -1,8 +1,8 @@
-import { cn } from "@conquest/ui/utils/cn";
 import { Separator } from "@conquest/ui/separator";
+import { cn } from "@conquest/ui/utils/cn";
+import type { ActivityWithContact } from "@conquest/zod/activity.schema";
 import { format, isYesterday } from "date-fns";
 import { Fragment, type HTMLAttributes } from "react";
-import type { ActivityWithContact } from "schemas/activity.schema";
 import { CustomActivity } from "./custom-activity";
 import { LoadMore } from "./load-more";
 

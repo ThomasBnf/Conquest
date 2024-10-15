@@ -13,8 +13,8 @@ export const Logout = () => {
     <Button
       variant="ghost"
       onClick={onClick}
-      className="w-full hover:bg-active"
-      classNameSpan="justify-start"
+      className="w-full"
+      classNameSpan="justify-start hover:bg-neutral-200"
     >
       <SignOut className="size-[18px]" />
       Logout

@@ -1,13 +1,13 @@
 "use client";
 
-import cuid from "cuid";
-import { createContext, useContext, useState } from "react";
-import type { Filter } from "schemas/filters.schema";
+import type { Filter } from "@conquest/zod/filters.schema";
 import type {
   Category,
   GroupFilter,
   NodeListRecords,
-} from "schemas/node.schema";
+} from "@conquest/zod/node.schema";
+import cuid from "cuid";
+import { createContext, useContext, useState } from "react";
 import { useWorkflow } from "./workflowContext";
 
 type GroupFilterProps = {

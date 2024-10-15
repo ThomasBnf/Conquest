@@ -5,10 +5,10 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@conquest/ui/dropdown-menu";
+import type { Filter } from "@conquest/zod/filters.schema";
+import type { GroupFilter } from "@conquest/zod/node.schema";
 import { useFilters } from "context/filtersContext";
 import { Plus } from "lucide-react";
-import type { Filter } from "schemas/filters.schema";
-import type { GroupFilter } from "schemas/node.schema";
 
 type Props = {
   groupFilter: GroupFilter;

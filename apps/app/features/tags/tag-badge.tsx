@@ -1,7 +1,7 @@
 import { Button } from "@conquest/ui/button";
 import { cn } from "@conquest/ui/utils/cn";
+import type { Tag } from "@conquest/zod/tag.schema";
 import { X } from "lucide-react";
-import type { Tag } from "schemas/tag.schema";
 
 type Props = {
   tag: Tag | undefined;

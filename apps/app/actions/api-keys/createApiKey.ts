@@ -1,9 +1,9 @@
 "use server";
 
+import { APIKeySchema } from "@conquest/zod/apikey.schema";
 import { authAction } from "lib/authAction";
 import { prisma } from "lib/prisma";
 import { revalidatePath } from "next/cache";
-import { APIKeySchema } from "schemas/apikey.schema";
 import { z } from "zod";
 
 export const createApiKey = authAction

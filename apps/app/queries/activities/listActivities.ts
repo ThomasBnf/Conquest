@@ -1,9 +1,9 @@
 "use server";
 
+import { ActivityWithContactSchema } from "@conquest/zod/activity.schema";
 import { endOfDay, startOfDay, subDays } from "date-fns";
 import { authAction } from "lib/authAction";
 import { prisma } from "lib/prisma";
-import { ActivityWithContactSchema } from "schemas/activity.schema";
 import { z } from "zod";
 
 export const listActivities = authAction

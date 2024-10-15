@@ -1,10 +1,10 @@
 "use server";
 
+import { NodeRecurringSchema } from "@conquest/zod/node.schema";
+import { WorkflowSchema } from "@conquest/zod/workflow.schema";
 import { authAction } from "lib/authAction";
 import { prisma } from "lib/prisma";
 import { revalidatePath } from "next/cache";
-import { NodeRecurringSchema } from "schemas/node.schema";
-import { WorkflowSchema } from "schemas/workflow.schema";
 import { z } from "zod";
 
 export const publishWorkflow = authAction

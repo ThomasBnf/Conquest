@@ -4,7 +4,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@conquest/ui/card";
-import type { ContactWithActivities } from "schemas/activity.schema";
+import type { ContactWithActivities } from "@conquest/zod/activity.schema";
 
 type Props = {
   contact: ContactWithActivities;

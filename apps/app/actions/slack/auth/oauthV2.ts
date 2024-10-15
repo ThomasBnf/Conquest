@@ -1,9 +1,9 @@
 "use server";
 
+import { createIntegration } from "@/actions/integrations/createIntegration";
+import { IntegrationSchema } from "@conquest/zod/integration.schema";
 import { authAction } from "lib/authAction";
-import { prisma } from "lib/prisma";
 import { revalidatePath } from "next/cache";
-import { WorkspaceSchema } from "schemas/workspace.schema";
 import { z } from "zod";
 
 export const oauthV2 = authAction
@@ -13,9 +13,10 @@ export const oauthV2 = authAction
   .schema(
     z.object({
       code: z.string(),
+      scopes: z.string(),
     }),
   )
-  .action(async ({ ctx, parsedInput: { code } }) => {
+  .action(async ({ ctx, parsedInput: { code, scopes } }) => {
     const slug = ctx.user.workspace.slug;
 
     const response = await fetch("https://slack.com/api/oauth.v2.access", {
@@ -30,18 +31,17 @@ export const oauthV2 = authAction
       }),
     });
 
-    const data = await response.json();
-    const slack_token = data.access_token;
+    const { access_token, team } = await response.json();
 
-    const workspace = await prisma.workspace.update({
-      where: {
-        id: ctx.user.workspace_id,
-      },
-      data: {
-        slack_token,
-      },
+    const rIntegration = await createIntegration({
+      external_id: team.id,
+      name: team.name,
+      source: "SLACK",
+      token: access_token,
+      scopes,
     });
+    const integration = rIntegration?.data;
 
     revalidatePath(`/${slug}/settings/integrations/slack`);
-    return WorkspaceSchema.parse(workspace);
+    return IntegrationSchema.parse(integration);
   });

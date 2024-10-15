@@ -8,11 +8,11 @@ import {
   PopoverItem,
   PopoverTrigger,
 } from "@conquest/ui/popover";
+import type { Contact } from "@conquest/zod/contact.schema";
+import type { Tag as TTag } from "@conquest/zod/tag.schema";
 import { updateContact } from "actions/contacts/updateContact";
 import { Plus, Tag } from "lucide-react";
 import { useState } from "react";
-import type { Contact } from "schemas/contact.schema";
-import type { Tag as TTag } from "schemas/tag.schema";
 import { TagBadge } from "./tag-badge";
 
 type Props = {

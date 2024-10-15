@@ -1,4 +1,4 @@
-import type { Operator } from "schemas/filters.schema";
+import type { Operator } from "@conquest/zod/filters.schema";
 
 export const OPERATORS: Operator[] = [
   "is",

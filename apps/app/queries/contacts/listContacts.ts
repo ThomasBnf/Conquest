@@ -1,6 +1,6 @@
+import { ContactWithActivitiesSchema } from "@conquest/zod/activity.schema";
 import { authAction } from "lib/authAction";
 import { prisma } from "lib/prisma";
-import { ContactWithActivitiesSchema } from "schemas/activity.schema";
 import { z } from "zod";
 
 export const listContacts = authAction

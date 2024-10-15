@@ -11,12 +11,17 @@ export const env = createEnv({
   },
   server: {
     GOOGLE_API_KEY: z.string(),
+    SLACK_CLIENT_SECRET: z.string(),
   },
-  client: {},
+  client: {
+    NEXT_PUBLIC_SLACK_CLIENT_ID: z.string(),
+  },
   runtimeEnv: {
     PORT: process.env.PORT,
     VERCEL_URL: process.env.VERCEL_URL,
     GOOGLE_API_KEY: process.env.GOOGLE_API_KEY,
+    NEXT_PUBLIC_SLACK_CLIENT_ID: process.env.NEXT_PUBLIC_SLACK_CLIENT_ID,
+    SLACK_CLIENT_SECRET: process.env.SLACK_CLIENT_SECRET,
   },
   skipValidation: !!process.env.CI || !!process.env.SKIP_ENV_VALIDATION,
 });

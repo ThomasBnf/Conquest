@@ -1,7 +1,6 @@
 import { z } from "zod";
-
-export const SOURCE = z.enum(["API", "MANUAL", "SLACK"]);
-export const GENDER = z.enum(["MALE", "FEMALE", "OTHER"]);
+import { GENDER } from "./gender.enum";
+import { SOURCE } from "./source.enum";
 
 export const ContactSchema = z.object({
   id: z.string().cuid(),
@@ -26,5 +25,3 @@ export const ContactSchema = z.object({
 });
 
 export type Contact = z.infer<typeof ContactSchema>;
-export type Source = z.infer<typeof SOURCE>;
-export type Gender = z.infer<typeof GENDER>;

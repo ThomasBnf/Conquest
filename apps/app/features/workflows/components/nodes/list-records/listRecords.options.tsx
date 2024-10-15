@@ -13,10 +13,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@conquest/ui/select";
+import { NodeListRecordsSchema } from "@conquest/zod/node.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useWorkflow } from "context/workflowContext";
 import { useForm } from "react-hook-form";
-import { NodeListRecordsSchema } from "schemas/node.schema";
 import { FilterOptions } from "./filter/filter.options";
 import { type FormSource, FormSourceSchema } from "./types/form-source.schema";
 

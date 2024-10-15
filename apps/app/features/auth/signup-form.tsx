@@ -19,6 +19,7 @@ import {
   FormMessage,
 } from "@conquest/ui/form";
 import { Input } from "@conquest/ui/input";
+import { SignupSchema } from "@conquest/zod/auth.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { logIn } from "actions/auth";
 import { createUser } from "actions/users/createUser";
@@ -26,7 +27,6 @@ import { ArrowRightIcon } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { SignupSchema } from "schemas/auth.schema";
 import { toast } from "sonner";
 
 export const SignupForm = () => {

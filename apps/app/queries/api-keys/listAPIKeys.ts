@@ -1,6 +1,6 @@
+import { APIKeySchema } from "@conquest/zod/apikey.schema";
 import { authAction } from "lib/authAction";
 import { prisma } from "lib/prisma";
-import { APIKeySchema } from "schemas/apikey.schema";
 
 export const listAPIKeys = authAction
   .metadata({ name: "listAPIKeys" })

@@ -7,8 +7,8 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@conquest/ui/chart";
+import type { Activity } from "@conquest/zod/activity.schema";
 import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";
-import type { Activity } from "schemas/activity.schema";
 
 const chartConfig = {
   count: {

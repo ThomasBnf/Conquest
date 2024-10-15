@@ -1,11 +1,13 @@
 "use client";
 
+import type { Integration } from "@conquest/zod/integration.schema";
+import type { UserWithWorkspace } from "@conquest/zod/user.schema";
 import { createContext, useContext } from "react";
-import type { UserWithWorkspace } from "schemas/user.schema";
 
 type userContext = {
   user: UserWithWorkspace | undefined;
   slug: string | undefined;
+  slack: Integration | undefined;
 };
 
 const userContext = createContext<userContext>({} as userContext);
@@ -17,12 +19,16 @@ type Props = {
 
 export const UserProvider = ({ user, children }: Props) => {
   const slug = user?.workspace.slug;
+  const slack = user?.workspace.integrations.find(
+    (integration) => integration.source === "SLACK",
+  );
 
   return (
     <userContext.Provider
       value={{
         user,
         slug,
+        slack,
       }}
     >
       {children}

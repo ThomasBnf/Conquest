@@ -1,3 +1,4 @@
+import { ContactMenu } from "@/features/contacts/contact-menu";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -9,7 +10,6 @@ import {
 import { ScrollArea } from "@conquest/ui/scroll-area";
 import { GroupedActivities } from "features/activities/grouped-activities";
 import { ContactSidebar } from "features/contacts/contact-sidebar";
-import { getFromPage } from "helpers/getFromPage";
 import { redirect } from "next/navigation";
 import { listActivities } from "queries/activities/listActivities";
 import { getContact } from "queries/contacts/getContact";
@@ -20,17 +20,9 @@ type Props = {
     slug: string;
     contactId: string;
   };
-  searchParams: {
-    from: string;
-  };
 };
 
-export default async function Page({
-  params: { contactId, slug },
-  searchParams: { from },
-}: Props) {
-  const fromPage = getFromPage({ from });
-
+export default async function Page({ params: { contactId, slug } }: Props) {
   const rActivities = await listActivities({ contact_id: contactId });
   const activities = rActivities?.data;
 
@@ -40,18 +32,18 @@ export default async function Page({
   const rTags = await listTags();
   const tags = rTags?.data;
 
-  if (!contact) redirect(`/${slug}/${from}`);
+  if (!contact) redirect(`/${slug}/contacts`);
 
   const { full_name } = contact;
 
   return (
     <div className="flex h-full flex-col divide-y">
-      <div className="flex h-12 items-center px-4">
+      <div className="flex h-12 items-center justify-between px-4">
         <Breadcrumb>
           <BreadcrumbList>
             <BreadcrumbItem>
-              <BreadcrumbLink href={`/${slug}/${from}`}>
-                {fromPage}
+              <BreadcrumbLink href={`/${slug}/contacts`}>
+                Contacts
               </BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
@@ -60,6 +52,7 @@ export default async function Page({
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
+        <ContactMenu contact={contact} />
       </div>
       <div className="flex min-h-0 flex-1 divide-x">
         <ScrollArea className="flex-1">

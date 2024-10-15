@@ -9,26 +9,26 @@ import {
   TableHeader,
   TableRow,
 } from "@conquest/ui/table";
+import { cn } from "@conquest/ui/utils/cn";
+import { ContactWithActivitiesSchema } from "@conquest/zod/activity.schema";
+import type { Tag } from "@conquest/zod/tag.schema";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import {
   flexRender,
   getCoreRowModel,
-  getFilteredRowModel,
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
 import { listContacts } from "actions/contacts/listContacts";
 import { QueryInput } from "components/custom/query-input";
 import { IsLoading } from "components/states/is-loading";
-import { useUser } from "context/userContext";
 import { AddContact } from "features/contacts/add-contact";
 import { Columns } from "features/contacts/table/columns";
 import { useParamsContacts } from "hooks/useParamsContacts";
-import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { useInView } from "react-intersection-observer";
-import { ContactWithActivitiesSchema } from "schemas/activity.schema";
-import type { Tag } from "schemas/tag.schema";
+import { useDebounce } from "use-debounce";
+import { BottomMenuAction } from "./bottom-menu-action";
 
 type Props = {
   tags: Tag[] | undefined;
@@ -36,19 +36,18 @@ type Props = {
 };
 
 export const ContactsTable = ({ tags, contactsCount }: Props) => {
-  const { slug } = useUser();
   const { ref, inView } = useInView();
-
-  const [{ search, id, desc }, setSearchParams] = useParamsContacts();
-  const [sorting, setSorting] = useState([{ id: "last_name", desc: false }]);
-
-  const router = useRouter();
   const columns = useMemo(() => Columns({ tags }), [tags]);
 
+  const [sorting, setSorting] = useState([{ id: "last_name", desc: false }]);
+  const [rowSelection, setRowSelection] = useState({});
+  const [{ search, id, desc }, setSearchParams] = useParamsContacts();
+  const [debouncedSearch] = useDebounce(search, 500);
+
   const { data, isLoading, fetchNextPage, hasNextPage } = useInfiniteQuery({
-    queryKey: ["contacts", search, id, desc],
+    queryKey: ["contacts", debouncedSearch, id, desc],
     queryFn: ({ pageParam }) =>
-      listContacts({ page: pageParam, search, id, desc }),
+      listContacts({ page: pageParam, search: debouncedSearch, id, desc }),
     getNextPageParam: (_, allPages) => allPages.length + 1,
     initialPageParam: 1,
   });
@@ -64,17 +63,12 @@ export const ContactsTable = ({ tags, contactsCount }: Props) => {
   const table = useReactTable({
     data: flatData,
     columns,
+    state: { sorting, rowSelection },
+    enableRowSelection: true,
+    onRowSelectionChange: setRowSelection,
     getCoreRowModel: getCoreRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
     getSortedRowModel: getSortedRowModel(),
     onSortingChange: setSorting,
-    onGlobalFilterChange: (value) => setSearchParams({ search: value }),
-    state: {
-      sorting,
-      globalFilter: search,
-    },
-    globalFilterFn: (row, _, filterValue) =>
-      row.original.search.includes(filterValue.toLowerCase()),
   });
 
   useEffect(() => {
@@ -82,7 +76,7 @@ export const ContactsTable = ({ tags, contactsCount }: Props) => {
   }, [inView, hasNextPage, fetchNextPage]);
 
   return (
-    <div className="flex h-full flex-col divide-y">
+    <div className="relative flex h-full flex-col divide-y">
       <div className="divide-y">
         <div className="flex items-center gap-2 py-2 px-4 justify-between">
           <div className="flex gap-2">
@@ -125,17 +119,12 @@ export const ContactsTable = ({ tags, contactsCount }: Props) => {
             <TableBody>
               {table.getRowModel().rows?.length ? (
                 table.getRowModel().rows.map((row) => (
-                  <TableRow
-                    key={row.id}
-                    className="cursor-pointer"
-                    onClick={() => {
-                      router.push(
-                        `/${slug}/contacts/${row.original.id}?from=contacts`,
-                      );
-                    }}
-                  >
+                  <TableRow key={row.id}>
                     {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id}>
+                      <TableCell
+                        key={cell.id}
+                        className={cn(row.getIsSelected() && "bg-neutral-100")}
+                      >
                         {flexRender(
                           cell.column.columnDef.cell,
                           cell.getContext(),
@@ -163,6 +152,9 @@ export const ContactsTable = ({ tags, contactsCount }: Props) => {
           </Table>
         )}
       </div>
+      {table.getSelectedRowModel().rows.length > 0 && (
+        <BottomMenuAction table={table} />
+      )}
     </div>
   );
 };

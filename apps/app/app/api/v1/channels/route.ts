@@ -1,8 +1,8 @@
+import { ChannelSchema } from "@conquest/zod/channel.schema";
 import { getAuthenticatedUser } from "features/auth/helpers/getAuthenticatedUser";
 import { prisma } from "lib/prisma";
 import { safeRoute } from "lib/safeRoute";
 import { NextResponse } from "next/server";
-import { ChannelSchema } from "schemas/channel.schema";
 import { z } from "zod";
 
 export const POST = safeRoute
@@ -20,6 +20,7 @@ export const POST = safeRoute
     const channel = await prisma.channel.create({
       data: {
         name,
+        source: "API",
         workspace_id: data.workspace_id,
       },
     });

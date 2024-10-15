@@ -1,7 +1,7 @@
+import { ContactWithActivitiesSchema } from "@conquest/zod/activity.schema";
 import { differenceInDays, format, subDays } from "date-fns";
 import { authAction } from "lib/authAction";
 import { prisma } from "lib/prisma";
-import { ContactWithActivitiesSchema } from "schemas/activity.schema";
 import { z } from "zod";
 
 export const listEngagement = authAction

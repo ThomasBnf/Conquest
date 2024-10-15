@@ -1,5 +1,6 @@
 "use server";
 
+import { ChannelSchema } from "@conquest/zod/channel.schema";
 import { WebClient } from "@slack/web-api";
 import { authAction } from "lib/authAction";
 import { prisma } from "lib/prisma";
@@ -14,19 +15,19 @@ export const listReplies = authAction
   .schema(
     z.object({
       web: z.instanceof(WebClient),
-      channel_id: z.string().cuid(),
+      channel: ChannelSchema,
       reference: z.string().cuid().optional(),
       ts: z.string(),
     }),
   )
-  .action(async ({ ctx, parsedInput: { web, channel_id, ts, reference } }) => {
+  .action(async ({ ctx, parsedInput: { web, channel, ts, reference } }) => {
     const workspace_id = ctx.user.workspace_id;
     let cursor: string | undefined;
 
     do {
       const { messages, response_metadata } = await web.conversations.replies({
         limit: 100,
-        channel: channel_id,
+        channel: channel.external_id ?? "",
         ts,
         cursor,
       });
@@ -45,7 +46,7 @@ export const listReplies = authAction
           const rActivity = await createActivity({
             details: {
               source: "SLACK",
-              type: "MESSAGE",
+              type: "REPLY",
               message: text ?? "",
               reference,
               attachments: attachments?.map(({ from_url, title_link }) => ({
@@ -56,8 +57,9 @@ export const listReplies = authAction
                 title: title ?? "",
                 url: url_private ?? "",
               })),
+              ts: ts ?? "",
             },
-            channel_id,
+            channel_id: channel.id,
             contact_id: contact.id,
             created_at: new Date(Number(ts) * 1000),
             updated_at: new Date(Number(ts) * 1000),
@@ -76,7 +78,7 @@ export const listReplies = authAction
                   user,
                   message: name ?? "",
                   reference: activity.id,
-                  channel_id,
+                  channel_id: channel.id,
                   ts: message.ts ?? "",
                 });
               }

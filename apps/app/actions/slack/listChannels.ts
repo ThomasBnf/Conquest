@@ -13,9 +13,10 @@ export const listChannels = authAction
   .schema(
     z.object({
       web: z.instanceof(WebClient),
+      token: z.string(),
     }),
   )
-  .action(async ({ parsedInput: { web } }) => {
+  .action(async ({ parsedInput: { web, token } }) => {
     let cursor: string | undefined;
 
     do {
@@ -26,15 +27,23 @@ export const listChannels = authAction
       });
 
       for (const channel of channels ?? []) {
-        if (!channel.name) continue;
+        const { name, id } = channel;
+
+        if (!name || !id) continue;
 
         const rChannel = await createChannel({
-          name: channel.name,
-          external_id: channel.id ?? null,
+          external_id: id,
+          name: name,
+          source: "SLACK",
         });
         const createdChannel = rChannel?.data;
 
         if (!createdChannel) continue;
+
+        await web.conversations.join({
+          channel: createdChannel.external_id ?? "",
+          token,
+        });
 
         await listMessages({ web, channel: createdChannel });
       }

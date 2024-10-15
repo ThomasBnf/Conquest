@@ -29,9 +29,9 @@ export const seed = async () => {
         search: `${contact.firstName.toLowerCase()} ${contact.lastName.toLowerCase()} ${contact.emails.join(" ")}`,
         source: "API",
         tags: [],
-        created_at: subDays(today, contact.activities[0].daysAgo),
-        updated_at: subDays(today, contact.activities[0].daysAgo),
-        joined_at: subDays(today, contact.activities[0].daysAgo),
+        created_at: subDays(today, contact.activities[0]?.daysAgo ?? 0),
+        updated_at: subDays(today, contact.activities[0]?.daysAgo ?? 0),
+        joined_at: subDays(today, contact.activities[0]?.daysAgo ?? 0),
         activities: {
           create: contact.activities.map((activity) => ({
             details: {

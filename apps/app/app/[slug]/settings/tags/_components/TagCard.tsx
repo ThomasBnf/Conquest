@@ -1,5 +1,5 @@
+import type { Tag } from "@conquest/zod/tag.schema";
 import { useState } from "react";
-import type { Tag } from "schemas/tag.schema";
 import { TagForm } from "./TagForm";
 import { TagMenu } from "./TagMenu";
 

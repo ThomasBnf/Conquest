@@ -1,7 +1,7 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@conquest/ui/avatar";
+import type { ContactWithActivities } from "@conquest/zod/activity.schema";
+import type { Tag } from "@conquest/zod/tag.schema";
 import type { ColumnDef } from "@tanstack/react-table";
-import type { ContactWithActivities } from "schemas/activity.schema";
-import type { Tag } from "schemas/tag.schema";
 import { DateCell } from "../contacts/table/date-cell";
 import { TagBadge } from "../tags/tag-badge";
 
@@ -81,7 +81,6 @@ export const Columns = (
     header: () => <p className="px-2">Last activity</p>,
     cell: ({ row }) => {
       const lastActivity = row.original.activities
-        .filter((activity) => activity.details.type !== "JOIN")
         .sort((a, b) => b.created_at.getTime() - a.created_at.getTime())
         .at(0)?.created_at;
 

@@ -1,6 +1,6 @@
+import { WorkflowSchema } from "@conquest/zod/workflow.schema";
 import { authAction } from "lib/authAction";
 import { prisma } from "lib/prisma";
-import { WorkflowSchema } from "schemas/workflow.schema";
 import { z } from "zod";
 
 export const getWorkflow = authAction

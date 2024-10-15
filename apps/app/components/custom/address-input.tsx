@@ -1,7 +1,6 @@
 "use client";
 
 import { Button } from "@conquest/ui/button";
-import { cn } from "@conquest/ui/utils/cn";
 import {
   Command,
   CommandEmpty,
@@ -11,10 +10,11 @@ import {
   CommandList,
 } from "@conquest/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@conquest/ui/popover";
+import { cn } from "@conquest/ui/utils/cn";
+import type { Contact } from "@conquest/zod/contact.schema";
 import { updateContact } from "actions/contacts/updateContact";
 import { Check, MapPin, X } from "lucide-react";
 import { useState } from "react";
-import type { Contact } from "schemas/contact.schema";
 import usePlacesAutocomplete from "use-places-autocomplete";
 
 type Props = {

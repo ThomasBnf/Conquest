@@ -1,8 +1,10 @@
+import { useUser } from "@/context/userContext";
 import { Button } from "@conquest/ui/button";
 import {
   Dialog,
   DialogBody,
   DialogContent,
+  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -20,6 +22,7 @@ import { Input } from "@conquest/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createContact } from "actions/contacts/createContact";
 import { Plus } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -29,8 +32,10 @@ import {
 } from "./types/form-create-contact.schema";
 
 export const AddContact = () => {
-  const [isOpen, setIsOpen] = useState(false);
+  const { slug } = useUser();
+  const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
   const form = useForm<FormCreateContact>({
     resolver: zodResolver(FormCreateContactSchema),
@@ -54,22 +59,22 @@ export const AddContact = () => {
     const error = rContact?.serverError;
 
     if (error) toast.error(error);
-    if (contact) toast.success("Contact added");
+    if (contact) router.push(`/${slug}/contacts/${contact.id}`);
 
     setLoading(false);
-    setIsOpen(false);
+    setOpen(false);
     form.reset();
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button>
           <Plus size={15} />
           Add Contact
         </Button>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent aria-describedby="dialog-description">
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit)}
@@ -77,6 +82,9 @@ export const AddContact = () => {
           >
             <DialogHeader>
               <DialogTitle>Add Contact</DialogTitle>
+              <DialogDescription id="dialog-description">
+                Enter the details of the new contact you want to add.
+              </DialogDescription>
             </DialogHeader>
             <DialogBody>
               <FormField

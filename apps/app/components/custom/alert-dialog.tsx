@@ -15,28 +15,28 @@ type Props = {
   title: string;
   description: string;
   onConfirm: () => Promise<string | number | undefined>;
-  isOpen: boolean;
-  setIsOpen: (isOpen: boolean) => void;
+  open: boolean;
+  setOpen: (open: boolean) => void;
 };
 
 export const AlertDialog = ({
   title,
   description,
   onConfirm,
-  isOpen,
-  setIsOpen,
+  open,
+  setOpen,
 }: Props) => {
   const [loading, setLoading] = useState(false);
 
   const onClick = async () => {
     setLoading(true);
     await onConfirm();
-    setIsOpen(false);
+    setOpen(false);
     setLoading(false);
   };
 
   return (
-    <CustomAlertDialog open={isOpen} onOpenChange={setIsOpen}>
+    <CustomAlertDialog open={open} onOpenChange={setOpen}>
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>{title}</AlertDialogTitle>
@@ -49,7 +49,7 @@ export const AlertDialog = ({
             className={buttonVariants({ variant: "destructive" })}
           >
             <Button loading={loading} onClick={onClick}>
-              Continue
+              Delete
             </Button>
           </AlertDialogAction>
         </AlertDialogFooter>

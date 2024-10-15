@@ -1,17 +1,15 @@
 "use server";
 
-import { updateContact } from "actions/contacts/updateContact";
-import { startOfDay, subDays } from "date-fns";
-import { authAction } from "lib/authAction";
-import { listContacts } from "queries/contacts/listContacts";
-import { getWorkflow } from "queries/workflows/getWorkflow";
-import type { Activity, ContactWithActivities } from "schemas/activity.schema";
+import type {
+  Activity,
+  ContactWithActivities,
+} from "@conquest/zod/activity.schema";
 import {
   FilterCountSchema,
   type FilterDate,
   FilterDateSchema,
   FilterSelectSchema,
-} from "schemas/filters.schema";
+} from "@conquest/zod/filters.schema";
 import {
   type Node,
   NodeDataSchema,
@@ -19,7 +17,12 @@ import {
   NodeSchema,
   NodeTagContactSchema,
   NodeWebhookSchema,
-} from "schemas/node.schema";
+} from "@conquest/zod/node.schema";
+import { updateContact } from "actions/contacts/updateContact";
+import { startOfDay, subDays } from "date-fns";
+import { authAction } from "lib/authAction";
+import { listContacts } from "queries/contacts/listContacts";
+import { getWorkflow } from "queries/workflows/getWorkflow";
 import { z } from "zod";
 
 let records: ContactWithActivities[] | undefined = undefined;

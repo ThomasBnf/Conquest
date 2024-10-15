@@ -1,4 +1,4 @@
-import type { RepeatOn } from "schemas/node.schema";
+import type { RepeatOn } from "@conquest/zod/node.schema";
 
 export const weekdays: RepeatOn[] = [
   "monday",
