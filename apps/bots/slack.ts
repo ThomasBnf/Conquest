@@ -18,7 +18,7 @@ import { getAttachements } from "./helpers/getAttachements";
 dotenv.config();
 
 const appExpress = express();
-const port = process.env.NODE_ENV === "development" ? 3001 : 3000;
+const port = 3000;
 
 const token = process.env.SLACK_BOT_TOKEN;
 const signingSecret = process.env.SLACK_SIGNING_SECRET;
