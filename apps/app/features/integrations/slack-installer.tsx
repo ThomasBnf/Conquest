@@ -20,12 +20,9 @@ export const SlackInstaller = () => {
 
   const onInstall = async () => {
     if (!code) return;
-    console.log("onInstall", code);
 
     const rIntegration = await oauthV2({ code, scopes });
     const integration = rIntegration?.data;
-
-    console.log(integration);
 
     if (integration) {
       router.replace(`/w/${slug}/settings/integrations/slack`);
@@ -42,9 +39,8 @@ export const SlackInstaller = () => {
   };
 
   useEffect(() => {
-    console.log("useEffect", code);
     onInstall();
-  }, []);
+  }, [code]);
 
   return <IsLoading />;
 };

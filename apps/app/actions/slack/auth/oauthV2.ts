@@ -32,7 +32,6 @@ export const oauthV2 = authAction
     });
 
     const data = await response.json();
-    console.log("response", data);
 
     if (!data.ok) {
       console.error("Slack OAuth error:", data.error);
