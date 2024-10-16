@@ -13,7 +13,7 @@
       "cache": false
     },
     "build": {
-      "env": ["RESEND_API_KEY"],
+      "env": ["DATABASE_URL"],
       "inputs": ["$TURBO_DEFAULT$", ".env"],
       "dependsOn": ["^db:generate", "^db:deploy", "^build"],
       "outputs": [".next/**", "!.next/cache/**", "next-env.d.ts", ".expo/**"]
