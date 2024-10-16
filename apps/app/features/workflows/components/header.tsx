@@ -58,7 +58,7 @@ export const Header = ({ workflow }: Props) => {
       <Breadcrumb>
         <BreadcrumbList>
           <BreadcrumbItem>
-            <BreadcrumbLink href={`/${slug}/workflows`}>
+            <BreadcrumbLink href={`/w/${slug}/workflows`}>
               Workflows
             </BreadcrumbLink>
           </BreadcrumbItem>

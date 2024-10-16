@@ -53,7 +53,7 @@ export const Columns = ({
       return (
         <Button
           variant="ghost"
-          onClick={() => router.push(`/${slug}/contacts/${row.original.id}`)}
+          onClick={() => router.push(`/w/${slug}/contacts/${row.original.id}`)}
           className="flex items-center gap-2 px-1.5"
         >
           <Avatar className="size-6">

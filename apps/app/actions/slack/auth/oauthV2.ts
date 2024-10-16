@@ -50,6 +50,6 @@ export const oauthV2 = authAction
     });
     const integration = rIntegration?.data;
 
-    revalidatePath(`/${slug}/settings/integrations/slack`);
+    revalidatePath(`/w/${slug}/settings/integrations/slack`);
     return IntegrationSchema.parse(integration);
   });

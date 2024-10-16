@@ -50,7 +50,7 @@ export const QuestionsStep = () => {
       return toast.error(error);
     }
 
-    router.push(`/${slug}`);
+    router.push(`/w/${slug}`);
   };
 
   return (
@@ -63,7 +63,7 @@ export const QuestionsStep = () => {
         <CompanySize form={form} />
         <Button
           type="submit"
-          onClick={() => router.replace(`/${slug}`)}
+          onClick={() => router.replace(`/w/${slug}`)}
           loading={loading}
           disabled={isDisabled}
           className="mt-4"

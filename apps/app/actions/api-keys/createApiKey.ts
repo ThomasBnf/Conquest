@@ -23,7 +23,7 @@ export const createApiKey = authAction
       },
     });
 
-    revalidatePath(`/${slug}/settings/api`);
+    revalidatePath(`/w/${slug}/settings/api`);
     return APIKeySchema.parse(apiKey);
   });
 

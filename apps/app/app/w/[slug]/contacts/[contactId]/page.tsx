@@ -32,7 +32,7 @@ export default async function Page({ params: { contactId, slug } }: Props) {
   const rTags = await listTags();
   const tags = rTags?.data;
 
-  if (!contact) redirect(`/${slug}/contacts`);
+  if (!contact) redirect(`/w/${slug}/contacts`);
 
   const { full_name } = contact;
 
@@ -42,7 +42,7 @@ export default async function Page({ params: { contactId, slug } }: Props) {
         <Breadcrumb>
           <BreadcrumbList>
             <BreadcrumbItem>
-              <BreadcrumbLink href={`/${slug}/contacts`}>
+              <BreadcrumbLink href={`/w/${slug}/contacts`}>
                 Contacts
               </BreadcrumbLink>
             </BreadcrumbItem>

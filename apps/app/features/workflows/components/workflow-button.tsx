@@ -14,7 +14,7 @@ export const WorkflowButton = () => {
     const rWorkflow = await createWorkflow();
     const workflow = rWorkflow?.data;
 
-    router.push(`/${slug}/workflows/${workflow?.id}`);
+    router.push(`/w/${slug}/workflows/${workflow?.id}`);
   };
 
   return (

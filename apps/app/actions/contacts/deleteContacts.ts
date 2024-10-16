@@ -26,5 +26,5 @@ export const deleteContacts = authAction
       },
     });
 
-    return revalidatePath(`/${slug}/contacts`);
+    return revalidatePath(`/w/${slug}/contacts`);
   });

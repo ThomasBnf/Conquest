@@ -22,5 +22,5 @@ export const deleteApiKey = authAction
       },
     });
 
-    return revalidatePath(`/${slug}/settings/api`);
+    return revalidatePath(`/w/${slug}/settings/api`);
   });

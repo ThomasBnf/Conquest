@@ -27,6 +27,6 @@ export const updateIntegration = authAction
       },
     });
 
-    revalidatePath(`/${slug}/settings/integrations`);
+    revalidatePath(`/w/${slug}/settings/integrations`);
     return IntegrationSchema.parse(integration);
   });

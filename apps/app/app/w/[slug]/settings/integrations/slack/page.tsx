@@ -27,7 +27,7 @@ export default function Page() {
   return (
     <div className="mx-auto max-w-3xl py-16">
       <Link
-        href={`/${slug}/settings/integrations`}
+        href={`/w/${slug}/settings/integrations`}
         className={cn(
           buttonVariants({ variant: "link", size: "xs" }),
           "flex w-fit items-center gap-1 text-foreground",

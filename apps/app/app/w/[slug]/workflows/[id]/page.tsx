@@ -16,7 +16,7 @@ export default async function Page({ params: { slug, id } }: Props) {
   const rWorkflow = await getWorkflow({ id });
   const workflow = rWorkflow?.data;
 
-  if (!workflow) redirect(`/${slug}/workflows`);
+  if (!workflow) redirect(`/w/${slug}/workflows`);
 
   return (
     <div className="flex h-full w-full flex-col divide-y">

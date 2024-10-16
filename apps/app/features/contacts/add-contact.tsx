@@ -59,7 +59,7 @@ export const AddContact = () => {
     const error = rContact?.serverError;
 
     if (error) toast.error(error);
-    if (contact) router.push(`/${slug}/contacts/${contact.id}`);
+    if (contact) router.push(`/w/${slug}/contacts/${contact.id}`);
 
     setLoading(false);
     setOpen(false);
