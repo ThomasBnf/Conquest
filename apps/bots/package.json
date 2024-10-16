@@ -1,6 +1,5 @@
 {
   "name": "bots",
-  "type": "module",
   "scripts": {
     "dev": "bun run ./slack.ts --watch",
     "build": "tsup ./slack.ts",
