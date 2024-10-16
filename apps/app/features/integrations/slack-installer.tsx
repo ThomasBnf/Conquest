@@ -31,11 +31,13 @@ export const SlackInstaller = () => {
       router.replace(`/w/${slug}/settings/integrations/slack`);
       toast.success("Conquest installed on Slack");
 
-      updateIntegration({
-        id: integration.id,
-        installed_at: new Date(),
-      });
-      runSlack({ id: integration.id });
+      await Promise.all([
+        updateIntegration({
+          id: integration.id,
+          installed_at: new Date(),
+        }),
+        runSlack({ id: integration.id }),
+      ]);
     }
   };
 
