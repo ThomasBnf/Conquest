@@ -103,7 +103,7 @@ export const EditableEmails = ({ contact }: Props) => {
                     onDeleteEmail={onDeleteEmail}
                   />
                 ))}
-                <Separator className="-mx-2 w-[calc(100%+1rem)]" />
+                <Separator className="-mx-2 w-[calc(100%+1rem)] my-1" />
                 <CommandItem onClick={onAddEmail} onSelect={onAddEmail}>
                   <Plus size={15} />
                   <p>Add email</p>

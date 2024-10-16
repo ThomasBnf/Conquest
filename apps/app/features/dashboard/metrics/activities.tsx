@@ -36,7 +36,7 @@ export const Activities = async () => {
           <Percentage percentage={percentageChange} />
         </div>
       </CardContent>
-      <Separator className="my-0" />
+      <Separator />
       <CardFooter className="bg-muted p-4 py-2">
         <p>Total {totalActivities?.toFixed(0) ?? 0}</p>
       </CardFooter>

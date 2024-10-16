@@ -43,7 +43,7 @@ export const EngagementRate = async () => {
           <Percentage percentage={percentageChange} />
         </div>
       </CardContent>
-      <Separator className="my-0" />
+      <Separator />
       <CardFooter className="bg-muted p-4 py-2">
         <p>
           All time{" "}
