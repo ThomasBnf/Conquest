@@ -27,22 +27,24 @@ export default function Page() {
     "channels:history,channels:join,channels:read,files:read,groups:read,links:read,reactions:read,team:read,users:read,users:read.email";
 
   const onInstall = async () => {
-    if (code) {
-      const rIntegration = await oauthV2({ code, scopes });
-      const integration = rIntegration?.data;
+    if (!code) return;
 
-      if (integration) {
-        router.replace(`/${slug}/settings/integrations/slack`);
-        toast.success("Conquest installed on Slack");
+    const rIntegration = await oauthV2({ code, scopes });
+    const integration = rIntegration?.data;
 
-        Promise.all([
-          updateIntegration({
-            id: integration.id,
-            installed_at: new Date(),
-          }),
-          runSlack({ id: integration.id }),
-        ]);
-      }
+    console.log(integration);
+
+    if (integration) {
+      router.replace(`/${slug}/settings/integrations/slack`);
+      toast.success("Conquest installed on Slack");
+
+      Promise.all([
+        updateIntegration({
+          id: integration.id,
+          installed_at: new Date(),
+        }),
+        runSlack({ id: integration.id }),
+      ]);
     }
   };
 
@@ -53,6 +55,7 @@ export default function Page() {
   };
 
   useEffect(() => {
+    console.log("useEffect", code);
     onInstall();
   }, [code]);
 

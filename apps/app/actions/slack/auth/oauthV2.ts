@@ -31,6 +31,8 @@ export const oauthV2 = authAction
       }),
     });
 
+    console.log(await response.json());
+
     const { access_token, team } = await response.json();
 
     const rIntegration = await createIntegration({
