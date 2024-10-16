@@ -2,18 +2,18 @@ import { App } from "@slack/bolt";
 import type { GenericMessageEvent } from "@slack/types";
 import dotenv from "dotenv";
 import express from "express";
-import { createActivity } from "./actions/activities/createActivity";
-import { deleteActivity } from "./actions/activities/deleteActivity";
-import { listActivities } from "./actions/activities/listActivities";
-import { updateActivity } from "./actions/activities/updateActivity";
-import { createChannel } from "./actions/channels/createChannel";
-import { deleteChannel } from "./actions/channels/deleteChannel";
-import { updateChannel } from "./actions/channels/updateChannel";
-import { getContact } from "./actions/contacts/getContact";
-import { updateContact } from "./actions/contacts/updateContact";
-import { getIntegration } from "./actions/integrations/getIntegration";
-import { deleteReactions } from "./actions/reactions/deleteReactions";
 import { getAttachements } from "./helpers/getAttachements";
+import { createActivity } from "./queries/activities/createActivity";
+import { deleteActivity } from "./queries/activities/deleteActivity";
+import { listActivities } from "./queries/activities/listActivities";
+import { updateActivity } from "./queries/activities/updateActivity";
+import { createChannel } from "./queries/channels/createChannel";
+import { deleteChannel } from "./queries/channels/deleteChannel";
+import { updateChannel } from "./queries/channels/updateChannel";
+import { getContact } from "./queries/contacts/getContact";
+import { updateContact } from "./queries/contacts/updateContact";
+import { getIntegration } from "./queries/integrations/getIntegration";
+import { deleteReactions } from "./queries/reactions/deleteReactions";
 
 dotenv.config();
 
@@ -34,8 +34,8 @@ const app = new App({
 app.event("channel_created", async ({ event }) => {
   const { name, id, context_team_id } = event.channel;
 
-  const rIntegration = await getIntegration({ external_id: context_team_id });
-  const workspace_id = rIntegration?.data?.workspace_id;
+  const integration = await getIntegration({ external_id: context_team_id });
+  const workspace_id = integration?.workspace_id;
 
   if (!workspace_id) return;
 
@@ -54,8 +54,7 @@ app.event("channel_rename", async ({ event }) => {
 
 app.event("channel_deleted", async ({ event }) => {
   const { channel } = event;
-  const rActivities = await listActivities({ channel_id: channel });
-  const activities = rActivities?.data;
+  const activities = await listActivities({ channel_id: channel });
 
   for (const activity of activities ?? []) {
     const { ts } = activity.details;
@@ -77,8 +76,7 @@ app.event("message", async ({ message }) => {
     if (message.subtype === undefined) {
       const { user, text, thread_ts } = message;
 
-      const rContact = await getContact({ slack_id: user });
-      const contact = rContact?.data;
+      const contact = await getContact({ slack_id: user });
 
       const workspace_id = contact?.workspace_id;
 
@@ -91,6 +89,8 @@ app.event("message", async ({ message }) => {
           message: text ?? "",
           source: "SLACK",
           type: thread_ts ? "REPLY" : "MESSAGE",
+          attachments: [],
+          files: [],
           ts,
         },
         workspace_id,
@@ -108,6 +108,7 @@ app.event("message", async ({ message }) => {
           source: "SLACK",
           type: thread_ts ? "REPLY" : "MESSAGE",
           attachments,
+          files: [],
           ts,
         },
       });
@@ -115,8 +116,7 @@ app.event("message", async ({ message }) => {
 
     if (subtype === "file_share") {
       const { user, text, files, thread_ts } = message;
-      const rContact = await getContact({ slack_id: user });
-      const contact = rContact?.data;
+      const contact = await getContact({ slack_id: user });
 
       const workspace_id = contact?.workspace_id;
 
@@ -129,10 +129,12 @@ app.event("message", async ({ message }) => {
           message: text ?? "",
           source: "SLACK",
           type: thread_ts ? "REPLY" : "MESSAGE",
-          files: files?.map(({ title, url_private }) => ({
-            title: title ?? "",
-            url: url_private ?? "",
-          })),
+          attachments: [],
+          files:
+            files?.map(({ title, url_private }) => ({
+              title: title ?? "",
+              url: url_private ?? "",
+            })) ?? [],
           ts,
         },
         workspace_id,
@@ -153,8 +155,7 @@ app.event("reaction_added", async ({ event }) => {
   const { user, item, reaction } = event;
   const { channel, ts } = item;
 
-  const rContact = await getContact({ slack_id: user });
-  const contact = rContact?.data;
+  const contact = await getContact({ slack_id: user });
 
   const workspace_id = contact?.workspace_id;
 
@@ -167,6 +168,8 @@ app.event("reaction_added", async ({ event }) => {
       source: "SLACK",
       type: "REACTION",
       message: reaction,
+      attachments: [],
+      files: [],
       ts,
     },
     workspace_id,

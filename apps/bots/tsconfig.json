@@ -1,6 +1,8 @@
 {
-  "extends": "@conquest/typescript/nextjs.json",
+  "extends": "@conquest/typescript/base.json",
   "compilerOptions": {
+    "module": "ESNext",
+    "moduleResolution": "node",
     "baseUrl": ".",
     "paths": {
       "@/*": ["./*"]
