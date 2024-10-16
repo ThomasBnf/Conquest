@@ -53,9 +53,7 @@ export default function Page() {
   };
 
   useEffect(() => {
-    if (code !== null) {
-      onInstall();
-    }
+    onInstall();
   }, [code]);
 
   return (
