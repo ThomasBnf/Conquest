@@ -17,38 +17,38 @@ export const Sidebar = () => {
   const { slug } = useUser();
   const pathname = usePathname();
 
-  if (pathname.startsWith(`/${slug}/settings`)) return <SidebarSettings />;
+  if (pathname.startsWith(`/w/${slug}/settings`)) return <SidebarSettings />;
 
   const routes = [
     {
       label: "Dashboard",
       icon: <Dashboard className="size-[18px]" />,
-      href: `/${slug}`,
-      isActive: pathname === `/${slug}`,
+      href: `/w/${slug}`,
+      isActive: pathname === `/w/${slug}`,
     },
     {
       label: "Contacts",
       icon: <Contacts className="size-[18px]" />,
-      href: `/${slug}/contacts`,
-      isActive: pathname.startsWith(`/${slug}/contacts`),
+      href: `/w/${slug}/contacts`,
+      isActive: pathname.startsWith(`/w/${slug}/contacts`),
     },
     {
       label: "Leaderboard",
       icon: <LeaderBoard className="size-[18px]" />,
-      href: `/${slug}/leaderboard`,
-      isActive: pathname.startsWith(`/${slug}/leaderboard`),
+      href: `/w/${slug}/leaderboard`,
+      isActive: pathname.startsWith(`/w/${slug}/leaderboard`),
     },
     {
       label: "Activities",
       icon: <Activities className="size-[18px]" />,
-      href: `/${slug}/activities`,
-      isActive: pathname.startsWith(`/${slug}/activities`),
+      href: `/w/${slug}/activities`,
+      isActive: pathname.startsWith(`/w/${slug}/activities`),
     },
     {
       label: "Workflows",
       icon: <Workflows className="size-[18px]" />,
-      href: `/${slug}/workflows`,
-      isActive: pathname.startsWith(`/${slug}/workflows`),
+      href: `/w/${slug}/workflows`,
+      isActive: pathname.startsWith(`/w/${slug}/workflows`),
     },
   ];
 
@@ -65,8 +65,8 @@ export const Sidebar = () => {
           {...{
             label: "Settings",
             icon: <Settings className="size-[18px]" />,
-            href: `/${slug}/settings`,
-            isActive: pathname.startsWith(`/${slug}/settings`),
+            href: `/w/${slug}/settings`,
+            isActive: pathname.startsWith(`/w/${slug}/settings`),
           }}
         />
         <Logout />

@@ -31,9 +31,15 @@ export const oauthV2 = authAction
       }),
     });
 
-    console.log(await response.json());
+    const data = await response.json();
+    console.log("response", data);
 
-    const { access_token, team } = await response.json();
+    if (!data.ok) {
+      console.error("Slack OAuth error:", data.error);
+      throw new Error(`Slack OAuth failed: ${data.error}`);
+    }
+
+    const { access_token, team } = data;
 
     const rIntegration = await createIntegration({
       external_id: team.id,

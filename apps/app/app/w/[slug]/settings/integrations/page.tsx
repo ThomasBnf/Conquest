@@ -13,7 +13,7 @@ export default function Page() {
       <p className="text-muted-foreground">Synchronize data across platforms</p>
       <div className="mt-4 grid grid-cols-2 gap-4">
         <Link
-          href={`/${slug}/settings/integrations/slack`}
+          href={`/w/${slug}/settings/integrations/slack`}
           className="flex items-start gap-4 rounded-md border p-4 hover:bg-muted transition-colors"
         >
           <Image src="/social/slack.svg" alt="Slack" width={24} height={24} />

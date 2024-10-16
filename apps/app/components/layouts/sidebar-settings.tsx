@@ -20,33 +20,33 @@ export const SidebarSettings = () => {
     {
       icon: <User className="size-[16px]" />,
       label: "Profile",
-      href: `/${slug}/settings`,
-      isActive: pathname === `/${slug}/settings`,
+      href: `/w/${slug}/settings`,
+      isActive: pathname === `/w/${slug}/settings`,
     },
     {
       icon: <Tags className="size-[16px]" />,
       label: "Tags",
-      href: `/${slug}/settings/tags`,
-      isActive: pathname.startsWith(`/${slug}/settings/tags`),
+      href: `/w/${slug}/settings/tags`,
+      isActive: pathname.startsWith(`/w/${slug}/settings/tags`),
     },
     {
       icon: <Integration className="size-[18px]" />,
       label: "Integrations",
-      href: `/${slug}/settings/integrations`,
-      isActive: pathname.startsWith(`/${slug}/settings/integrations`),
+      href: `/w/${slug}/settings/integrations`,
+      isActive: pathname.startsWith(`/w/${slug}/settings/integrations`),
     },
     {
       icon: <APIKey className="size-[18px]" />,
       label: "API",
-      href: `/${slug}/settings/api`,
-      isActive: pathname.startsWith(`/${slug}/settings/api`),
+      href: `/w/${slug}/settings/api`,
+      isActive: pathname.startsWith(`/w/${slug}/settings/api`),
     },
   ];
 
   return (
     <div className="flex flex-col h-full max-w-48 w-full bg-secondary p-2">
       <Link
-        href={`/${slug}`}
+        href={`/w/${slug}`}
         className={cn(
           buttonVariants({ variant: "ghost" }),
           "justify-start gap-2 hover:bg-neutral-200",

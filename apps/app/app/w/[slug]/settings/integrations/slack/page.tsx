@@ -1,63 +1,28 @@
 "use client";
 
 import { deleteIntegration } from "@/actions/integrations/deleteIntegration";
-import { updateIntegration } from "@/actions/integrations/updateIntegration";
 import { DeleteDialog } from "@/components/custom/delete-dialog";
 import { env } from "@/env.mjs";
 import { buttonVariants } from "@conquest/ui/button";
 import { Separator } from "@conquest/ui/separator";
 import { cn } from "@conquest/ui/utils/cn";
-import { oauthV2 } from "actions/slack/auth/oauthV2";
-import { runSlack } from "actions/slack/runSlack";
 import { useUser } from "context/userContext";
 import { ArrowLeft, ExternalLink } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect } from "react";
 import { toast } from "sonner";
 
 export default function Page() {
   const { slug, slack } = useUser();
-  const router = useRouter();
-  const params = useSearchParams();
-  const code = params.get("code");
 
   const scopes =
     "channels:history,channels:join,channels:read,files:read,groups:read,links:read,reactions:read,team:read,users:read,users:read.email";
-
-  const onInstall = async () => {
-    if (!code) return;
-
-    const rIntegration = await oauthV2({ code, scopes });
-    const integration = rIntegration?.data;
-
-    console.log(integration);
-
-    if (integration) {
-      router.replace(`/${slug}/settings/integrations/slack`);
-      toast.success("Conquest installed on Slack");
-
-      Promise.all([
-        updateIntegration({
-          id: integration.id,
-          installed_at: new Date(),
-        }),
-        runSlack({ id: integration.id }),
-      ]);
-    }
-  };
 
   const onUninstall = async () => {
     if (!slack?.id) return;
     deleteIntegration({ id: slack.id });
     return toast.success("Slack disconnected");
   };
-
-  useEffect(() => {
-    console.log("useEffect", code);
-    onInstall();
-  }, [code]);
 
   return (
     <div className="mx-auto max-w-3xl py-16">
@@ -119,7 +84,7 @@ export default function Page() {
               </DeleteDialog>
             ) : (
               <Link
-                href={`https://slack.com/oauth/v2/authorize?client_id=${env.NEXT_PUBLIC_SLACK_CLIENT_ID}&scope=${scopes}&redirect_uri=https://app.useconquest.com/${slug}/settings/integrations/slack`}
+                href={`https://slack.com/oauth/v2/authorize?client_id=${env.NEXT_PUBLIC_SLACK_CLIENT_ID}&scope=${scopes}`}
                 className={cn(buttonVariants({ variant: "default" }))}
               >
                 Install

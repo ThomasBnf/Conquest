@@ -14,13 +14,11 @@ export default async function Layout({
   children,
   params: { slug },
 }: PropsWithChildren<Props>) {
-  if (slug.includes("favicon")) return;
-
   const rUser = await getCurrentUser();
   const user = rUser?.data;
 
   if (!user?.onboarding) redirect("/");
-  if (user?.workspace.slug !== slug) redirect(`/${user?.workspace.slug}`);
+  if (user?.workspace.slug !== slug) redirect(`/w/${user?.workspace.slug}`);
 
   return (
     <UserProvider user={user}>
