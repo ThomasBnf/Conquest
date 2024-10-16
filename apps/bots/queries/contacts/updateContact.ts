@@ -23,7 +23,7 @@ export const updateContact = async ({
     },
   });
 
-  const { emails, phone } = currentContact;
+  const { emails, phone } = currentContact ?? {};
   const newSearch = `${first_name} ${last_name} ${emails} ${newPhone ?? phone}`;
 
   return await prisma.contact.update({

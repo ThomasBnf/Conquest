@@ -57,7 +57,7 @@ app.event("channel_deleted", async ({ event }) => {
   const activities = await listActivities({ channel_id: channel });
 
   for (const activity of activities ?? []) {
-    const { ts } = activity.details;
+    const { ts } = activity.details as { ts: string };
     if (!ts) continue;
 
     await deleteActivity({ channel_id: channel, ts });
