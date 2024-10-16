@@ -39,7 +39,11 @@ export const TypePicker = ({ filter }: Props) => {
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button variant="dropdown" className="w-full rounded-none">
+        <Button
+          variant="dropdown"
+          className="w-full rounded-none"
+          classNameSpan="justify-between"
+        >
           {values.length > 0 ? (
             <span className="capitalize">
               {values.length > 1 ? `${values.length} types` : values[0]}

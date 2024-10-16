@@ -79,7 +79,11 @@ export const DatePicker = ({ filter }: Props) => {
       )}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="dropdown" className="w-full rounded-none">
+          <Button
+            variant="dropdown"
+            className="w-full rounded-none"
+            classNameSpan="justify-between"
+          >
             {filter.dynamic_date ? (
               <span className="first-letter:uppercase">
                 {filter.dynamic_date.replace(/_/g, " ")}

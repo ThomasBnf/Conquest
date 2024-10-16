@@ -118,7 +118,7 @@ export default function Page() {
               </DeleteDialog>
             ) : (
               <Link
-                href={`https://slack.com/oauth/v2/authorize?client_id=${env.NEXT_PUBLIC_SLACK_CLIENT_ID}&scope=${scopes}&uri=http://app.useconquest.com/${slug}/settings/integrations/slack`}
+                href={`https://slack.com/oauth/v2/authorize?client_id=${env.NEXT_PUBLIC_SLACK_CLIENT_ID}&scope=${scopes}&redirect_uri=https://app.useconquest.com/${slug}/settings/integrations/slack`}
                 className={cn(buttonVariants({ variant: "default" }))}
               >
                 Install

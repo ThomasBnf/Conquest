@@ -1,7 +1,7 @@
 import { cn } from "@conquest/ui/utils/cn";
 import { Slot } from "@radix-ui/react-slot";
 import { type VariantProps, cva } from "class-variance-authority";
-import { Loader } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import * as React from "react";
 
 const buttonVariants = cva(
@@ -78,7 +78,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         >
           {props.children}
         </span>
-        {loading && <Loader className="size-4 absolute animate-spin" />}
+        {loading && <Loader2 className="size-4 absolute animate-spin" />}
       </Comp>
     );
   },

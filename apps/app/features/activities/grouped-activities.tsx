@@ -4,7 +4,6 @@ import type { ActivityWithContact } from "@conquest/zod/activity.schema";
 import { format, isYesterday } from "date-fns";
 import { Fragment, type HTMLAttributes } from "react";
 import { CustomActivity } from "./custom-activity";
-import { LoadMore } from "./load-more";
 
 type Activities = {
   [createdAt: string]: ActivityWithContact[];
@@ -36,7 +35,6 @@ export const GroupedActivities = ({ activities, className }: Props) => {
                 {activities.map((activity) => (
                   <CustomActivity key={activity.id} activity={activity} />
                 ))}
-                <LoadMore />
               </div>
             </Fragment>
           ),

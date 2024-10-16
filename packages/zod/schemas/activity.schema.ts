@@ -13,14 +13,13 @@ export const FilesSchema = z.object({
   url: z.string(),
 });
 
-const ActivityAPISchema = z.object({
+export const ActivityAPISchema = z.object({
   source: z.literal("API"),
-  type: TYPE,
+  type: z.string(),
   message: z.string(),
-  ts: z.string(),
 });
 
-const ActivitySlackSchema = z.object({
+export const ActivitySlackSchema = z.object({
   source: z.literal("SLACK"),
   type: TYPE,
   message: z.string(),
@@ -50,7 +49,7 @@ export const ActivityWithContactSchema = ActivitySchema.extend({
 });
 
 export const ContactWithActivitiesSchema = ContactSchema.extend({
-  activities: ActivitySchema.array(),
+  activities: z.array(ActivitySchema).default([]),
 });
 
 export type Activity = z.infer<typeof ActivitySchema>;

@@ -10,7 +10,6 @@ import {
   TableRow,
 } from "@conquest/ui/table";
 import { cn } from "@conquest/ui/utils/cn";
-import { ContactWithActivitiesSchema } from "@conquest/zod/activity.schema";
 import type { Tag } from "@conquest/zod/tag.schema";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import {
@@ -29,6 +28,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useInView } from "react-intersection-observer";
 import { useDebounce } from "use-debounce";
 import { BottomMenuAction } from "./bottom-menu-action";
+import { ContactWithActivitiesSchema } from "@conquest/zod/activity.schema";
 
 type Props = {
   tags: Tag[] | undefined;

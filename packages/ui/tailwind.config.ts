@@ -67,11 +67,8 @@ const config = {
           900: "hsl(257 79% 19%)",
           950: "hsl(257 81% 14%)",
         },
-        sidebar: {
-          DEFAULT: "hsl(var(--sidebar))",
-        },
-        active: {
-          DEFAULT: "hsl(var(--active))",
+        slack: {
+          DEFAULT: "hsl(var(--slack))",
         },
       },
       borderRadius: {

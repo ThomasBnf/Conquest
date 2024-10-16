@@ -56,7 +56,11 @@ export const FieldPicker = ({ filter }: Props) => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="dropdown" className="w-full rounded-none">
+        <Button
+          variant="dropdown"
+          className="w-full rounded-none"
+          classNameSpan="justify-between"
+        >
           <span className="first-letter:uppercase">
             {filter.field.replace(/_/g, " ")}
           </span>

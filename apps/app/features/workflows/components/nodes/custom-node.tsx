@@ -27,7 +27,7 @@ export const CustomNode = ({ props }: Props) => {
         <div
           className={cn(
             "absolute -top-[24px] flex h-6 items-center gap-1 rounded-t-md border-x border-t bg-muted px-1 text-muted-foreground",
-            currentNode?.id === props.id && "bg-muted text-main-500",
+            currentNode?.id === props.id && "bg-muted text-main-500 ",
           )}
         >
           <Target size={14} />
@@ -50,7 +50,7 @@ export const CustomNode = ({ props }: Props) => {
         className={cn(
           "relative flex w-80 flex-1 flex-col border bg-background p-3",
           isTrigger ? "rounded-b-md rounded-tr-md" : "rounded-md",
-          currentNode?.id === props.id && "border-primary",
+          currentNode?.id === props.id && "border-main-500",
         )}
       >
         <div className="flex items-center gap-2">
@@ -73,8 +73,8 @@ export const CustomNode = ({ props }: Props) => {
             {category}
           </Badge>
         </div>
-        <Separator />
-        <p className="text-balance text-xs text-muted-foreground">
+        <Separator className="my-3" />
+        <p className="text-balance text-muted-foreground">
           {description === "" ? "No description" : description}
         </p>
         {!isTrigger && <CustomHandle position={Position.Top} type="target" />}

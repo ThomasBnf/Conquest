@@ -5,11 +5,23 @@
     "emails": ["emilythompson@gmail.com"],
     "job_title": null,
     "activities": [
-      { "type": "SIGNUP", "daysAgo": 26 },
-      { "type": "LOGIN", "daysAgo": 24 },
-      { "type": "POST", "daysAgo": 23 },
-      { "type": "REACTION", "daysAgo": 21, "message": "👍" },
-      { "type": "REACTION", "daysAgo": 21, "message": "😄" }
+      { "source": "API", "channel_id": null, "type": "SIGNUP", "daysAgo": 26 },
+      { "source": "API", "channel_id": null, "type": "LOGIN", "daysAgo": 24 },
+      { "source": "API", "channel_id": null, "type": "POST", "daysAgo": 23 },
+      {
+        "source": "API",
+        "channel_id": null,
+        "type": "REACTION",
+        "daysAgo": 21,
+        "message": "👍"
+      },
+      {
+        "source": "API",
+        "channel_id": null,
+        "type": "REACTION",
+        "daysAgo": 21,
+        "message": "😄"
+      }
     ]
   },
   {
@@ -18,11 +30,11 @@
     "emails": ["michaeljohnson@gmail.com"],
     "job_title": null,
     "activities": [
-      { "type": "SIGNUP", "daysAgo": 25 },
-      { "type": "LOGIN", "daysAgo": 24 },
-      { "type": "POST", "daysAgo": 23 },
-      { "type": "POST", "daysAgo": 21 },
-      { "type": "POST", "daysAgo": 12 }
+      { "source": "API", "channel_id": null, "type": "SIGNUP", "daysAgo": 25 },
+      { "source": "API", "channel_id": null, "type": "LOGIN", "daysAgo": 24 },
+      { "source": "API", "channel_id": null, "type": "POST", "daysAgo": 23 },
+      { "source": "API", "channel_id": null, "type": "POST", "daysAgo": 21 },
+      { "source": "API", "channel_id": null, "type": "POST", "daysAgo": 12 }
     ]
   },
   {
@@ -31,11 +43,11 @@
     "emails": ["sarahwilliams@gmail.com"],
     "job_title": null,
     "activities": [
-      { "type": "SIGNUP", "daysAgo": 24 },
-      { "type": "LOGIN", "daysAgo": 23 },
-      { "type": "POST", "daysAgo": 20 },
-      { "type": "POST", "daysAgo": 16 },
-      { "type": "POST", "daysAgo": 5 }
+      { "source": "API", "channel_id": null, "type": "SIGNUP", "daysAgo": 24 },
+      { "source": "API", "channel_id": null, "type": "LOGIN", "daysAgo": 23 },
+      { "source": "API", "channel_id": null, "type": "POST", "daysAgo": 20 },
+      { "source": "API", "channel_id": null, "type": "POST", "daysAgo": 16 },
+      { "source": "API", "channel_id": null, "type": "POST", "daysAgo": 5 }
     ]
   },
   {
@@ -44,10 +56,10 @@
     "emails": ["davidbrown@gmail.com"],
     "job_title": null,
     "activities": [
-      { "type": "SIGNUP", "daysAgo": 23 },
-      { "type": "LOGIN", "daysAgo": 22 },
-      { "type": "POST", "daysAgo": 21 },
-      { "type": "REPLY", "daysAgo": 13 }
+      { "source": "API", "channel_id": null, "type": "SIGNUP", "daysAgo": 23 },
+      { "source": "API", "channel_id": null, "type": "LOGIN", "daysAgo": 22 },
+      { "source": "API", "channel_id": null, "type": "POST", "daysAgo": 21 },
+      { "source": "API", "channel_id": null, "type": "REPLY", "daysAgo": 13 }
     ]
   },
   {
@@ -56,9 +68,9 @@
     "emails": ["jessicadavis@gmail.com"],
     "job_title": null,
     "activities": [
-      { "type": "SIGNUP", "daysAgo": 23 },
-      { "type": "LOGIN", "daysAgo": 22 },
-      { "type": "POST", "daysAgo": 19 }
+      { "source": "API", "channel_id": null, "type": "SIGNUP", "daysAgo": 23 },
+      { "source": "API", "channel_id": null, "type": "LOGIN", "daysAgo": 22 },
+      { "source": "API", "channel_id": null, "type": "POST", "daysAgo": 19 }
     ]
   },
   {
@@ -67,10 +79,10 @@
     "emails": ["christopherwilson@gmail.com"],
     "job_title": null,
     "activities": [
-      { "type": "SIGNUP", "daysAgo": 22 },
-      { "type": "LOGIN", "daysAgo": 21 },
-      { "type": "POST", "daysAgo": 20 },
-      { "type": "REPLY", "daysAgo": 8 }
+      { "source": "API", "channel_id": null, "type": "SIGNUP", "daysAgo": 22 },
+      { "source": "API", "channel_id": null, "type": "LOGIN", "daysAgo": 21 },
+      { "source": "API", "channel_id": null, "type": "POST", "daysAgo": 20 },
+      { "source": "API", "channel_id": null, "type": "REPLY", "daysAgo": 8 }
     ]
   },
   {
@@ -79,11 +91,23 @@
     "emails": ["amandataylor@gmail.com"],
     "job_title": null,
     "activities": [
-      { "type": "SIGNUP", "daysAgo": 21 },
-      { "type": "LOGIN", "daysAgo": 20 },
-      { "type": "POST", "daysAgo": 19 },
-      { "type": "REACTION", "daysAgo": 4, "message": "👍" },
-      { "type": "REACTION", "daysAgo": 2, "message": "🚀" }
+      { "source": "API", "channel_id": null, "type": "SIGNUP", "daysAgo": 21 },
+      { "source": "API", "channel_id": null, "type": "LOGIN", "daysAgo": 20 },
+      { "source": "API", "channel_id": null, "type": "POST", "daysAgo": 19 },
+      {
+        "source": "API",
+        "channel_id": null,
+        "type": "REACTION",
+        "daysAgo": 4,
+        "message": "👍"
+      },
+      {
+        "source": "API",
+        "channel_id": null,
+        "type": "REACTION",
+        "daysAgo": 2,
+        "message": "🚀"
+      }
     ]
   },
   {
@@ -92,9 +116,9 @@
     "emails": ["danielanderson@gmail.com"],
     "job_title": null,
     "activities": [
-      { "type": "SIGNUP", "daysAgo": 19 },
-      { "type": "LOGIN", "daysAgo": 17 },
-      { "type": "POST", "daysAgo": 8 }
+      { "source": "API", "channel_id": null, "type": "SIGNUP", "daysAgo": 19 },
+      { "source": "API", "channel_id": null, "type": "LOGIN", "daysAgo": 17 },
+      { "source": "API", "channel_id": null, "type": "POST", "daysAgo": 8 }
     ]
   },
   {
@@ -103,10 +127,10 @@
     "emails": ["jenniferthomas@gmail.com"],
     "job_title": null,
     "activities": [
-      { "type": "SIGNUP", "daysAgo": 18 },
-      { "type": "LOGIN", "daysAgo": 16 },
-      { "type": "POST", "daysAgo": 15 },
-      { "type": "REPLY", "daysAgo": 5 }
+      { "source": "API", "channel_id": null, "type": "SIGNUP", "daysAgo": 18 },
+      { "source": "API", "channel_id": null, "type": "LOGIN", "daysAgo": 16 },
+      { "source": "API", "channel_id": null, "type": "POST", "daysAgo": 15 },
+      { "source": "API", "channel_id": null, "type": "REPLY", "daysAgo": 5 }
     ]
   },
   {
@@ -115,12 +139,12 @@
     "emails": ["robertjackson@gmail.com"],
     "job_title": null,
     "activities": [
-      { "type": "SIGNUP", "daysAgo": 18 },
-      { "type": "LOGIN", "daysAgo": 16 },
-      { "type": "POST", "daysAgo": 15 },
-      { "type": "REPLY", "daysAgo": 6 },
-      { "type": "REPLY", "daysAgo": 4 },
-      { "type": "POST", "daysAgo": 3 }
+      { "source": "API", "channel_id": null, "type": "SIGNUP", "daysAgo": 18 },
+      { "source": "API", "channel_id": null, "type": "LOGIN", "daysAgo": 16 },
+      { "source": "API", "channel_id": null, "type": "POST", "daysAgo": 15 },
+      { "source": "API", "channel_id": null, "type": "REPLY", "daysAgo": 6 },
+      { "source": "API", "channel_id": null, "type": "REPLY", "daysAgo": 4 },
+      { "source": "API", "channel_id": null, "type": "POST", "daysAgo": 3 }
     ]
   },
   {
@@ -129,9 +153,9 @@
     "emails": ["elizabethwhite@gmail.com"],
     "job_title": null,
     "activities": [
-      { "type": "SIGNUP", "daysAgo": 16 },
-      { "type": "LOGIN", "daysAgo": 15 },
-      { "type": "POST", "daysAgo": 13 }
+      { "source": "API", "channel_id": null, "type": "SIGNUP", "daysAgo": 16 },
+      { "source": "API", "channel_id": null, "type": "LOGIN", "daysAgo": 15 },
+      { "source": "API", "channel_id": null, "type": "POST", "daysAgo": 13 }
     ]
   },
   {
@@ -140,10 +164,10 @@
     "emails": ["williamharris@gmail.com"],
     "job_title": null,
     "activities": [
-      { "type": "SIGNUP", "daysAgo": 30 },
-      { "type": "LOGIN", "daysAgo": 29 },
-      { "type": "POST", "daysAgo": 28 },
-      { "type": "REPLY", "daysAgo": 25 }
+      { "source": "API", "channel_id": null, "type": "SIGNUP", "daysAgo": 30 },
+      { "source": "API", "channel_id": null, "type": "LOGIN", "daysAgo": 29 },
+      { "source": "API", "channel_id": null, "type": "POST", "daysAgo": 28 },
+      { "source": "API", "channel_id": null, "type": "REPLY", "daysAgo": 25 }
     ]
   },
   {
@@ -152,10 +176,16 @@
     "emails": ["oliviamartin@gmail.com"],
     "job_title": null,
     "activities": [
-      { "type": "SIGNUP", "daysAgo": 29 },
-      { "type": "LOGIN", "daysAgo": 28 },
-      { "type": "POST", "daysAgo": 27 },
-      { "type": "REACTION", "daysAgo": 26, "message": "❤️" }
+      { "source": "API", "channel_id": null, "type": "SIGNUP", "daysAgo": 29 },
+      { "source": "API", "channel_id": null, "type": "LOGIN", "daysAgo": 28 },
+      { "source": "API", "channel_id": null, "type": "POST", "daysAgo": 27 },
+      {
+        "source": "API",
+        "channel_id": null,
+        "type": "REACTION",
+        "daysAgo": 26,
+        "message": "❤️"
+      }
     ]
   },
   {
@@ -164,8 +194,8 @@
     "emails": ["jamesthompson@gmail.com"],
     "job_title": null,
     "activities": [
-      { "type": "SIGNUP", "daysAgo": 28 },
-      { "type": "LOGIN", "daysAgo": 27 }
+      { "source": "API", "channel_id": null, "type": "SIGNUP", "daysAgo": 28 },
+      { "source": "API", "channel_id": null, "type": "LOGIN", "daysAgo": 27 }
     ]
   },
   {
@@ -174,10 +204,10 @@
     "emails": ["sophiagarcia@gmail.com"],
     "job_title": null,
     "activities": [
-      { "type": "SIGNUP", "daysAgo": 27 },
-      { "type": "LOGIN", "daysAgo": 26 },
-      { "type": "POST", "daysAgo": 25 },
-      { "type": "REPLY", "daysAgo": 24 }
+      { "source": "API", "channel_id": null, "type": "SIGNUP", "daysAgo": 27 },
+      { "source": "API", "channel_id": null, "type": "LOGIN", "daysAgo": 26 },
+      { "source": "API", "channel_id": null, "type": "POST", "daysAgo": 25 },
+      { "source": "API", "channel_id": null, "type": "REPLY", "daysAgo": 24 }
     ]
   },
   {
@@ -186,9 +216,9 @@
     "emails": ["benjaminmartinez@gmail.com"],
     "job_title": null,
     "activities": [
-      { "type": "SIGNUP", "daysAgo": 26 },
-      { "type": "LOGIN", "daysAgo": 25 },
-      { "type": "POST", "daysAgo": 24 }
+      { "source": "API", "channel_id": null, "type": "SIGNUP", "daysAgo": 26 },
+      { "source": "API", "channel_id": null, "type": "LOGIN", "daysAgo": 25 },
+      { "source": "API", "channel_id": null, "type": "POST", "daysAgo": 24 }
     ]
   },
   {
@@ -197,10 +227,16 @@
     "emails": ["isabellarobinson@gmail.com"],
     "job_title": null,
     "activities": [
-      { "type": "SIGNUP", "daysAgo": 25 },
-      { "type": "LOGIN", "daysAgo": 24 },
-      { "type": "POST", "daysAgo": 23 },
-      { "type": "REACTION", "daysAgo": 22, "message": "😍" }
+      { "source": "API", "channel_id": null, "type": "SIGNUP", "daysAgo": 25 },
+      { "source": "API", "channel_id": null, "type": "LOGIN", "daysAgo": 24 },
+      { "source": "API", "channel_id": null, "type": "POST", "daysAgo": 23 },
+      {
+        "source": "API",
+        "channel_id": null,
+        "type": "REACTION",
+        "daysAgo": 22,
+        "message": "😍"
+      }
     ]
   },
   {
@@ -209,9 +245,9 @@
     "emails": ["masonclark@gmail.com"],
     "job_title": null,
     "activities": [
-      { "type": "SIGNUP", "daysAgo": 24 },
-      { "type": "LOGIN", "daysAgo": 23 },
-      { "type": "POST", "daysAgo": 22 }
+      { "source": "API", "channel_id": null, "type": "SIGNUP", "daysAgo": 24 },
+      { "source": "API", "channel_id": null, "type": "LOGIN", "daysAgo": 23 },
+      { "source": "API", "channel_id": null, "type": "POST", "daysAgo": 22 }
     ]
   },
   {
@@ -220,10 +256,10 @@
     "emails": ["miarodriguez@gmail.com"],
     "job_title": null,
     "activities": [
-      { "type": "SIGNUP", "daysAgo": 23 },
-      { "type": "LOGIN", "daysAgo": 22 },
-      { "type": "POST", "daysAgo": 21 },
-      { "type": "REPLY", "daysAgo": 20 }
+      { "source": "API", "channel_id": null, "type": "SIGNUP", "daysAgo": 23 },
+      { "source": "API", "channel_id": null, "type": "LOGIN", "daysAgo": 22 },
+      { "source": "API", "channel_id": null, "type": "POST", "daysAgo": 21 },
+      { "source": "API", "channel_id": null, "type": "REPLY", "daysAgo": 20 }
     ]
   },
   {
@@ -232,9 +268,9 @@
     "emails": ["ethanlewis@gmail.com"],
     "job_title": null,
     "activities": [
-      { "type": "SIGNUP", "daysAgo": 22 },
-      { "type": "LOGIN", "daysAgo": 21 },
-      { "type": "POST", "daysAgo": 20 }
+      { "source": "API", "channel_id": null, "type": "SIGNUP", "daysAgo": 22 },
+      { "source": "API", "channel_id": null, "type": "LOGIN", "daysAgo": 21 },
+      { "source": "API", "channel_id": null, "type": "POST", "daysAgo": 20 }
     ]
   },
   {
@@ -243,10 +279,16 @@
     "emails": ["charlottelee@gmail.com"],
     "job_title": null,
     "activities": [
-      { "type": "SIGNUP", "daysAgo": 21 },
-      { "type": "LOGIN", "daysAgo": 20 },
-      { "type": "POST", "daysAgo": 19 },
-      { "type": "REACTION", "daysAgo": 18, "message": "👏" }
+      { "source": "API", "channel_id": null, "type": "SIGNUP", "daysAgo": 21 },
+      { "source": "API", "channel_id": null, "type": "LOGIN", "daysAgo": 20 },
+      { "source": "API", "channel_id": null, "type": "POST", "daysAgo": 19 },
+      {
+        "source": "API",
+        "channel_id": null,
+        "type": "REACTION",
+        "daysAgo": 18,
+        "message": "👏"
+      }
     ]
   },
   {
@@ -255,9 +297,9 @@
     "emails": ["alexanderwalker@gmail.com"],
     "job_title": null,
     "activities": [
-      { "type": "SIGNUP", "daysAgo": 20 },
-      { "type": "LOGIN", "daysAgo": 19 },
-      { "type": "POST", "daysAgo": 18 }
+      { "source": "API", "channel_id": null, "type": "SIGNUP", "daysAgo": 20 },
+      { "source": "API", "channel_id": null, "type": "LOGIN", "daysAgo": 19 },
+      { "source": "API", "channel_id": null, "type": "POST", "daysAgo": 18 }
     ]
   },
   {
@@ -266,10 +308,10 @@
     "emails": ["avahall@gmail.com"],
     "job_title": null,
     "activities": [
-      { "type": "SIGNUP", "daysAgo": 19 },
-      { "type": "LOGIN", "daysAgo": 18 },
-      { "type": "POST", "daysAgo": 17 },
-      { "type": "REPLY", "daysAgo": 16 }
+      { "source": "API", "channel_id": null, "type": "SIGNUP", "daysAgo": 19 },
+      { "source": "API", "channel_id": null, "type": "LOGIN", "daysAgo": 18 },
+      { "source": "API", "channel_id": null, "type": "POST", "daysAgo": 17 },
+      { "source": "API", "channel_id": null, "type": "REPLY", "daysAgo": 16 }
     ]
   },
   {
@@ -278,9 +320,9 @@
     "emails": ["ryanallen@gmail.com"],
     "job_title": null,
     "activities": [
-      { "type": "SIGNUP", "daysAgo": 18 },
-      { "type": "LOGIN", "daysAgo": 17 },
-      { "type": "POST", "daysAgo": 16 }
+      { "source": "API", "channel_id": null, "type": "SIGNUP", "daysAgo": 18 },
+      { "source": "API", "channel_id": null, "type": "LOGIN", "daysAgo": 17 },
+      { "source": "API", "channel_id": null, "type": "POST", "daysAgo": 16 }
     ]
   },
   {
@@ -289,10 +331,16 @@
     "emails": ["graceyoung@gmail.com"],
     "job_title": null,
     "activities": [
-      { "type": "SIGNUP", "daysAgo": 17 },
-      { "type": "LOGIN", "daysAgo": 16 },
-      { "type": "POST", "daysAgo": 15 },
-      { "type": "REACTION", "daysAgo": 14, "message": "🎉" }
+      { "source": "API", "channel_id": null, "type": "SIGNUP", "daysAgo": 17 },
+      { "source": "API", "channel_id": null, "type": "LOGIN", "daysAgo": 16 },
+      { "source": "API", "channel_id": null, "type": "POST", "daysAgo": 15 },
+      {
+        "source": "API",
+        "channel_id": null,
+        "type": "REACTION",
+        "daysAgo": 14,
+        "message": "🎉"
+      }
     ]
   },
   {
@@ -301,9 +349,9 @@
     "emails": ["noahhernandez@gmail.com"],
     "job_title": null,
     "activities": [
-      { "type": "SIGNUP", "daysAgo": 16 },
-      { "type": "LOGIN", "daysAgo": 15 },
-      { "type": "POST", "daysAgo": 14 }
+      { "source": "API", "channel_id": null, "type": "SIGNUP", "daysAgo": 16 },
+      { "source": "API", "channel_id": null, "type": "LOGIN", "daysAgo": 15 },
+      { "source": "API", "channel_id": null, "type": "POST", "daysAgo": 14 }
     ]
   },
   {
@@ -312,10 +360,10 @@
     "emails": ["chloeking@gmail.com"],
     "job_title": null,
     "activities": [
-      { "type": "SIGNUP", "daysAgo": 15 },
-      { "type": "LOGIN", "daysAgo": 14 },
-      { "type": "POST", "daysAgo": 13 },
-      { "type": "REPLY", "daysAgo": 12 }
+      { "source": "API", "channel_id": null, "type": "SIGNUP", "daysAgo": 15 },
+      { "source": "API", "channel_id": null, "type": "LOGIN", "daysAgo": 14 },
+      { "source": "API", "channel_id": null, "type": "POST", "daysAgo": 13 },
+      { "source": "API", "channel_id": null, "type": "REPLY", "daysAgo": 12 }
     ]
   },
   {
@@ -324,9 +372,9 @@
     "emails": ["liamwright@gmail.com"],
     "job_title": null,
     "activities": [
-      { "type": "SIGNUP", "daysAgo": 14 },
-      { "type": "LOGIN", "daysAgo": 13 },
-      { "type": "POST", "daysAgo": 12 }
+      { "source": "API", "channel_id": null, "type": "SIGNUP", "daysAgo": 14 },
+      { "source": "API", "channel_id": null, "type": "LOGIN", "daysAgo": 13 },
+      { "source": "API", "channel_id": null, "type": "POST", "daysAgo": 12 }
     ]
   },
   {
@@ -335,10 +383,16 @@
     "emails": ["zoelopez@gmail.com"],
     "job_title": null,
     "activities": [
-      { "type": "SIGNUP", "daysAgo": 13 },
-      { "type": "LOGIN", "daysAgo": 12 },
-      { "type": "POST", "daysAgo": 11 },
-      { "type": "REACTION", "daysAgo": 10, "message": "😊" }
+      { "source": "API", "channel_id": null, "type": "SIGNUP", "daysAgo": 13 },
+      { "source": "API", "channel_id": null, "type": "LOGIN", "daysAgo": 12 },
+      { "source": "API", "channel_id": null, "type": "POST", "daysAgo": 11 },
+      {
+        "source": "API",
+        "channel_id": null,
+        "type": "REACTION",
+        "daysAgo": 10,
+        "message": "😊"
+      }
     ]
   },
   {
@@ -347,9 +401,9 @@
     "emails": ["lucashill@gmail.com"],
     "job_title": null,
     "activities": [
-      { "type": "SIGNUP", "daysAgo": 12 },
-      { "type": "LOGIN", "daysAgo": 11 },
-      { "type": "POST", "daysAgo": 10 }
+      { "source": "API", "channel_id": null, "type": "SIGNUP", "daysAgo": 12 },
+      { "source": "API", "channel_id": null, "type": "LOGIN", "daysAgo": 11 },
+      { "source": "API", "channel_id": null, "type": "POST", "daysAgo": 10 }
     ]
   },
   {
@@ -358,10 +412,10 @@
     "emails": ["lilyscott@gmail.com"],
     "job_title": null,
     "activities": [
-      { "type": "SIGNUP", "daysAgo": 11 },
-      { "type": "LOGIN", "daysAgo": 10 },
-      { "type": "POST", "daysAgo": 9 },
-      { "type": "REPLY", "daysAgo": 8 }
+      { "source": "API", "channel_id": null, "type": "SIGNUP", "daysAgo": 11 },
+      { "source": "API", "channel_id": null, "type": "LOGIN", "daysAgo": 10 },
+      { "source": "API", "channel_id": null, "type": "POST", "daysAgo": 9 },
+      { "source": "API", "channel_id": null, "type": "REPLY", "daysAgo": 8 }
     ]
   },
   {
@@ -370,10 +424,16 @@
     "emails": ["sophiemartin@gmail.com"],
     "job_title": null,
     "activities": [
-      { "type": "SIGNUP", "daysAgo": 30 },
-      { "type": "LOGIN", "daysAgo": 29 },
-      { "type": "POST", "daysAgo": 28 },
-      { "type": "REACTION", "daysAgo": 27, "message": "😊" }
+      { "source": "API", "channel_id": null, "type": "SIGNUP", "daysAgo": 30 },
+      { "source": "API", "channel_id": null, "type": "LOGIN", "daysAgo": 29 },
+      { "source": "API", "channel_id": null, "type": "POST", "daysAgo": 28 },
+      {
+        "source": "API",
+        "channel_id": null,
+        "type": "REACTION",
+        "daysAgo": 27,
+        "message": "😊"
+      }
     ]
   },
   {
@@ -382,10 +442,10 @@
     "emails": ["thomasbernard@gmail.com"],
     "job_title": null,
     "activities": [
-      { "type": "SIGNUP", "daysAgo": 29 },
-      { "type": "LOGIN", "daysAgo": 28 },
-      { "type": "POST", "daysAgo": 26 },
-      { "type": "REPLY", "daysAgo": 25 }
+      { "source": "API", "channel_id": null, "type": "SIGNUP", "daysAgo": 29 },
+      { "source": "API", "channel_id": null, "type": "LOGIN", "daysAgo": 28 },
+      { "source": "API", "channel_id": null, "type": "POST", "daysAgo": 26 },
+      { "source": "API", "channel_id": null, "type": "REPLY", "daysAgo": 25 }
     ]
   },
   {
@@ -394,9 +454,9 @@
     "emails": ["emmapetit@gmail.com"],
     "job_title": null,
     "activities": [
-      { "type": "SIGNUP", "daysAgo": 28 },
-      { "type": "LOGIN", "daysAgo": 27 },
-      { "type": "POST", "daysAgo": 25 }
+      { "source": "API", "channel_id": null, "type": "SIGNUP", "daysAgo": 28 },
+      { "source": "API", "channel_id": null, "type": "LOGIN", "daysAgo": 27 },
+      { "source": "API", "channel_id": null, "type": "POST", "daysAgo": 25 }
     ]
   },
   {
@@ -405,10 +465,16 @@
     "emails": ["lucasdubois@gmail.com"],
     "job_title": null,
     "activities": [
-      { "type": "SIGNUP", "daysAgo": 27 },
-      { "type": "LOGIN", "daysAgo": 26 },
-      { "type": "POST", "daysAgo": 24 },
-      { "type": "REACTION", "daysAgo": 23, "message": "👍" }
+      { "source": "API", "channel_id": null, "type": "SIGNUP", "daysAgo": 27 },
+      { "source": "API", "channel_id": null, "type": "LOGIN", "daysAgo": 26 },
+      { "source": "API", "channel_id": null, "type": "POST", "daysAgo": 24 },
+      {
+        "source": "API",
+        "channel_id": null,
+        "type": "REACTION",
+        "daysAgo": 23,
+        "message": "👍"
+      }
     ]
   },
   {
@@ -417,9 +483,9 @@
     "emails": ["chloemoreau@gmail.com"],
     "job_title": null,
     "activities": [
-      { "type": "SIGNUP", "daysAgo": 26 },
-      { "type": "LOGIN", "daysAgo": 25 },
-      { "type": "POST", "daysAgo": 23 }
+      { "source": "API", "channel_id": null, "type": "SIGNUP", "daysAgo": 26 },
+      { "source": "API", "channel_id": null, "type": "LOGIN", "daysAgo": 25 },
+      { "source": "API", "channel_id": null, "type": "POST", "daysAgo": 23 }
     ]
   },
   {
@@ -428,10 +494,10 @@
     "emails": ["antoinesimon@gmail.com"],
     "job_title": null,
     "activities": [
-      { "type": "SIGNUP", "daysAgo": 25 },
-      { "type": "LOGIN", "daysAgo": 24 },
-      { "type": "POST", "daysAgo": 22 },
-      { "type": "REPLY", "daysAgo": 21 }
+      { "source": "API", "channel_id": null, "type": "SIGNUP", "daysAgo": 25 },
+      { "source": "API", "channel_id": null, "type": "LOGIN", "daysAgo": 24 },
+      { "source": "API", "channel_id": null, "type": "POST", "daysAgo": 22 },
+      { "source": "API", "channel_id": null, "type": "REPLY", "daysAgo": 21 }
     ]
   },
   {
@@ -440,9 +506,9 @@
     "emails": ["leamichel@gmail.com"],
     "job_title": null,
     "activities": [
-      { "type": "SIGNUP", "daysAgo": 24 },
-      { "type": "LOGIN", "daysAgo": 23 },
-      { "type": "POST", "daysAgo": 21 }
+      { "source": "API", "channel_id": null, "type": "SIGNUP", "daysAgo": 24 },
+      { "source": "API", "channel_id": null, "type": "LOGIN", "daysAgo": 23 },
+      { "source": "API", "channel_id": null, "type": "POST", "daysAgo": 21 }
     ]
   },
   {
@@ -451,10 +517,16 @@
     "emails": ["gabriellefebvre@gmail.com"],
     "job_title": null,
     "activities": [
-      { "type": "SIGNUP", "daysAgo": 23 },
-      { "type": "LOGIN", "daysAgo": 22 },
-      { "type": "POST", "daysAgo": 20 },
-      { "type": "REACTION", "daysAgo": 19, "message": "❤️" }
+      { "source": "API", "channel_id": null, "type": "SIGNUP", "daysAgo": 23 },
+      { "source": "API", "channel_id": null, "type": "LOGIN", "daysAgo": 22 },
+      { "source": "API", "channel_id": null, "type": "POST", "daysAgo": 20 },
+      {
+        "source": "API",
+        "channel_id": null,
+        "type": "REACTION",
+        "daysAgo": 19,
+        "message": "❤️"
+      }
     ]
   },
   {
@@ -463,9 +535,9 @@
     "emails": ["manonleroy@gmail.com"],
     "job_title": null,
     "activities": [
-      { "type": "SIGNUP", "daysAgo": 22 },
-      { "type": "LOGIN", "daysAgo": 21 },
-      { "type": "POST", "daysAgo": 19 }
+      { "source": "API", "channel_id": null, "type": "SIGNUP", "daysAgo": 22 },
+      { "source": "API", "channel_id": null, "type": "LOGIN", "daysAgo": 21 },
+      { "source": "API", "channel_id": null, "type": "POST", "daysAgo": 19 }
     ]
   },
   {
@@ -474,10 +546,10 @@
     "emails": ["hugoroux@gmail.com"],
     "job_title": null,
     "activities": [
-      { "type": "SIGNUP", "daysAgo": 21 },
-      { "type": "LOGIN", "daysAgo": 20 },
-      { "type": "POST", "daysAgo": 18 },
-      { "type": "REPLY", "daysAgo": 17 }
+      { "source": "API", "channel_id": null, "type": "SIGNUP", "daysAgo": 21 },
+      { "source": "API", "channel_id": null, "type": "LOGIN", "daysAgo": 20 },
+      { "source": "API", "channel_id": null, "type": "POST", "daysAgo": 18 },
+      { "source": "API", "channel_id": null, "type": "REPLY", "daysAgo": 17 }
     ]
   },
   {
@@ -486,9 +558,9 @@
     "emails": ["camilledavid@gmail.com"],
     "job_title": null,
     "activities": [
-      { "type": "SIGNUP", "daysAgo": 20 },
-      { "type": "LOGIN", "daysAgo": 19 },
-      { "type": "POST", "daysAgo": 17 }
+      { "source": "API", "channel_id": null, "type": "SIGNUP", "daysAgo": 20 },
+      { "source": "API", "channel_id": null, "type": "LOGIN", "daysAgo": 19 },
+      { "source": "API", "channel_id": null, "type": "POST", "daysAgo": 17 }
     ]
   },
   {
@@ -497,10 +569,16 @@
     "emails": ["louisbertrand@gmail.com"],
     "job_title": null,
     "activities": [
-      { "type": "SIGNUP", "daysAgo": 19 },
-      { "type": "LOGIN", "daysAgo": 18 },
-      { "type": "POST", "daysAgo": 16 },
-      { "type": "REACTION", "daysAgo": 15, "message": "👏" }
+      { "source": "API", "channel_id": null, "type": "SIGNUP", "daysAgo": 19 },
+      { "source": "API", "channel_id": null, "type": "LOGIN", "daysAgo": 18 },
+      { "source": "API", "channel_id": null, "type": "POST", "daysAgo": 16 },
+      {
+        "source": "API",
+        "channel_id": null,
+        "type": "REACTION",
+        "daysAgo": 15,
+        "message": "👏"
+      }
     ]
   },
   {
@@ -509,9 +587,9 @@
     "emails": ["inesvincent@gmail.com"],
     "job_title": null,
     "activities": [
-      { "type": "SIGNUP", "daysAgo": 18 },
-      { "type": "LOGIN", "daysAgo": 17 },
-      { "type": "POST", "daysAgo": 15 }
+      { "source": "API", "channel_id": null, "type": "SIGNUP", "daysAgo": 18 },
+      { "source": "API", "channel_id": null, "type": "LOGIN", "daysAgo": 17 },
+      { "source": "API", "channel_id": null, "type": "POST", "daysAgo": 15 }
     ]
   },
   {
@@ -520,10 +598,10 @@
     "emails": ["theofournier@gmail.com"],
     "job_title": null,
     "activities": [
-      { "type": "SIGNUP", "daysAgo": 17 },
-      { "type": "LOGIN", "daysAgo": 16 },
-      { "type": "POST", "daysAgo": 14 },
-      { "type": "REPLY", "daysAgo": 13 }
+      { "source": "API", "channel_id": null, "type": "SIGNUP", "daysAgo": 17 },
+      { "source": "API", "channel_id": null, "type": "LOGIN", "daysAgo": 16 },
+      { "source": "API", "channel_id": null, "type": "POST", "daysAgo": 14 },
+      { "source": "API", "channel_id": null, "type": "REPLY", "daysAgo": 13 }
     ]
   },
   {
@@ -532,9 +610,9 @@
     "emails": ["zoemorel@gmail.com"],
     "job_title": null,
     "activities": [
-      { "type": "SIGNUP", "daysAgo": 16 },
-      { "type": "LOGIN", "daysAgo": 15 },
-      { "type": "POST", "daysAgo": 13 }
+      { "source": "API", "channel_id": null, "type": "SIGNUP", "daysAgo": 16 },
+      { "source": "API", "channel_id": null, "type": "LOGIN", "daysAgo": 15 },
+      { "source": "API", "channel_id": null, "type": "POST", "daysAgo": 13 }
     ]
   },
   {
@@ -543,10 +621,16 @@
     "emails": ["maximegirard@gmail.com"],
     "job_title": null,
     "activities": [
-      { "type": "SIGNUP", "daysAgo": 15 },
-      { "type": "LOGIN", "daysAgo": 14 },
-      { "type": "POST", "daysAgo": 12 },
-      { "type": "REACTION", "daysAgo": 11, "message": "😄" }
+      { "source": "API", "channel_id": null, "type": "SIGNUP", "daysAgo": 15 },
+      { "source": "API", "channel_id": null, "type": "LOGIN", "daysAgo": 14 },
+      { "source": "API", "channel_id": null, "type": "POST", "daysAgo": 12 },
+      {
+        "source": "API",
+        "channel_id": null,
+        "type": "REACTION",
+        "daysAgo": 11,
+        "message": "😄"
+      }
     ]
   },
   {
@@ -555,9 +639,9 @@
     "emails": ["lolaandre@gmail.com"],
     "job_title": null,
     "activities": [
-      { "type": "SIGNUP", "daysAgo": 14 },
-      { "type": "LOGIN", "daysAgo": 13 },
-      { "type": "POST", "daysAgo": 11 }
+      { "source": "API", "channel_id": null, "type": "SIGNUP", "daysAgo": 14 },
+      { "source": "API", "channel_id": null, "type": "LOGIN", "daysAgo": 13 },
+      { "source": "API", "channel_id": null, "type": "POST", "daysAgo": 11 }
     ]
   },
   {
@@ -566,10 +650,10 @@
     "emails": ["nathanlemaire@gmail.com"],
     "job_title": null,
     "activities": [
-      { "type": "SIGNUP", "daysAgo": 13 },
-      { "type": "LOGIN", "daysAgo": 12 },
-      { "type": "POST", "daysAgo": 10 },
-      { "type": "REPLY", "daysAgo": 9 }
+      { "source": "API", "channel_id": null, "type": "SIGNUP", "daysAgo": 13 },
+      { "source": "API", "channel_id": null, "type": "LOGIN", "daysAgo": 12 },
+      { "source": "API", "channel_id": null, "type": "POST", "daysAgo": 10 },
+      { "source": "API", "channel_id": null, "type": "REPLY", "daysAgo": 9 }
     ]
   },
   {
@@ -578,9 +662,9 @@
     "emails": ["jadelegrand@gmail.com"],
     "job_title": null,
     "activities": [
-      { "type": "SIGNUP", "daysAgo": 12 },
-      { "type": "LOGIN", "daysAgo": 11 },
-      { "type": "POST", "daysAgo": 9 }
+      { "source": "API", "channel_id": null, "type": "SIGNUP", "daysAgo": 12 },
+      { "source": "API", "channel_id": null, "type": "LOGIN", "daysAgo": 11 },
+      { "source": "API", "channel_id": null, "type": "POST", "daysAgo": 9 }
     ]
   },
   {
@@ -589,10 +673,16 @@
     "emails": ["enzogarnier@gmail.com"],
     "job_title": null,
     "activities": [
-      { "type": "SIGNUP", "daysAgo": 11 },
-      { "type": "LOGIN", "daysAgo": 10 },
-      { "type": "POST", "daysAgo": 8 },
-      { "type": "REACTION", "daysAgo": 7, "message": "🎉" }
+      { "source": "API", "channel_id": null, "type": "SIGNUP", "daysAgo": 11 },
+      { "source": "API", "channel_id": null, "type": "LOGIN", "daysAgo": 10 },
+      { "source": "API", "channel_id": null, "type": "POST", "daysAgo": 8 },
+      {
+        "source": "API",
+        "channel_id": null,
+        "type": "REACTION",
+        "daysAgo": 7,
+        "message": "🎉"
+      }
     ]
   },
   {
@@ -601,9 +691,9 @@
     "emails": ["lenafaure@gmail.com"],
     "job_title": null,
     "activities": [
-      { "type": "SIGNUP", "daysAgo": 10 },
-      { "type": "LOGIN", "daysAgo": 9 },
-      { "type": "POST", "daysAgo": 7 }
+      { "source": "API", "channel_id": null, "type": "SIGNUP", "daysAgo": 10 },
+      { "source": "API", "channel_id": null, "type": "LOGIN", "daysAgo": 9 },
+      { "source": "API", "channel_id": null, "type": "POST", "daysAgo": 7 }
     ]
   },
   {
@@ -612,10 +702,10 @@
     "emails": ["adamrousseau@gmail.com"],
     "job_title": null,
     "activities": [
-      { "type": "SIGNUP", "daysAgo": 9 },
-      { "type": "LOGIN", "daysAgo": 8 },
-      { "type": "POST", "daysAgo": 6 },
-      { "type": "REPLY", "daysAgo": 5 }
+      { "source": "API", "channel_id": null, "type": "SIGNUP", "daysAgo": 9 },
+      { "source": "API", "channel_id": null, "type": "LOGIN", "daysAgo": 8 },
+      { "source": "API", "channel_id": null, "type": "POST", "daysAgo": 6 },
+      { "source": "API", "channel_id": null, "type": "REPLY", "daysAgo": 5 }
     ]
   },
   {
@@ -624,9 +714,9 @@
     "emails": ["luciemercier@gmail.com"],
     "job_title": null,
     "activities": [
-      { "type": "SIGNUP", "daysAgo": 8 },
-      { "type": "LOGIN", "daysAgo": 7 },
-      { "type": "POST", "daysAgo": 5 }
+      { "source": "API", "channel_id": null, "type": "SIGNUP", "daysAgo": 8 },
+      { "source": "API", "channel_id": null, "type": "LOGIN", "daysAgo": 7 },
+      { "source": "API", "channel_id": null, "type": "POST", "daysAgo": 5 }
     ]
   },
   {
@@ -635,10 +725,16 @@
     "emails": ["raphaelbonnet@gmail.com"],
     "job_title": null,
     "activities": [
-      { "type": "SIGNUP", "daysAgo": 7 },
-      { "type": "LOGIN", "daysAgo": 6 },
-      { "type": "POST", "daysAgo": 4 },
-      { "type": "REACTION", "daysAgo": 3, "message": "👌" }
+      { "source": "API", "channel_id": null, "type": "SIGNUP", "daysAgo": 7 },
+      { "source": "API", "channel_id": null, "type": "LOGIN", "daysAgo": 6 },
+      { "source": "API", "channel_id": null, "type": "POST", "daysAgo": 4 },
+      {
+        "source": "API",
+        "channel_id": null,
+        "type": "REACTION",
+        "daysAgo": 3,
+        "message": "👌"
+      }
     ]
   },
   {
@@ -647,9 +743,9 @@
     "emails": ["evalambert@gmail.com"],
     "job_title": null,
     "activities": [
-      { "type": "SIGNUP", "daysAgo": 6 },
-      { "type": "LOGIN", "daysAgo": 5 },
-      { "type": "POST", "daysAgo": 3 }
+      { "source": "API", "channel_id": null, "type": "SIGNUP", "daysAgo": 6 },
+      { "source": "API", "channel_id": null, "type": "LOGIN", "daysAgo": 5 },
+      { "source": "API", "channel_id": null, "type": "POST", "daysAgo": 3 }
     ]
   },
   {
@@ -658,10 +754,10 @@
     "emails": ["julesdupont@gmail.com"],
     "job_title": null,
     "activities": [
-      { "type": "SIGNUP", "daysAgo": 5 },
-      { "type": "LOGIN", "daysAgo": 4 },
-      { "type": "POST", "daysAgo": 2 },
-      { "type": "REPLY", "daysAgo": 1 }
+      { "source": "API", "channel_id": null, "type": "SIGNUP", "daysAgo": 5 },
+      { "source": "API", "channel_id": null, "type": "LOGIN", "daysAgo": 4 },
+      { "source": "API", "channel_id": null, "type": "POST", "daysAgo": 2 },
+      { "source": "API", "channel_id": null, "type": "REPLY", "daysAgo": 1 }
     ]
   },
   {
@@ -670,9 +766,9 @@
     "emails": ["louisefontaine@gmail.com"],
     "job_title": null,
     "activities": [
-      { "type": "SIGNUP", "daysAgo": 4 },
-      { "type": "LOGIN", "daysAgo": 3 },
-      { "type": "POST", "daysAgo": 1 }
+      { "source": "API", "channel_id": null, "type": "SIGNUP", "daysAgo": 4 },
+      { "source": "API", "channel_id": null, "type": "LOGIN", "daysAgo": 3 },
+      { "source": "API", "channel_id": null, "type": "POST", "daysAgo": 1 }
     ]
   },
   {
@@ -681,10 +777,16 @@
     "emails": ["mathisroussel@gmail.com"],
     "job_title": null,
     "activities": [
-      { "type": "SIGNUP", "daysAgo": 3 },
-      { "type": "LOGIN", "daysAgo": 2 },
-      { "type": "POST", "daysAgo": 1 },
-      { "type": "REACTION", "daysAgo": 1, "message": "😎" }
+      { "source": "API", "channel_id": null, "type": "SIGNUP", "daysAgo": 3 },
+      { "source": "API", "channel_id": null, "type": "LOGIN", "daysAgo": 2 },
+      { "source": "API", "channel_id": null, "type": "POST", "daysAgo": 1 },
+      {
+        "source": "API",
+        "channel_id": null,
+        "type": "REACTION",
+        "daysAgo": 1,
+        "message": "😎"
+      }
     ]
   },
   {
@@ -693,9 +795,9 @@
     "emails": ["alicehubert@gmail.com"],
     "job_title": null,
     "activities": [
-      { "type": "SIGNUP", "daysAgo": 2 },
-      { "type": "LOGIN", "daysAgo": 1 },
-      { "type": "POST", "daysAgo": 1 }
+      { "source": "API", "channel_id": null, "type": "SIGNUP", "daysAgo": 2 },
+      { "source": "API", "channel_id": null, "type": "LOGIN", "daysAgo": 1 },
+      { "source": "API", "channel_id": null, "type": "POST", "daysAgo": 1 }
     ]
   },
   {
@@ -704,10 +806,16 @@
     "emails": ["victorlefevre@gmail.com"],
     "job_title": null,
     "activities": [
-      { "type": "SIGNUP", "daysAgo": 30 },
-      { "type": "LOGIN", "daysAgo": 29 },
-      { "type": "POST", "daysAgo": 28 },
-      { "type": "REACTION", "daysAgo": 27, "message": "🚀" }
+      { "source": "API", "channel_id": null, "type": "SIGNUP", "daysAgo": 30 },
+      { "source": "API", "channel_id": null, "type": "LOGIN", "daysAgo": 29 },
+      { "source": "API", "channel_id": null, "type": "POST", "daysAgo": 28 },
+      {
+        "source": "API",
+        "channel_id": null,
+        "type": "REACTION",
+        "daysAgo": 27,
+        "message": "🚀"
+      }
     ]
   },
   {
@@ -716,10 +824,10 @@
     "emails": ["eliseperrin@gmail.com"],
     "job_title": null,
     "activities": [
-      { "type": "SIGNUP", "daysAgo": 29 },
-      { "type": "LOGIN", "daysAgo": 28 },
-      { "type": "POST", "daysAgo": 26 },
-      { "type": "REPLY", "daysAgo": 25 }
+      { "source": "API", "channel_id": null, "type": "SIGNUP", "daysAgo": 29 },
+      { "source": "API", "channel_id": null, "type": "LOGIN", "daysAgo": 28 },
+      { "source": "API", "channel_id": null, "type": "POST", "daysAgo": 26 },
+      { "source": "API", "channel_id": null, "type": "REPLY", "daysAgo": 25 }
     ]
   },
   {
@@ -728,9 +836,9 @@
     "emails": ["nolanrenaud@gmail.com"],
     "job_title": null,
     "activities": [
-      { "type": "SIGNUP", "daysAgo": 28 },
-      { "type": "LOGIN", "daysAgo": 27 },
-      { "type": "POST", "daysAgo": 25 }
+      { "source": "API", "channel_id": null, "type": "SIGNUP", "daysAgo": 28 },
+      { "source": "API", "channel_id": null, "type": "LOGIN", "daysAgo": 27 },
+      { "source": "API", "channel_id": null, "type": "POST", "daysAgo": 25 }
     ]
   },
   {
@@ -739,10 +847,16 @@
     "emails": ["maellecaron@gmail.com"],
     "job_title": null,
     "activities": [
-      { "type": "SIGNUP", "daysAgo": 27 },
-      { "type": "LOGIN", "daysAgo": 26 },
-      { "type": "POST", "daysAgo": 24 },
-      { "type": "REACTION", "daysAgo": 23, "message": "😍" }
+      { "source": "API", "channel_id": null, "type": "SIGNUP", "daysAgo": 27 },
+      { "source": "API", "channel_id": null, "type": "LOGIN", "daysAgo": 26 },
+      { "source": "API", "channel_id": null, "type": "POST", "daysAgo": 24 },
+      {
+        "source": "API",
+        "channel_id": null,
+        "type": "REACTION",
+        "daysAgo": 23,
+        "message": "😍"
+      }
     ]
   },
   {
@@ -751,9 +865,9 @@
     "emails": ["romainmathieu@gmail.com"],
     "job_title": null,
     "activities": [
-      { "type": "SIGNUP", "daysAgo": 26 },
-      { "type": "LOGIN", "daysAgo": 25 },
-      { "type": "POST", "daysAgo": 23 }
+      { "source": "API", "channel_id": null, "type": "SIGNUP", "daysAgo": 26 },
+      { "source": "API", "channel_id": null, "type": "LOGIN", "daysAgo": 25 },
+      { "source": "API", "channel_id": null, "type": "POST", "daysAgo": 23 }
     ]
   },
   {
@@ -762,10 +876,10 @@
     "emails": ["elodiegautier@gmail.com"],
     "job_title": null,
     "activities": [
-      { "type": "SIGNUP", "daysAgo": 25 },
-      { "type": "LOGIN", "daysAgo": 24 },
-      { "type": "POST", "daysAgo": 22 },
-      { "type": "REPLY", "daysAgo": 21 }
+      { "source": "API", "channel_id": null, "type": "SIGNUP", "daysAgo": 25 },
+      { "source": "API", "channel_id": null, "type": "LOGIN", "daysAgo": 24 },
+      { "source": "API", "channel_id": null, "type": "POST", "daysAgo": 22 },
+      { "source": "API", "channel_id": null, "type": "REPLY", "daysAgo": 21 }
     ]
   },
   {
@@ -774,9 +888,9 @@
     "emails": ["quentinduval@gmail.com"],
     "job_title": null,
     "activities": [
-      { "type": "SIGNUP", "daysAgo": 24 },
-      { "type": "LOGIN", "daysAgo": 23 },
-      { "type": "POST", "daysAgo": 21 }
+      { "source": "API", "channel_id": null, "type": "SIGNUP", "daysAgo": 24 },
+      { "source": "API", "channel_id": null, "type": "LOGIN", "daysAgo": 23 },
+      { "source": "API", "channel_id": null, "type": "POST", "daysAgo": 21 }
     ]
   },
   {
@@ -785,10 +899,16 @@
     "emails": ["oceaneaubert@gmail.com"],
     "job_title": null,
     "activities": [
-      { "type": "SIGNUP", "daysAgo": 23 },
-      { "type": "LOGIN", "daysAgo": 22 },
-      { "type": "POST", "daysAgo": 20 },
-      { "type": "REACTION", "daysAgo": 19, "message": "👀" }
+      { "source": "API", "channel_id": null, "type": "SIGNUP", "daysAgo": 23 },
+      { "source": "API", "channel_id": null, "type": "LOGIN", "daysAgo": 22 },
+      { "source": "API", "channel_id": null, "type": "POST", "daysAgo": 20 },
+      {
+        "source": "API",
+        "channel_id": null,
+        "type": "REACTION",
+        "daysAgo": 19,
+        "message": "👀"
+      }
     ]
   },
   {
@@ -797,9 +917,9 @@
     "emails": ["maxencelacroix@gmail.com"],
     "job_title": null,
     "activities": [
-      { "type": "SIGNUP", "daysAgo": 22 },
-      { "type": "LOGIN", "daysAgo": 21 },
-      { "type": "POST", "daysAgo": 19 }
+      { "source": "API", "channel_id": null, "type": "SIGNUP", "daysAgo": 22 },
+      { "source": "API", "channel_id": null, "type": "LOGIN", "daysAgo": 21 },
+      { "source": "API", "channel_id": null, "type": "POST", "daysAgo": 19 }
     ]
   },
   {
@@ -808,10 +928,10 @@
     "emails": ["anaisnguyen@gmail.com"],
     "job_title": null,
     "activities": [
-      { "type": "SIGNUP", "daysAgo": 21 },
-      { "type": "LOGIN", "daysAgo": 20 },
-      { "type": "POST", "daysAgo": 18 },
-      { "type": "REPLY", "daysAgo": 17 }
+      { "source": "API", "channel_id": null, "type": "SIGNUP", "daysAgo": 21 },
+      { "source": "API", "channel_id": null, "type": "LOGIN", "daysAgo": 20 },
+      { "source": "API", "channel_id": null, "type": "POST", "daysAgo": 18 },
+      { "source": "API", "channel_id": null, "type": "REPLY", "daysAgo": 17 }
     ]
   },
   {
@@ -820,9 +940,9 @@
     "emails": ["tristanblanchard@gmail.com"],
     "job_title": null,
     "activities": [
-      { "type": "SIGNUP", "daysAgo": 20 },
-      { "type": "LOGIN", "daysAgo": 19 },
-      { "type": "POST", "daysAgo": 17 }
+      { "source": "API", "channel_id": null, "type": "SIGNUP", "daysAgo": 20 },
+      { "source": "API", "channel_id": null, "type": "LOGIN", "daysAgo": 19 },
+      { "source": "API", "channel_id": null, "type": "POST", "daysAgo": 17 }
     ]
   },
   {
@@ -831,10 +951,16 @@
     "emails": ["leoniemarchand@gmail.com"],
     "job_title": null,
     "activities": [
-      { "type": "SIGNUP", "daysAgo": 19 },
-      { "type": "LOGIN", "daysAgo": 18 },
-      { "type": "POST", "daysAgo": 16 },
-      { "type": "REACTION", "daysAgo": 15, "message": "💖" }
+      { "source": "API", "channel_id": null, "type": "SIGNUP", "daysAgo": 19 },
+      { "source": "API", "channel_id": null, "type": "LOGIN", "daysAgo": 18 },
+      { "source": "API", "channel_id": null, "type": "POST", "daysAgo": 16 },
+      {
+        "source": "API",
+        "channel_id": null,
+        "type": "REACTION",
+        "daysAgo": 15,
+        "message": "💖"
+      }
     ]
   },
   {
@@ -843,9 +969,9 @@
     "emails": ["kylianmeunier@gmail.com"],
     "job_title": null,
     "activities": [
-      { "type": "SIGNUP", "daysAgo": 18 },
-      { "type": "LOGIN", "daysAgo": 17 },
-      { "type": "POST", "daysAgo": 15 }
+      { "source": "API", "channel_id": null, "type": "SIGNUP", "daysAgo": 18 },
+      { "source": "API", "channel_id": null, "type": "LOGIN", "daysAgo": 17 },
+      { "source": "API", "channel_id": null, "type": "POST", "daysAgo": 15 }
     ]
   },
   {
@@ -854,10 +980,10 @@
     "emails": ["juliettedufour@gmail.com"],
     "job_title": null,
     "activities": [
-      { "type": "SIGNUP", "daysAgo": 17 },
-      { "type": "LOGIN", "daysAgo": 16 },
-      { "type": "POST", "daysAgo": 14 },
-      { "type": "REPLY", "daysAgo": 13 }
+      { "source": "API", "channel_id": null, "type": "SIGNUP", "daysAgo": 17 },
+      { "source": "API", "channel_id": null, "type": "LOGIN", "daysAgo": 16 },
+      { "source": "API", "channel_id": null, "type": "POST", "daysAgo": 14 },
+      { "source": "API", "channel_id": null, "type": "REPLY", "daysAgo": 13 }
     ]
   },
   {
@@ -866,9 +992,9 @@
     "emails": ["gabincharpentier@gmail.com"],
     "job_title": null,
     "activities": [
-      { "type": "SIGNUP", "daysAgo": 16 },
-      { "type": "LOGIN", "daysAgo": 15 },
-      { "type": "POST", "daysAgo": 13 }
+      { "source": "API", "channel_id": null, "type": "SIGNUP", "daysAgo": 16 },
+      { "source": "API", "channel_id": null, "type": "LOGIN", "daysAgo": 15 },
+      { "source": "API", "channel_id": null, "type": "POST", "daysAgo": 13 }
     ]
   },
   {
@@ -877,10 +1003,16 @@
     "emails": ["margauxdupuis@gmail.com"],
     "job_title": null,
     "activities": [
-      { "type": "SIGNUP", "daysAgo": 15 },
-      { "type": "LOGIN", "daysAgo": 14 },
-      { "type": "POST", "daysAgo": 12 },
-      { "type": "REACTION", "daysAgo": 11, "message": "🤔" }
+      { "source": "API", "channel_id": null, "type": "SIGNUP", "daysAgo": 15 },
+      { "source": "API", "channel_id": null, "type": "LOGIN", "daysAgo": 14 },
+      { "source": "API", "channel_id": null, "type": "POST", "daysAgo": 12 },
+      {
+        "source": "API",
+        "channel_id": null,
+        "type": "REACTION",
+        "daysAgo": 11,
+        "message": "🤔"
+      }
     ]
   },
   {
@@ -889,9 +1021,9 @@
     "emails": ["loicchevallier@gmail.com"],
     "job_title": null,
     "activities": [
-      { "type": "SIGNUP", "daysAgo": 14 },
-      { "type": "LOGIN", "daysAgo": 13 },
-      { "type": "POST", "daysAgo": 11 }
+      { "source": "API", "channel_id": null, "type": "SIGNUP", "daysAgo": 14 },
+      { "source": "API", "channel_id": null, "type": "LOGIN", "daysAgo": 13 },
+      { "source": "API", "channel_id": null, "type": "POST", "daysAgo": 11 }
     ]
   },
   {
@@ -900,10 +1032,10 @@
     "emails": ["ambrelemoine@gmail.com"],
     "job_title": null,
     "activities": [
-      { "type": "SIGNUP", "daysAgo": 13 },
-      { "type": "LOGIN", "daysAgo": 12 },
-      { "type": "POST", "daysAgo": 10 },
-      { "type": "REPLY", "daysAgo": 9 }
+      { "source": "API", "channel_id": null, "type": "SIGNUP", "daysAgo": 13 },
+      { "source": "API", "channel_id": null, "type": "LOGIN", "daysAgo": 12 },
+      { "source": "API", "channel_id": null, "type": "POST", "daysAgo": 10 },
+      { "source": "API", "channel_id": null, "type": "REPLY", "daysAgo": 9 }
     ]
   },
   {
@@ -912,9 +1044,9 @@
     "emails": ["bastiencollet@gmail.com"],
     "job_title": null,
     "activities": [
-      { "type": "SIGNUP", "daysAgo": 12 },
-      { "type": "LOGIN", "daysAgo": 11 },
-      { "type": "POST", "daysAgo": 9 }
+      { "source": "API", "channel_id": null, "type": "SIGNUP", "daysAgo": 12 },
+      { "source": "API", "channel_id": null, "type": "LOGIN", "daysAgo": 11 },
+      { "source": "API", "channel_id": null, "type": "POST", "daysAgo": 9 }
     ]
   },
   {
@@ -923,10 +1055,16 @@
     "emails": ["romanelecomte@gmail.com"],
     "job_title": null,
     "activities": [
-      { "type": "SIGNUP", "daysAgo": 11 },
-      { "type": "LOGIN", "daysAgo": 10 },
-      { "type": "POST", "daysAgo": 8 },
-      { "type": "REACTION", "daysAgo": 7, "message": "😂" }
+      { "source": "API", "channel_id": null, "type": "SIGNUP", "daysAgo": 11 },
+      { "source": "API", "channel_id": null, "type": "LOGIN", "daysAgo": 10 },
+      { "source": "API", "channel_id": null, "type": "POST", "daysAgo": 8 },
+      {
+        "source": "API",
+        "channel_id": null,
+        "type": "REACTION",
+        "daysAgo": 7,
+        "message": "😂"
+      }
     ]
   },
   {
@@ -935,9 +1073,9 @@
     "emails": ["timotheeguyot@gmail.com"],
     "job_title": null,
     "activities": [
-      { "type": "SIGNUP", "daysAgo": 10 },
-      { "type": "LOGIN", "daysAgo": 9 },
-      { "type": "POST", "daysAgo": 7 }
+      { "source": "API", "channel_id": null, "type": "SIGNUP", "daysAgo": 10 },
+      { "source": "API", "channel_id": null, "type": "LOGIN", "daysAgo": 9 },
+      { "source": "API", "channel_id": null, "type": "POST", "daysAgo": 7 }
     ]
   },
   {
@@ -946,10 +1084,10 @@
     "emails": ["maelysboucher@gmail.com"],
     "job_title": null,
     "activities": [
-      { "type": "SIGNUP", "daysAgo": 9 },
-      { "type": "LOGIN", "daysAgo": 8 },
-      { "type": "POST", "daysAgo": 6 },
-      { "type": "REPLY", "daysAgo": 5 }
+      { "source": "API", "channel_id": null, "type": "SIGNUP", "daysAgo": 9 },
+      { "source": "API", "channel_id": null, "type": "LOGIN", "daysAgo": 8 },
+      { "source": "API", "channel_id": null, "type": "POST", "daysAgo": 6 },
+      { "source": "API", "channel_id": null, "type": "REPLY", "daysAgo": 5 }
     ]
   },
   {
@@ -958,9 +1096,9 @@
     "emails": ["estebanbrun@gmail.com"],
     "job_title": null,
     "activities": [
-      { "type": "SIGNUP", "daysAgo": 8 },
-      { "type": "LOGIN", "daysAgo": 7 },
-      { "type": "POST", "daysAgo": 5 }
+      { "source": "API", "channel_id": null, "type": "SIGNUP", "daysAgo": 8 },
+      { "source": "API", "channel_id": null, "type": "LOGIN", "daysAgo": 7 },
+      { "source": "API", "channel_id": null, "type": "POST", "daysAgo": 5 }
     ]
   },
   {
@@ -969,10 +1107,16 @@
     "emails": ["linapicard@gmail.com"],
     "job_title": null,
     "activities": [
-      { "type": "SIGNUP", "daysAgo": 7 },
-      { "type": "LOGIN", "daysAgo": 6 },
-      { "type": "POST", "daysAgo": 4 },
-      { "type": "REACTION", "daysAgo": 3, "message": "🙌" }
+      { "source": "API", "channel_id": null, "type": "SIGNUP", "daysAgo": 7 },
+      { "source": "API", "channel_id": null, "type": "LOGIN", "daysAgo": 6 },
+      { "source": "API", "channel_id": null, "type": "POST", "daysAgo": 4 },
+      {
+        "source": "API",
+        "channel_id": null,
+        "type": "REACTION",
+        "daysAgo": 3,
+        "message": "🙌"
+      }
     ]
   },
   {
@@ -981,9 +1125,9 @@
     "emails": ["noabourgeois@gmail.com"],
     "job_title": null,
     "activities": [
-      { "type": "SIGNUP", "daysAgo": 6 },
-      { "type": "LOGIN", "daysAgo": 5 },
-      { "type": "POST", "daysAgo": 3 }
+      { "source": "API", "channel_id": null, "type": "SIGNUP", "daysAgo": 6 },
+      { "source": "API", "channel_id": null, "type": "LOGIN", "daysAgo": 5 },
+      { "source": "API", "channel_id": null, "type": "POST", "daysAgo": 3 }
     ]
   },
   {
@@ -992,10 +1136,10 @@
     "emails": ["milarenard@gmail.com"],
     "job_title": null,
     "activities": [
-      { "type": "SIGNUP", "daysAgo": 5 },
-      { "type": "LOGIN", "daysAgo": 4 },
-      { "type": "POST", "daysAgo": 2 },
-      { "type": "REPLY", "daysAgo": 1 }
+      { "source": "API", "channel_id": null, "type": "SIGNUP", "daysAgo": 5 },
+      { "source": "API", "channel_id": null, "type": "LOGIN", "daysAgo": 4 },
+      { "source": "API", "channel_id": null, "type": "POST", "daysAgo": 2 },
+      { "source": "API", "channel_id": null, "type": "REPLY", "daysAgo": 1 }
     ]
   },
   {
@@ -1004,9 +1148,9 @@
     "emails": ["robinarnaud@gmail.com"],
     "job_title": null,
     "activities": [
-      { "type": "SIGNUP", "daysAgo": 4 },
-      { "type": "LOGIN", "daysAgo": 3 },
-      { "type": "POST", "daysAgo": 1 }
+      { "source": "API", "channel_id": null, "type": "SIGNUP", "daysAgo": 4 },
+      { "source": "API", "channel_id": null, "type": "LOGIN", "daysAgo": 3 },
+      { "source": "API", "channel_id": null, "type": "POST", "daysAgo": 1 }
     ]
   },
   {
@@ -1015,10 +1159,16 @@
     "emails": ["lilougiraud@gmail.com"],
     "job_title": null,
     "activities": [
-      { "type": "SIGNUP", "daysAgo": 3 },
-      { "type": "LOGIN", "daysAgo": 2 },
-      { "type": "POST", "daysAgo": 1 },
-      { "type": "REACTION", "daysAgo": 1, "message": "🎈" }
+      { "source": "API", "channel_id": null, "type": "SIGNUP", "daysAgo": 3 },
+      { "source": "API", "channel_id": null, "type": "LOGIN", "daysAgo": 2 },
+      { "source": "API", "channel_id": null, "type": "POST", "daysAgo": 1 },
+      {
+        "source": "API",
+        "channel_id": null,
+        "type": "REACTION",
+        "daysAgo": 1,
+        "message": "🎈"
+      }
     ]
   },
   {
@@ -1027,9 +1177,9 @@
     "emails": ["axelguillot@gmail.com"],
     "job_title": null,
     "activities": [
-      { "type": "SIGNUP", "daysAgo": 2 },
-      { "type": "LOGIN", "daysAgo": 1 },
-      { "type": "POST", "daysAgo": 1 }
+      { "source": "API", "channel_id": null, "type": "SIGNUP", "daysAgo": 2 },
+      { "source": "API", "channel_id": null, "type": "LOGIN", "daysAgo": 1 },
+      { "source": "API", "channel_id": null, "type": "POST", "daysAgo": 1 }
     ]
   }
 ]

@@ -1,3 +1,5 @@
+"use server";
+
 import { ContactWithActivitiesSchema } from "@conquest/zod/activity.schema";
 import { authAction } from "lib/authAction";
 import { prisma } from "lib/prisma";
