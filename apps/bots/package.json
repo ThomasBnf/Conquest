@@ -2,7 +2,7 @@
   "name": "bots",
   "scripts": {
     "dev": "bun run ./slack.ts --watch",
-    "build": "tsup ./slack.ts",
+    "build": "bunx prisma generate && tsup ./slack.ts",
     "start": "node dist/slack.js"
   },
   "dependencies": {
