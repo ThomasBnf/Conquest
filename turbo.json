@@ -15,7 +15,7 @@
     "build": {
       "env": ["RESEND_API_KEY"],
       "inputs": ["$TURBO_DEFAULT$", ".env"],
-      "dependsOn": ["^db:generate", "^build"],
+      "dependsOn": ["^db:generate", "^db:deploy", "^build"],
       "outputs": [".next/**", "!.next/cache/**", "next-env.d.ts", ".expo/**"]
     },
     "start": {

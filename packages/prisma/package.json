@@ -4,7 +4,8 @@
   "scripts": {
     "db:generate": "prisma generate",
     "db:push": "prisma db push --skip-generate",
-    "db:seed": "prisma db seed"
+    "db:seed": "prisma db seed",
+    "db:deploy": "prisma migrate deploy"
   },
   "prisma": {
     "seed": "bun run prisma/seed.ts"
