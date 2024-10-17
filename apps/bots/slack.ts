@@ -18,7 +18,7 @@ import { deleteReactions } from "./queries/reactions/deleteReactions";
 dotenv.config();
 
 const appExpress = express();
-const port = process.env.PORT || 3100;
+const port = process.env.PORT || 4000;
 
 const token = process.env.SLACK_BOT_TOKEN;
 const signingSecret = process.env.SLACK_SIGNING_SECRET;
