@@ -7,12 +7,12 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@conquest/ui/chart";
-import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
+import { Area, AreaChart, CartesianGrid, XAxis } from "recharts";
 
 const chartConfig = {
   engagement: {
     label: "Engagement Rate (%)",
-    color: "hsl(var(--chart-1))",
+    color: "hsl(var(--chart-2))",
   },
 } satisfies ChartConfig;
 
@@ -36,12 +36,13 @@ export const ChartEngagement = ({ dailyEngagement }: Props) => {
           config={chartConfig}
           className="aspect-auto h-[320px] w-full"
         >
-          <BarChart
-            accessibilityLayer
+          <AreaChart
             data={chartData}
             margin={{
-              left: 12,
-              right: 12,
+              top: 10,
+              right: 30,
+              left: 0,
+              bottom: 0,
             }}
           >
             <CartesianGrid vertical={false} />
@@ -59,12 +60,6 @@ export const ChartEngagement = ({ dailyEngagement }: Props) => {
                 });
               }}
             />
-            <YAxis
-              tickLine={false}
-              axisLine={false}
-              tickMargin={8}
-              tickFormatter={(value) => `${value}%`}
-            />
             <ChartTooltip
               content={
                 <ChartTooltipContent
@@ -81,12 +76,29 @@ export const ChartEngagement = ({ dailyEngagement }: Props) => {
                 />
               }
             />
-            <Bar
+            <defs>
+              <linearGradient id="colorEngagement" x1="0" y1="0" x2="0" y2="1">
+                <stop
+                  offset="5%"
+                  stopColor="var(--color-engagement)"
+                  stopOpacity={0.8}
+                />
+                <stop
+                  offset="95%"
+                  stopColor="var(--color-engagement)"
+                  stopOpacity={0.1}
+                />
+              </linearGradient>
+            </defs>
+            <Area
               dataKey="engagement"
-              fill="var(--color-engagement)"
-              radius={[4, 4, 0, 0]}
+              type="monotone"
+              fill="url(#colorEngagement)"
+              fillOpacity={0.4}
+              stroke="var(--color-engagement)"
+              stackId="a"
             />
-          </BarChart>
+          </AreaChart>
         </ChartContainer>
       </CardContent>
     </Card>

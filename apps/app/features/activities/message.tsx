@@ -60,8 +60,8 @@ export const Message = ({ activity }: Props) => {
   }, [message, type, source]);
 
   return (
-    <p className="text-muted-foreground whitespace-pre-wrap">
+    <div className="text-muted-foreground text-sm whitespace-pre-wrap">
       {processedMessage}
-    </p>
+    </div>
   );
 };

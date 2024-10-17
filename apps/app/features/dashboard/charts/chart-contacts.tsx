@@ -8,14 +8,19 @@ import {
   ChartTooltipContent,
 } from "@conquest/ui/chart";
 import type { ContactWithActivities } from "@conquest/zod/activity.schema";
-import { eachDayOfInterval, format, isWithinInterval } from "date-fns";
+import {
+  eachDayOfInterval,
+  format,
+  isWithinInterval,
+  parseISO,
+} from "date-fns";
 import { useDateRange } from "hooks/useDateRange";
-import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";
+import { Area, AreaChart, CartesianGrid, XAxis } from "recharts";
 
 const chartConfig = {
   active: {
     label: "New contacts",
-    color: "hsl(var(--chart-1))",
+    color: "hsl(var(--chart-2))",
   },
 } satisfies ChartConfig;
 
@@ -34,9 +39,9 @@ const getContacts = ({ contacts, from, to }: ActiveContacts) => {
 
   const groupedContacts = contacts.reduce(
     (acc, contact) => {
-      const createdAt = format(contact.created_at, "yyyy-MM-dd");
+      const createdAt = format(new Date(contact.created_at), "yyyy-MM-dd");
 
-      if (isWithinInterval(createdAt, { start: from, end: to })) {
+      if (isWithinInterval(parseISO(createdAt), { start: from, end: to })) {
         acc[createdAt] = (acc[createdAt] || 0) + 1;
       }
       return acc;
@@ -67,12 +72,13 @@ export const ChartContacts = ({ contacts }: Props) => {
           config={chartConfig}
           className="aspect-auto h-[320px] w-full"
         >
-          <BarChart
-            accessibilityLayer
+          <AreaChart
             data={chartData}
             margin={{
-              left: 12,
-              right: 12,
+              top: 10,
+              right: 30,
+              left: 0,
+              bottom: 0,
             }}
           >
             <CartesianGrid vertical={false} />
@@ -106,12 +112,29 @@ export const ChartContacts = ({ contacts }: Props) => {
                 />
               }
             />
-            <Bar
+            <defs>
+              <linearGradient id="colorActive" x1="0" y1="0" x2="0" y2="1">
+                <stop
+                  offset="5%"
+                  stopColor="var(--color-active)"
+                  stopOpacity={0.8}
+                />
+                <stop
+                  offset="95%"
+                  stopColor="var(--color-active)"
+                  stopOpacity={0.1}
+                />
+              </linearGradient>
+            </defs>
+            <Area
               dataKey="active"
-              fill="var(--color-active)"
-              radius={[4, 4, 0, 0]}
+              type="monotone"
+              fill="url(#colorActive)"
+              fillOpacity={0.4}
+              stroke="var(--color-active)"
+              stackId="a"
             />
-          </BarChart>
+          </AreaChart>
         </ChartContainer>
       </CardContent>
     </Card>
