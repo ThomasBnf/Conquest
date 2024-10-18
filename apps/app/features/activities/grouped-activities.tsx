@@ -49,8 +49,6 @@ export const GroupedActivities = ({ contact_id, className }: Props) => {
     }, {});
   }, [activities, data?.pages]);
 
-  console.log(groupedActivities);
-
   useEffect(() => {
     if (inView && hasNextPage && !isLoading) fetchNextPage();
   }, [inView, hasNextPage, fetchNextPage, isLoading]);

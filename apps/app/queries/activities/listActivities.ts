@@ -19,7 +19,6 @@ export const listActivities = authAction
     }),
   )
   .action(async ({ ctx, parsedInput: { contact_id, from, to, page } }) => {
-    console.log(page);
     const activities = await prisma.activity.findMany({
       where: {
         contact_id,
@@ -38,8 +37,6 @@ export const listActivities = authAction
       take: page ? 25 : undefined,
       skip: page ? (page - 1) * 25 : undefined,
     });
-
-    console.log(activities.length);
 
     return ActivityWithContactSchema.array().parse(activities);
   });

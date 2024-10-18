@@ -29,7 +29,7 @@ export const createIntegration = authAction
           source,
           token,
           scopes,
-          status: "PENDING",
+          status: "CONNECTED",
           workspace_id: ctx.user?.workspace_id,
         },
       });

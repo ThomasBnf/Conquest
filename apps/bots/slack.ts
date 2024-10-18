@@ -1,4 +1,4 @@
-import { App } from "@slack/bolt";
+import { App, type KnownEventFromType } from "@slack/bolt";
 import type { GenericMessageEvent } from "@slack/types";
 import dotenv from "dotenv";
 import express from "express";
@@ -10,10 +10,10 @@ import { updateActivity } from "./queries/activities/updateActivity";
 import { createChannel } from "./queries/channels/createChannel";
 import { deleteChannel } from "./queries/channels/deleteChannel";
 import { updateChannel } from "./queries/channels/updateChannel";
-import { getContact } from "./queries/contacts/getContact";
 import { mergeContact } from "./queries/contacts/mergeContact";
 import { updateContact } from "./queries/contacts/updateContact";
 import { getIntegration } from "./queries/integrations/getIntegration";
+import { updateIntegration } from "./queries/integrations/updateIntegration";
 import { deleteReactions } from "./queries/reactions/deleteReactions";
 
 dotenv.config();
@@ -68,47 +68,20 @@ app.event("channel_deleted", async ({ event }) => {
   await deleteChannel({ external_id: channel });
 });
 
-app.event("message", async ({ message }) => {
-  const { channel, ts, subtype } = message;
+app.event("message", async ({ event, message }) => {
+  console.log("SLACK MESSAGE", message);
 
-  console.log(message);
+  const { team, user } = event as KnownEventFromType<"event">;
+  const { channel, type, ts, subtype } = message;
 
-  if (message.type === "message") {
-    if (message.subtype === undefined) {
-      const { user, text, thread_ts, team } = message;
+  const contact = await mergeContact({ app, team, user });
+  const workspace_id = contact?.workspace_id;
 
-      if (!team) return;
-      const integration = await getIntegration({ external_id: team });
-      const workspace_id = integration?.workspace_id;
+  if (!contact || !workspace_id) return;
 
-      if (!workspace_id) return;
-
-      const { profile } = await app.client.users.profile.get({ user });
-      if (!profile) return;
-
-      const {
-        first_name,
-        last_name,
-        real_name,
-        email,
-        phone,
-        image_1024,
-        title,
-      } = profile;
-
-      const contact = await mergeContact({
-        first_name,
-        last_name,
-        full_name: real_name,
-        email,
-        phone,
-        avatar_url: image_1024,
-        job_title: title,
-        slack_id: user,
-        workspace_id,
-      });
-
-      if (!contact) return;
+  if (type === "message") {
+    if (subtype === undefined) {
+      const { text, thread_ts } = message;
 
       await createActivity({
         contact_id: contact.id,
@@ -124,11 +97,9 @@ app.event("message", async ({ message }) => {
         workspace_id,
       });
     }
-
     if (subtype === "message_changed") {
       const { text, ts, thread_ts } = message.message as GenericMessageEvent;
       const attachments = getAttachements(text);
-
       await updateActivity({
         ts,
         details: {
@@ -141,14 +112,14 @@ app.event("message", async ({ message }) => {
         },
       });
     }
-
+    if (subtype === "message_deleted") {
+      const { deleted_ts } = message;
+      await deleteReactions({ channel_id: channel, ts: deleted_ts });
+      await deleteActivity({ channel_id: channel, ts: deleted_ts });
+    }
     if (subtype === "file_share") {
-      const { user, text, files, thread_ts } = message;
-      const contact = await getContact({ slack_id: user });
-
-      const workspace_id = contact?.workspace_id;
-
-      if (!workspace_id || !contact) return;
+      console.log("file_share", message);
+      const { text, files, thread_ts } = message;
 
       await createActivity({
         contact_id: contact.id,
@@ -168,23 +139,17 @@ app.event("message", async ({ message }) => {
         workspace_id,
       });
     }
-
-    if (subtype === "message_deleted") {
-      const { deleted_ts } = message;
-
-      await deleteReactions({ channel_id: channel, ts: deleted_ts });
-      await deleteActivity({ channel_id: channel, ts: deleted_ts });
-    }
   }
 });
 
-app.event("reaction_added", async ({ event }) => {
-  console.log(event);
+app.event("reaction_added", async ({ body, event }) => {
+  const { team_id } = body;
   const { user, item, reaction } = event;
   const { channel, ts } = item;
 
-  const contact = await getContact({ slack_id: user });
+  if (!team_id) return;
 
+  const contact = await mergeContact({ app, team: team_id, user });
   const workspace_id = contact?.workspace_id;
 
   if (!workspace_id || !contact) return;
@@ -207,12 +172,13 @@ app.event("reaction_added", async ({ event }) => {
 app.event("reaction_removed", async ({ event }) => {
   const { reaction } = event;
   const { ts, channel } = event.item;
+
   await deleteActivity({ channel_id: channel, message: reaction, ts });
 });
 
 app.event("user_change", async ({ event }) => {
-  const { first_name, last_name, title, phone, image_1024 } =
-    event.user.profile;
+  const { profile } = event.user;
+  const { first_name, last_name, title, phone, image_1024 } = profile;
 
   await updateContact({
     slack_id: event.user.id,
@@ -222,6 +188,11 @@ app.event("user_change", async ({ event }) => {
     phone,
     avatar_url: image_1024,
   });
+});
+
+app.event("app_uninstalled", async ({ body }) => {
+  const { team_id } = body;
+  await updateIntegration({ external_id: team_id, status: "DISCONNECTED" });
 });
 
 (async () => {
