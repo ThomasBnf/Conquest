@@ -12,9 +12,10 @@ export const Logout = () => {
   return (
     <Button
       variant="ghost"
+      size="sm"
       onClick={onClick}
-      className="w-full"
-      classNameSpan="justify-start hover:bg-neutral-200"
+      className="w-full hover:bg-neutral-200 "
+      classNameSpan="justify-start"
     >
       <SignOut className="size-[18px]" />
       Logout

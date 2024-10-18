@@ -1,5 +1,5 @@
-import { App, type KnownEventFromType } from "@slack/bolt";
-import type { GenericMessageEvent } from "@slack/types";
+import { App } from "@slack/bolt";
+import type { File, GenericMessageEvent } from "@slack/types";
 import dotenv from "dotenv";
 import express from "express";
 import { getAttachements } from "./helpers/getAttachements";
@@ -68,20 +68,23 @@ app.event("channel_deleted", async ({ event }) => {
   await deleteChannel({ external_id: channel });
 });
 
-app.event("message", async ({ event, message }) => {
+app.event("message", async ({ message }) => {
   console.log("SLACK MESSAGE", message);
 
-  const { team, user } = event as KnownEventFromType<"event">;
   const { channel, type, ts, subtype } = message;
-
-  const contact = await mergeContact({ app, team, user });
-  const workspace_id = contact?.workspace_id;
-
-  if (!contact || !workspace_id) return;
 
   if (type === "message") {
     if (subtype === undefined) {
+      const { team, user } = message;
+
+      if (!team || !user) return;
+
       const { text, thread_ts } = message;
+
+      const contact = await mergeContact({ app, team, user });
+      const workspace_id = contact?.workspace_id;
+
+      if (!contact || !workspace_id) return;
 
       await createActivity({
         contact_id: contact.id,
@@ -98,7 +101,8 @@ app.event("message", async ({ event, message }) => {
       });
     }
     if (subtype === "message_changed") {
-      const { text, ts, thread_ts } = message.message as GenericMessageEvent;
+      const { text, ts, thread_ts, files } =
+        message.message as GenericMessageEvent;
       const attachments = getAttachements(text);
       await updateActivity({
         ts,
@@ -107,7 +111,11 @@ app.event("message", async ({ event, message }) => {
           source: "SLACK",
           type: thread_ts ? "REPLY" : "MESSAGE",
           attachments,
-          files: [],
+          files:
+            files?.map(({ title, url_private }) => ({
+              title: title ?? "",
+              url: url_private ?? "",
+            })) ?? [],
           ts,
         },
       });
@@ -118,8 +126,15 @@ app.event("message", async ({ event, message }) => {
       await deleteActivity({ channel_id: channel, ts: deleted_ts });
     }
     if (subtype === "file_share") {
-      console.log("file_share", message);
-      const { text, files, thread_ts } = message;
+      const { user, text, files, thread_ts } = message;
+      const { user_team } = files?.[0] as File & { user_team: string };
+
+      const contact = await mergeContact({ app, team: user_team, user });
+      const workspace_id = contact?.workspace_id;
+
+      if (!contact || !workspace_id) return;
+
+      const attachments = getAttachements(text);
 
       await createActivity({
         contact_id: contact.id,
@@ -128,7 +143,7 @@ app.event("message", async ({ event, message }) => {
           message: text ?? "",
           source: "SLACK",
           type: thread_ts ? "REPLY" : "MESSAGE",
-          attachments: [],
+          attachments,
           files:
             files?.map(({ title, url_private }) => ({
               title: title ?? "",
