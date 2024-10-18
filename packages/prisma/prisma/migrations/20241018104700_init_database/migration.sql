@@ -61,7 +61,6 @@ CREATE TABLE "Contact" (
     "workspace_id" TEXT NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
-    "joined_at" TIMESTAMP(3),
 
     CONSTRAINT "Contact_pkey" PRIMARY KEY ("id")
 );
@@ -74,6 +73,7 @@ CREATE TABLE "Integration" (
     "source" "SOURCE" NOT NULL,
     "token" TEXT NOT NULL,
     "scopes" TEXT NOT NULL,
+    "status" TEXT NOT NULL,
     "installed_at" TIMESTAMP(3),
     "workspace_id" TEXT NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -114,7 +114,6 @@ CREATE TABLE "User" (
     "last_name" TEXT,
     "full_name" TEXT,
     "onboarding" TIMESTAMP(3),
-    "date_range" JSONB,
     "workspace_id" TEXT NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,

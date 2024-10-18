@@ -31,7 +31,6 @@ export const seed = async () => {
         tags: [],
         created_at: subDays(today, contact.activities[0]?.daysAgo ?? 0),
         updated_at: subDays(today, contact.activities[0]?.daysAgo ?? 0),
-        joined_at: subDays(today, contact.activities[0]?.daysAgo ?? 0),
         activities: {
           create: contact.activities.map((activity) => ({
             details: {

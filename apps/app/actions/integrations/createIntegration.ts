@@ -29,6 +29,7 @@ export const createIntegration = authAction
           source,
           token,
           scopes,
+          status: "PENDING",
           workspace_id: ctx.user?.workspace_id,
         },
       });

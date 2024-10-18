@@ -11,7 +11,6 @@ import { ScrollArea } from "@conquest/ui/scroll-area";
 import { GroupedActivities } from "features/activities/grouped-activities";
 import { ContactSidebar } from "features/contacts/contact-sidebar";
 import { redirect } from "next/navigation";
-import { listActivities } from "queries/activities/listActivities";
 import { getContact } from "queries/contacts/getContact";
 import { listTags } from "queries/tags/listTags";
 
@@ -23,9 +22,6 @@ type Props = {
 };
 
 export default async function Page({ params: { contactId, slug } }: Props) {
-  const rActivities = await listActivities({ contact_id: contactId });
-  const activities = rActivities?.data;
-
   const rContact = await getContact({ id: contactId });
   const contact = rContact?.data;
 
@@ -57,7 +53,7 @@ export default async function Page({ params: { contactId, slug } }: Props) {
       <div className="flex min-h-0 flex-1 divide-x">
         <ScrollArea className="flex-1">
           <GroupedActivities
-            activities={activities}
+            contact_id={contactId}
             className="mx-auto max-w-3xl px-4 md:px-8"
           />
         </ScrollArea>

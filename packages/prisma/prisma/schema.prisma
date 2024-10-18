@@ -59,11 +59,11 @@ model Channel {
 }
 
 model Contact {
-  id           String    @id @default(cuid())
+  id           String   @id @default(cuid())
   first_name   String?
   last_name    String?
   full_name    String?
-  emails       String[]  @default([])
+  emails       String[] @default([])
   phone        String?
   avatar_url   String?
   job_title    String?
@@ -73,11 +73,10 @@ model Contact {
   search       String
   source       SOURCE
   tags         String[]
-  slack_id     String?   @unique
+  slack_id     String?  @unique
   workspace_id String
-  created_at   DateTime  @default(now())
-  updated_at   DateTime  @updatedAt
-  joined_at    DateTime?
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
 
   workspace  Workspace  @relation(fields: [workspace_id], references: [id], onDelete: Cascade)
   activities Activity[]
@@ -92,6 +91,7 @@ model Integration {
   source       SOURCE
   token        String
   scopes       String
+  status       String
   installed_at DateTime?
   workspace_id String
   workspace    Workspace @relation(fields: [workspace_id], references: [id], onDelete: Cascade)
@@ -132,7 +132,6 @@ model User {
   last_name       String?
   full_name       String?
   onboarding      DateTime?
-  date_range      Json?
   workspace_id    String
   workspace       Workspace? @relation(fields: [workspace_id], references: [id], onDelete: Cascade)
   created_at      DateTime   @default(now())

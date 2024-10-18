@@ -1,11 +1,7 @@
 import { ScrollArea } from "@conquest/ui/scroll-area";
 import { GroupedActivities } from "features/activities/grouped-activities";
-import { listActivities } from "queries/activities/listActivities";
 
-export default async function Page() {
-  const rActivities = await listActivities({});
-  const activities = rActivities?.data ?? [];
-
+export default function Page() {
   return (
     <div className="flex h-full flex-col divide-y">
       <div className="flex min-h-12 shrink-0 items-center px-4">
@@ -13,7 +9,7 @@ export default async function Page() {
       </div>
       <ScrollArea>
         <div className="mx-auto max-w-3xl py-12">
-          <GroupedActivities activities={activities} />
+          <GroupedActivities />
         </div>
       </ScrollArea>
     </div>

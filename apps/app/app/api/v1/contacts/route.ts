@@ -24,7 +24,6 @@ export const POST = safeRoute
       address: z.string().optional(),
       source: SOURCE,
       tags: z.array(z.string()).default([]),
-      joined_at: z.coerce.date(),
     }),
   )
   .handler(async (_, { body, data }) => {
@@ -39,7 +38,6 @@ export const POST = safeRoute
       address,
       source,
       tags,
-      joined_at,
     } = body;
 
     const contact = await prisma.contact.create({
@@ -55,7 +53,6 @@ export const POST = safeRoute
         address,
         source,
         tags,
-        joined_at: new Date(joined_at),
         search: `${first_name} ${last_name} ${emails.join(" ")} ${phone ?? ""}`
           .trim()
           .toLowerCase(),

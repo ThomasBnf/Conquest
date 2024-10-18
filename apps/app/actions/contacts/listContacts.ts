@@ -44,7 +44,7 @@ export const listContacts = authAction
         where,
         include,
         orderBy:
-          id && !["last_activity", "joined_at"].includes(id)
+          id && !["last_activity", "created_at"].includes(id)
             ? getOrderBy(id, desc)
             : undefined,
         take: 25,
@@ -60,7 +60,7 @@ export const listContacts = authAction
         );
       }
 
-      if (id === "joined_at") {
+      if (id === "created_at") {
         return parsedContacts.sort((a, b) =>
           desc ? sortByJoinedAt(a, b) : -sortByJoinedAt(a, b),
         );
@@ -80,8 +80,8 @@ const sortByLastActivity = (
 };
 
 const sortByJoinedAt = (a: ContactWithActivities, b: ContactWithActivities) => {
-  const joinedAtA = a.joined_at?.getTime() ?? 0;
-  const joinedAtB = b.joined_at?.getTime() ?? 0;
+  const joinedAtA = a.created_at?.getTime() ?? 0;
+  const joinedAtB = b.created_at?.getTime() ?? 0;
   return joinedAtB - joinedAtA;
 };
 

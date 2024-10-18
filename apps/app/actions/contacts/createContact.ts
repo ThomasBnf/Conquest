@@ -24,7 +24,6 @@ export const createContact = authAction
         emails: [email],
         source: "MANUAL",
         search: `${first_name} ${last_name} ${email}`.trim().toLowerCase(),
-        joined_at: new Date(),
         workspace_id: ctx.user.workspace_id,
       },
     });

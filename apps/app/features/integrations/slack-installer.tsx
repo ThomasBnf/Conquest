@@ -16,7 +16,7 @@ export const SlackInstaller = () => {
   const code = params.get("code");
 
   const scopes =
-    "channels:history,channels:join,channels:read,files:read,groups:read,links:read,reactions:read,team:read,users:read,users:read.email";
+    "channels:history,channels:join,channels:read,files:read,groups:read,links:read,mpim:read,reactions:read,team:read,users:read,users:read.email,users.profile:read";
 
   const onInstall = async () => {
     if (!code) return;
@@ -28,13 +28,8 @@ export const SlackInstaller = () => {
       router.replace(`/w/${slug}/settings/integrations/slack`);
       toast.success("Conquest installed on Slack");
 
-      await Promise.all([
-        updateIntegration({
-          id: integration.id,
-          installed_at: new Date(),
-        }),
-        runSlack({ id: integration.id }),
-      ]);
+      updateIntegration({ id: integration.id, installed_at: new Date() });
+      runSlack({ id: integration.id });
     }
   };
 

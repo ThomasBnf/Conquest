@@ -21,7 +21,6 @@ export const ContactSchema = z.object({
   workspace_id: z.string().cuid(),
   created_at: z.date(),
   updated_at: z.date(),
-  joined_at: z.date().nullable(),
 });
 
 export type Contact = z.infer<typeof ContactSchema>;

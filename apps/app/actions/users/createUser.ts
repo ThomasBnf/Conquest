@@ -3,7 +3,6 @@
 import { SignupSchema } from "@conquest/zod/auth.schema";
 import { UserSchema } from "@conquest/zod/user.schema";
 import { hash } from "bcryptjs";
-import { endOfDay, startOfDay, subDays } from "date-fns";
 import { prisma } from "lib/prisma";
 import { safeAction } from "lib/safeAction";
 
@@ -25,10 +24,6 @@ export const createUser = safeAction
         workspace_id: workspace.id,
         email,
         hashed_password,
-        date_range: {
-          from: subDays(startOfDay(new Date()), 30),
-          to: endOfDay(new Date()),
-        },
       },
     });
 

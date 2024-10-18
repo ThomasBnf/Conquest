@@ -11,6 +11,7 @@ import { createChannel } from "./queries/channels/createChannel";
 import { deleteChannel } from "./queries/channels/deleteChannel";
 import { updateChannel } from "./queries/channels/updateChannel";
 import { getContact } from "./queries/contacts/getContact";
+import { mergeContact } from "./queries/contacts/mergeContact";
 import { updateContact } from "./queries/contacts/updateContact";
 import { getIntegration } from "./queries/integrations/getIntegration";
 import { deleteReactions } from "./queries/reactions/deleteReactions";
@@ -74,13 +75,40 @@ app.event("message", async ({ message }) => {
 
   if (message.type === "message") {
     if (message.subtype === undefined) {
-      const { user, text, thread_ts } = message;
+      const { user, text, thread_ts, team } = message;
 
-      const contact = await getContact({ slack_id: user });
+      if (!team) return;
+      const integration = await getIntegration({ external_id: team });
+      const workspace_id = integration?.workspace_id;
 
-      const workspace_id = contact?.workspace_id;
+      if (!workspace_id) return;
 
-      if (!workspace_id || !contact) return;
+      const { profile } = await app.client.users.profile.get({ user });
+      if (!profile) return;
+
+      const {
+        first_name,
+        last_name,
+        real_name,
+        email,
+        phone,
+        image_1024,
+        title,
+      } = profile;
+
+      const contact = await mergeContact({
+        first_name,
+        last_name,
+        full_name: real_name,
+        email,
+        phone,
+        avatar_url: image_1024,
+        job_title: title,
+        slack_id: user,
+        workspace_id,
+      });
+
+      if (!contact) return;
 
       await createActivity({
         contact_id: contact.id,

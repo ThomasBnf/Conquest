@@ -31,7 +31,6 @@ export const PATCH = safeRoute
       address,
       source,
       tags,
-      joined_at,
     } = body;
 
     const contact = await prisma.contact.update({
@@ -50,7 +49,6 @@ export const PATCH = safeRoute
         address,
         source,
         tags,
-        joined_at: joined_at ? new Date(joined_at) : null,
         search:
           `${first_name} ${last_name} ${emails.join(" ")} ${phone}`.toLowerCase(),
         workspace_id: data.workspace_id,

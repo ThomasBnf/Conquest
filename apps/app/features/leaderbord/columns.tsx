@@ -89,13 +89,13 @@ export const Columns = (
     },
   },
   {
-    accessorKey: "joined_at",
-    header: () => <p className="px-2">Joined at</p>,
+    accessorKey: "created_at",
+    header: () => <p className="px-2">Created at</p>,
     cell: ({ row }) => {
-      const joined_at = row.original.joined_at;
-      if (!joined_at) return;
+      const created_at = row.original.created_at;
+      if (!created_at) return;
 
-      return <DateCell date={joined_at} />;
+      return <DateCell date={created_at} />;
     },
   },
 ];

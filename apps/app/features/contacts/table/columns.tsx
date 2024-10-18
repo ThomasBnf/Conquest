@@ -131,23 +131,23 @@ export const Columns = ({
     },
   },
   {
-    accessorKey: "joined_at",
-    header: ({ column }) => <Header column={column} title="Joined at" />,
+    accessorKey: "created_at",
+    header: ({ column }) => <Header column={column} title="Created at" />,
     cell: ({ row }) => {
-      const joined_at = row.original.joined_at;
-      if (!joined_at) return;
+      const created_at = row.original.created_at;
+      if (!created_at) return;
 
-      return <DateCell date={joined_at} />;
+      return <DateCell date={created_at} />;
     },
     sortingFn: (rowA, rowB) => {
-      const joined_atA = rowA.original.joined_at;
-      const joined_atB = rowB.original.joined_at;
+      const created_atA = rowA.original.created_at;
+      const created_atB = rowB.original.created_at;
 
-      if (!joined_atA && !joined_atB) return 0;
-      if (!joined_atA) return 1;
-      if (!joined_atB) return -1;
+      if (!created_atA && !created_atB) return 0;
+      if (!created_atA) return 1;
+      if (!created_atB) return -1;
 
-      return new Date(joined_atA).getTime() - new Date(joined_atB).getTime();
+      return new Date(created_atA).getTime() - new Date(created_atB).getTime();
     },
   },
 ];

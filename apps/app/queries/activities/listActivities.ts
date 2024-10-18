@@ -15,9 +15,11 @@ export const listActivities = authAction
       contact_id: z.string().optional(),
       from: z.date().nullable().optional(),
       to: z.date().nullable().optional(),
+      page: z.number().optional(),
     }),
   )
-  .action(async ({ ctx, parsedInput: { contact_id, from, to } }) => {
+  .action(async ({ ctx, parsedInput: { contact_id, from, to, page } }) => {
+    console.log(page);
     const activities = await prisma.activity.findMany({
       where: {
         contact_id,
@@ -33,7 +35,11 @@ export const listActivities = authAction
       orderBy: {
         created_at: "desc",
       },
+      take: page ? 25 : undefined,
+      skip: page ? (page - 1) * 25 : undefined,
     });
+
+    console.log(activities.length);
 
     return ActivityWithContactSchema.array().parse(activities);
   });
