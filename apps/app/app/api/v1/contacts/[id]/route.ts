@@ -1,4 +1,4 @@
-import { ContactSchema } from "@conquest/zod/contact.schema";
+import { MemberSchema } from "@conquest/zod/member.schema";
 import { getAuthenticatedUser } from "features/auth/helpers/getAuthenticatedUser";
 import { prisma } from "lib/prisma";
 import { safeRoute } from "lib/safeRoute";
@@ -10,7 +10,7 @@ export const PATCH = safeRoute
     return await getAuthenticatedUser(request);
   })
   .body(
-    ContactSchema.omit({
+    MemberSchema.omit({
       search: true,
       workspace_id: true,
       created_at: true,
@@ -33,7 +33,7 @@ export const PATCH = safeRoute
       tags,
     } = body;
 
-    const contact = await prisma.contact.update({
+    const member = await prisma.member.update({
       where: {
         id,
       },
@@ -55,7 +55,7 @@ export const PATCH = safeRoute
       },
     });
 
-    return NextResponse.json(ContactSchema.parse(contact));
+    return NextResponse.json(MemberSchema.parse(member));
   });
 
 export const DELETE = safeRoute
@@ -70,7 +70,7 @@ export const DELETE = safeRoute
   .handler(async (_, { params, data }) => {
     const { id } = params;
 
-    await prisma.contact.delete({
+    await prisma.member.delete({
       where: {
         id,
         workspace_id: data.workspace_id,

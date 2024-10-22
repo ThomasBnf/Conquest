@@ -1,10 +1,14 @@
 "use client";
 
+import { formatDateRange } from "@/helpers/format-date-range";
 import { Button } from "@conquest/ui/button";
+import { Calendar } from "@conquest/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@conquest/ui/popover";
+import { cn } from "@conquest/ui/utils/cn";
 import { updateUser } from "actions/users/updateUser";
-import { DateRange } from "components/custom/date-range";
 import { endOfDay, isEqual, startOfDay, subDays } from "date-fns";
 import { useDateRange } from "hooks/useDateRange";
+import { CalendarIcon } from "lucide-react";
 
 export const DateRangePicker = () => {
   const [{ from, to }, setDateRange] = useDateRange();
@@ -32,7 +36,33 @@ export const DateRangePicker = () => {
 
   return (
     <div className="flex items-center gap-2">
-      <DateRange align="end" />
+      <Popover>
+        <PopoverTrigger asChild>
+          <Button
+            id="date"
+            variant="outline"
+            className={cn("justify-start text-left font-normal")}
+          >
+            <CalendarIcon size={16} className="text-muted-foreground" />
+            {formatDateRange(from, to, { includeTime: false })}
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent align="end">
+          <Calendar
+            initialFocus
+            mode="range"
+            defaultMonth={from}
+            selected={{ from, to }}
+            onSelect={(range) => {
+              setDateRange({
+                from: range?.from ?? null,
+                to: range?.to ?? null,
+              });
+            }}
+            numberOfMonths={2}
+          />
+        </PopoverContent>
+      </Popover>
       <Button
         variant={isYesterday ? "default" : "outline"}
         className="justify-start"

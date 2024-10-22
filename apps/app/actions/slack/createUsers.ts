@@ -3,7 +3,7 @@
 import { WebClient } from "@slack/web-api";
 import { authAction } from "lib/authAction";
 import { z } from "zod";
-import { mergeContact } from "./mergeContact";
+import { mergeMember } from "./mergeMember";
 
 export const createUsers = authAction
   .metadata({
@@ -39,7 +39,7 @@ export const createUsers = authAction
             title,
           } = profile;
 
-          await mergeContact({
+          await mergeMember({
             first_name,
             last_name,
             full_name: real_name,

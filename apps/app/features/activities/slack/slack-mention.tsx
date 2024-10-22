@@ -1,11 +1,11 @@
-import { useGetContact } from "@/queries/contacts/useGetContact";
+import { useGetMember } from "@/queries/members/useGetMember";
 
 type Props = {
   slack_id: string;
 };
 
 export const SlackMention = ({ slack_id }: Props) => {
-  const { data } = useGetContact({ slack_id });
+  const { data } = useGetMember({ slack_id });
   const { full_name } = data ?? {};
 
   return (

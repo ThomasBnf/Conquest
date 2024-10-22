@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import type { App, StringIndexed } from "@slack/bolt";
 import { getIntegration } from "../integrations/getIntegration";
-import { getContact } from "./getContact";
+import { getMember } from "./getMember";
 
 type Props = {
   app: App<StringIndexed>;
@@ -9,7 +9,7 @@ type Props = {
   user: string;
 };
 
-export const mergeContact = async ({ app, team, user }: Props) => {
+export const mergeMember = async ({ app, team, user }: Props) => {
   const integration = await getIntegration({ external_id: team });
   const workspace_id = integration?.workspace_id;
 
@@ -22,35 +22,35 @@ export const mergeContact = async ({ app, team, user }: Props) => {
   const { first_name, last_name, real_name, email, phone, image_1024, title } =
     profile;
 
-  const existingContact = await getContact({ slack_id: user });
+  const existingMember = await getMember({ slack_id: user });
 
-  if (existingContact) {
-    const updatedEmails = new Set(existingContact.emails);
+  if (existingMember) {
+    const updatedEmails = new Set(existingMember.emails);
     if (email) updatedEmails.add(email);
 
-    return await prisma.contact.update({
+    return await prisma.member.update({
       where: {
-        id: existingContact.id,
+        id: existingMember.id,
         workspace_id,
       },
       data: {
-        first_name: existingContact.first_name ?? first_name,
-        last_name: existingContact.last_name ?? last_name,
-        full_name: existingContact.full_name ?? real_name,
+        first_name: existingMember.first_name ?? first_name,
+        last_name: existingMember.last_name ?? last_name,
+        full_name: existingMember.full_name ?? real_name,
         emails: Array.from(updatedEmails).filter(Boolean),
-        phone: existingContact.phone ?? phone,
-        avatar_url: existingContact.avatar_url ?? image_1024,
-        job_title: existingContact.job_title ?? title,
+        phone: existingMember.phone ?? phone,
+        avatar_url: existingMember.avatar_url ?? image_1024,
+        job_title: existingMember.job_title ?? title,
         search:
-          `${real_name ?? existingContact.full_name} ${Array.from(updatedEmails).join(" ")} ${existingContact.phone ?? phone}`
+          `${real_name ?? existingMember.full_name} ${Array.from(updatedEmails).join(" ")} ${existingMember.phone ?? phone}`
             .trim()
             .toLowerCase(),
-        slack_id: existingContact.slack_id,
+        slack_id: existingMember.slack_id,
       },
     });
   }
 
-  return await prisma.contact.create({
+  return await prisma.member.create({
     data: {
       first_name: first_name ?? null,
       last_name: last_name ?? null,

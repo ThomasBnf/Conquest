@@ -2,7 +2,7 @@
 
 import type {
   Activity,
-  ContactWithActivities,
+  MemberWithActivities,
 } from "@conquest/zod/activity.schema";
 import {
   FilterCountSchema,
@@ -15,17 +15,17 @@ import {
   NodeDataSchema,
   NodeListRecordsSchema,
   NodeSchema,
-  NodeTagContactSchema,
+  NodeTagMemberSchema,
   NodeWebhookSchema,
 } from "@conquest/zod/node.schema";
-import { updateContact } from "actions/contacts/updateContact";
+import { updateMember } from "actions/members/updateMember";
 import { startOfDay, subDays } from "date-fns";
 import { authAction } from "lib/authAction";
-import { listContacts } from "queries/contacts/listContacts";
+import { listMembers } from "queries/members/listMembers";
 import { getWorkflow } from "queries/workflows/getWorkflow";
 import { z } from "zod";
 
-let records: ContactWithActivities[] | undefined = undefined;
+let records: MemberWithActivities[] | undefined = undefined;
 
 export const runWorkflow = authAction
   .metadata({
@@ -57,22 +57,22 @@ export const runWorkflow = authAction
         case "list-records": {
           const { source } = NodeListRecordsSchema.parse(node.data);
 
-          if (source === "contacts") {
-            const rContacts = await listContacts({});
-            records = rContacts?.data;
+          if (source === "members") {
+            const rMembers = await listMembers({});
+            records = rMembers?.data;
 
-            if (!records?.length) throw new Error("No contacts found");
+            if (!records?.length) throw new Error("No members found");
 
-            records = await executeListContacts(node);
+            records = await executeListMembers(node);
           }
           break;
         }
         case "add-tag": {
-          await addTagContact(node);
+          await addTagMember(node);
           break;
         }
         case "remove-tag": {
-          await removeTagContact(node);
+          await removeTagMember(node);
           break;
         }
         case "webhook": {
@@ -107,10 +107,10 @@ export const runWorkflow = authAction
     return records;
   });
 
-const executeListContacts = async (node: Node) => {
+const executeListMembers = async (node: Node) => {
   const { group_filters } = NodeListRecordsSchema.parse(node.data);
 
-  return records?.filter((contact) => {
+  return records?.filter((member) => {
     let activities: Activity[] = [];
 
     return group_filters.every((group) => {
@@ -118,19 +118,19 @@ const executeListContacts = async (node: Node) => {
 
       switch (category) {
         case "activities": {
-          activities = contact.activities;
+          activities = member.activities;
           break;
         }
         case "activities_count": {
-          activities = contact.activities;
+          activities = member.activities;
           break;
         }
         case "last_activity": {
-          activities = contact.activities?.slice(-1) ?? [];
+          activities = member.activities?.slice(-1) ?? [];
           break;
         }
         case "first_activity": {
-          activities = contact.activities?.slice(0, 1) ?? [];
+          activities = member.activities?.slice(0, 1) ?? [];
           break;
         }
       }
@@ -227,34 +227,34 @@ const executeListContacts = async (node: Node) => {
   });
 };
 
-const addTagContact = async (node: Node) => {
-  const { tags } = NodeTagContactSchema.parse(node.data);
+const addTagMember = async (node: Node) => {
+  const { tags } = NodeTagMemberSchema.parse(node.data);
 
   if (tags.length === 0) return;
 
-  for (const contact of records ?? []) {
-    const contactTags = contact.tags;
-    const hasTags = tags.some((tag) => contactTags.includes(tag));
+  for (const member of records ?? []) {
+    const memberTags = member.tags;
+    const hasTags = tags.some((tag) => memberTags.includes(tag));
 
     if (!hasTags) {
-      await updateContact({ id: contact.id, tags: [...contactTags, ...tags] });
+      await updateMember({ id: member.id, tags: [...memberTags, ...tags] });
     }
   }
 };
 
-const removeTagContact = async (node: Node) => {
-  const { tags } = NodeTagContactSchema.parse(node.data);
+const removeTagMember = async (node: Node) => {
+  const { tags } = NodeTagMemberSchema.parse(node.data);
 
   if (tags.length === 0) return;
 
-  for (const contact of records ?? []) {
-    const contactTags = contact.tags;
-    const hasTags = tags.some((tag) => contactTags.includes(tag));
+  for (const member of records ?? []) {
+    const memberTags = member.tags;
+    const hasTags = tags.some((tag) => memberTags.includes(tag));
 
     if (hasTags) {
-      await updateContact({
-        id: contact.id,
-        tags: contactTags.filter((tag) => !tags.includes(tag)),
+      await updateMember({
+        id: member.id,
+        tags: memberTags.filter((tag) => !tags.includes(tag)),
       });
     }
   }

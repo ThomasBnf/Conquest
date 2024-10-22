@@ -9,7 +9,7 @@
     "dev": "turbo dev --parallel",
     "dev:app": "turbo dev --filter=app",
     "dev:web": "turbo dev --filter=web",
-    "dev:bots": "turbo bots --filter=bots",
+    "dev:bots": "turbo dev --filter=bots",
     "start:app": "turbo start --filter=app",
     "start:web": "turbo start --filter=web",
     "test": "turbo test --parallel",

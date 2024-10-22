@@ -1,6 +1,6 @@
 "use client";
 
-import { listLeaderboard } from "@/actions/contacts/listLeaderboard";
+import { listLeaderboard } from "@/actions/members/listLeaderboard";
 import {
   Table,
   TableBody,
@@ -10,7 +10,7 @@ import {
   TableHeader,
   TableRow,
 } from "@conquest/ui/table";
-import { ContactWithActivitiesSchema } from "@conquest/zod/activity.schema";
+import { MemberWithActivitiesSchema } from "@conquest/zod/activity.schema";
 import type { Tag } from "@conquest/zod/tag.schema";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import {
@@ -47,7 +47,7 @@ export const LeaderbordTable = ({ tags, from, to }: Props) => {
   const flatData = useMemo(() => {
     const pages = data?.pages;
     if (!pages?.length) return [];
-    return ContactWithActivitiesSchema.array().parse(
+    return MemberWithActivitiesSchema.array().parse(
       pages.flatMap((page) => page?.data ?? []).slice(3),
     );
   }, [data?.pages]);
@@ -95,7 +95,7 @@ export const LeaderbordTable = ({ tags, from, to }: Props) => {
                     className="cursor-pointer"
                     onClick={() => {
                       router.push(
-                        `/w/${slug}/contacts/${row.original.id}?from=leaderboard`,
+                        `/w/${slug}/members/${row.original.id}?from=leaderboard`,
                       );
                     }}
                   >
@@ -115,7 +115,7 @@ export const LeaderbordTable = ({ tags, from, to }: Props) => {
                     colSpan={columns.length}
                     className="h-24 text-center"
                   >
-                    No contacts found.
+                    No members found.
                   </TableCell>
                 </TableRow>
               )}

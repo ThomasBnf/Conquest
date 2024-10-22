@@ -16,7 +16,7 @@ export const createActivity = authAction
     z.object({
       details: ActivityDetailsSchema,
       channel_id: z.string().cuid(),
-      contact_id: z.string().cuid(),
+      member_id: z.string().cuid(),
       created_at: z.date().optional(),
       updated_at: z.date().optional(),
     }),
@@ -24,13 +24,13 @@ export const createActivity = authAction
   .action(
     async ({
       ctx,
-      parsedInput: { details, channel_id, contact_id, created_at, updated_at },
+      parsedInput: { details, channel_id, member_id, created_at, updated_at },
     }) => {
       const activity = await prisma.activity.create({
         data: {
           details,
           channel_id,
-          contact_id,
+          member_id,
           created_at: created_at ?? new Date(),
           updated_at: updated_at ?? new Date(),
           workspace_id: ctx.user.workspace_id,

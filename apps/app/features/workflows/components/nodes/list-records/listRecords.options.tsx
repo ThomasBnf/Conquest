@@ -66,7 +66,7 @@ export const ListRecordsOptions = () => {
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value="contacts">Contacts</SelectItem>
+                    <SelectItem value="members">Members</SelectItem>
                     <SelectItem value="activities" disabled>
                       Activities
                     </SelectItem>

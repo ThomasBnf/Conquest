@@ -4,8 +4,8 @@ type Props = {
   slack_id: string;
 };
 
-export const getContact = async ({ slack_id }: Props) => {
-  return await prisma.contact.findUnique({
+export const getMember = async ({ slack_id }: Props) => {
+  return await prisma.member.findUnique({
     where: {
       slack_id,
     },

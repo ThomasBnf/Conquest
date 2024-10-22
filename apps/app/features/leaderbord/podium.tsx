@@ -1,24 +1,39 @@
+"use client";
+
+import { useUser } from "@/context/userContext";
+import { buttonVariants } from "@conquest/ui/button";
 import {
   Card,
   CardDescription,
   CardHeader,
   CardTitle,
 } from "@conquest/ui/card";
-import type { ContactWithActivities } from "@conquest/zod/activity.schema";
+import { cn } from "@conquest/ui/utils/cn";
+import type { MemberWithActivities } from "@conquest/zod/activity.schema";
+import Link from "next/link";
 
 type Props = {
-  contact: ContactWithActivities;
+  member: MemberWithActivities;
   position: number;
 };
 
-export const Podium = ({ contact, position }: Props) => {
-  const { full_name, activities } = contact;
+export const Podium = ({ member, position }: Props) => {
+  const { slug } = useUser();
+  const { full_name, activities } = member;
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="relative text-xl">
-          {full_name}
+        <CardTitle className="relative">
+          <Link
+            href={`/w/${slug}/members/${member.id}`}
+            className={cn(
+              buttonVariants({ variant: "ghost" }),
+              "-ml-2  text-xl",
+            )}
+          >
+            {full_name}
+          </Link>
           <p className="absolute -top-1.5 right-0 text-3xl">
             {position === 0 && "🥇"}
             {position === 1 && "🥈"}

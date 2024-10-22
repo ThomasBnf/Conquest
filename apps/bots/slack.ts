@@ -10,10 +10,10 @@ import { updateActivity } from "./queries/activities/updateActivity";
 import { createChannel } from "./queries/channels/createChannel";
 import { deleteChannel } from "./queries/channels/deleteChannel";
 import { updateChannel } from "./queries/channels/updateChannel";
-import { mergeContact } from "./queries/contacts/mergeContact";
-import { updateContact } from "./queries/contacts/updateContact";
 import { getIntegration } from "./queries/integrations/getIntegration";
 import { updateIntegration } from "./queries/integrations/updateIntegration";
+import { mergeMember } from "./queries/members/mergeMember";
+import { updateMember } from "./queries/members/updateMember";
 import { deleteReactions } from "./queries/reactions/deleteReactions";
 
 dotenv.config();
@@ -81,13 +81,13 @@ app.event("message", async ({ message }) => {
 
       const { text, thread_ts } = message;
 
-      const contact = await mergeContact({ app, team, user });
-      const workspace_id = contact?.workspace_id;
+      const member = await mergeMember({ app, team, user });
+      const workspace_id = member?.workspace_id;
 
-      if (!contact || !workspace_id) return;
+      if (!member || !workspace_id) return;
 
       await createActivity({
-        contact_id: contact.id,
+        member_id: member.id,
         channel_id: channel,
         details: {
           message: text ?? "",
@@ -129,15 +129,15 @@ app.event("message", async ({ message }) => {
       const { user, text, files, thread_ts } = message;
       const { user_team } = files?.[0] as File & { user_team: string };
 
-      const contact = await mergeContact({ app, team: user_team, user });
-      const workspace_id = contact?.workspace_id;
+      const member = await mergeMember({ app, team: user_team, user });
+      const workspace_id = member?.workspace_id;
 
-      if (!contact || !workspace_id) return;
+      if (!member || !workspace_id) return;
 
       const attachments = getAttachements(text);
 
       await createActivity({
-        contact_id: contact.id,
+        member_id: member.id,
         channel_id: channel,
         details: {
           message: text ?? "",
@@ -164,13 +164,13 @@ app.event("reaction_added", async ({ body, event }) => {
 
   if (!team_id) return;
 
-  const contact = await mergeContact({ app, team: team_id, user });
-  const workspace_id = contact?.workspace_id;
+  const member = await mergeMember({ app, team: team_id, user });
+  const workspace_id = member?.workspace_id;
 
-  if (!workspace_id || !contact) return;
+  if (!workspace_id || !member) return;
 
   await createActivity({
-    contact_id: contact.id,
+    member_id: member.id,
     channel_id: channel,
     details: {
       source: "SLACK",
@@ -195,7 +195,7 @@ app.event("user_change", async ({ event }) => {
   const { profile } = event.user;
   const { first_name, last_name, title, phone, image_1024 } = profile;
 
-  await updateContact({
+  await updateMember({
     slack_id: event.user.id,
     first_name,
     last_name,

@@ -48,7 +48,7 @@ export const NodeRecurringSchema = NodeBaseSchema.extend({
 export const NodeListRecordsSchema = NodeBaseSchema.extend({
   type: z.literal("list-records"),
   category: z.literal("records"),
-  source: z.enum(["contacts", "activities"]),
+  source: z.enum(["members", "activities"]),
   group_filters: z.array(GroupFilterSchema),
 });
 
@@ -58,7 +58,7 @@ export const NodeWebhookSchema = NodeBaseSchema.extend({
   category: z.literal("utilities"),
 });
 
-export const NodeTagContactSchema = NodeBaseSchema.extend({
+export const NodeTagMemberSchema = NodeBaseSchema.extend({
   type: z.enum(["add-tag", "remove-tag"]),
   category: z.literal("utilities"),
   tags: z.array(z.string()),
@@ -70,7 +70,7 @@ export const NodeDataSchema = z.discriminatedUnion("type", [
   NodeRecurringSchema,
   NodeListRecordsSchema,
   NodeWebhookSchema,
-  NodeTagContactSchema,
+  NodeTagMemberSchema,
 ]);
 
 export const NodeSchema = z.object({

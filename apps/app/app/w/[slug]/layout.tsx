@@ -25,7 +25,7 @@ export default async function Layout({
     <SidebarProvider>
       <UserProvider user={user}>
         <AppSidebar />
-        <div className="flex-1">{children}</div>
+        <div className="flex-1 h-dvh overflow-hidden">{children}</div>
       </UserProvider>
     </SidebarProvider>
   );

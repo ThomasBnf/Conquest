@@ -44,7 +44,7 @@ export default function Page() {
           <div>
             <p className="text-lg font-medium">Slack</p>
             <p className="text-muted-foreground">
-              Synchronize your contacts with Slack
+              Synchronize your members with Slack
             </p>
           </div>
         </div>

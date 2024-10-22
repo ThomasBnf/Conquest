@@ -37,7 +37,7 @@ export const deleteIntegration = authAction
       },
     });
 
-    await prisma.contact.deleteMany({
+    await prisma.member.deleteMany({
       where: {
         source: "SLACK",
         workspace_id,

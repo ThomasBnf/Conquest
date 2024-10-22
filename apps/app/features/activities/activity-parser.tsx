@@ -1,9 +1,9 @@
-import type { ActivityWithContact } from "@conquest/zod/activity.schema";
+import type { ActivityWithMember } from "@conquest/zod/activity.schema";
 import { APIActivity } from "./api-activity";
 import { SlackActivity } from "./slack/slack-activity";
 
 type Props = {
-  activity: ActivityWithContact;
+  activity: ActivityWithMember;
 };
 
 export const ActivityParser = ({ activity }: Props) => {

@@ -1,5 +1,5 @@
-import { ContactSchema } from "@conquest/zod/contact.schema";
 import { GENDER } from "@conquest/zod/gender.enum";
+import { MemberSchema } from "@conquest/zod/member.schema";
 import { SOURCE } from "@conquest/zod/source.enum";
 import { getAuthenticatedUser } from "features/auth/helpers/getAuthenticatedUser";
 import { prisma } from "lib/prisma";
@@ -40,7 +40,7 @@ export const POST = safeRoute
       tags,
     } = body;
 
-    const contact = await prisma.contact.create({
+    const member = await prisma.member.create({
       data: {
         first_name,
         last_name,
@@ -60,5 +60,5 @@ export const POST = safeRoute
       },
     });
 
-    return NextResponse.json(ContactSchema.parse(contact));
+    return NextResponse.json(MemberSchema.parse(member));
   });

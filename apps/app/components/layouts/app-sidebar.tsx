@@ -11,12 +11,15 @@ import {
   SidebarMenuItem,
 } from "@conquest/ui/sidebar";
 import { Activities } from "components/icons/Activities";
-import { Contacts } from "components/icons/Contacts";
 import { Dashboard } from "components/icons/Dashboard";
 import { LeaderBoard } from "components/icons/Leaderbord";
+import { Members } from "components/icons/Members";
+import { Settings } from "components/icons/Settings";
+import { SignOut } from "components/icons/SignOut";
 import { Workflows } from "components/icons/Workflows";
 import { useUser } from "context/userContext";
 import { WorkspaceMenu } from "features/user/workspace-menu";
+import { signOut } from "next-auth/react";
 import { usePathname } from "next/navigation";
 import { SidebarSettings } from "./sidebar-settings";
 
@@ -34,10 +37,10 @@ export const AppSidebar = () => {
       isActive: pathname === `/w/${slug}`,
     },
     {
-      label: "Contacts",
-      icon: <Contacts className="size-[18px]" />,
-      href: `/w/${slug}/contacts`,
-      isActive: pathname.startsWith(`/w/${slug}/contacts`),
+      label: "Members",
+      icon: <Members className="size-[18px]" />,
+      href: `/w/${slug}/members`,
+      isActive: pathname.startsWith(`/w/${slug}/members`),
     },
     {
       label: "Leaderboard",
@@ -58,6 +61,10 @@ export const AppSidebar = () => {
       isActive: pathname.startsWith(`/w/${slug}/workflows`),
     },
   ];
+
+  const onClick = async () => {
+    signOut({ callbackUrl: "/auth/login", redirect: true });
+  };
 
   return (
     <Sidebar>
@@ -80,7 +87,30 @@ export const AppSidebar = () => {
           </SidebarMenu>
         </SidebarGroup>
       </SidebarContent>
-      <SidebarFooter />
+      <SidebarFooter>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton asChild>
+              <a href={`/w/${slug}/settings`}>
+                <Settings className="size-[18px]" />
+                <span>Settings</span>
+              </a>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+          <SidebarMenuItem>
+            <SidebarMenuButton
+              asChild
+              onClick={onClick}
+              className="cursor-pointer"
+            >
+              <div>
+                <SignOut className="size-[18px]" />
+                <span>Logout</span>
+              </div>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarFooter>
     </Sidebar>
   );
 };

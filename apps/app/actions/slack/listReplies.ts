@@ -35,14 +35,14 @@ export const listReplies = authAction
       for (const message of messages?.slice(1) ?? []) {
         const { text, ts, user, reactions, attachments, files } = message;
 
-        const contact = await prisma.contact.findUnique({
+        const member = await prisma.member.findUnique({
           where: {
             slack_id: user,
             workspace_id,
           },
         });
 
-        if (contact) {
+        if (member) {
           const rActivity = await createActivity({
             details: {
               source: "SLACK",
@@ -60,7 +60,7 @@ export const listReplies = authAction
               ts: ts ?? "",
             },
             channel_id: channel.id,
-            contact_id: contact.id,
+            member_id: member.id,
             created_at: new Date(Number(ts) * 1000),
             updated_at: new Date(Number(ts) * 1000),
           });

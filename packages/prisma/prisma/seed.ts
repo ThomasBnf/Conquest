@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import { subDays } from "date-fns";
-import contacts from "./contacts.json";
+import members from "./members.json";
 
 const prisma = new PrismaClient();
 
@@ -13,33 +13,33 @@ export const seed = async () => {
     throw new Error("Workspace not found");
   }
 
-  for (const contact of contacts) {
-    await prisma.contact.create({
+  for (const member of members) {
+    await prisma.member.create({
       data: {
         workspace_id,
-        first_name: contact.firstName,
-        last_name: contact.lastName,
-        full_name: `${contact.firstName} ${contact.lastName}`,
-        emails: contact.emails,
+        first_name: member.firstName,
+        last_name: member.lastName,
+        full_name: `${member.firstName} ${member.lastName}`,
+        emails: member.emails,
         phone: null,
         avatar_url: null,
         bio: null,
         gender: null,
         address: null,
-        search: `${contact.firstName.toLowerCase()} ${contact.lastName.toLowerCase()} ${contact.emails.join(" ")}`,
+        search: `${member.firstName.toLowerCase()} ${member.lastName.toLowerCase()} ${member.emails.join(" ")}`,
         source: "API",
         tags: [],
-        created_at: subDays(today, contact.activities[0]?.daysAgo ?? 0),
-        updated_at: subDays(today, contact.activities[0]?.daysAgo ?? 0),
+        created_at: subDays(today, member.activities[0]?.daysAgo ?? 0),
+        updated_at: subDays(today, member.activities[0]?.daysAgo ?? 0),
         activities: {
-          create: contact.activities.map((activity) => ({
+          create: member.activities.map((activity) => ({
             details: {
               source: "API",
               type: activity.type,
               message:
                 activity.message ||
                 (activity.type === "SIGNUP"
-                  ? "New contact registered"
+                  ? "New member registered"
                   : activity.type === "LOGIN"
                     ? "First login completed"
                     : activity.type === "POST"

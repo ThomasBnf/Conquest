@@ -25,14 +25,14 @@ export const createReaction = authAction
     }) => {
       const workspace_id = ctx.user.workspace_id;
 
-      const contact = await prisma.contact.findUnique({
+      const member = await prisma.member.findUnique({
         where: {
           slack_id: user,
           workspace_id,
         },
       });
 
-      if (!contact) return;
+      if (!member) return;
 
       await createActivity({
         details: {
@@ -43,7 +43,7 @@ export const createReaction = authAction
           ts,
         },
         channel_id,
-        contact_id: contact.id,
+        member_id: member.id,
         created_at: new Date(Number(ts) * 1000),
         updated_at: new Date(Number(ts) * 1000),
       });

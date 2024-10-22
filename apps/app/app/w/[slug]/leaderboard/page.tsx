@@ -1,4 +1,4 @@
-import { listPodium } from "actions/contacts/listPodium";
+import { listPodium } from "actions/members/listPodium";
 import { DateRangePicker } from "features/dashboard/date-range-picker";
 import { LeaderbordTable } from "features/leaderbord/leaderboard-table";
 import { Podium } from "features/leaderbord/podium";
@@ -12,10 +12,10 @@ type Props = {
 export default async function Page({ searchParams }: Props) {
   const { from, to } = searchParamsDate.parse(searchParams);
 
-  const rContacts = await listPodium({ from, to });
-  const contacts = rContacts?.data;
+  const rMembers = await listPodium({ from, to });
+  const members = rMembers?.data;
 
-  const podium = contacts?.slice(0, 3);
+  const podium = members?.slice(0, 3);
 
   const rTags = await listTags();
   const tags = rTags?.data;
@@ -27,8 +27,8 @@ export default async function Page({ searchParams }: Props) {
         <DateRangePicker />
       </div>
       <div className="grid shrink-0 grid-cols-3 gap-4 p-4">
-        {podium?.map((contact, position) => (
-          <Podium key={contact.id} contact={contact} position={position} />
+        {podium?.map((member, position) => (
+          <Podium key={member.id} member={member} position={position} />
         ))}
       </div>
       <div className="flex-1 overflow-hidden">

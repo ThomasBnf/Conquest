@@ -8,7 +8,7 @@ import { ArrowLeft, type icons } from "lucide-react";
 import { Description } from "../description";
 import { ListRecordsOptions } from "../nodes/list-records/listRecords.options";
 import { RecurringScheduleOptions } from "../nodes/recurring-schedule/recurring.options";
-import { TagContactOptions } from "../nodes/tag-contact/tag-contact.options";
+import { TagMemberOptions } from "../nodes/tag-member/tag-member.options";
 import { WebhookOptions } from "../nodes/webhook/webhook.options";
 
 export const OptionsPanel = () => {
@@ -48,8 +48,8 @@ export const OptionsPanel = () => {
         {type === "trigger-recurring-schedule" && <RecurringScheduleOptions />}
         {type === "list-records" && <ListRecordsOptions />}
         {type === "webhook" && <WebhookOptions />}
-        {type === "add-tag" && <TagContactOptions />}
-        {type === "remove-tag" && <TagContactOptions />}
+        {type === "add-tag" && <TagMemberOptions />}
+        {type === "remove-tag" && <TagMemberOptions />}
       </div>
       <div className="mt-auto flex justify-end gap-2 p-4">
         <DeleteDialog

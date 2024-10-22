@@ -1,16 +1,23 @@
+import { useUser } from "@/context/userContext";
 import { Avatar, AvatarFallback, AvatarImage } from "@conquest/ui/avatar";
-import type { ContactWithActivities } from "@conquest/zod/activity.schema";
+import { Button } from "@conquest/ui/button";
+import type { MemberWithActivities } from "@conquest/zod/activity.schema";
 import type { Tag } from "@conquest/zod/tag.schema";
 import type { ColumnDef } from "@tanstack/react-table";
-import { DateCell } from "../contacts/table/date-cell";
+import { useRouter } from "next/navigation";
+import { DateCell } from "../members/table/date-cell";
 import { TagBadge } from "../tags/tag-badge";
 
 export const Columns = (
   tags: Tag[] | undefined,
-): ColumnDef<ContactWithActivities>[] => [
+): ColumnDef<MemberWithActivities>[] => [
   {
     accessorKey: "place",
-    header: () => <p className="text-center">Place</p>,
+    header: () => (
+      <p className="text-center bg-background h-full place-content-center">
+        Place
+      </p>
+    ),
     cell: ({ row, table }) => {
       const rowIndex = table
         .getRowModel()
@@ -20,26 +27,36 @@ export const Columns = (
   },
   {
     accessorKey: "full_name",
-    header: () => <p className="px-2">Name</p>,
+    header: () => (
+      <p className="px-2 bg-background h-full place-content-center">Name</p>
+    ),
     cell: ({ row }) => {
+      const { slug } = useUser();
       const { avatar_url, first_name, full_name } = row.original;
+      const router = useRouter();
 
       return (
-        <div className="flex items-center gap-2">
-          <Avatar className="size-10">
+        <Button
+          variant="ghost"
+          onClick={() => router.push(`/w/${slug}/members/${row.original.id}`)}
+          className="flex items-center gap-2 px-1.5"
+        >
+          <Avatar className="size-6">
             <AvatarImage src={avatar_url ?? ""} />
             <AvatarFallback className="text-sm">
               {first_name?.charAt(0).toUpperCase()}
             </AvatarFallback>
           </Avatar>
           <p className="font-medium">{full_name}</p>
-        </div>
+        </Button>
       );
     },
   },
   {
     accessorKey: "emails",
-    header: () => <p className="px-2">Email</p>,
+    header: () => (
+      <p className="px-2 bg-background h-full place-content-center">Email</p>
+    ),
     cell: ({ row }) => {
       return <p>{row.original.emails[0]}</p>;
     },
@@ -47,22 +64,26 @@ export const Columns = (
   },
   {
     accessorKey: "source",
-    header: () => <p className="px-2">Source</p>,
+    header: () => (
+      <p className="px-2 bg-background h-full place-content-center">Source</p>
+    ),
     cell: ({ row }) => {
       return <p>{row.original.source}</p>;
     },
   },
   {
     accessorKey: "tags",
-    header: () => <p className="px-2">Tags</p>,
+    header: () => (
+      <p className="px-2 bg-background h-full place-content-center">Tags</p>
+    ),
     cell: ({ row }) => {
-      const contactTags = tags?.filter((tag) =>
+      const memberTags = tags?.filter((tag) =>
         row.original.tags.includes(tag.id),
       );
 
       return (
         <div className="flex flex-wrap gap-1">
-          {contactTags?.map((tag) => (
+          {memberTags?.map((tag) => (
             <TagBadge key={tag.id} tag={tag} />
           ))}
         </div>
@@ -71,14 +92,22 @@ export const Columns = (
   },
   {
     accessorKey: "activities",
-    header: () => <p className="px-2">Activities</p>,
+    header: () => (
+      <p className="px-2 bg-background h-full place-content-center">
+        Activities
+      </p>
+    ),
     cell: ({ row }) => {
       return <p>{row.original.activities.length}</p>;
     },
   },
   {
     accessorKey: "last_activity",
-    header: () => <p className="px-2">Last activity</p>,
+    header: () => (
+      <p className="px-2 bg-background h-full place-content-center">
+        Last activity
+      </p>
+    ),
     cell: ({ row }) => {
       const lastActivity = row.original.activities
         .sort((a, b) => b.created_at.getTime() - a.created_at.getTime())
@@ -90,7 +119,11 @@ export const Columns = (
   },
   {
     accessorKey: "created_at",
-    header: () => <p className="px-2">Created at</p>,
+    header: () => (
+      <p className="px-2 bg-background h-full place-content-center">
+        Created at
+      </p>
+    ),
     cell: ({ row }) => {
       const created_at = row.original.created_at;
       if (!created_at) return;

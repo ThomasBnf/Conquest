@@ -10,21 +10,21 @@ type Props = {
     ts: string | undefined;
   };
   channel_id: string;
-  contact_id: string;
+  member_id: string;
   workspace_id: string;
 };
 
 export const createActivity = async ({
   details,
   channel_id,
-  contact_id,
+  member_id,
   workspace_id,
 }: Props) => {
   return await prisma.activity.create({
     data: {
       details,
       channel_id,
-      contact_id,
+      member_id,
       workspace_id,
     },
   });

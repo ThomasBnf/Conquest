@@ -11,19 +11,19 @@ import {
 } from "@conquest/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@conquest/ui/popover";
 import { cn } from "@conquest/ui/utils/cn";
-import type { Contact } from "@conquest/zod/contact.schema";
-import { updateContact } from "actions/contacts/updateContact";
+import type { Member } from "@conquest/zod/member.schema";
+import { updateMember } from "actions/members/updateMember";
 import { Check, MapPin, X } from "lucide-react";
 import { useState } from "react";
 import usePlacesAutocomplete from "use-places-autocomplete";
 
 type Props = {
-  contact: Contact;
+  member: Member;
 };
 
-export function AddressInput({ contact }: Props) {
+export function AddressInput({ member }: Props) {
   const [open, setOpen] = useState(false);
-  const [selectedAddress, setSelectedAddress] = useState(contact.address);
+  const [selectedAddress, setSelectedAddress] = useState(member.address);
 
   const {
     value,
@@ -41,7 +41,7 @@ export function AddressInput({ contact }: Props) {
   const onSelect = (address: string | null) => {
     setOpen(false);
     setSelectedAddress(address);
-    updateContact({ id: contact.id, address });
+    updateMember({ id: member.id, address });
   };
 
   return (

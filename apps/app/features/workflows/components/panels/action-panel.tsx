@@ -73,7 +73,7 @@ export const nodes: {
             description: "",
             type: "list-records",
             category: "records",
-            source: "contacts",
+            source: "members",
             group_filters: [],
           },
         },
@@ -101,7 +101,7 @@ export const nodes: {
           position: { x: 0, y: 0 },
           data: {
             icon: "Tag",
-            label: "Add tag to contact",
+            label: "Add tag to member",
             description: "",
             type: "add-tag",
             category: "utilities",
@@ -114,7 +114,7 @@ export const nodes: {
           position: { x: 0, y: 0 },
           data: {
             icon: "Tag",
-            label: "Remove tag from contact",
+            label: "Remove tag from member",
             description: "",
             type: "remove-tag",
             category: "utilities",

@@ -3,14 +3,14 @@
 import { emojiParser } from "@/helpers/emoji-parser";
 import { buttonVariants } from "@conquest/ui/button";
 import { cn } from "@conquest/ui/utils/cn";
-import type { ActivityWithContact } from "@conquest/zod/activity.schema";
+import type { ActivityWithMember } from "@conquest/zod/activity.schema";
 import Link from "next/link";
 import { useMemo } from "react";
 import { SlackMention } from "./slack/slack-mention";
 import { Reaction } from "./slack/slack-reaction";
 
 type Props = {
-  activity: ActivityWithContact;
+  activity: ActivityWithMember;
 };
 
 export const Message = ({ activity }: Props) => {

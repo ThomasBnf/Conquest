@@ -14,13 +14,13 @@ export const engagementRate = authAction
     }),
   )
   .action(async ({ ctx, parsedInput: { from, to } }) => {
-    const totalContacts = await prisma.contact.count({
+    const totalMembers = await prisma.member.count({
       where: {
         workspace_id: ctx.user.workspace_id,
       },
     });
 
-    const activeContacts = await prisma.contact.count({
+    const activeMembers = await prisma.member.count({
       where: {
         workspace_id: ctx.user.workspace_id,
         activities: {
@@ -34,11 +34,11 @@ export const engagementRate = authAction
       },
     });
 
-    const currentEngagementRate = (activeContacts / totalContacts) * 100;
+    const currentEngagementRate = (activeMembers / totalMembers) * 100;
 
     const differenceInDays = differenceInCalendarDays(to, from);
 
-    const previousPeriodActiveContacts = await prisma.contact.count({
+    const previousPeriodActiveMembers = await prisma.member.count({
       where: {
         workspace_id: ctx.user.workspace_id,
         activities: {
@@ -53,9 +53,9 @@ export const engagementRate = authAction
     });
 
     const previousPeriodEngagementRate =
-      (previousPeriodActiveContacts / totalContacts) * 100;
+      (previousPeriodActiveMembers / totalMembers) * 100;
 
-    const contactsWithActivities = await prisma.contact.count({
+    const membersWithActivities = await prisma.member.count({
       where: {
         workspace_id: ctx.user.workspace_id,
         activities: {
@@ -64,7 +64,7 @@ export const engagementRate = authAction
       },
     });
 
-    const totalEngagementRate = (contactsWithActivities / totalContacts) * 100;
+    const totalEngagementRate = (membersWithActivities / totalMembers) * 100;
 
     return {
       totalEngagementRate,

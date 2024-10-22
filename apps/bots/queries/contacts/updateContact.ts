@@ -9,7 +9,7 @@ type Props = {
   job_title: string;
 };
 
-export const updateContact = async ({
+export const updateMember = async ({
   slack_id,
   first_name,
   last_name,
@@ -17,16 +17,16 @@ export const updateContact = async ({
   avatar_url,
   job_title,
 }: Props) => {
-  const currentContact = await prisma.contact.findUnique({
+  const currentMember = await prisma.member.findUnique({
     where: {
       slack_id,
     },
   });
 
-  const { emails, phone } = currentContact ?? {};
+  const { emails, phone } = currentMember ?? {};
   const newSearch = `${first_name} ${last_name} ${emails} ${newPhone ?? phone}`;
 
-  return await prisma.contact.update({
+  return await prisma.member.update({
     where: {
       slack_id,
     },

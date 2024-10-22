@@ -1,16 +1,16 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@conquest/ui/avatar";
-import type { ActivityWithContact } from "@conquest/zod/activity.schema";
+import type { ActivityWithMember } from "@conquest/zod/activity.schema";
 import { ActivityBadge } from "./activity-badge";
 import { Menu } from "./activity-menu";
 import { CreatedAt } from "./created-at";
 
 type Props = {
-  activity: ActivityWithContact;
+  activity: ActivityWithMember;
 };
 
 export const APIActivity = ({ activity }: Props) => {
   const { avatar_url, first_name, last_name, full_name } =
-    activity.contact ?? {};
+    activity.member ?? {};
   const { message, type } = activity.details;
 
   return (

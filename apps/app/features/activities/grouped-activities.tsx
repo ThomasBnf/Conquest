@@ -5,8 +5,8 @@ import { listActivities } from "@/queries/activities/listActivities";
 import { Separator } from "@conquest/ui/separator";
 import { cn } from "@conquest/ui/utils/cn";
 import {
-  type ActivityWithContact,
-  ActivityWithContactSchema,
+  type ActivityWithMember,
+  ActivityWithMemberSchema,
 } from "@conquest/zod/activity.schema";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { format, isYesterday } from "date-fns";
@@ -15,20 +15,20 @@ import { useInView } from "react-intersection-observer";
 import { ActivityParser } from "./activity-parser";
 
 type Activities = {
-  [createdAt: string]: ActivityWithContact[];
+  [createdAt: string]: ActivityWithMember[];
 };
 
 type Props = {
-  contact_id?: string;
+  member_id?: string;
   className?: string;
 };
 
-export const GroupedActivities = ({ contact_id, className }: Props) => {
+export const GroupedActivities = ({ member_id, className }: Props) => {
   const { ref, inView } = useInView();
 
   const { data, isLoading, fetchNextPage, hasNextPage } = useInfiniteQuery({
-    queryKey: ["activities", contact_id],
-    queryFn: ({ pageParam }) => listActivities({ page: pageParam, contact_id }),
+    queryKey: ["activities", member_id],
+    queryFn: ({ pageParam }) => listActivities({ page: pageParam, member_id }),
     getNextPageParam: (_, allPages) => allPages.length + 1,
     initialPageParam: 1,
   });
@@ -36,7 +36,7 @@ export const GroupedActivities = ({ contact_id, className }: Props) => {
   const activities = useMemo(() => {
     const pages = data?.pages;
     if (!pages?.length) return [];
-    return ActivityWithContactSchema.array().parse(
+    return ActivityWithMemberSchema.array().parse(
       pages.flatMap((page) => page?.data ?? []),
     );
   }, [data?.pages]);

@@ -2,11 +2,11 @@ import { emojiParser } from "@/helpers/emoji-parser";
 import { useGetActivity } from "@/queries/activities/useGetActivity";
 import {
   ActivitySlackSchema,
-  type ActivityWithContact,
+  type ActivityWithMember,
 } from "@conquest/zod/activity.schema";
 
 type Props = {
-  activity: ActivityWithContact;
+  activity: ActivityWithMember;
   content: string;
 };
 
