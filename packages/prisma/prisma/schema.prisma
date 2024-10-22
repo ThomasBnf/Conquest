@@ -143,10 +143,10 @@ model User {
 
 model Workflow {
   id           String    @id @default(cuid())
-  icon         String
   name         String
   description  String?
-  isPublished  Boolean   @default(false)
+  published    Boolean   @default(false)
+  last_run_at  DateTime?
   nodes        Json[]
   edges        Json[]
   workspace_id String

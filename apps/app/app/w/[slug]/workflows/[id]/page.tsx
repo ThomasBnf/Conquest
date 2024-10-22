@@ -1,7 +1,7 @@
+import { Flow } from "@/features/workflows/flow";
+import { Header } from "@/features/workflows/header";
 import { ReactFlowProvider } from "@xyflow/react";
 import { WorkflowProvider } from "context/workflowContext";
-import { Flow } from "features/workflows/components/flow";
-import { Header } from "features/workflows/components/header";
 import { redirect } from "next/navigation";
 import { getWorkflow } from "queries/workflows/getWorkflow";
 
@@ -20,12 +20,12 @@ export default async function Page({ params: { slug, id } }: Props) {
 
   return (
     <div className="flex h-full w-full flex-col divide-y">
-      <Header workflow={workflow} />
-      <ReactFlowProvider>
-        <WorkflowProvider workflow={workflow}>
+      <WorkflowProvider currentWorkflow={workflow}>
+        <Header />
+        <ReactFlowProvider>
           <Flow />
-        </WorkflowProvider>
-      </ReactFlowProvider>
+        </ReactFlowProvider>
+      </WorkflowProvider>
     </div>
   );
 }

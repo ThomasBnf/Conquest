@@ -1,4 +1,8 @@
 import {
+  type FormDescription,
+  FormDescriptionSchema,
+} from "@/features/workflows/panels/types/form-description.schema";
+import {
   Form,
   FormControl,
   FormField,
@@ -7,13 +11,8 @@ import {
   FormMessage,
 } from "@conquest/ui/form";
 import { Input } from "@conquest/ui/input";
-import { Separator } from "@conquest/ui/separator";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useWorkflow } from "context/workflowContext";
-import {
-  type FormDescription,
-  FormDescriptionSchema,
-} from "features/workflows/components/panels/types/form-description.schema";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 
@@ -47,10 +46,7 @@ export const Description = () => {
 
   return (
     <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(onSubmit)}
-        className="flex flex-col gap-2"
-      >
+      <form onSubmit={form.handleSubmit(onSubmit)}>
         <FormField
           control={form.control}
           name="description"
@@ -78,7 +74,6 @@ export const Description = () => {
             </FormItem>
           )}
         />
-        <Separator />
       </form>
     </Form>
   );

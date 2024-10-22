@@ -37,10 +37,13 @@ type workflowContext = {
   setEdges: Dispatch<SetStateAction<Edge[]>>;
   onNodesChange: OnNodesChange;
   onEdgesChange: OnEdgesChange;
-  panel: "trigger" | "action" | undefined;
-  setPanel: (panel: "trigger" | "action" | undefined) => void;
+  panel: "workflow" | "trigger" | "action" | "node";
+  setPanel: Dispatch<
+    SetStateAction<"workflow" | "trigger" | "action" | "node">
+  >;
   currentNode: NodeType | undefined;
   setCurrentNode: (node: NodeType | undefined) => void;
+  onUpdateWorkflow: (updatedWorkflow: Workflow) => Promise<void>;
   onAddNode: (node: NodeType) => void;
   onUpdateNode: (node: NodeType) => void;
   onDeleteNode: () => Promise<string | number | undefined>;
@@ -52,17 +55,31 @@ type workflowContext = {
 const workflowContext = createContext<workflowContext>({} as workflowContext);
 
 type Props = {
-  workflow: Workflow;
+  currentWorkflow: Workflow;
   children: React.ReactNode;
 };
 
-export const WorkflowProvider = ({ workflow, children }: Props) => {
+export const WorkflowProvider = ({ currentWorkflow, children }: Props) => {
+  const [workflow, setWorkflow] = useState<Workflow>(currentWorkflow);
   const [nodes, setNodes, onNodesChange] = useNodesState<Node>(workflow.nodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>(workflow.edges);
-  const [panel, setPanel] = useState<"trigger" | "action">();
+  const [panel, setPanel] = useState<
+    "workflow" | "trigger" | "action" | "node"
+  >("workflow");
   const [currentNode, setCurrentNode] = useState<NodeType | undefined>(
     undefined,
   );
+
+  const onUpdateWorkflow = useCallback(async (updatedWorkflow: Workflow) => {
+    setWorkflow(updatedWorkflow);
+    const rWorkflow = await updateWorkflow({
+      id: workflow.id,
+      name: updatedWorkflow.name,
+      description: updatedWorkflow.description,
+    });
+    const error = rWorkflow?.serverError;
+    if (error) toast.error(error);
+  }, []);
 
   const onAddNode = useCallback(
     async (node: NodeType) => {
@@ -79,6 +96,7 @@ export const WorkflowProvider = ({ workflow, children }: Props) => {
       };
 
       setCurrentNode(newNode);
+      setPanel("node");
 
       const updatedNodes = [...nodes, newNode];
       const parsedNodes = NodeSchema.array().parse(updatedNodes);
@@ -218,14 +236,12 @@ export const WorkflowProvider = ({ workflow, children }: Props) => {
   };
 
   useEffect(() => {
-    const nodesCount = nodes.length;
     const hasTrigger = nodes.some((node) => {
       const { type } = NodeDataSchema.parse(node.data);
       return type.startsWith("trigger");
     });
 
-    if (nodesCount === 0) setPanel("trigger");
-    if (hasTrigger) setPanel("action");
+    if (!hasTrigger) setPanel("trigger");
   }, [nodes]);
 
   return (
@@ -242,6 +258,7 @@ export const WorkflowProvider = ({ workflow, children }: Props) => {
         setPanel,
         currentNode,
         setCurrentNode,
+        onUpdateWorkflow,
         onAddNode,
         onUpdateNode,
         onDeleteNode,

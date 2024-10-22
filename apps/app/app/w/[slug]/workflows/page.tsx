@@ -1,7 +1,6 @@
-import { Icon } from "components/icons/Icon";
-import { IsPublished } from "features/workflows/components/isPublished";
-import { WorkflowButton } from "features/workflows/components/workflow-button";
-import type { icons } from "lucide-react";
+import { IsPublished } from "@/features/workflows/isPublished";
+import { WorkflowButton } from "@/features/workflows/workflow-button";
+import { WorkflowMenu } from "@/features/workflows/workflow-menu";
 import Link from "next/link";
 import { listWorkflows } from "queries/workflows/listWorkflows";
 
@@ -25,24 +24,16 @@ export default async function Page({ params: { slug } }: Props) {
         {workflows?.map((workflow) => (
           <div
             key={workflow.id}
-            className="flex items-center justify-between border-b pr-4 transition-colors hover:bg-muted"
+            className="flex items-center justify-between border-b px-4 gap-6 transition-colors hover:bg-muted-hover"
           >
             <Link
               href={`/w/${slug}/workflows/${workflow.id}`}
-              className="flex-1 p-4"
+              className="flex-1 h-14 flex items-center"
             >
-              <div className="flex items-center gap-2">
-                <Icon
-                  name={workflow.icon as keyof typeof icons}
-                  className="size-5 text-muted-foreground"
-                />
-                <p className="font-medium">{workflow.name}</p>
-              </div>
-              <p className="ml-7 text-muted-foreground">
-                {workflow.description}
-              </p>
+              <p className="font-medium w-96 truncate">{workflow.name}</p>
             </Link>
             <IsPublished workflow={workflow} />
+            <WorkflowMenu workflow={workflow} />
           </div>
         ))}
       </div>

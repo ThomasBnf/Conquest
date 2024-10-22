@@ -15,6 +15,7 @@ type Props = {
 
 export const CustomNode = ({ props }: Props) => {
   const { currentNode, setCurrentNode, setPanel, nodes } = useWorkflow();
+
   const data = NodeDataSchema.parse(props.data);
   const { type, category, icon, label, description } = data;
 
@@ -36,7 +37,7 @@ export const CustomNode = ({ props }: Props) => {
       )}
       {/* biome-ignore lint/a11y/useKeyWithClickEvents: <explanation> */}
       <div
-        onClick={() =>
+        onClick={() => {
           setCurrentNode({
             id: props.id,
             position: {
@@ -45,8 +46,9 @@ export const CustomNode = ({ props }: Props) => {
             },
             type: "custom",
             data,
-          })
-        }
+          });
+          setPanel("node");
+        }}
         className={cn(
           "relative flex w-80 flex-1 flex-col border bg-background p-3",
           isTrigger ? "rounded-b-md rounded-tr-md" : "rounded-md",
@@ -66,10 +68,7 @@ export const CustomNode = ({ props }: Props) => {
             <Icon name={icon as keyof typeof icons} size={16} />
           </div>
           <p className="font-medium">{label}</p>
-          <Badge
-            variant="secondary"
-            className="ml-auto font-normal capitalize text-muted-foreground"
-          >
+          <Badge variant="secondary" className="ml-auto">
             {category}
           </Badge>
         </div>

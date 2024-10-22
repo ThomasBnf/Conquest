@@ -12,7 +12,7 @@ import { TagMemberOptions } from "../nodes/tag-member/tag-member.options";
 import { WebhookOptions } from "../nodes/webhook/webhook.options";
 
 export const OptionsPanel = () => {
-  const { currentNode, setCurrentNode, onDeleteNode } = useWorkflow();
+  const { currentNode, setCurrentNode, setPanel, onDeleteNode } = useWorkflow();
   const data = NodeDataSchema.parse(currentNode?.data);
   const { type } = data;
 
@@ -21,13 +21,16 @@ export const OptionsPanel = () => {
       <div className="flex h-12 items-center px-4">
         <Button
           variant="ghost"
-          size="icon"
-          onClick={() => setCurrentNode(undefined)}
+          onClick={() => {
+            setCurrentNode(undefined);
+            setPanel("workflow");
+          }}
         >
           <ArrowLeft size={16} />
+          Back
         </Button>
       </div>
-      <div className="flex flex-col gap-2 p-6">
+      <div className="flex flex-col gap-4 p-6">
         <div className="mb-2 flex items-center gap-2">
           <Icon
             name={data.icon as keyof typeof icons}
@@ -36,12 +39,7 @@ export const OptionsPanel = () => {
           />
           <p className="font-medium">{data.label}</p>
           <div className="space-y1">
-            <Badge
-              variant="secondary"
-              className="ml-auto font-normal capitalize text-muted-foreground"
-            >
-              {data.category}
-            </Badge>
+            <Badge variant="secondary">{data.category}</Badge>
           </div>
         </div>
         <Description />

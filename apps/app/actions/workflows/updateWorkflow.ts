@@ -16,11 +16,15 @@ export const updateWorkflow = authAction
       nodes: z.array(NodeSchema).optional(),
       edges: z.array(EdgeSchema).optional(),
       name: z.string().optional(),
-      isPublished: z.boolean().optional(),
+      description: z.string().nullable().optional(),
+      published: z.boolean().optional(),
     }),
   )
   .action(
-    async ({ ctx, parsedInput: { id, nodes, edges, name, isPublished } }) => {
+    async ({
+      ctx,
+      parsedInput: { id, nodes, edges, name, description, published },
+    }) => {
       const updatedWorkflow = await prisma.workflow.update({
         where: {
           id,
@@ -30,7 +34,8 @@ export const updateWorkflow = authAction
           nodes,
           edges,
           name,
-          isPublished,
+          description,
+          published,
         },
       });
 

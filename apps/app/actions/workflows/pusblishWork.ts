@@ -1,6 +1,5 @@
 "use server";
 
-import { NodeRecurringSchema } from "@conquest/zod/node.schema";
 import { WorkflowSchema } from "@conquest/zod/workflow.schema";
 import { authAction } from "lib/authAction";
 import { prisma } from "lib/prisma";
@@ -12,31 +11,19 @@ export const publishWorkflow = authAction
   .schema(
     z.object({
       id: z.string().cuid(),
-      isPublished: z.boolean().optional(),
+      published: z.boolean().optional(),
     }),
   )
-  .action(async ({ ctx, parsedInput: { id, isPublished } }) => {
+  .action(async ({ ctx, parsedInput: { id, published } }) => {
     const updatedWorkflow = await prisma.workflow.update({
       where: {
         id,
         workspace_id: ctx.user.workspace_id,
       },
       data: {
-        isPublished,
+        published,
       },
     });
-
-    const parsedWorkflow = WorkflowSchema.parse(updatedWorkflow);
-
-    const node = parsedWorkflow.nodes.find(
-      (node) => node.data.type === "trigger-recurring-schedule",
-    )?.data;
-
-    const parsedNode = NodeRecurringSchema.parse(node);
-    // const cron = cronBuilder(parsedNode);
-
-    if (isPublished) {
-    }
 
     revalidatePath(`/${ctx.user.workspace.slug}/workflows/${id}`);
     return WorkflowSchema.parse(updatedWorkflow);

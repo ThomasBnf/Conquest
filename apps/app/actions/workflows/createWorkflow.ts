@@ -13,10 +13,9 @@ export const createWorkflow = authAction
     const workflow = await prisma.workflow.create({
       data: {
         workspace_id: ctx.user.workspace.id,
-        icon: "Workflow",
         name: "Untitled workflow",
         description: "",
-        isPublished: false,
+        published: false,
         nodes: [],
         edges: [],
       },

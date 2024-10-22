@@ -1,5 +1,4 @@
 import {
-  AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
@@ -8,7 +7,7 @@ import {
   AlertDialogTitle,
   AlertDialog as CustomAlertDialog,
 } from "@conquest/ui/alert-dialog";
-import { Button, buttonVariants } from "@conquest/ui/button";
+import { Button } from "@conquest/ui/button";
 import { useState } from "react";
 
 type Props = {
@@ -44,14 +43,9 @@ export const AlertDialog = ({
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction
-            asChild
-            className={buttonVariants({ variant: "destructive" })}
-          >
-            <Button loading={loading} onClick={onClick}>
-              Delete
-            </Button>
-          </AlertDialogAction>
+          <Button variant="destructive" loading={loading} onClick={onClick}>
+            Delete
+          </Button>
         </AlertDialogFooter>
       </AlertDialogContent>
     </CustomAlertDialog>

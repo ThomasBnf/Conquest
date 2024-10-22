@@ -1,5 +1,6 @@
 "use client";
 
+import { useWorkflow } from "@/context/workflowContext";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -8,28 +9,18 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@conquest/ui/breadcrumb";
-import { Button } from "@conquest/ui/button";
 import { Form, FormControl, FormField, FormItem } from "@conquest/ui/form";
 import { Input } from "@conquest/ui/input";
-import type { Workflow } from "@conquest/zod/workflow.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { runWorkflow } from "actions/workflows/runWorkflow";
-import { updateWorkflow } from "actions/workflows/updateWorkflow";
 import { useUser } from "context/userContext";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { toast } from "sonner";
 import { type FormName, FormNameSchema } from "./panels/types/form-name.schema";
+import { WorkflowMenu } from "./workflow-menu";
 
-type Props = {
-  workflow: Workflow;
-};
-
-export const Header = ({ workflow }: Props) => {
+export const Header = () => {
   const { slug } = useUser();
-
-  const onRunWorkflow = async () => {
-    await runWorkflow({ id: workflow.id });
-  };
+  const { workflow, onUpdateWorkflow } = useWorkflow();
 
   const form = useForm<FormName>({
     resolver: zodResolver(FormNameSchema),
@@ -39,19 +30,12 @@ export const Header = ({ workflow }: Props) => {
   });
 
   const onSubmit = async ({ name }: FormName) => {
-    if (name === workflow.name) return;
-
-    const rWorkflow = await updateWorkflow({
-      id: workflow.id,
-      nodes: workflow.nodes,
-      name,
-    });
-
-    if (rWorkflow?.data) {
-      return toast.success("Workflow name updated");
-    }
-    return toast.error("Failed to update workflow name");
+    await onUpdateWorkflow({ ...workflow, name });
   };
+
+  useEffect(() => {
+    form.setValue("name", workflow.name);
+  }, [workflow]);
 
   return (
     <div className="flex h-12 shrink-0 items-center justify-between gap-2 px-4">
@@ -91,7 +75,7 @@ export const Header = ({ workflow }: Props) => {
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
-      <Button onClick={onRunWorkflow}>Try Workflow</Button>
+      <WorkflowMenu workflow={workflow} />
     </div>
   );
 };
