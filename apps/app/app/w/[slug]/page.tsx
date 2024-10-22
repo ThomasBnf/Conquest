@@ -33,7 +33,7 @@ export default async function Page({ searchParams }: Props) {
   return (
     <div className="flex h-full flex-col divide-y">
       <div className="flex h-12 shrink-0 items-center justify-between px-4">
-        <p className="font-medium">Dashboard</p>
+        <p className="font-medium text-foreground">Dashboard</p>
         <DateRangePicker />
       </div>
       <ScrollArea>

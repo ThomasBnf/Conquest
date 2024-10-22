@@ -64,7 +64,7 @@ export const GroupedActivities = ({ member_id, className }: Props) => {
             activities.length > 0 && (
               <Fragment key={date}>
                 <DateSeparator date={new Date(date)} />
-                <div className="flex flex-col gap-4">
+                <div className="flex flex-col gap-10">
                   {activities.map((activity) => (
                     <ActivityParser key={activity.id} activity={activity} />
                   ))}

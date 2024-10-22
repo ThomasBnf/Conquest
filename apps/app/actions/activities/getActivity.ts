@@ -2,7 +2,7 @@
 
 import { authAction } from "@/lib/authAction";
 import { prisma } from "@/lib/prisma";
-import { ActivitySchema } from "@conquest/zod/activity.schema";
+import { ActivityWithMemberSchema } from "@conquest/zod/activity.schema";
 import { z } from "zod";
 
 export const getActivity = authAction
@@ -20,7 +20,10 @@ export const getActivity = authAction
         id,
         workspace_id: ctx.user.workspace_id,
       },
+      include: {
+        member: true,
+      },
     });
 
-    return ActivitySchema.parse(activity);
+    return ActivityWithMemberSchema.parse(activity);
   });

@@ -4,6 +4,8 @@ import {
   ActivitySlackSchema,
   type ActivityWithMember,
 } from "@conquest/zod/activity.schema";
+import { ActivityCard } from "../activity-card";
+import { Message } from "../message";
 
 type Props = {
   activity: ActivityWithMember;
@@ -14,10 +16,14 @@ export const Reaction = ({ activity, content }: Props) => {
   const slackActivity = ActivitySlackSchema.parse(activity.details);
   const { data } = useGetActivity({ id: slackActivity.reference });
 
+  if (!data) return;
+
   return (
     <div className="flex flex-col gap-2">
-      <p className="text-muted-foreground">{data?.details.message}</p>
-      <p className="border border-[#1264a3] min-h-6 px-2 rounded-full bg-[#e3f8ff] w-fit flex items-center justify-center">
+      <ActivityCard activity={data}>
+        <Message activity={data} />
+      </ActivityCard>
+      <p className="border border-[#1264a3] size-7 rounded-lg bg-[#e3f8ff] text-center place-content-center">
         {emojiParser(content)}
       </p>
     </div>
