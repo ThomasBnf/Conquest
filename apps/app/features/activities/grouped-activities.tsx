@@ -1,5 +1,6 @@
 "use client";
 
+import { IsLoading } from "@/components/states/is-loading";
 import { listActivities } from "@/queries/activities/listActivities";
 import { Separator } from "@conquest/ui/separator";
 import { cn } from "@conquest/ui/utils/cn";
@@ -11,7 +12,7 @@ import { useInfiniteQuery } from "@tanstack/react-query";
 import { format, isYesterday } from "date-fns";
 import { Fragment, useEffect, useMemo } from "react";
 import { useInView } from "react-intersection-observer";
-import { CustomActivity } from "./custom-activity";
+import { ActivityParser } from "./activity-parser";
 
 type Activities = {
   [createdAt: string]: ActivityWithContact[];
@@ -55,18 +56,22 @@ export const GroupedActivities = ({ contact_id, className }: Props) => {
 
   return (
     <div className={cn("mt-4 flex flex-col gap-4", className)}>
-      {Object.entries(groupedActivities).map(
-        ([date, activities]) =>
-          activities.length > 0 && (
-            <Fragment key={date}>
-              <DateSeparator date={new Date(date)} />
-              <div className="flex flex-col gap-4">
-                {activities.map((activity) => (
-                  <CustomActivity key={activity.id} activity={activity} />
-                ))}
-              </div>
-            </Fragment>
-          ),
+      {isLoading ? (
+        <IsLoading />
+      ) : (
+        Object.entries(groupedActivities).map(
+          ([date, activities]) =>
+            activities.length > 0 && (
+              <Fragment key={date}>
+                <DateSeparator date={new Date(date)} />
+                <div className="flex flex-col gap-4">
+                  {activities.map((activity) => (
+                    <ActivityParser key={activity.id} activity={activity} />
+                  ))}
+                </div>
+              </Fragment>
+            ),
+        )
       )}
       {!isLoading && <div ref={ref} />}
     </div>

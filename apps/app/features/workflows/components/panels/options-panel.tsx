@@ -4,7 +4,7 @@ import { NodeDataSchema } from "@conquest/zod/node.schema";
 import { DeleteDialog } from "components/custom/delete-dialog";
 import { Icon } from "components/icons/Icon";
 import { useWorkflow } from "context/workflowContext";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, type icons } from "lucide-react";
 import { Description } from "../description";
 import { ListRecordsOptions } from "../nodes/list-records/listRecords.options";
 import { RecurringScheduleOptions } from "../nodes/recurring-schedule/recurring.options";
@@ -29,7 +29,11 @@ export const OptionsPanel = () => {
       </div>
       <div className="flex flex-col gap-2 p-6">
         <div className="mb-2 flex items-center gap-2">
-          <Icon name={data.icon} size={24} className="text-muted-foreground" />
+          <Icon
+            name={data.icon as keyof typeof icons}
+            size={24}
+            className="text-muted-foreground"
+          />
           <p className="font-medium">{data.label}</p>
           <div className="space-y1">
             <Badge

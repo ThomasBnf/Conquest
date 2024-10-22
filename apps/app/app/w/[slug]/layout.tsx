@@ -1,5 +1,6 @@
+import { AppSidebar } from "@/components/layouts/app-sidebar";
+import { SidebarProvider } from "@conquest/ui/sidebar";
 import { getCurrentUser } from "actions/users/getCurrentUser";
-import { Sidebar } from "components/layouts/sidebar";
 import { UserProvider } from "context/userContext";
 import { redirect } from "next/navigation";
 import type { PropsWithChildren } from "react";
@@ -21,11 +22,11 @@ export default async function Layout({
   if (user?.workspace.slug !== slug) redirect(`/w/${user?.workspace.slug}`);
 
   return (
-    <UserProvider user={user}>
-      <div className="flex h-dvh divide-x">
-        <Sidebar />
+    <SidebarProvider>
+      <UserProvider user={user}>
+        <AppSidebar />
         <div className="flex-1">{children}</div>
-      </div>
-    </UserProvider>
+      </UserProvider>
+    </SidebarProvider>
   );
 }

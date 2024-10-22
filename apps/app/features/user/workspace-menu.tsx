@@ -6,7 +6,7 @@ export const WorkspaceMenu = () => {
   const { user } = useUser();
 
   return (
-    <div className="flex h-10 items-center cursor-pointer rounded-md hover:border-border border border-transparent hover:shadow-sm gap-2 px-1.5 transition-all hover:bg-background mx-2 mt-1">
+    <div className="flex h-10 items-center cursor-pointer rounded-md hover:border-border border border-transparent hover:shadow-sm gap-2 px-1.5 transition-all hover:bg-background">
       <Avatar className="size-7">
         <AvatarImage src="" />
         <AvatarFallback className="text-sm uppercase">

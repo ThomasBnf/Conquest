@@ -6,7 +6,7 @@ import { NodeDataSchema } from "@conquest/zod/node.schema";
 import { type NodeProps, Position } from "@xyflow/react";
 import { Icon } from "components/icons/Icon";
 import { useWorkflow } from "context/workflowContext";
-import { Plus, Target } from "lucide-react";
+import { Plus, Target, type icons } from "lucide-react";
 import { CustomHandle } from "./custom-handle";
 
 type Props = {
@@ -63,7 +63,7 @@ export const CustomNode = ({ props }: Props) => {
                 "border-yellow-200 bg-yellow-100 text-yellow-500",
             )}
           >
-            <Icon name={icon} size={16} />
+            <Icon name={icon as keyof typeof icons} size={16} />
           </div>
           <p className="font-medium">{label}</p>
           <Badge

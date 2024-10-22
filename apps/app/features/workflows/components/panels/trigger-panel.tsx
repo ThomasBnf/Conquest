@@ -2,6 +2,7 @@ import { Label } from "@conquest/ui/label";
 import type { Node as NodeType } from "@conquest/zod/node.schema";
 import { Icon } from "components/icons/Icon";
 import { useWorkflow } from "context/workflowContext";
+import type { icons } from "lucide-react";
 
 export const TriggerPanel = () => {
   const { onAddNode } = useWorkflow();
@@ -33,7 +34,7 @@ export const TriggerPanel = () => {
                       <div className="flex items-center gap-2">
                         <div className="rounded-md border bg-background p-1">
                           <Icon
-                            name={data.icon}
+                            name={data.icon as keyof typeof icons}
                             size={14}
                             className="text-muted-foreground"
                           />

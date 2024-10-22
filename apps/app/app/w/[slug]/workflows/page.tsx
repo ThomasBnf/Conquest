@@ -1,6 +1,7 @@
 import { Icon } from "components/icons/Icon";
 import { IsPublished } from "features/workflows/components/isPublished";
 import { WorkflowButton } from "features/workflows/components/workflow-button";
+import type { icons } from "lucide-react";
 import Link from "next/link";
 import { listWorkflows } from "queries/workflows/listWorkflows";
 
@@ -32,7 +33,7 @@ export default async function Page({ params: { slug } }: Props) {
             >
               <div className="flex items-center gap-2">
                 <Icon
-                  name={workflow.icon}
+                  name={workflow.icon as keyof typeof icons}
                   className="size-5 text-muted-foreground"
                 />
                 <p className="font-medium">{workflow.name}</p>

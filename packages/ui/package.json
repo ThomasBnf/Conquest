@@ -21,6 +21,7 @@
   "exports": {
     "./*": "./components/*.tsx",
     "./utils/*": "./utils/*.ts",
+    "./hooks/*": "./hooks/*.tsx",
     "./globals.css": "./globals.css",
     "./tailwind.config": "./tailwind.config.ts",
     "./postcss": "./postcss.config.js"
@@ -46,7 +47,7 @@
     "class-variance-authority": "^0.7.0",
     "cmdk": "1.0.0",
     "date-fns": "^4.1.0",
-    "lucide-react": "^0.452.0",
+    "lucide-react": "^0.453.0",
     "next-themes": "^0.3.0",
     "prettier-plugin-tailwindcss": "^0.6.8",
     "react-colorful": "^5.6.1",
