@@ -69,7 +69,7 @@ export const AppSidebar = () => {
           <SidebarMenu>
             {routes.map((route) => (
               <SidebarMenuItem key={route.label}>
-                <SidebarMenuButton asChild>
+                <SidebarMenuButton asChild isActive={route.isActive}>
                   <a href={route.href}>
                     {route.icon}
                     <span>{route.label}</span>
