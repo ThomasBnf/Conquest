@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import type { App, StringIndexed } from "@slack/bolt";
 import { getIntegration } from "../integrations/getIntegration";
-import { getMember } from "./getMember";
+import { getMember } from "./getContact";
 
 type Props = {
   app: App<StringIndexed>;

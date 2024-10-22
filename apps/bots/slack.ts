@@ -12,9 +12,9 @@ import { deleteChannel } from "./queries/channels/deleteChannel";
 import { updateChannel } from "./queries/channels/updateChannel";
 import { getIntegration } from "./queries/integrations/getIntegration";
 import { updateIntegration } from "./queries/integrations/updateIntegration";
-import { mergeMember } from "./queries/members/mergeMember";
-import { updateMember } from "./queries/members/updateMember";
 import { deleteReactions } from "./queries/reactions/deleteReactions";
+import { mergeMember } from "./queries/contacts/mergeContact";
+import { updateMember } from "./queries/contacts/updateContact";
 
 dotenv.config();
 
