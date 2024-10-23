@@ -1,10 +1,10 @@
 "use server";
 
+import { createChannel } from "@/actions/channels/createChannel";
+import { listMessages } from "@/actions/slack/listMessages";
+import { authAction } from "@/lib/authAction";
 import { WebClient } from "@slack/web-api";
-import { authAction } from "lib/authAction";
 import { z } from "zod";
-import { createChannel } from "../channels/createChannel";
-import { listMessages } from "./listMessages";
 
 export const listChannels = authAction
   .metadata({

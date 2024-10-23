@@ -1,3 +1,7 @@
+import { getMember } from "@/actions/members/getMember";
+import { listTags } from "@/actions/tags/listTags";
+import { PageLayout } from "@/components/layouts/page-layout";
+import { Activities } from "@/features/activities/activities";
 import { MemberMenu } from "@/features/members/member-menu";
 import { MemberSidebar } from "@/features/members/member-sidebar";
 import {
@@ -9,10 +13,7 @@ import {
   BreadcrumbSeparator,
 } from "@conquest/ui/breadcrumb";
 import { ScrollArea } from "@conquest/ui/scroll-area";
-import { GroupedActivities } from "features/activities/grouped-activities";
 import { redirect } from "next/navigation";
-import { getMember } from "queries/members/getMember";
-import { listTags } from "queries/tags/listTags";
 
 type Props = {
   params: {
@@ -23,9 +24,9 @@ type Props = {
 
 export default async function Page({ params: { memberId, slug } }: Props) {
   const rMember = await getMember({ id: memberId });
-  const member = rMember?.data;
-
   const rTags = await listTags();
+
+  const member = rMember?.data;
   const tags = rTags?.data;
 
   if (!member) redirect(`/w/${slug}/members`);
@@ -33,8 +34,8 @@ export default async function Page({ params: { memberId, slug } }: Props) {
   const { full_name } = member;
 
   return (
-    <div className="flex h-full flex-col divide-y">
-      <div className="flex h-12 items-center justify-between px-4">
+    <PageLayout>
+      <div className="flex h-12 shrink-0 items-center justify-between px-4 border-b">
         <Breadcrumb>
           <BreadcrumbList>
             <BreadcrumbItem>
@@ -50,15 +51,12 @@ export default async function Page({ params: { memberId, slug } }: Props) {
         </Breadcrumb>
         <MemberMenu member={member} />
       </div>
-      <div className="flex min-h-0 flex-1 divide-x">
+      <div className="flex divide-x h-full">
         <ScrollArea className="flex-1">
-          <GroupedActivities
-            member_id={memberId}
-            className="mx-auto max-w-3xl px-4 md:px-8"
-          />
+          <Activities member_id={memberId} />
         </ScrollArea>
         <MemberSidebar member={member} tags={tags} />
       </div>
-    </div>
+    </PageLayout>
   );
 }

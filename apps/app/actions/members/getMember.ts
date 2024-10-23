@@ -16,6 +16,8 @@ export const getMember = authAction
     }),
   )
   .action(async ({ ctx, parsedInput: { id, slack_id } }) => {
+    const slug = ctx.user.workspace.slug;
+
     const member = await prisma.member.findUnique({
       where: {
         id,

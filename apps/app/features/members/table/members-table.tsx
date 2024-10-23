@@ -1,6 +1,9 @@
 "use client";
 
+import { QueryInput } from "@/components/custom/query-input";
+import { IsLoading } from "@/components/states/is-loading";
 import { useParamsMembers } from "@/hooks/useParamsMembers";
+import { ScrollArea } from "@conquest/ui/scroll-area";
 import {
   Table,
   TableBody,
@@ -21,31 +24,29 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { listMembers } from "actions/members/listMembers";
-import { QueryInput } from "components/custom/query-input";
-import { IsLoading } from "components/states/is-loading";
 import { Columns } from "features/members/table/columns";
-import { useEffect, useMemo, useState } from "react";
+import { Fragment, useEffect, useMemo, useState } from "react";
 import { useInView } from "react-intersection-observer";
 import { useDebounce } from "use-debounce";
-import { AddMember } from "../add-member";
-import { BottomMenuAction } from "./bottom-menu-action";
+import { ActionMenu } from "./action-menu";
 
 type Props = {
   tags: Tag[] | undefined;
-  membersCount: number;
 };
 
-export const MembersTable = ({ tags, membersCount }: Props) => {
+export const MembersTable = ({ tags }: Props) => {
   const { ref, inView } = useInView();
   const columns = useMemo(() => Columns({ tags }), [tags]);
 
-  const [sorting, setSorting] = useState([{ id: "last_name", desc: false }]);
-  const [rowSelection, setRowSelection] = useState({});
   const [{ search, id, desc }, setSearchParams] = useParamsMembers();
+  const [sorting, setSorting] = useState([
+    { id: id ?? "last_name", desc: desc ?? false },
+  ]);
+  const [rowSelection, setRowSelection] = useState({});
   const [debouncedSearch] = useDebounce(search, 500);
 
   const { data, isLoading, fetchNextPage, hasNextPage } = useInfiniteQuery({
-    queryKey: ["members", debouncedSearch, id, desc],
+    queryKey: ["members", debouncedSearch, id, desc, sorting],
     queryFn: ({ pageParam }) =>
       listMembers({ page: pageParam, search: debouncedSearch, id, desc }),
     getNextPageParam: (_, allPages) => allPages.length + 1,
@@ -73,88 +74,79 @@ export const MembersTable = ({ tags, membersCount }: Props) => {
 
   useEffect(() => {
     if (inView && hasNextPage) fetchNextPage();
-  }, [inView, hasNextPage, fetchNextPage]);
+  }, [inView]);
 
   return (
-    <div className="relative flex h-full flex-col divide-y">
-      <div className="divide-y">
-        <div className="flex items-center gap-2 py-2 px-4 justify-between">
-          <div className="flex gap-2">
-            <p className="text-base font-medium">Members</p>
-            <p className="rounded border bg-muted p-1 font-mono leading-none shadow-sm">
-              {membersCount}
-            </p>
-          </div>
-          <AddMember />
-        </div>
-        <div className="flex py-2 px-4 ">
-          <QueryInput
-            query={search}
-            setQuery={(value) => setSearchParams({ search: value })}
-            placeholder="Search in members..."
-          />
-        </div>
+    <Fragment>
+      <div className="px-4 min-h-12 flex items-center border-b">
+        <QueryInput
+          query={search}
+          setQuery={(value) => setSearchParams({ search: value })}
+          placeholder="Search in members..."
+        />
       </div>
-      <div className="relative overflow-auto">
-        {isLoading ? (
-          <IsLoading />
-        ) : (
-          <Table>
-            <TableHeader className="sticky top-0 z-10 after:absolute after:inset-x-0 after:bottom-0 after:h-px after:bg-border">
-              {table.getHeaderGroups().map((headerGroup) => (
-                <TableRow key={headerGroup.id}>
-                  {headerGroup.headers.map((header) => (
-                    <TableHead key={header.id} className="bg-background">
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext(),
-                          )}
-                    </TableHead>
+      <ScrollArea>
+        <Table>
+          <TableHeader className="sticky top-0 z-10 after:absolute after:inset-x-0 after:bottom-0 after:h-px after:bg-border">
+            {table.getHeaderGroups().map((headerGroup) => (
+              <TableRow key={headerGroup.id}>
+                {headerGroup.headers.map((header) => (
+                  <TableHead key={header.id} className="bg-background">
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext(),
+                        )}
+                  </TableHead>
+                ))}
+              </TableRow>
+            ))}
+          </TableHeader>
+          <TableBody>
+            {isLoading ? (
+              <TableRow>
+                <TableCell colSpan={columns.length}>
+                  <IsLoading />
+                </TableCell>
+              </TableRow>
+            ) : table.getRowModel().rows?.length ? (
+              table.getRowModel().rows.map((row) => (
+                <TableRow key={row.id}>
+                  {row.getVisibleCells().map((cell) => (
+                    <TableCell
+                      key={cell.id}
+                      className={cn(row.getIsSelected() && "bg-neutral-100")}
+                    >
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext(),
+                      )}
+                    </TableCell>
                   ))}
                 </TableRow>
-              ))}
-            </TableHeader>
-            <TableBody>
-              {table.getRowModel().rows?.length ? (
-                table.getRowModel().rows.map((row) => (
-                  <TableRow key={row.id}>
-                    {row.getVisibleCells().map((cell) => (
-                      <TableCell
-                        key={cell.id}
-                        className={cn(row.getIsSelected() && "bg-neutral-100")}
-                      >
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext(),
-                        )}
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell
-                    colSpan={columns.length}
-                    className="h-24 text-center"
-                  >
-                    No members found.
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-            <TableFooter>
+              ))
+            ) : (
               <TableRow>
-                <TableCell colSpan={columns.length} ref={ref} className="p-0" />
+                <TableCell
+                  colSpan={columns.length}
+                  className="h-24 text-center"
+                >
+                  No members found.
+                </TableCell>
               </TableRow>
-            </TableFooter>
-          </Table>
-        )}
-      </div>
+            )}
+          </TableBody>
+          <TableFooter>
+            <TableRow>
+              <TableCell colSpan={columns.length} ref={ref} className="p-0" />
+            </TableRow>
+          </TableFooter>
+        </Table>
+      </ScrollArea>
       {table.getSelectedRowModel().rows.length > 0 && (
-        <BottomMenuAction table={table} />
+        <ActionMenu table={table} />
       )}
-    </div>
+    </Fragment>
   );
 };

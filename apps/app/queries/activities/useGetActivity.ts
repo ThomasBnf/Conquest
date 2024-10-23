@@ -2,13 +2,13 @@ import { getActivity } from "@/actions/activities/getActivity";
 import { useQuery } from "@tanstack/react-query";
 
 type Props = {
-  id: string | undefined;
+  ts: string | undefined;
 };
 
-export const useGetActivity = ({ id }: Props) => {
+export const useGetActivity = ({ ts }: Props) => {
   const { data, isLoading } = useQuery({
-    queryKey: ["activity", id],
-    queryFn: () => getActivity({ id }),
+    queryKey: ["activity", ts],
+    queryFn: () => getActivity({ ts }),
   });
 
   return { data: data?.data, isLoading };

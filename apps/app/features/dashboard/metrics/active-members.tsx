@@ -1,3 +1,4 @@
+import { listActiveMembers } from "@/actions/dashboard/listActiveMembers";
 import {
   Card,
   CardContent,
@@ -7,7 +8,6 @@ import {
 } from "@conquest/ui/card";
 import { Separator } from "@conquest/ui/separator";
 import { searchParamsDate } from "lib/searchParamsDate";
-import { listActiveMembers } from "queries/dashboard/listActiveMembers";
 import { Percentage } from "./percentage";
 
 export const ActiveMembers = async () => {

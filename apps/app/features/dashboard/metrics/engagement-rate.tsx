@@ -1,3 +1,4 @@
+import { engagementRate } from "@/actions/dashboard/engagementRate";
 import {
   Card,
   CardContent,
@@ -7,7 +8,6 @@ import {
 } from "@conquest/ui/card";
 import { Separator } from "@conquest/ui/separator";
 import { searchParamsDate } from "lib/searchParamsDate";
-import { engagementRate } from "queries/dashboard/engagementRate";
 import { Percentage } from "./percentage";
 
 export const EngagementRate = async () => {

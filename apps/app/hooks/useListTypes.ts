@@ -1,10 +1,10 @@
+import { listTypes } from "@/actions/activities/listTypes";
 import { useQuery } from "@tanstack/react-query";
-import { listActivityType } from "queries/activities/listActivityType";
 
 export const useListTypes = () => {
   const { data, isLoading } = useQuery({
     queryKey: ["types"],
-    queryFn: () => listActivityType(),
+    queryFn: () => listTypes(),
   });
 
   return { types: data?.data, isLoading };

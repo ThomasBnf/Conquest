@@ -1,6 +1,6 @@
 import { Button } from "@conquest/ui/button";
-import { cn } from "@conquest/ui/utils/cn";
 import { Input } from "@conquest/ui/input";
+import { cn } from "@conquest/ui/utils/cn";
 import { Search, X } from "lucide-react";
 import { useRef, useState } from "react";
 
@@ -37,7 +37,7 @@ export const QueryInput = ({
     <div
       className={cn(
         "relative flex w-56 items-center rounded border px-2 shadow-sm",
-        isFocus && "ring-2 ring-neutral-300 ring-offset-1",
+        isFocus && "ring-2 ring-neutral-200 ring-offset-1",
         className,
       )}
     >

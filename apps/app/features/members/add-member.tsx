@@ -1,3 +1,5 @@
+"use client";
+
 import { useUser } from "@/context/userContext";
 import { Button } from "@conquest/ui/button";
 import {

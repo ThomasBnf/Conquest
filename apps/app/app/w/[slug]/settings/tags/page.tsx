@@ -1,5 +1,5 @@
+import { listTags } from "@/actions/tags/listTags";
 import { Separator } from "@conquest/ui/separator";
-import { listTags } from "queries/tags/listTags";
 import { ListTags } from "./_components/ListTags";
 
 export default async function Page() {

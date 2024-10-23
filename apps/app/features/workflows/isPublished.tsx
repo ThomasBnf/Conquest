@@ -2,7 +2,7 @@
 
 import { Switch } from "@conquest/ui/switch";
 import type { Workflow } from "@conquest/zod/workflow.schema";
-import { publishWorkflow } from "actions/workflows/pusblishWork";
+import { updateWorkflow } from "actions/workflows/updateWorkflow";
 import { useState } from "react";
 
 type Props = {
@@ -14,7 +14,7 @@ export const IsPublished = ({ workflow }: Props) => {
 
   const onTogglePublished = async () => {
     setIsPublished(!isPublished);
-    await publishWorkflow({
+    await updateWorkflow({
       id: workflow.id,
       published: !isPublished,
     });

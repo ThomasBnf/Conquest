@@ -1,6 +1,8 @@
 "use client";
 
 import { listLeaderboard } from "@/actions/members/listLeaderboard";
+import { IsLoading } from "@/components/states/is-loading";
+import { ScrollArea } from "@conquest/ui/scroll-area";
 import {
   Table,
   TableBody,
@@ -18,7 +20,6 @@ import {
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { IsLoading } from "components/states/is-loading";
 import { useUser } from "context/userContext";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo } from "react";
@@ -62,72 +63,64 @@ export const LeaderbordTable = ({ tags, from, to }: Props) => {
     if (inView && hasNextPage) fetchNextPage();
   }, [inView]);
 
-  if (flatData.length === 0) return;
-
   return (
-    <div className="flex h-full flex-col divide-y">
-      <div className="flex-1 overflow-auto">
-        {isLoading ? (
-          <IsLoading />
-        ) : (
-          <Table>
-            <TableHeader className="sticky top-0 z-10 after:absolute after:inset-x-0 after:bottom-0 after:h-px after:bg-border">
-              {table.getHeaderGroups().map((headerGroup) => (
-                <TableRow key={headerGroup.id}>
-                  {headerGroup.headers.map((header) => (
-                    <TableHead key={header.id}>
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext(),
-                          )}
-                    </TableHead>
-                  ))}
-                </TableRow>
+    <ScrollArea>
+      <Table>
+        <TableHeader className="sticky top-0 z-10 after:absolute after:inset-x-0 after:bottom-0 after:h-px after:bg-border">
+          {table.getHeaderGroups().map((headerGroup) => (
+            <TableRow key={headerGroup.id}>
+              {headerGroup.headers.map((header) => (
+                <TableHead key={header.id}>
+                  {header.isPlaceholder
+                    ? null
+                    : flexRender(
+                        header.column.columnDef.header,
+                        header.getContext(),
+                      )}
+                </TableHead>
               ))}
-            </TableHeader>
-            <TableBody>
-              {table.getRowModel().rows?.length ? (
-                table.getRowModel().rows.map((row) => (
-                  <TableRow
-                    key={row.id}
-                    className="cursor-pointer"
-                    onClick={() => {
-                      router.push(
-                        `/w/${slug}/members/${row.original.id}?from=leaderboard`,
-                      );
-                    }}
-                  >
-                    {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id}>
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext(),
-                        )}
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell
-                    colSpan={columns.length}
-                    className="h-24 text-center"
-                  >
-                    No members found.
+            </TableRow>
+          ))}
+        </TableHeader>
+        <TableBody>
+          {isLoading ? (
+            <TableRow>
+              <TableCell colSpan={columns.length}>
+                <IsLoading />
+              </TableCell>
+            </TableRow>
+          ) : table.getRowModel().rows?.length ? (
+            table.getRowModel().rows.map((row) => (
+              <TableRow
+                key={row.id}
+                className="cursor-pointer"
+                onClick={() => {
+                  router.push(
+                    `/w/${slug}/members/${row.original.id}?from=leaderboard`,
+                  );
+                }}
+              >
+                {row.getVisibleCells().map((cell) => (
+                  <TableCell key={cell.id}>
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-            <TableFooter>
-              <TableRow>
-                <TableCell colSpan={columns.length} ref={ref} className="p-0" />
+                ))}
               </TableRow>
-            </TableFooter>
-          </Table>
-        )}
-      </div>
-    </div>
+            ))
+          ) : (
+            <TableRow>
+              <TableCell colSpan={columns.length} className="h-24 text-center">
+                No members found.
+              </TableCell>
+            </TableRow>
+          )}
+        </TableBody>
+        <TableFooter>
+          <TableRow>
+            <TableCell colSpan={columns.length} ref={ref} className="p-0" />
+          </TableRow>
+        </TableFooter>
+      </Table>
+    </ScrollArea>
   );
 };

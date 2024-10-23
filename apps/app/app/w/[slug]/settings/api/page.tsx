@@ -1,4 +1,4 @@
-import { listAPIKeys } from "queries/api-keys/listAPIKeys";
+import { listAPIKeys } from "@/actions/api-keys/listAPIKeys";
 import { ApiKey } from "./_components/ApiKey";
 import { FormAPIKey } from "./_components/FormAPI";
 

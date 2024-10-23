@@ -1,11 +1,11 @@
 "use server";
 
+import { createActivity } from "@/actions/activities/createActivity";
 import { ChannelSchema } from "@conquest/zod/channel.schema";
 import { WebClient } from "@slack/web-api";
 import { authAction } from "lib/authAction";
 import { prisma } from "lib/prisma";
 import { z } from "zod";
-import { createActivity } from "../activities/createActivity";
 import { createReaction } from "./createReaction";
 
 export const listReplies = authAction
@@ -48,11 +48,6 @@ export const listReplies = authAction
               source: "SLACK",
               type: "REPLY",
               message: text ?? "",
-              reference,
-              attachments: attachments?.map(({ from_url, title_link }) => ({
-                title: title_link ?? "",
-                url: from_url ?? "",
-              })),
               files: files?.map(({ title, url_private }) => ({
                 title: title ?? "",
                 url: url_private ?? "",
@@ -77,7 +72,6 @@ export const listReplies = authAction
                 await createReaction({
                   user,
                   message: name ?? "",
-                  reference: activity.id,
                   channel_id: channel.id,
                   ts: message.ts ?? "",
                 });

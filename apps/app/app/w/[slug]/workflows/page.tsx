@@ -1,8 +1,11 @@
+import { listWorkflows } from "@/actions/workflows/listWorkflows";
+import { Header } from "@/components/layouts/header";
+import { PageLayout } from "@/components/layouts/page-layout";
 import { IsPublished } from "@/features/workflows/isPublished";
 import { WorkflowButton } from "@/features/workflows/workflow-button";
 import { WorkflowMenu } from "@/features/workflows/workflow-menu";
+import { ScrollArea } from "@conquest/ui/scroll-area";
 import Link from "next/link";
-import { listWorkflows } from "queries/workflows/listWorkflows";
 
 type Props = {
   params: {
@@ -15,12 +18,11 @@ export default async function Page({ params: { slug } }: Props) {
   const workflows = rWorkflows?.data;
 
   return (
-    <div className="flex flex-col divide-y">
-      <div className="flex h-12 items-center justify-between px-4">
-        <p className="font-medium text-base">Workflows</p>
+    <PageLayout>
+      <Header title="Workflows" className="justify-between">
         <WorkflowButton />
-      </div>
-      <div>
+      </Header>
+      <ScrollArea>
         {workflows?.map((workflow) => (
           <div
             key={workflow.id}
@@ -36,7 +38,7 @@ export default async function Page({ params: { slug } }: Props) {
             <WorkflowMenu workflow={workflow} />
           </div>
         ))}
-      </div>
-    </div>
+      </ScrollArea>
+    </PageLayout>
   );
 }

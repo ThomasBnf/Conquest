@@ -13,7 +13,7 @@ export const listMembers = authAction
   .metadata({ name: "listMembers" })
   .schema(
     z.object({
-      page: z.number(),
+      page: z.number().optional(),
       search: z.string().optional(),
       id: z.string().optional(),
       desc: z.boolean().optional(),
@@ -47,8 +47,8 @@ export const listMembers = authAction
           id && !["last_activity", "created_at"].includes(id)
             ? getOrderBy(id, desc)
             : undefined,
-        take: 25,
-        skip: (page - 1) * 25,
+        take: page ? 50 : undefined,
+        skip: page ? (page - 1) * 50 : undefined,
       });
 
       const parsedMembers = MemberWithActivitiesSchema.array().parse(members);

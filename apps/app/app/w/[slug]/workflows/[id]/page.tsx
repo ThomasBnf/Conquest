@@ -1,9 +1,9 @@
+import { getWorkflow } from "@/actions/workflows/getWorkflow";
 import { Flow } from "@/features/workflows/flow";
 import { Header } from "@/features/workflows/header";
 import { ReactFlowProvider } from "@xyflow/react";
 import { WorkflowProvider } from "context/workflowContext";
 import { redirect } from "next/navigation";
-import { getWorkflow } from "queries/workflows/getWorkflow";
 
 type Props = {
   params: {

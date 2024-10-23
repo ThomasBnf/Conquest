@@ -1,5 +1,6 @@
 "use server";
 
+import { getWorkflow } from "@/actions/workflows/getWorkflow";
 import type {
   Activity,
   MemberWithActivities,
@@ -21,8 +22,7 @@ import {
 import { updateMember } from "actions/members/updateMember";
 import { startOfDay, subDays } from "date-fns";
 import { authAction } from "lib/authAction";
-import { listMembers } from "queries/members/listMembers";
-import { getWorkflow } from "queries/workflows/getWorkflow";
+import { listMembers } from "actions/members/listMembers";
 import { z } from "zod";
 
 let records: MemberWithActivities[] | undefined = undefined;

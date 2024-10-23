@@ -89,7 +89,6 @@ export const MemberSidebar = ({ member, tags }: Props) => {
           <p>{member.source}</p>
         </div>
       </div>
-
       <Separator />
     </div>
   );

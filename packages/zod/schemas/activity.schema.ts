@@ -23,9 +23,7 @@ export const ActivitySlackSchema = z.object({
   source: z.literal("SLACK"),
   type: TYPE,
   message: z.string(),
-  attachments: z.array(AttachmentsSchema).default([]),
   files: z.array(FilesSchema).default([]),
-  reference: z.string().optional(),
   ts: z.string().optional(),
 });
 

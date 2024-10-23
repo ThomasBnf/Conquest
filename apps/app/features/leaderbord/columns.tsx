@@ -1,10 +1,11 @@
 import { useUser } from "@/context/userContext";
 import { Avatar, AvatarFallback, AvatarImage } from "@conquest/ui/avatar";
-import { Button } from "@conquest/ui/button";
+import { buttonVariants } from "@conquest/ui/button";
+import { cn } from "@conquest/ui/utils/cn";
 import type { MemberWithActivities } from "@conquest/zod/activity.schema";
 import type { Tag } from "@conquest/zod/tag.schema";
 import type { ColumnDef } from "@tanstack/react-table";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { DateCell } from "../members/table/date-cell";
 import { TagBadge } from "../tags/tag-badge";
 
@@ -33,13 +34,11 @@ export const Columns = (
     cell: ({ row }) => {
       const { slug } = useUser();
       const { avatar_url, first_name, full_name } = row.original;
-      const router = useRouter();
 
       return (
-        <Button
-          variant="ghost"
-          onClick={() => router.push(`/w/${slug}/members/${row.original.id}`)}
-          className="flex items-center gap-2 px-1.5"
+        <Link
+          href={`/w/${slug}/members/${row.original.id}`}
+          className={cn(buttonVariants({ variant: "ghost" }), "space-x-2")}
         >
           <Avatar className="size-6">
             <AvatarImage src={avatar_url ?? ""} />
@@ -48,7 +47,7 @@ export const Columns = (
             </AvatarFallback>
           </Avatar>
           <p className="font-medium">{full_name}</p>
-        </Button>
+        </Link>
       );
     },
   },
@@ -110,10 +109,9 @@ export const Columns = (
     ),
     cell: ({ row }) => {
       const lastActivity = row.original.activities
-        .sort((a, b) => b.created_at.getTime() - a.created_at.getTime())
-        .at(0)?.created_at;
+        .sort((a, b) => a.created_at.getTime() - b.created_at.getTime())
+        .at(-1)?.created_at;
 
-      if (!lastActivity) return;
       return <DateCell date={lastActivity} />;
     },
   },
@@ -126,7 +124,6 @@ export const Columns = (
     ),
     cell: ({ row }) => {
       const created_at = row.original.created_at;
-      if (!created_at) return;
 
       return <DateCell date={created_at} />;
     },

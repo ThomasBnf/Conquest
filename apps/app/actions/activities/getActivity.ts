@@ -11,13 +11,16 @@ export const getActivity = authAction
   })
   .schema(
     z.object({
-      id: z.string().optional(),
+      ts: z.string().optional(),
     }),
   )
-  .action(async ({ ctx, parsedInput: { id } }) => {
+  .action(async ({ ctx, parsedInput: { ts } }) => {
     const activity = await prisma.activity.findFirst({
       where: {
-        id,
+        details: {
+          path: ["ts"],
+          equals: ts,
+        },
         workspace_id: ctx.user.workspace_id,
       },
       include: {

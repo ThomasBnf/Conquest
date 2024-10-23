@@ -10,9 +10,9 @@ import { Activities } from "features/dashboard/metrics/activities";
 import { EngagementRate } from "features/dashboard/metrics/engagement-rate";
 import { Members } from "features/dashboard/metrics/members";
 import { searchParamsDate } from "lib/searchParamsDate";
-import { listActivities } from "queries/activities/listActivities";
-import { listEngagement } from "queries/dashboard/listEngagement";
-import { listMembers } from "queries/members/listMembers";
+import { listActivities } from "actions/activities/listActivities";
+import { listEngagement } from "actions/dashboard/listEngagement";
+import { listMembers } from "actions/members/listMembers";
 
 type Props = {
   searchParams: Record<string, string | string[] | undefined>;

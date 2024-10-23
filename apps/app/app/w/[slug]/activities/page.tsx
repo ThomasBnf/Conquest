@@ -1,17 +1,15 @@
+import { Header } from "@/components/layouts/header";
+import { PageLayout } from "@/components/layouts/page-layout";
+import { Activities } from "@/features/activities/activities";
 import { ScrollArea } from "@conquest/ui/scroll-area";
-import { GroupedActivities } from "features/activities/grouped-activities";
 
-export default function Page() {
+export default async function Page() {
   return (
-    <div className="flex h-full flex-col divide-y">
-      <div className="flex min-h-12 shrink-0 items-center px-4">
-        <p className="font-medium text-base">Activities</p>
-      </div>
+    <PageLayout>
+      <Header title="Activities" />
       <ScrollArea>
-        <div className="mx-auto max-w-3xl py-12">
-          <GroupedActivities />
-        </div>
+        <Activities />
       </ScrollArea>
-    </div>
+    </PageLayout>
   );
 }

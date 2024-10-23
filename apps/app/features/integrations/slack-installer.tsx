@@ -1,7 +1,7 @@
 "use client";
 
 import { updateIntegration } from "@/actions/integrations/updateIntegration";
-import { oauthV2 } from "@/actions/slack/auth/oauthV2";
+import { oauthV2 } from "@/actions/slack/oauthV2";
 import { runSlack } from "@/actions/slack/runSlack";
 import { IsLoading } from "@/components/states/is-loading";
 import { useUser } from "@/context/userContext";

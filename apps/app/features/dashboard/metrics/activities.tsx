@@ -1,3 +1,4 @@
+import { listActivities } from "@/actions/dashboard/listActivities";
 import {
   Card,
   CardContent,
@@ -7,7 +8,6 @@ import {
 } from "@conquest/ui/card";
 import { Separator } from "@conquest/ui/separator";
 import { searchParamsDate } from "lib/searchParamsDate";
-import { listActivities } from "queries/dashboard/listActivities";
 import { Percentage } from "./percentage";
 
 export const Activities = async () => {

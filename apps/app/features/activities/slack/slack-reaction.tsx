@@ -14,7 +14,7 @@ type Props = {
 
 export const Reaction = ({ activity, content }: Props) => {
   const slackActivity = ActivitySlackSchema.parse(activity.details);
-  const { data } = useGetActivity({ id: slackActivity.reference });
+  const { data } = useGetActivity({ ts: slackActivity.ts });
 
   if (!data) return;
 

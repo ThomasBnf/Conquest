@@ -1,7 +1,7 @@
 "use server";
 
 import { WebClient } from "@slack/web-api";
-import { authAction } from "lib/authAction";
+import { authAction } from "@/lib/authAction";
 import { z } from "zod";
 import { mergeMember } from "./mergeMember";
 

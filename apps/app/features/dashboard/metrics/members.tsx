@@ -1,4 +1,4 @@
-import { listMembers } from "@/queries/dashboard/listMembers";
+import { listMembers } from "@/actions/dashboard/listMembers";
 import {
   Card,
   CardContent,

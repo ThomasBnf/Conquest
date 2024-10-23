@@ -44,8 +44,8 @@ export const listLeaderboard = authAction
           _count: "desc",
         },
       },
-      take: 20,
-      skip: page * 20,
+      take: 50,
+      skip: page * 50,
     });
 
     return MemberWithActivitiesSchema.array().parse(members);
