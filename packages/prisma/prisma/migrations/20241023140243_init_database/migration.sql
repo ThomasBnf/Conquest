@@ -124,10 +124,10 @@ CREATE TABLE "User" (
 -- CreateTable
 CREATE TABLE "Workflow" (
     "id" TEXT NOT NULL,
-    "icon" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "description" TEXT,
-    "isPublished" BOOLEAN NOT NULL DEFAULT false,
+    "published" BOOLEAN NOT NULL DEFAULT false,
+    "last_run_at" TIMESTAMP(3),
     "nodes" JSONB[],
     "edges" JSONB[],
     "workspace_id" TEXT NOT NULL,
@@ -196,6 +196,9 @@ CREATE UNIQUE INDEX "Workspace_slug_key" ON "Workspace"("slug");
 
 -- CreateIndex
 CREATE INDEX "Workspace_id_idx" ON "Workspace"("id");
+
+-- AddForeignKey
+ALTER TABLE "Activity" ADD CONSTRAINT "Activity_channel_id_fkey" FOREIGN KEY ("channel_id") REFERENCES "Channel"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Activity" ADD CONSTRAINT "Activity_member_id_fkey" FOREIGN KEY ("member_id") REFERENCES "Member"("id") ON DELETE CASCADE ON UPDATE CASCADE;
