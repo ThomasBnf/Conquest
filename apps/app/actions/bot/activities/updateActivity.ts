@@ -1,9 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { safeAction } from "@/lib/safeAction";
-import {
-  ActivityDetailsSchema,
-  ActivitySchema,
-} from "@conquest/zod/activity.schema";
+import { ActivityDetailsSchema } from "@conquest/zod/activity.schema";
 import { z } from "zod";
 
 export const updateActivity = safeAction
@@ -11,21 +8,26 @@ export const updateActivity = safeAction
   .schema(
     z.object({
       ts: z.string(),
+      previous_text: z.string(),
       details: ActivityDetailsSchema,
     }),
   )
-  .action(async ({ parsedInput: { ts, details } }) => {
-    const activity = await prisma.activity.updateMany({
+  .action(async ({ parsedInput: { ts, previous_text, details } }) => {
+    return await prisma.activity.updateMany({
       where: {
         details: {
           path: ["ts"],
           equals: ts,
+        },
+        AND: {
+          details: {
+            path: ["message"],
+            equals: previous_text,
+          },
         },
       },
       data: {
         details,
       },
     });
-
-    return ActivitySchema.parse(activity);
   });

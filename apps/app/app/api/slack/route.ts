@@ -30,7 +30,7 @@ export const POST = safeRoute.body(bodySchema).handler(async (_, context) => {
   const { team_id, event } = context.body;
   const { type } = event;
 
-  console.log(event);
+  // console.log(event);
 
   const rIntegration = await getIntegration({ external_id: team_id });
   const integration = rIntegration?.data;
@@ -148,8 +148,12 @@ export const POST = safeRoute.body(bodySchema).handler(async (_, context) => {
         case "message_changed": {
           const { text, ts, thread_ts, files } =
             event.message as GenericMessageEvent;
+          const { text: previous_text } =
+            event.previous_message as GenericMessageEvent;
+
           await updateActivity({
             ts,
+            previous_text: previous_text ?? "",
             details: {
               message: text ?? "",
               source: "SLACK",
@@ -232,8 +236,22 @@ export const POST = safeRoute.body(bodySchema).handler(async (_, context) => {
 
     case "reaction_removed": {
       const { reaction, item } = event;
-      const { ts, channel } = item;
-      await deleteActivity({ channel_id: channel, message: reaction, ts });
+      const { ts, channel: channel_id } = item;
+
+      const rChannel = await getChannel({
+        external_id: channel_id,
+        workspace_id,
+      });
+      const channel = rChannel?.data;
+
+      if (!channel) {
+        return NextResponse.json(
+          { message: "Channel not found" },
+          { status: 404 },
+        );
+      }
+
+      await deleteActivity({ channel_id: channel.id, message: reaction, ts });
       break;
     }
 
