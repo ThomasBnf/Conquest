@@ -31,6 +31,7 @@ import { toast } from "sonner";
 
 type workflowContext = {
   workflow: Workflow;
+  setWorkflow: Dispatch<SetStateAction<Workflow>>;
   nodes: Node[];
   setNodes: (nodes: Node[]) => void;
   edges: Edge[];
@@ -248,6 +249,7 @@ export const WorkflowProvider = ({ currentWorkflow, children }: Props) => {
     <workflowContext.Provider
       value={{
         workflow,
+        setWorkflow,
         nodes,
         setNodes,
         edges,

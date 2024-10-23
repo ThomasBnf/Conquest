@@ -53,7 +53,7 @@ export default async function Page({ params: { memberId, slug } }: Props) {
       </div>
       <div className="flex divide-x h-full">
         <ScrollArea className="flex-1">
-          <Activities member_id={memberId} />
+          <Activities member_id={memberId} className="px-4" />
         </ScrollArea>
         <MemberSidebar member={member} tags={tags} />
       </div>

@@ -24,6 +24,7 @@ export const ActivitySlackSchema = z.object({
   type: TYPE,
   message: z.string(),
   files: z.array(FilesSchema).default([]),
+  thread_ts: z.string().optional(),
   ts: z.string().optional(),
 });
 

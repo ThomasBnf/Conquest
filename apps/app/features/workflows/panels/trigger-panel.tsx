@@ -78,6 +78,18 @@ export const nodes: {
             time: "05:00",
           },
         },
+        {
+          id: "2",
+          type: "custom",
+          position: { x: 0, y: 0 },
+          data: {
+            icon: "MousePointerClick",
+            label: "Manual run",
+            description: "Trigger a workflow manually",
+            type: "trigger-manual-run",
+            category: "utilities",
+          },
+        },
       ],
     },
   ],

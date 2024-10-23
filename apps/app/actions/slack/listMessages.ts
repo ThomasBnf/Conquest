@@ -36,8 +36,7 @@ export const listMessages = authAction
       for (const message of messages ?? []) {
         if (!message.user) continue;
 
-        const { text, ts, user, reactions, reply_count, attachments, files } =
-          message;
+        const { text, ts, user, reactions, reply_count, files } = message;
 
         const member = await prisma.member.findUnique({
           where: {
@@ -47,7 +46,7 @@ export const listMessages = authAction
         });
 
         if (member) {
-          const rActivity = await createActivity({
+          await createActivity({
             details: {
               source: "SLACK",
               type: "MESSAGE",
@@ -63,10 +62,6 @@ export const listMessages = authAction
             created_at: new Date(Number(ts) * 1000),
             updated_at: new Date(Number(ts) * 1000),
           });
-
-          const activity = rActivity?.data;
-
-          if (!activity) continue;
 
           if (reactions?.length) {
             for (const reaction of reactions) {

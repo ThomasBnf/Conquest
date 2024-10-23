@@ -50,7 +50,7 @@ export const ActivityCard = ({
             </AvatarFallback>
           </Avatar>
         </Link>
-        <div className="ml-4 flex flex-col gap-1">
+        <div className="ml-4 flex flex-col gap-1 flex-1">
           <div className="flex items-baseline gap-2">
             <Link
               href={`/w/${slug}/members/${activity.member?.id}`}

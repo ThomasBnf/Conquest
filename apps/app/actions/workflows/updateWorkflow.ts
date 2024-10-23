@@ -39,7 +39,7 @@ export const updateWorkflow = authAction
         },
       });
 
-      revalidatePath(`/${ctx.user.workspace.slug}/workflows/${id}`);
+      revalidatePath(`/w/${ctx.user.workspace.slug}/workflows/${id}`);
       return WorkflowSchema.parse(updatedWorkflow);
     },
   );

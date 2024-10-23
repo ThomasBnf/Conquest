@@ -5,7 +5,7 @@ import type { WebClient } from "@slack/web-api";
 import { z } from "zod";
 
 export const mergeMember = safeAction
-  .metadata({ name: "mergeMember2" })
+  .metadata({ name: "mergeMember" })
   .schema(
     z.object({
       web: z.custom<WebClient>(),

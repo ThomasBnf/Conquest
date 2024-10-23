@@ -4,7 +4,7 @@ import { Button } from "@conquest/ui/button";
 import type { Tag } from "@conquest/zod/tag.schema";
 import { QueryInput } from "components/custom/query-input";
 import { useState } from "react";
-import { useDebounceValue } from "usehooks-ts";
+import { useDebounce } from "use-debounce";
 import { TagCard } from "./TagCard";
 import { TagForm } from "./TagForm";
 
@@ -14,7 +14,7 @@ type Props = {
 
 export const ListTags = ({ tags }: Props) => {
   const [isVisible, setIsVisible] = useState(false);
-  const [query, setQuery] = useDebounceValue("", 500);
+  const [query, setQuery] = useDebounce("", 500);
 
   return (
     <div className="mt-6 flex flex-col gap-4">

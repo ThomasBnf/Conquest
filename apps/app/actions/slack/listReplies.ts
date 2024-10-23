@@ -16,11 +16,10 @@ export const listReplies = authAction
     z.object({
       web: z.instanceof(WebClient),
       channel: ChannelSchema,
-      reference: z.string().cuid().optional(),
       ts: z.string(),
     }),
   )
-  .action(async ({ ctx, parsedInput: { web, channel, ts, reference } }) => {
+  .action(async ({ ctx, parsedInput: { web, channel, ts } }) => {
     const workspace_id = ctx.user.workspace_id;
     let cursor: string | undefined;
 
@@ -33,7 +32,7 @@ export const listReplies = authAction
       });
 
       for (const message of messages?.slice(1) ?? []) {
-        const { text, ts, user, reactions, attachments, files } = message;
+        const { text, ts, user, reactions, files, thread_ts } = message;
 
         const member = await prisma.member.findUnique({
           where: {
@@ -53,6 +52,7 @@ export const listReplies = authAction
                 url: url_private ?? "",
               })),
               ts: ts ?? "",
+              thread_ts: thread_ts ?? "",
             },
             channel_id: channel.id,
             member_id: member.id,

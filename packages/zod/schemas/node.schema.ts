@@ -45,6 +45,11 @@ export const NodeRecurringSchema = NodeBaseSchema.extend({
   }),
 });
 
+export const NodeManualRunSchema = NodeBaseSchema.extend({
+  type: z.literal("trigger-manual-run"),
+  category: z.literal("utilities"),
+});
+
 export const NodeListRecordsSchema = NodeBaseSchema.extend({
   type: z.literal("list-records"),
   category: z.literal("records"),
@@ -68,6 +73,7 @@ export const NodeTagMemberSchema = NodeBaseSchema.extend({
 
 export const NodeDataSchema = z.discriminatedUnion("type", [
   NodeRecurringSchema,
+  NodeManualRunSchema,
   NodeListRecordsSchema,
   NodeWebhookSchema,
   NodeTagMemberSchema,

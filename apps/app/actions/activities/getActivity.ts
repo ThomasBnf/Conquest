@@ -12,15 +12,18 @@ export const getActivity = authAction
   .schema(
     z.object({
       ts: z.string().optional(),
+      type: z.literal("MESSAGE").optional(),
     }),
   )
-  .action(async ({ ctx, parsedInput: { ts } }) => {
+  .action(async ({ ctx, parsedInput: { ts, type } }) => {
+    const AND = type ? [{ details: { path: ["type"], equals: type } }] : [];
     const activity = await prisma.activity.findFirst({
       where: {
         details: {
           path: ["ts"],
           equals: ts,
         },
+        AND,
         workspace_id: ctx.user.workspace_id,
       },
       include: {

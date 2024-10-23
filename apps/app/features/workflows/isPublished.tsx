@@ -3,17 +3,20 @@
 import { Switch } from "@conquest/ui/switch";
 import type { Workflow } from "@conquest/zod/workflow.schema";
 import { updateWorkflow } from "actions/workflows/updateWorkflow";
-import { useState } from "react";
+import { type Dispatch, type SetStateAction, useState } from "react";
 
 type Props = {
   workflow: Workflow;
+  setWorkflow?: Dispatch<SetStateAction<Workflow>>;
 };
 
-export const IsPublished = ({ workflow }: Props) => {
+export const IsPublished = ({ workflow, setWorkflow }: Props) => {
   const [isPublished, setIsPublished] = useState(workflow.published);
 
   const onTogglePublished = async () => {
     setIsPublished(!isPublished);
+    setWorkflow?.({ ...workflow, published: !isPublished });
+
     await updateWorkflow({
       id: workflow.id,
       published: !isPublished,
@@ -23,12 +26,12 @@ export const IsPublished = ({ workflow }: Props) => {
   return (
     <div className="flex items-center gap-2">
       {isPublished ? (
-        <div className="flex items-center gap-1 rounded-md border border-green-200 bg-green-100 px-1">
+        <div className="flex items-center gap-1 rounded-md border border-green-200 bg-green-100 px-1 h-6">
           <div className="size-2.5 rounded-full bg-green-500" />
           <p className="text-green-700">Live</p>
         </div>
       ) : (
-        <p className="flex h-5 items-center rounded-md border border-neutral-200 bg-neutral-100 px-1">
+        <p className="flex h-6 items-center rounded-md border border-neutral-200 bg-neutral-100 px-1">
           Draft
         </p>
       )}

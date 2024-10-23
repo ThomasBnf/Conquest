@@ -1,4 +1,3 @@
-import { cn } from "@conquest/ui/utils/cn";
 import {
   FormControl,
   FormField,
@@ -7,11 +6,12 @@ import {
   FormMessage,
 } from "@conquest/ui/form";
 import { Input } from "@conquest/ui/input";
+import { cn } from "@conquest/ui/utils/cn";
 import { getSlug } from "actions/workspaces/getSlug";
 import { Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { type UseFormReturn, useWatch } from "react-hook-form";
-import { useDebounceValue } from "usehooks-ts";
+import { useDebounce } from "use-debounce";
 import type { Workspace } from "../schemas/create-workspace.schema";
 
 type Props = {
@@ -26,7 +26,7 @@ export const WorkspaceFields = ({ form }: Props) => {
     name: "workspace_name",
   });
 
-  const [debouncedValue, setValue] = useDebounceValue(companyName, 500);
+  const [debouncedValue, setValue] = useDebounce(companyName, 500);
 
   const checkSlug = async (slug: string) => {
     setLoading(true);

@@ -30,7 +30,7 @@ export const POST = safeRoute.body(bodySchema).handler(async (_, context) => {
   const { team_id, event } = context.body;
   const { type } = event;
 
-  // console.log(event);
+  console.log(event);
 
   const rIntegration = await getIntegration({ external_id: team_id });
   const integration = rIntegration?.data;
@@ -49,6 +49,11 @@ export const POST = safeRoute.body(bodySchema).handler(async (_, context) => {
         external_id: team_id,
         status: "DISCONNECTED",
       });
+      break;
+    }
+
+    case "member_joined_channel": {
+      await mergeMember({ web, user: event.user, workspace_id });
       break;
     }
 
@@ -76,13 +81,10 @@ export const POST = safeRoute.body(bodySchema).handler(async (_, context) => {
       break;
     }
 
-    case "channel_deleted":
+    case "channel_deleted": {
       await deleteChannel({ external_id: event.channel });
       break;
-
-    case "member_joined_channel":
-      await mergeMember({ web, user: event.user, workspace_id });
-      break;
+    }
 
     case "message": {
       const { channel: channel_id, subtype } = event;
@@ -132,6 +134,7 @@ export const POST = safeRoute.body(bodySchema).handler(async (_, context) => {
                 title: title ?? "",
                 url: url_private ?? "",
               })) ?? [],
+            thread_ts,
             ts,
           },
           workspace_id,
@@ -146,6 +149,7 @@ export const POST = safeRoute.body(bodySchema).handler(async (_, context) => {
         }
 
         case "message_changed": {
+          console.log(event);
           const { text, ts, thread_ts, files } =
             event.message as GenericMessageEvent;
           const { text: previous_text } =
@@ -164,6 +168,7 @@ export const POST = safeRoute.body(bodySchema).handler(async (_, context) => {
                   url: url_private ?? "",
                 })) ?? [],
               ts,
+              thread_ts,
             },
           });
           break;

@@ -1,4 +1,3 @@
-import { emojiParser } from "@/helpers/emoji-parser";
 import { SlackMarkdown } from "@/helpers/slack-markdown";
 import { useGetActivity } from "@/queries/activities/useGetActivity";
 import {
@@ -11,21 +10,18 @@ type Props = {
   activity: ActivityWithMember;
 };
 
-export const SlackReaction = ({ activity }: Props) => {
+export const SlackReply = ({ activity }: Props) => {
   const slackActivity = ActivitySlackSchema.parse(activity.details);
-  const { data } = useGetActivity({ ts: slackActivity.ts });
-  const parsedMessage = ActivitySlackSchema.safeParse(data?.details);
+  const { data } = useGetActivity({ ts: slackActivity.thread_ts });
 
-  if (!parsedMessage.success || !data) return;
+  if (!data) return;
 
   return (
     <div className="flex flex-col gap-2">
       <ActivityCard activity={data}>
         <SlackMarkdown activity={data} />
       </ActivityCard>
-      <p className="border border-[#1264a3] size-7 rounded-lg bg-[#e3f8ff] text-center place-content-center">
-        {emojiParser(slackActivity.message)}
-      </p>
+      <SlackMarkdown activity={activity} />
     </div>
   );
 };

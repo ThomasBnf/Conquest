@@ -15,12 +15,13 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useUser } from "context/userContext";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
+import { IsPublished } from "./isPublished";
 import { type FormName, FormNameSchema } from "./panels/types/form-name.schema";
 import { WorkflowMenu } from "./workflow-menu";
 
 export const Header = () => {
   const { slug } = useUser();
-  const { workflow, onUpdateWorkflow } = useWorkflow();
+  const { workflow, setWorkflow, onUpdateWorkflow } = useWorkflow();
 
   const form = useForm<FormName>({
     resolver: zodResolver(FormNameSchema),
@@ -75,7 +76,10 @@ export const Header = () => {
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
-      <WorkflowMenu workflow={workflow} />
+      <div className="flex items-center gap-4">
+        <IsPublished workflow={workflow} setWorkflow={setWorkflow} />
+        <WorkflowMenu workflow={workflow} />
+      </div>
     </div>
   );
 };

@@ -13,6 +13,7 @@ TypeScript Usage:
 - Use TypeScript for all code; prefer types over interfaces
 - Avoid enums; use maps instead
 - Use arrow function for components with TypeScript types and called "Props"
+- Don't use "index" as key for map or other type of function
 
 Syntax and Formatting:
 - Use the arrow function for pure functions

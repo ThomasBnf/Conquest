@@ -16,7 +16,7 @@ export default function Page() {
   const { slug, slack } = useUser();
 
   const scopes =
-    "channels:history,channels:join,channels:read,files:read,groups:read,links:read,reactions:read,team:read,users:read,users:read.email";
+    "channels:history,channels:join,channels:read,files:read,groups:read,links:read,reactions:read,team:read,users.profile:read,users:read,users:read.email";
 
   const onUninstall = async () => {
     if (!slack?.id) return;
