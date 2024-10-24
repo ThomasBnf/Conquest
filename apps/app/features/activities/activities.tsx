@@ -1,6 +1,5 @@
 "use client";
 
-import { listActivities } from "@/actions/activities/listActivities";
 import { IsLoading } from "@/components/states/is-loading";
 import { Separator } from "@conquest/ui/separator";
 import { cn } from "@conquest/ui/utils/cn";
@@ -10,8 +9,9 @@ import {
 } from "@conquest/zod/activity.schema";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { format, isYesterday } from "date-fns";
-import { forwardRef, useEffect, useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { useInView } from "react-intersection-observer";
+import { listActivitiesAction } from "./actions/listActivitiesAction";
 import { ActivityParser } from "./activity-parser";
 
 type Activities = Record<string, ActivityWithMember[]>;
@@ -20,62 +20,65 @@ type Props = React.HTMLAttributes<HTMLDivElement> & {
   member_id?: string;
 };
 
-export const Activities = forwardRef<HTMLDivElement, Props>(
-  ({ member_id, className }) => {
-    const { ref, inView } = useInView();
+export const Activities = ({ member_id, className }: Props) => {
+  const { ref, inView } = useInView();
 
-    const { data, isLoading, fetchNextPage, hasNextPage } = useInfiniteQuery({
-      queryKey: ["activities", member_id],
-      queryFn: ({ pageParam }) =>
-        listActivities({ member_id, page: pageParam }),
-      getNextPageParam: (_, allPages) => allPages.length + 1,
-      initialPageParam: 1,
-    });
+  const { data, isLoading, fetchNextPage, hasNextPage } = useInfiniteQuery({
+    queryKey: ["activities", member_id],
+    queryFn: ({ pageParam }) =>
+      listActivitiesAction({
+        member_id,
+        page: pageParam,
+      }),
+    getNextPageParam: (_, allPages) => allPages.length + 1,
+    initialPageParam: 1,
+  });
 
-    const activities = useMemo(() => {
-      const pages = data?.pages;
-      if (!pages?.length) return [];
+  const activities = useMemo(() => {
+    const pages = data?.pages;
+    if (!pages?.length) return [];
 
-      return ActivityWithMemberSchema.array().parse(
-        pages.flatMap((page) => page?.data ?? []),
-      );
-    }, [data?.pages]);
-
-    const groupedActivities = useMemo(() => {
-      return activities.reduce((acc: Activities, activity) => {
-        const createdAt = format(activity.created_at, "PP");
-        if (!acc[createdAt]) acc[createdAt] = [];
-        acc[createdAt].push(activity);
-        return acc;
-      }, {});
-    }, [activities, data?.pages]);
-
-    useEffect(() => {
-      if (inView && hasNextPage) fetchNextPage();
-    }, [inView]);
-
-    if (isLoading) return <IsLoading />;
-
-    return (
-      <div className={cn("mx-auto max-w-3xl py-12", className)}>
-        {Object.entries(groupedActivities).map(([date, activities]) => (
-          <div key={date} className="space-y-14 mb-10">
-            <div className="my-4 flex items-center">
-              <Separator className="flex-1" />
-              <p className="mx-4 rounded border bg-muted p-1 leading-none">
-                {isYesterday(date) ? "Yesterday" : format(date, "MMMM d, yyyy")}
-              </p>
-              <Separator className="flex-1" />
-            </div>
-            <div className="space-y-10">
-              {activities.map((activity) => (
-                <ActivityParser key={activity.id} activity={activity} />
-              ))}
-            </div>
-          </div>
-        ))}
-        {!isLoading && <div ref={ref} />}
-      </div>
+    return ActivityWithMemberSchema.array().parse(
+      pages.flatMap((page) => page?.data ?? []),
     );
-  },
-);
+  }, [data?.pages]);
+
+  const groupedActivities = useMemo(() => {
+    if (!activities?.length) return {};
+
+    return activities?.reduce((acc: Activities, activity) => {
+      const createdAt = format(activity.created_at, "PP");
+      if (!acc[createdAt]) acc[createdAt] = [];
+      acc[createdAt].push(activity);
+      return acc;
+    }, {});
+  }, [activities]);
+
+  useEffect(() => {
+    if (inView && hasNextPage) fetchNextPage();
+  }, [inView]);
+
+  if (isLoading || !activities) return <IsLoading />;
+
+  return (
+    <div className={cn("mx-auto max-w-3xl pt-6 pb-12", className)}>
+      {Object.entries(groupedActivities).map(([date, activities]) => (
+        <div key={date} className="space-y-14 mb-10">
+          <div className="my-4 flex items-center">
+            <Separator className="flex-1" />
+            <p className="mx-4 rounded border bg-muted p-1 leading-none">
+              {isYesterday(date) ? "Yesterday" : format(date, "MMMM d, yyyy")}
+            </p>
+            <Separator className="flex-1" />
+          </div>
+          <div className="space-y-10">
+            {activities.map((activity) => (
+              <ActivityParser key={activity.id} activity={activity} />
+            ))}
+          </div>
+        </div>
+      ))}
+      {!isLoading && <div ref={ref} />}
+    </div>
+  );
+};

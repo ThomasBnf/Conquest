@@ -19,8 +19,8 @@ export const MemberSchema = z.object({
   tags: z.array(z.string()).default([]),
   slack_id: z.string().nullable(),
   workspace_id: z.string().cuid(),
-  created_at: z.date(),
-  updated_at: z.date(),
+  created_at: z.coerce.date(),
+  updated_at: z.coerce.date(),
 });
 
 export type Member = z.infer<typeof MemberSchema>;

@@ -5,7 +5,11 @@ type Props = PropsWithChildren<React.HTMLAttributes<HTMLDivElement>>;
 
 export const PageLayout = forwardRef<HTMLDivElement, Props>(
   ({ children, className, ...props }, ref) => (
-    <div ref={ref} className={cn("flex flex-col h-full", className)} {...props}>
+    <div
+      ref={ref}
+      className={cn("flex flex-col h-full overflow-hidden", className)}
+      {...props}
+    >
       {children}
     </div>
   ),

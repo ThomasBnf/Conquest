@@ -1,8 +1,8 @@
+import { updateUserAction } from "@/features/auth/actions/updateUserAction";
+import { updateWorkspaceAction } from "@/features/workspaces/actions/updateWorkspaceAction";
 import { Button } from "@conquest/ui/button";
 import { Form } from "@conquest/ui/form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { updateUser } from "actions/users/updateUser";
-import { updateWorkspace } from "actions/workspaces/updateWorkspace";
 import { ArrowRightIcon } from "lucide-react";
 import { type Dispatch, type SetStateAction, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -42,7 +42,7 @@ export const WorkspaceStep = ({ setStep }: Props) => {
   }: Workspace) => {
     setLoading(true);
 
-    const rUser = await updateUser({ first_name, last_name });
+    const rUser = await updateUserAction({ first_name, last_name });
     const error = rUser?.serverError;
 
     if (error) {
@@ -50,7 +50,10 @@ export const WorkspaceStep = ({ setStep }: Props) => {
       return toast.error(error);
     }
 
-    const rWorkspace = await updateWorkspace({ name: workspace_name, slug });
+    const rWorkspace = await updateWorkspaceAction({
+      name: workspace_name,
+      slug,
+    });
     const errorWorkspace = rWorkspace?.serverError;
 
     if (errorWorkspace) {

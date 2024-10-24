@@ -1,5 +1,6 @@
 "use client";
 
+import { logIn } from "@/features/auth/actions/loginInAction";
 import { Button, buttonVariants } from "@conquest/ui/button";
 import {
   Card,
@@ -21,7 +22,6 @@ import {
 import { Input } from "@conquest/ui/input";
 import { type Login, LoginSchema } from "@conquest/zod/auth.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { logIn } from "actions/auth";
 import { ArrowRightIcon } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";

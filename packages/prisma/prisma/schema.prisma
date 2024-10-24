@@ -20,12 +20,13 @@ enum GENDER {
 }
 
 model Activity {
-  id         String   @id @default(cuid())
-  details    Json
-  channel_id String?
-  channel    Channel? @relation(fields: [channel_id], references: [id], onDelete: Cascade)
-  member_id  String
-  member     Member   @relation(fields: [member_id], references: [id], onDelete: Cascade)
+  id          String   @id @default(cuid())
+  external_id String?  @unique
+  details     Json
+  channel_id  String?
+  channel     Channel? @relation(fields: [channel_id], references: [id], onDelete: Cascade)
+  member_id   String
+  member      Member   @relation(fields: [member_id], references: [id], onDelete: Cascade)
 
   workspace_id String
   workspace    Workspace @relation(fields: [workspace_id], references: [id], onDelete: Cascade)

@@ -1,10 +1,12 @@
 import { emojiParser } from "@/helpers/emoji-parser";
 import { SlackMarkdown } from "@/helpers/slack-markdown";
-import { useGetActivity } from "@/queries/activities/useGetActivity";
+import { Skeleton } from "@conquest/ui/skeleton";
 import {
   ActivitySlackSchema,
   type ActivityWithMember,
 } from "@conquest/zod/activity.schema";
+import ky from "ky";
+import useSWR from "swr";
 import { ActivityCard } from "../activity-card";
 
 type Props = {
@@ -13,10 +15,18 @@ type Props = {
 
 export const SlackReaction = ({ activity }: Props) => {
   const slackActivity = ActivitySlackSchema.parse(activity.details);
-  const { data } = useGetActivity({ ts: slackActivity.ts });
-  const parsedMessage = ActivitySlackSchema.safeParse(data?.details);
 
-  if (!parsedMessage.success || !data) return;
+  const { data } = useSWR(
+    `/api/activities/${slackActivity.react_to}`,
+    async (url) => (await ky.get(url).json()) as ActivityWithMember,
+  );
+
+  if (!data)
+    return (
+      <div className="h-16 w-full border rounded p-3">
+        <Skeleton className="h-full" />
+      </div>
+    );
 
   return (
     <div className="flex flex-col gap-2">

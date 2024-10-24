@@ -1,8 +1,8 @@
-import { ChartActiveMembers } from "@/features/dashboard/charts/chart-active-members";
-import { ChartMembers } from "@/features/dashboard/charts/chart-members";
 import { ActiveMembers } from "@/features/dashboard/metrics/active-members";
 import { ScrollArea } from "@conquest/ui/scroll-area";
 import { Separator } from "@conquest/ui/separator";
+import { listActivities } from "actions/activities/listActivities";
+import { listEngagement } from "actions/dashboard/listEngagement";
 import { ChartActivityType } from "features/dashboard/charts/chart-activity-type";
 import { ChartEngagement } from "features/dashboard/charts/chart-engagement";
 import { DateRangePicker } from "features/dashboard/date-range-picker";
@@ -10,9 +10,7 @@ import { Activities } from "features/dashboard/metrics/activities";
 import { EngagementRate } from "features/dashboard/metrics/engagement-rate";
 import { Members } from "features/dashboard/metrics/members";
 import { searchParamsDate } from "lib/searchParamsDate";
-import { listActivities } from "actions/activities/listActivities";
-import { listEngagement } from "actions/dashboard/listEngagement";
-import { listMembers } from "actions/members/listMembers";
+// import { listMembers } from "actions/members/listMembersAc";
 
 type Props = {
   searchParams: Record<string, string | string[] | undefined>;
@@ -21,8 +19,8 @@ type Props = {
 export default async function Page({ searchParams }: Props) {
   const { from, to } = searchParamsDate.parse(searchParams);
 
-  const rMembers = await listMembers({});
-  const members = rMembers?.data;
+  // const rMembers = await listMembers({});
+  // const members = rMembers?.data;
 
   const rActivities = await listActivities({ from, to });
   const activities = rActivities?.data;
@@ -45,8 +43,8 @@ export default async function Page({ searchParams }: Props) {
         </div>
         <Separator />
         <div className="flex flex-col gap-4 p-4">
-          <ChartMembers members={members} />
-          <ChartActiveMembers members={members} />
+          {/* <ChartMembers members={members} />
+          <ChartActiveMembers members={members} /> */}
           <ChartEngagement dailyEngagement={engagement} />
           <ChartActivityType activities={activities} />
         </div>

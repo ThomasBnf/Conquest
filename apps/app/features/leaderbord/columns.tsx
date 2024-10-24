@@ -6,7 +6,7 @@ import type { MemberWithActivities } from "@conquest/zod/activity.schema";
 import type { Tag } from "@conquest/zod/tag.schema";
 import type { ColumnDef } from "@tanstack/react-table";
 import Link from "next/link";
-import { DateCell } from "../members/table/date-cell";
+import { DateCell } from "../members/date-cell";
 import { TagBadge } from "../tags/tag-badge";
 
 export const Columns = (

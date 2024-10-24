@@ -1,5 +1,5 @@
+import { getAuthenticatedUser } from "@/features/auth/queries/getAuthenticatedUser";
 import { ChannelSchema } from "@conquest/zod/channel.schema";
-import { getAuthenticatedUser } from "features/auth/helpers/getAuthenticatedUser";
 import { prisma } from "lib/prisma";
 import { safeRoute } from "lib/safeRoute";
 import { NextResponse } from "next/server";

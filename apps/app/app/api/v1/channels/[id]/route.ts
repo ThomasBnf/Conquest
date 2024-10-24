@@ -1,4 +1,4 @@
-import { getAuthenticatedUser } from "features/auth/helpers/getAuthenticatedUser";
+import { getAuthenticatedUser } from "@/features/auth/queries/getAuthenticatedUser";
 import { prisma } from "lib/prisma";
 import { safeRoute } from "lib/safeRoute";
 import { NextResponse } from "next/server";

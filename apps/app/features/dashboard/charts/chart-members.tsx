@@ -1,5 +1,6 @@
 "use client";
 
+import { Button } from "@conquest/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@conquest/ui/card";
 import {
   type ChartConfig,
@@ -15,6 +16,7 @@ import {
   parseISO,
 } from "date-fns";
 import { useDateRange } from "hooks/useDateRange";
+import ky from "ky";
 import { Area, AreaChart, CartesianGrid, XAxis } from "recharts";
 
 const chartConfig = {
@@ -62,12 +64,18 @@ export const ChartMembers = ({ members }: Props) => {
   const [{ from, to }] = useDateRange();
   const chartData = getMembers({ members, from, to });
 
+  const onClick = async () => {
+    const json = await ky.get("/api/activities?page=1").json();
+    console.log(json);
+  };
+
   return (
     <Card>
       <CardHeader className="border-b p-4">
         <CardTitle className="text-lg font-medium">Members</CardTitle>
       </CardHeader>
       <CardContent className="px-2 pt-4 sm:px-6 sm:pt-6">
+        <Button onClick={onClick}>test</Button>
         <ChartContainer
           config={chartConfig}
           className="aspect-auto h-[320px] w-full"

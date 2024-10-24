@@ -14,11 +14,7 @@ export const Message = ({ activity }: Props) => {
   const { type } = activity.details;
 
   if (type === "REACTION") {
-    return (
-      <div className="text-sm whitespace-pre-wrap">
-        <SlackReaction activity={activity} />
-      </div>
-    );
+    return <SlackReaction activity={activity} />;
   }
 
   if (type === "REPLY") {

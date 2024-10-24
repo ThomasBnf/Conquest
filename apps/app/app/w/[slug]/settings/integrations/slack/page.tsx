@@ -1,8 +1,8 @@
 "use client";
 
-import { deleteIntegration } from "@/actions/integrations/deleteIntegration";
 import { DeleteDialog } from "@/components/custom/delete-dialog";
 import { env } from "@/env.mjs";
+import { deleteIntegrationAction } from "@/features/integrations/actions/deleteIntegrationAction";
 import { buttonVariants } from "@conquest/ui/button";
 import { Separator } from "@conquest/ui/separator";
 import { cn } from "@conquest/ui/utils/cn";
@@ -20,7 +20,7 @@ export default function Page() {
 
   const onUninstall = async () => {
     if (!slack?.id) return;
-    deleteIntegration({ id: slack.id });
+    deleteIntegrationAction({ id: slack.id });
     return toast.success("Slack disconnected");
   };
 

@@ -36,8 +36,8 @@ export const ActivityCard = ({
       {badge}
       <div
         className={cn(
-          "relative flex rounded-[6px] bg-background",
           badge ? "p-6" : "p-3",
+          "relative flex rounded-[6px] bg-background pr-10",
         )}
       >
         {badge && <Menu activity={activity} />}

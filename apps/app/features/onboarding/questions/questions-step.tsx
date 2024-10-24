@@ -1,8 +1,8 @@
+import { updateUserAction } from "@/features/auth/actions/updateUserAction";
+import { updateWorkspaceAction } from "@/features/workspaces/actions/updateWorkspaceAction";
 import { Button } from "@conquest/ui/button";
 import { Form } from "@conquest/ui/form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { updateUser } from "actions/users/updateUser";
-import { updateWorkspace } from "actions/workspaces/updateWorkspace";
 import { useUser } from "context/userContext";
 import { ArrowRightIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -34,7 +34,7 @@ export const QuestionsStep = () => {
   const onSubmit = async ({ company_size, source }: Questions) => {
     setLoading(true);
 
-    const rUser = await updateUser({ onboarding: new Date() });
+    const rUser = await updateUserAction({ onboarding: new Date() });
     const error = rUser?.serverError;
 
     if (error) {
@@ -42,7 +42,10 @@ export const QuestionsStep = () => {
       return toast.error(error);
     }
 
-    const rWorkspace = await updateWorkspace({ company_size, source });
+    const rWorkspace = await updateWorkspaceAction({
+      company_size,
+      source,
+    });
     const errorWorkspace = rWorkspace?.serverError;
 
     if (errorWorkspace) {

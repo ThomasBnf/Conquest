@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { MemberSchema } from "./member.schema";
 
-export const TYPE = z.enum(["MESSAGE", "REACTION", "REPLY"]);
+export const TYPE = z.enum(["POST", "REACTION", "REPLY"]);
 
 export const AttachmentsSchema = z.object({
   title: z.string(),
@@ -24,8 +24,8 @@ export const ActivitySlackSchema = z.object({
   type: TYPE,
   message: z.string(),
   files: z.array(FilesSchema).default([]),
-  thread_ts: z.string().optional(),
-  ts: z.string().optional(),
+  reply_to: z.string().nullable().optional(),
+  react_to: z.string().nullable().optional(),
 });
 
 export const ActivityDetailsSchema = z.discriminatedUnion("source", [
@@ -35,12 +35,13 @@ export const ActivityDetailsSchema = z.discriminatedUnion("source", [
 
 export const ActivitySchema = z.object({
   id: z.string().cuid(),
+  external_id: z.string().nullable(),
   details: ActivityDetailsSchema,
   channel_id: z.string().cuid().nullable(),
   member_id: z.string().cuid(),
   workspace_id: z.string().cuid(),
-  created_at: z.date(),
-  updated_at: z.date(),
+  created_at: z.coerce.date(),
+  updated_at: z.coerce.date(),
 });
 
 export const ActivityWithMemberSchema = ActivitySchema.extend({

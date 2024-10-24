@@ -1,3 +1,4 @@
+import { getSlugAction } from "@/features/workspaces/actions/getSlugAction";
 import {
   FormControl,
   FormField,
@@ -7,7 +8,6 @@ import {
 } from "@conquest/ui/form";
 import { Input } from "@conquest/ui/input";
 import { cn } from "@conquest/ui/utils/cn";
-import { getSlug } from "actions/workspaces/getSlug";
 import { Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { type UseFormReturn, useWatch } from "react-hook-form";
@@ -30,7 +30,7 @@ export const WorkspaceFields = ({ form }: Props) => {
 
   const checkSlug = async (slug: string) => {
     setLoading(true);
-    const rSlug = await getSlug({ slug });
+    const rSlug = await getSlugAction({ slug });
     const slugData = rSlug?.data;
 
     if (slugData === 0) {

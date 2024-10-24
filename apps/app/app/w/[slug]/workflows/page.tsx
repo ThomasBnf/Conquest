@@ -1,8 +1,8 @@
-import { listWorkflows } from "@/actions/workflows/listWorkflows";
 import { Header } from "@/components/layouts/header";
 import { PageLayout } from "@/components/layouts/page-layout";
+import { CreateWorkflowButton } from "@/features/workflows/create-workflow-button";
 import { IsPublished } from "@/features/workflows/isPublished";
-import { WorkflowButton } from "@/features/workflows/workflow-button";
+import { listWorkflows } from "@/features/workflows/queries/listWorkflows";
 import { WorkflowMenu } from "@/features/workflows/workflow-menu";
 import { ScrollArea } from "@conquest/ui/scroll-area";
 import Link from "next/link";
@@ -20,7 +20,7 @@ export default async function Page({ params: { slug } }: Props) {
   return (
     <PageLayout>
       <Header title="Workflows" className="justify-between">
-        <WorkflowButton />
+        <CreateWorkflowButton />
       </Header>
       <ScrollArea>
         {workflows?.map((workflow) => (

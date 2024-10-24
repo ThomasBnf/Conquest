@@ -1,6 +1,5 @@
 "use client";
 
-import { runWorkflow } from "@/actions/workflows/runWorkflow";
 import { Button } from "@conquest/ui/button";
 import { Background, Controls, type NodeProps, ReactFlow } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
@@ -8,6 +7,7 @@ import { useWorkflow } from "context/workflowContext";
 import { MousePointerClick } from "lucide-react";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
+import { runWorkflow } from "./actions/runWorkflow";
 import { CustomNode } from "./nodes/custom-node";
 import { Sidebar } from "./sidebar";
 

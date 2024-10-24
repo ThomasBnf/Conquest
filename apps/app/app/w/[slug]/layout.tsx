@@ -1,7 +1,7 @@
 import { AppSidebar } from "@/components/layouts/app-sidebar";
+import { UserProvider } from "@/context/userContext";
+import { getCurrentUser } from "@/helpers/getCurrentUser";
 import { SidebarProvider } from "@conquest/ui/sidebar";
-import { getCurrentUser } from "actions/users/getCurrentUser";
-import { UserProvider } from "context/userContext";
 import { redirect } from "next/navigation";
 import type { PropsWithChildren } from "react";
 
@@ -15,11 +15,10 @@ export default async function Layout({
   children,
   params: { slug },
 }: PropsWithChildren<Props>) {
-  const rUser = await getCurrentUser();
-  const user = rUser?.data;
+  const user = await getCurrentUser();
 
-  if (!user?.onboarding) redirect("/");
-  if (user?.workspace.slug !== slug) redirect(`/w/${user?.workspace.slug}`);
+  if (!user.onboarding) redirect("/");
+  if (user.workspace.slug !== slug) redirect(`/w/${user.workspace.slug}`);
 
   return (
     <SidebarProvider>

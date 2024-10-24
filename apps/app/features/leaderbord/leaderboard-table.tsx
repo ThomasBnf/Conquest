@@ -1,6 +1,5 @@
 "use client";
 
-import { listLeaderboard } from "@/actions/members/listLeaderboard";
 import { IsLoading } from "@/components/states/is-loading";
 import { ScrollArea } from "@conquest/ui/scroll-area";
 import {
@@ -12,6 +11,7 @@ import {
   TableHeader,
   TableRow,
 } from "@conquest/ui/table";
+import { cn } from "@conquest/ui/utils/cn";
 import { MemberWithActivitiesSchema } from "@conquest/zod/activity.schema";
 import type { Tag } from "@conquest/zod/tag.schema";
 import { useInfiniteQuery } from "@tanstack/react-query";
@@ -24,6 +24,7 @@ import { useUser } from "context/userContext";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo } from "react";
 import { useInView } from "react-intersection-observer";
+import { listLeaderboardActions } from "./actions/listLeaderboardActions";
 import { Columns } from "./columns";
 
 type Props = {
@@ -40,7 +41,8 @@ export const LeaderbordTable = ({ tags, from, to }: Props) => {
 
   const { data, isLoading, fetchNextPage, hasNextPage } = useInfiniteQuery({
     queryKey: ["leaderboard", from, to],
-    queryFn: ({ pageParam }) => listLeaderboard({ page: pageParam, from, to }),
+    queryFn: ({ pageParam }) =>
+      listLeaderboardActions({ page: pageParam, from, to }),
     getNextPageParam: (_, allPages) => allPages.length + 1,
     initialPageParam: 0,
   });
@@ -115,7 +117,7 @@ export const LeaderbordTable = ({ tags, from, to }: Props) => {
             </TableRow>
           )}
         </TableBody>
-        <TableFooter>
+        <TableFooter className={cn(isLoading && "border-t-0")}>
           <TableRow>
             <TableCell colSpan={columns.length} ref={ref} className="p-0" />
           </TableRow>

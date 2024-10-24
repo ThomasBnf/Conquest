@@ -1,9 +1,9 @@
-import { listLeaderboard } from "@/actions/members/listLeaderboard";
-import { listTags } from "@/actions/tags/listTags";
 import { Header } from "@/components/layouts/header";
 import { PageLayout } from "@/components/layouts/page-layout";
 import { LeaderbordTable } from "@/features/leaderbord/leaderboard-table";
 import { Podium } from "@/features/leaderbord/podium";
+import { listLeaderboard } from "@/features/leaderbord/queries/listLeaderboard";
+import { listTags } from "@/features/tags/queries/listTags";
 import { DateRangePicker } from "features/dashboard/date-range-picker";
 import { searchParamsDate } from "lib/searchParamsDate";
 

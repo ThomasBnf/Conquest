@@ -1,6 +1,6 @@
-import { listTags } from "@/actions/tags/listTags";
+import { listTags } from "@/features/tags/queries/listTags";
+import { Tags } from "@/features/tags/tags";
 import { Separator } from "@conquest/ui/separator";
-import { ListTags } from "./_components/ListTags";
 
 export default async function Page() {
   const rTags = await listTags();
@@ -11,7 +11,7 @@ export default async function Page() {
       <p className="text-2xl font-medium">Tags</p>
       <p className="text-muted-foreground">Manage community tags</p>
       <Separator className="my-4" />
-      <ListTags tags={tags} />
+      <Tags tags={tags} />
     </div>
   );
 }

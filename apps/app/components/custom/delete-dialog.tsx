@@ -11,9 +11,9 @@ import {
 } from "@conquest/ui/alert-dialog";
 import { Button, buttonVariants } from "@conquest/ui/button";
 import { Trash2 } from "lucide-react";
-import { type ReactNode, useState } from "react";
+import { type HTMLAttributes, type ReactNode, useState } from "react";
 
-type Props = {
+type Props = HTMLAttributes<HTMLButtonElement> & {
   title: string;
   description: string;
   children?: ReactNode;
@@ -25,6 +25,7 @@ export const DeleteDialog = ({
   description,
   children,
   onConfirm,
+  className,
 }: Props) => {
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -39,7 +40,7 @@ export const DeleteDialog = ({
   return (
     <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
       <AlertDialogTrigger asChild>
-        <Button variant="destructive">
+        <Button variant="destructive" className={className}>
           {children ?? (
             <>
               <Trash2 size={16} />

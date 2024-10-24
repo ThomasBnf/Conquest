@@ -128,14 +128,13 @@ export const POST = safeRoute.body(bodySchema).handler(async (_, context) => {
           details: {
             message: text ?? "",
             source: "SLACK",
-            type: thread_ts ? "REPLY" : "MESSAGE",
+            type: thread_ts ? "REPLY" : "POST",
             files:
               files?.map(({ title, url_private }) => ({
                 title: title ?? "",
                 url: url_private ?? "",
               })) ?? [],
-            thread_ts,
-            ts,
+            reply_to: thread_ts,
           },
           workspace_id,
         });
@@ -149,7 +148,6 @@ export const POST = safeRoute.body(bodySchema).handler(async (_, context) => {
         }
 
         case "message_changed": {
-          console.log(event);
           const { text, ts, thread_ts, files } =
             event.message as GenericMessageEvent;
           const { text: previous_text } =
@@ -161,14 +159,13 @@ export const POST = safeRoute.body(bodySchema).handler(async (_, context) => {
             details: {
               message: text ?? "",
               source: "SLACK",
-              type: thread_ts ? "REPLY" : "MESSAGE",
+              type: thread_ts ? "REPLY" : "POST",
               files:
                 files?.map(({ title, url_private }) => ({
                   title: title ?? "",
                   url: url_private ?? "",
                 })) ?? [],
-              ts,
-              thread_ts,
+              reply_to: thread_ts,
             },
           });
           break;
@@ -232,7 +229,7 @@ export const POST = safeRoute.body(bodySchema).handler(async (_, context) => {
           type: "REACTION",
           message: reaction,
           files: [],
-          ts,
+          react_to: ts,
         },
         workspace_id,
       });

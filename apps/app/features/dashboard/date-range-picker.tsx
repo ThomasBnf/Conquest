@@ -5,7 +5,6 @@ import { Button } from "@conquest/ui/button";
 import { Calendar } from "@conquest/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@conquest/ui/popover";
 import { cn } from "@conquest/ui/utils/cn";
-import { updateUser } from "actions/users/updateUser";
 import { endOfDay, isEqual, startOfDay, subDays } from "date-fns";
 import { useDateRange } from "hooks/useDateRange";
 import { CalendarIcon } from "lucide-react";
@@ -30,7 +29,6 @@ export const DateRangePicker = () => {
     isEqual(to, endOfDay(new Date()));
 
   const onUpdateDateRange = async (from: Date, to: Date) => {
-    await updateUser({ date_range: { from, to } });
     setDateRange({ from, to });
   };
 

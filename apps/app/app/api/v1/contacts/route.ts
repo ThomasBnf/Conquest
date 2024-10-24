@@ -1,7 +1,7 @@
+import { getAuthenticatedUser } from "@/features/auth/queries/getAuthenticatedUser";
 import { GENDER } from "@conquest/zod/gender.enum";
 import { MemberSchema } from "@conquest/zod/member.schema";
 import { SOURCE } from "@conquest/zod/source.enum";
-import { getAuthenticatedUser } from "features/auth/helpers/getAuthenticatedUser";
 import { prisma } from "lib/prisma";
 import { safeRoute } from "lib/safeRoute";
 import { NextResponse } from "next/server";

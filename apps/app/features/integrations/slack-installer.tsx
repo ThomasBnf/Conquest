@@ -1,13 +1,13 @@
 "use client";
 
-import { updateIntegration } from "@/actions/integrations/updateIntegration";
-import { oauthV2 } from "@/actions/slack/oauthV2";
-import { runSlack } from "@/actions/slack/runSlack";
 import { IsLoading } from "@/components/states/is-loading";
 import { useUser } from "@/context/userContext";
+import { installSlack } from "@/features/slack/actions/installSlack";
+import { oauthV2 } from "@/features/slack/actions/oauthV2";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect } from "react";
 import { toast } from "sonner";
+import { updateIntegrationAction } from "./actions/updateIntegrationAction";
 
 export const SlackInstaller = () => {
   const { slug } = useUser();
@@ -28,8 +28,8 @@ export const SlackInstaller = () => {
       router.replace(`/w/${slug}/settings/integrations/slack`);
       toast.success("Conquest installed on Slack");
 
-      updateIntegration({ id: integration.id, installed_at: new Date() });
-      runSlack({ id: integration.id });
+      installSlack({ id: integration.id });
+      updateIntegrationAction({ id: integration.id, installed_at: new Date() });
     }
   };
 

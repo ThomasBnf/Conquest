@@ -1,13 +1,9 @@
 import { Button } from "@conquest/ui/button";
 import { Input } from "@conquest/ui/input";
 import { TextField } from "@conquest/ui/text-field";
-import { cn } from "@conquest/ui/utils/cn";
-import { Icon } from "components/icons/Icon";
-import type { icons } from "lucide-react";
 import { useState } from "react";
 
 type Props = {
-  icon: keyof typeof icons;
   defaultValue: string | null;
   placeholder?: string;
   onUpdate: (value: string) => void;
@@ -15,7 +11,6 @@ type Props = {
 };
 
 export const EditableInput = ({
-  icon,
   defaultValue,
   placeholder,
   onUpdate,
@@ -26,31 +21,23 @@ export const EditableInput = ({
 
   if (!isFocus) {
     return (
-      <div className="flex min-h-7 items-center gap-1.5">
-        <Icon
-          name={icon}
-          size={15}
-          className="shrink-0 text-muted-foreground"
-        />
-        <Button onClick={() => setIsFocus(true)} variant="ghost" size="xs">
-          {value ? (
-            value
-          ) : (
-            <span className="text-muted-foreground">{placeholder}</span>
-          )}
-        </Button>
-      </div>
+      <Button
+        variant="ghost"
+        size="xs"
+        onClick={() => setIsFocus(true)}
+        className="-ml-1.5"
+      >
+        {value ? (
+          value
+        ) : (
+          <span className="text-muted-foreground">{placeholder}</span>
+        )}
+      </Button>
     );
   }
 
   return (
-    <div
-      className={cn(
-        "flex h-fit gap-2",
-        textArea ? "items-start" : "items-center",
-      )}
-    >
-      <Icon name={icon} size={15} className="shrink-0 text-muted-foreground" />
+    <>
       {textArea ? (
         <TextField
           autoFocus
@@ -87,6 +74,6 @@ export const EditableInput = ({
           }}
         />
       )}
-    </div>
+    </>
   );
 };
