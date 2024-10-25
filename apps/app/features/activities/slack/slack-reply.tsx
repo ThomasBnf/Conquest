@@ -4,8 +4,8 @@ import {
   ActivitySlackSchema,
   type ActivityWithMember,
 } from "@conquest/zod/activity.schema";
+import { useQuery } from "@tanstack/react-query";
 import ky from "ky";
-import useSWR from "swr";
 import { ActivityCard } from "../activity-card";
 
 type Props = {
@@ -15,10 +15,13 @@ type Props = {
 export const SlackReply = ({ activity }: Props) => {
   const slackActivity = ActivitySlackSchema.parse(activity.details);
 
-  const { data, isLoading } = useSWR(
-    `/api/activities/${slackActivity.reply_to}`,
-    async (url) => (await ky.get(url).json()) as ActivityWithMember,
-  );
+  const { data } = useQuery({
+    queryKey: ["activities", slackActivity.reply_to],
+    queryFn: async () =>
+      (await ky
+        .get(`/api/activities/${slackActivity.reply_to}`)
+        .json()) as ActivityWithMember,
+  });
 
   if (!data)
     return (
