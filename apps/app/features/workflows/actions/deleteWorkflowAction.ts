@@ -16,6 +16,7 @@ export const deleteWorkflowAction = authAction
     }),
   )
   .action(async ({ ctx, parsedInput: { id } }) => {
+    const slug = ctx.user.workspace.slug;
     await prisma.workflow.delete({
       where: {
         id,
@@ -23,6 +24,6 @@ export const deleteWorkflowAction = authAction
       },
     });
 
-    revalidatePath(`/w/${ctx.user.workspace.slug}/workflows`);
-    redirect(`/w/${ctx.user.workspace.slug}/workflows`);
+    revalidatePath(`/${slug}/workflows`);
+    redirect(`/${slug}/workflows`);
   });

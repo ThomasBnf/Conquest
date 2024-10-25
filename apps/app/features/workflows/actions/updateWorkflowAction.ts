@@ -25,6 +25,8 @@ export const updateWorkflowAction = authAction
       ctx,
       parsedInput: { id, nodes, edges, name, description, published },
     }) => {
+      const slug = ctx.user.workspace.slug;
+
       const updatedWorkflow = await prisma.workflow.update({
         where: {
           id,
@@ -39,7 +41,7 @@ export const updateWorkflowAction = authAction
         },
       });
 
-      revalidatePath(`/w/${ctx.user.workspace.slug}/workflows/${id}`);
+      revalidatePath(`/${slug}/workflows/${id}`);
       return WorkflowSchema.parse(updatedWorkflow);
     },
   );

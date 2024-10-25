@@ -5,5 +5,5 @@ export default async function Page() {
   const user = await getCurrentUser();
 
   if (!user.onboarding) redirect("/");
-  redirect(`/w/${user?.workspace.slug}`);
+  redirect(`/${user?.workspace.slug}`);
 }

@@ -18,7 +18,7 @@ export default async function Layout({
   const user = await getCurrentUser();
 
   if (!user.onboarding) redirect("/");
-  if (user.workspace.slug !== slug) redirect(`/w/${user.workspace.slug}`);
+  if (user.workspace.slug !== slug) redirect(`/${user.workspace.slug}`);
 
   return (
     <SidebarProvider>

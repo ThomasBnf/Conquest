@@ -1,9 +1,9 @@
+import { useUser } from "@/context/userContext";
 import { updateUserAction } from "@/features/auth/actions/updateUserAction";
 import { updateWorkspaceAction } from "@/features/workspaces/actions/updateWorkspaceAction";
 import { Button } from "@conquest/ui/button";
 import { Form } from "@conquest/ui/form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useUser } from "context/userContext";
 import { ArrowRightIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
