@@ -1,7 +1,7 @@
 "use client";
 
-import { deleteActivity } from "@/actions/activities/deleteActivity";
 import { AlertDialog } from "@/components/custom/alert-dialog";
+import { deleteActivityAction } from "@/features/activities/actions/deleteActivityAction";
 import { Button } from "@conquest/ui/button";
 import {
   DropdownMenu,
@@ -22,7 +22,7 @@ export const Menu = ({ activity }: Props) => {
   const [open, setOpen] = useState(false);
 
   const onDelete = async () => {
-    const rActivity = await deleteActivity({ id: activity.id });
+    const rActivity = await deleteActivityAction({ id: activity.id });
     const error = rActivity?.serverError;
 
     if (error) return toast.error(error);

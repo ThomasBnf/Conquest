@@ -1,10 +1,6 @@
 import { ActiveMembers } from "@/features/dashboard/metrics/active-members";
 import { ScrollArea } from "@conquest/ui/scroll-area";
 import { Separator } from "@conquest/ui/separator";
-import { listActivities } from "actions/activities/listActivities";
-import { listEngagement } from "actions/dashboard/listEngagement";
-import { ChartActivityType } from "features/dashboard/charts/chart-activity-type";
-import { ChartEngagement } from "features/dashboard/charts/chart-engagement";
 import { DateRangePicker } from "features/dashboard/date-range-picker";
 import { Activities } from "features/dashboard/metrics/activities";
 import { EngagementRate } from "features/dashboard/metrics/engagement-rate";
@@ -22,11 +18,11 @@ export default async function Page({ searchParams }: Props) {
   // const rMembers = await listMembers({});
   // const members = rMembers?.data;
 
-  const rActivities = await listActivities({ from, to });
-  const activities = rActivities?.data;
+  // const rActivities = await listActivities({ from, to });
+  // const activities = rActivities?.data;
 
-  const rEngagement = await listEngagement({ from, to });
-  const engagement = rEngagement?.data;
+  // const rEngagement = await listEngagement({ from, to });
+  // const engagement = rEngagement?.data;
 
   return (
     <div className="flex h-full flex-col divide-y">
@@ -45,8 +41,8 @@ export default async function Page({ searchParams }: Props) {
         <div className="flex flex-col gap-4 p-4">
           {/* <ChartMembers members={members} />
           <ChartActiveMembers members={members} /> */}
-          <ChartEngagement dailyEngagement={engagement} />
-          <ChartActivityType activities={activities} />
+          {/* <ChartEngagement dailyEngagement={engagement} /> */}
+          {/* <ChartActivityType activities={activities} /> */}
         </div>
       </ScrollArea>
     </div>

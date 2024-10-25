@@ -16,7 +16,7 @@ export const SlackInstaller = () => {
   const code = params.get("code");
 
   const scopes =
-    "channels:history,channels:join,channels:read,files:read,groups:read,links:read,mpim:read,reactions:read,team:read,users:read,users:read.email,users.profile:read";
+    "channels:history,channels:join,channels:read,files:read,groups:read,links:read,reactions:read,team:read,users:read,users:read.email,users.profile:read";
 
   const onInstall = async () => {
     if (!code) return;

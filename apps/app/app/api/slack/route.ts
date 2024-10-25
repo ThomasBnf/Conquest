@@ -1,15 +1,15 @@
-import { createActivity } from "@/actions/bot/activities/createActivity";
-import { deleteActivity } from "@/actions/bot/activities/deleteActivity";
-import { updateActivity } from "@/actions/bot/activities/updateActivity";
-import { createChannel } from "@/actions/bot/channels/createChannel";
-import { deleteChannel } from "@/actions/bot/channels/deleteChannel";
-import { getChannel } from "@/actions/bot/channels/getChannel";
-import { updateChannel } from "@/actions/bot/channels/updateChannel";
-import { getIntegration } from "@/actions/bot/integrations/getIntegration";
-import { updateIntegration } from "@/actions/bot/integrations/updateIntegration";
-import { mergeMember } from "@/actions/bot/members/mergeMember";
-import { updateMember } from "@/actions/bot/members/updateMember";
-import { deleteReactions } from "@/actions/bot/reactions/deleteReactions";
+import { createActivity } from "@/features/bot/activities/createActivity";
+import { deleteActivity } from "@/features/bot/activities/deleteActivity";
+import { updateActivity } from "@/features/bot/activities/updateActivity";
+import { createChannel } from "@/features/bot/channels/createChannel";
+import { deleteChannel } from "@/features/bot/channels/deleteChannel";
+import { getChannel } from "@/features/bot/channels/getChannel";
+import { updateChannel } from "@/features/bot/channels/updateChannel";
+import { getIntegration } from "@/features/bot/integrations/getIntegration";
+import { updateIntegration } from "@/features/bot/integrations/updateIntegration";
+import { mergeMember } from "@/features/bot/members/mergeMember";
+import { updateMember } from "@/features/bot/members/updateMember";
+import { deleteReactions } from "@/features/bot/reactions/deleteReactions";
 import { safeRoute } from "@/lib/safeRoute";
 import {
   type GenericMessageEvent,

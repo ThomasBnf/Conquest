@@ -1,10 +1,10 @@
-import { listSources } from "@/actions/activities/listSources";
+import { listSourcesAction } from "@/features/activities/actions/listSourcesAction";
 import { useQuery } from "@tanstack/react-query";
 
 export const useListSources = () => {
   const { data, isLoading } = useQuery({
     queryKey: ["sources"],
-    queryFn: () => listSources(),
+    queryFn: () => listSourcesAction(),
   });
 
   return { sources: data?.data, isLoading };

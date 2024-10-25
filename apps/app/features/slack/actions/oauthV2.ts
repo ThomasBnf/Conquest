@@ -30,6 +30,8 @@ export const oauthV2 = authAction
       })
       .json();
 
+    console.log(data);
+
     const { access_token, team } = data as {
       access_token: string;
       team: { id: string; name: string };

@@ -4,9 +4,9 @@ import { ActivitySchema } from "@conquest/zod/activity.schema";
 import { authAction } from "lib/authAction";
 import { prisma } from "lib/prisma";
 
-export const listSources = authAction
+export const listTypesAction = authAction
   .metadata({
-    name: "listSources",
+    name: "listTypesAction",
   })
   .action(async ({ ctx }) => {
     const activities = await prisma.activity.findMany({
@@ -17,11 +17,11 @@ export const listSources = authAction
 
     const parsedActivities = ActivitySchema.array().parse(activities);
 
-    return parsedActivities.reduce<string[]>((uniqueSources, activity) => {
-      const activitySource = activity.details.source;
-      if (!uniqueSources.includes(activitySource)) {
-        uniqueSources.push(activitySource);
+    return parsedActivities.reduce<string[]>((uniqueTypes, activity) => {
+      const activityType = activity.details.type;
+      if (!uniqueTypes.includes(activityType)) {
+        uniqueTypes.push(activityType);
       }
-      return uniqueSources;
+      return uniqueTypes;
     }, []);
   });
