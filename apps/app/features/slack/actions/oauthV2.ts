@@ -1,5 +1,6 @@
 "use server";
 
+import { env } from "@/env.mjs";
 import { createIntegration } from "@/features/integrations/queries/createIntegration";
 import { IntegrationSchema } from "@conquest/zod/integration.schema";
 import { authAction } from "lib/authAction";
@@ -26,13 +27,13 @@ export const oauthV2 = authAction
       },
       body: new URLSearchParams({
         code,
-        client_id: process.env.NEXT_PUBLIC_SLACK_CLIENT_ID!,
-        client_secret: process.env.SLACK_CLIENT_SECRET!,
+        client_id: env.NEXT_PUBLIC_SLACK_CLIENT_ID,
+        client_secret: env.SLACK_CLIENT_SECRET,
+        redirect_uri: `${env.NEXT_PUBLIC_SLACK_REDIRECT_URI}/w/${slug}/settings/integrations/slack?loading=true`,
       }),
     });
 
     const data = await response.json();
-    console.log(data);
     const { access_token, team } = data;
 
     const rIntegration = await createIntegration({

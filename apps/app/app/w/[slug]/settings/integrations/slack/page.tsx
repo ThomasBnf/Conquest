@@ -6,7 +6,7 @@ import { deleteIntegrationAction } from "@/features/integrations/actions/deleteI
 import { updateIntegrationAction } from "@/features/integrations/actions/updateIntegrationAction";
 import { installSlack } from "@/features/slack/actions/installSlack";
 import { oauthV2 } from "@/features/slack/actions/oauthV2";
-import { buttonVariants } from "@conquest/ui/button";
+import { Button, buttonVariants } from "@conquest/ui/button";
 import { Separator } from "@conquest/ui/separator";
 import { cn } from "@conquest/ui/utils/cn";
 import { useUser } from "context/userContext";
@@ -22,9 +22,45 @@ export default function Page() {
   const router = useRouter();
   const params = useSearchParams();
   const code = params.get("code");
-
+  const loading = params.get("loading");
   const scopes =
     "channels:history,channels:join,channels:read,files:read,groups:read,links:read,reactions:read,team:read,users.profile:read,users:read,users:read.email";
+
+  const onStartInstall = () => {
+    const baseUrl = "https://slack.com/oauth/v2/authorize";
+    const clientId = `client_id=${env.NEXT_PUBLIC_SLACK_CLIENT_ID}`;
+    const scopesSlack = `scope=${scopes}`;
+    const redirectUri = `redirect_uri=${encodeURIComponent(`${env.NEXT_PUBLIC_SLACK_REDIRECT_URI}/w/${slug}/settings/integrations/slack?loading=true`)}`;
+
+    const url = `${baseUrl}?${clientId}&${scopesSlack}&${redirectUri}`;
+    router.push(url);
+  };
+
+  const onInstall = async () => {
+    if (!code) return;
+
+    const installPromise = async () => {
+      const rIntegration = await oauthV2({ code, scopes });
+      const integration = rIntegration?.data;
+
+      if (integration) {
+        router.replace(`/w/${slug}/settings/integrations/slack`);
+        await installSlack({ id: integration.id });
+        await updateIntegrationAction({
+          id: integration.id,
+          installed_at: new Date(),
+        });
+        return integration;
+      }
+      throw new Error("Installation failed");
+    };
+
+    toast.promise(installPromise, {
+      loading: "Installing Conquest on Slack...",
+      success: "Conquest installed on Slack",
+      error: "Failed to install Conquest on Slack",
+    });
+  };
 
   const onUninstall = async () => {
     if (!slack?.id) return;
@@ -32,24 +68,9 @@ export default function Page() {
     return toast.success("Slack disconnected");
   };
 
-  const onInstall = async () => {
-    if (!code) return;
-
-    const rIntegration = await oauthV2({ code, scopes });
-    const integration = rIntegration?.data;
-
-    if (integration) {
-      router.replace(`/w/${slug}/settings/integrations/slack`);
-      toast.success("Conquest installed on Slack");
-
-      installSlack({ id: integration.id });
-      updateIntegrationAction({ id: integration.id, installed_at: new Date() });
-    }
-  };
-
   useEffect(() => {
     onInstall();
-  }, [code]);
+  }, []);
 
   return (
     <div className="mx-auto max-w-3xl py-16">
@@ -110,12 +131,13 @@ export default function Page() {
                 Uninstall
               </DeleteDialog>
             ) : (
-              <Link
-                href={`https://slack.com/oauth/v2/authorize?client_id=${env.NEXT_PUBLIC_SLACK_CLIENT_ID}&scope=${scopes}&redirect_uri=${encodeURIComponent(`https://app.useconquest.com/w/${slug}/settings/integrations/slack`)}`}
+              <Button
+                loading={loading === "true"}
                 className={cn(buttonVariants({ variant: "default" }))}
+                onClick={onStartInstall}
               >
                 Install
-              </Link>
+              </Button>
             )}
           </div>
           <Separator />
