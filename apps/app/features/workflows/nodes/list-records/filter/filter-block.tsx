@@ -9,6 +9,7 @@ import { GroupOperatorPicker } from "./pickers/group-operator";
 import { OperatorPicker } from "./pickers/operator-picker";
 import { QueryInput } from "./pickers/query-input";
 import { SourcePicker } from "./pickers/source-picker";
+import { TagPicker } from "./pickers/tag-picker";
 import { TypePicker } from "./pickers/type-picker";
 
 type Props = {
@@ -41,6 +42,7 @@ export const FilterBlock = ({ groupFilter, filter }: Props) => {
           {field === "source" && <SourcePicker filter={filter} />}
           {field === "created_at" && <DatePicker filter={filter} />}
           {field === "activities_count" && <QueryInput filter={filter} />}
+          {field === "tags" && <TagPicker filter={filter} />}
           <Button
             variant="outline"
             onClick={() => onDeleteFilter(filter)}

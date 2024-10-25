@@ -44,7 +44,7 @@ export const LeaderbordTable = ({ tags, from, to }: Props) => {
     queryFn: ({ pageParam }) =>
       listLeaderboardActions({ page: pageParam, from, to }),
     getNextPageParam: (_, allPages) => allPages.length + 1,
-    initialPageParam: 0,
+    initialPageParam: 1,
   });
 
   const flatData = useMemo(() => {

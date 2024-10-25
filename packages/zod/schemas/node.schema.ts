@@ -20,10 +20,11 @@ export const RepeatOnSchema = z.enum([
 ]);
 
 export const CategorySchema = z.enum([
-  "activities_count",
   "last_activity",
   "first_activity",
   "activities",
+  "activities_count",
+  "tags",
 ]);
 
 export const GroupFilterSchema = z.object({

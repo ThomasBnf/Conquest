@@ -9,7 +9,11 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@conquest/ui/dropdown-menu";
-import type { Filter, FilterCount } from "@conquest/zod/filters.schema";
+import type {
+  Filter,
+  FilterCount,
+  FilterTag,
+} from "@conquest/zod/filters.schema";
 import type { Category } from "@conquest/zod/node.schema";
 import { useFilters } from "context/filtersContext";
 import { Plus } from "lucide-react";
@@ -54,6 +58,16 @@ export const CategoryPicker = () => {
         >
           Activities count
         </DropdownMenuItem>
+        <DropdownMenuItem
+          onClick={() =>
+            onAddGroupFilter({
+              category: "tags",
+              filter: tagFilter,
+            })
+          }
+        >
+          Tags
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );
@@ -95,4 +109,12 @@ const countFilter: FilterCount = {
   field: "activities_count",
   operator: "greater_than",
   value: 1,
+};
+
+const tagFilter: FilterTag = {
+  id: "4",
+  label: "Tags",
+  field: "tags",
+  operator: "contains",
+  values: [],
 };

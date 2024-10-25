@@ -2,11 +2,10 @@
 
 import { updateMemberAction } from "@/features/members/actions/updateMemberAction";
 import { Button } from "@conquest/ui/button";
-import { Checkbox } from "@conquest/ui/checkbox";
 import {
   Popover,
+  PopoverCheckboxItem,
   PopoverContent,
-  PopoverItem,
   PopoverTrigger,
 } from "@conquest/ui/popover";
 import type { Member } from "@conquest/zod/member.schema";
@@ -60,14 +59,17 @@ export const TagPicker = ({ member, tags }: Props) => {
         onOpenAutoFocus={(e) => e.preventDefault()}
       >
         {tags?.map((tag) => (
-          <PopoverItem key={tag.id} onClick={() => handleTagToggle(tag)}>
-            <Checkbox checked={memberTags.includes(tag.id)} />
+          <PopoverCheckboxItem
+            key={tag.id}
+            checked={memberTags.includes(tag.id)}
+            onCheckedChange={() => handleTagToggle(tag)}
+          >
             <div
               className="size-3 rounded-full"
               style={{ backgroundColor: tag.color }}
             />
             {tag.name}
-          </PopoverItem>
+          </PopoverCheckboxItem>
         ))}
       </PopoverContent>
     </Popover>

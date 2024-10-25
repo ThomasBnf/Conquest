@@ -1,3 +1,8 @@
+"use client";
+
+import { useFilters } from "@/context/filtersContext";
+import { useListTags } from "@/features/tags/hooks/useListTags";
+import { TagBadge } from "@/features/tags/tag-badge";
 import { Button } from "@conquest/ui/button";
 import {
   Popover,
@@ -6,26 +11,25 @@ import {
   PopoverTrigger,
 } from "@conquest/ui/popover";
 import { Skeleton } from "@conquest/ui/skeleton";
-import type { FilterSelect } from "@conquest/zod/filters.schema";
-import { useFilters } from "context/filtersContext";
-import { useListSources } from "hooks/useListSources";
+import type { FilterTag } from "@conquest/zod/filters.schema";
+import type { Tag } from "@conquest/zod/tag.schema";
 import { ChevronDown } from "lucide-react";
 import { useState } from "react";
 
 type Props = {
-  filter: FilterSelect;
+  filter: FilterTag;
 };
 
-export const SourcePicker = ({ filter }: Props) => {
+export const TagPicker = ({ filter }: Props) => {
   const { onUpdateFilter } = useFilters();
-  const { sources, isLoading } = useListSources();
+  const { tags, isLoading } = useListTags();
   const [values, setValues] = useState(filter.values);
 
-  const onUpdateActivitySource = (source: string) => {
+  const handleTagToggle = async (tag: Tag) => {
     setValues((prev) => {
-      const updatedValues = prev.includes(source)
-        ? prev.filter((t) => t !== source)
-        : [...prev, source];
+      const updatedValues = prev.includes(tag.id)
+        ? prev.filter((t) => t !== tag.id)
+        : [...prev, tag.id];
 
       onUpdateFilter({
         ...filter,
@@ -46,10 +50,17 @@ export const SourcePicker = ({ filter }: Props) => {
         >
           {values.length > 0 ? (
             <span className="capitalize">
-              {values.length > 1 ? `${values.length} sources` : values[0]}
+              {values.length > 1 ? (
+                `${values.length} tags`
+              ) : (
+                <TagBadge
+                  tag={tags?.find((t) => t.id === values[0])}
+                  isClickable
+                />
+              )}
             </span>
           ) : (
-            <span className="text-muted-foreground">Select source</span>
+            <span className="text-muted-foreground">Select tags</span>
           )}
           <ChevronDown size={14} />
         </Button>
@@ -58,13 +69,17 @@ export const SourcePicker = ({ filter }: Props) => {
         {isLoading ? (
           <Skeleton className="h-5 w-full" />
         ) : (
-          sources?.map((source) => (
+          tags?.map((tag) => (
             <PopoverCheckboxItem
-              key={source}
-              checked={values?.includes(source)}
-              onCheckedChange={() => onUpdateActivitySource(source)}
+              key={tag.id}
+              checked={values?.includes(tag.id)}
+              onCheckedChange={() => handleTagToggle(tag)}
             >
-              {source}
+              <div
+                className="size-3 rounded-full"
+                style={{ backgroundColor: tag.color }}
+              />
+              {tag.name}
             </PopoverCheckboxItem>
           ))
         )}

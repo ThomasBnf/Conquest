@@ -1,15 +1,23 @@
+import { useListTags } from "@/features/tags/hooks/useListTags";
+import { TagBadge } from "@/features/tags/tag-badge";
 import { Button } from "@conquest/ui/button";
+import { Checkbox } from "@conquest/ui/checkbox";
 import { Label } from "@conquest/ui/label";
-import { Popover, PopoverContent, PopoverTrigger } from "@conquest/ui/popover";
+import {
+  Popover,
+  PopoverContent,
+  PopoverItem,
+  PopoverTrigger,
+} from "@conquest/ui/popover";
+import { Skeleton } from "@conquest/ui/skeleton";
 import { NodeTagMemberSchema } from "@conquest/zod/node.schema";
 import type { Tag } from "@conquest/zod/tag.schema";
 import { useWorkflow } from "context/workflowContext";
-
 import { Plus, TagIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 
 export const TagMemberOptions = () => {
-  // const { tags, isLoading } = useListTags();
+  const { tags, isLoading } = useListTags();
   const { currentNode, onUpdateNode } = useWorkflow();
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
@@ -46,7 +54,7 @@ export const TagMemberOptions = () => {
       <Popover>
         <PopoverTrigger asChild>
           <div className="flex flex-wrap items-center gap-1 rounded-md border px-2 py-[0.4375rem]">
-            {/* {selectedTags.map((tagId) => {
+            {selectedTags.map((tagId) => {
               const tag = tags?.find((t) => t.id === tagId);
               return tag ? (
                 <TagBadge
@@ -58,7 +66,7 @@ export const TagMemberOptions = () => {
                   }}
                 />
               ) : null;
-            })} */}
+            })}
             <Button variant="ghost" size="xs" className="text-muted-foreground">
               {selectedTags.length === 0 ? (
                 <TagIcon size={14} />
@@ -74,7 +82,7 @@ export const TagMemberOptions = () => {
           className="w-52"
           align="start"
         >
-          {/* {isLoading ? (
+          {isLoading ? (
             <Skeleton className="h-5 w-full" />
           ) : (
             tags?.map((tag) => (
@@ -87,7 +95,7 @@ export const TagMemberOptions = () => {
                 {tag.name}
               </PopoverItem>
             ))
-          )} */}
+          )}
         </PopoverContent>
       </Popover>
     </div>

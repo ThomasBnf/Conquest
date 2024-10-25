@@ -59,6 +59,15 @@ export const OperatorPicker = ({ filter }: Props) => {
         operator: parsedOperator,
       });
     }
+
+    if (filter.field === "tags") {
+      const parsedOperator = BaseOperatorSchema.parse(operator);
+
+      onUpdateFilter({
+        ...filter,
+        operator: parsedOperator,
+      });
+    }
   };
 
   return (

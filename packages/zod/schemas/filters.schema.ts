@@ -49,10 +49,17 @@ export const FilterCountSchema = FilterBaseSchema.extend({
   value: z.number().default(1),
 });
 
+export const FilterTagSchema = FilterBaseSchema.extend({
+  field: z.literal("tags"),
+  operator: BaseOperatorSchema,
+  values: z.array(z.string()).default([]),
+});
+
 export const FilterSchema = z.discriminatedUnion("field", [
   FilterSelectSchema,
   FilterDateSchema,
   FilterCountSchema,
+  FilterTagSchema,
 ]);
 
 // TYPES
@@ -61,6 +68,7 @@ export type Filter = z.infer<typeof FilterSchema>;
 export type FilterSelect = z.infer<typeof FilterSelectSchema>;
 export type FilterDate = z.infer<typeof FilterDateSchema>;
 export type FilterCount = z.infer<typeof FilterCountSchema>;
+export type FilterTag = z.infer<typeof FilterTagSchema>;
 
 export type DynamicDate = z.infer<typeof DynamicDateSchema>;
 export type Operator = z.infer<typeof OperatorSchema>;

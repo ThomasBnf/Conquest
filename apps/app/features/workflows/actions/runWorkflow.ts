@@ -2,15 +2,13 @@
 
 import { updateMemberAction } from "@/features/members/actions/updateMemberAction";
 import { listMembers } from "@/features/members/queries/listMembers";
-import type {
-  Activity,
-  MemberWithActivities,
-} from "@conquest/zod/activity.schema";
+import type { MemberWithActivities } from "@conquest/zod/activity.schema";
 import {
   FilterCountSchema,
   type FilterDate,
   FilterDateSchema,
   FilterSelectSchema,
+  FilterTagSchema,
 } from "@conquest/zod/filters.schema";
 import {
   type Node,
@@ -111,31 +109,41 @@ const executeListMembers = async (node: Node) => {
   const { group_filters } = NodeListRecordsSchema.parse(node.data);
 
   return records?.filter((member) => {
-    let activities: Activity[] = [];
+    let record: MemberWithActivities;
 
     return group_filters.every((group) => {
       const { filters, category } = group;
 
       switch (category) {
         case "activities": {
-          activities = member.activities;
-          break;
-        }
-        case "activities_count": {
-          activities = member.activities;
+          record = member;
           break;
         }
         case "last_activity": {
-          activities = member.activities?.slice(-1) ?? [];
+          record = {
+            ...member,
+            activities: member.activities?.slice(-1) ?? [],
+          };
           break;
         }
         case "first_activity": {
-          activities = member.activities?.slice(0, 1) ?? [];
+          record = {
+            ...member,
+            activities: member.activities?.slice(0, 1) ?? [],
+          };
+          break;
+        }
+        case "activities_count": {
+          record = member;
+          break;
+        }
+        case "tags": {
+          record = member;
           break;
         }
       }
 
-      if (activities.length === 0) return false;
+      if (record.activities.length === 0) return false;
 
       return filters.every((filter) => {
         const { field } = filter;
@@ -145,12 +153,12 @@ const executeListMembers = async (node: Node) => {
             const { operator, values } = FilterSelectSchema.parse(filter);
             switch (operator) {
               case "contains": {
-                return activities.some((activity) =>
+                return record.activities.some((activity) =>
                   values.includes(activity.details.type),
                 );
               }
               case "not_contains": {
-                return activities.every(
+                return record.activities.every(
                   (activity) => !values.includes(activity.details.type),
                 );
               }
@@ -161,14 +169,26 @@ const executeListMembers = async (node: Node) => {
             const { operator, values } = FilterSelectSchema.parse(filter);
             switch (operator) {
               case "contains": {
-                return activities.some((activity) =>
+                return record.activities.some((activity) =>
                   values.includes(activity.details.source),
                 );
               }
               case "not_contains": {
-                return activities.every(
+                return record.activities.every(
                   (activity) => !values.includes(activity.details.source),
                 );
+              }
+            }
+            break;
+          }
+          case "tags": {
+            const { operator, values } = FilterTagSchema.parse(filter);
+            switch (operator) {
+              case "contains": {
+                return record.tags.some((tag) => values.includes(tag));
+              }
+              case "not_contains": {
+                return record.tags.every((tag) => !values.includes(tag));
               }
             }
             break;
@@ -181,22 +201,22 @@ const executeListMembers = async (node: Node) => {
 
             switch (operator) {
               case "is": {
-                return activities.some(
+                return record.activities.some(
                   (activity) => startOfDay(activity.created_at) === date,
                 );
               }
               case "is_not": {
-                return activities.every(
+                return record.activities.every(
                   (activity) => startOfDay(activity.created_at) !== date,
                 );
               }
               case "after": {
-                return activities.some(
+                return record.activities.some(
                   (activity) => activity.created_at > date,
                 );
               }
               case "before": {
-                return activities.every(
+                return record.activities.every(
                   (activity) => activity.created_at < date,
                 );
               }
@@ -208,16 +228,16 @@ const executeListMembers = async (node: Node) => {
 
             switch (operator) {
               case "equals": {
-                return activities.length === value;
+                return record.activities.length === value;
               }
               case "not_equals": {
-                return activities.length !== value;
+                return record.activities.length !== value;
               }
               case "greater_than": {
-                return activities.length > value;
+                return record.activities.length > value;
               }
               case "less_than": {
-                return activities.length < value;
+                return record.activities.length < value;
               }
             }
           }

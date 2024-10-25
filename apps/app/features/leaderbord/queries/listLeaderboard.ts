@@ -43,7 +43,7 @@ export const listLeaderboard = authAction
         },
       },
       take: 50,
-      skip: page * 50,
+      skip: (page - 1) * 50,
     });
 
     return MemberWithActivitiesSchema.array().parse(members);
