@@ -43,7 +43,7 @@ export const Header = () => {
       <Breadcrumb>
         <BreadcrumbList>
           <BreadcrumbItem>
-            <BreadcrumbLink href={`/w/${slug}/workflows`}>
+            <BreadcrumbLink href={`/${slug}/workflows`}>
               Workflows
             </BreadcrumbLink>
           </BreadcrumbItem>

@@ -98,7 +98,7 @@ export const LeaderbordTable = ({ tags, from, to }: Props) => {
                 className="cursor-pointer"
                 onClick={() => {
                   router.push(
-                    `/w/${slug}/members/${row.original.id}?from=leaderboard`,
+                    `/${slug}/members/${row.original.id}?from=leaderboard`,
                   );
                 }}
               >

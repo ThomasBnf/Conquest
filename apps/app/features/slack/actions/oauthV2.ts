@@ -29,7 +29,7 @@ export const oauthV2 = authAction
         code,
         client_id: env.NEXT_PUBLIC_SLACK_CLIENT_ID,
         client_secret: env.SLACK_CLIENT_SECRET,
-        redirect_uri: `${env.NEXT_PUBLIC_SLACK_REDIRECT_URI}/w/${slug}/settings/integrations/slack?loading=true`,
+        redirect_uri: `${env.NEXT_PUBLIC_SLACK_REDIRECT_URI}/${slug}/settings/integrations/slack?loading=true`,
       }),
     });
 
@@ -45,6 +45,6 @@ export const oauthV2 = authAction
     });
     const integration = rIntegration?.data;
 
-    revalidatePath(`/w/${slug}/settings/integrations/slack`);
+    revalidatePath(`/${slug}/settings/integrations/slack`);
     return IntegrationSchema.parse(integration);
   });

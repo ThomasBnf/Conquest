@@ -51,5 +51,5 @@ export const deleteIntegrationAction = authAction
       },
     });
 
-    return revalidatePath(`/w/${slug}/settings/integrations`);
+    return revalidatePath(`/${slug}/settings/integrations`);
   });

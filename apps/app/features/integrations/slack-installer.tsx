@@ -25,7 +25,7 @@ export const SlackInstaller = () => {
     const integration = rIntegration?.data;
 
     if (integration) {
-      router.replace(`/w/${slug}/settings/integrations/slack`);
+      router.replace(`/${slug}/settings/integrations/slack`);
       toast.success("Conquest installed on Slack");
 
       installSlack({ id: integration.id });

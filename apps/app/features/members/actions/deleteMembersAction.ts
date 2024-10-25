@@ -26,5 +26,5 @@ export const deleteMembersAction = authAction
       },
     });
 
-    return revalidatePath(`/w/${slug}/members`);
+    return revalidatePath(`/${slug}/members`);
   });

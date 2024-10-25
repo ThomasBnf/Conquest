@@ -57,7 +57,7 @@ export const CreateMemberDialog = () => {
     const error = rMember?.serverError;
 
     if (error) toast.error(error);
-    if (member) router.push(`/w/${slug}/members/${member.id}`);
+    if (member) router.push(`/${slug}/members/${member.id}`);
 
     setLoading(false);
     setOpen(false);

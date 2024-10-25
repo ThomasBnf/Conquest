@@ -27,38 +27,38 @@ export const AppSidebar = () => {
   const { slug } = useUser();
   const pathname = usePathname();
 
-  if (pathname.startsWith(`/w/${slug}/settings`)) return <SidebarSettings />;
+  if (pathname.startsWith(`/${slug}/settings`)) return <SidebarSettings />;
 
   const routes = [
     {
       label: "Dashboard",
       icon: <Dashboard className="size-[18px]" />,
-      href: `/w/${slug}`,
-      isActive: pathname === `/w/${slug}`,
+      href: `/${slug}`,
+      isActive: pathname === `/${slug}`,
     },
     {
       label: "Members",
       icon: <Members className="size-[18px]" />,
-      href: `/w/${slug}/members`,
-      isActive: pathname.startsWith(`/w/${slug}/members`),
+      href: `/${slug}/members`,
+      isActive: pathname.startsWith(`/${slug}/members`),
     },
     {
       label: "Leaderboard",
       icon: <LeaderBoard className="size-[18px]" />,
-      href: `/w/${slug}/leaderboard`,
-      isActive: pathname.startsWith(`/w/${slug}/leaderboard`),
+      href: `/${slug}/leaderboard`,
+      isActive: pathname.startsWith(`/${slug}/leaderboard`),
     },
     {
       label: "Activities",
       icon: <Activities className="size-[18px]" />,
-      href: `/w/${slug}/activities`,
-      isActive: pathname.startsWith(`/w/${slug}/activities`),
+      href: `/${slug}/activities`,
+      isActive: pathname.startsWith(`/${slug}/activities`),
     },
     {
       label: "Workflows",
       icon: <Workflows className="size-[18px]" />,
-      href: `/w/${slug}/workflows`,
-      isActive: pathname.startsWith(`/w/${slug}/workflows`),
+      href: `/${slug}/workflows`,
+      isActive: pathname.startsWith(`/${slug}/workflows`),
     },
   ];
 
@@ -91,7 +91,7 @@ export const AppSidebar = () => {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton asChild>
-              <a href={`/w/${slug}/settings`}>
+              <a href={`/${slug}/settings`}>
                 <Settings className="size-[18px]" />
                 <span>Settings</span>
               </a>

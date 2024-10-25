@@ -29,7 +29,7 @@ export default async function Page({ params: { slug } }: Props) {
             className="flex items-center justify-between border-b px-4 gap-6 transition-colors hover:bg-muted-hover"
           >
             <Link
-              href={`/w/${slug}/workflows/${workflow.id}`}
+              href={`/${slug}/workflows/${workflow.id}`}
               className="flex-1 h-14 flex items-center"
             >
               <p className="font-medium w-96 truncate">{workflow.name}</p>

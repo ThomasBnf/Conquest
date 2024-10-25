@@ -41,7 +41,7 @@ export const ActivityCard = ({
         )}
       >
         {badge && <Menu activity={activity} />}
-        <Link href={`/w/${slug}/members/${activity.member?.id}`}>
+        <Link href={`/${slug}/members/${activity.member?.id}`}>
           <Avatar className="size-8">
             <AvatarImage src={avatar_url ?? ""} />
             <AvatarFallback className="text-sm">
@@ -53,7 +53,7 @@ export const ActivityCard = ({
         <div className="ml-4 flex flex-col gap-1 flex-1">
           <div className="flex items-baseline gap-2">
             <Link
-              href={`/w/${slug}/members/${activity.member?.id}`}
+              href={`/${slug}/members/${activity.member?.id}`}
               className="text-sm font-medium leading-none hover:underline"
             >
               {full_name}

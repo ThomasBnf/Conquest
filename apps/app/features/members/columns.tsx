@@ -51,7 +51,7 @@ export const Columns = ({ tags }: Props): ColumnDef<MemberWithActivities>[] => [
       return (
         <Button
           variant="ghost"
-          onClick={() => router.push(`/w/${slug}/members/${row.original.id}`)}
+          onClick={() => router.push(`/${slug}/members/${row.original.id}`)}
           className="flex items-center gap-2 px-1.5"
         >
           <Avatar className="size-6">

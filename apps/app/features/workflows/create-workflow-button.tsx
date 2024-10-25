@@ -24,7 +24,7 @@ export const CreateWorkflowButton = () => {
       return toast.error(error);
     }
 
-    router.push(`/w/${slug}/workflows/${workflow?.id}`);
+    router.push(`/${slug}/workflows/${workflow?.id}`);
   };
 
   return (

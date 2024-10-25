@@ -37,7 +37,7 @@ export const Columns = (
 
       return (
         <Link
-          href={`/w/${slug}/members/${row.original.id}`}
+          href={`/${slug}/members/${row.original.id}`}
           className={cn(buttonVariants({ variant: "ghost" }), "space-x-2")}
         >
           <Avatar className="size-6">

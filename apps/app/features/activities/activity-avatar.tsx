@@ -14,7 +14,7 @@ export const ActivityAvatar = ({ activity }: Props) => {
   const { avatar_url, first_name, last_name } = activity.member ?? {};
 
   return (
-    <Link href={`/w/${slug}/members/${activity.member?.id}`}>
+    <Link href={`/${slug}/members/${activity.member?.id}`}>
       <Avatar className="size-8">
         <AvatarImage src={avatar_url ?? ""} />
         <AvatarFallback className="text-sm">

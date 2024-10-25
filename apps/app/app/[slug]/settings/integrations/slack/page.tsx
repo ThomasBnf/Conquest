@@ -30,7 +30,7 @@ export default function Page() {
     const baseUrl = "https://slack.com/oauth/v2/authorize";
     const clientId = `client_id=${env.NEXT_PUBLIC_SLACK_CLIENT_ID}`;
     const scopesSlack = `scope=${scopes}`;
-    const redirectUri = `redirect_uri=${encodeURIComponent(`${env.NEXT_PUBLIC_SLACK_REDIRECT_URI}/w/${slug}/settings/integrations/slack?loading=true`)}`;
+    const redirectUri = `redirect_uri=${encodeURIComponent(`${env.NEXT_PUBLIC_SLACK_REDIRECT_URI}/${slug}/settings/integrations/slack?loading=true`)}`;
 
     const url = `${baseUrl}?${clientId}&${scopesSlack}&${redirectUri}`;
     router.push(url);
@@ -44,7 +44,7 @@ export default function Page() {
       const integration = rIntegration?.data;
 
       if (integration) {
-        router.replace(`/w/${slug}/settings/integrations/slack`);
+        router.replace(`/${slug}/settings/integrations/slack`);
         await installSlack({ id: integration.id });
         await updateIntegrationAction({
           id: integration.id,
@@ -75,7 +75,7 @@ export default function Page() {
   return (
     <div className="mx-auto max-w-3xl py-16">
       <Link
-        href={`/w/${slug}/settings/integrations`}
+        href={`/${slug}/settings/integrations`}
         className={cn(
           buttonVariants({ variant: "link", size: "xs" }),
           "flex w-fit items-center gap-1 text-foreground",

@@ -26,7 +26,7 @@ export const Podium = ({ member, position }: Props) => {
       <CardHeader>
         <CardTitle className="relative">
           <Link
-            href={`/w/${slug}/members/${member.id}`}
+            href={`/${slug}/members/${member.id}`}
             className={cn(
               buttonVariants({ variant: "ghost" }),
               "-ml-2  text-xl",

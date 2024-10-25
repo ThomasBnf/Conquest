@@ -25,26 +25,26 @@ export const SidebarSettings = () => {
     {
       icon: <User className="size-[16px]" />,
       label: "Profile",
-      href: `/w/${slug}/settings`,
-      isActive: pathname === `/w/${slug}/settings`,
+      href: `/${slug}/settings`,
+      isActive: pathname === `/${slug}/settings`,
     },
     {
       icon: <Tags className="size-[16px]" />,
       label: "Tags",
-      href: `/w/${slug}/settings/tags`,
-      isActive: pathname.startsWith(`/w/${slug}/settings/tags`),
+      href: `/${slug}/settings/tags`,
+      isActive: pathname.startsWith(`/${slug}/settings/tags`),
     },
     {
       icon: <Integration className="size-[18px]" />,
       label: "Integrations",
-      href: `/w/${slug}/settings/integrations`,
-      isActive: pathname.startsWith(`/w/${slug}/settings/integrations`),
+      href: `/${slug}/settings/integrations`,
+      isActive: pathname.startsWith(`/${slug}/settings/integrations`),
     },
     {
       icon: <APIKey className="size-[18px]" />,
       label: "API",
-      href: `/w/${slug}/settings/api`,
-      isActive: pathname.startsWith(`/w/${slug}/settings/api`),
+      href: `/${slug}/settings/api`,
+      isActive: pathname.startsWith(`/${slug}/settings/api`),
     },
   ];
 
@@ -54,7 +54,7 @@ export const SidebarSettings = () => {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton asChild>
-              <a href={`/w/${slug}`}>
+              <a href={`/${slug}`}>
                 <ArrowLeft />
                 Back to dashboard
               </a>

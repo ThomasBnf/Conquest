@@ -23,7 +23,7 @@ export default async function Page({ params: { memberId, slug } }: Props) {
   const member = rMember?.data;
   const tags = rTags?.data;
 
-  if (!member) redirect(`/w/${slug}/members`);
+  if (!member) redirect(`/${slug}/members`);
 
   const { id, avatar_url, first_name, last_name, full_name } = member;
 
