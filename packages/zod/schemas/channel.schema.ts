@@ -11,4 +11,13 @@ export const ChannelSchema = z.object({
   updated_at: z.date(),
 });
 
+export const ChannelWithActivitiesCountSchema = ChannelSchema.extend({
+  _count: z.object({
+    activities: z.number(),
+  }),
+});
+
 export type Channel = z.infer<typeof ChannelSchema>;
+export type ChannelWithActivitiesCount = z.infer<
+  typeof ChannelWithActivitiesCountSchema
+>;

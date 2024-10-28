@@ -9,15 +9,11 @@ import {
 import { Skeleton } from "@conquest/ui/skeleton";
 import { useQuery } from "@tanstack/react-query";
 import ky from "ky";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { Area, AreaChart, CartesianGrid, XAxis } from "recharts";
 
 const chartConfig = {
-  total: {
-    label: "Total members",
-    color: "hsl(var(--chart-1))",
-  },
-  count: {
+  members: {
     label: "Total members",
     color: "hsl(var(--chart-1))",
   },
@@ -26,7 +22,7 @@ const chartConfig = {
     color: "hsl(var(--chart-1))",
   },
   activeMembers: {
-    label: "Avg. Daily active members",
+    label: "Active members",
     color: "hsl(var(--chart-1))",
   },
 } satisfies ChartConfig;
@@ -36,19 +32,24 @@ type Props = {
   to: Date;
 };
 
+type ChartDataProps = {
+  totalMembers: number;
+  totalActiveMembers: number;
+  data: ChartDataItem[];
+};
+
 type ChartDataItem = {
   date: string;
-  total: number;
-  count: number;
+  members: number;
   newMembers: number;
   activeMembers: number;
 };
 
 export const MembersChart = ({ from, to }: Props) => {
   const [activeChart, setActiveChart] =
-    useState<keyof typeof chartConfig>("count");
+    useState<keyof typeof chartConfig>("members");
 
-  const { data: chartData, isLoading } = useQuery<ChartDataItem[]>({
+  const { data: chartData, isLoading } = useQuery({
     queryKey: ["members", from, to],
     queryFn: async () => {
       const response = await ky
@@ -58,87 +59,52 @@ export const MembersChart = ({ from, to }: Props) => {
             to: to.toISOString(),
           },
         })
-        .json<ChartDataItem[]>();
+        .json<ChartDataProps>();
       return response;
     },
   });
 
-  const total = useMemo(() => {
-    if (!chartData?.length) return { count: 0, newMembers: 0 };
-
-    return {
-      count: chartData[chartData.length - 1]?.count ?? 0,
-      newMembers: chartData.reduce((acc, curr) => acc + curr.newMembers, 0),
-      avgActiveMembers:
-        chartData.reduce((acc, curr) => acc + curr.activeMembers, 0) /
-        chartData.length,
-    };
-  }, [chartData, activeChart]);
+  const { totalMembers, totalActiveMembers, data } = chartData ?? {
+    totalMembers: 0,
+    totalActiveMembers: 0,
+    data: [],
+  };
+  const totalNewMembers =
+    data?.reduce((acc, curr) => acc + curr.newMembers, 0) ?? 0;
 
   return (
     <div className="divide-y">
       <div className="flex flex-1 divide-x">
-        <button
-          type="button"
-          data-active={activeChart === "count"}
-          className="flex flex-1 flex-col justify-center gap-1 p-6 data-[active=true]:bg-muted/50"
-          onClick={() => setActiveChart("count")}
-        >
-          <span className="text-sm text-muted-foreground">Total members</span>
-          {isLoading ? (
-            <Skeleton className="h-9 w-12" />
-          ) : (
-            <span className="text-lg font-bold leading-none sm:text-3xl">
-              {chartData?.[chartData.length - 1]?.total}
+        {Object.entries(chartConfig).map(([key, config]) => (
+          <button
+            key={key}
+            type="button"
+            data-active={activeChart === key}
+            className="flex flex-1 flex-col justify-center gap-1 p-6 data-[active=true]:bg-muted"
+            onClick={() => setActiveChart(key as keyof typeof chartConfig)}
+          >
+            <span className="text-sm text-muted-foreground">
+              {config.label}
             </span>
-          )}
-        </button>
-        <button
-          type="button"
-          data-active={activeChart === "newMembers"}
-          className="flex flex-1 flex-col justify-center gap-1 p-6 data-[active=true]:bg-muted/50"
-          onClick={() => setActiveChart("newMembers")}
-        >
-          <span className="text-sm text-muted-foreground">
-            {chartConfig.newMembers.label}
-          </span>
-          {isLoading ? (
-            <Skeleton className="h-9 w-12" />
-          ) : (
-            <span className="text-lg font-bold leading-none sm:text-3xl">
-              {total.newMembers}
-            </span>
-          )}
-        </button>
-        <button
-          type="button"
-          data-active={activeChart === "activeMembers"}
-          className="flex flex-1 flex-col justify-center gap-1 p-6 data-[active=true]:bg-muted/50"
-          onClick={() => setActiveChart("activeMembers")}
-        >
-          <span className="text-sm text-muted-foreground">
-            {chartConfig.activeMembers.label}
-          </span>
-          {isLoading ? (
-            <Skeleton className="h-9 w-12" />
-          ) : (
-            <span className="text-lg font-bold leading-none sm:text-3xl">
-              {total.avgActiveMembers?.toFixed(0)}
-            </span>
-          )}
-        </button>
+            {isLoading ? (
+              <Skeleton className="h-9 w-12" />
+            ) : (
+              <span className="text-lg font-bold leading-none sm:text-3xl">
+                {key === "members" && totalMembers}
+                {key === "newMembers" && totalNewMembers}
+                {key === "activeMembers" && totalActiveMembers}
+              </span>
+            )}
+          </button>
+        ))}
       </div>
       <ChartContainer
         config={chartConfig}
         className="aspect-auto h-[275px] w-full"
       >
         <AreaChart
-          data={chartData}
-          margin={{
-            top: 24,
-            left: 24,
-            right: 24,
-          }}
+          data={data}
+          margin={{ top: 24, left: 24, right: 24, bottom: 5 }}
         >
           <CartesianGrid vertical={false} />
           <XAxis

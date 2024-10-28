@@ -1,7 +1,7 @@
 "use client";
 
 import { type ChartConfig, ChartContainer } from "@conquest/ui/chart";
-import type { MemberWithActivities } from "@conquest/zod/activity.schema";
+import type { ChannelWithActivitiesCount } from "@conquest/zod/channel.schema";
 import { useQuery } from "@tanstack/react-query";
 import ky from "ky";
 import { useRef } from "react";
@@ -19,51 +19,47 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-type ChartDataItem = {
-  member: MemberWithActivities;
-  activities: number;
-};
-
-export const MembersTop = ({ from, to }: Props) => {
+export const ChannelsTop = ({ from, to }: Props) => {
   const ref = useRef<HTMLDivElement>(null);
 
-  const { data: chartData } = useQuery<ChartDataItem[]>({
-    queryKey: ["members-top", from, to],
+  const { data: chartData } = useQuery({
+    queryKey: ["channels-top", from, to],
     queryFn: async () => {
       const response = await ky
-        .get("/api/dashboard/members/top", {
+        .get("/api/dashboard/engagement/channels/top", {
           searchParams: {
             from: from.toISOString(),
             to: to.toISOString(),
           },
         })
-        .json<ChartDataItem[]>();
+        .json<ChannelWithActivitiesCount[]>();
       return response;
     },
   });
 
   return (
     <div className="flex-1 p-4 space-y-2">
-      <p className="pl-1.5 text-base font-medium">Top Members</p>
+      <p className="pl-1.5 text-base font-medium">Top Active Channels</p>
       <ChartContainer ref={ref} config={chartConfig}>
         <BarChart accessibilityLayer data={chartData} layout="vertical">
           <YAxis
-            dataKey="member"
+            dataKey="name"
             type="category"
             tickLine={false}
             tickMargin={10}
             axisLine={false}
             hide
           />
-          <XAxis dataKey="activities" type="number" hide />
+          <XAxis dataKey="_count.activities" type="number" hide />
           <Bar
-            dataKey="activities"
+            dataKey="_count.activities"
             layout="vertical"
             fill="var(--color-activities)"
             radius={4}
+            alignmentBaseline="baseline"
           >
             <LabelList
-              dataKey="member"
+              dataKey="name"
               position="insideLeft"
               offset={10}
               className="fill-muted-foreground text-xs"
@@ -71,13 +67,13 @@ export const MembersTop = ({ from, to }: Props) => {
                 const yPos = Number(y) + Number(height) / 2 + 5;
                 return (
                   <text x={Number(x) + 10} y={yPos} className="text-xs">
-                    {value}
+                    #{value}
                   </text>
                 );
               }}
             />
             <LabelList
-              dataKey="activities"
+              dataKey="_count.activities"
               position="right"
               offset={10}
               className="fill-muted-foreground text-xs"

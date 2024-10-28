@@ -2,7 +2,7 @@ import { getCurrentUser } from "@/helpers/getCurrentUser";
 import { prisma } from "@/lib/prisma";
 import { safeRoute } from "@/lib/safeRoute";
 import { MemberWithActivitiesSchema } from "@conquest/zod/activity.schema";
-import { format } from "date-fns";
+import { eachDayOfInterval, format } from "date-fns";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
@@ -18,31 +18,53 @@ export const GET = safeRoute
   )
   .handler(async (_, { query, data: user }) => {
     const { from, to } = query;
+    const { workspace_id } = user;
 
-    const members = await prisma.member.findMany({
-      where: {
-        workspace_id: user.workspace_id,
-      },
-      include: {
-        activities: true,
-      },
-      orderBy: {
-        created_at: "asc",
-      },
-    });
+    const [totalMembers, totalActiveMembers, members] = await Promise.all([
+      prisma.member.count({
+        where: {
+          workspace_id,
+        },
+      }),
+      prisma.member.count({
+        where: {
+          workspace_id,
+          activities: {
+            some: {
+              created_at: {
+                gte: from,
+                lte: to,
+              },
+            },
+          },
+        },
+      }),
+      prisma.member.findMany({
+        where: {
+          workspace_id,
+          created_at: {
+            gte: from,
+            lte: to,
+          },
+        },
+        include: {
+          activities: true,
+        },
+        orderBy: {
+          created_at: "asc",
+        },
+      }),
+    ]);
 
     const parsedMembers = z.array(MemberWithActivitiesSchema).parse(members);
-    const filteredMembers = parsedMembers.filter(
-      (member) => member.created_at >= from && member.created_at <= to,
-    );
-
-    const chartData = [];
+    const dates = eachDayOfInterval({ start: from, end: to });
 
     let count = 0;
 
-    while (from <= to) {
-      const date = format(from, "PP");
-      const newMembers = filteredMembers.filter(
+    const data = dates.map((currentDate) => {
+      const date = format(currentDate, "PP");
+
+      const newMembers = parsedMembers.filter(
         (member) => format(member.created_at, "PP") === date,
       );
       const activeMembers = parsedMembers.filter((member) =>
@@ -53,16 +75,19 @@ export const GET = safeRoute
 
       count += newMembers.length;
 
-      chartData.push({
+      return {
         date,
-        total: parsedMembers.length,
-        count,
+        members: count,
         newMembers: newMembers.length,
         activeMembers: activeMembers.length,
-      });
+      };
+    });
 
-      from.setDate(from.getDate() + 1);
-    }
+    const chartData = {
+      totalMembers,
+      totalActiveMembers,
+      data,
+    };
 
     return NextResponse.json(chartData);
   });
