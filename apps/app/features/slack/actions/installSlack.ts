@@ -1,6 +1,8 @@
 "use server";
 
 import { listChannels } from "@/features/channels/queries/listChannels";
+import { updateIntegrationAction } from "@/features/integrations/actions/updateIntegrationAction";
+import { IntegrationSchema } from "@conquest/zod/integration.schema";
 import { WebClient } from "@slack/web-api";
 import { authAction } from "lib/authAction";
 import { z } from "zod";
@@ -12,10 +14,10 @@ export const installSlack = authAction
   })
   .schema(
     z.object({
-      id: z.string(),
+      integration: IntegrationSchema,
     }),
   )
-  .action(async ({ ctx: { user } }) => {
+  .action(async ({ ctx: { user }, parsedInput: { integration } }) => {
     const slack_token = user.workspace.integrations.find(
       (integration) => integration.source === "SLACK",
     )?.token;
@@ -26,4 +28,9 @@ export const installSlack = authAction
 
     await createUsers({ web });
     await listChannels({ web, token: slack_token });
+    updateIntegrationAction({
+      id: integration.id,
+      installed_at: new Date(),
+      status: "SYNCING",
+    });
   });

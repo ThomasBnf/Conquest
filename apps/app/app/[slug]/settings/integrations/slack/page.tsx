@@ -3,7 +3,6 @@
 import { DeleteDialog } from "@/components/custom/delete-dialog";
 import { env } from "@/env.mjs";
 import { deleteIntegrationAction } from "@/features/integrations/actions/deleteIntegrationAction";
-import { updateIntegrationAction } from "@/features/integrations/actions/updateIntegrationAction";
 import { installSlack } from "@/features/slack/actions/installSlack";
 import { oauthV2 } from "@/features/slack/actions/oauthV2";
 import { Button, buttonVariants } from "@conquest/ui/button";
@@ -22,7 +21,6 @@ export default function Page() {
   const router = useRouter();
   const params = useSearchParams();
   const code = params.get("code");
-  const loading = params.get("loading");
   const scopes =
     "channels:history,channels:join,channels:read,files:read,groups:read,links:read,reactions:read,team:read,users.profile:read,users:read,users:read.email";
 
@@ -45,12 +43,7 @@ export default function Page() {
       toast.success("Slack installed, we are syncing your data...");
       router.replace(`/${slug}/settings/integrations/slack`);
 
-      installSlack({ id: integration.id });
-      updateIntegrationAction({
-        id: integration.id,
-        installed_at: new Date(),
-      });
-      return integration;
+      installSlack({ integration });
     }
 
     toast.error("Failed to install Slack");
@@ -126,7 +119,7 @@ export default function Page() {
               </DeleteDialog>
             ) : (
               <Button
-                loading={loading === "true"}
+                loading={slack?.status === "SYNCING"}
                 className={cn(buttonVariants({ variant: "default" }))}
                 onClick={onStartInstall}
               >
