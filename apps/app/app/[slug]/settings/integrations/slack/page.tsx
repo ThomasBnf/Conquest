@@ -29,37 +29,31 @@ export default function Page() {
   const onStartInstall = () => {
     const baseUrl = "https://slack.com/oauth/v2/authorize";
     const clientId = `client_id=${env.NEXT_PUBLIC_SLACK_CLIENT_ID}`;
-    const scopesSlack = `scope=${scopes}`;
-    const redirectUri = `redirect_uri=${encodeURIComponent(`${env.NEXT_PUBLIC_SLACK_REDIRECT_URI}/${slug}/settings/integrations/slack?loading=true`)}`;
+    const scopesParams = `scope=${scopes}`;
+    const redirectURI = `redirect_uri=${encodeURIComponent(`${env.NEXT_PUBLIC_SLACK_REDIRECT_URI}/${slug}/settings/integrations/slack?loading=true`)}`;
 
-    const url = `${baseUrl}?${clientId}&${scopesSlack}&${redirectUri}`;
-    router.push(url);
+    router.push(`${baseUrl}?${clientId}&${scopesParams}&${redirectURI}`);
   };
 
   const onInstall = async () => {
     if (!code) return;
 
-    const installPromise = async () => {
-      const rIntegration = await oauthV2({ code, scopes });
-      const integration = rIntegration?.data;
+    const rIntegration = await oauthV2({ code, scopes });
+    const integration = rIntegration?.data;
 
-      if (integration) {
-        router.replace(`/${slug}/settings/integrations/slack`);
-        await installSlack({ id: integration.id });
-        await updateIntegrationAction({
-          id: integration.id,
-          installed_at: new Date(),
-        });
-        return integration;
-      }
-      throw new Error("Installation failed");
-    };
+    if (integration) {
+      toast.success("Slack installed, we are syncing your data...");
+      router.replace(`/${slug}/settings/integrations/slack`);
 
-    toast.promise(installPromise, {
-      loading: "Installing Conquest on Slack...",
-      success: "Conquest installed on Slack",
-      error: "Failed to install Conquest on Slack",
-    });
+      installSlack({ id: integration.id });
+      updateIntegrationAction({
+        id: integration.id,
+        installed_at: new Date(),
+      });
+      return integration;
+    }
+
+    toast.error("Failed to install Slack");
   };
 
   const onUninstall = async () => {
