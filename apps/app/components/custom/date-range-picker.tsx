@@ -58,6 +58,7 @@ export const DateRangePicker = () => {
               });
             }}
             numberOfMonths={2}
+            disabled={(date) => date > new Date()}
           />
         </PopoverContent>
       </Popover>

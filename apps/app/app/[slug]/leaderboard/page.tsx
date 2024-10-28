@@ -1,10 +1,10 @@
+import { DateRangePicker } from "@/components/custom/date-range-picker";
 import { Header } from "@/components/layouts/header";
 import { PageLayout } from "@/components/layouts/page-layout";
 import { LeaderbordTable } from "@/features/leaderbord/leaderboard-table";
 import { Podium } from "@/features/leaderbord/podium";
 import { listLeaderboard } from "@/features/leaderbord/queries/listLeaderboard";
 import { listTags } from "@/features/tags/queries/listTags";
-import { DateRangePicker } from "features/dashboard/date-range-picker";
 import { searchParamsDate } from "lib/searchParamsDate";
 
 type Props = {
@@ -14,7 +14,7 @@ type Props = {
 export default async function Page({ searchParams }: Props) {
   const { from, to } = searchParamsDate.parse(searchParams);
 
-  const rMembers = await listLeaderboard({ page: 0, from, to });
+  const rMembers = await listLeaderboard({ page: 1, from, to });
   const rTags = await listTags();
 
   const members = rMembers?.data;
