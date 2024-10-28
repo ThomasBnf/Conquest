@@ -28,6 +28,7 @@ export const installSlack = authAction
 
     await createUsers({ web });
     await listChannels({ web, token: slack_token });
+
     updateIntegrationAction({
       id: integration.id,
       installed_at: new Date(),

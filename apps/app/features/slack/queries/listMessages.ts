@@ -43,12 +43,16 @@ export const listMessages = authAction
           },
         });
 
+        const type = text?.includes("> has joined the channel")
+          ? "JOIN"
+          : "POST";
+
         if (member) {
           const rActivity = await createActivity({
             external_id: ts,
             details: {
               source: "SLACK",
-              type: "POST",
+              type,
               message: text ?? "",
               files: files?.map(({ title, url_private }) => ({
                 title: title ?? "",

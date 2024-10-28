@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { MemberSchema } from "./member.schema";
 
-export const TYPE = z.enum(["POST", "REACTION", "REPLY"]);
+export const TYPE = z.enum(["POST", "REACTION", "REPLY", "JOIN"]);
 
 export const AttachmentsSchema = z.object({
   title: z.string(),

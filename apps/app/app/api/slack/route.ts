@@ -106,6 +106,7 @@ export const POST = safeRoute.body(bodySchema).handler(async (_, context) => {
             { status: 404 },
           );
         }
+
         await createActivity({
           member_id: member.id,
           channel_id: channel.id,
