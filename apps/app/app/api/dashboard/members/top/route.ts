@@ -49,7 +49,5 @@ export const GET = safeRoute
       }))
       .sort((a, b) => b.activities - a.activities);
 
-    console.dir(chartData, { depth: Number.POSITIVE_INFINITY });
-
     return NextResponse.json(chartData);
   });
