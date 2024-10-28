@@ -1,14 +1,10 @@
 "use client";
 
-import {
-  type ChartConfig,
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from "@conquest/ui/chart";
+import { type ChartConfig, ChartContainer } from "@conquest/ui/chart";
 import type { MemberWithActivities } from "@conquest/zod/activity.schema";
 import { useQuery } from "@tanstack/react-query";
 import ky from "ky";
+import { useRef } from "react";
 import { Bar, BarChart, LabelList, XAxis, YAxis } from "recharts";
 
 type Props = {
@@ -29,6 +25,8 @@ type ChartDataItem = {
 };
 
 export const MembersTop = ({ from, to }: Props) => {
+  const ref = useRef<HTMLDivElement>(null);
+
   const { data: chartData } = useQuery<ChartDataItem[]>({
     queryKey: ["members-top", from, to],
     queryFn: async () => {
@@ -47,7 +45,7 @@ export const MembersTop = ({ from, to }: Props) => {
   return (
     <div className="flex-1 p-4 space-y-2">
       <p className="pl-1.5 text-base font-medium">Top Members</p>
-      <ChartContainer config={chartConfig}>
+      <ChartContainer ref={ref} config={chartConfig}>
         <BarChart accessibilityLayer data={chartData} layout="vertical">
           <YAxis
             dataKey="member"
@@ -58,10 +56,6 @@ export const MembersTop = ({ from, to }: Props) => {
             hide
           />
           <XAxis dataKey="activities" type="number" hide />
-          <ChartTooltip
-            cursor={false}
-            content={<ChartTooltipContent indicator="line" />}
-          />
           <Bar
             dataKey="activities"
             layout="vertical"
@@ -72,16 +66,30 @@ export const MembersTop = ({ from, to }: Props) => {
               dataKey="member"
               position="insideLeft"
               offset={10}
-              className="fill-muted-foreground"
-              fontSize={12}
+              className="fill-muted-foreground text-xs"
+              content={({ value, x, y, height }) => {
+                const yPos = Number(y) + Number(height) / 2 + 5;
+                return (
+                  <text x={Number(x) + 10} y={yPos} className="text-xs">
+                    {value}
+                  </text>
+                );
+              }}
             />
             <LabelList
               dataKey="activities"
               position="right"
               offset={10}
-              className="fill-muted-foreground"
-              fontSize={12}
-              formatter={(value: number) => (value > 0 ? value : "")}
+              className="fill-muted-foreground text-xs"
+              content={({ value, y }) => {
+                const xPos = Number(ref.current?.clientWidth) - 20;
+                const yPos = Number(y) + 20;
+                return (
+                  <text x={xPos} y={yPos} className="text-xs">
+                    {value}
+                  </text>
+                );
+              }}
             />
           </Bar>
         </BarChart>
