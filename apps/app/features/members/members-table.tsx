@@ -42,29 +42,26 @@ export const MembersTable = ({ tags }: Props) => {
   const columns = useMemo(() => Columns({ tags }), [tags]);
 
   const [{ search, id, desc }, setSearchParams] = useParamsMembers();
-  const [sorting, setSorting] = useState([
-    { id: id ?? "last_name", desc: desc ?? false },
-  ]);
+  const [sorting, setSorting] = useState([{ id, desc }]);
   const [rowSelection, setRowSelection] = useState({});
   const [debouncedSearch] = useDebounce(search, 500);
 
-  const { data, isLoading, fetchNextPage, hasNextPage, error } =
-    useInfiniteQuery({
-      queryKey: ["members", debouncedSearch, id, desc, sorting],
-      queryFn: async ({ pageParam }) =>
-        await ky
-          .get("/api/members", {
-            searchParams: {
-              page: pageParam,
-              search: debouncedSearch,
-              id,
-              desc,
-            },
-          })
-          .json<MemberWithActivities[]>(),
-      getNextPageParam: (_, allPages) => allPages.length + 1,
-      initialPageParam: 1,
-    });
+  const { data, isLoading, fetchNextPage, hasNextPage } = useInfiniteQuery({
+    queryKey: ["members", debouncedSearch, id, desc, sorting],
+    queryFn: async ({ pageParam }) =>
+      await ky
+        .get("/api/members", {
+          searchParams: {
+            page: pageParam,
+            search: debouncedSearch,
+            id,
+            desc,
+          },
+        })
+        .json<MemberWithActivities[]>(),
+    getNextPageParam: (_, allPages) => allPages.length + 1,
+    initialPageParam: 1,
+  });
 
   const members = useMemo(() => {
     const pages = data?.pages;

@@ -136,7 +136,6 @@ export const WorkflowProvider = ({ currentWorkflow, children }: Props) => {
 
   const onUpdateNode = useCallback(
     async (updatedNode: NodeType) => {
-      console.log(updatedNode);
       const updatedNodes = nodes.map((node) => {
         if (node.id === updatedNode.id) {
           return updatedNode;

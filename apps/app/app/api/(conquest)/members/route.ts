@@ -18,12 +18,14 @@ export const GET = safeRoute
       search: z.string(),
       page: z.coerce.number(),
       id: z.string(),
-      desc: z.coerce.boolean(),
+      desc: z.string().transform((value) => value === "true"),
     }),
   )
   .handler(async (_, { data: user, query }) => {
-    const { id, search, page, desc } = query;
+    const { search, page, id, desc } = query;
     const workspace_id = user.workspace_id;
+
+    const orderBy = getOrderBy(id, desc);
 
     const members = await prisma.member.findMany({
       where: {
@@ -31,13 +33,11 @@ export const GET = safeRoute
         workspace_id,
       },
       include: {
-        activities: {
-          orderBy: { created_at: "desc" },
-        },
+        activities: true,
       },
-      orderBy: getOrderBy(id, desc),
-      take: page ? 50 : undefined,
-      skip: page ? (page - 1) * 50 : undefined,
+      orderBy,
+      take: 50,
+      skip: (page - 1) * 50,
     });
 
     const parsedMembers = MemberWithActivitiesSchema.array().parse(members);
@@ -73,8 +73,8 @@ const sortByCreatedAt = (a: MemberWithActivities, b: MemberWithActivities) => {
 };
 
 const getOrderBy = (
-  id: string | undefined,
-  desc: boolean | undefined,
+  id: string,
+  desc: boolean,
 ): Prisma.MemberOrderByWithRelationInput => {
   if (!id) {
     return { last_name: desc ? "desc" : "asc" };

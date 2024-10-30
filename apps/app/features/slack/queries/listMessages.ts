@@ -67,10 +67,6 @@ export const listMessages = authAction
 
           const activity = rActivity?.data;
 
-          if (!ts) {
-            console.log(message);
-          }
-
           if (!activity) break;
 
           if (reactions?.length) {
