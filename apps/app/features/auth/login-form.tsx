@@ -1,6 +1,6 @@
 "use client";
 
-import { logIn } from "@/features/auth/actions/loginInAction";
+import { logIn } from "@/features/auth/actions/loginIn";
 import { Button, buttonVariants } from "@conquest/ui/button";
 import {
   Card,

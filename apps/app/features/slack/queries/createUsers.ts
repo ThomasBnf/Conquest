@@ -1,5 +1,3 @@
-"use server";
-
 import { mergeMember } from "@/features/members/queries/mergeMember";
 import { authAction } from "@/lib/authAction";
 import { WebClient } from "@slack/web-api";
@@ -39,7 +37,7 @@ export const createUsers = authAction
             title,
           } = profile;
 
-          await mergeMember({
+          const rMember = await mergeMember({
             first_name,
             last_name,
             full_name: real_name,
@@ -49,6 +47,10 @@ export const createUsers = authAction
             job_title: title,
             slack_id: id,
           });
+
+          if (rMember?.serverError) {
+            console.error(rMember.serverError);
+          }
         }
       }
 

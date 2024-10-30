@@ -1,4 +1,4 @@
-import { getSlugAction } from "@/features/workspaces/actions/getSlugAction";
+import { getSlug } from "@/features/workspaces/actions/getSlug";
 import {
   FormControl,
   FormField,
@@ -30,7 +30,7 @@ export const WorkspaceFields = ({ form }: Props) => {
 
   const checkSlug = async (slug: string) => {
     setLoading(true);
-    const rSlug = await getSlugAction({ slug });
+    const rSlug = await getSlug({ slug });
     const slugData = rSlug?.data;
 
     if (slugData === 0) {

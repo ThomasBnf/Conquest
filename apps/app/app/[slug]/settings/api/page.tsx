@@ -1,6 +1,6 @@
 import { ApiKey } from "@/features/api-keys/ApiKey";
 import { FormAPIKey } from "@/features/api-keys/FormAPI";
-import { listAPIKeys } from "@/features/api-keys/actions/listAPIKeys";
+import { listAPIKeys } from "@/features/api-keys/queries/listAPIKeys";
 
 export default async function Page() {
   const rApiKeys = await listAPIKeys();

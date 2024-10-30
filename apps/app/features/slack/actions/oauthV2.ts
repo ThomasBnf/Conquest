@@ -2,10 +2,11 @@
 
 import { env } from "@/env.mjs";
 import { createIntegration } from "@/features/integrations/queries/createIntegration";
-import { IntegrationSchema } from "@conquest/zod/integration.schema";
 import { authAction } from "lib/authAction";
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { z } from "zod";
+import { installSlack } from "../queries/installSlack";
 
 export const oauthV2 = authAction
   .metadata({
@@ -17,8 +18,8 @@ export const oauthV2 = authAction
       scopes: z.string(),
     }),
   )
-  .action(async ({ ctx, parsedInput: { code, scopes } }) => {
-    const slug = ctx.user.workspace.slug;
+  .action(async ({ ctx: { user }, parsedInput: { code, scopes } }) => {
+    const slug = user.workspace.slug;
 
     const response = await fetch("https://slack.com/api/oauth.v2.access", {
       method: "POST",
@@ -29,22 +30,24 @@ export const oauthV2 = authAction
         code,
         client_id: env.NEXT_PUBLIC_SLACK_CLIENT_ID,
         client_secret: env.SLACK_CLIENT_SECRET,
-        redirect_uri: `${env.NEXT_PUBLIC_SLACK_REDIRECT_URI}/${slug}/settings/integrations/slack?loading=true`,
+        redirect_uri: `${env.NEXT_PUBLIC_SLACK_REDIRECT_URI}/${slug}/settings/integrations/slack`,
       }),
     });
 
     const data = await response.json();
     const { access_token, team } = data;
 
-    const rIntegration = await createIntegration({
+    await createIntegration({
       external_id: team.id,
       name: team.name,
       source: "SLACK",
       token: access_token,
+      status: "SYNCING",
       scopes,
     });
-    const integration = rIntegration?.data;
+
+    installSlack();
 
     revalidatePath(`/${slug}/settings/integrations/slack`);
-    return IntegrationSchema.parse(integration);
+    return redirect(`/${slug}/settings/integrations/slack`);
   });

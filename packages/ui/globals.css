@@ -41,6 +41,18 @@
     --sidebar-border: 220 13% 91%;
     --sidebar-ring: 217.2 91.2% 59.8%;
 
+    --main-50: 240 18% 96%;
+    --main-100: 248 20% 92%;
+    --main-200: 247 21% 84%;
+    --main-300: 248 23% 74%;
+    --main-400: 247 25% 62%;
+    --main-500: 257 80% 32%;
+    --main-600: 257 81% 30%;
+    --main-700: 257 80% 27%;
+    --main-800: 257 80% 24%;
+    --main-900: 257 79% 19%;
+    --main-950: 257 81% 14%;
+
     --slack: 294 54% 27%;
   }
 
@@ -97,4 +109,12 @@
 .actions-primary {
   box-shadow: inset 0 8px 16px 0 hsla(0, 0%, 100%, 0.16), inset 0 2px 0 0
     hsla(0, 0%, 100%, 0.1), 0 1px 2px 0.05px hsla(240, 6%, 10%, 0.24);
+}
+
+.actions-secondary {
+  box-shadow:
+    inset 0 8px 16px 0 hsla(0, 0%, 100%, 0.02),
+    inset 0 -4px 8px 0 hsla(0, 0%, 0%, 0.02),
+    inset 0 2px 0 0 hsla(0, 0%, 0%, 0.02),
+    0 1px 0.5px 0.05px hsla(240, 6%, 10%, 0.05);
 }

@@ -1,5 +1,6 @@
 import { DateRangePicker } from "@/components/custom/date-range-picker";
 import { MemberDashboard } from "@/features/dashboard/members/member-dashboard";
+import { prisma } from "@/lib/prisma";
 import { ScrollArea } from "@conquest/ui/scroll-area";
 import { searchParamsDate } from "lib/searchParamsDate";
 
@@ -9,6 +10,22 @@ type Props = {
 
 export default async function Page({ searchParams }: Props) {
   const { from, to } = searchParamsDate.parse(searchParams);
+
+  const activities = await prisma.activity.groupBy({
+    by: ["external_id"],
+    _count: {
+      external_id: true,
+    },
+    having: {
+      external_id: {
+        _count: {
+          gt: 1,
+        },
+      },
+    },
+  });
+
+  console.log(activities);
 
   return (
     <div className="flex h-full flex-col divide-y">

@@ -1,5 +1,6 @@
 "use client";
 
+import { Loader } from "@conquest/ui/loader";
 import {
   Sidebar,
   SidebarContent,
@@ -20,11 +21,13 @@ import { Workflows } from "components/icons/Workflows";
 import { useUser } from "context/userContext";
 import { WorkspaceMenu } from "features/user/workspace-menu";
 import { signOut } from "next-auth/react";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
+import { Integration } from "../icons/Integration";
 import { SidebarSettings } from "./sidebar-settings";
 
 export const AppSidebar = () => {
-  const { slug } = useUser();
+  const { slug, slack } = useUser();
   const pathname = usePathname();
 
   if (pathname.startsWith(`/${slug}/settings`)) return <SidebarSettings />;
@@ -91,6 +94,14 @@ export const AppSidebar = () => {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton asChild>
+              <a href={`/${slug}/settings/integrations`}>
+                <Integration className="size-[18px]" />
+                <span>Integrations</span>
+              </a>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+          <SidebarMenuItem>
+            <SidebarMenuButton asChild>
               <a href={`/${slug}/settings`}>
                 <Settings className="size-[18px]" />
                 <span>Settings</span>
@@ -111,6 +122,13 @@ export const AppSidebar = () => {
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarFooter>
+      {slack?.status === "SYNCING" && (
+        <div className="border-t h-10 px-4 text-sm flex items-center gap-2 bg-background">
+          <Image src="/social/slack.svg" alt="Slack" width={16} height={16} />
+          <p>Collecting data</p>
+          <Loader className="size-4 ml-auto" />
+        </div>
+      )}
     </Sidebar>
   );
 };

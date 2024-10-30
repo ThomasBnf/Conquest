@@ -5,7 +5,14 @@ import type { MemberWithActivities } from "@conquest/zod/activity.schema";
 import { useQuery } from "@tanstack/react-query";
 import ky from "ky";
 import { useRef } from "react";
-import { Bar, BarChart, LabelList, XAxis, YAxis } from "recharts";
+import {
+  Bar,
+  BarChart,
+  LabelList,
+  ResponsiveContainer,
+  XAxis,
+  YAxis,
+} from "recharts";
 
 type Props = {
   from: Date;
@@ -15,7 +22,7 @@ type Props = {
 const chartConfig = {
   activities: {
     label: "Activities",
-    color: "hsl(var(--muted))",
+    color: "hsl(var(--main-100))",
   },
 } satisfies ChartConfig;
 
@@ -45,55 +52,60 @@ export const MembersTop = ({ from, to }: Props) => {
   return (
     <div className="flex-1 p-4 space-y-2">
       <p className="pl-1.5 text-base font-medium">Top Members</p>
-      <ChartContainer ref={ref} config={chartConfig}>
-        <BarChart accessibilityLayer data={chartData} layout="vertical">
-          <YAxis
-            dataKey="member"
-            type="category"
-            tickLine={false}
-            tickMargin={10}
-            axisLine={false}
-            hide
-          />
-          <XAxis dataKey="activities" type="number" hide />
-          <Bar
-            dataKey="activities"
+      <ResponsiveContainer height={350}>
+        <ChartContainer ref={ref} config={chartConfig}>
+          <BarChart
+            accessibilityLayer
+            data={chartData}
             layout="vertical"
-            fill="var(--color-activities)"
-            radius={4}
+            barCategoryGap={2}
           >
-            <LabelList
+            <YAxis
               dataKey="member"
-              position="insideLeft"
-              offset={10}
-              className="fill-muted-foreground text-xs"
-              content={({ value, x, y, height }) => {
-                const yPos = Number(y) + Number(height) / 2 + 5;
-                return (
-                  <text x={Number(x) + 10} y={yPos} className="text-xs">
-                    {value}
-                  </text>
-                );
-              }}
+              type="category"
+              tickLine={false}
+              tickMargin={10}
+              axisLine={false}
+              hide
             />
-            <LabelList
+            <XAxis dataKey="activities" type="number" hide />
+            <Bar
               dataKey="activities"
-              position="right"
-              offset={10}
-              className="fill-muted-foreground text-xs"
-              content={({ value, y, height }) => {
-                const xPos = Number(ref.current?.clientWidth) - 30;
-                const yPos = Number(y) + Number(height) / 2 + 5;
-                return (
-                  <text x={xPos} y={yPos} className="text-xs">
-                    {value}
-                  </text>
-                );
-              }}
-            />
-          </Bar>
-        </BarChart>
-      </ChartContainer>
+              layout="vertical"
+              fill="var(--color-activities)"
+              radius={4}
+            >
+              <LabelList
+                dataKey="member"
+                position="insideLeft"
+                offset={10}
+                content={({ value, x, y, height }) => {
+                  const yPos = Number(y) + Number(height) / 2 + 5;
+                  return (
+                    <text x={Number(x) + 10} y={yPos}>
+                      {value}
+                    </text>
+                  );
+                }}
+              />
+              <LabelList
+                dataKey="activities"
+                position="right"
+                offset={10}
+                content={({ value, y, height }) => {
+                  const xPos = Number(ref.current?.clientWidth) - 30;
+                  const yPos = Number(y) + Number(height) / 2 + 5;
+                  return (
+                    <text x={xPos} y={yPos}>
+                      {value}
+                    </text>
+                  );
+                }}
+              />
+            </Bar>
+          </BarChart>
+        </ChartContainer>
+      </ResponsiveContainer>
     </div>
   );
 };

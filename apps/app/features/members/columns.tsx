@@ -39,6 +39,7 @@ export const Columns = ({ tags }: Props): ColumnDef<MemberWithActivities>[] => [
         />
       </div>
     ),
+    size: 50,
   },
   {
     accessorKey: "full_name",
@@ -71,7 +72,6 @@ export const Columns = ({ tags }: Props): ColumnDef<MemberWithActivities>[] => [
     cell: ({ row }) => {
       return <p>{row.original.emails[0]}</p>;
     },
-    enableSorting: true,
   },
   {
     accessorKey: "source",

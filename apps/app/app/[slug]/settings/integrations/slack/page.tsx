@@ -2,9 +2,9 @@
 
 import { DeleteDialog } from "@/components/custom/delete-dialog";
 import { env } from "@/env.mjs";
-import { deleteIntegrationAction } from "@/features/integrations/actions/deleteIntegrationAction";
-import { installSlack } from "@/features/slack/actions/installSlack";
+import { deleteIntegration } from "@/features/integrations/actions/deleteIntegration";
 import { oauthV2 } from "@/features/slack/actions/oauthV2";
+import { installSlack } from "@/features/slack/queries/installSlack";
 import { Button, buttonVariants } from "@conquest/ui/button";
 import { Separator } from "@conquest/ui/separator";
 import { cn } from "@conquest/ui/utils/cn";
@@ -28,36 +28,20 @@ export default function Page() {
     const baseUrl = "https://slack.com/oauth/v2/authorize";
     const clientId = `client_id=${env.NEXT_PUBLIC_SLACK_CLIENT_ID}`;
     const scopesParams = `scope=${scopes}`;
-    const redirectURI = `redirect_uri=${encodeURIComponent(`${env.NEXT_PUBLIC_SLACK_REDIRECT_URI}/${slug}/settings/integrations/slack?loading=true`)}`;
+    const redirectURI = `redirect_uri=${encodeURIComponent(`${env.NEXT_PUBLIC_SLACK_REDIRECT_URI}/${slug}/settings/integrations/slack`)}`;
 
     router.push(`${baseUrl}?${clientId}&${scopesParams}&${redirectURI}`);
   };
 
-  const onInstall = async () => {
-    if (!code) return;
-
-    const rIntegration = await oauthV2({ code, scopes });
-    const integration = rIntegration?.data;
-
-    if (integration) {
-      toast.success("Slack installed, we are syncing your data...");
-      router.replace(`/${slug}/settings/integrations/slack`);
-
-      installSlack({ integration });
-    }
-
-    toast.error("Failed to install Slack");
-  };
-
   const onUninstall = async () => {
     if (!slack?.id) return;
-    deleteIntegrationAction({ id: slack.id });
+    deleteIntegration({ id: slack.id });
     return toast.success("Slack disconnected");
   };
 
   useEffect(() => {
-    onInstall();
-  }, []);
+    if (code) oauthV2({ code, scopes });
+  }, [code]);
 
   return (
     <div className="mx-auto max-w-3xl py-16">

@@ -1,6 +1,6 @@
 "use server";
 
-import { updateMemberAction } from "@/features/members/actions/updateMemberAction";
+import { updateMember } from "@/features/members/actions/updateMember";
 import { listMembers } from "@/features/members/queries/listMembers";
 import type { MemberWithActivities } from "@conquest/zod/activity.schema";
 import {
@@ -257,7 +257,7 @@ const addTagMember = async (node: Node) => {
     const hasTags = tags.some((tag) => memberTags.includes(tag));
 
     if (!hasTags) {
-      await updateMemberAction({
+      await updateMember({
         id: member.id,
         tags: [...memberTags, ...tags],
       });
@@ -275,7 +275,7 @@ const removeTagMember = async (node: Node) => {
     const hasTags = tags.some((tag) => memberTags.includes(tag));
 
     if (hasTags) {
-      await updateMemberAction({
+      await updateMember({
         id: member.id,
         tags: memberTags.filter((tag) => !tags.includes(tag)),
       });

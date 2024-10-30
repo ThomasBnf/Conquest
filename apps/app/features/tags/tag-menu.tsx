@@ -10,7 +10,7 @@ import { AlertDialog } from "components/custom/alert-dialog";
 import { Edit2, MoreHorizontal, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
-import { deleteTagAction } from "./actions/deleteTagAction";
+import { deleteTag } from "./actions/deleteTag";
 
 type Props = {
   tag: Tag;
@@ -22,7 +22,7 @@ export const TagMenu = ({ tag, setIsEditing }: Props) => {
   const [showAlert, setShowAlert] = useState(false);
 
   const onDeleteTag = async () => {
-    const rTag = await deleteTagAction({ id: tag.id });
+    const rTag = await deleteTag({ id: tag.id });
     if (rTag?.serverError) return toast.error(rTag.serverError);
   };
 

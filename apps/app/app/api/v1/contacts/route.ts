@@ -16,7 +16,7 @@ export const POST = safeRoute
       first_name: z.string(),
       last_name: z.string(),
       emails: z.array(z.string()).min(1),
-      phone: z.string().optional(),
+      phones: z.array(z.string()).optional(),
       avatar_url: z.string().optional(),
       bio: z.string().optional(),
       job_title: z.string().optional(),
@@ -31,7 +31,7 @@ export const POST = safeRoute
       first_name,
       last_name,
       emails,
-      phone,
+      phones,
       avatar_url,
       bio,
       gender,
@@ -46,16 +46,17 @@ export const POST = safeRoute
         last_name,
         full_name: `${first_name} ${last_name}`,
         emails,
-        phone,
+        phones,
         avatar_url,
         bio,
         gender,
         address,
         source,
         tags,
-        search: `${first_name} ${last_name} ${emails.join(" ")} ${phone ?? ""}`
-          .trim()
-          .toLowerCase(),
+        search:
+          `${first_name} ${last_name} ${emails.join(" ")} ${phones?.join(" ")}`
+            .trim()
+            .toLowerCase(),
         workspace_id: data.workspace_id,
       },
     });

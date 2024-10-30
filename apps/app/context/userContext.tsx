@@ -6,7 +6,7 @@ import { createContext, useContext } from "react";
 
 type userContext = {
   user: UserWithWorkspace | undefined;
-  slug: string | undefined;
+  slug: string | null | undefined;
   slack: Integration | undefined;
 };
 

@@ -1,11 +1,10 @@
 import { useUser } from "@/context/userContext";
 import { Avatar, AvatarFallback, AvatarImage } from "@conquest/ui/avatar";
-import { buttonVariants } from "@conquest/ui/button";
-import { cn } from "@conquest/ui/utils/cn";
+import { Button } from "@conquest/ui/button";
 import type { MemberWithActivities } from "@conquest/zod/activity.schema";
 import type { Tag } from "@conquest/zod/tag.schema";
 import type { ColumnDef } from "@tanstack/react-table";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { DateCell } from "../members/date-cell";
 import { TagBadge } from "../tags/tag-badge";
 
@@ -25,6 +24,7 @@ export const Columns = (
         .rows.findIndex((r) => r.id === row.id);
       return <p className="text-center">{rowIndex + 4}</p>;
     },
+    size: 60,
   },
   {
     accessorKey: "full_name",
@@ -34,11 +34,13 @@ export const Columns = (
     cell: ({ row }) => {
       const { slug } = useUser();
       const { avatar_url, first_name, full_name } = row.original;
+      const router = useRouter();
 
       return (
-        <Link
-          href={`/${slug}/members/${row.original.id}`}
-          className={cn(buttonVariants({ variant: "ghost" }), "space-x-2")}
+        <Button
+          variant="ghost"
+          onClick={() => router.push(`/${slug}/members/${row.original.id}`)}
+          className="flex items-center gap-2 px-1.5"
         >
           <Avatar className="size-6">
             <AvatarImage src={avatar_url ?? ""} />
@@ -47,7 +49,7 @@ export const Columns = (
             </AvatarFallback>
           </Avatar>
           <p className="font-medium">{full_name}</p>
-        </Link>
+        </Button>
       );
     },
   },

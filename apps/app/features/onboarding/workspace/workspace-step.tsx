@@ -1,5 +1,5 @@
-import { updateUserAction } from "@/features/auth/actions/updateUserAction";
-import { updateWorkspaceAction } from "@/features/workspaces/actions/updateWorkspaceAction";
+import { updateUser } from "@/features/auth/actions/updateUser";
+import { updateWorkspace } from "@/features/workspaces/actions/updateWorkspace";
 import { Button } from "@conquest/ui/button";
 import { Form } from "@conquest/ui/form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -42,7 +42,7 @@ export const WorkspaceStep = ({ setStep }: Props) => {
   }: Workspace) => {
     setLoading(true);
 
-    const rUser = await updateUserAction({ first_name, last_name });
+    const rUser = await updateUser({ first_name, last_name });
     const error = rUser?.serverError;
 
     if (error) {
@@ -50,7 +50,7 @@ export const WorkspaceStep = ({ setStep }: Props) => {
       return toast.error(error);
     }
 
-    const rWorkspace = await updateWorkspaceAction({
+    const rWorkspace = await updateWorkspace({
       name: workspace_name,
       slug,
     });

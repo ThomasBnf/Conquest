@@ -1,7 +1,7 @@
 "use client";
 
 import { useUser } from "@/context/userContext";
-import { createMember } from "@/features/members/actions/createMemberAction";
+import { createMember } from "@/features/members/actions/createMember";
 import { Button } from "@conquest/ui/button";
 import {
   Dialog,

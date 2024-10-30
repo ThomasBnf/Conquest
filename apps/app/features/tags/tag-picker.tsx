@@ -1,6 +1,6 @@
 "use client";
 
-import { updateMemberAction } from "@/features/members/actions/updateMemberAction";
+import { updateMember } from "@/features/members/actions/updateMember";
 import { Button } from "@conquest/ui/button";
 import {
   Popover,
@@ -28,7 +28,7 @@ export const TagPicker = ({ member, tags }: Props) => {
         ? prevTags.filter((id) => id !== tag.id)
         : [...prevTags, tag.id];
 
-      updateMemberAction({ id: member.id, tags: updatedTags });
+      updateMember({ id: member.id, tags: updatedTags });
       return updatedTags;
     });
   };

@@ -1,27 +1,55 @@
 "use client";
 
+import { SignOut } from "@/components/icons/SignOut";
+import { useUser } from "@/context/userContext";
+import { Button } from "@conquest/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@conquest/ui/card";
 import { Steps } from "features/onboarding/Steps";
 import { QuestionsStep } from "features/onboarding/questions/questions-step";
 import { WorkspaceStep } from "features/onboarding/workspace/workspace-step";
+import { signOut } from "next-auth/react";
 import { useState } from "react";
 
 export default function Page() {
+  const { user } = useUser();
   const [step, setStep] = useState(1);
 
+  const onClick = async () => {
+    signOut({ callbackUrl: "/auth/login", redirect: true });
+  };
+
   return (
-    <div className="flex h-dvh divide-x">
-      <div className="flex h-full flex-1 flex-col items-center justify-center">
-        <div className="flex flex-col">
-          <Steps step={step} />
-          <p className="text-xl font-medium">Welcome to Conquest</p>
-          <p className="mb-8 text-base text-muted-foreground">
-            Tell us a bit about yourself so we can personalize your experience
-          </p>
-          {step === 1 && <WorkspaceStep setStep={setStep} />}
-          {step === 2 && <QuestionsStep />}
+    <div className="flex h-full flex-col justify-between p-4 lg:px-8 bg-muted/30">
+      <div className="flex items-center justify-between">
+        <Button onClick={onClick} variant="outline" className="self-start">
+          <SignOut className="size-[18px]" />
+          Log out
+        </Button>
+        <div>
+          <p className="text-xs text-muted-foreground">Logged in as:</p>
+          <p className="text-sm">{user?.email}</p>
         </div>
       </div>
-      <div className="flex-1 bg-neutral-50" />
+      <Card className="max-w-xl mx-auto w-full">
+        <CardHeader>
+          <Steps step={step} />
+          <CardTitle>Welcome to Conquest</CardTitle>
+          <CardDescription>
+            Tell us a bit about yourself so we can personalize your experience
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          {step === 1 && <WorkspaceStep setStep={setStep} />}
+          {step === 2 && <QuestionsStep />}
+        </CardContent>
+      </Card>
+      <div />
     </div>
   );
 }

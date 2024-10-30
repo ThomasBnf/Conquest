@@ -20,7 +20,7 @@ export const updateMember = safeAction
         slack_id,
         first_name,
         last_name,
-        phone: newPhone,
+        phone,
         avatar_url,
         job_title,
       },
@@ -31,8 +31,12 @@ export const updateMember = safeAction
         },
       });
 
-      const { emails, phone } = currentMember ?? {};
-      const newSearch = `${first_name} ${last_name} ${emails} ${newPhone ?? phone}`;
+      const { emails, phones } = currentMember ?? {};
+
+      const updatedPhones = new Set(phones);
+      if (phone) updatedPhones.add(phone);
+
+      const newSearch = `${first_name} ${last_name} ${emails?.join(" ") ?? ""} ${Array.from(updatedPhones).join(" ")}`;
 
       return await prisma.member.update({
         where: {
@@ -42,7 +46,7 @@ export const updateMember = safeAction
           first_name,
           last_name,
           full_name: `${first_name} ${last_name}`,
-          phone: newPhone ?? phone,
+          phones: Array.from(updatedPhones).filter(Boolean),
           avatar_url,
           job_title,
           search: newSearch,

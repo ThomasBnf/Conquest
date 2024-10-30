@@ -1,7 +1,7 @@
 "use client";
 
 import { IsLoading } from "@/components/states/is-loading";
-import { ScrollArea } from "@conquest/ui/scroll-area";
+import { ScrollArea, ScrollBar } from "@conquest/ui/scroll-area";
 import {
   Table,
   TableBody,
@@ -12,7 +12,10 @@ import {
   TableRow,
 } from "@conquest/ui/table";
 import { cn } from "@conquest/ui/utils/cn";
-import { MemberWithActivitiesSchema } from "@conquest/zod/activity.schema";
+import {
+  type MemberWithActivities,
+  MemberWithActivitiesSchema,
+} from "@conquest/zod/activity.schema";
 import type { Tag } from "@conquest/zod/tag.schema";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import {
@@ -20,11 +23,9 @@ import {
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { useUser } from "context/userContext";
-import { useRouter } from "next/navigation";
+import ky from "ky";
 import { useEffect, useMemo } from "react";
 import { useInView } from "react-intersection-observer";
-import { listLeaderboardActions } from "./actions/listLeaderboardActions";
 import { Columns } from "./columns";
 
 type Props = {
@@ -34,15 +35,21 @@ type Props = {
 };
 
 export const LeaderbordTable = ({ tags, from, to }: Props) => {
-  const { slug } = useUser();
   const { ref, inView } = useInView();
-  const router = useRouter();
   const columns = Columns(tags);
 
   const { data, isLoading, fetchNextPage, hasNextPage } = useInfiniteQuery({
     queryKey: ["leaderboard", from, to],
-    queryFn: ({ pageParam }) =>
-      listLeaderboardActions({ page: pageParam, from, to }),
+    queryFn: async ({ pageParam }) =>
+      await ky
+        .get("/api/leaderboard", {
+          searchParams: {
+            page: pageParam,
+            from: from.toISOString(),
+            to: to.toISOString(),
+          },
+        })
+        .json<MemberWithActivities[]>(),
     getNextPageParam: (_, allPages) => allPages.length + 1,
     initialPageParam: 1,
   });
@@ -50,9 +57,7 @@ export const LeaderbordTable = ({ tags, from, to }: Props) => {
   const flatData = useMemo(() => {
     const pages = data?.pages;
     if (!pages?.length) return [];
-    return MemberWithActivitiesSchema.array().parse(
-      pages.flatMap((page) => page?.data ?? []).slice(3),
-    );
+    return MemberWithActivitiesSchema.array().parse(pages.flat());
   }, [data?.pages]);
 
   const table = useReactTable({
@@ -67,12 +72,20 @@ export const LeaderbordTable = ({ tags, from, to }: Props) => {
 
   return (
     <ScrollArea>
-      <Table>
+      <Table
+        className="whitespace-nowrap"
+        style={{ width: table.getCenterTotalSize() }}
+      >
         <TableHeader className="sticky top-0 z-10 after:absolute after:inset-x-0 after:bottom-0 after:h-px after:bg-border">
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
-                <TableHead key={header.id}>
+                <TableHead
+                  key={header.id}
+                  style={{
+                    minWidth: header.getSize(),
+                  }}
+                >
                   {header.isPlaceholder
                     ? null
                     : flexRender(
@@ -93,17 +106,12 @@ export const LeaderbordTable = ({ tags, from, to }: Props) => {
             </TableRow>
           ) : table.getRowModel().rows?.length ? (
             table.getRowModel().rows.map((row) => (
-              <TableRow
-                key={row.id}
-                className="cursor-pointer"
-                onClick={() => {
-                  router.push(
-                    `/${slug}/members/${row.original.id}?from=leaderboard`,
-                  );
-                }}
-              >
+              <TableRow key={row.id} className="hover:bg-neutral-50">
                 {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id}>
+                  <TableCell
+                    key={cell.id}
+                    style={{ minWidth: cell.column.getSize() }}
+                  >
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </TableCell>
                 ))}
@@ -122,6 +130,8 @@ export const LeaderbordTable = ({ tags, from, to }: Props) => {
             <TableCell colSpan={columns.length} ref={ref} className="p-0" />
           </TableRow>
         </TableFooter>
+        <ScrollBar orientation="horizontal" />
+        <ScrollBar orientation="vertical" />
       </Table>
     </ScrollArea>
   );

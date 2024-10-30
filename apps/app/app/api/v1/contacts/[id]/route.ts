@@ -24,7 +24,7 @@ export const PATCH = safeRoute
       last_name,
       full_name,
       emails,
-      phone,
+      phones,
       avatar_url,
       bio,
       gender,
@@ -42,7 +42,7 @@ export const PATCH = safeRoute
         last_name,
         full_name,
         emails,
-        phone,
+        phones,
         avatar_url,
         bio,
         gender,
@@ -50,7 +50,7 @@ export const PATCH = safeRoute
         source,
         tags,
         search:
-          `${first_name} ${last_name} ${emails.join(" ")} ${phone}`.toLowerCase(),
+          `${first_name} ${last_name} ${emails.join(" ")} ${phones?.join(" ")}`.toLowerCase(),
         workspace_id: data.workspace_id,
       },
     });

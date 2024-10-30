@@ -1,4 +1,3 @@
-import { createActivity } from "@/features/activities/queries/createActivity";
 import { ChannelSchema } from "@conquest/zod/channel.schema";
 import { WebClient } from "@slack/web-api";
 import { authAction } from "lib/authAction";
@@ -40,25 +39,41 @@ export const listReplies = authAction
         });
 
         if (member) {
-          const rActivity = await createActivity({
-            external_id: ts,
-            details: {
-              source: "SLACK",
-              type: "REPLY",
-              message: text ?? "",
-              files: files?.map(({ title, url_private }) => ({
-                title: title ?? "",
-                url: url_private ?? "",
-              })),
-              reply_to,
+          const activity = await prisma.activity.upsert({
+            where: {
+              external_id: ts,
             },
-            channel_id: channel.id,
-            member_id: member.id,
-            created_at: new Date(Number(ts) * 1000),
-            updated_at: new Date(Number(ts) * 1000),
+            update: {
+              details: {
+                source: "SLACK",
+                type: "REPLY",
+                message: text ?? "",
+                files: files?.map(({ title, url_private }) => ({
+                  title: title ?? "",
+                  url: url_private ?? "",
+                })),
+                reply_to,
+              },
+            },
+            create: {
+              external_id: ts,
+              details: {
+                source: "SLACK",
+                type: "REPLY",
+                message: text ?? "",
+                files: files?.map(({ title, url_private }) => ({
+                  title: title ?? "",
+                  url: url_private ?? "",
+                })),
+                reply_to,
+              },
+              channel_id: channel.id,
+              member_id: member.id,
+              created_at: new Date(Number(ts) * 1000),
+              updated_at: new Date(Number(ts) * 1000),
+              workspace_id,
+            },
           });
-
-          const activity = rActivity?.data;
 
           if (reactions?.length) {
             for (const reaction of reactions) {

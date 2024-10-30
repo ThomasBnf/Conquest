@@ -12,6 +12,7 @@ export const createActivity = safeAction
   })
   .schema(
     z.object({
+      external_id: z.string().nullable(),
       details: ActivityDetailsSchema,
       channel_id: z.string(),
       member_id: z.string(),
@@ -20,10 +21,17 @@ export const createActivity = safeAction
   )
   .action(
     async ({
-      parsedInput: { details, channel_id, member_id, workspace_id },
+      parsedInput: {
+        external_id,
+        details,
+        channel_id,
+        member_id,
+        workspace_id,
+      },
     }) => {
       const activity = await prisma.activity.create({
         data: {
+          external_id,
           details,
           channel_id,
           member_id,

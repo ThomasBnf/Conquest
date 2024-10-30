@@ -8,7 +8,7 @@ export const MemberSchema = z.object({
   last_name: z.string().nullable(),
   full_name: z.string().nullable(),
   emails: z.array(z.string()).default([]),
-  phone: z.string().nullable(),
+  phones: z.array(z.string()).default([]),
   avatar_url: z.string().nullable(),
   bio: z.string().nullable(),
   job_title: z.string().nullable(),

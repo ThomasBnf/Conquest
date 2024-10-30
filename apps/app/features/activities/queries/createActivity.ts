@@ -12,7 +12,7 @@ export const createActivity = authAction
   })
   .schema(
     z.object({
-      external_id: z.string().optional(),
+      external_id: z.string().nullable(),
       details: ActivityDetailsSchema,
       channel_id: z.string().cuid(),
       member_id: z.string().cuid(),

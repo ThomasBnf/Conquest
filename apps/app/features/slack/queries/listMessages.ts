@@ -49,7 +49,7 @@ export const listMessages = authAction
 
         if (member) {
           const rActivity = await createActivity({
-            external_id: ts,
+            external_id: ts ?? null,
             details: {
               source: "SLACK",
               type,
@@ -66,6 +66,10 @@ export const listMessages = authAction
           });
 
           const activity = rActivity?.data;
+
+          if (!ts) {
+            console.log(message);
+          }
 
           if (!activity) break;
 

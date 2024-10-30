@@ -2,11 +2,12 @@
 
 import { AddressInput } from "@/components/custom/address-input";
 import { EditableInput } from "@/components/custom/editable-input";
-import { updateMemberAction } from "@/features/members/actions/updateMemberAction";
+import { updateMember } from "@/features/members/actions/updateMember";
 import { TagPicker } from "@/features/tags/tag-picker";
 import type { MemberWithActivities } from "@conquest/zod/activity.schema";
 import type { Tag } from "@conquest/zod/tag.schema";
 import { EditableEmails } from "./editable-emails";
+import { EditablePhones } from "./editable-phones";
 import { FieldCard } from "./field-card";
 
 type Props = {
@@ -15,13 +16,13 @@ type Props = {
 };
 
 export const MemberSidebar = ({ member, tags }: Props) => {
-  const { id, source, phone, job_title } = member;
+  const { id, source, phones, job_title } = member;
 
   const onUpdateMember = async (
     field: "phone" | "job_title" | "bio" | "source",
     value: string,
   ) => {
-    await updateMemberAction({ id, [field]: value });
+    await updateMember({ id, [field]: value });
   };
 
   return (
@@ -37,11 +38,7 @@ export const MemberSidebar = ({ member, tags }: Props) => {
         <EditableEmails member={member} />
       </FieldCard>
       <FieldCard icon="Phone" label="Phone">
-        <EditableInput
-          defaultValue={phone}
-          placeholder="Set phone"
-          onUpdate={(value) => onUpdateMember("phone", value)}
-        />
+        <EditablePhones member={member} />
       </FieldCard>
       <FieldCard icon="Briefcase" label="Job title">
         <EditableInput

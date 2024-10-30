@@ -5,7 +5,8 @@ import { useWorkflow } from "context/workflowContext";
 import type { icons } from "lucide-react";
 
 export const TriggerPanel = () => {
-  const { onAddNode } = useWorkflow();
+  const { currentNode, onAddNode, onUpdateNode, changing, setChanging } =
+    useWorkflow();
 
   return (
     <div className="p-6">
@@ -28,7 +29,14 @@ export const TriggerPanel = () => {
                     // biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
                     <div
                       key={node.id}
-                      onClick={() => onAddNode(node)}
+                      onClick={() => {
+                        if (currentNode) {
+                          onUpdateNode({ ...currentNode, data: node.data });
+                        } else {
+                          onAddNode(node);
+                        }
+                        setChanging(true);
+                      }}
                       className="cursor-pointer rounded-md border p-2 transition-colors hover:bg-muted"
                     >
                       <div className="flex items-center gap-2">

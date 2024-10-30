@@ -6,15 +6,15 @@ import { redirect } from "next/navigation";
 import type { PropsWithChildren } from "react";
 
 type Props = {
-  params: {
-    slug: string;
-  };
+  children: React.ReactNode;
+  params: Record<string, string>;
 };
 
 export default async function Layout({
   children,
-  params: { slug },
+  params,
 }: PropsWithChildren<Props>) {
+  const { slug } = await params;
   const user = await getCurrentUser();
 
   if (!user.onboarding) redirect("/");

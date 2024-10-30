@@ -9,9 +9,9 @@ import {
 } from "@conquest/zod/activity.schema";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { format, isYesterday } from "date-fns";
+import ky from "ky";
 import { useEffect, useMemo } from "react";
 import { useInView } from "react-intersection-observer";
-import { listActivitiesAction } from "./actions/listActivitiesAction";
 import { ActivityParser } from "./activity-parser";
 
 type Activities = Record<string, ActivityWithMember[]>;
@@ -25,11 +25,15 @@ export const Activities = ({ member_id, className }: Props) => {
 
   const { data, isLoading, fetchNextPage, hasNextPage } = useInfiniteQuery({
     queryKey: ["activities", member_id],
-    queryFn: ({ pageParam }) =>
-      listActivitiesAction({
-        member_id,
-        page: pageParam,
-      }),
+    queryFn: async ({ pageParam }) =>
+      await ky
+        .get("/api/activities", {
+          searchParams: {
+            page: pageParam,
+          },
+        })
+        .json<ActivityWithMember[]>(),
+
     getNextPageParam: (_, allPages) => allPages.length + 1,
     initialPageParam: 1,
   });
@@ -38,9 +42,7 @@ export const Activities = ({ member_id, className }: Props) => {
     const pages = data?.pages;
     if (!pages?.length) return [];
 
-    return ActivityWithMemberSchema.array().parse(
-      pages.flatMap((page) => page?.data ?? []),
-    );
+    return ActivityWithMemberSchema.array().parse(pages.flat());
   }, [data?.pages]);
 
   const groupedActivities = useMemo(() => {

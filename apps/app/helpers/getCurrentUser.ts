@@ -2,6 +2,7 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { CustomError } from "@/lib/safeRoute";
 import { UserWithWorkspaceSchema } from "@conquest/zod/user.schema";
+import { headers } from "next/headers";
 
 export const getCurrentUser = async () => {
   const session = await auth();

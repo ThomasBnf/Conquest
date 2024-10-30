@@ -10,7 +10,13 @@ import { Skeleton } from "@conquest/ui/skeleton";
 import { useQuery } from "@tanstack/react-query";
 import ky from "ky";
 import { useState } from "react";
-import { Area, AreaChart, CartesianGrid, XAxis } from "recharts";
+import {
+  Area,
+  AreaChart,
+  CartesianGrid,
+  ResponsiveContainer,
+  XAxis,
+} from "recharts";
 
 const chartConfig = {
   members: {
@@ -98,61 +104,62 @@ export const MembersChart = ({ from, to }: Props) => {
           </button>
         ))}
       </div>
-      <ChartContainer
-        config={chartConfig}
-        className="aspect-auto h-[275px] w-full"
-      >
-        <AreaChart
-          data={data}
-          margin={{ top: 24, left: 24, right: 24, bottom: 5 }}
-        >
-          <CartesianGrid vertical={false} />
-          <XAxis
-            dataKey="date"
-            tickLine={false}
-            axisLine={false}
-            tickMargin={8}
-            tickFormatter={(value) => {
-              const date = new Date(value);
-              return date.toLocaleDateString("en-US", {
-                month: "short",
-                day: "numeric",
-              });
-            }}
-          />
-          <ChartTooltip
-            content={<ChartTooltipContent indicator="line" className="w-60" />}
-          />
-          <defs>
-            <linearGradient
-              id={`fill${activeChart}`}
-              x1="0"
-              y1="0"
-              x2="0"
-              y2="1"
-            >
-              <stop
-                offset="5%"
-                stopColor={`var(--color-${activeChart})`}
-                stopOpacity={0.5}
-              />
-              <stop
-                offset="95%"
-                stopColor={`var(--color-${activeChart})`}
-                stopOpacity={0.05}
-              />
-            </linearGradient>
-          </defs>
-          <Area
-            type="linear"
-            dataKey={activeChart}
-            fill={`url(#fill${activeChart})`}
-            fillOpacity={0.4}
-            stroke={`var(--color-${activeChart})`}
-            strokeWidth={1.5}
-          />
-        </AreaChart>
-      </ChartContainer>
+      <ResponsiveContainer height={300}>
+        <ChartContainer config={chartConfig}>
+          <AreaChart
+            data={data}
+            margin={{ top: 24, left: 24, right: 24, bottom: 5 }}
+          >
+            <CartesianGrid vertical={false} />
+            <XAxis
+              dataKey="date"
+              tickLine={false}
+              axisLine={false}
+              tickMargin={8}
+              tickFormatter={(value) => {
+                const date = new Date(value);
+                return date.toLocaleDateString("en-US", {
+                  month: "short",
+                  day: "numeric",
+                });
+              }}
+            />
+            <ChartTooltip
+              content={
+                <ChartTooltipContent indicator="line" className="w-60" />
+              }
+            />
+            <defs>
+              <linearGradient
+                id={`fill${activeChart}`}
+                x1="0"
+                y1="0"
+                x2="0"
+                y2="1"
+              >
+                <stop
+                  offset="5%"
+                  stopColor={`var(--color-${activeChart})`}
+                  stopOpacity={0.5}
+                />
+                <stop
+                  offset="95%"
+                  stopColor={`var(--color-${activeChart})`}
+                  stopOpacity={0.05}
+                />
+              </linearGradient>
+            </defs>
+            <Area
+              type="linear"
+              dataKey={activeChart}
+              fill={`url(#fill${activeChart})`}
+              fillOpacity={0.4}
+              stroke={`var(--color-${activeChart})`}
+              strokeWidth={1.5}
+            />
+          </AreaChart>
+        </ChartContainer>
+      </ResponsiveContainer>
     </div>
   );
 };

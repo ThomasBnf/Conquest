@@ -19,6 +19,7 @@ Syntax and Formatting:
 - Use the arrow function for pure functions
 - Avoid unnecessary curly braces in conditionals; use concise syntax for simple statements
 - Use declarative JSX
+- Don't use try catch block
 
 Error Handling and Validation:
 - Prioritize error handling: handle errors and edge cases early

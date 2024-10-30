@@ -33,6 +33,7 @@ export const createReaction = authAction
       if (!member) return;
 
       await createActivity({
+        external_id: null,
         details: {
           source: "SLACK",
           type: "REACTION",

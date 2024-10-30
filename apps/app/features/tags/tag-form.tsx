@@ -8,8 +8,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { colors } from "constant/colors";
 import { Check } from "lucide-react";
 import { useForm } from "react-hook-form";
-import { createTagAction } from "./actions/createTagAction";
-import { updateTagAction } from "./actions/updateTagAction";
+import { createTag } from "./actions/createTag";
+import { updateTag } from "./actions/updateTag";
 import { type FormTag, FormTagSchema } from "./schema/form.schema";
 
 type Props = {
@@ -40,9 +40,9 @@ export const TagForm = ({
 
   const onSubmit = async ({ name, color }: FormTag) => {
     if (tag && isEditing !== undefined) {
-      await updateTagAction({ id: tag.id, name, color });
+      await updateTag({ id: tag.id, name, color });
     } else {
-      await createTagAction({ name, color });
+      await createTag({ name, color });
     }
 
     setIsVisible?.(false);

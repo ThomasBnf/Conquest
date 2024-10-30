@@ -1,6 +1,6 @@
 "use client";
 
-import { updateWorkflowAction } from "@/features/workflows/actions/updateWorkflowAction";
+import { updateWorkflow } from "@/features/workflows/actions/updateWorkflow";
 import { EdgeSchema } from "@conquest/zod/edge.schema";
 import {
   NodeDataSchema,
@@ -44,6 +44,8 @@ type workflowContext = {
   >;
   currentNode: NodeType | undefined;
   setCurrentNode: (node: NodeType | undefined) => void;
+  changing: boolean;
+  setChanging: Dispatch<SetStateAction<boolean>>;
   onUpdateWorkflow: (updatedWorkflow: Workflow) => Promise<void>;
   onAddNode: (node: NodeType) => void;
   onUpdateNode: (node: NodeType) => void;
@@ -70,10 +72,11 @@ export const WorkflowProvider = ({ currentWorkflow, children }: Props) => {
   const [currentNode, setCurrentNode] = useState<NodeType | undefined>(
     undefined,
   );
+  const [changing, setChanging] = useState(false);
 
   const onUpdateWorkflow = useCallback(async (updatedWorkflow: Workflow) => {
     setWorkflow(updatedWorkflow);
-    const rWorkflow = await updateWorkflowAction({
+    const rWorkflow = await updateWorkflow({
       id: workflow.id,
       name: updatedWorkflow.name,
       description: updatedWorkflow.description,
@@ -115,7 +118,7 @@ export const WorkflowProvider = ({ currentWorkflow, children }: Props) => {
           const parsedEdges = EdgeSchema.array().parse(updatedEdges);
           setEdges(updatedEdges);
 
-          await updateWorkflowAction({
+          await updateWorkflow({
             id: workflow.id,
             nodes: parsedNodes,
             edges: parsedEdges,
@@ -123,7 +126,7 @@ export const WorkflowProvider = ({ currentWorkflow, children }: Props) => {
         }
       }
 
-      await updateWorkflowAction({
+      await updateWorkflow({
         id: workflow.id,
         nodes: parsedNodes,
       });
@@ -133,6 +136,7 @@ export const WorkflowProvider = ({ currentWorkflow, children }: Props) => {
 
   const onUpdateNode = useCallback(
     async (updatedNode: NodeType) => {
+      console.log(updatedNode);
       const updatedNodes = nodes.map((node) => {
         if (node.id === updatedNode.id) {
           return updatedNode;
@@ -143,7 +147,7 @@ export const WorkflowProvider = ({ currentWorkflow, children }: Props) => {
       const parsedNodes = NodeSchema.array().parse(updatedNodes);
       setNodes(parsedNodes);
 
-      const rWorkflow = await updateWorkflowAction({
+      const rWorkflow = await updateWorkflow({
         id: workflow.id,
         nodes: parsedNodes,
       });
@@ -167,7 +171,7 @@ export const WorkflowProvider = ({ currentWorkflow, children }: Props) => {
     setEdges(parsedEdges);
     setCurrentNode(undefined);
 
-    const rWorkflow = await updateWorkflowAction({
+    const rWorkflow = await updateWorkflow({
       id: workflow.id,
       nodes: parsedNodes,
       edges: parsedEdges,
@@ -207,7 +211,7 @@ export const WorkflowProvider = ({ currentWorkflow, children }: Props) => {
         const currentEdge = edges.find((edge) => edge.id === change.id);
 
         if (currentEdge) {
-          updateWorkflowAction({
+          updateWorkflow({
             id: workflow.id,
             nodes: workflow.nodes,
             edges: workflow.edges.filter((edge) => edge.id !== currentEdge.id),
@@ -229,7 +233,7 @@ export const WorkflowProvider = ({ currentWorkflow, children }: Props) => {
 
     const parsedEdge = EdgeSchema.parse(newEdge);
 
-    updateWorkflowAction({
+    updateWorkflow({
       id: workflow.id,
       nodes: workflow.nodes,
       edges: [...workflow.edges, parsedEdge],
@@ -259,6 +263,8 @@ export const WorkflowProvider = ({ currentWorkflow, children }: Props) => {
         panel,
         setPanel,
         currentNode,
+        changing,
+        setChanging,
         setCurrentNode,
         onUpdateWorkflow,
         onAddNode,

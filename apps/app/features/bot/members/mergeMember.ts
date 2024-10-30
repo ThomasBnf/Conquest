@@ -39,6 +39,9 @@ export const mergeMember = safeAction
       const updatedEmails = new Set(existingMember.emails);
       if (email) updatedEmails.add(email);
 
+      const updatedPhones = new Set(existingMember.phones);
+      if (phone) updatedPhones.add(phone);
+
       const updatedMember = await prisma.member.update({
         where: {
           id: existingMember.id,
@@ -49,11 +52,11 @@ export const mergeMember = safeAction
           last_name: existingMember.last_name ?? last_name,
           full_name: existingMember.full_name ?? real_name,
           emails: Array.from(updatedEmails).filter(Boolean),
-          phone: existingMember.phone ?? phone,
+          phones: Array.from(updatedPhones).filter(Boolean),
           avatar_url: existingMember.avatar_url ?? image_1024,
           job_title: existingMember.job_title ?? title,
           search:
-            `${real_name ?? existingMember.full_name} ${Array.from(updatedEmails).join(" ")} ${existingMember.phone ?? phone}`
+            `${real_name ?? existingMember.full_name} ${Array.from(updatedEmails).join(" ")} ${Array.from(updatedPhones).join(" ")}`
               .trim()
               .toLowerCase(),
           slack_id: existingMember.slack_id,
@@ -69,7 +72,7 @@ export const mergeMember = safeAction
         last_name: last_name ?? null,
         full_name: real_name ?? null,
         emails: email ? [email] : [],
-        phone: phone ?? null,
+        phones: phone ? [phone] : [],
         avatar_url: image_1024 ?? null,
         job_title: title ?? null,
         source: "SLACK",

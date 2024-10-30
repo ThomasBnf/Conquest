@@ -1,7 +1,7 @@
 "use client";
 
 import { AlertDialog } from "@/components/custom/alert-dialog";
-import { deleteMemberAction } from "@/features/members/actions/deleteMemberAction";
+import { deleteMember } from "@/features/members/actions/deleteMember";
 import { Button } from "@conquest/ui/button";
 import {
   DropdownMenu,
@@ -28,7 +28,7 @@ export const MemberMenu = ({ member }: Props) => {
   };
 
   const onDelete = async () => {
-    const rMember = await deleteMemberAction({ id: member.id });
+    const rMember = await deleteMember({ id: member.id });
     const error = rMember?.serverError;
 
     if (error) return toast.error(error);

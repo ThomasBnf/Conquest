@@ -5,7 +5,7 @@ export const WorkspaceSchema = z.object({
   id: z.string().cuid(),
   name: z.string(),
   source: z.string().nullable(),
-  slug: z.string(),
+  slug: z.string().nullable(),
   integrations: z.array(IntegrationSchema).default([]),
   created_at: z.date(),
   updated_at: z.date(),

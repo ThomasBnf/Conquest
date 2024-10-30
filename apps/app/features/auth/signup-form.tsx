@@ -1,7 +1,7 @@
 "use client";
 
-import { createUserAction } from "@/features/auth/actions/createUserAction";
-import { logIn } from "@/features/auth/actions/loginInAction";
+import { createUser } from "@/features/auth/actions/createUser";
+import { logIn } from "@/features/auth/actions/loginIn";
 import { Button, buttonVariants } from "@conquest/ui/button";
 import {
   Card,
@@ -28,7 +28,6 @@ import Link from "next/link";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-
 export const SignupForm = () => {
   const [loading, setLoading] = useState(false);
 
@@ -43,7 +42,7 @@ export const SignupForm = () => {
   const onSubmit = async ({ email, password }: SignupSchema) => {
     setLoading(true);
 
-    const rUser = await createUserAction({ email, password });
+    const rUser = await createUser({ email, password });
     const user = rUser?.data;
     const error = rUser?.serverError;
 

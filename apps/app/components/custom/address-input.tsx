@@ -1,6 +1,6 @@
 "use client";
 
-import { updateMemberAction } from "@/features/members/actions/updateMemberAction";
+import { updateMember } from "@/features/members/actions/updateMember";
 import { Button, buttonVariants } from "@conquest/ui/button";
 import {
   Command,
@@ -44,7 +44,7 @@ export function AddressInput({ member }: Props) {
   const onSelect = (address: string | null) => {
     setOpen(false);
     setSelectedAddress(address);
-    updateMemberAction({ id: member.id, address });
+    updateMember({ id: member.id, address });
   };
 
   return (

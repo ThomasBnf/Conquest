@@ -1,6 +1,7 @@
 import { Button } from "@conquest/ui/button";
 import { Input } from "@conquest/ui/input";
 import { TextField } from "@conquest/ui/text-field";
+import { cn } from "@conquest/ui/utils/cn";
 import { useState } from "react";
 
 type Props = {
@@ -25,7 +26,8 @@ export const EditableInput = ({
         variant="ghost"
         size="xs"
         onClick={() => setIsFocus(true)}
-        className="-ml-1.5"
+        className={cn("-ml-1.5", value && "h-fit")}
+        classNameSpan={cn(value && "text-start")}
       >
         {value ? (
           value

@@ -1,6 +1,6 @@
 "use client";
 
-import { updateMemberAction } from "@/features/members/actions/updateMemberAction";
+import { updateMember } from "@/features/members/actions/updateMember";
 import { Button } from "@conquest/ui/button";
 import {
   Command,
@@ -36,7 +36,7 @@ export const EditableEmails = ({ member }: Props) => {
     if (!emailRegex.test(newEmail)) {
       const newEmails = emails.filter((email) => email.id !== id);
       setEmails(newEmails);
-      updateMemberAction({
+      updateMember({
         id: member.id,
         emails: newEmails.map((email) => email.content),
       });
@@ -46,7 +46,7 @@ export const EditableEmails = ({ member }: Props) => {
       email.id === id ? { id: email.id, content: newEmail } : email,
     );
     setEmails(updatedEmails);
-    updateMemberAction({
+    updateMember({
       id: member.id,
       emails: updatedEmails.map((email) => email.content),
     });
@@ -55,7 +55,7 @@ export const EditableEmails = ({ member }: Props) => {
   const onDeleteEmail = (id: string) => {
     const updatedEmails = emails.filter((email) => email.id !== id);
     setEmails(updatedEmails);
-    updateMemberAction({
+    updateMember({
       id: member.id,
       emails: updatedEmails.map((email) => email.content),
     });

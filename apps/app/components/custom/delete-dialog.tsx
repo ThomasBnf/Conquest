@@ -61,7 +61,12 @@ export const DeleteDialog = ({
             className={buttonVariants({ variant: "destructive" })}
           >
             <Button loading={loading} onClick={onClick}>
-              Continue
+              {children ?? (
+                <>
+                  <Trash2 size={16} />
+                  Delete
+                </>
+              )}
             </Button>
           </AlertDialogAction>
         </AlertDialogFooter>

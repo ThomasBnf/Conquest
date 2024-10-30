@@ -1,4 +1,6 @@
-import { IntegrationSchema } from "@conquest/zod/integration.schema";
+"use server";
+
+import { STATUS } from "@conquest/zod/integration.schema";
 import { SOURCE } from "@conquest/zod/source.enum";
 import { authAction } from "lib/authAction";
 import { prisma } from "lib/prisma";
@@ -12,26 +14,25 @@ export const createIntegration = authAction
       name: z.string(),
       source: SOURCE,
       token: z.string(),
+      status: STATUS,
       scopes: z.string(),
     }),
   )
   .action(
     async ({
       ctx,
-      parsedInput: { external_id, name, source, token, scopes },
+      parsedInput: { external_id, name, source, token, status, scopes },
     }) => {
-      const integration = await prisma.integration.create({
+      return await prisma.integration.create({
         data: {
           external_id,
           name,
           source,
           token,
           scopes,
-          status: "CONNECTED",
+          status,
           workspace_id: ctx.user?.workspace_id,
         },
       });
-
-      return IntegrationSchema.parse(integration);
     },
   );

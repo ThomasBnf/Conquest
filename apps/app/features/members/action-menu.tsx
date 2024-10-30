@@ -1,4 +1,4 @@
-import { deleteMembersAction } from "@/features/members/actions/deleteMembersAction";
+import { deleteMembers } from "@/features/members/actions/deleteMembers";
 import { Button } from "@conquest/ui/button";
 import { MemberWithActivitiesSchema } from "@conquest/zod/activity.schema";
 import { useQueryClient } from "@tanstack/react-query";
@@ -19,7 +19,7 @@ export const ActionMenu = <T,>({ table }: Props<T>) => {
       return member.id;
     });
 
-    const result = await deleteMembersAction({ ids });
+    const result = await deleteMembers({ ids });
     const error = result?.serverError;
 
     if (error) return toast.error(error);
