@@ -22,6 +22,7 @@ import { useUser } from "context/userContext";
 import { WorkspaceMenu } from "features/user/workspace-menu";
 import { signOut } from "next-auth/react";
 import Image from "next/image";
+import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Integration } from "../icons/Integration";
 import { SidebarSettings } from "./sidebar-settings";
@@ -80,10 +81,10 @@ export const AppSidebar = () => {
             {routes.map((route) => (
               <SidebarMenuItem key={route.label}>
                 <SidebarMenuButton asChild isActive={route.isActive}>
-                  <a href={route.href}>
+                  <Link href={route.href}>
                     {route.icon}
                     <span>{route.label}</span>
-                  </a>
+                  </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             ))}
@@ -94,10 +95,10 @@ export const AppSidebar = () => {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton asChild>
-              <a href={`/${slug}/settings/integrations`}>
+              <Link href={`/${slug}/settings/integrations`}>
                 <Integration className="size-[18px]" />
                 <span>Integrations</span>
-              </a>
+              </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
           <SidebarMenuItem>

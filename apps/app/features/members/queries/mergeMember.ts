@@ -34,63 +34,69 @@ export const mergeMember = authAction
       },
     }) => {
       const workspace_id = ctx.user.workspace_id;
+      const formattedEmail = email?.toLowerCase().trim();
+      const formattedPhone = phone?.toLowerCase().trim();
 
-      const existingMember = await prisma.member.findFirst({
+      const member = await prisma.member.findFirst({
         where: {
-          emails: { has: email },
+          emails: { has: formattedEmail },
           workspace_id,
         },
       });
 
-      if (existingMember) {
-        const updatedEmails = new Set(existingMember.emails);
-        if (email) updatedEmails.add(email);
+      const updatedEmails = new Set(member?.emails);
+      if (formattedEmail) updatedEmails.add(formattedEmail);
 
-        const updatedPhones = new Set(existingMember.phones);
-        if (phone) updatedPhones.add(phone);
+      const updatedPhones = new Set(member?.phones);
+      if (formattedPhone) updatedPhones.add(formattedPhone);
 
-        const member = await prisma.member.update({
-          where: {
-            id: existingMember.id,
-            workspace_id,
-          },
-          data: {
-            first_name: existingMember.first_name ?? first_name,
-            last_name: existingMember.last_name ?? last_name,
-            full_name: existingMember.full_name ?? full_name,
-            emails: Array.from(updatedEmails).filter(Boolean),
-            phones: Array.from(updatedPhones).filter(Boolean),
-            avatar_url: existingMember.avatar_url ?? avatar_url,
-            job_title: existingMember.job_title ?? job_title,
-            search:
-              `${full_name ?? existingMember.full_name} ${Array.from(updatedEmails).join(" ")}  ${Array.from(updatedPhones).join(" ")}`
-                .trim()
-                .toLowerCase(),
-            slack_id: existingMember.slack_id,
-          },
-        });
+      const emails = Array.from(updatedEmails).filter(Boolean);
+      const phones = Array.from(updatedPhones).filter(Boolean);
 
-        return MemberSchema.parse(member);
-      }
-
-      const member = await prisma.member.create({
-        data: {
+      const newMember = await prisma.member.upsert({
+        where: {
+          slack_id,
+        },
+        update: {
+          first_name: member?.first_name ?? first_name,
+          last_name: member?.last_name ?? last_name,
+          full_name: member?.full_name ?? full_name,
+          emails: emails,
+          phones: phones,
+          avatar_url: member?.avatar_url ?? avatar_url,
+          job_title: member?.job_title ?? job_title,
+          search: search(
+            { full_name: full_name ?? member?.full_name },
+            emails,
+            phones,
+          ),
+          slack_id: member?.slack_id,
+        },
+        create: {
           first_name: first_name ?? null,
           last_name: last_name ?? null,
           full_name: full_name ?? null,
-          emails: email ? [email] : [],
-          phones: phone ? [phone] : [],
+          emails: emails,
+          phones: phones,
           avatar_url: avatar_url ?? null,
           job_title: job_title ?? null,
           source: "SLACK",
-          search: `${full_name} ${email ?? ""} ${phone ?? ""}`
-            .trim()
-            .toLowerCase(),
+          search: search({ full_name: full_name }, emails, phones),
           slack_id: slack_id ?? null,
           workspace_id,
         },
       });
 
-      return MemberSchema.parse(member);
+      return MemberSchema.parse(newMember);
     },
   );
+
+const search = (
+  { full_name }: { full_name: string | null | undefined },
+  emails: string[] = [],
+  phones: string[] = [],
+) => {
+  const searchTerms = [full_name, ...emails, ...phones].filter(Boolean);
+
+  return searchTerms.join(" ").trim().toLowerCase();
+};

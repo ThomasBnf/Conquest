@@ -61,6 +61,25 @@ model Channel {
   @@index([id, workspace_id])
 }
 
+model Company {
+  id           String    @id @default(cuid())
+  name         String
+  title        String?
+  description  String?
+  industry     String?
+  address      String?
+  website      String?   @unique
+  employees    Int?
+  founded_at   DateTime?
+  members      Member[]
+  workspace_id String
+  workspace    Workspace @relation(fields: [workspace_id], references: [id], onDelete: Cascade)
+  created_at   DateTime  @default(now())
+  updated_at   DateTime  @updatedAt
+
+  @@index([id, workspace_id])
+}
+
 model Member {
   id           String    @id @default(cuid())
   first_name   String?
@@ -77,6 +96,8 @@ model Member {
   source       SOURCE
   tags         String[]
   slack_id     String?   @unique
+  company_id   String?
+  company      Company?  @relation(fields: [company_id], references: [id], onDelete: SetNull)
   workspace_id String
   joined_at    DateTime?
   left_at      DateTime?
@@ -98,17 +119,6 @@ model Integration {
   scopes       String
   status       String
   installed_at DateTime?
-  workspace_id String
-  workspace    Workspace @relation(fields: [workspace_id], references: [id], onDelete: Cascade)
-  created_at   DateTime  @default(now())
-  updated_at   DateTime  @updatedAt
-
-  @@index([id, workspace_id])
-}
-
-model Organization {
-  id           String    @id @default(cuid())
-  name         String
   workspace_id String
   workspace    Workspace @relation(fields: [workspace_id], references: [id], onDelete: Cascade)
   created_at   DateTime  @default(now())
@@ -163,20 +173,20 @@ model Workflow {
 }
 
 model Workspace {
-  id            String         @id @default(cuid())
-  name          String
-  slug          String         @unique
-  source        String?
-  users         User[]
-  members       Member[]
-  activities    Activity[]
-  organizations Organization[]
-  workflows     Workflow[]
-  tags          Tag[]
-  channels      Channel[]
-  integrations  Integration[]
-  created_at    DateTime       @default(now())
-  updated_at    DateTime       @updatedAt
+  id           String        @id @default(cuid())
+  name         String
+  slug         String        @unique
+  source       String?
+  users        User[]
+  members      Member[]
+  activities   Activity[]
+  workflows    Workflow[]
+  tags         Tag[]
+  channels     Channel[]
+  integrations Integration[]
+  companies    Company[]
+  created_at   DateTime      @default(now())
+  updated_at   DateTime      @updatedAt
 
   @@index([id])
 }

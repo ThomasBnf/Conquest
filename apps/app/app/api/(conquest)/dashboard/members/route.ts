@@ -20,41 +20,41 @@ export const GET = safeRoute
     const { from, to } = query;
     const { workspace_id } = user;
 
-    const [totalMembers, totalActiveMembers, members] = await Promise.all([
-      prisma.member.count({
-        where: {
-          workspace_id,
-        },
-      }),
-      prisma.member.count({
-        where: {
-          workspace_id,
-          activities: {
-            some: {
-              created_at: {
-                gte: from,
-                lte: to,
-              },
+    const totalMembers = await prisma.member.count({
+      where: {
+        workspace_id,
+      },
+    });
+
+    const totalActiveMembers = await prisma.member.count({
+      where: {
+        workspace_id,
+        activities: {
+          some: {
+            created_at: {
+              gte: from,
+              lte: to,
             },
           },
         },
-      }),
-      prisma.member.findMany({
-        where: {
-          workspace_id,
-          created_at: {
-            gte: from,
-            lte: to,
-          },
+      },
+    });
+
+    const members = await prisma.member.findMany({
+      where: {
+        workspace_id,
+        created_at: {
+          gte: from,
+          lte: to,
         },
-        include: {
-          activities: true,
-        },
-        orderBy: {
-          created_at: "asc",
-        },
-      }),
-    ]);
+      },
+      include: {
+        activities: true,
+      },
+      orderBy: {
+        created_at: "asc",
+      },
+    });
 
     const parsedMembers = z.array(MemberWithActivitiesSchema).parse(members);
     const dates = eachDayOfInterval({ start: from, end: to });
