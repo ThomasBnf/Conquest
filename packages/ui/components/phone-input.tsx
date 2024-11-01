@@ -58,6 +58,7 @@ const InputComponent = React.forwardRef<HTMLInputElement, InputProps>(
       className={cn("rounded-e-lg rounded-s-none", className)}
       {...props}
       ref={ref}
+      h="sm"
     />
   ),
 );

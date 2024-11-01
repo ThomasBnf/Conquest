@@ -2,6 +2,7 @@ import { useUser } from "@/context/userContext";
 import { updateUser } from "@/features/auth/actions/updateUser";
 import { updateWorkspace } from "@/features/workspaces/actions/updateWorkspace";
 import { Button } from "@conquest/ui/button";
+import { CardContent, CardFooter } from "@conquest/ui/card";
 import { Form } from "@conquest/ui/form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowRightIcon } from "lucide-react";
@@ -58,22 +59,23 @@ export const QuestionsStep = () => {
 
   return (
     <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(onSubmit)}
-        className="flex flex-col gap-4"
-      >
-        <Source form={form} />
-        <CompanySize form={form} />
-        <Button
-          type="submit"
-          onClick={() => router.replace(`/${slug}`)}
-          loading={loading}
-          disabled={isDisabled}
-          className="mt-4"
-        >
-          Get Started
-          <ArrowRightIcon size={16} />
-        </Button>
+      <form onSubmit={form.handleSubmit(onSubmit)}>
+        <CardContent className="space-y-4">
+          <Source form={form} />
+          <CompanySize form={form} />
+        </CardContent>
+        <CardFooter>
+          <Button
+            type="submit"
+            onClick={() => router.replace(`/${slug}`)}
+            loading={loading}
+            disabled={isDisabled}
+            className="w-full"
+          >
+            Get Started
+            <ArrowRightIcon size={16} />
+          </Button>
+        </CardFooter>
       </form>
     </Form>
   );

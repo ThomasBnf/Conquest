@@ -57,7 +57,7 @@ export default function Page() {
       </Link>
       <div className="mt-6 flex flex-col gap-4">
         <div className="flex items-center gap-4">
-          <div className="rounded-md border p-3">
+          <div className="rounded-lg border p-3">
             <Image src="/social/slack.svg" alt="Slack" width={24} height={24} />
           </div>
           <div>
@@ -67,7 +67,7 @@ export default function Page() {
             </p>
           </div>
         </div>
-        <div className="rounded-md border overflow-hidden">
+        <div className="rounded-lg border overflow-hidden">
           <div className="flex items-center justify-between p-4 bg-muted">
             <div className="flex items-center gap-4">
               <Link

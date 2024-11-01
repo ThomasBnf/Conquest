@@ -21,7 +21,7 @@ export const seed = async () => {
         last_name: member.lastName,
         full_name: `${member.firstName} ${member.lastName}`,
         emails: member.emails,
-        phone: null,
+        phones: [],
         avatar_url: null,
         bio: null,
         gender: null,

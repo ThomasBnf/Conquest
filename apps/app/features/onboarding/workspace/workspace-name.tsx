@@ -81,7 +81,7 @@ export const WorkspaceFields = ({ form }: Props) => {
             <FormControl>
               <div
                 className={cn(
-                  "relative flex items-center rounded-md border pl-3",
+                  "relative flex items-center rounded-lg border pl-3",
                   isFocus && "ring-2 ring-neutral-300 ring-offset-2",
                 )}
               >

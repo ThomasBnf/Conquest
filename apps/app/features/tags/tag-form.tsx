@@ -60,7 +60,7 @@ export const TagForm = ({
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="flex items-center gap-2 rounded-md border bg-muted p-2"
+        className="flex items-center gap-2 rounded-lg border bg-muted p-2"
       >
         <FormField
           control={form.control}

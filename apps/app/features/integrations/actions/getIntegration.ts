@@ -11,7 +11,7 @@ export const getIntegration = safeAction
     }),
   )
   .action(async ({ parsedInput: { external_id } }) => {
-    const integration = await prisma.integration.findUnique({
+    const integration = await prisma.integration.findFirst({
       where: {
         external_id,
       },

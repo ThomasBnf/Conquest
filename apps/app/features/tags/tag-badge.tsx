@@ -15,7 +15,7 @@ export const TagBadge = ({ tag, isClickable = false, onDelete }: Props) => {
   return (
     <div
       className={cn(
-        "flex h-6 w-fit items-center gap-2 rounded-md border px-1.5",
+        "flex h-6 w-fit items-center gap-2 rounded-lg border px-1.5",
         isClickable && "cursor-pointer transition-colors hover:bg-muted",
         !!onDelete && "cursor-pointer",
       )}

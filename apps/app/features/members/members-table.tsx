@@ -48,8 +48,8 @@ export const MembersTable = ({ tags }: Props) => {
 
   const { data, isLoading, fetchNextPage, hasNextPage } = useInfiniteQuery({
     queryKey: ["members", debouncedSearch, id, desc, sorting],
-    queryFn: async ({ pageParam }) =>
-      await ky
+    queryFn: async ({ pageParam }) => {
+      return await ky
         .get("/api/members", {
           searchParams: {
             page: pageParam,
@@ -58,7 +58,8 @@ export const MembersTable = ({ tags }: Props) => {
             desc,
           },
         })
-        .json<MemberWithActivities[]>(),
+        .json<MemberWithActivities[]>();
+    },
     getNextPageParam: (_, allPages) => allPages.length + 1,
     initialPageParam: 1,
   });

@@ -35,7 +35,7 @@ export const ApiKey = ({ apiKey }: Props) => {
   };
 
   return (
-    <div className="rounded-md border bg-muted p-4">
+    <div className="rounded-lg border bg-muted p-4">
       <div className="flex items-center justify-between">
         <p className="font-medium">{apiKey.name}</p>
         <DeleteDialog

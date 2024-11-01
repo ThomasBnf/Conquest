@@ -7,12 +7,14 @@ import { WorkflowPanel } from "./panels/workflow-panel";
 export const Sidebar = () => {
   const { currentNode, panel } = useWorkflow();
 
+  console.log(panel);
+
   return (
     <div className="flex w-full max-w-sm flex-col">
       {currentNode && <OptionsPanel />}
-      {panel === "workflow" && <WorkflowPanel />}
-      {panel === "trigger" && <TriggerPanel />}
-      {panel === "action" && <ActionPanel />}
+      {!currentNode && panel === "workflow" && <WorkflowPanel />}
+      {!currentNode && panel === "trigger" && <TriggerPanel />}
+      {!currentNode && panel === "action" && <ActionPanel />}
     </div>
   );
 };

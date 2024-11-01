@@ -15,16 +15,13 @@ export const updateIntegration = safeAction
     }),
   )
   .action(async ({ parsedInput: { external_id, installed_at, status } }) => {
-    return await prisma.integration.update({
+    return await prisma.integration.updateMany({
       where: {
         external_id,
       },
       data: {
         installed_at,
         status,
-      },
-      include: {
-        workspace: true,
       },
     });
   });

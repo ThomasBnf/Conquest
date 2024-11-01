@@ -1,6 +1,7 @@
 import { updateUser } from "@/features/auth/actions/updateUser";
 import { updateWorkspace } from "@/features/workspaces/actions/updateWorkspace";
 import { Button } from "@conquest/ui/button";
+import { CardContent, CardFooter } from "@conquest/ui/card";
 import { Form } from "@conquest/ui/form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowRightIcon } from "lucide-react";
@@ -66,21 +67,22 @@ export const WorkspaceStep = ({ setStep }: Props) => {
 
   return (
     <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(onSubmit)}
-        className="flex flex-col gap-4"
-      >
-        <UserFields form={form} />
-        <WorkspaceFields form={form} />
-        <Button
-          type="submit"
-          loading={loading}
-          disabled={isDisabled}
-          className="mt-4"
-        >
-          Next
-          <ArrowRightIcon size={16} />
-        </Button>
+      <form onSubmit={form.handleSubmit(onSubmit)}>
+        <CardContent className="space-y-4">
+          <UserFields form={form} />
+          <WorkspaceFields form={form} />
+        </CardContent>
+        <CardFooter>
+          <Button
+            type="submit"
+            className="w-full"
+            loading={loading}
+            disabled={isDisabled}
+          >
+            Next
+            <ArrowRightIcon size={16} />
+          </Button>
+        </CardFooter>
       </form>
     </Form>
   );

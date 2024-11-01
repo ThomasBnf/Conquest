@@ -1,11 +1,11 @@
 "use client";
 
+import { Button } from "@conquest/ui/button";
+import { Input } from "@conquest/ui/input";
+import { Popover, PopoverContent, PopoverTrigger } from "@conquest/ui/popover";
 import { ChevronDown } from "lucide-react";
 import { forwardRef, useCallback, useState } from "react";
 import { HexColorPicker } from "react-colorful";
-import { Button } from "./button";
-import { Input } from "./input";
-import { Popover, PopoverContent, PopoverTrigger } from "./popover";
 
 interface ColorPickerProps {
   value: string;

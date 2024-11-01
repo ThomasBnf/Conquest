@@ -55,6 +55,11 @@ export const POST = safeRoute.body(bodySchema).handler(async (_, context) => {
       break;
     }
 
+    case "team_join": {
+      console.log(event);
+      break;
+    }
+
     case "member_left_channel": {
       console.log(event);
       break;
@@ -88,6 +93,11 @@ export const POST = safeRoute.body(bodySchema).handler(async (_, context) => {
 
     case "channel_deleted": {
       await deleteChannel({ external_id: event.channel });
+      break;
+    }
+
+    case "channel_left": {
+      console.log(event);
       break;
     }
 

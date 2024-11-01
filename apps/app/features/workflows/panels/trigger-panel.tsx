@@ -5,8 +5,7 @@ import { useWorkflow } from "context/workflowContext";
 import type { icons } from "lucide-react";
 
 export const TriggerPanel = () => {
-  const { currentNode, onAddNode, onUpdateNode, changing, setChanging } =
-    useWorkflow();
+  const { currentNode, onAddNode, onUpdateNode } = useWorkflow();
 
   return (
     <div className="p-6">
@@ -35,12 +34,11 @@ export const TriggerPanel = () => {
                         } else {
                           onAddNode(node);
                         }
-                        setChanging(true);
                       }}
-                      className="cursor-pointer rounded-md border p-2 transition-colors hover:bg-muted"
+                      className="cursor-pointer rounded-lg border p-2 transition-colors hover:bg-muted"
                     >
                       <div className="flex items-center gap-2">
-                        <div className="rounded-md border bg-background p-1">
+                        <div className="rounded-lg border bg-background p-1">
                           <Icon
                             name={data.icon as keyof typeof icons}
                             size={14}

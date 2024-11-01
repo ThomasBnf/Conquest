@@ -38,14 +38,10 @@ type workflowContext = {
   setEdges: Dispatch<SetStateAction<Edge[]>>;
   onNodesChange: OnNodesChange;
   onEdgesChange: OnEdgesChange;
-  panel: "workflow" | "trigger" | "action" | "node";
-  setPanel: Dispatch<
-    SetStateAction<"workflow" | "trigger" | "action" | "node">
-  >;
+  panel: "workflow" | "trigger" | "action";
+  setPanel: Dispatch<SetStateAction<"workflow" | "trigger" | "action">>;
   currentNode: NodeType | undefined;
   setCurrentNode: (node: NodeType | undefined) => void;
-  changing: boolean;
-  setChanging: Dispatch<SetStateAction<boolean>>;
   onUpdateWorkflow: (updatedWorkflow: Workflow) => Promise<void>;
   onAddNode: (node: NodeType) => void;
   onUpdateNode: (node: NodeType) => void;
@@ -66,13 +62,12 @@ export const WorkflowProvider = ({ currentWorkflow, children }: Props) => {
   const [workflow, setWorkflow] = useState<Workflow>(currentWorkflow);
   const [nodes, setNodes, onNodesChange] = useNodesState<Node>(workflow.nodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>(workflow.edges);
-  const [panel, setPanel] = useState<
-    "workflow" | "trigger" | "action" | "node"
-  >("workflow");
+  const [panel, setPanel] = useState<"workflow" | "trigger" | "action">(
+    "workflow",
+  );
   const [currentNode, setCurrentNode] = useState<NodeType | undefined>(
     undefined,
   );
-  const [changing, setChanging] = useState(false);
 
   const onUpdateWorkflow = useCallback(async (updatedWorkflow: Workflow) => {
     setWorkflow(updatedWorkflow);
@@ -100,7 +95,6 @@ export const WorkflowProvider = ({ currentWorkflow, children }: Props) => {
       };
 
       setCurrentNode(newNode);
-      setPanel("node");
 
       const updatedNodes = [...nodes, newNode];
       const parsedNodes = NodeSchema.array().parse(updatedNodes);
@@ -246,7 +240,7 @@ export const WorkflowProvider = ({ currentWorkflow, children }: Props) => {
     });
 
     if (!hasTrigger) setPanel("trigger");
-  }, [nodes]);
+  }, [workflow]);
 
   return (
     <workflowContext.Provider
@@ -262,8 +256,6 @@ export const WorkflowProvider = ({ currentWorkflow, children }: Props) => {
         panel,
         setPanel,
         currentNode,
-        changing,
-        setChanging,
         setCurrentNode,
         onUpdateWorkflow,
         onAddNode,

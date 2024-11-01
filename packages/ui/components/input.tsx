@@ -8,7 +8,7 @@ const inputVariants = cva(
     variants: {
       variant: {
         default:
-          "border border-input rounded-md shadow-sm focus-visible:ring-2 focus-visible:ring-neutral-200 focus-visible:ring-offset-1",
+          "border border-input rounded-lg shadow-sm focus-visible:ring-2 focus-visible:ring-neutral-200 focus-visible:ring-offset-1",
         transparent: "bg-transparent",
       },
       h: {
@@ -18,7 +18,7 @@ const inputVariants = cva(
     },
     defaultVariants: {
       variant: "default",
-      h: "sm",
+      h: "default",
     },
   },
 );

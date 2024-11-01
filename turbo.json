@@ -8,8 +8,8 @@
       "dependsOn": ["^topo"]
     },
     "dev": {
-      "dependsOn": ["^db:generate"],
       "inputs": ["$TURBO_DEFAULT$", ".env"],
+      "dependsOn": ["^db:generate"],
       "persistent": true,
       "cache": false
     },

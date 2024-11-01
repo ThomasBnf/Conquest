@@ -7,7 +7,6 @@ import {
   Dialog,
   DialogBody,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -76,13 +75,10 @@ export const CreateMemberDialog = () => {
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit)}
-            className="flex flex-col divide-y"
+            className="flex flex-col"
           >
             <DialogHeader>
               <DialogTitle>Add Member</DialogTitle>
-              <DialogDescription id="dialog-description">
-                Enter the details of the new member you want to add.
-              </DialogDescription>
             </DialogHeader>
             <DialogBody>
               <FormField

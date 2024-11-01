@@ -6,7 +6,6 @@ import { Button, buttonVariants } from "@conquest/ui/button";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
@@ -14,7 +13,6 @@ import {
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -56,13 +54,12 @@ export const SignupForm = () => {
 
   return (
     <Card className="w-full max-w-md">
-      <CardHeader className="p-8">
+      <CardHeader>
         <CardTitle>Get started now</CardTitle>
-        <CardDescription>Create your Conquest account</CardDescription>
       </CardHeader>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
-          <CardContent className="space-y-4 p-8 pt-0">
+          <CardContent className="space-y-4">
             <FormField
               control={form.control}
               name="email"
@@ -70,9 +67,12 @@ export const SignupForm = () => {
                 <FormItem>
                   <FormLabel>Email</FormLabel>
                   <FormControl>
-                    <Input type="email" {...field} />
+                    <Input
+                      type="email"
+                      placeholder="example@email.com"
+                      {...field}
+                    />
                   </FormControl>
-                  <FormDescription />
                   <FormMessage />
                 </FormItem>
               )}
@@ -84,15 +84,14 @@ export const SignupForm = () => {
                 <FormItem>
                   <FormLabel>Password</FormLabel>
                   <FormControl>
-                    <Input type="password" {...field} />
+                    <Input type="password" placeholder="********" {...field} />
                   </FormControl>
-                  <FormDescription />
                   <FormMessage />
                 </FormItem>
               )}
             />
           </CardContent>
-          <CardFooter className="w-full flex-col p-8 pt-0">
+          <CardFooter className="flex-col">
             <Button type="submit" loading={loading} className="w-full">
               Signup
               <ArrowRightIcon size={16} />

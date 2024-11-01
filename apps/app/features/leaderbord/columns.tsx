@@ -14,9 +14,7 @@ export const Columns = (
   {
     accessorKey: "place",
     header: () => (
-      <p className="text-center bg-background h-full place-content-center">
-        Place
-      </p>
+      <p className="text-center h-full place-content-center">Place</p>
     ),
     cell: ({ row, table }) => {
       const rowIndex = table
@@ -28,9 +26,7 @@ export const Columns = (
   },
   {
     accessorKey: "full_name",
-    header: () => (
-      <p className="px-2 bg-background h-full place-content-center">Name</p>
-    ),
+    header: () => <p className="px-2 h-full place-content-center">Name</p>,
     cell: ({ row }) => {
       const { slug } = useUser();
       const { avatar_url, first_name, full_name } = row.original;
@@ -55,9 +51,7 @@ export const Columns = (
   },
   {
     accessorKey: "emails",
-    header: () => (
-      <p className="px-2 bg-background h-full place-content-center">Email</p>
-    ),
+    header: () => <p className="px-2 h-full place-content-center">Email</p>,
     cell: ({ row }) => {
       return <p>{row.original.emails[0]}</p>;
     },
@@ -65,18 +59,14 @@ export const Columns = (
   },
   {
     accessorKey: "source",
-    header: () => (
-      <p className="px-2 bg-background h-full place-content-center">Source</p>
-    ),
+    header: () => <p className="px-2 h-full place-content-center">Source</p>,
     cell: ({ row }) => {
       return <p>{row.original.source}</p>;
     },
   },
   {
     accessorKey: "tags",
-    header: () => (
-      <p className="px-2 bg-background h-full place-content-center">Tags</p>
-    ),
+    header: () => <p className="px-2 h-full place-content-center">Tags</p>,
     cell: ({ row }) => {
       const memberTags = tags?.filter((tag) =>
         row.original.tags.includes(tag.id),
@@ -94,9 +84,7 @@ export const Columns = (
   {
     accessorKey: "activities",
     header: () => (
-      <p className="px-2 bg-background h-full place-content-center">
-        Activities
-      </p>
+      <p className="px-2 h-full place-content-center">Activities</p>
     ),
     cell: ({ row }) => {
       return <p>{row.original.activities.length}</p>;
@@ -105,9 +93,7 @@ export const Columns = (
   {
     accessorKey: "last_activity",
     header: () => (
-      <p className="px-2 bg-background h-full place-content-center">
-        Last activity
-      </p>
+      <p className="px-2 h-full place-content-center">Last activity</p>
     ),
     cell: ({ row }) => {
       const lastActivity = row.original.activities
@@ -120,9 +106,7 @@ export const Columns = (
   {
     accessorKey: "created_at",
     header: () => (
-      <p className="px-2 bg-background h-full place-content-center">
-        Created at
-      </p>
+      <p className="px-2 h-full place-content-center">Created at</p>
     ),
     cell: ({ row }) => {
       const created_at = row.original.created_at;

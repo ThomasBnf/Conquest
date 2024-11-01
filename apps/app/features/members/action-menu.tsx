@@ -32,7 +32,7 @@ export const ActionMenu = <T,>({ table }: Props<T>) => {
     <div className="absolute bg-background bottom-10 inset-x-0 border shadow-lg rounded-lg w-fit mx-auto">
       <div className="bg-muted/30 p-2 flex items-center gap-2">
         <div className="flex items-center gap-2">
-          <p className="rounded border bg-main-500 text-white flex items-center justify-center p-0.5 min-w-5 font-mono text-xs">
+          <p className="rounded-lg border bg-main-500 text-white flex items-center justify-center p-0.5 min-w-5 font-mono text-xs">
             {table.getSelectedRowModel().rows.length}
           </p>
           <p className="text-muted-foreground text-xs">selected</p>

@@ -36,7 +36,7 @@ export const QueryInput = ({
   return (
     <div
       className={cn(
-        "relative flex w-56 items-center rounded border px-2 shadow-sm",
+        "relative flex w-56 items-center rounded-lg border px-2",
         isFocus && "ring-2 ring-neutral-200 ring-offset-1",
         className,
       )}
@@ -55,7 +55,7 @@ export const QueryInput = ({
       {query && (
         <Button
           onClick={handleClear}
-          variant="secondary"
+          variant="outline"
           size="icon"
           className="shrink-0"
         >

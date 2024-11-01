@@ -29,10 +29,10 @@ export const ActionPanel = () => {
                     <div
                       key={node.id}
                       onClick={() => onAddNode(node)}
-                      className="cursor-pointer rounded-md border p-2 transition-colors hover:bg-muted"
+                      className="cursor-pointer rounded-lg border p-2 transition-colors hover:bg-muted"
                     >
                       <div className="flex items-center gap-2">
-                        <div className="rounded-md border bg-background p-1">
+                        <div className="rounded-lg border bg-background p-1">
                           <Icon
                             name={data.icon as keyof typeof icons}
                             size={14}

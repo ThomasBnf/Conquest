@@ -14,8 +14,8 @@ export const Route = ({ label, icon, href, isActive }: Props) => {
     <Link
       href={href}
       className={cn(
-        "flex h-8 items-center gap-2 rounded-md border border-transparent px-2 transition-colors",
-        isActive && "rounded-md border-border bg-background shadow-sm",
+        "flex h-8 items-center gap-2 rounded-lg border border-transparent px-2 transition-colors",
+        isActive && "rounded-lg border-border bg-background shadow-sm",
         !isActive && "hover:bg-neutral-200",
       )}
     >

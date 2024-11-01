@@ -47,18 +47,17 @@ export const CustomNode = ({ props }: Props) => {
             type: "custom",
             data,
           });
-          setPanel("node");
         }}
         className={cn(
           "relative flex w-80 flex-1 flex-col border bg-background p-3",
-          isTrigger ? "rounded-b-md rounded-tr-md" : "rounded-md",
+          isTrigger ? "rounded-b-md rounded-tr-md" : "rounded-lg",
           currentNode?.id === props.id && "border-main-500",
         )}
       >
         <div className="flex items-center gap-2">
           <div
             className={cn(
-              "rounded-md border p-1",
+              "rounded-lg border p-1",
               category === "utilities" &&
                 "border-blue-200 bg-blue-100 text-blue-500",
               category === "records" &&

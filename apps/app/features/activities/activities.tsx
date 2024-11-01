@@ -33,10 +33,11 @@ export const Activities = ({ member_id, className }: Props) => {
           },
         })
         .json<ActivityWithMember[]>(),
-
     getNextPageParam: (_, allPages) => allPages.length + 1,
     initialPageParam: 1,
   });
+
+  console.log(data);
 
   const activities = useMemo(() => {
     const pages = data?.pages;
@@ -68,7 +69,7 @@ export const Activities = ({ member_id, className }: Props) => {
         <div key={date} className="space-y-14 mb-10">
           <div className="my-4 flex items-center">
             <Separator className="flex-1" />
-            <p className="mx-4 rounded border bg-muted p-1 leading-none">
+            <p className="mx-4 rounded-lg border bg-muted p-1 leading-none">
               {isYesterday(date) ? "Yesterday" : format(date, "MMMM d, yyyy")}
             </p>
             <Separator className="flex-1" />

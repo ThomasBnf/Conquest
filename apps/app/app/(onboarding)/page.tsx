@@ -5,7 +5,6 @@ import { useUser } from "@/context/userContext";
 import { Button } from "@conquest/ui/button";
 import {
   Card,
-  CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
@@ -44,10 +43,8 @@ export default function Page() {
             Tell us a bit about yourself so we can personalize your experience
           </CardDescription>
         </CardHeader>
-        <CardContent>
-          {step === 1 && <WorkspaceStep setStep={setStep} />}
-          {step === 2 && <QuestionsStep />}
-        </CardContent>
+        {step === 1 && <WorkspaceStep setStep={setStep} />}
+        {step === 2 && <QuestionsStep />}
       </Card>
       <div />
     </div>

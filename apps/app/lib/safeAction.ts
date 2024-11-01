@@ -10,7 +10,10 @@ export const safeAction = createSafeActionClient({
       name: z.string(),
     });
   },
-  handleServerError(e: Error, utils: { metadata: { name?: string } }) {
+  handleServerError(
+    e: Error,
+    utils: { metadata: { name?: string; key?: string } },
+  ) {
     const { metadata } = utils;
 
     console.log("--- LOG ERROR ---");

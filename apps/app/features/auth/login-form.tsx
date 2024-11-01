@@ -5,7 +5,6 @@ import { Button, buttonVariants } from "@conquest/ui/button";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
@@ -13,7 +12,6 @@ import {
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -52,13 +50,12 @@ export const LoginForm = () => {
 
   return (
     <Card className="w-full max-w-md">
-      <CardHeader className="p-8">
+      <CardHeader>
         <CardTitle>Welcome back</CardTitle>
-        <CardDescription>Login to your Conquest account</CardDescription>
       </CardHeader>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
-          <CardContent className="space-y-4 p-8 pt-0">
+          <CardContent className="space-y-4">
             <FormField
               control={form.control}
               name="email"
@@ -66,9 +63,12 @@ export const LoginForm = () => {
                 <FormItem>
                   <FormLabel>Email</FormLabel>
                   <FormControl>
-                    <Input type="email" {...field} />
+                    <Input
+                      type="email"
+                      placeholder="email@example.com"
+                      {...field}
+                    />
                   </FormControl>
-                  <FormDescription />
                   <FormMessage />
                 </FormItem>
               )}
@@ -80,15 +80,14 @@ export const LoginForm = () => {
                 <FormItem>
                   <FormLabel>Password</FormLabel>
                   <FormControl>
-                    <Input type="password" {...field} />
+                    <Input type="password" placeholder="••••••••" {...field} />
                   </FormControl>
-                  <FormDescription />
                   <FormMessage />
                 </FormItem>
               )}
             />
           </CardContent>
-          <CardFooter className="w-full flex-col p-8 pt-0">
+          <CardFooter className="flex flex-col">
             <Button type="submit" loading={loading} className="w-full">
               Login
               <ArrowRightIcon size={16} />

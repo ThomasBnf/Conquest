@@ -26,7 +26,7 @@ export const SlackReaction = ({ activity }: Props) => {
 
   if (!data)
     return (
-      <div className="h-16 w-full border rounded p-3">
+      <div className="h-16 w-full border rounded-lg p-3">
         <Skeleton className="h-full" />
       </div>
     );

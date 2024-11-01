@@ -2,6 +2,7 @@
 
 import { updateMember } from "@/features/members/actions/updateMember";
 import { listMembers } from "@/features/members/queries/listMembers";
+import { authAction } from "@/lib/authAction";
 import type { MemberWithActivities } from "@conquest/zod/activity.schema";
 import {
   FilterCountSchema,
@@ -19,7 +20,6 @@ import {
   NodeWebhookSchema,
 } from "@conquest/zod/node.schema";
 import { startOfDay, subDays } from "date-fns";
-import { authAction } from "lib/authAction";
 import { z } from "zod";
 import { getWorkflow } from "../queries/getWorkflow";
 

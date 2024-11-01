@@ -7,9 +7,9 @@ import { useWorkflow } from "context/workflowContext";
 import { MousePointerClick } from "lucide-react";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
-import { runWorkflow } from "./actions/runWorkflow";
 import { CustomNode } from "./nodes/custom-node";
 import { Sidebar } from "./sidebar";
+import { runWorkflow } from "./actions/runWorkflow";
 
 const CustomNodeComponent = (props: NodeProps) => <CustomNode props={props} />;
 
