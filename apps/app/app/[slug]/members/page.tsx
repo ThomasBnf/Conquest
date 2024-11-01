@@ -1,8 +1,8 @@
 import { Header } from "@/components/layouts/header";
 import { PageLayout } from "@/components/layouts/page-layout";
-import { CreateMemberDialog } from "@/features/members/create-member-dialog";
-import { MembersTable } from "@/features/members/members-table";
-import { countMembers } from "@/features/members/queries/countMembers";
+import { CreateMemberDialog } from "@/features/members/components/create-member-dialog";
+import { MembersTable } from "@/features/members/components/members-table";
+import { countMembers } from "@/features/members/functions/countMembers";
 import { listTags } from "@/features/tags/queries/listTags";
 
 export default async function Page() {

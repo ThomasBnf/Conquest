@@ -1,6 +1,6 @@
 import { AppSidebar } from "@/components/layouts/app-sidebar";
 import { UserProvider } from "@/context/userContext";
-import { getCurrentUser } from "@/helpers/getCurrentUser";
+import { getCurrentUser } from "@/features/users/functions/getCurrentUser";
 import { SidebarProvider } from "@conquest/ui/sidebar";
 import { redirect } from "next/navigation";
 import type { PropsWithChildren } from "react";

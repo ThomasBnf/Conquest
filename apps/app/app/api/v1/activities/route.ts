@@ -1,4 +1,4 @@
-import { getAuthenticatedUser } from "@/features/auth/queries/getAuthenticatedUser";
+import { getAuthenticatedUser } from "@/features/auth/functions/getAuthenticatedUser";
 import { ActivitySchema } from "@conquest/zod/activity.schema";
 import { prisma } from "lib/prisma";
 import { safeRoute } from "lib/safeRoute";

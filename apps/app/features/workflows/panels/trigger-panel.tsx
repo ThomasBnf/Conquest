@@ -1,7 +1,7 @@
+import { useWorkflow } from "@/context/workflowContext";
 import { Label } from "@conquest/ui/label";
 import type { Node as NodeType } from "@conquest/zod/node.schema";
 import { Icon } from "components/icons/Icon";
-import { useWorkflow } from "context/workflowContext";
 import type { icons } from "lucide-react";
 
 export const TriggerPanel = () => {

@@ -1,3 +1,4 @@
+import { useWorkflow } from "@/context/workflowContext";
 import { Badge } from "@conquest/ui/badge";
 import { Button } from "@conquest/ui/button";
 import { Separator } from "@conquest/ui/separator";
@@ -5,7 +6,6 @@ import { cn } from "@conquest/ui/utils/cn";
 import { NodeDataSchema } from "@conquest/zod/node.schema";
 import { type NodeProps, Position } from "@xyflow/react";
 import { Icon } from "components/icons/Icon";
-import { useWorkflow } from "context/workflowContext";
 import { Plus, Target, type icons } from "lucide-react";
 import { CustomHandle } from "./custom-handle";
 

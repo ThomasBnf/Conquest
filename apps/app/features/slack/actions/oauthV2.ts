@@ -1,12 +1,12 @@
 "use server";
 
 import { env } from "@/env.mjs";
-import { createIntegration } from "@/features/integrations/queries/createIntegration";
+import { createIntegration } from "@/features/integrations/actions/createIntegration";
 import { authAction } from "lib/authAction";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
-import { installSlack } from "../queries/installSlack";
+import { installSlack } from "./installSlack";
 
 export const oauthV2 = authAction
   .metadata({

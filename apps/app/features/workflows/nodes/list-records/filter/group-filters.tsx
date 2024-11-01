@@ -1,6 +1,6 @@
+import { useFilters } from "@/context/filtersContext";
 import { Button } from "@conquest/ui/button";
 import { cn } from "@conquest/ui/utils/cn";
-import { useFilters } from "context/filtersContext";
 import { CategoryPicker } from "./category-picker";
 import { FilterBlock } from "./filter-block";
 import { FilterPicker } from "./filter-picker";

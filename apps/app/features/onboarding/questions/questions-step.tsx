@@ -1,5 +1,5 @@
 import { useUser } from "@/context/userContext";
-import { updateUser } from "@/features/auth/actions/updateUser";
+import { _updateUser } from "@/features/users/actions/_updateUser";
 import { updateWorkspace } from "@/features/workspaces/actions/updateWorkspace";
 import { Button } from "@conquest/ui/button";
 import { CardContent, CardFooter } from "@conquest/ui/card";
@@ -35,7 +35,7 @@ export const QuestionsStep = () => {
   const onSubmit = async ({ company_size, source }: Questions) => {
     setLoading(true);
 
-    const rUser = await updateUser({ onboarding: new Date() });
+    const rUser = await _updateUser({ onboarding: new Date() });
     const error = rUser?.serverError;
 
     if (error) {

@@ -1,4 +1,4 @@
-import { runWorkflow } from "@/features/workflows/actions/runWorkflow";
+import { runWorkflow } from "@/features/workflows/functions/runWorkflow";
 import { prisma } from "@/lib/prisma";
 import { NodeRecurringSchema } from "@conquest/zod/node.schema";
 import { WorkflowSchema } from "@conquest/zod/workflow.schema";

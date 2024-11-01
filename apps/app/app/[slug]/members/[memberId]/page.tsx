@@ -1,8 +1,8 @@
 import { PageLayout } from "@/components/layouts/page-layout";
-import { Activities } from "@/features/activities/activities";
-import { MemberHeader } from "@/features/members/member-profile/member-header";
-import { MemberSidebar } from "@/features/members/member-profile/member-sidebar";
-import { getMember } from "@/features/members/queries/getMember";
+import { Activities } from "@/features/activities/components/activities";
+import { _getMember } from "@/features/members/actions/_getMember";
+import { MemberHeader } from "@/features/members/components/member-header";
+import { MemberSidebar } from "@/features/members/components/member-sidebar";
 import { listTags } from "@/features/tags/queries/listTags";
 import { Avatar, AvatarFallback, AvatarImage } from "@conquest/ui/avatar";
 import { ScrollArea } from "@conquest/ui/scroll-area";
@@ -17,7 +17,7 @@ type Props = {
 };
 
 export default async function Page({ params: { memberId, slug } }: Props) {
-  const rMember = await getMember({ id: memberId });
+  const rMember = await _getMember({ id: memberId });
   const rTags = await listTags();
 
   const member = rMember?.data;

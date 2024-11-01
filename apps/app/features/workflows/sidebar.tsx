@@ -1,4 +1,4 @@
-import { useWorkflow } from "context/workflowContext";
+import { useWorkflow } from "@/context/workflowContext";
 import { ActionPanel } from "./panels/action-panel";
 import { OptionsPanel } from "./panels/options-panel";
 import { TriggerPanel } from "./panels/trigger-panel";

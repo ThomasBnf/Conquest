@@ -7,6 +7,6 @@
       "@conquest/ui/*": ["../ui/*"]
     }
   },
-  "include": ["**/*"],
+  "include": ["**/*.ts", "**/*.tsx"],
   "exclude": ["node_modules", "dist"]
 }

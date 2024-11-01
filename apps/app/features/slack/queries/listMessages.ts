@@ -1,4 +1,4 @@
-import { createActivity } from "@/features/activities/queries/createActivity";
+import { createActivity } from "@/features/activities/functions/createActivity";
 import { prisma } from "@/lib/prisma";
 import { ChannelSchema } from "@conquest/zod/channel.schema";
 import { WebClient } from "@slack/web-api";
@@ -61,6 +61,7 @@ export const listMessages = authAction
             },
             channel_id: channel.id,
             member_id: member.id,
+            workspace_id,
             created_at: new Date(Number(ts) * 1000),
             updated_at: new Date(Number(ts) * 1000),
           });
@@ -79,7 +80,7 @@ export const listMessages = authAction
                   message: name ?? "",
                   channel_id: channel.id,
                   react_to: activity?.external_id,
-                  ts: message.ts ?? "",
+                  ts: (Number(ts) + 1).toString(),
                 });
               }
             }

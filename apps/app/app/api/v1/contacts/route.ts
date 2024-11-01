@@ -1,4 +1,4 @@
-import { getAuthenticatedUser } from "@/features/auth/queries/getAuthenticatedUser";
+import { getAuthenticatedUser } from "@/features/auth/functions/getAuthenticatedUser";
 import { GENDER } from "@conquest/zod/gender.enum";
 import { MemberSchema } from "@conquest/zod/member.schema";
 import { SOURCE } from "@conquest/zod/source.enum";

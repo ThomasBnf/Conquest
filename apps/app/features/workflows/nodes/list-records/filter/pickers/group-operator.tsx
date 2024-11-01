@@ -1,6 +1,6 @@
+import { useFilters } from "@/context/filtersContext";
 import { Button } from "@conquest/ui/button";
 import type { GroupFilter } from "@conquest/zod/node.schema";
-import { useFilters } from "context/filtersContext";
 import { RefreshCcw } from "lucide-react";
 
 type Props = {

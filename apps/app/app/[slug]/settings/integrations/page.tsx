@@ -1,6 +1,6 @@
 "use client";
 
-import { useUser } from "context/userContext";
+import { useUser } from "@/context/userContext";
 import Image from "next/image";
 import Link from "next/link";
 

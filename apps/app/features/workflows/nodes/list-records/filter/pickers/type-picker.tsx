@@ -1,3 +1,5 @@
+import { useFilters } from "@/context/filtersContext";
+import { useListTypes } from "@/features/activities/hooks/useListTypes";
 import { Button } from "@conquest/ui/button";
 import {
   Popover,
@@ -7,8 +9,6 @@ import {
 } from "@conquest/ui/popover";
 import { Skeleton } from "@conquest/ui/skeleton";
 import type { FilterSelect } from "@conquest/zod/filters.schema";
-import { useFilters } from "context/filtersContext";
-import { useListTypes } from "hooks/useListTypes";
 import { ChevronDown } from "lucide-react";
 import { useState } from "react";
 

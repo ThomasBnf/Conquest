@@ -1,5 +1,7 @@
 "use client";
 
+import { useUser } from "@/context/userContext";
+import { WorkspaceMenu } from "@/features/workspaces/components/workspace-menu";
 import { Loader } from "@conquest/ui/loader";
 import {
   Sidebar,
@@ -18,8 +20,6 @@ import { Members } from "components/icons/Members";
 import { Settings } from "components/icons/Settings";
 import { SignOut } from "components/icons/SignOut";
 import { Workflows } from "components/icons/Workflows";
-import { useUser } from "context/userContext";
-import { WorkspaceMenu } from "features/user/workspace-menu";
 import { signOut } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";

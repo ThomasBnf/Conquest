@@ -1,7 +1,7 @@
 "use client";
 
 import { AlertDialog } from "@/components/custom/alert-dialog";
-import { deleteWorkflow } from "@/features/workflows/actions/deleteWorkflow";
+import { _deleteWorkflow } from "@/features/workflows/actions/_deleteWorkflow";
 import { Button } from "@conquest/ui/button";
 import {
   DropdownMenu,
@@ -22,11 +22,10 @@ export const WorkflowMenu = ({ workflow }: Props) => {
   const [open, setOpen] = useState(false);
 
   const handleDelete = async () => {
-    const rWorkflow = await deleteWorkflow({ id: workflow.id });
+    const rWorkflow = await _deleteWorkflow({ id: workflow.id });
     const error = rWorkflow?.serverError;
-    if (error) {
-      return toast.error(error);
-    }
+
+    if (error) return toast.error(error);
   };
 
   return (

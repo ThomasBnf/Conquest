@@ -1,6 +1,6 @@
-import { ApiKey } from "@/features/api-keys/ApiKey";
-import { FormAPIKey } from "@/features/api-keys/FormAPI";
-import { listAPIKeys } from "@/features/api-keys/queries/listAPIKeys";
+import { ApiKeyCard } from "@/features/api-keys/components/ApiKeyCard";
+import { FormAPIKey } from "@/features/api-keys/components/FormAPI";
+import { listAPIKeys } from "@/features/api-keys/functions/listAPIKeys";
 
 export default async function Page() {
   const rApiKeys = await listAPIKeys();
@@ -20,7 +20,7 @@ export default async function Page() {
         <div className="flex flex-col gap-4">
           <FormAPIKey />
           {apiKeys?.map((apiKey) => (
-            <ApiKey key={apiKey.id} apiKey={apiKey} />
+            <ApiKeyCard key={apiKey.id} apiKey={apiKey} />
           ))}
         </div>
       </div>

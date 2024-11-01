@@ -1,9 +1,9 @@
 import { DateRangePicker } from "@/components/custom/date-range-picker";
 import { Header } from "@/components/layouts/header";
 import { PageLayout } from "@/components/layouts/page-layout";
-import { LeaderbordTable } from "@/features/leaderbord/leaderboard-table";
-import { Podium } from "@/features/leaderbord/podium";
-import { listLeaderboard } from "@/features/leaderbord/queries/listLeaderboard";
+import { LeaderbordTable } from "@/features/leaderbord/components/leaderboard-table";
+import { Podium } from "@/features/leaderbord/components/podium";
+import { listLeaderboard } from "@/features/leaderbord/functions/listLeaderboard";
 import { listTags } from "@/features/tags/queries/listTags";
 import { searchParamsDate } from "lib/searchParamsDate";
 

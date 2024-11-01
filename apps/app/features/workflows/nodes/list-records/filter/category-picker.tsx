@@ -1,3 +1,4 @@
+import { useFilters } from "@/context/filtersContext";
 import { Button } from "@conquest/ui/button";
 import {
   DropdownMenu,
@@ -15,7 +16,6 @@ import type {
   FilterTag,
 } from "@conquest/zod/filters.schema";
 import type { Category } from "@conquest/zod/node.schema";
-import { useFilters } from "context/filtersContext";
 import { Plus } from "lucide-react";
 
 export const CategoryPicker = () => {

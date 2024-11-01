@@ -1,4 +1,4 @@
-import { updateUser } from "@/features/auth/actions/updateUser";
+import { _updateUser } from "@/features/users/actions/_updateUser";
 import { updateWorkspace } from "@/features/workspaces/actions/updateWorkspace";
 import { Button } from "@conquest/ui/button";
 import { CardContent, CardFooter } from "@conquest/ui/card";
@@ -43,7 +43,7 @@ export const WorkspaceStep = ({ setStep }: Props) => {
   }: Workspace) => {
     setLoading(true);
 
-    const rUser = await updateUser({ first_name, last_name });
+    const rUser = await _updateUser({ first_name, last_name });
     const error = rUser?.serverError;
 
     if (error) {

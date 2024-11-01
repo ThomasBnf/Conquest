@@ -1,4 +1,4 @@
-import { getCurrentUser } from "@/helpers/getCurrentUser";
+import { getCurrentUser } from "@/features/users/functions/getCurrentUser";
 import { prisma } from "@/lib/prisma";
 import { safeRoute } from "@/lib/safeRoute";
 import { eachDayOfInterval, format } from "date-fns";

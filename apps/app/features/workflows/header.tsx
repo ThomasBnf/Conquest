@@ -1,5 +1,6 @@
 "use client";
 
+import { useUser } from "@/context/userContext";
 import { useWorkflow } from "@/context/workflowContext";
 import {
   Breadcrumb,
@@ -12,7 +13,7 @@ import {
 import { Form, FormControl, FormField, FormItem } from "@conquest/ui/form";
 import { Input } from "@conquest/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useUser } from "context/userContext";
+import Link from "next/link";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { IsPublished } from "./isPublished";
@@ -43,8 +44,8 @@ export const Header = () => {
       <Breadcrumb>
         <BreadcrumbList>
           <BreadcrumbItem>
-            <BreadcrumbLink href={`/${slug}/workflows`}>
-              Workflows
+            <BreadcrumbLink asChild>
+              <Link href={`/${slug}/workflows`}>Workflows</Link>
             </BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbSeparator />

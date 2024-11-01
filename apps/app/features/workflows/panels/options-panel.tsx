@@ -1,3 +1,4 @@
+import { useWorkflow } from "@/context/workflowContext";
 import { Badge } from "@conquest/ui/badge";
 import { Button } from "@conquest/ui/button";
 import { ScrollArea } from "@conquest/ui/scroll-area";
@@ -5,7 +6,6 @@ import { cn } from "@conquest/ui/utils/cn";
 import { NodeDataSchema } from "@conquest/zod/node.schema";
 import { DeleteDialog } from "components/custom/delete-dialog";
 import { Icon } from "components/icons/Icon";
-import { useWorkflow } from "context/workflowContext";
 import { ArrowLeft, type icons } from "lucide-react";
 import { Description } from "../description";
 import { ListRecordsOptions } from "../nodes/list-records/listRecords.options";

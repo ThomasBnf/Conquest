@@ -1,3 +1,4 @@
+import { useFilters } from "@/context/filtersContext";
 import { Button } from "@conquest/ui/button";
 import {
   DropdownMenu,
@@ -13,7 +14,6 @@ import {
   type Operator,
 } from "@conquest/zod/filters.schema";
 import { OPERATORS } from "constant/operators";
-import { useFilters } from "context/filtersContext";
 import { ChevronDown } from "lucide-react";
 
 type Props = {

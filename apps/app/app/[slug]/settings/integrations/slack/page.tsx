@@ -1,14 +1,13 @@
 "use client";
 
 import { DeleteDialog } from "@/components/custom/delete-dialog";
+import { useUser } from "@/context/userContext";
 import { env } from "@/env.mjs";
 import { deleteIntegration } from "@/features/integrations/actions/deleteIntegration";
 import { oauthV2 } from "@/features/slack/actions/oauthV2";
-import { installSlack } from "@/features/slack/queries/installSlack";
 import { Button, buttonVariants } from "@conquest/ui/button";
 import { Separator } from "@conquest/ui/separator";
 import { cn } from "@conquest/ui/utils/cn";
-import { useUser } from "context/userContext";
 import { ArrowLeft, ExternalLink } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";

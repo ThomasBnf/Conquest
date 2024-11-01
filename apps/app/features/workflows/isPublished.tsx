@@ -1,6 +1,6 @@
 "use client";
 
-import { updateWorkflow } from "@/features/workflows/actions/updateWorkflow";
+import { _updateWorkflow } from "@/features/workflows/actions/_updateWorkflow";
 import { Switch } from "@conquest/ui/switch";
 import type { Workflow } from "@conquest/zod/workflow.schema";
 import { type Dispatch, type SetStateAction, useState } from "react";
@@ -17,7 +17,7 @@ export const IsPublished = ({ workflow, setWorkflow }: Props) => {
     setIsPublished(!isPublished);
     setWorkflow?.({ ...workflow, published: !isPublished });
 
-    await updateWorkflow({
+    await _updateWorkflow({
       id: workflow.id,
       published: !isPublished,
     });

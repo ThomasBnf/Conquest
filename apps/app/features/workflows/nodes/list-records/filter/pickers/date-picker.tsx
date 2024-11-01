@@ -1,3 +1,4 @@
+import { useFilters } from "@/context/filtersContext";
 import { Button } from "@conquest/ui/button";
 import {
   DropdownMenu,
@@ -10,7 +11,6 @@ import { Form, FormControl, FormField, FormItem } from "@conquest/ui/form";
 import { Input } from "@conquest/ui/input";
 import type { DynamicDate, FilterDate } from "@conquest/zod/filters.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useFilters } from "context/filtersContext";
 import { ChevronDown } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { type FormDays, FormDaysSchema } from "../../types/form-days.schema";

@@ -1,4 +1,4 @@
-import { createActivity } from "@/features/activities/queries/createActivity";
+import { createActivity } from "@/features/activities/functions/createActivity";
 import { authAction } from "lib/authAction";
 import { prisma } from "lib/prisma";
 import { z } from "zod";
@@ -42,6 +42,7 @@ export const createReaction = authAction
         },
         channel_id,
         member_id: member.id,
+        workspace_id,
         created_at: new Date(Number(ts) * 1000),
         updated_at: new Date(Number(ts) * 1000),
       });

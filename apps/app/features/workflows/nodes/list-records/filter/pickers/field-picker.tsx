@@ -1,3 +1,4 @@
+import { useFilters } from "@/context/filtersContext";
 import { Button } from "@conquest/ui/button";
 import {
   DropdownMenu,
@@ -10,7 +11,6 @@ import {
   FilterDateSchema,
   FilterSelectSchema,
 } from "@conquest/zod/filters.schema";
-import { useFilters } from "context/filtersContext";
 import { ChevronDown } from "lucide-react";
 
 type Props = {
