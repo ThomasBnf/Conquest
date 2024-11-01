@@ -5,17 +5,17 @@ import { Icon } from "components/icons/Icon";
 import type { icons } from "lucide-react";
 
 export const TriggerPanel = () => {
-  const { currentNode, onAddNode, onUpdateNode } = useWorkflow();
+  const { currentNode, onAddNode, onUpdateNode, setChanging } = useWorkflow();
 
   return (
     <div className="p-6">
       <div>
-        <p className="font-medium">Triggers</p>
+        <Label>Triggers</Label>
         <p className="text-muted-foreground">
           Pick an event to start this workflow
         </p>
       </div>
-      <div className="flex flex-col gap-1">
+      <div className="flex flex-col gap-1 mt-2">
         {nodes.categories.map((category) => {
           return (
             <div key={category.label} className="mt-2">
@@ -30,6 +30,7 @@ export const TriggerPanel = () => {
                       key={node.id}
                       onClick={() => {
                         if (currentNode) {
+                          setChanging(false);
                           onUpdateNode({ ...currentNode, data: node.data });
                         } else {
                           onAddNode(node);

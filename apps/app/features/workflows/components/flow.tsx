@@ -7,8 +7,8 @@ import "@xyflow/react/dist/style.css";
 import { MousePointerClick } from "lucide-react";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
-import { runWorkflow } from "./functions/runWorkflow";
-import { CustomNode } from "./nodes/custom-node";
+import { runWorkflow } from "../functions/runWorkflow";
+import { CustomNode } from "../nodes/custom-node";
 import { Sidebar } from "./sidebar";
 
 const CustomNodeComponent = (props: NodeProps) => <CustomNode props={props} />;

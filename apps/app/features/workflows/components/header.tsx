@@ -16,8 +16,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
+import {
+  type FormName,
+  FormNameSchema,
+} from "../panels/types/form-name.schema";
 import { IsPublished } from "./isPublished";
-import { type FormName, FormNameSchema } from "./panels/types/form-name.schema";
 import { WorkflowMenu } from "./workflow-menu";
 
 export const Header = () => {

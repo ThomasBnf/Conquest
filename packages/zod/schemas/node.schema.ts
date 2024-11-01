@@ -66,7 +66,7 @@ export const NodeWebhookSchema = NodeBaseSchema.extend({
 
 export const NodeTagMemberSchema = NodeBaseSchema.extend({
   type: z.enum(["add-tag", "remove-tag"]),
-  category: z.literal("utilities"),
+  category: z.literal("mutations"),
   tags: z.array(z.string()),
 });
 

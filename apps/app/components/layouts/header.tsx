@@ -17,7 +17,7 @@ export const Header = ({ title, count, children, className }: Props) => {
       <div className="flex items-center gap-2">
         <h2 className="font-medium text-base">{title}</h2>
         {count && (
-          <p className="border rounded-lg px-1.5 py-0.5 shadow-sm font-mono">
+          <p className="border rounded-lg px-1.5 py-0.5 font-mono actions-secondary">
             {count}
           </p>
         )}

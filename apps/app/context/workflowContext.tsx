@@ -40,12 +40,15 @@ type workflowContext = {
   onEdgesChange: OnEdgesChange;
   panel: "workflow" | "trigger" | "action";
   setPanel: Dispatch<SetStateAction<"workflow" | "trigger" | "action">>;
+  changing: boolean;
+  setChanging: Dispatch<SetStateAction<boolean>>;
   currentNode: NodeType | undefined;
   setCurrentNode: (node: NodeType | undefined) => void;
   onUpdateWorkflow: (updatedWorkflow: Workflow) => Promise<void>;
   onAddNode: (node: NodeType) => void;
   onUpdateNode: (node: NodeType) => void;
   onDeleteNode: () => Promise<string | number | undefined>;
+  onDeleteEdge: () => Promise<void>;
   handleNodesChange: OnNodesChange;
   handleEdgesChange: OnEdgesChange;
   onConnect: (params: Connection) => void;
@@ -62,6 +65,7 @@ export const WorkflowProvider = ({ currentWorkflow, children }: Props) => {
   const [workflow, setWorkflow] = useState<Workflow>(currentWorkflow);
   const [nodes, setNodes, onNodesChange] = useNodesState<Node>(workflow.nodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>(workflow.edges);
+  const [changing, setChanging] = useState(false);
   const [panel, setPanel] = useState<"workflow" | "trigger" | "action">(
     "workflow",
   );
@@ -103,7 +107,7 @@ export const WorkflowProvider = ({ currentWorkflow, children }: Props) => {
       if (updatedNodes.length > 1) {
         if (previousNode) {
           const newEdge: Edge = {
-            id: `e${previousNode.id}-${newNode.id}`,
+            id: `${previousNode.id}-${newNode.id}`,
             source: previousNode.id,
             target: newNode.id,
             type: "smoothstep",
@@ -173,7 +177,21 @@ export const WorkflowProvider = ({ currentWorkflow, children }: Props) => {
     if (rWorkflow?.serverError) return toast.error(rWorkflow.serverError);
   }, [nodes, setNodes, currentNode]);
 
+  const onDeleteEdge = useCallback(async () => {
+    const updatedEdges = edges.filter((e) => e.source !== currentNode?.id);
+    const parsedEdges = EdgeSchema.array().parse(updatedEdges);
+
+    setEdges(parsedEdges);
+
+    await _updateWorkflow({
+      id: workflow.id,
+      edges: parsedEdges,
+    });
+  }, [edges, workflow, currentNode]);
+
   const handleNodesChange: OnNodesChange = (changes) => {
+    if (currentNode?.data.type.startsWith("trigger")) return;
+
     onNodesChange(changes);
 
     for (const change of changes) {
@@ -190,6 +208,9 @@ export const WorkflowProvider = ({ currentWorkflow, children }: Props) => {
             position: { x, y },
           });
         }
+      }
+      if (change.type === "remove") {
+        onDeleteNode();
       }
     }
   };
@@ -255,12 +276,15 @@ export const WorkflowProvider = ({ currentWorkflow, children }: Props) => {
         onEdgesChange,
         panel,
         setPanel,
+        changing,
+        setChanging,
         currentNode,
         setCurrentNode,
         onUpdateWorkflow,
         onAddNode,
         onUpdateNode,
         onDeleteNode,
+        onDeleteEdge,
         handleNodesChange,
         handleEdgesChange,
         onConnect,

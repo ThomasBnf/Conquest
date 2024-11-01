@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 
-export const CreateWorkflowButton = () => {
+export const CreateWorkflow = () => {
   const { slug } = useUser();
   const [loading, setLoading] = useState(false);
   const router = useRouter();

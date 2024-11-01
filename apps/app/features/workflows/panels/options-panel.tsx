@@ -2,22 +2,36 @@ import { useWorkflow } from "@/context/workflowContext";
 import { Badge } from "@conquest/ui/badge";
 import { Button } from "@conquest/ui/button";
 import { ScrollArea } from "@conquest/ui/scroll-area";
+import { Separator } from "@conquest/ui/separator";
 import { cn } from "@conquest/ui/utils/cn";
 import { NodeDataSchema } from "@conquest/zod/node.schema";
 import { DeleteDialog } from "components/custom/delete-dialog";
 import { Icon } from "components/icons/Icon";
 import { ArrowLeft, type icons } from "lucide-react";
-import { Description } from "../description";
+import { Description } from "../components/description";
+import { NextStep } from "../components/next-step";
 import { ListRecordsOptions } from "../nodes/list-records/listRecords.options";
 import { RecurringScheduleOptions } from "../nodes/recurring-schedule/recurring.options";
 import { TagMemberOptions } from "../nodes/tag-member/tag-member.options";
 import { WebhookOptions } from "../nodes/webhook/webhook.options";
+import { ActionPanel } from "./action-panel";
+import { TriggerPanel } from "./trigger-panel";
 
 export const OptionsPanel = () => {
-  const { currentNode, setCurrentNode, setPanel, onDeleteNode } = useWorkflow();
+  const {
+    currentNode,
+    setCurrentNode,
+    panel,
+    setPanel,
+    changing,
+    setChanging,
+    onDeleteNode,
+  } = useWorkflow();
   const { type, icon, category, label } = NodeDataSchema.parse(
     currentNode?.data,
   );
+
+  const isTrigger = type.startsWith("trigger");
 
   return (
     <div className="flex flex-col divide-y h-full">
@@ -25,6 +39,10 @@ export const OptionsPanel = () => {
         <Button
           variant="ghost"
           onClick={() => {
+            if (changing) {
+              setChanging(false);
+              return;
+            }
             setCurrentNode(undefined);
             setPanel("workflow");
           }}
@@ -33,52 +51,53 @@ export const OptionsPanel = () => {
           Back
         </Button>
       </div>
-      <ScrollArea className="flex-grow h-[calc(100vh-10rem)]">
-        <div className="flex flex-col gap-4 p-6">
-          <div className="flex justify-between gap-2">
-            <div className="flex items-center gap-2">
-              <Icon
-                name={icon as keyof typeof icons}
-                size={24}
-                className={cn(
-                  "border rounded-lg size-11 p-1.5",
-                  type.startsWith("trigger") &&
-                    "border-blue-200 bg-blue-100 text-blue-500",
-                )}
-              />
-              <div className="space-y-1">
-                <Badge variant="secondary">{category}</Badge>
-                <p className="font-medium">{label}</p>
+      {changing && panel === "trigger" && <TriggerPanel />}
+      {changing && panel === "action" && <ActionPanel />}
+      {!changing && (
+        <ScrollArea className="flex-grow h-[calc(100vh-10rem)]">
+          <div className="flex flex-col gap-4 p-6">
+            <div className="flex justify-between gap-2">
+              <div className="flex items-center gap-2">
+                <Icon
+                  name={icon as keyof typeof icons}
+                  size={46}
+                  className={cn(
+                    "border rounded-lg p-2",
+                    type.startsWith("trigger") &&
+                      "border-blue-200 bg-blue-100 text-blue-500",
+                  )}
+                />
+                <div className="space-y-1">
+                  <Badge variant="secondary">{category}</Badge>
+                  <p className="font-medium">{label}</p>
+                </div>
               </div>
+              <Button variant="outline" onClick={() => setChanging(true)}>
+                Change
+              </Button>
             </div>
-            <Button
-              variant="outline"
-              onClick={() => {
-                const isTrigger = type?.startsWith("trigger");
-
-                setPanel(isTrigger ? "trigger" : "action");
-              }}
-            >
-              Change
-            </Button>
+            <Description />
+            {type === "trigger-recurring-schedule" && (
+              <RecurringScheduleOptions />
+            )}
+            {type === "list-records" && <ListRecordsOptions />}
+            {type === "webhook" && <WebhookOptions />}
+            {type === "add-tag" && <TagMemberOptions />}
+            {type === "remove-tag" && <TagMemberOptions />}
+            <Separator />
+            <NextStep />
           </div>
-          <Description />
-          {type === "trigger-recurring-schedule" && (
-            <RecurringScheduleOptions />
-          )}
-          {type === "list-records" && <ListRecordsOptions />}
-          {type === "webhook" && <WebhookOptions />}
-          {type === "add-tag" && <TagMemberOptions />}
-          {type === "remove-tag" && <TagMemberOptions />}
+        </ScrollArea>
+      )}
+      {!isTrigger && (
+        <div className="mt-auto flex justify-end gap-2 p-4 shrink-0">
+          <DeleteDialog
+            title="Delete node"
+            description="Are you sure you want to delete this node?"
+            onConfirm={onDeleteNode}
+          />
         </div>
-      </ScrollArea>
-      <div className="mt-auto flex justify-end gap-2 p-4 shrink-0">
-        <DeleteDialog
-          title="Delete node"
-          description="Are you sure you want to delete this node?"
-          onConfirm={onDeleteNode}
-        />
-      </div>
+      )}
     </div>
   );
 };

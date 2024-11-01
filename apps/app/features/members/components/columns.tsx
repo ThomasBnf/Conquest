@@ -27,7 +27,13 @@ export const Columns = ({ tags }: Props): ColumnDef<MemberWithActivities>[] => [
             table.getIsAllRowsSelected() ||
             (table.getIsSomeRowsSelected() && "indeterminate")
           }
-          onCheckedChange={(value) => table.toggleAllRowsSelected(!!value)}
+          onClick={(value) => {
+            if (table.getIsAllRowsSelected()) {
+              table.toggleAllRowsSelected(false);
+            } else {
+              table.toggleAllRowsSelected(!!value);
+            }
+          }}
         />
       </div>
     ),

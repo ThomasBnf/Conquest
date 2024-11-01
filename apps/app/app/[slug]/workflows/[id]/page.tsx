@@ -1,6 +1,6 @@
-import { Flow } from "@/features/workflows/flow";
-import { Header } from "@/features/workflows/header";
-import { getWorkflow } from "@/features/workflows/queries/getWorkflow";
+import { Flow } from "@/features/workflows/components/flow";
+import { Header } from "@/features/workflows/components/header";
+import { getWorkflow } from "@/features/workflows/functions/getWorkflow";
 import { ReactFlowProvider } from "@xyflow/react";
 import { WorkflowProvider } from "context/workflowContext";
 import { redirect } from "next/navigation";

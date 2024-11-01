@@ -82,6 +82,9 @@ export const TagMemberOptions = () => {
           className="w-52"
           align="start"
         >
+          {!isLoading && tags?.length === 0 && (
+            <p className="text-sm text-muted-foreground">No tags found</p>
+          )}
           {isLoading ? (
             <Skeleton className="h-5 w-full" />
           ) : (

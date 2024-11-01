@@ -95,20 +95,12 @@ export const MembersTable = ({ tags }: Props) => {
         />
       </div>
       <ScrollArea>
-        <Table
-          className="whitespace-nowrap"
-          style={{ width: table.getCenterTotalSize() }}
-        >
+        <Table className="whitespace-nowrap">
           <TableHeader className="sticky top-0 z-10 after:absolute after:inset-x-0 after:bottom-0 after:h-px after:bg-border">
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
-                  <TableHead
-                    key={header.id}
-                    style={{
-                      minWidth: header.getSize(),
-                    }}
-                  >
+                  <TableHead key={header.id}>
                     {header.isPlaceholder
                       ? null
                       : flexRender(
@@ -129,13 +121,12 @@ export const MembersTable = ({ tags }: Props) => {
               </TableRow>
             ) : table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
-                <TableRow key={row.id} className="hover:bg-neutral-50">
+                <TableRow
+                  key={row.id}
+                  className={cn(row.getIsSelected() && "bg-muted")}
+                >
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell
-                      key={cell.id}
-                      className={cn(row.getIsSelected() && "bg-neutral-100")}
-                      style={{ minWidth: cell.column.getSize() }}
-                    >
+                    <TableCell key={cell.id}>
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext(),

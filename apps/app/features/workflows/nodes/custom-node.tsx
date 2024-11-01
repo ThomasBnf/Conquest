@@ -14,7 +14,8 @@ type Props = {
 };
 
 export const CustomNode = ({ props }: Props) => {
-  const { currentNode, setCurrentNode, setPanel, nodes } = useWorkflow();
+  const { currentNode, setCurrentNode, setPanel, setChanging, nodes } =
+    useWorkflow();
 
   const data = NodeDataSchema.parse(props.data);
   const { type, category, icon, label, description } = data;
@@ -27,7 +28,7 @@ export const CustomNode = ({ props }: Props) => {
       {isTrigger && (
         <div
           className={cn(
-            "absolute -top-[24px] flex h-6 items-center gap-1 rounded-t-md border-x border-t bg-muted px-1 text-muted-foreground",
+            "absolute -top-[24px] flex h-6 items-center gap-1 rounded-t-lg border-x border-t bg-muted px-1.5 text-muted-foreground",
             currentNode?.id === props.id && "bg-muted text-main-500 ",
           )}
         >
@@ -47,10 +48,12 @@ export const CustomNode = ({ props }: Props) => {
             type: "custom",
             data,
           });
+          setPanel(isTrigger ? "trigger" : "action");
+          setChanging(false);
         }}
         className={cn(
           "relative flex w-80 flex-1 flex-col border bg-background p-3",
-          isTrigger ? "rounded-b-md rounded-tr-md" : "rounded-lg",
+          isTrigger ? "rounded-b-lg rounded-tr-lg" : "rounded-lg",
           currentNode?.id === props.id && "border-main-500",
         )}
       >

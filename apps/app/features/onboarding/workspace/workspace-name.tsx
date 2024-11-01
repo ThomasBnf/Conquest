@@ -82,7 +82,7 @@ export const WorkspaceFields = ({ form }: Props) => {
               <div
                 className={cn(
                   "relative flex items-center rounded-lg border pl-3",
-                  isFocus && "ring-2 ring-neutral-300 ring-offset-2",
+                  isFocus && "ring-2 ring-ring",
                 )}
               >
                 <p>useconquest.com/</p>

@@ -1,13 +1,11 @@
 import { useWorkflow } from "@/context/workflowContext";
-import { ActionPanel } from "./panels/action-panel";
-import { OptionsPanel } from "./panels/options-panel";
-import { TriggerPanel } from "./panels/trigger-panel";
-import { WorkflowPanel } from "./panels/workflow-panel";
+import { ActionPanel } from "../panels/action-panel";
+import { OptionsPanel } from "../panels/options-panel";
+import { TriggerPanel } from "../panels/trigger-panel";
+import { WorkflowPanel } from "../panels/workflow-panel";
 
 export const Sidebar = () => {
   const { currentNode, panel } = useWorkflow();
-
-  console.log(panel);
 
   return (
     <div className="flex w-full max-w-sm flex-col">

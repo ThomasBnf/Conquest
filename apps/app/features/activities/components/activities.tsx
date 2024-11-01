@@ -52,7 +52,7 @@ export const Activities = ({ member_id, className }: Props) => {
   if (isLoading || !activities) return <IsLoading />;
 
   return (
-    <div className={cn("mx-auto max-w-3xl pt-6 pb-12", className)}>
+    <div className={cn("mx-auto pt-6 pb-12 max-w-3xl", className)}>
       {Object.entries(groupedActivities).map(([date, activities]) => (
         <div key={date} className="space-y-14 mb-10">
           <div className="my-4 flex items-center">

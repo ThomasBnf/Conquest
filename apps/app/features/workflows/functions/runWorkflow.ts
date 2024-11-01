@@ -19,7 +19,7 @@ import {
 } from "@conquest/zod/node.schema";
 import { startOfDay, subDays } from "date-fns";
 import { z } from "zod";
-import { getWorkflow } from "../queries/getWorkflow";
+import { getWorkflow } from "./getWorkflow";
 
 let records: MemberWithActivities[] | undefined = undefined;
 

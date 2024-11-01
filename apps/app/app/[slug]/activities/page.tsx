@@ -1,5 +1,3 @@
-"use client";
-
 import { Header } from "@/components/layouts/header";
 import { PageLayout } from "@/components/layouts/page-layout";
 import { Activities } from "@/features/activities/components/activities";

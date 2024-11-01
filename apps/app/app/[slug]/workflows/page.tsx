@@ -1,9 +1,9 @@
 import { Header } from "@/components/layouts/header";
 import { PageLayout } from "@/components/layouts/page-layout";
-import { CreateWorkflowButton } from "@/features/workflows/create-workflow-button";
-import { IsPublished } from "@/features/workflows/isPublished";
-import { listWorkflows } from "@/features/workflows/queries/listWorkflows";
-import { WorkflowMenu } from "@/features/workflows/workflow-menu";
+import { CreateWorkflow } from "@/features/workflows/components/create-workflow";
+import { IsPublished } from "@/features/workflows/components/isPublished";
+import { WorkflowMenu } from "@/features/workflows/components/workflow-menu";
+import { listWorkflows } from "@/features/workflows/functions/listWorkflows";
 import { ScrollArea } from "@conquest/ui/scroll-area";
 import Link from "next/link";
 
@@ -20,22 +20,24 @@ export default async function Page({ params: { slug } }: Props) {
   return (
     <PageLayout>
       <Header title="Workflows" className="justify-between">
-        <CreateWorkflowButton />
+        <CreateWorkflow />
       </Header>
       <ScrollArea>
         {workflows?.map((workflow) => (
           <div
             key={workflow.id}
-            className="flex items-center justify-between border-b px-4 gap-6 transition-colors hover:bg-muted-hover"
+            className="flex items-center justify-between border-b px-4 transition-colors hover:bg-muted-hover"
           >
             <Link
               href={`/${slug}/workflows/${workflow.id}`}
-              className="flex-1 h-14 flex items-center"
+              className="flex flex-1 items-center h-12"
             >
               <p className="font-medium w-96 truncate">{workflow.name}</p>
             </Link>
-            <IsPublished workflow={workflow} />
-            <WorkflowMenu workflow={workflow} />
+            <div className="flex items-center gap-6">
+              <IsPublished workflow={workflow} />
+              <WorkflowMenu workflow={workflow} />
+            </div>
           </div>
         ))}
       </ScrollArea>

@@ -36,12 +36,18 @@ export const QueryInput = ({
   return (
     <div
       className={cn(
-        "relative flex w-56 items-center rounded-lg border px-2",
-        isFocus && "ring-2 ring-neutral-200 ring-offset-1",
+        "relative flex w-56 items-center rounded-lg border px-2 actions-secondary",
+        isFocus && "ring-2 ring-ring border-main-400",
         className,
       )}
     >
-      <Search size={15} className="text-muted-foreground shrink-0" />
+      <Search
+        size={15}
+        className={cn(
+          "text-muted-foreground shrink-0",
+          isFocus && "text-main-500",
+        )}
+      />
       <Input
         ref={ref}
         value={value}
