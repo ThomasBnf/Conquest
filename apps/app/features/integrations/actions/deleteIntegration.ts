@@ -1,9 +1,14 @@
 "use server";
 
+import { env } from "@/env.mjs";
 import { authAction } from "@/lib/authAction";
 import { prisma } from "@/lib/prisma";
+import { IntegrationSchema } from "@conquest/zod/integration.schema";
+import { WebClient } from "@slack/web-api";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
+
+
 
 export const deleteIntegration = authAction
   .metadata({
@@ -11,14 +16,22 @@ export const deleteIntegration = authAction
   })
   .schema(
     z.object({
-      id: z.string(),
+      integration: IntegrationSchema,
     }),
   )
-  .action(async ({ ctx, parsedInput: { id } }) => {
+  .action(async ({ ctx, parsedInput: { integration } }) => {
     const slug = ctx.user?.workspace.slug;
     const workspace_id = ctx.user?.workspace_id;
 
     if (!workspace_id) return;
+
+    const web = new WebClient(integration.token);
+
+    await web.apps.uninstall({
+      token: integration.token,
+      client_id: env.NEXT_PUBLIC_SLACK_CLIENT_ID,
+      client_secret: env.SLACK_CLIENT_SECRET,
+    });
 
     await prisma.activity.deleteMany({
       where: {
@@ -46,7 +59,7 @@ export const deleteIntegration = authAction
 
     await prisma.integration.delete({
       where: {
-        id,
+        id: integration.id,
         workspace_id,
       },
     });

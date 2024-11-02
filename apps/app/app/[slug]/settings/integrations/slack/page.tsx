@@ -12,11 +12,12 @@ import { ArrowLeft, ExternalLink } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 export default function Page() {
   const { slug, slack } = useUser();
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
   const params = useSearchParams();
   const code = params.get("code");
@@ -34,7 +35,9 @@ export default function Page() {
 
   const onUninstall = async () => {
     if (!slack?.id) return;
-    deleteIntegration({ id: slack.id });
+    setLoading(true);
+    await deleteIntegration({ integration: slack });
+    setLoading(false);
     return toast.success("Slack disconnected");
   };
 
@@ -102,7 +105,7 @@ export default function Page() {
               </DeleteDialog>
             ) : (
               <Button
-                loading={slack?.status === "SYNCING"}
+                loading={slack?.status === "SYNCING" || loading}
                 className={cn(buttonVariants({ variant: "default" }))}
                 onClick={onStartInstall}
               >
