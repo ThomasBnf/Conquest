@@ -5,7 +5,7 @@ import { Icon } from "components/icons/Icon";
 import type { icons } from "lucide-react";
 
 export const ActionPanel = () => {
-  const { currentNode, onAddNode, onUpdateNode, setChanging } = useWorkflow();
+  const { currentNode, onAddNode, onUpdateNode, adding,setChanging } = useWorkflow();
 
   return (
     <div className="p-6">
@@ -29,7 +29,7 @@ export const ActionPanel = () => {
                     <div
                       key={node.id}
                       onClick={() => {
-                        if (currentNode) {
+                        if (currentNode && !adding) {
                           setChanging(false);
                           onUpdateNode({ ...currentNode, data: node.data });
                         } else {

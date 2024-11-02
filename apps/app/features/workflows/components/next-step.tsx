@@ -9,7 +9,7 @@ import { X, type icons } from "lucide-react";
 import { useEffect, useState } from "react";
 
 export const NextStep = () => {
-  const { currentNode, onDeleteEdge, nodes, edges, setChanging, setPanel } =
+  const { currentNode, onDeleteEdge, nodes, edges, setChanging, setPanel,setAdding } =
     useWorkflow();
   const { icon, type, label } = currentNode?.data ?? {};
   const [nextNode, setNextNode] = useState<NodeData | undefined>();
@@ -51,6 +51,7 @@ export const NextStep = () => {
               onClick={() => {
                 onDeleteEdge();
                 setPanel("action");
+                setAdding(true);
                 setChanging(true);
               }}
               className="relative cursor-pointer z-10 flex items-center gap-2 border rounded-lg h-10 px-2 hover:bg-muted-hover transition-colors-hover"

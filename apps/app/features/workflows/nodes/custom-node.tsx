@@ -14,14 +14,18 @@ type Props = {
 };
 
 export const CustomNode = ({ props }: Props) => {
-  const { currentNode, setCurrentNode, setPanel, setChanging, nodes } =
+  const { currentNode,setCurrentNode, panel, setPanel, setChanging, edges } =
     useWorkflow();
+
+
 
   const data = NodeDataSchema.parse(props.data);
   const { type, category, icon, label, description } = data;
 
   const isTrigger = type.startsWith("trigger");
-  const isLastNode = nodes.at(-1)?.id === props.id;
+  console.log(edges)
+  const isLastNode = edges.find((e) => e.source === props.id) === undefined;
+
 
   return (
     <div className="relative">
@@ -63,6 +67,8 @@ export const CustomNode = ({ props }: Props) => {
               "rounded-lg border p-1",
               category === "utilities" &&
                 "border-blue-200 bg-blue-100 text-blue-500",
+              category === "mutations" &&
+                "border-green-200 bg-green-100 text-green-500",
               category === "records" &&
                 "border-yellow-200 bg-yellow-100 text-yellow-500",
             )}
@@ -81,7 +87,7 @@ export const CustomNode = ({ props }: Props) => {
         {!isTrigger && <CustomHandle position={Position.Top} type="target" />}
         <CustomHandle position={Position.Bottom} type="source" />
       </div>
-      {isLastNode && (
+      {isLastNode  && (
         // biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
         <div
           onClick={() => {
@@ -97,7 +103,7 @@ export const CustomNode = ({ props }: Props) => {
             <Plus size={16} />
           </Button>
         </div>
-      )}
+      )} 
     </div>
   );
 };

@@ -42,6 +42,8 @@ type workflowContext = {
   setPanel: Dispatch<SetStateAction<"workflow" | "trigger" | "action">>;
   changing: boolean;
   setChanging: Dispatch<SetStateAction<boolean>>;
+  adding: boolean;
+  setAdding: Dispatch<SetStateAction<boolean>>;
   currentNode: NodeType | undefined;
   setCurrentNode: (node: NodeType | undefined) => void;
   onUpdateWorkflow: (updatedWorkflow: Workflow) => Promise<void>;
@@ -66,6 +68,7 @@ export const WorkflowProvider = ({ currentWorkflow, children }: Props) => {
   const [nodes, setNodes, onNodesChange] = useNodesState<Node>(workflow.nodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>(workflow.edges);
   const [changing, setChanging] = useState(false);
+  const [adding, setAdding] = useState(false);
   const [panel, setPanel] = useState<"workflow" | "trigger" | "action">(
     "workflow",
   );
@@ -92,13 +95,15 @@ export const WorkflowProvider = ({ currentWorkflow, children }: Props) => {
         ...node,
         id: cuid(),
         position: {
-          x: 0,
-          y: previousNode ? previousNode.position.y + 150 : 0,
+          x: previousNode ? previousNode.position.x : 0,
+          y: previousNode ? previousNode.position.y + 200 : 0,
         },
         type: "custom",
       };
 
       setCurrentNode(newNode);
+      setAdding(false);
+      setChanging(false);
 
       const updatedNodes = [...nodes, newNode];
       const parsedNodes = NodeSchema.array().parse(updatedNodes);
@@ -190,11 +195,18 @@ export const WorkflowProvider = ({ currentWorkflow, children }: Props) => {
   }, [edges, workflow, currentNode]);
 
   const handleNodesChange: OnNodesChange = (changes) => {
-    if (currentNode?.data.type.startsWith("trigger")) return;
+    const filteredChanges = changes.filter((change) => {
+      if (change.type === "remove") {
+        const nodeToDelete = nodes.find((node) => node.id === change.id);
+        const nodeData = NodeDataSchema.parse(nodeToDelete?.data);
+        return !nodeData.type.startsWith("trigger");
+      }
+      return true;
+    });
 
-    onNodesChange(changes);
+    onNodesChange(filteredChanges);
 
-    for (const change of changes) {
+    for (const change of filteredChanges) {
       if (change.type === "position" && change.position && !change.dragging) {
         const { id, position } = change;
         const currentNode = nodes.find((node) => node.id === id);
@@ -278,6 +290,8 @@ export const WorkflowProvider = ({ currentWorkflow, children }: Props) => {
         setPanel,
         changing,
         setChanging,
+        adding,
+        setAdding,
         currentNode,
         setCurrentNode,
         onUpdateWorkflow,
