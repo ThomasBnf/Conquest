@@ -405,6 +405,7 @@ export const POST = safeRoute.body(bodySchema).handler(async (_, context) => {
         job_title: title,
         phone,
         avatar_url: image_1024,
+        workspace_id,
       });
       break;
     }

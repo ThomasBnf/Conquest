@@ -12,6 +12,7 @@ export const updateSlackMember = safeAction
       phone: z.string(),
       avatar_url: z.string().optional(),
       job_title: z.string(),
+      workspace_id: z.string(),
     }),
   )
   .action(
@@ -23,6 +24,7 @@ export const updateSlackMember = safeAction
         phone,
         avatar_url,
         job_title,
+        workspace_id,
       },
     }) => {
       const currentMember = await prisma.member.findUnique({
@@ -41,6 +43,7 @@ export const updateSlackMember = safeAction
       return await prisma.member.update({
         where: {
           slack_id,
+          workspace_id,
         },
         data: {
           first_name,
