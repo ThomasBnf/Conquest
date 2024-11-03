@@ -1,7 +1,6 @@
 "use client";
 
 import { useUser } from "@/context/userContext";
-import { useWorkflow } from "@/context/workflowContext";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -12,10 +11,14 @@ import {
 } from "@conquest/ui/breadcrumb";
 import { Form, FormControl, FormField, FormItem } from "@conquest/ui/form";
 import { Input } from "@conquest/ui/input";
+import { Skeleton } from "@conquest/ui/skeleton";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
+import { _getWorkflow } from "../actions/_getWorkflow";
+import { _updateWorkflow } from "../actions/_updateWorkflow";
 import {
   type FormName,
   FormNameSchema,
@@ -23,9 +26,27 @@ import {
 import { IsPublished } from "./isPublished";
 import { WorkflowMenu } from "./workflow-menu";
 
-export const Header = () => {
+type Props = {
+  id: string;
+};
+
+export const Header = ({ id }: Props) => {
   const { slug } = useUser();
-  const { workflow, setWorkflow, onUpdateWorkflow } = useWorkflow();
+  const queryClient = useQueryClient();
+
+  const { data, isLoading } = useQuery({
+    queryKey: ["workflow", id],
+    queryFn: () => _getWorkflow({ id }),
+  });
+
+  const { mutate } = useMutation({
+    mutationFn: _updateWorkflow,
+    onSuccess: () => {
+      queryClient.refetchQueries({ queryKey: ["workflow", id] });
+    },
+  });
+
+  const workflow = data?.data;
 
   const form = useForm<FormName>({
     resolver: zodResolver(FormNameSchema),
@@ -35,11 +56,12 @@ export const Header = () => {
   });
 
   const onSubmit = async ({ name }: FormName) => {
-    await onUpdateWorkflow({ ...workflow, name });
+    if (!workflow?.id) return;
+    mutate({ id: workflow.id, name });
   };
 
   useEffect(() => {
-    form.setValue("name", workflow.name);
+    form.setValue("name", workflow?.name ?? "");
   }, [workflow]);
 
   return (
@@ -54,36 +76,42 @@ export const Header = () => {
           <BreadcrumbSeparator />
           <BreadcrumbItem>
             <BreadcrumbPage>
-              <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)}>
-                  <FormField
-                    control={form.control}
-                    name="name"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormControl>
-                          <Input
-                            {...field}
-                            type="text"
-                            className="h-8 w-80"
-                            onBlur={() => {
-                              form.handleSubmit(onSubmit)();
-                            }}
-                          />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
-                </form>
-              </Form>
+              {isLoading ? (
+                <Skeleton />
+              ) : (
+                <Form {...form}>
+                  <form onSubmit={form.handleSubmit(onSubmit)}>
+                    <FormField
+                      control={form.control}
+                      name="name"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormControl>
+                            <Input
+                              {...field}
+                              type="text"
+                              className="h-8 w-80"
+                              onBlur={() => {
+                                form.handleSubmit(onSubmit)();
+                              }}
+                            />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                  </form>
+                </Form>
+              )}
             </BreadcrumbPage>
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
-      <div className="flex items-center gap-4">
-        <IsPublished workflow={workflow} setWorkflow={setWorkflow} />
-        <WorkflowMenu workflow={workflow} />
-      </div>
+      {workflow && (
+        <div className="flex items-center gap-4">
+          <IsPublished workflow={workflow} />
+          <WorkflowMenu workflow={workflow} />
+        </div>
+      )}
     </div>
   );
 };

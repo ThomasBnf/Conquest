@@ -1,31 +1,28 @@
-import { useWorkflow } from "@/context/workflowContext";
 import { Badge } from "@conquest/ui/badge";
-import { Button } from "@conquest/ui/button";
 import { Separator } from "@conquest/ui/separator";
 import { cn } from "@conquest/ui/utils/cn";
-import { NodeDataSchema } from "@conquest/zod/node.schema";
-import { type NodeProps, Position } from "@xyflow/react";
+import { type NodeProps, Position, useReactFlow } from "@xyflow/react";
 import { Icon } from "components/icons/Icon";
-import { Plus, Target, type icons } from "lucide-react";
+import { Target, type icons } from "lucide-react";
+import { useMemo } from "react";
+import { useChanging } from "../hooks/useChanging";
+import { usePanel } from "../hooks/usePanel";
+import { useSelected } from "../hooks/useSelected";
+import type { WorkflowNode } from "../panels/types/node-data";
 import { CustomHandle } from "./custom-handle";
 
-type Props = {
-  props: NodeProps;
-};
+export const CustomNode = ({ ...props }: NodeProps<WorkflowNode>) => {
+  const { setPanel } = usePanel();
+  const { selected, setSelected } = useSelected();
+  const { setIsChanging } = useChanging();
+  const { getNode } = useReactFlow();
 
-export const CustomNode = ({ props }: Props) => {
-  const { currentNode,setCurrentNode, panel, setPanel, setChanging, edges } =
-    useWorkflow();
+  const node = getNode(props.id) as WorkflowNode | undefined;
 
+  if (!node) return;
 
-
-  const data = NodeDataSchema.parse(props.data);
-  const { type, category, icon, label, description } = data;
-
-  const isTrigger = type.startsWith("trigger");
-  console.log(edges)
-  const isLastNode = edges.find((e) => e.source === props.id) === undefined;
-
+  const { category, icon, label, description } = node.data;
+  const isTrigger = useMemo(() => "isTrigger" in node.data, [node]);
 
   return (
     <div className="relative">
@@ -33,7 +30,7 @@ export const CustomNode = ({ props }: Props) => {
         <div
           className={cn(
             "absolute -top-[24px] flex h-6 items-center gap-1 rounded-t-lg border-x border-t bg-muted px-1.5 text-muted-foreground",
-            currentNode?.id === props.id && "bg-muted text-main-500 ",
+            node?.id === props.id && "bg-muted text-main-500 ",
           )}
         >
           <Target size={14} />
@@ -43,22 +40,14 @@ export const CustomNode = ({ props }: Props) => {
       {/* biome-ignore lint/a11y/useKeyWithClickEvents: <explanation> */}
       <div
         onClick={() => {
-          setCurrentNode({
-            id: props.id,
-            position: {
-              x: props.positionAbsoluteX,
-              y: props.positionAbsoluteY,
-            },
-            type: "custom",
-            data,
-          });
-          setPanel(isTrigger ? "trigger" : "action");
-          setChanging(false);
+          setSelected(node);
+          setPanel("node");
+          setIsChanging(false);
         }}
         className={cn(
           "relative flex w-80 flex-1 flex-col border bg-background p-3",
           isTrigger ? "rounded-b-lg rounded-tr-lg" : "rounded-lg",
-          currentNode?.id === props.id && "border-main-500",
+          selected?.id === node.id && "border-main-500 ring-2 ring-ring",
         )}
       >
         <div className="flex items-center gap-2">
@@ -87,23 +76,21 @@ export const CustomNode = ({ props }: Props) => {
         {!isTrigger && <CustomHandle position={Position.Top} type="target" />}
         <CustomHandle position={Position.Bottom} type="source" />
       </div>
-      {isLastNode  && (
-        // biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
-        <div
-          onClick={() => {
-            setPanel("action");
-            setCurrentNode(undefined);
-          }}
-          className="absolute -bottom-12 left-1/2 -translate-x-1/2"
-        >
-          <div className="flex items-center justify-center py-1">
-            <div className="h-2 w-px bg-border" />
-          </div>
-          <Button size="icon">
+      {/* {!hasEdge && (
+        <>
+          <div className="h-7 w-px bg-border absolute -bottom-9 left-1/2 -translate-x-1/2" />
+          <Button
+            size="icon"
+            className="absolute -bottom-16 left-1/2 -translate-x-1/2"
+            onClick={() => {
+              setSelected(node);
+              setPanel("actions");
+            }}
+          >
             <Plus size={16} />
           </Button>
-        </div>
-      )} 
+        </>
+      )} */}
     </div>
   );
 };

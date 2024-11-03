@@ -1,4 +1,3 @@
-import { useWorkflow } from "@/context/workflowContext";
 import {
   Form,
   FormControl,
@@ -9,30 +8,37 @@ import {
 import { Input } from "@conquest/ui/input";
 import { NodeWebhookSchema } from "@conquest/zod/node.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useReactFlow } from "@xyflow/react";
 import { useForm } from "react-hook-form";
+import { useSelected } from "../../hooks/useSelected";
 import { type FormUrl, FormUrlSchema } from "./form-url.schema";
 
 export const WebhookOptions = () => {
-  const { currentNode, onUpdateNode } = useWorkflow();
-  const parsedData = NodeWebhookSchema.parse(currentNode?.data);
+  const { selected } = useSelected();
+  const { getNodes, setNodes } = useReactFlow();
+
+  const { url } = NodeWebhookSchema.parse(selected?.data);
 
   const form = useForm<FormUrl>({
     resolver: zodResolver(FormUrlSchema),
     defaultValues: {
-      url: parsedData.url,
+      url,
     },
   });
 
   const onSubmit = ({ url }: FormUrl) => {
-    if (!currentNode) return;
+    if (!selected) return;
 
-    onUpdateNode({
-      ...currentNode,
-      data: {
-        ...parsedData,
-        url,
-      },
-    });
+    console.log(url);
+    console.log(getNodes());
+
+    setNodes((nodes) =>
+      nodes.map((node) =>
+        node.id === selected.id
+          ? { ...node, data: { ...node.data, url } }
+          : node,
+      ),
+    );
   };
 
   return (

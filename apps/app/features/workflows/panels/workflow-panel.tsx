@@ -1,6 +1,5 @@
 "use client";
 
-import { useWorkflow } from "@/context/workflowContext";
 import {
   Form,
   FormControl,
@@ -12,31 +11,52 @@ import {
 import { Input } from "@conquest/ui/input";
 import { TextField } from "@conquest/ui/text-field";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { usePathname } from "next/navigation";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
+import { _getWorkflow } from "../actions/_getWorkflow";
+import { _updateWorkflow } from "../actions/_updateWorkflow";
 import {
   type FormWorkflow,
   FormWorkflowSchema,
 } from "./types/form-workflow.schema";
 
 export const WorkflowPanel = () => {
-  const { workflow, onUpdateWorkflow } = useWorkflow();
+  const pathname = usePathname();
+  const id = pathname.split("/").at(-1) as string;
+  const queryClient = useQueryClient();
+
+  const { data } = useQuery({
+    queryKey: ["workflow", id],
+    queryFn: () => _getWorkflow({ id }),
+  });
+
+  const { mutate } = useMutation({
+    mutationFn: _updateWorkflow,
+    onSuccess: () => {
+      queryClient.refetchQueries({ queryKey: ["workflow", id] });
+    },
+  });
+
+  const workflow = data?.data;
 
   const form = useForm<FormWorkflow>({
     resolver: zodResolver(FormWorkflowSchema),
     defaultValues: {
-      name: workflow.name,
-      description: workflow.description ?? "",
+      name: workflow?.name ?? "",
+      description: workflow?.description ?? "",
     },
   });
 
   const onSubmit = async ({ name, description }: FormWorkflow) => {
-    await onUpdateWorkflow({ ...workflow, name, description });
+    if (!workflow?.id) return;
+    mutate({ id: workflow.id, name, description });
   };
 
   useEffect(() => {
-    form.setValue("name", workflow.name);
-    form.setValue("description", workflow.description ?? "");
+    form.setValue("name", workflow?.name ?? "");
+    form.setValue("description", workflow?.description ?? "");
   }, [workflow]);
 
   return (

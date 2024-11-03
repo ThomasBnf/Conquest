@@ -1,14 +1,15 @@
 "use client";
 
+import { useSelected } from "@/features/workflows/hooks/useSelected";
 import type { Filter } from "@conquest/zod/filters.schema";
 import type {
   Category,
   GroupFilter,
-  NodeListRecords,
+  NodeListMembers,
 } from "@conquest/zod/node.schema";
+import { useReactFlow } from "@xyflow/react";
 import cuid from "cuid";
 import { createContext, useContext, useState } from "react";
-import { useWorkflow } from "./workflowContext";
 
 type GroupFilterProps = {
   category: Category;
@@ -34,16 +35,17 @@ type filtersContext = {
 const filtersContext = createContext<filtersContext>({} as filtersContext);
 
 type Props = {
-  node: NodeListRecords;
+  node: NodeListMembers;
   children: React.ReactNode;
 };
 
 export const FiltersProvider = ({ node, children }: Props) => {
-  const { currentNode, onUpdateNode } = useWorkflow();
+  const { selected } = useSelected();
+  const { updateNode } = useReactFlow();
   const [groupFilters, setGroupFilters] = useState(node.group_filters);
 
   const onAddGroupFilter = ({ category, filter }: GroupFilterProps) => {
-    if (!currentNode) return;
+    if (!selected) return;
 
     const newGroupFilter: GroupFilter = {
       id: cuid(),
@@ -59,8 +61,8 @@ export const FiltersProvider = ({ node, children }: Props) => {
 
     setGroupFilters((prev) => [...prev, newGroupFilter]);
 
-    onUpdateNode({
-      ...currentNode,
+    updateNode(selected.id, {
+      ...selected,
       data: {
         ...node,
         group_filters: [...node.group_filters, newGroupFilter],
@@ -69,7 +71,7 @@ export const FiltersProvider = ({ node, children }: Props) => {
   };
 
   const onUpdateGroupFilter = (updatedGroup: GroupFilter) => {
-    if (!currentNode) return;
+    if (!selected) return;
 
     const updatedGroupFilters = groupFilters.map((group) =>
       group.id === updatedGroup.id ? updatedGroup : group,
@@ -77,8 +79,8 @@ export const FiltersProvider = ({ node, children }: Props) => {
 
     setGroupFilters(updatedGroupFilters);
 
-    onUpdateNode({
-      ...currentNode,
+    updateNode(selected.id, {
+      ...selected,
       data: {
         ...node,
         group_filters: updatedGroupFilters,
@@ -87,7 +89,7 @@ export const FiltersProvider = ({ node, children }: Props) => {
   };
 
   const onDeleteGroup = (groupFilter: GroupFilter) => {
-    if (!currentNode) return;
+    if (!selected) return;
 
     const updatedGroupFilters = groupFilters.filter(
       (group) => group.id !== groupFilter.id,
@@ -95,8 +97,8 @@ export const FiltersProvider = ({ node, children }: Props) => {
 
     setGroupFilters(updatedGroupFilters);
 
-    onUpdateNode({
-      ...currentNode,
+    updateNode(selected.id, {
+      ...selected,
       data: {
         ...node,
         group_filters: updatedGroupFilters,
@@ -105,7 +107,7 @@ export const FiltersProvider = ({ node, children }: Props) => {
   };
 
   const onAddFilter = ({ groupFilter, filter }: FilterProps) => {
-    if (!currentNode) return;
+    if (!selected) return;
 
     const newFilter: Filter = {
       ...filter,
@@ -120,8 +122,8 @@ export const FiltersProvider = ({ node, children }: Props) => {
 
     setGroupFilters(updatedGroupFilters);
 
-    onUpdateNode({
-      ...currentNode,
+    updateNode(selected.id, {
+      ...selected,
       data: {
         ...node,
         group_filters: updatedGroupFilters,
@@ -130,7 +132,7 @@ export const FiltersProvider = ({ node, children }: Props) => {
   };
 
   const onUpdateFilter = (filter: Filter) => {
-    if (!currentNode) return;
+    if (!selected) return;
 
     const updatedGroupFilters: GroupFilter[] = groupFilters.map((group) => {
       return {
@@ -141,8 +143,8 @@ export const FiltersProvider = ({ node, children }: Props) => {
 
     setGroupFilters(updatedGroupFilters);
 
-    onUpdateNode({
-      ...currentNode,
+    updateNode(selected.id, {
+      ...selected,
       data: {
         ...node,
         group_filters: updatedGroupFilters,
@@ -151,7 +153,7 @@ export const FiltersProvider = ({ node, children }: Props) => {
   };
 
   const onDeleteFilter = (filter: Filter) => {
-    if (!currentNode) return;
+    if (!selected) return;
 
     const updatedGroupFilters: GroupFilter[] = groupFilters
       .map((group) => ({
@@ -162,8 +164,8 @@ export const FiltersProvider = ({ node, children }: Props) => {
 
     setGroupFilters(updatedGroupFilters);
 
-    onUpdateNode({
-      ...currentNode,
+    updateNode(selected.id, {
+      ...selected,
       data: {
         ...node,
         group_filters: updatedGroupFilters,

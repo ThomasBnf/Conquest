@@ -5,7 +5,6 @@ import { NodeSchema } from "@conquest/zod/node.schema";
 import { WorkflowSchema } from "@conquest/zod/workflow.schema";
 import { authAction } from "lib/authAction";
 import { prisma } from "lib/prisma";
-import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
 export const _updateWorkflow = authAction
@@ -27,8 +26,6 @@ export const _updateWorkflow = authAction
       ctx,
       parsedInput: { id, nodes, edges, name, description, published },
     }) => {
-      const slug = ctx.user.workspace.slug;
-
       const updatedWorkflow = await prisma.workflow.update({
         where: {
           id,
@@ -43,7 +40,6 @@ export const _updateWorkflow = authAction
         },
       });
 
-      revalidatePath(`/${slug}/workflows/${id}`);
       return WorkflowSchema.parse(updatedWorkflow);
     },
   );

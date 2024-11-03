@@ -18,16 +18,12 @@ export const listWorkflows = inngest.createFunction(
       const parsedWorkflows = WorkflowSchema.array().parse(publishedWorkflows);
 
       return parsedWorkflows.filter((workflow) =>
-        workflow.nodes.some(
-          (node) => node.data.type === "trigger-recurring-schedule",
-        ),
+        workflow.nodes.some((node) => "isTrigger" in node.data),
       );
     });
 
     for (const workflow of workflows) {
-      const trigger = workflow.nodes.find(
-        (node) => node.data.type === "trigger-recurring-schedule",
-      );
+      const trigger = workflow.nodes.find((node) => "isTrigger" in node.data);
 
       const { frequency, time } = NodeRecurringSchema.parse(trigger?.data);
 

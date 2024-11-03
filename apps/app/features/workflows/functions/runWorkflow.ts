@@ -9,17 +9,17 @@ import {
   FilterSelectSchema,
   FilterTagSchema,
 } from "@conquest/zod/filters.schema";
+import type { Node } from "@conquest/zod/node.schema";
 import {
-  type Node,
   NodeDataSchema,
-  NodeListRecordsSchema,
+  NodeListMembersSchema,
   NodeSchema,
   NodeTagMemberSchema,
   NodeWebhookSchema,
 } from "@conquest/zod/node.schema";
 import { startOfDay, subDays } from "date-fns";
 import { z } from "zod";
-import { getWorkflow } from "./getWorkflow";
+import { _getWorkflow } from "../actions/_getWorkflow";
 
 let records: MemberWithActivities[] | undefined = undefined;
 
@@ -33,7 +33,7 @@ export const runWorkflow = safeAction
     }),
   )
   .action(async ({ parsedInput: { id } }) => {
-    const rWorkflow = await getWorkflow({ id });
+    const rWorkflow = await _getWorkflow({ id });
     const workflow = rWorkflow?.data;
 
     if (!workflow) throw new Error("Workflow not found");
@@ -50,17 +50,13 @@ export const runWorkflow = safeAction
       const { type } = NodeDataSchema.parse(node.data);
 
       switch (type) {
-        case "list-records": {
-          const { source } = NodeListRecordsSchema.parse(node.data);
+        case "list-members": {
+          const rMembers = await listMembers({});
+          records = rMembers?.data;
 
-          if (source === "members") {
-            const rMembers = await listMembers({});
-            records = rMembers?.data;
+          if (!records?.length) throw new Error("No members found");
 
-            if (!records?.length) throw new Error("No members found");
-
-            records = await executeListMembers(node);
-          }
+          records = await executeListMembers(node);
           break;
         }
         case "add-tag": {
@@ -89,9 +85,8 @@ export const runWorkflow = safeAction
 
     if (startNodeId) {
       const { data } = NodeSchema.parse(nodeMap.get(startNodeId));
-      const { type } = data;
 
-      if (data && type.startsWith("trigger")) {
+      if (data && "isTrigger" in data) {
         await executeNode(startNodeId);
       } else {
         throw new Error("Workflow must start with a trigger node");
@@ -104,7 +99,7 @@ export const runWorkflow = safeAction
   });
 
 const executeListMembers = async (node: Node) => {
-  const { group_filters } = NodeListRecordsSchema.parse(node.data);
+  const { group_filters } = NodeListMembersSchema.parse(node.data);
 
   return records?.filter((member) => {
     let record: MemberWithActivities;

@@ -1,11 +1,35 @@
-import { useWorkflow } from "@/context/workflowContext";
+import { Button } from "@conquest/ui/button";
 import { Label } from "@conquest/ui/label";
-import type { Node as NodeType } from "@conquest/zod/node.schema";
+import { useReactFlow } from "@xyflow/react";
 import { Icon } from "components/icons/Icon";
+import cuid from "cuid";
 import type { icons } from "lucide-react";
+import { useChanging } from "../hooks/useChanging";
+import { usePanel } from "../hooks/usePanel";
+import { useSelected } from "../hooks/useSelected";
+import type { WorkflowNode } from "./types/node-data";
 
 export const TriggerPanel = () => {
-  const { currentNode, onAddNode, onUpdateNode, setChanging } = useWorkflow();
+  const { setPanel } = usePanel();
+  const { selected, setSelected } = useSelected();
+  const { isChanging, setIsChanging } = useChanging();
+  const { setNodes, updateNodeData } = useReactFlow();
+
+  const onClick = (node: WorkflowNode) => {
+    if (isChanging && selected) {
+      const newNode = {
+        ...selected,
+        data: node.data,
+      };
+      setSelected(newNode);
+      updateNodeData(selected.id, newNode.data);
+    } else {
+      setSelected(node);
+      setNodes((prev) => [...prev, node]);
+    }
+    setPanel("node");
+    setIsChanging(false);
+  };
 
   return (
     <div className="p-6">
@@ -25,30 +49,23 @@ export const TriggerPanel = () => {
                   const { data } = node;
 
                   return (
-                    // biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
-                    <div
+                    <Button
                       key={node.id}
-                      onClick={() => {
-                        if (currentNode) {
-                          setChanging(false);
-                          onUpdateNode({ ...currentNode, data: node.data });
-                        } else {
-                          onAddNode(node);
-                        }
-                      }}
-                      className="cursor-pointer rounded-lg border p-2 transition-colors hover:bg-muted"
+                      variant="outline"
+                      size="default"
+                      className="px-2"
+                      classNameSpan="justify-start"
+                      onClick={() => onClick(node)}
                     >
-                      <div className="flex items-center gap-2">
-                        <div className="rounded-lg border bg-background p-1">
-                          <Icon
-                            name={data.icon as keyof typeof icons}
-                            size={14}
-                            className="text-muted-foreground"
-                          />
-                        </div>
-                        <p className="font-medium">{data.label}</p>
+                      <div className="border rounded-lg bg-background p-1">
+                        <Icon
+                          name={data.icon as keyof typeof icons}
+                          size={14}
+                          className="text-muted-foreground"
+                        />
                       </div>
-                    </div>
+                      <p className="font-medium">{data.label}</p>
+                    </Button>
                   );
                 })}
               </div>
@@ -63,7 +80,7 @@ export const TriggerPanel = () => {
 export const nodes: {
   categories: {
     label: string;
-    nodes: NodeType[];
+    nodes: WorkflowNode[];
   }[];
 } = {
   categories: [
@@ -71,30 +88,32 @@ export const nodes: {
       label: "Utilities",
       nodes: [
         {
-          id: "1",
+          id: cuid(),
           type: "custom",
           position: { x: 0, y: 0 },
           data: {
             icon: "Calendar",
             label: "Recurring schedule",
             description: "Trigger a workflow on a schedule",
-            type: "trigger-recurring-schedule",
+            type: "recurring-schedule",
             category: "utilities",
             frequency: "daily",
             repeat_on: ["monday"],
-            time: "05:00",
+            time: "06:00",
+            isTrigger: true,
           },
         },
         {
-          id: "2",
+          id: cuid(),
           type: "custom",
           position: { x: 0, y: 0 },
           data: {
             icon: "MousePointerClick",
             label: "Manual run",
             description: "Trigger a workflow manually",
-            type: "trigger-manual-run",
+            type: "manual-run",
             category: "utilities",
+            isTrigger: true,
           },
         },
       ],

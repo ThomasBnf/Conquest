@@ -1,16 +1,20 @@
-import { useWorkflow } from "@/context/workflowContext";
+import { DeleteDialog } from "@/components/custom/delete-dialog";
+import { Icon } from "@/components/icons/Icon";
 import { Badge } from "@conquest/ui/badge";
 import { Button } from "@conquest/ui/button";
 import { ScrollArea } from "@conquest/ui/scroll-area";
 import { Separator } from "@conquest/ui/separator";
 import { cn } from "@conquest/ui/utils/cn";
-import { NodeDataSchema } from "@conquest/zod/node.schema";
-import { DeleteDialog } from "components/custom/delete-dialog";
-import { Icon } from "components/icons/Icon";
+import { useReactFlow } from "@xyflow/react";
 import { ArrowLeft, type icons } from "lucide-react";
+import { toast } from "sonner";
 import { Description } from "../components/description";
 import { NextStep } from "../components/next-step";
-import { ListRecordsOptions } from "../nodes/list-records/listRecords.options";
+import { useAdding } from "../hooks/useAdding";
+import { useChanging } from "../hooks/useChanging";
+import { usePanel } from "../hooks/usePanel";
+import { useSelected } from "../hooks/useSelected";
+import { FilterOptions } from "../nodes/list-members/filter/filter.options";
 import { RecurringScheduleOptions } from "../nodes/recurring-schedule/recurring.options";
 import { TagMemberOptions } from "../nodes/tag-member/tag-member.options";
 import { WebhookOptions } from "../nodes/webhook/webhook.options";
@@ -18,20 +22,28 @@ import { ActionPanel } from "./action-panel";
 import { TriggerPanel } from "./trigger-panel";
 
 export const OptionsPanel = () => {
-  const {
-    currentNode,
-    setCurrentNode,
-    panel,
-    setPanel,
-    changing,
-    setChanging,
-    onDeleteNode,
-  } = useWorkflow();
-  const { type, icon, category, label } = NodeDataSchema.parse(
-    currentNode?.data,
-  );
+  const { panel, setPanel } = usePanel();
+  const { selected, setSelected } = useSelected();
+  const { isAdding } = useAdding();
+  const { isChanging, setIsChanging } = useChanging();
+  const { getNodes, getEdges, deleteElements } = useReactFlow();
 
-  const isTrigger = type.startsWith("trigger");
+  if (!selected) return;
+
+  const { type, icon, category, label } = selected.data;
+  const isTrigger = "isTrigger" in selected.data;
+
+  const onDelete = async () => {
+    const nodes = getNodes();
+    const edges = getEdges();
+
+    deleteElements({
+      nodes: nodes.filter((node) => node.id !== selected.id),
+      edges: edges.filter((edge) => edge.source !== selected.id),
+    });
+
+    return toast.success("Step deleted");
+  };
 
   return (
     <div className="flex flex-col divide-y h-full">
@@ -39,11 +51,12 @@ export const OptionsPanel = () => {
         <Button
           variant="ghost"
           onClick={() => {
-            if (changing) {
-              setChanging(false);
+            if (isChanging) {
+              setIsChanging(false);
+              setPanel("node");
               return;
             }
-            setCurrentNode(undefined);
+            setSelected(undefined);
             setPanel("workflow");
           }}
         >
@@ -51,9 +64,9 @@ export const OptionsPanel = () => {
           Back
         </Button>
       </div>
-      {changing && panel === "trigger" && <TriggerPanel />}
-      {changing && panel === "action" && <ActionPanel />}
-      {!changing && (
+      {(isChanging || isAdding) && panel === "actions" && <ActionPanel />}
+      {(isChanging || isAdding) && panel === "triggers" && <TriggerPanel />}
+      {!isChanging && panel === "node" && (
         <ScrollArea className="flex-grow h-[calc(100vh-10rem)]">
           <div className="flex flex-col gap-4 p-6">
             <div className="flex justify-between gap-2">
@@ -72,15 +85,19 @@ export const OptionsPanel = () => {
                   <p className="font-medium">{label}</p>
                 </div>
               </div>
-              <Button variant="outline" onClick={() => setChanging(true)}>
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setPanel(isTrigger ? "triggers" : "actions");
+                  setIsChanging(true);
+                }}
+              >
                 Change
               </Button>
             </div>
-            <Description />
-            {type === "trigger-recurring-schedule" && (
-              <RecurringScheduleOptions />
-            )}
-            {type === "list-records" && <ListRecordsOptions />}
+            <Description id={selected.id} />
+            {type === "recurring-schedule" && <RecurringScheduleOptions />}
+            {type === "list-members" && <FilterOptions />}
             {type === "webhook" && <WebhookOptions />}
             {type === "add-tag" && <TagMemberOptions />}
             {type === "remove-tag" && <TagMemberOptions />}
@@ -89,12 +106,12 @@ export const OptionsPanel = () => {
           </div>
         </ScrollArea>
       )}
-      {!isTrigger && (
-        <div className="mt-auto flex justify-end gap-2 p-4 shrink-0">
+      {!isChanging && !isTrigger && (
+        <div className="flex justify-end p-4">
           <DeleteDialog
-            title="Delete node"
-            description="Are you sure you want to delete this node?"
-            onConfirm={onDeleteNode}
+            title="Delete Workflow"
+            description="Are you sure you want to delete this workflow?"
+            onConfirm={onDelete}
           />
         </div>
       )}

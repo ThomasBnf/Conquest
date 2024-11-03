@@ -1,4 +1,3 @@
-import { useWorkflow } from "@/context/workflowContext";
 import {
   type FormDescription,
   FormDescriptionSchema,
@@ -13,36 +12,42 @@ import {
 } from "@conquest/ui/form";
 import { Input } from "@conquest/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useReactFlow } from "@xyflow/react";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
+import type { WorkflowNode } from "../panels/types/node-data";
 
-export const Description = () => {
-  const { currentNode, onUpdateNode } = useWorkflow();
+type Props = {
+  id: string;
+};
 
+export const Description = ({ id }: Props) => {
+  const { getNode, updateNode } = useReactFlow();
+  const node = getNode(id) as WorkflowNode | undefined;
   const form = useForm<FormDescription>({
     resolver: zodResolver(FormDescriptionSchema),
     defaultValues: {
-      description: currentNode?.data.description,
+      description: node?.data.description ?? "",
     },
   });
 
-  const onSubmit = ({ description }: FormDescription) => {
-    if (!currentNode) return;
+  useEffect(() => {
+    if (!node) return;
+    form.reset({
+      description: node?.data.description ?? "",
+    });
+  }, [node]);
 
-    onUpdateNode({
-      ...currentNode,
+  if (!node) return null;
+
+  const onSubmit = ({ description }: FormDescription) => {
+    updateNode(id, {
       data: {
-        ...currentNode.data,
+        ...node.data,
         description,
       },
     });
   };
-
-  useEffect(() => {
-    if (!currentNode) return;
-
-    form.setValue("description", currentNode.data.description);
-  }, [currentNode]);
 
   return (
     <Form {...form}>
@@ -57,16 +62,9 @@ export const Description = () => {
                 <Input
                   {...field}
                   placeholder="Add a description"
-                  onBlur={(e) => {
-                    if (!currentNode) return;
-
-                    onUpdateNode({
-                      ...currentNode,
-                      data: {
-                        ...currentNode.data,
-                        description: e.target.value,
-                      },
-                    });
+                  onChange={(e) => {
+                    field.onChange(e);
+                    onSubmit({ description: e.target.value });
                   }}
                 />
               </FormControl>

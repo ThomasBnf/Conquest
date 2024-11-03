@@ -1,14 +1,40 @@
-import { useWorkflow } from "@/context/workflowContext";
+import { Button } from "@conquest/ui/button";
 import { Label } from "@conquest/ui/label";
-import type { Node as NodeType } from "@conquest/zod/node.schema";
+import { useReactFlow } from "@xyflow/react";
 import { Icon } from "components/icons/Icon";
+import cuid from "cuid";
 import type { icons } from "lucide-react";
+import { useChanging } from "../hooks/useChanging";
+import { useSelected } from "../hooks/useSelected";
+import type { WorkflowNode } from "./types/node-data";
 
 export const ActionPanel = () => {
-  const { currentNode, onAddNode, onUpdateNode, adding,setChanging } = useWorkflow();
+  const { selected } = useSelected();
+  const { isChanging } = useChanging();
+  const { addNodes, updateNodeData } = useReactFlow();
+
+  const onSelect = (node: WorkflowNode) => {
+    if (isChanging && selected) {
+      updateNodeData(selected.id, {
+        id: selected.id,
+        ...node.data,
+      });
+    } else {
+      addNodes([
+        {
+          ...node,
+          id: cuid(),
+          position: {
+            x: selected?.position.x ?? 0,
+            y: (selected?.position.y ?? 0) + 200,
+          },
+        },
+      ]);
+    }
+  };
 
   return (
-    <div className="p-6">
+    <div className="p-6 flex-grow">
       <div>
         <Label>Next step</Label>
         <p className="text-muted-foreground">
@@ -25,30 +51,23 @@ export const ActionPanel = () => {
                   const { data } = node;
 
                   return (
-                    // biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
-                    <div
+                    <Button
                       key={node.id}
-                      onClick={() => {
-                        if (currentNode && !adding) {
-                          setChanging(false);
-                          onUpdateNode({ ...currentNode, data: node.data });
-                        } else {
-                          onAddNode(node);
-                        }
-                      }}
-                      className="cursor-pointer rounded-lg border p-2 transition-colors hover:bg-muted"
+                      variant="outline"
+                      size="default"
+                      className="px-2"
+                      classNameSpan="justify-start"
+                      onClick={() => onSelect(node)}
                     >
-                      <div className="flex items-center gap-2">
-                        <div className="rounded-lg border bg-background p-1">
-                          <Icon
-                            name={data.icon as keyof typeof icons}
-                            size={14}
-                            className="text-muted-foreground"
-                          />
-                        </div>
-                        <p className="font-medium">{data.label}</p>
+                      <div className="border rounded-lg bg-background p-1">
+                        <Icon
+                          name={data.icon as keyof typeof icons}
+                          size={14}
+                          className="text-muted-foreground"
+                        />
                       </div>
-                    </div>
+                      <p className="font-medium">{data.label}</p>
+                    </Button>
                   );
                 })}
               </div>
@@ -63,7 +82,7 @@ export const ActionPanel = () => {
 export const nodes: {
   categories: {
     label: string;
-    nodes: NodeType[];
+    nodes: WorkflowNode[];
   }[];
 } = {
   categories: [
@@ -71,16 +90,15 @@ export const nodes: {
       label: "Records",
       nodes: [
         {
-          id: "1",
+          id: cuid(),
           type: "custom",
           position: { x: 0, y: 0 },
           data: {
             icon: "FileSearch",
-            label: "List records",
+            label: "List members",
             description: "",
-            type: "list-records",
+            type: "list-members",
             category: "records",
-            source: "members",
             group_filters: [],
           },
         },
@@ -90,7 +108,7 @@ export const nodes: {
       label: "Mutations",
       nodes: [
         {
-          id: "1",
+          id: cuid(),
           type: "custom",
           position: { x: 0, y: 0 },
           data: {
@@ -103,7 +121,7 @@ export const nodes: {
           },
         },
         {
-          id: "2",
+          id: cuid(),
           type: "custom",
           position: { x: 0, y: 0 },
           data: {
@@ -121,7 +139,7 @@ export const nodes: {
       label: "Utilities",
       nodes: [
         {
-          id: "1",
+          id: cuid(),
           type: "custom",
           position: { x: 0, y: 0 },
           data: {

@@ -1,4 +1,3 @@
-import { useWorkflow } from "@/context/workflowContext";
 import {
   Form,
   FormControl,
@@ -18,18 +17,21 @@ import {
 import { ToggleGroup, ToggleGroupItem } from "@conquest/ui/toggle-group";
 import { NodeRecurringSchema } from "@conquest/zod/node.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useReactFlow } from "@xyflow/react";
 import { weekdays } from "constant/weekdays";
 import { useForm } from "react-hook-form";
+import { useSelected } from "../../hooks/useSelected";
 import {
   type FormRecurring,
   FormRecurringSchema,
 } from "./form-recurring.schema";
 
 export const RecurringScheduleOptions = () => {
-  const { currentNode, onUpdateNode } = useWorkflow();
-
-  const parsedData = NodeRecurringSchema.parse(currentNode?.data);
-  const { frequency, repeat_on, time } = parsedData;
+  const { selected } = useSelected();
+  const { updateNodeData } = useReactFlow();
+  const { frequency, repeat_on, time } = NodeRecurringSchema.parse(
+    selected?.data,
+  );
 
   const form = useForm<FormRecurring>({
     resolver: zodResolver(FormRecurringSchema),
@@ -41,16 +43,15 @@ export const RecurringScheduleOptions = () => {
   });
 
   const onSubmit = ({ frequency, repeat_on, time }: FormRecurring) => {
-    if (!currentNode) return;
+    if (!selected?.id) return;
 
-    onUpdateNode({
-      ...currentNode,
-      data: {
-        ...parsedData,
-        frequency,
-        repeat_on,
-        time,
-      },
+    console.log(frequency, repeat_on, time);
+
+    updateNodeData(selected.id, {
+      ...selected?.data,
+      frequency,
+      repeat_on,
+      time,
     });
   };
 
@@ -104,9 +105,12 @@ export const RecurringScheduleOptions = () => {
                       <ToggleGroupItem
                         key={day}
                         value={day}
-                        variant="outline"
-                        size="sm"
-                        className="data-[state=on]:border-main-500"
+                        variant={
+                          form.getValues("repeat_on").includes(day)
+                            ? "default"
+                            : "outline"
+                        }
+                        className="capitalize w-full"
                       >
                         {day.slice(0, 3)}
                       </ToggleGroupItem>

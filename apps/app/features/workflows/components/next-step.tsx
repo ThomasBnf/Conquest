@@ -1,27 +1,38 @@
 import { Icon } from "@/components/icons/Icon";
-import { useWorkflow } from "@/context/workflowContext";
 import { Badge } from "@conquest/ui/badge";
 import { Button } from "@conquest/ui/button";
 import { Label } from "@conquest/ui/label";
 import { cn } from "@conquest/ui/utils/cn";
-import { type NodeData, NodeDataSchema } from "@conquest/zod/node.schema";
+import { useReactFlow } from "@xyflow/react";
 import { X, type icons } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useAdding } from "../hooks/useAdding";
+import { usePanel } from "../hooks/usePanel";
+import { useSelected } from "../hooks/useSelected";
+import type { WorkflowNode } from "../panels/types/node-data";
 
 export const NextStep = () => {
-  const { currentNode, onDeleteEdge, nodes, edges, setChanging, setPanel,setAdding } =
-    useWorkflow();
-  const { icon, type, label } = currentNode?.data ?? {};
-  const [nextNode, setNextNode] = useState<NodeData | undefined>();
+  const { setPanel } = usePanel();
+  const { selected } = useSelected();
+  const { setIsAdding } = useAdding();
 
-  const nextNodeId = edges.find((e) => e.source === currentNode?.id)?.target;
-  const hasNextNode = nodes.find((n) => n.id === nextNodeId);
+  const { getNodes, getEdges, deleteElements } = useReactFlow();
+  const { icon, type, label } = selected?.data ?? {};
 
-  useEffect(() => {
-    setNextNode(
-      hasNextNode ? NodeDataSchema.parse(hasNextNode.data) : undefined,
-    );
-  }, [edges]);
+  const nodes = getNodes();
+  const edges = getEdges();
+  const nextNode = nodes.find((node) =>
+    edges.find(
+      (edge) => edge.source === selected?.id && edge.target === node.id,
+    ),
+  ) as WorkflowNode | undefined;
+
+  const { label: nextNodeLabel } = nextNode?.data ?? {};
+
+  const onDeleteNode = () => {
+    deleteElements({
+      edges: edges.filter((edge) => edge.source === selected?.id),
+    });
+  };
 
   return (
     <div>
@@ -48,17 +59,15 @@ export const NextStep = () => {
             <Badge variant="secondary">Next step</Badge>
             {/* biome-ignore lint/a11y/useKeyWithClickEvents: <explanation> */}
             <div
-              onClick={() => {
-                onDeleteEdge();
-                setPanel("action");
-                setAdding(true);
-                setChanging(true);
-              }}
               className="relative cursor-pointer z-10 flex items-center gap-2 border rounded-lg h-10 px-2 hover:bg-muted-hover transition-colors-hover"
+              onClick={() => {
+                setPanel("actions");
+                setIsAdding(true);
+              }}
             >
               {nextNode ? (
                 <Icon
-                  name={nextNode?.icon as keyof typeof icons}
+                  name={nextNode?.data.icon as keyof typeof icons}
                   size={24}
                   className={cn(
                     "border rounded-lg p-1",
@@ -70,12 +79,17 @@ export const NextStep = () => {
                 <Icon name="Plus" size={24} className="border rounded-lg p-1" />
               )}
               <p>
-                {nextNode?.label ?? (
+                {nextNodeLabel ?? (
                   <span className="text-muted-foreground">Select a block</span>
                 )}
               </p>
               {nextNode && (
-                <Button variant="outline" size="icon" className="ml-auto">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="ml-auto"
+                  onClick={onDeleteNode}
+                >
                   <X size={16} />
                 </Button>
               )}

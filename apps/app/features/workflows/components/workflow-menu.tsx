@@ -22,6 +22,8 @@ export const WorkflowMenu = ({ workflow }: Props) => {
   const [open, setOpen] = useState(false);
 
   const handleDelete = async () => {
+    if (!workflow) return;
+
     const rWorkflow = await _deleteWorkflow({ id: workflow.id });
     const error = rWorkflow?.serverError;
 

@@ -1,12 +1,12 @@
-import { useWorkflow } from "@/context/workflowContext";
+import { useSelected } from "@/features/workflows/hooks/useSelected";
 import { Label } from "@conquest/ui/label";
-import { NodeListRecordsSchema } from "@conquest/zod/node.schema";
+import { NodeListMembersSchema } from "@conquest/zod/node.schema";
 import { FiltersProvider } from "context/filtersContext";
 import { GroupFilters } from "./group-filters";
 
 export const FilterOptions = () => {
-  const { currentNode } = useWorkflow();
-  const parsedNode = NodeListRecordsSchema.parse(currentNode?.data);
+  const { selected } = useSelected();
+  const parsedNode = NodeListMembersSchema.parse(selected?.data);
 
   return (
     <FiltersProvider node={parsedNode}>

@@ -1,4 +1,3 @@
-import { useWorkflow } from "@/context/workflowContext";
 import { useListTags } from "@/features/tags/hooks/useListTags";
 import { TagBadge } from "@/features/tags/tag-badge";
 import { Button } from "@conquest/ui/button";
@@ -13,25 +12,27 @@ import {
 import { Skeleton } from "@conquest/ui/skeleton";
 import { NodeTagMemberSchema } from "@conquest/zod/node.schema";
 import type { Tag } from "@conquest/zod/tag.schema";
+import { useReactFlow } from "@xyflow/react";
 import { Plus, TagIcon } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useSelected } from "../../hooks/useSelected";
 
 export const TagMemberOptions = () => {
   const { tags, isLoading } = useListTags();
-  const { currentNode, onUpdateNode } = useWorkflow();
+  const { selected } = useSelected();
+  const { updateNodeData } = useReactFlow();
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
+  const parsedData = NodeTagMemberSchema.parse(selected?.data);
+
   useEffect(() => {
-    if (currentNode) {
-      const parsedData = NodeTagMemberSchema.parse(currentNode.data);
+    if (selected) {
       setSelectedTags(parsedData.tags);
     }
-  }, [currentNode]);
+  }, [selected]);
 
   const handleSelectTag = (tag: Tag) => {
-    if (!currentNode) return;
-
-    const parsedData = NodeTagMemberSchema.parse(currentNode.data);
+    if (!selected) return;
 
     const updatedTags = selectedTags.includes(tag.id)
       ? selectedTags.filter((selectedTag) => selectedTag !== tag.id)
@@ -39,8 +40,8 @@ export const TagMemberOptions = () => {
 
     setSelectedTags(updatedTags);
 
-    onUpdateNode({
-      ...currentNode,
+    updateNodeData(selected.id, {
+      ...selected,
       data: {
         ...parsedData,
         tags: updatedTags,

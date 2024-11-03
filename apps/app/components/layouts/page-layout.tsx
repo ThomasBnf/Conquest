@@ -7,7 +7,7 @@ export const PageLayout = forwardRef<HTMLDivElement, Props>(
   ({ children, className, ...props }, ref) => (
     <div
       ref={ref}
-      className={cn("flex flex-col h-dvh overflow-hidden", className)}
+      className={cn("flex flex-col h-dvh overflow-hidden divide-y", className)}
       {...props}
     >
       {children}

@@ -1,18 +1,22 @@
-import { useWorkflow } from "@/context/workflowContext";
+import { useChanging } from "../hooks/useChanging";
+import { usePanel } from "../hooks/usePanel";
+import { useSelected } from "../hooks/useSelected";
 import { ActionPanel } from "../panels/action-panel";
 import { OptionsPanel } from "../panels/options-panel";
 import { TriggerPanel } from "../panels/trigger-panel";
 import { WorkflowPanel } from "../panels/workflow-panel";
 
 export const Sidebar = () => {
-  const { currentNode, panel } = useWorkflow();
+  const { panel } = usePanel();
+  const { selected } = useSelected();
+  const { isChanging } = useChanging();
 
   return (
-    <div className="flex w-full max-w-sm flex-col">
-      {currentNode && <OptionsPanel />}
-      {!currentNode && panel === "workflow" && <WorkflowPanel />}
-      {!currentNode && panel === "trigger" && <TriggerPanel />}
-      {!currentNode && panel === "action" && <ActionPanel />}
+    <div className="max-w-sm w-full h-full bg-background border-l">
+      {selected && <OptionsPanel />}
+      {!isChanging && panel === "workflow" && <WorkflowPanel />}
+      {!isChanging && panel === "triggers" && <TriggerPanel />}
+      {!isChanging && panel === "actions" && <ActionPanel />}
     </div>
   );
 };

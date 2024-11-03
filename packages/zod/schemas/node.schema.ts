@@ -1,12 +1,5 @@
-import type { icons } from "lucide-react";
 import { z } from "zod";
 import { FilterSchema } from "./filters.schema";
-
-export const NodeBaseSchema = z.object({
-  icon: z.custom<keyof typeof icons>(),
-  label: z.string(),
-  description: z.string().optional(),
-});
 
 export const FrequencySchema = z.enum(["daily", "weekly"]);
 export const RepeatOnSchema = z.enum([
@@ -17,6 +10,15 @@ export const RepeatOnSchema = z.enum([
   "friday",
   "saturday",
   "sunday",
+]);
+
+export const NodeTypeSchema = z.enum([
+  "trigger-recurring-schedule",
+  "trigger-manual-run",
+  "list-records",
+  "add-tag",
+  "remove-tag",
+  "webhook",
 ]);
 
 export const CategorySchema = z.enum([
@@ -36,70 +38,77 @@ export const GroupFilterSchema = z.object({
 
 // NODES
 
-export const NodeRecurringSchema = NodeBaseSchema.extend({
-  type: z.literal("trigger-recurring-schedule"),
-  category: z.literal("utilities"),
-  frequency: FrequencySchema,
-  repeat_on: z.array(RepeatOnSchema),
-  time: z.string().regex(/^([01]?[0-9]|2[0-3]):[0-5][0-9]$/, {
-    message: "Provide a valid time in the format HH:MM",
-  }),
-});
-
-export const NodeManualRunSchema = NodeBaseSchema.extend({
-  type: z.literal("trigger-manual-run"),
-  category: z.literal("utilities"),
-});
-
-export const NodeListRecordsSchema = NodeBaseSchema.extend({
-  type: z.literal("list-records"),
-  category: z.literal("records"),
-  source: z.enum(["members", "activities"]),
-  group_filters: z.array(GroupFilterSchema),
-});
-
-export const NodeWebhookSchema = NodeBaseSchema.extend({
-  type: z.literal("webhook"),
-  url: z.string().url().optional(),
-  category: z.literal("utilities"),
-});
-
-export const NodeTagMemberSchema = NodeBaseSchema.extend({
-  type: z.enum(["add-tag", "remove-tag"]),
-  category: z.literal("mutations"),
-  tags: z.array(z.string()),
-});
-
-// NODE DATA
-
-export const NodeDataSchema = z.discriminatedUnion("type", [
-  NodeRecurringSchema,
-  NodeManualRunSchema,
-  NodeListRecordsSchema,
-  NodeWebhookSchema,
-  NodeTagMemberSchema,
-]);
-
-export const NodeSchema = z.object({
+export const NodeBaseSchema = z.object({
   id: z.string().cuid(),
   type: z.literal("custom"),
   position: z.object({
     x: z.number(),
     y: z.number(),
   }),
+});
+
+export const NodeBaseDataSchema = z.object({
+  icon: z.string(),
+  label: z.string(),
+  description: z.string(),
+});
+
+export const NodeRecurringSchema = NodeBaseDataSchema.extend({
+  type: z.literal("recurring-schedule"),
+  category: z.literal("utilities"),
+  frequency: FrequencySchema,
+  repeat_on: z.array(RepeatOnSchema),
+  time: z.string().regex(/^([01]?[0-9]|2[0-3]):[0-5][0-9]$/, {
+    message: "Provide a valid time in the format HH:MM",
+  }),
+  isTrigger: z.boolean().default(true),
+});
+
+export const NodeManualRunSchema = NodeBaseDataSchema.extend({
+  type: z.literal("manual-run"),
+  category: z.literal("utilities"),
+  isTrigger: z.boolean().default(true),
+});
+
+export const NodeListMembersSchema = NodeBaseDataSchema.extend({
+  type: z.literal("list-members"),
+  category: z.literal("records"),
+  group_filters: z.array(GroupFilterSchema),
+});
+
+export const NodeTagMemberSchema = NodeBaseDataSchema.extend({
+  type: z.enum(["add-tag", "remove-tag"]),
+  category: z.literal("mutations"),
+  tags: z.array(z.string()),
+});
+
+export const NodeWebhookSchema = NodeBaseDataSchema.extend({
+  type: z.literal("webhook"),
+  category: z.literal("utilities"),
+  url: z.string().url().optional(),
+});
+
+export const NodeDataSchema = z.discriminatedUnion("type", [
+  NodeRecurringSchema,
+  NodeManualRunSchema,
+  NodeListMembersSchema,
+  NodeTagMemberSchema,
+  NodeWebhookSchema,
+]);
+
+export const NodeSchema = NodeBaseSchema.extend({
   data: NodeDataSchema,
 });
 
-// EXPORT TYPE
-
 export type Node = z.infer<typeof NodeSchema>;
 export type NodeData = z.infer<typeof NodeDataSchema>;
-
 export type Frequency = z.infer<typeof FrequencySchema>;
 export type RepeatOn = z.infer<typeof RepeatOnSchema>;
 export type Category = z.infer<typeof CategorySchema>;
 export type GroupFilter = z.infer<typeof GroupFilterSchema>;
 
-export type NodeRecurringSchedule = z.infer<typeof NodeRecurringSchema>;
-export type NodeListRecords = z.infer<typeof NodeListRecordsSchema>;
+export type NodeRecurring = z.infer<typeof NodeRecurringSchema>;
+export type NodeManualRun = z.infer<typeof NodeManualRunSchema>;
+export type NodeListMembers = z.infer<typeof NodeListMembersSchema>;
+export type NodeTagMember = z.infer<typeof NodeTagMemberSchema>;
 export type NodeWebhook = z.infer<typeof NodeWebhookSchema>;
