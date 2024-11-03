@@ -36,10 +36,6 @@ type Props = {
   workflow: Workflow;
 };
 
-const nodeTypes = {
-  custom: (props: NodeProps<WorkflowNode>) => <CustomNode {...props} />,
-};
-
 const edgesTypes = {
   default: SmoothStepEdge,
 };
@@ -48,13 +44,27 @@ export const Editor = ({ workflow }: Props) => {
   const { panel, setPanel } = usePanel();
   const { selected, setSelected } = useSelected();
   const { setIsChanging } = useChanging();
-  const { toObject, deleteElements, addEdges, updateNodeData, fitView } =
-    useReactFlow();
+  const {
+    toObject,
+    deleteElements,
+    addEdges,
+    updateNodeData,
+    updateNode,
+    fitView,
+  } = useReactFlow();
 
   const [running, setRunning] = useState(false);
 
   const [nodes, setNodes] = useNodesState<WorkflowNode>(workflow.nodes);
   const [edges, setEdges] = useEdgesState<Edge>(workflow.edges);
+
+  const nodeTypes = useMemo(() => {
+    return {
+      custom: (props: NodeProps<WorkflowNode>) => (
+        <CustomNode hasEdges={hasEdges} {...props} />
+      ),
+    };
+  }, [edges]);
 
   const onNodesChange = useCallback(
     (changes: NodeChange<WorkflowNode>[]) => {
@@ -100,6 +110,13 @@ export const Editor = ({ workflow }: Props) => {
                 setSelected(item);
                 onSave();
               }, 0);
+              break;
+            }
+            case "position": {
+              const { position, id } = change;
+              updateNode(id, { position });
+
+              setTimeout(() => onSave(), 0);
               break;
             }
             case "remove": {
@@ -160,7 +177,7 @@ export const Editor = ({ workflow }: Props) => {
     [setEdges],
   );
 
-  const onSave = () => {
+  const onSave = async () => {
     _updateWorkflow({
       id: workflow.id,
       nodes: toObject().nodes.map((node) => {
@@ -176,9 +193,18 @@ export const Editor = ({ workflow }: Props) => {
     });
   };
 
+  const hasEdges = useMemo(() => {
+    return nodes.filter((node) =>
+      edges.find((edge) => edge.source === node.id),
+    );
+  }, [nodes, edges]);
+
   const hasManualTrigger = useMemo(() => {
-    return workflow.published && nodes.some((node) => "isTrigger" in node.data);
-  }, [workflow, nodes]);
+    return (
+      workflow.published &&
+      nodes.some((node) => node.data.type === "manual-run")
+    );
+  }, [workflow.published, nodes]);
 
   const onRunWorkflow = async () => {
     setRunning(true);

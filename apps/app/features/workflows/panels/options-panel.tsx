@@ -34,14 +34,15 @@ export const OptionsPanel = () => {
   const isTrigger = "isTrigger" in selected.data;
 
   const onDelete = async () => {
-    const nodes = getNodes();
-    const edges = getEdges();
-
     deleteElements({
-      nodes: nodes.filter((node) => node.id !== selected.id),
-      edges: edges.filter((edge) => edge.source !== selected.id),
+      nodes: [{ id: selected.id }],
+      edges: getEdges().filter(
+        (edge) => edge.source === selected.id || edge.target === selected.id,
+      ),
     });
 
+    setSelected(undefined);
+    setPanel("workflow");
     return toast.success("Step deleted");
   };
 

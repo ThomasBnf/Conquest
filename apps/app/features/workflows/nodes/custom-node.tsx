@@ -1,19 +1,26 @@
 import { Badge } from "@conquest/ui/badge";
+import { Button } from "@conquest/ui/button";
 import { Separator } from "@conquest/ui/separator";
 import { cn } from "@conquest/ui/utils/cn";
 import { type NodeProps, Position, useReactFlow } from "@xyflow/react";
 import { Icon } from "components/icons/Icon";
-import { Target, type icons } from "lucide-react";
+import { Plus, Target, type icons } from "lucide-react";
 import { useMemo } from "react";
+import { useAdding } from "../hooks/useAdding";
 import { useChanging } from "../hooks/useChanging";
 import { usePanel } from "../hooks/usePanel";
 import { useSelected } from "../hooks/useSelected";
 import type { WorkflowNode } from "../panels/types/node-data";
 import { CustomHandle } from "./custom-handle";
 
-export const CustomNode = ({ ...props }: NodeProps<WorkflowNode>) => {
+type Props = NodeProps<WorkflowNode> & {
+  hasEdges: WorkflowNode[];
+};
+
+export const CustomNode = ({ hasEdges, ...props }: Props) => {
   const { setPanel } = usePanel();
   const { selected, setSelected } = useSelected();
+  const { setIsAdding } = useAdding();
   const { setIsChanging } = useChanging();
   const { getNode } = useReactFlow();
 
@@ -23,6 +30,11 @@ export const CustomNode = ({ ...props }: NodeProps<WorkflowNode>) => {
 
   const { category, icon, label, description } = node.data;
   const isTrigger = useMemo(() => "isTrigger" in node.data, [node]);
+
+  const hasEdge = useMemo(
+    () => hasEdges.find((edge) => edge.id === node.id),
+    [hasEdges, props],
+  );
 
   return (
     <div className="relative">
@@ -40,9 +52,9 @@ export const CustomNode = ({ ...props }: NodeProps<WorkflowNode>) => {
       {/* biome-ignore lint/a11y/useKeyWithClickEvents: <explanation> */}
       <div
         onClick={() => {
-          setSelected(node);
           setPanel("node");
           setIsChanging(false);
+          setSelected(node);
         }}
         className={cn(
           "relative flex w-80 flex-1 flex-col border bg-background p-3",
@@ -76,21 +88,22 @@ export const CustomNode = ({ ...props }: NodeProps<WorkflowNode>) => {
         {!isTrigger && <CustomHandle position={Position.Top} type="target" />}
         <CustomHandle position={Position.Bottom} type="source" />
       </div>
-      {/* {!hasEdge && (
+      {!hasEdge && (
         <>
           <div className="h-7 w-px bg-border absolute -bottom-9 left-1/2 -translate-x-1/2" />
           <Button
             size="icon"
             className="absolute -bottom-16 left-1/2 -translate-x-1/2"
             onClick={() => {
-              setSelected(node);
               setPanel("actions");
+              setIsAdding(true);
+              setSelected(node);
             }}
           >
             <Plus size={16} />
           </Button>
         </>
-      )} */}
+      )}
     </div>
   );
 };
