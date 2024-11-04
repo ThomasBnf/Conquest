@@ -27,6 +27,8 @@ export const createListMembers = safeAction
         const isMember = is_email_confirmed;
         const isDeleted = deleted;
 
+        if (!id) continue;
+
         if (profile && isMember && !isDeleted) {
           const {
             first_name,
@@ -38,7 +40,7 @@ export const createListMembers = safeAction
             title,
           } = profile;
 
-          const rMember = await mergeMember({
+          await mergeMember({
             slack_id: id,
             first_name,
             last_name,
@@ -49,10 +51,6 @@ export const createListMembers = safeAction
             job_title: title,
             workspace_id,
           });
-
-          if (rMember?.serverError) {
-            console.error(rMember.serverError);
-          }
         }
       }
 

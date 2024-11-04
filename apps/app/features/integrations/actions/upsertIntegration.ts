@@ -6,8 +6,8 @@ import { authAction } from "lib/authAction";
 import { prisma } from "lib/prisma";
 import { z } from "zod";
 
-export const createIntegration = authAction
-  .metadata({ name: "createIntegration" })
+export const upsertIntegration = authAction
+  .metadata({ name: "upsertIntegration" })
   .schema(
     z.object({
       external_id: z.string(),
@@ -23,8 +23,20 @@ export const createIntegration = authAction
       ctx,
       parsedInput: { external_id, name, source, token, status, scopes },
     }) => {
-      return await prisma.integration.create({
-        data: {
+      return await prisma.integration.upsert({
+        where: {
+          external_id,
+        },
+        update: {
+          external_id,
+          name,
+          source,
+          token,
+          scopes,
+          status,
+          installed_at: new Date(),
+        },
+        create: {
           external_id,
           name,
           source,

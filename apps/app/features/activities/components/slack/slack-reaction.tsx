@@ -17,7 +17,7 @@ export const SlackReaction = ({ activity }: Props) => {
   const slackActivity = ActivitySlackSchema.parse(activity.details);
 
   const { data } = useQuery({
-    queryKey: ["activities", slackActivity.react_to],
+    queryKey: ["react_to", slackActivity.react_to],
     queryFn: async () =>
       await ky
         .get(`/api/activities/${slackActivity.react_to}`)

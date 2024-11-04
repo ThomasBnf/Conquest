@@ -34,7 +34,8 @@ export const listMessages = authAction
       for (const message of messages ?? []) {
         if (!message.user) continue;
 
-        const { text, ts, user, reactions, reply_count, files } = message;
+        const { text, ts, user, reactions, reply_count, files, subtype } =
+          message;
 
         const member = await prisma.member.findUnique({
           where: {
@@ -43,16 +44,14 @@ export const listMessages = authAction
           },
         });
 
-        const type = text?.includes("> has joined the channel")
-          ? "JOIN"
-          : "POST";
+        if (subtype === "channel_join") continue;
 
         if (member) {
           const rActivity = await createActivity({
             external_id: ts ?? null,
             details: {
               source: "SLACK",
-              type,
+              type: "POST",
               message: text ?? "",
               files: files?.map(({ title, url_private }) => ({
                 title: title ?? "",

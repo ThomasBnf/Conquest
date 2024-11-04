@@ -1,7 +1,7 @@
 "use server";
 
 import { env } from "@/env.mjs";
-import { createIntegration } from "@/features/integrations/actions/createIntegration";
+import { upsertIntegration } from "@/features/integrations/actions/upsertIntegration";
 import { authAction } from "lib/authAction";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
@@ -37,7 +37,7 @@ export const oauthV2 = authAction
     const data = await response.json();
     const { access_token, team } = data;
 
-    await createIntegration({
+    await upsertIntegration({
       external_id: team.id,
       name: team.name,
       source: "SLACK",

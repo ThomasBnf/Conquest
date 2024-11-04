@@ -7,7 +7,7 @@ export const getIntegration = safeAction
   .metadata({ name: "getIntegration" })
   .schema(
     z.object({
-      external_id: z.string(),
+      external_id: z.string().optional(),
     }),
   )
   .action(async ({ parsedInput: { external_id } }) => {

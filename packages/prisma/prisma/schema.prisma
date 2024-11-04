@@ -100,7 +100,7 @@ model Member {
   company      Company?  @relation(fields: [company_id], references: [id], onDelete: SetNull)
   workspace_id String
   joined_at    DateTime?
-  left_at      DateTime?
+  deleted_at   DateTime?
   created_at   DateTime  @default(now())
   updated_at   DateTime  @updatedAt
 

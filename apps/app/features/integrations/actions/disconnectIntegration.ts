@@ -8,11 +8,9 @@ import { WebClient } from "@slack/web-api";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
-
-
-export const deleteIntegration = authAction
+export const disconnectIntegration = authAction
   .metadata({
-    name: "deleteIntegration",
+    name: "disconnectIntegration",
   })
   .schema(
     z.object({
@@ -31,6 +29,16 @@ export const deleteIntegration = authAction
       token: integration.token,
       client_id: env.NEXT_PUBLIC_SLACK_CLIENT_ID,
       client_secret: env.SLACK_CLIENT_SECRET,
+    });
+
+    await prisma.integration.update({
+      where: {
+        id: integration.id,
+      },
+      data: {
+        status: "DISCONNECTED",
+        installed_at: null,
+      },
     });
 
     await prisma.activity.deleteMany({
@@ -53,13 +61,6 @@ export const deleteIntegration = authAction
     await prisma.member.deleteMany({
       where: {
         source: "SLACK",
-        workspace_id,
-      },
-    });
-
-    await prisma.integration.delete({
-      where: {
-        id: integration.id,
         workspace_id,
       },
     });

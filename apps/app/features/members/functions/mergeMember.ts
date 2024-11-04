@@ -37,57 +37,44 @@ export const mergeMember = safeAction
       const formattedEmail = email?.toLowerCase().trim();
       const formattedPhone = phone?.toLowerCase().trim();
 
-      const member = await prisma.member.findFirst({
-        where: {
-          emails: { has: formattedEmail },
-          workspace_id,
-        },
-      });
-
-      const updatedEmails = new Set(member?.emails);
-      if (formattedEmail) updatedEmails.add(formattedEmail);
-
-      const updatedPhones = new Set(member?.phones);
-      if (formattedPhone) updatedPhones.add(formattedPhone);
-
-      const emails = Array.from(updatedEmails).filter(Boolean);
-      const phones = Array.from(updatedPhones).filter(Boolean);
-
-      const newMember = await prisma.member.upsert({
+      const member = await prisma.member.upsert({
         where: {
           slack_id,
         },
         update: {
-          first_name: member?.first_name ?? first_name,
-          last_name: member?.last_name ?? last_name,
-          full_name: member?.full_name ?? full_name,
-          emails: emails,
-          phones: phones,
-          avatar_url: member?.avatar_url ?? avatar_url,
-          job_title: member?.job_title ?? job_title,
-          search: search(
-            { full_name: full_name ?? member?.full_name },
-            emails,
-            phones,
-          ),
-          slack_id: member?.slack_id,
-        },
-        create: {
           first_name: first_name ?? null,
           last_name: last_name ?? null,
           full_name: full_name ?? null,
-          emails: emails,
-          phones: phones,
+          emails: formattedEmail ? [formattedEmail] : undefined,
+          phones: formattedPhone ? [formattedPhone] : undefined,
+          avatar_url: avatar_url ?? null,
+          job_title: job_title ?? null,
+          search: search(
+            { full_name },
+            formattedEmail ? [formattedEmail] : undefined,
+            formattedPhone ? [formattedPhone] : undefined,
+          ),
+        },
+        create: {
+          slack_id,
+          first_name: first_name ?? null,
+          last_name: last_name ?? null,
+          full_name: full_name ?? null,
+          emails: formattedEmail ? [formattedEmail] : undefined,
+          phones: formattedPhone ? [formattedPhone] : undefined,
           avatar_url: avatar_url ?? null,
           job_title: job_title ?? null,
           source: "SLACK",
-          search: search({ full_name: full_name }, emails, phones),
-          slack_id: slack_id ?? null,
+          search: search(
+            { full_name },
+            formattedEmail ? [formattedEmail] : undefined,
+            formattedPhone ? [formattedPhone] : undefined,
+          ),
           workspace_id,
         },
       });
 
-      return MemberSchema.parse(newMember);
+      return MemberSchema.parse(member);
     },
   );
 

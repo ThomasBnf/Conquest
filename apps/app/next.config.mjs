@@ -4,7 +4,14 @@ import "./env.mjs";
 const nextConfig = {
   reactStrictMode: false,
   images: {
-    remotePatterns: [{ hostname: "files.slack.com" }],
+    domains: ["files.slack.com"],
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "files.slack.com",
+        pathname: "/files-pri/**",
+      },
+    ],
   },
 };
 

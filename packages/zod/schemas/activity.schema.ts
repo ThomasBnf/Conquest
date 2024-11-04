@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { MemberSchema } from "./member.schema";
 
-export const TYPE = z.enum(["POST", "REACTION", "REPLY", "JOIN"]);
+export const TYPE = z.enum(["POST", "REACTION", "REPLY", "INVITE"]);
 
 export const AttachmentsSchema = z.object({
   title: z.string(),
@@ -26,6 +26,7 @@ export const ActivitySlackSchema = z.object({
   files: z.array(FilesSchema).default([]),
   reply_to: z.string().nullable().optional(),
   react_to: z.string().nullable().optional(),
+  invite_by: z.string().nullable().optional(),
 });
 
 export const ActivityDetailsSchema = z.discriminatedUnion("source", [

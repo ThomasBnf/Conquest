@@ -3,7 +3,7 @@
 import { DeleteDialog } from "@/components/custom/delete-dialog";
 import { useUser } from "@/context/userContext";
 import { env } from "@/env.mjs";
-import { deleteIntegration } from "@/features/integrations/actions/deleteIntegration";
+import { disconnectIntegration } from "@/features/integrations/actions/disconnectIntegration";
 import { oauthV2 } from "@/features/slack/actions/oauthV2";
 import { Button, buttonVariants } from "@conquest/ui/button";
 import { Separator } from "@conquest/ui/separator";
@@ -25,18 +25,20 @@ export default function Page() {
     "channels:history,channels:join,channels:read,files:read,groups:read,links:read,reactions:read,team:read,users.profile:read,users:read,users:read.email";
 
   const onStartInstall = () => {
+    setLoading(true);
     const baseUrl = "https://slack.com/oauth/v2/authorize";
     const clientId = `client_id=${env.NEXT_PUBLIC_SLACK_CLIENT_ID}`;
     const scopesParams = `scope=${scopes}`;
     const redirectURI = `redirect_uri=${encodeURIComponent(`${env.NEXT_PUBLIC_SLACK_REDIRECT_URI}/${slug}/settings/integrations/slack`)}`;
 
     router.push(`${baseUrl}?${clientId}&${scopesParams}&${redirectURI}`);
+    setLoading(false);
   };
 
   const onUninstall = async () => {
     if (!slack?.id) return;
     setLoading(true);
-    await deleteIntegration({ integration: slack });
+    await disconnectIntegration({ integration: slack });
     setLoading(false);
     return toast.success("Slack disconnected");
   };
@@ -95,15 +97,7 @@ export default function Page() {
                 slack.com
               </Link>
             </div>
-            {slack?.installed_at ? (
-              <DeleteDialog
-                title="Disconnect Slack"
-                description="Integrations will be removed from your workspace and all your data will be lost."
-                onConfirm={onUninstall}
-              >
-                Uninstall
-              </DeleteDialog>
-            ) : (
+            {!slack?.id && (
               <Button
                 loading={slack?.status === "SYNCING" || loading}
                 className={cn(buttonVariants({ variant: "default" }))}
@@ -111,6 +105,28 @@ export default function Page() {
               >
                 Install
               </Button>
+            )}
+            {slack?.status === "DISCONNECTED" && (
+              <Button loading={loading} onClick={onStartInstall}>
+                Install
+              </Button>
+            )}
+            {slack?.status === "SYNCING" && (
+              <Button
+                loading={true}
+                className={cn(buttonVariants({ variant: "default" }))}
+              >
+                Installing...
+              </Button>
+            )}
+            {slack?.status === "CONNECTED" && slack?.installed_at && (
+              <DeleteDialog
+                title="Disconnect Slack"
+                description="Integrations will be removed from your workspace and all your data will be lost."
+                onConfirm={onUninstall}
+              >
+                Uninstall
+              </DeleteDialog>
             )}
           </div>
           <Separator />

@@ -14,7 +14,7 @@ export const createActivity = safeAction
     z.object({
       external_id: z.string().nullable(),
       details: ActivityDetailsSchema,
-      channel_id: z.string(),
+      channel_id: z.string().nullable(),
       member_id: z.string(),
       workspace_id: z.string(),
       created_at: z.date().optional(),

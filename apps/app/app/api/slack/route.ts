@@ -9,8 +9,7 @@ import { updateChannel } from "@/features/channels/functions/updateChannel";
 import { getIntegration } from "@/features/integrations/functions/getIntegration";
 import { updateIntegration } from "@/features/integrations/functions/updateIntegration";
 import { getMember } from "@/features/members/functions/getMember";
-import { mergeMember } from "@/features/members/functions/mergeMember";
-import { updateSlackMember } from "@/features/members/functions/updateSlackMember";
+import { mergeSlackMember } from "@/features/slack/actions/mergeSlackMember";
 import { prisma } from "@/lib/prisma";
 import { safeRoute } from "@/lib/safeRoute";
 import {
@@ -36,12 +35,12 @@ export const POST = safeRoute.body(bodySchema).handler(async (_, context) => {
 
   const rIntegration = await getIntegration({ external_id: team_id });
   const integration = rIntegration?.data;
-  const workspace_id = integration?.workspace_id;
+  const { workspace_id, token } = integration ?? {};
 
-  if (!workspace_id) {
+  if (!workspace_id || !token) {
     return NextResponse.json(
       { message: "Integration not found" },
-      { status: 404 },
+      { status: 200 },
     );
   }
 
@@ -50,59 +49,19 @@ export const POST = safeRoute.body(bodySchema).handler(async (_, context) => {
       await updateIntegration({
         external_id: team_id,
         status: "DISCONNECTED",
+        installed_at: null,
       });
-      break;
-    }
-
-    case "member_joined_channel": {
-      const { profile } = await web.users.profile.get({ user: event.user });
-
-      if (!profile) return;
-
-      const {
-        first_name,
-        last_name,
-        real_name,
-        email,
-        phone,
-        image_1024,
-        title,
-      } = profile;
-
-      await mergeMember({
-        slack_id: event.user,
-        first_name,
-        last_name,
-        full_name: real_name,
-        email,
-        phone,
-        avatar_url: image_1024,
-        job_title: title,
-        workspace_id,
-      });
-      break;
-    }
-
-    case "team_join": {
-      console.log(event);
       break;
     }
 
     case "channel_created": {
       const { name, id } = event.channel;
-      const rChannel = await createChannel({
+      await createChannel({
         name,
         external_id: id,
         source: "SLACK",
         workspace_id,
       });
-
-      if (!rChannel?.data) {
-        return NextResponse.json(
-          { message: "Channel not created" },
-          { status: 400 },
-        );
-      }
 
       await web.conversations.join({ channel: id });
       break;
@@ -125,44 +84,13 @@ export const POST = safeRoute.body(bodySchema).handler(async (_, context) => {
       const handleMessage = async (messageEvent: GenericMessageEvent) => {
         const { user, text, thread_ts, ts, files } = messageEvent;
 
-        if (!user) {
-          return NextResponse.json(
-            { message: "User not found" },
-            { status: 404 },
-          );
-        }
-
-        const { profile } = await web.users.profile.get({ user });
-
-        if (!profile) return;
-
-        const {
-          first_name,
-          last_name,
-          real_name,
-          email,
-          phone,
-          image_1024,
-          title,
-        } = profile;
-
-        const rMember = await mergeMember({
-          slack_id: user,
-          first_name,
-          last_name,
-          full_name: real_name,
-          email,
-          phone,
-          avatar_url: image_1024,
-          job_title: title,
-          workspace_id,
-        });
+        const rMember = await mergeSlackMember({ user, workspace_id, token });
         const member = rMember?.data;
 
         if (!member) {
           return NextResponse.json(
             { message: "Member not found" },
-            { status: 404 },
+            { status: 200 },
           );
         }
 
@@ -175,7 +103,7 @@ export const POST = safeRoute.body(bodySchema).handler(async (_, context) => {
         if (!channel) {
           return NextResponse.json(
             { message: "Channel not found" },
-            { status: 404 },
+            { status: 200 },
           );
         }
 
@@ -210,9 +138,6 @@ export const POST = safeRoute.body(bodySchema).handler(async (_, context) => {
           const { text, ts, thread_ts, files } =
             event.message as GenericMessageEvent;
 
-          const { text: previous_text } =
-            event.previous_message as GenericMessageEvent;
-
           await updateActivity({
             external_id: ts,
             details: {
@@ -241,7 +166,7 @@ export const POST = safeRoute.body(bodySchema).handler(async (_, context) => {
           if (!channel) {
             return NextResponse.json(
               { message: "Channel not found" },
-              { status: 404 },
+              { status: 200 },
             );
           }
 
@@ -264,38 +189,13 @@ export const POST = safeRoute.body(bodySchema).handler(async (_, context) => {
       const { user, item, reaction } = event;
       const { channel: channel_id, ts } = item;
 
-      const { profile } = await web.users.profile.get({ user });
-
-      if (!profile) return;
-
-      const {
-        first_name,
-        last_name,
-        real_name,
-        email,
-        phone,
-        image_1024,
-        title,
-      } = profile;
-
-      const rMember = await mergeMember({
-        slack_id: user,
-        first_name,
-        last_name,
-        full_name: real_name,
-        email,
-        phone,
-        avatar_url: image_1024,
-        job_title: title,
-        workspace_id,
-      });
-
+      const rMember = await mergeSlackMember({ user, workspace_id, token });
       const member = rMember?.data;
 
       if (!member) {
         return NextResponse.json(
           { message: "Member not found" },
-          { status: 404 },
+          { status: 200 },
         );
       }
 
@@ -308,7 +208,7 @@ export const POST = safeRoute.body(bodySchema).handler(async (_, context) => {
       if (!channel) {
         return NextResponse.json(
           { message: "Channel not found" },
-          { status: 404 },
+          { status: 200 },
         );
       }
 
@@ -341,7 +241,7 @@ export const POST = safeRoute.body(bodySchema).handler(async (_, context) => {
       if (!member) {
         return NextResponse.json(
           { message: "Member not found" },
-          { status: 404 },
+          { status: 200 },
         );
       }
 
@@ -354,7 +254,7 @@ export const POST = safeRoute.body(bodySchema).handler(async (_, context) => {
       if (!channel) {
         return NextResponse.json(
           { message: "Channel not found" },
-          { status: 404 },
+          { status: 200 },
         );
       }
 
@@ -394,22 +294,90 @@ export const POST = safeRoute.body(bodySchema).handler(async (_, context) => {
       break;
     }
 
-    case "user_change": {
-      const { profile, id } = event.user;
-      const { first_name, last_name, title, phone, image_1024 } = profile;
+    case "member_joined_channel": {
+      const { user, inviter, event_ts, channel } = event;
 
-      await updateSlackMember({
-        slack_id: id,
-        first_name,
-        last_name,
-        job_title: title,
-        phone,
-        avatar_url: image_1024,
+      if (!inviter) break;
+
+      const rMember = await mergeSlackMember({ user, workspace_id, token });
+      const member = rMember?.data;
+
+      if (!member) {
+        return NextResponse.json(
+          { message: "Member not found" },
+          { status: 200 },
+        );
+      }
+
+      const rChannel = await getChannel({
+        external_id: channel,
+        workspace_id,
+      });
+      const channelData = rChannel?.data;
+
+      if (!channelData) {
+        return NextResponse.json(
+          { message: "Channel not found" },
+          { status: 200 },
+        );
+      }
+
+      const currentTimestamp = Math.floor(Number.parseFloat(event_ts));
+
+      const activity = await prisma.activity.findFirst({
+        where: {
+          member_id: member.id,
+          details: {
+            path: ["invite_by"],
+            equals: inviter,
+          },
+          AND: [
+            {
+              created_at: {
+                gt: new Date((currentTimestamp - 5) * 1000),
+              },
+            },
+            {
+              created_at: {
+                lt: new Date((currentTimestamp + 5) * 1000),
+              },
+            },
+          ],
+        },
+        orderBy: {
+          created_at: "desc",
+        },
+      });
+
+      if (activity) {
+        return NextResponse.json({ success: true }, { status: 200 });
+      }
+
+      await createActivity({
+        external_id: null,
+        member_id: member.id,
+        channel_id: channelData.id,
+        details: {
+          message: `<@${inviter}> invited to channel`,
+          source: "SLACK",
+          type: "INVITE",
+          files: [],
+          invite_by: inviter,
+        },
+        created_at: new Date(Number.parseFloat(event_ts) * 1000),
+        updated_at: new Date(Number.parseFloat(event_ts) * 1000),
         workspace_id,
       });
       break;
     }
+
+    case "user_change": {
+      const { id, deleted } = event.user;
+      await mergeSlackMember({ user: id, workspace_id, token, deleted });
+
+      break;
+    }
   }
 
-  return NextResponse.json({ success: true });
+  return NextResponse.json({ success: true }, { status: 200 });
 });
