@@ -9,6 +9,7 @@ export const IntegrationSchema = z.object({
   name: z.string(),
   source: SOURCE,
   token: z.string(),
+  slack_user_token: z.string().nullable(),
   scopes: z.string(),
   status: STATUS.optional(),
   installed_at: z.date().nullable(),

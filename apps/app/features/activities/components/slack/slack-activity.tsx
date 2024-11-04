@@ -19,9 +19,10 @@ export const SlackActivity = ({ activity }: Props) => {
       <Message activity={activity} />
       {files.length > 0 && (
         <div className="mt-2 grid grid-cols-2 gap-2">
-          {files.map((file) => (
-            <SlackImage key={file.url} url={file.url} />
-          ))}
+          {files.map((file) => {
+            if (!file.url) return;
+            return <SlackImage key={file.url} url={file.url} />;
+          })}
         </div>
       )}
     </ActivityCard>

@@ -9,8 +9,8 @@ export const AttachmentsSchema = z.object({
 });
 
 export const FilesSchema = z.object({
-  title: z.string(),
-  url: z.string(),
+  title: z.string().nullable(),
+  url: z.string().optional(),
 });
 
 export const ActivityAPISchema = z.object({

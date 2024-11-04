@@ -8,13 +8,10 @@ export const SlackImage = ({ url }: { url: string }) => {
   const { data } = useQuery({
     queryKey: ["slack-image", url],
     queryFn: async () => {
-      const response = await fetch(
-        `/api/slack/file?url=${url}&token=${slack?.token}`,
-        {
-          method: "GET",
-          headers: { Authorization: `Bearer ${slack?.token}` },
-        },
-      );
+      const response = await fetch("/api/slack/file", {
+        method: "GET",
+        headers: { Authorization: `Bearer ${slack?.token}` },
+      });
 
       return (await response.json()) as { url: string; type: string };
     },

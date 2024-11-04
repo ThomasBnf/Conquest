@@ -21,17 +21,22 @@ export default function Page() {
   const router = useRouter();
   const params = useSearchParams();
   const code = params.get("code");
+
+  const user_scope = "chat:write,im:write";
   const scopes =
-    "channels:history,channels:join,channels:read,files:read,groups:read,links:read,reactions:read,team:read,users.profile:read,users:read,users:read.email";
+    "channels:history,channels:join,channels:read,chat:write,files:read,groups:read,links:read,reactions:read,team:read,users.profile:read,users:read,users:read.email";
 
   const onStartInstall = () => {
     setLoading(true);
     const baseUrl = "https://slack.com/oauth/v2/authorize";
     const clientId = `client_id=${env.NEXT_PUBLIC_SLACK_CLIENT_ID}`;
     const scopesParams = `scope=${scopes}`;
+    const userScopeParams = `user_scope=${user_scope}`;
     const redirectURI = `redirect_uri=${encodeURIComponent(`${env.NEXT_PUBLIC_SLACK_REDIRECT_URI}/${slug}/settings/integrations/slack`)}`;
 
-    router.push(`${baseUrl}?${clientId}&${scopesParams}&${redirectURI}`);
+    router.push(
+      `${baseUrl}?${clientId}&${scopesParams}&${userScopeParams}&${redirectURI}`,
+    );
     setLoading(false);
   };
 

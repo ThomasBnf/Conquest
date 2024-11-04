@@ -14,6 +14,7 @@ export const upsertIntegration = authAction
       name: z.string(),
       source: SOURCE,
       token: z.string(),
+      slack_user_token: z.string().nullable(),
       status: STATUS,
       scopes: z.string(),
     }),
@@ -21,7 +22,15 @@ export const upsertIntegration = authAction
   .action(
     async ({
       ctx,
-      parsedInput: { external_id, name, source, token, status, scopes },
+      parsedInput: {
+        external_id,
+        name,
+        source,
+        token,
+        slack_user_token,
+        status,
+        scopes,
+      },
     }) => {
       return await prisma.integration.upsert({
         where: {
@@ -31,8 +40,9 @@ export const upsertIntegration = authAction
           external_id,
           name,
           source,
-          token,
           scopes,
+          token,
+          slack_user_token,
           status,
           installed_at: new Date(),
         },
@@ -41,6 +51,7 @@ export const upsertIntegration = authAction
           name,
           source,
           token,
+          slack_user_token,
           scopes,
           status,
           workspace_id: ctx.user?.workspace_id,

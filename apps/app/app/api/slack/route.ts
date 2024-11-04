@@ -1,3 +1,4 @@
+import { env } from "@/env.mjs";
 import { createActivity } from "@/features/activities/functions/createActivity";
 import { deleteActivity } from "@/features/activities/functions/deleteActivity";
 import { deleteListReactions } from "@/features/activities/functions/deleteListReactions";
@@ -7,9 +8,9 @@ import { deleteChannel } from "@/features/channels/functions/deleteChannel";
 import { getChannel } from "@/features/channels/functions/getChannel";
 import { updateChannel } from "@/features/channels/functions/updateChannel";
 import { getIntegration } from "@/features/integrations/functions/getIntegration";
-import { updateIntegration } from "@/features/integrations/functions/updateIntegration";
 import { getMember } from "@/features/members/functions/getMember";
 import { mergeSlackMember } from "@/features/slack/actions/mergeSlackMember";
+import { getFiles } from "@/features/slack/helpers/getFiles";
 import { prisma } from "@/lib/prisma";
 import { safeRoute } from "@/lib/safeRoute";
 import {
@@ -20,42 +21,47 @@ import {
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
-const web = new WebClient(process.env.SLACK_BOT_TOKEN);
+const web = new WebClient(env.SLACK_BOT_TOKEN);
 
 const bodySchema = z.object({
+  token: z.string(),
+  api_app_id: z.string(),
   team_id: z.string(),
   event: z.custom<SlackEvent>(),
 });
 
 export const POST = safeRoute.body(bodySchema).handler(async (_, context) => {
-  const { team_id, event } = context.body;
+  const { token: slack_token, api_app_id, team_id, event } = context.body;
   const { type } = event;
 
-  console.log(event);
+  // console.dir(context.body, { depth: Number.POSITIVE_INFINITY });
+
+  if (slack_token !== env.SLACK_TOKEN && api_app_id !== env.SLACK_APP_ID) {
+    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+  }
 
   const rIntegration = await getIntegration({ external_id: team_id });
   const integration = rIntegration?.data;
-  const { workspace_id, token } = integration ?? {};
 
-  if (!workspace_id || !token) {
-    return NextResponse.json(
-      { message: "Integration not found" },
-      { status: 200 },
-    );
-  }
+  if (!integration) return NextResponse.json({ status: 200 });
+
+  const { workspace_id, token } = integration;
+
+  if (!workspace_id || !token) return NextResponse.json({ status: 200 });
 
   switch (type) {
-    case "app_uninstalled": {
-      await updateIntegration({
-        external_id: team_id,
-        status: "DISCONNECTED",
-        installed_at: null,
-      });
-      break;
-    }
+    // case "app_uninstalled": {
+    //   await updateIntegration({
+    //     external_id: team_id,
+    //     status: "DISCONNECTED",
+    //     installed_at: null,
+    //   });
+    //   break;
+    // }
 
     case "channel_created": {
       const { name, id } = event.channel;
+
       await createChannel({
         name,
         external_id: id,
@@ -69,12 +75,15 @@ export const POST = safeRoute.body(bodySchema).handler(async (_, context) => {
 
     case "channel_rename": {
       const { name, id } = event.channel;
+
       await updateChannel({ external_id: id, name });
       break;
     }
 
     case "channel_deleted": {
-      await deleteChannel({ external_id: event.channel });
+      const { channel } = event;
+
+      await deleteChannel({ external_id: channel });
       break;
     }
 
@@ -87,12 +96,7 @@ export const POST = safeRoute.body(bodySchema).handler(async (_, context) => {
         const rMember = await mergeSlackMember({ user, workspace_id, token });
         const member = rMember?.data;
 
-        if (!member) {
-          return NextResponse.json(
-            { message: "Member not found" },
-            { status: 200 },
-          );
-        }
+        if (!member) return NextResponse.json({ status: 200 });
 
         const rChannel = await getChannel({
           external_id: channel_id,
@@ -100,13 +104,9 @@ export const POST = safeRoute.body(bodySchema).handler(async (_, context) => {
         });
         const channel = rChannel?.data;
 
-        if (!channel) {
-          return NextResponse.json(
-            { message: "Channel not found" },
-            { status: 200 },
-          );
-        }
+        if (!channel) return NextResponse.json({ status: 200 });
 
+        const _files = getFiles(files);
         await createActivity({
           external_id: ts,
           member_id: member.id,
@@ -115,11 +115,7 @@ export const POST = safeRoute.body(bodySchema).handler(async (_, context) => {
             message: text ?? "",
             source: "SLACK",
             type: thread_ts ? "REPLY" : "POST",
-            files:
-              files?.map(({ title, url_private }) => ({
-                title: title ?? "",
-                url: url_private ?? "",
-              })) ?? [],
+            files: _files,
             reply_to: thread_ts,
           },
           workspace_id,
@@ -138,17 +134,14 @@ export const POST = safeRoute.body(bodySchema).handler(async (_, context) => {
           const { text, ts, thread_ts, files } =
             event.message as GenericMessageEvent;
 
+          const _files = getFiles(files);
           await updateActivity({
             external_id: ts,
             details: {
               message: text ?? "",
               source: "SLACK",
               type: thread_ts ? "REPLY" : "POST",
-              files:
-                files?.map(({ title, url_private }) => ({
-                  title: title ?? "",
-                  url: url_private ?? "",
-                })) ?? [],
+              files: _files,
               reply_to: thread_ts,
             },
           });
@@ -163,12 +156,7 @@ export const POST = safeRoute.body(bodySchema).handler(async (_, context) => {
           });
 
           const channel = rChannel?.data;
-          if (!channel) {
-            return NextResponse.json(
-              { message: "Channel not found" },
-              { status: 200 },
-            );
-          }
+          if (!channel) return NextResponse.json({ status: 200 });
 
           await deleteListReactions({
             channel_id: channel.id,
@@ -192,12 +180,7 @@ export const POST = safeRoute.body(bodySchema).handler(async (_, context) => {
       const rMember = await mergeSlackMember({ user, workspace_id, token });
       const member = rMember?.data;
 
-      if (!member) {
-        return NextResponse.json(
-          { message: "Member not found" },
-          { status: 200 },
-        );
-      }
+      if (!member) return NextResponse.json({ status: 200 });
 
       const rChannel = await getChannel({
         external_id: channel_id,
@@ -205,12 +188,7 @@ export const POST = safeRoute.body(bodySchema).handler(async (_, context) => {
       });
       const channel = rChannel?.data;
 
-      if (!channel) {
-        return NextResponse.json(
-          { message: "Channel not found" },
-          { status: 200 },
-        );
-      }
+      if (!channel) return NextResponse.json({ status: 200 });
 
       await createActivity({
         external_id: null,
@@ -238,12 +216,7 @@ export const POST = safeRoute.body(bodySchema).handler(async (_, context) => {
       });
       const member = rMember?.data;
 
-      if (!member) {
-        return NextResponse.json(
-          { message: "Member not found" },
-          { status: 200 },
-        );
-      }
+      if (!member) return NextResponse.json({ status: 200 });
 
       const rChannel = await getChannel({
         external_id: channel_id,
@@ -251,12 +224,7 @@ export const POST = safeRoute.body(bodySchema).handler(async (_, context) => {
       });
       const channel = rChannel?.data;
 
-      if (!channel) {
-        return NextResponse.json(
-          { message: "Channel not found" },
-          { status: 200 },
-        );
-      }
+      if (!channel) return NextResponse.json({ status: 200 });
 
       await prisma.activity.deleteMany({
         where: {
@@ -302,12 +270,7 @@ export const POST = safeRoute.body(bodySchema).handler(async (_, context) => {
       const rMember = await mergeSlackMember({ user, workspace_id, token });
       const member = rMember?.data;
 
-      if (!member) {
-        return NextResponse.json(
-          { message: "Member not found" },
-          { status: 200 },
-        );
-      }
+      if (!member) return NextResponse.json({ status: 200 });
 
       const rChannel = await getChannel({
         external_id: channel,
@@ -315,12 +278,7 @@ export const POST = safeRoute.body(bodySchema).handler(async (_, context) => {
       });
       const channelData = rChannel?.data;
 
-      if (!channelData) {
-        return NextResponse.json(
-          { message: "Channel not found" },
-          { status: 200 },
-        );
-      }
+      if (!channelData) return NextResponse.json({ status: 200 });
 
       const currentTimestamp = Math.floor(Number.parseFloat(event_ts));
 
@@ -349,9 +307,7 @@ export const POST = safeRoute.body(bodySchema).handler(async (_, context) => {
         },
       });
 
-      if (activity) {
-        return NextResponse.json({ success: true }, { status: 200 });
-      }
+      if (activity) return NextResponse.json({ status: 200 });
 
       await createActivity({
         external_id: null,
@@ -379,5 +335,5 @@ export const POST = safeRoute.body(bodySchema).handler(async (_, context) => {
     }
   }
 
-  return NextResponse.json({ success: true }, { status: 200 });
+  return NextResponse.json({ status: 200 });
 });

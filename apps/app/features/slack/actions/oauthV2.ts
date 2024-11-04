@@ -35,13 +35,15 @@ export const oauthV2 = authAction
     });
 
     const data = await response.json();
-    const { access_token, team } = data;
+    console.log(data);
+    const { access_token, authed_user, team } = data;
 
     await upsertIntegration({
       external_id: team.id,
       name: team.name,
       source: "SLACK",
       token: access_token,
+      slack_user_token: authed_user.access_token,
       status: "SYNCING",
       scopes,
     });

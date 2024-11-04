@@ -21,14 +21,15 @@ export const installSlack = authAction
 
     if (!integration) return;
 
-    const { token, external_id } = IntegrationSchema.parse(integration);
+    const { token, slack_user_token, external_id } =
+      IntegrationSchema.parse(integration);
 
-    if (!token) return;
+    if (!token || !slack_user_token) return;
 
     const web = new WebClient(token);
 
     await createListMembers({ web, workspace_id });
-    await createListChannels({ web, token });
+    await createListChannels({ web, token: slack_user_token });
 
     await updateIntegration({
       external_id,
