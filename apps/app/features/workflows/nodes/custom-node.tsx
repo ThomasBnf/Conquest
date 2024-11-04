@@ -10,7 +10,7 @@ import { useAdding } from "../hooks/useAdding";
 import { useChanging } from "../hooks/useChanging";
 import { usePanel } from "../hooks/usePanel";
 import { useSelected } from "../hooks/useSelected";
-import type { WorkflowNode } from "../panels/types/node-data";
+import type { WorkflowNode } from "../panels/types/workflow-node.type";
 import { CustomHandle } from "./custom-handle";
 
 type Props = NodeProps<WorkflowNode> & {
@@ -45,7 +45,7 @@ export const CustomNode = ({ hasEdges, ...props }: Props) => {
             node?.id === props.id && "bg-muted text-main-500 ",
           )}
         >
-          <Target size={14} />
+          <Target size={15} />
           <p className="text-xs leading-none">Trigger</p>
         </div>
       )}
@@ -66,12 +66,9 @@ export const CustomNode = ({ hasEdges, ...props }: Props) => {
           <div
             className={cn(
               "rounded-lg border p-1",
-              category === "utilities" &&
-                "border-blue-200 bg-blue-100 text-blue-500",
-              category === "mutations" &&
-                "border-green-200 bg-green-100 text-green-500",
-              category === "records" &&
-                "border-yellow-200 bg-yellow-100 text-yellow-500",
+              isTrigger
+                ? "border-yellow-300 bg-yellow-100 text-yellow-500"
+                : "border-green-300 bg-green-100 text-green-500",
             )}
           >
             <Icon name={icon as keyof typeof icons} size={16} />

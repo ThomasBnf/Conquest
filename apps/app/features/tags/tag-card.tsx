@@ -22,7 +22,7 @@ export const TagCard = ({ tag }: Props) => {
           className="size-3 rounded-full"
           style={{ backgroundColor: tag.color }}
         />
-        <p className="font-medium">{tag.name}</p>
+        <p className="font-medium truncate">{tag.name}</p>
       </div>
       <TagMenu tag={tag} setIsEditing={setIsEditing} />
     </div>

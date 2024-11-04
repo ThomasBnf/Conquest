@@ -25,7 +25,7 @@ export const QueryInput = ({ filter }: Props) => {
       value={value}
       onChange={onUpdateValue}
       variant="transparent"
-      className="flex h-8 w-full"
+      className="flex h-8 w-full bg-background"
     />
   );
 };

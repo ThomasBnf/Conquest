@@ -9,10 +9,10 @@ import {
   Controls,
   type Edge,
   type EdgeChange,
+  type EdgeProps,
   type NodeChange,
   type NodeProps,
   ReactFlow,
-  SmoothStepEdge,
   applyEdgeChanges,
   applyNodeChanges,
   useEdgesState,
@@ -23,22 +23,18 @@ import "@xyflow/react/dist/style.css";
 import { MousePointerClick } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
-import { _runWorkflow } from "../actions/_runWorkflow";
 import { _runWorkflowInngest } from "../actions/_runWorkflowInngest";
 import { _updateWorkflow } from "../actions/_updateWorkflow";
 import { useChanging } from "../hooks/useChanging";
 import { usePanel } from "../hooks/usePanel";
 import { useSelected } from "../hooks/useSelected";
+import { CustomEdge } from "../nodes/custom-edge";
 import { CustomNode } from "../nodes/custom-node";
-import type { WorkflowNode } from "../panels/types/node-data";
+import type { WorkflowNode } from "../panels/types/workflow-node.type";
 import { Sidebar } from "./sidebar";
 
 type Props = {
   workflow: Workflow;
-};
-
-const edgesTypes = {
-  default: SmoothStepEdge,
 };
 
 export const Editor = ({ workflow }: Props) => {
@@ -67,6 +63,12 @@ export const Editor = ({ workflow }: Props) => {
     };
   }, [edges]);
 
+  const edgeTypes = useMemo(() => {
+    return {
+      custom: (props: EdgeProps) => <CustomEdge {...props} />,
+    };
+  }, []);
+
   const onNodesChange = useCallback(
     (changes: NodeChange<WorkflowNode>[]) => {
       setNodes((prev) => {
@@ -82,6 +84,7 @@ export const Editor = ({ workflow }: Props) => {
                     id: `${selected?.id ?? ""}-${item.id}`,
                     source: selected?.id ?? "",
                     target: item.id,
+                    type: "custom",
                   },
                 ]);
               }
@@ -148,7 +151,7 @@ export const Editor = ({ workflow }: Props) => {
         for (const change of changes) {
           switch (change.type) {
             case "add": {
-              addEdges([change.item]);
+              addEdges([{ ...change.item, type: "custom" }]);
               setTimeout(() => onSave(), 0);
               break;
             }
@@ -172,6 +175,7 @@ export const Editor = ({ workflow }: Props) => {
           id: `${params.source}-${params.target}`,
           source: params.source!,
           target: params.target!,
+          type: "custom",
         },
       ]);
     },
@@ -179,6 +183,7 @@ export const Editor = ({ workflow }: Props) => {
   );
 
   const onSave = async () => {
+    console.log(toObject());
     _updateWorkflow({
       id: workflow.id,
       nodes: toObject().nodes.map((node) => {
@@ -209,12 +214,9 @@ export const Editor = ({ workflow }: Props) => {
 
   const onRunWorkflow = async () => {
     setRunning(true);
-    const run = await _runWorkflow({ id: workflow.id });
-    const error = run?.serverError;
-    const success = run?.data;
-
-    if (error) toast.error(error);
-    if (success) toast.success("Workflow successfully run");
+    const run = await _runWorkflowInngest({ workflow_id: workflow.id });
+    console.log(run);
+    if (run) toast.success("Workflow successfully run");
     setRunning(false);
   };
 
@@ -230,14 +232,16 @@ export const Editor = ({ workflow }: Props) => {
 
   return (
     <div className="flex h-full">
-      <Button onClick={() => _runWorkflowInngest({ workflow })}>inngest</Button>
       <ReactFlow
         nodes={nodes}
         edges={edges}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         nodeTypes={nodeTypes}
-        edgeTypes={edgesTypes}
+        edgeTypes={edgeTypes}
+        defaultEdgeOptions={{
+          type: "custom",
+        }}
         onConnect={onConnect}
         fitViewOptions={{
           maxZoom: 1,

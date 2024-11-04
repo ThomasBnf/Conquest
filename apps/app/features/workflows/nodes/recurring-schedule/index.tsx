@@ -1,3 +1,4 @@
+import { useSelected } from "@/features/workflows/hooks/useSelected";
 import {
   Form,
   FormControl,
@@ -20,7 +21,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useReactFlow } from "@xyflow/react";
 import { weekdays } from "constant/weekdays";
 import { useForm } from "react-hook-form";
-import { useSelected } from "../../hooks/useSelected";
 import {
   type FormRecurring,
   FormRecurringSchema,

@@ -15,9 +15,11 @@ import { useChanging } from "../hooks/useChanging";
 import { usePanel } from "../hooks/usePanel";
 import { useSelected } from "../hooks/useSelected";
 import { FilterOptions } from "../nodes/list-members/filter/filter.options";
-import { RecurringScheduleOptions } from "../nodes/recurring-schedule/recurring.options";
-import { TagMemberOptions } from "../nodes/tag-member/tag-member.options";
-import { WebhookOptions } from "../nodes/webhook/webhook.options";
+import { RecurringScheduleOptions } from "../nodes/recurring-schedule";
+import { SlackMessageOptions } from "../nodes/slack-message";
+import { TagMemberOptions } from "../nodes/tag-member";
+import { WaitOptions } from "../nodes/wait";
+import { WebhookOptions } from "../nodes/webhook";
 import { ActionPanel } from "./action-panel";
 import { TriggerPanel } from "./trigger-panel";
 
@@ -77,8 +79,9 @@ export const OptionsPanel = () => {
                   size={46}
                   className={cn(
                     "border rounded-lg p-2",
-                    type.startsWith("trigger") &&
-                      "border-blue-200 bg-blue-100 text-blue-500",
+                    isTrigger
+                      ? "border-yellow-300 bg-yellow-100 text-yellow-500"
+                      : "border-green-300 bg-green-100 text-green-500",
                   )}
                 />
                 <div className="space-y-1">
@@ -102,6 +105,8 @@ export const OptionsPanel = () => {
             {type === "webhook" && <WebhookOptions />}
             {type === "add-tag" && <TagMemberOptions />}
             {type === "remove-tag" && <TagMemberOptions />}
+            {type === "slack-message" && <SlackMessageOptions />}
+            {type === "wait" && <WaitOptions />}
             <Separator />
             <NextStep />
           </div>

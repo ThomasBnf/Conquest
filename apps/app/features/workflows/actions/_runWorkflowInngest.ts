@@ -1,15 +1,14 @@
 "use server";
 
 import { inngest } from "@/inngest/client";
-import type { Workflow } from "@conquest/zod/workflow.schema";
 
 type Props = {
-  workflow: Workflow;
+  workflow_id: string;
 };
 
-export const _runWorkflowInngest = async ({ workflow }: Props) => {
-  await inngest.send({
+export const _runWorkflowInngest = async ({ workflow_id }: Props) => {
+  return await inngest.send({
     name: "workflow/run",
-    data: { workflow },
+    data: { workflow_id },
   });
 };

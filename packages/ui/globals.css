@@ -17,8 +17,8 @@
     --accent-foreground: 0 0% 9%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
-    --border: 240 3% 90%;
-    --input: 240 3% 90%;
+    --border: 240 3% 88%;
+    --input: 240 3% 88%;
     --ring: 248 20% 92%;
     --radius: 0.5rem;
 
@@ -28,7 +28,7 @@
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
 
-    --sidebar-background: 0 0% 95%;
+    --sidebar-background: 240 3% 95%;
     --sidebar-foreground: 240 6% 10%;
     --sidebar-accent: 0 0% 90%;
     --sidebar-accent-foreground: 240 6% 10%;

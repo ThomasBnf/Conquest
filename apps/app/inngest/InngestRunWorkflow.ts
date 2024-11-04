@@ -1,0 +1,446 @@
+import { prisma } from "@/lib/prisma";
+import {
+  type Activity,
+  type MemberWithActivities,
+  MemberWithActivitiesSchema,
+} from "@conquest/zod/activity.schema";
+import type {
+  Filter,
+  FilterCount,
+  FilterDate,
+  FilterSelect,
+  FilterTag,
+} from "@conquest/zod/filters.schema";
+import { IntegrationSchema } from "@conquest/zod/integration.schema";
+import {
+  type Category,
+  type GroupFilter,
+  NodeSchema,
+  type NodeSlackMessage,
+  type NodeTagMember,
+  type NodeWait,
+  type NodeWebhook,
+} from "@conquest/zod/node.schema";
+import { WorkflowSchema } from "@conquest/zod/workflow.schema";
+import { WebClient } from "@slack/web-api";
+import { startOfDay, subDays } from "date-fns";
+import { z } from "zod";
+import { inngest } from "./client";
+
+let members: MemberWithActivities[] = [];
+
+export const InngestRunWorkflow = inngest.createFunction(
+  { id: "run-workflow" },
+  { event: "workflow/run" },
+  async ({ event, step }) => {
+    const { workflow_id } = event.data;
+
+    const workflow = await prisma.workflow.findUnique({
+      where: { id: workflow_id },
+    });
+    const parsedWorkflow = WorkflowSchema.parse(workflow);
+    const { nodes, edges, workspace_id } = parsedWorkflow;
+
+    let node = nodes.find((node) => "isTrigger" in node.data);
+    let hasNextNode = true;
+
+    while (hasNextNode) {
+      const parsedNode = NodeSchema.parse(node);
+      const { type } = parsedNode.data;
+
+      await step.run(`${type}-${node?.id}`, async () => {
+        switch (type) {
+          case "list-members": {
+            const _members = await listMembers(workspace_id);
+            const parsedMembers = z
+              .array(MemberWithActivitiesSchema)
+              .parse(_members);
+
+            if (parsedMembers.length === 0) break;
+
+            const { group_filters } = parsedNode.data;
+            members = group_filters?.length
+              ? filterMembers(parsedMembers, group_filters)
+              : parsedMembers;
+            break;
+          }
+          case "add-tag": {
+            await addTag(parsedNode.data);
+            break;
+          }
+          case "remove-tag": {
+            await removeTag(parsedNode.data);
+            break;
+          }
+          case "slack-message": {
+            await slackMessage(parsedNode.data, workspace_id);
+            break;
+          }
+          case "webhook": {
+            await webhook(parsedNode.data);
+            break;
+          }
+          case "wait": {
+            await wait(parsedNode.data);
+            break;
+          }
+        }
+      });
+
+      const edge = edges.find((edge) => edge.source === node?.id);
+      if (!edge) {
+        hasNextNode = false;
+      } else {
+        node = nodes.find((currentNode) => edge?.target === currentNode.id);
+      }
+    }
+
+    return parsedWorkflow;
+  },
+);
+
+export const listMembers = async (workspace_id: string) => {
+  return await prisma.member.findMany({
+    where: {
+      workspace_id,
+    },
+    include: {
+      activities: {
+        orderBy: {
+          created_at: "desc",
+        },
+      },
+    },
+  });
+};
+
+export const addTag = async (node: NodeTagMember) => {
+  const { tags } = node;
+
+  if (tags.length === 0) return;
+
+  for (const member of members ?? []) {
+    const memberTags = member.tags;
+    const hasTags = tags.some((tag) => memberTags.includes(tag));
+
+    if (!hasTags) {
+      await prisma.member.update({
+        where: {
+          id: member.id,
+        },
+        data: {
+          tags: { push: tags },
+        },
+      });
+    }
+  }
+};
+
+export const removeTag = async (node: NodeTagMember) => {
+  const { tags } = node;
+
+  if (tags.length === 0) return;
+
+  for (const member of members ?? []) {
+    const memberTags = member.tags;
+    const hasTags = tags.some((tag) => memberTags.includes(tag));
+
+    if (hasTags) {
+      await prisma.member.update({
+        where: {
+          id: member.id,
+        },
+        data: {
+          tags: {
+            set: memberTags.filter((tag) => !tags.includes(tag)),
+          },
+        },
+      });
+    }
+  }
+};
+
+export const webhook = async (node: NodeWebhook) => {
+  const { url } = node;
+
+  if (!url) throw new Error("No URL provided");
+  if (!members?.length) return;
+
+  await fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(members),
+  });
+};
+
+export const wait = async (node: NodeWait) => {
+  const { duration, unit } = node;
+
+  const timeMap = {
+    seconds: 1000,
+    minutes: 60 * 1000,
+    hours: 60 * 60 * 1000,
+    days: 24 * 60 * 60 * 1000,
+  } as const;
+
+  const milliseconds = duration * timeMap[unit];
+  await new Promise((resolve) => setTimeout(resolve, milliseconds));
+};
+
+export const slackMessage = async (
+  node: NodeSlackMessage,
+  workspace_id: string,
+) => {
+  const slack = await prisma.integration.findFirst({
+    where: {
+      source: "SLACK",
+      workspace_id,
+    },
+  });
+
+  if (!slack) throw new Error("No Slack integration found");
+  const { slack_user_token } = IntegrationSchema.parse(slack);
+  const { message } = node;
+
+  if (!slack_user_token) throw new Error("No Slack user token found");
+
+  const web = new WebClient(slack_user_token);
+
+  for (const member of members ?? []) {
+    if (!member.slack_id) throw new Error("No Slack ID found");
+
+    const { channel } = await web.conversations.open({
+      users: member.slack_id,
+    });
+
+    if (!channel?.id) throw new Error("No channel ID found");
+
+    const result = await web.chat.postMessage({
+      channel: channel?.id,
+      text: message,
+      as_user: true,
+    });
+  }
+};
+
+export const filterMembers = (
+  members: MemberWithActivities[],
+  groupFilters: GroupFilter[],
+) => {
+  if (!groupFilters?.length) return members;
+
+  return members.filter((member) =>
+    groupFilters.every((group) => {
+      if (!group.filters?.length) return true;
+
+      const record = getRecordForCategory(member, group.category);
+      if (!record) return false;
+
+      return group.filters.every((filter) => {
+        const operation = createFilterOperation(filter);
+        return operation.execute({
+          member: record,
+          activities: record.activities || [],
+        });
+      });
+    }),
+  );
+};
+
+const getRecordForCategory = (
+  member: MemberWithActivities,
+  category: Category,
+): MemberWithActivities | null => {
+  if (!member) return null;
+
+  switch (category) {
+    case "last_activity":
+      return {
+        ...member,
+        activities: member.activities?.slice(-1) || [],
+      };
+    case "first_activity":
+      return {
+        ...member,
+        activities: member.activities?.slice(0, 1) || [],
+      };
+    default:
+      return member;
+  }
+};
+
+const createFilterOperation = (filter: Filter) => {
+  if (!filter?.field) return { execute: () => true };
+
+  switch (filter.field) {
+    case "type":
+      return createTypeFilter(filter);
+    case "source":
+      return createSourceFilter(filter);
+    case "tags":
+      return createTagFilter(filter);
+    case "created_at":
+      return createDateFilter(filter);
+    case "activities_count":
+      return createCountFilter(filter);
+    default:
+      return { execute: () => true };
+  }
+};
+
+export const createTypeFilter = (filter: FilterSelect) => {
+  const { operator, values } = filter;
+
+  if (!values?.length) return { execute: () => true };
+
+  return {
+    execute: ({ activities }: { activities: Activity[] }) => {
+      if (!activities?.length) return false;
+
+      switch (operator) {
+        case "contains":
+          return activities.some((activity) =>
+            values.includes(activity.details.type),
+          );
+        case "not_contains":
+          return activities.every(
+            (activity) => !values.includes(activity.details.type),
+          );
+        default:
+          return true;
+      }
+    },
+  };
+};
+
+export const createSourceFilter = (filter: FilterSelect) => {
+  const { operator, values } = filter;
+
+  if (!values?.length) return { execute: () => true };
+
+  return {
+    execute: ({ activities }: { activities: Activity[] }) => {
+      if (!activities?.length) return false;
+
+      switch (operator) {
+        case "contains":
+          return activities.some((activity) =>
+            values.includes(activity.details.source),
+          );
+        case "not_contains":
+          return activities.every(
+            (activity) => !values.includes(activity.details.source),
+          );
+        default:
+          return true;
+      }
+    },
+  };
+};
+
+export const createTagFilter = (filter: FilterTag) => {
+  const { operator, values } = filter;
+
+  if (!values?.length) return { execute: () => true };
+
+  return {
+    execute: ({ member }: { member: MemberWithActivities }) => {
+      const memberTags = member.tags || [];
+
+      switch (operator) {
+        case "contains":
+          return values.some((value) => memberTags.includes(value));
+        case "not_contains":
+          return !values.some((value) => memberTags.includes(value));
+        default:
+          return true;
+      }
+    },
+  };
+};
+
+export const createDateFilter = (filter: FilterDate) => {
+  const { operator } = filter;
+  const date = getDynamicDate(filter);
+
+  if (!date) return { execute: () => true };
+
+  return {
+    execute: ({ activities }: { activities: Activity[] }) => {
+      if (!activities?.length) return false;
+
+      const compareDate = startOfDay(date);
+
+      switch (operator) {
+        case "is":
+          return activities.some(
+            (activity) =>
+              startOfDay(new Date(activity.created_at)).getTime() ===
+              compareDate.getTime(),
+          );
+        case "is_not":
+          return activities.every(
+            (activity) =>
+              startOfDay(new Date(activity.created_at)).getTime() !==
+              compareDate.getTime(),
+          );
+        case "after":
+          return activities.some(
+            (activity) => new Date(activity.created_at) > compareDate,
+          );
+        case "before":
+          return activities.every(
+            (activity) => new Date(activity.created_at) < compareDate,
+          );
+        default:
+          return true;
+      }
+    },
+  };
+};
+
+export const createCountFilter = (filter: FilterCount) => {
+  const { operator, value } = filter;
+  if (typeof value !== "number") return { execute: () => true };
+
+  return {
+    execute: ({ activities }: { activities: Activity[] }) => {
+      const count = activities?.length ?? 0;
+
+      switch (operator) {
+        case "equals":
+          return count === value;
+        case "not_equals":
+          return count !== value;
+        case "greater_than":
+          return count > value;
+        case "less_than":
+          return count < value;
+        default:
+          return true;
+      }
+    },
+  };
+};
+
+const getDynamicDate = (filter: FilterDate) => {
+  const { dynamic_date, days } = filter;
+  if (!dynamic_date) return null;
+
+  const today = startOfDay(new Date());
+
+  switch (dynamic_date) {
+    case "today":
+      return today;
+    case "yesterday":
+      return subDays(today, 1);
+    case "7_days_ago":
+      return subDays(today, 7);
+    case "30_days_ago":
+      return subDays(today, 30);
+    case "days_ago":
+      return typeof days === "number" ? subDays(today, days) : null;
+    default:
+      return null;
+  }
+};

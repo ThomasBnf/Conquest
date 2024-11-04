@@ -33,7 +33,7 @@ export const IsPublished = ({ workflow }: Props) => {
     <div className="flex items-center gap-2">
       {isPublished ? (
         <div className="flex items-center gap-1 rounded-lg border border-green-200 bg-green-100 px-1 h-6">
-          <div className="size-2.5 rounded-full bg-green-500" />
+          <div className="size-2.5 rounded-full bg-green-500 animate-pulse" />
           <p className="text-green-700">Live</p>
         </div>
       ) : (

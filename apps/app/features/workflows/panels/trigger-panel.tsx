@@ -7,7 +7,7 @@ import type { icons } from "lucide-react";
 import { useChanging } from "../hooks/useChanging";
 import { usePanel } from "../hooks/usePanel";
 import { useSelected } from "../hooks/useSelected";
-import type { WorkflowNode } from "./types/node-data";
+import type { WorkflowNode } from "./types/workflow-node.type";
 
 export const TriggerPanel = () => {
   const { setPanel } = usePanel();
@@ -57,11 +57,10 @@ export const TriggerPanel = () => {
                       classNameSpan="justify-start"
                       onClick={() => onClick(node)}
                     >
-                      <div className="border rounded-lg bg-background p-1">
+                      <div className="p-1 rounded-lg border bg-background">
                         <Icon
                           name={data.icon as keyof typeof icons}
-                          size={14}
-                          className="text-muted-foreground"
+                          size={15}
                         />
                       </div>
                       <p className="font-medium">{data.label}</p>
@@ -84,6 +83,24 @@ export const nodes: {
   }[];
 } = {
   categories: [
+    {
+      label: "Members",
+      nodes: [
+        {
+          id: cuid(),
+          type: "custom",
+          position: { x: 0, y: 0 },
+          data: {
+            icon: "User",
+            label: "Member created",
+            description: "Trigger a workflow when a member is created",
+            type: "member-created",
+            category: "members",
+            isTrigger: true,
+          },
+        },
+      ],
+    },
     {
       label: "Utilities",
       nodes: [

@@ -8,6 +8,7 @@ import { deleteChannel } from "@/features/channels/functions/deleteChannel";
 import { getChannel } from "@/features/channels/functions/getChannel";
 import { updateChannel } from "@/features/channels/functions/updateChannel";
 import { getIntegration } from "@/features/integrations/functions/getIntegration";
+import { updateIntegration } from "@/features/integrations/functions/updateIntegration";
 import { getMember } from "@/features/members/functions/getMember";
 import { mergeSlackMember } from "@/features/slack/actions/mergeSlackMember";
 import { getFiles } from "@/features/slack/helpers/getFiles";
@@ -34,8 +35,6 @@ export const POST = safeRoute.body(bodySchema).handler(async (_, context) => {
   const { token: slack_token, api_app_id, team_id, event } = context.body;
   const { type } = event;
 
-  // console.dir(context.body, { depth: Number.POSITIVE_INFINITY });
-
   if (slack_token !== env.SLACK_TOKEN && api_app_id !== env.SLACK_APP_ID) {
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
   }
@@ -50,14 +49,14 @@ export const POST = safeRoute.body(bodySchema).handler(async (_, context) => {
   if (!workspace_id || !token) return NextResponse.json({ status: 200 });
 
   switch (type) {
-    // case "app_uninstalled": {
-    //   await updateIntegration({
-    //     external_id: team_id,
-    //     status: "DISCONNECTED",
-    //     installed_at: null,
-    //   });
-    //   break;
-    // }
+    case "app_uninstalled": {
+      await updateIntegration({
+        external_id: team_id,
+        status: "DISCONNECTED",
+        installed_at: null,
+      });
+      break;
+    }
 
     case "channel_created": {
       const { name, id } = event.channel;

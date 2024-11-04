@@ -5,6 +5,7 @@ import { NodeSchema } from "@conquest/zod/node.schema";
 import { WorkflowSchema } from "@conquest/zod/workflow.schema";
 import { authAction } from "lib/authAction";
 import { prisma } from "lib/prisma";
+import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
 export const _updateWorkflow = authAction
@@ -40,6 +41,7 @@ export const _updateWorkflow = authAction
         },
       });
 
+      revalidatePath(`/workflows/${id}`);
       return WorkflowSchema.parse(updatedWorkflow);
     },
   );

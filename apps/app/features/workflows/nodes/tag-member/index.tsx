@@ -1,5 +1,6 @@
 import { useListTags } from "@/features/tags/hooks/useListTags";
 import { TagBadge } from "@/features/tags/tag-badge";
+import { useSelected } from "@/features/workflows/hooks/useSelected";
 import { Button } from "@conquest/ui/button";
 import { Checkbox } from "@conquest/ui/checkbox";
 import { Label } from "@conquest/ui/label";
@@ -15,7 +16,6 @@ import type { Tag } from "@conquest/zod/tag.schema";
 import { useReactFlow } from "@xyflow/react";
 import { Plus, TagIcon } from "lucide-react";
 import { useEffect, useState } from "react";
-import { useSelected } from "../../hooks/useSelected";
 
 export const TagMemberOptions = () => {
   const { tags, isLoading } = useListTags();
@@ -65,14 +65,22 @@ export const TagMemberOptions = () => {
                 />
               ) : null;
             })}
-            <Button variant="ghost" size="xs" className="text-muted-foreground">
-              {selectedTags.length === 0 ? (
-                <TagIcon size={14} />
-              ) : (
-                <Plus size={14} />
-              )}
-              {selectedTags.length === 0 ? "Select tags" : ""}
-            </Button>
+            {isLoading ? (
+              <Skeleton className="h-6 w-28" />
+            ) : (
+              <Button
+                variant="ghost"
+                size="xs"
+                className="text-muted-foreground"
+              >
+                {selectedTags.length === 0 ? (
+                  <TagIcon size={14} />
+                ) : (
+                  <Plus size={14} />
+                )}
+                {selectedTags.length === 0 ? "Select tags" : ""}
+              </Button>
+            )}
           </div>
         </PopoverTrigger>
         <PopoverContent
@@ -90,10 +98,10 @@ export const TagMemberOptions = () => {
               <PopoverItem key={tag.id} onClick={() => handleSelectTag(tag)}>
                 <Checkbox checked={selectedTags.includes(tag.id)} />
                 <div
-                  className="size-3 rounded-full"
+                  className="size-3 rounded-full shrink-0"
                   style={{ backgroundColor: tag.color }}
                 />
-                {tag.name}
+                <p className="truncate">{tag.name}</p>
               </PopoverItem>
             ))
           )}

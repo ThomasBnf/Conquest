@@ -8,7 +8,7 @@ import { X, type icons } from "lucide-react";
 import { useAdding } from "../hooks/useAdding";
 import { usePanel } from "../hooks/usePanel";
 import { useSelected } from "../hooks/useSelected";
-import type { WorkflowNode } from "../panels/types/node-data";
+import type { WorkflowNode } from "../panels/types/workflow-node.type";
 
 export const NextStep = () => {
   const { setPanel } = usePanel();
@@ -16,7 +16,7 @@ export const NextStep = () => {
   const { setIsAdding } = useAdding();
 
   const { getNodes, getEdges, deleteElements } = useReactFlow();
-  const { icon, type, label } = selected?.data ?? {};
+  const { icon, label } = selected?.data ?? {};
 
   const nodes = getNodes();
   const edges = getEdges();
@@ -26,6 +26,8 @@ export const NextStep = () => {
     ),
   ) as WorkflowNode | undefined;
 
+  const isTrigger = "isTrigger" in (selected?.data ?? {});
+  const isNextNodeTrigger = "isTrigger" in (nextNode?.data ?? {});
   const { label: nextNodeLabel } = nextNode?.data ?? {};
 
   const onDeleteNode = () => {
@@ -41,14 +43,15 @@ export const NextStep = () => {
         Add the next block in the workflow
       </p>
       <div className="relative mt-2">
-        <div className="relative z-10 flex items-center gap-2 border rounded-lg h-10 px-2 bg-muted">
+        <div className="relative z-10 flex items-center gap-2 border rounded-lg h-10 px-2 bg-muted-hover">
           <Icon
             name={icon as keyof typeof icons}
             size={24}
             className={cn(
               "border rounded-lg p-1",
-              type?.startsWith("trigger") &&
-                "border-blue-200 bg-blue-100 text-blue-500",
+              isTrigger
+                ? "border-yellow-300 bg-yellow-100 text-yellow-500"
+                : "border-green-300 bg-green-100 text-green-500",
             )}
           />
           <p>{label}</p>
@@ -71,8 +74,9 @@ export const NextStep = () => {
                   size={24}
                   className={cn(
                     "border rounded-lg p-1",
-                    nextNode?.type?.startsWith("trigger") &&
-                      "border-blue-200 bg-blue-100 text-blue-500",
+                    isNextNodeTrigger
+                      ? "border-yellow-300 bg-yellow-100 text-yellow-500"
+                      : "border-green-300 bg-green-100 text-green-500",
                   )}
                 />
               ) : (
@@ -90,7 +94,7 @@ export const NextStep = () => {
                   className="ml-auto"
                   onClick={onDeleteNode}
                 >
-                  <X size={16} />
+                  <X size={15} />
                 </Button>
               )}
             </div>

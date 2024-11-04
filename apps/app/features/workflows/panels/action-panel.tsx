@@ -6,7 +6,7 @@ import cuid from "cuid";
 import type { icons } from "lucide-react";
 import { useChanging } from "../hooks/useChanging";
 import { useSelected } from "../hooks/useSelected";
-import type { WorkflowNode } from "./types/node-data";
+import type { WorkflowNode } from "./types/workflow-node.type";
 
 export const ActionPanel = () => {
   const { selected } = useSelected();
@@ -59,11 +59,11 @@ export const ActionPanel = () => {
                       classNameSpan="justify-start"
                       onClick={() => onSelect(node)}
                     >
-                      <div className="border rounded-lg bg-background p-1">
+                      <div className="border rounded-lg bg-green-100 border-green-200 p-1">
                         <Icon
                           name={data.icon as keyof typeof icons}
-                          size={14}
-                          className="text-muted-foreground"
+                          size={15}
+                          className="text-green-500"
                         />
                       </div>
                       <p className="font-medium">{data.label}</p>
@@ -136,8 +136,40 @@ export const nodes: {
       ],
     },
     {
+      label: "Communications",
+      nodes: [
+        {
+          id: cuid(),
+          type: "custom",
+          position: { x: 0, y: 0 },
+          data: {
+            icon: "MessageCircle",
+            label: "Send Slack message",
+            description: "",
+            type: "slack-message",
+            category: "communications",
+            message: "",
+          },
+        },
+      ],
+    },
+    {
       label: "Utilities",
       nodes: [
+        {
+          id: cuid(),
+          type: "custom",
+          position: { x: 0, y: 0 },
+          data: {
+            icon: "Clock",
+            label: "Wait",
+            description: "",
+            type: "wait",
+            category: "utilities",
+            duration: 0,
+            unit: "seconds",
+          },
+        },
         {
           id: cuid(),
           type: "custom",

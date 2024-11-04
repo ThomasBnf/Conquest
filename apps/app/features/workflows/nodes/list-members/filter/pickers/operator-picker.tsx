@@ -75,7 +75,7 @@ export const OperatorPicker = ({ filter }: Props) => {
       <DropdownMenuTrigger asChild>
         <Button
           variant="dropdown"
-          className="w-full rounded-none"
+          className="w-full rounded-none whitespace-nowrap"
           classNameSpan="justify-between"
         >
           {filter.operator.split("_").join(" ")}

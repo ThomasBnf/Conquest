@@ -15,7 +15,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useReactFlow } from "@xyflow/react";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
-import type { WorkflowNode } from "../panels/types/node-data";
+import type { WorkflowNode } from "../panels/types/workflow-node.type";
 
 type Props = {
   id: string;
