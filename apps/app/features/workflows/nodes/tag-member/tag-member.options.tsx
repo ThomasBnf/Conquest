@@ -41,11 +41,8 @@ export const TagMemberOptions = () => {
     setSelectedTags(updatedTags);
 
     updateNodeData(selected.id, {
-      ...selected,
-      data: {
-        ...parsedData,
-        tags: updatedTags,
-      },
+      ...parsedData,
+      tags: updatedTags,
     });
   };
 

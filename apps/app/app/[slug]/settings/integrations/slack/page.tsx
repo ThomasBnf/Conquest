@@ -22,9 +22,9 @@ export default function Page() {
   const params = useSearchParams();
   const code = params.get("code");
 
-  const user_scope = "chat:write,im:write";
+  const user_scope = "chat:write,im:write,channels:write";
   const scopes =
-    "channels:history,channels:join,channels:read,chat:write,files:read,groups:read,links:read,reactions:read,team:read,users.profile:read,users:read,users:read.email";
+    "channels:history,channels:join,channels:read,files:read,groups:history,groups:read,links:read,reactions:read,team:read,users.profile:read,users:read,users:read.email";
 
   const onStartInstall = () => {
     setLoading(true);

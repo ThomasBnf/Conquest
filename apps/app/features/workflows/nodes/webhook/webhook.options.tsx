@@ -29,9 +29,6 @@ export const WebhookOptions = () => {
   const onSubmit = ({ url }: FormUrl) => {
     if (!selected) return;
 
-    console.log(url);
-    console.log(getNodes());
-
     setNodes((nodes) =>
       nodes.map((node) =>
         node.id === selected.id

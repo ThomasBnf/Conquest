@@ -45,8 +45,6 @@ export const RecurringScheduleOptions = () => {
   const onSubmit = ({ frequency, repeat_on, time }: FormRecurring) => {
     if (!selected?.id) return;
 
-    console.log(frequency, repeat_on, time);
-
     updateNodeData(selected.id, {
       ...selected?.data,
       frequency,

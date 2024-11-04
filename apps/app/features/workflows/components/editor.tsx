@@ -24,6 +24,7 @@ import { MousePointerClick } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { _runWorkflow } from "../actions/_runWorkflow";
+import { _runWorkflowInngest } from "../actions/_runWorkflowInngest";
 import { _updateWorkflow } from "../actions/_updateWorkflow";
 import { useChanging } from "../hooks/useChanging";
 import { usePanel } from "../hooks/usePanel";
@@ -229,6 +230,7 @@ export const Editor = ({ workflow }: Props) => {
 
   return (
     <div className="flex h-full">
+      <Button onClick={() => _runWorkflowInngest({ workflow })}>inngest</Button>
       <ReactFlow
         nodes={nodes}
         edges={edges}

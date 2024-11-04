@@ -35,7 +35,6 @@ export const oauthV2 = authAction
     });
 
     const data = await response.json();
-    console.log(data);
     const { access_token, authed_user, team } = data;
 
     await upsertIntegration({

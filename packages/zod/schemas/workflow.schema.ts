@@ -11,8 +11,8 @@ export const WorkflowSchema = z.object({
   nodes: z.array(NodeSchema),
   edges: z.array(EdgeSchema),
   workspace_id: z.string().cuid(),
-  created_at: z.date(),
-  updated_at: z.date(),
+  created_at: z.coerce.date(),
+  updated_at: z.coerce.date(),
 });
 
 export type Workflow = z.infer<typeof WorkflowSchema>;

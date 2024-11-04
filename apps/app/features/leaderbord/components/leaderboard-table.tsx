@@ -57,7 +57,7 @@ export const LeaderbordTable = ({ tags, from, to }: Props) => {
   const flatData = useMemo(() => {
     const pages = data?.pages;
     if (!pages?.length) return [];
-    return MemberWithActivitiesSchema.array().parse(pages.flat());
+    return MemberWithActivitiesSchema.array().parse(pages.flat()).slice(3);
   }, [data?.pages]);
 
   const table = useReactTable({

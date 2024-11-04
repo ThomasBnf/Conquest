@@ -29,7 +29,7 @@ export const installSlack = authAction
     const web = new WebClient(token);
 
     await createListMembers({ web, workspace_id });
-    await createListChannels({ web, token: slack_user_token });
+    await createListChannels({ web, token });
 
     await updateIntegration({
       external_id,

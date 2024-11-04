@@ -13,8 +13,8 @@ export const RepeatOnSchema = z.enum([
 ]);
 
 export const NodeTypeSchema = z.enum([
-  "trigger-recurring-schedule",
-  "trigger-manual-run",
+  "recurring-schedule",
+  "manual-run",
   "list-records",
   "add-tag",
   "remove-tag",
