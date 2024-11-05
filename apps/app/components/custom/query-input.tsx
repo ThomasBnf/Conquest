@@ -36,7 +36,7 @@ export const QueryInput = ({
   return (
     <div
       className={cn(
-        "relative flex w-56 items-center rounded-lg border px-2 actions-secondary",
+        "relative flex w-56 items-center rounded-md border px-2 actions-secondary",
         isFocus && "ring-2 ring-ring border-main-400",
         className,
       )}

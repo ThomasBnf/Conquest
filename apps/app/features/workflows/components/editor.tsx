@@ -183,7 +183,6 @@ export const Editor = ({ workflow }: Props) => {
   );
 
   const onSave = async () => {
-    console.log(toObject());
     _updateWorkflow({
       id: workflow.id,
       nodes: toObject().nodes.map((node) => {
@@ -215,7 +214,6 @@ export const Editor = ({ workflow }: Props) => {
   const onRunWorkflow = async () => {
     setRunning(true);
     const run = await _runWorkflowInngest({ workflow_id: workflow.id });
-    console.log(run);
     if (run) toast.success("Workflow successfully run");
     setRunning(false);
   };

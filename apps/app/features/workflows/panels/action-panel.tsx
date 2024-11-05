@@ -59,7 +59,7 @@ export const ActionPanel = () => {
                       classNameSpan="justify-start"
                       onClick={() => onSelect(node)}
                     >
-                      <div className="border rounded-lg bg-green-100 border-green-200 p-1">
+                      <div className="border rounded-md bg-green-100 border-green-200 p-1">
                         <Icon
                           name={data.icon as keyof typeof icons}
                           size={15}

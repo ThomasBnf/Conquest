@@ -11,12 +11,19 @@ enum SOURCE {
   API
   MANUAL
   SLACK
+  DISCOURSE
 }
 
 enum GENDER {
   MALE
   FEMALE
   OTHER
+}
+
+enum STATUS {
+  CONNECTED
+  DISCONNECTED
+  SYNCING
 }
 
 model Activity {
@@ -68,11 +75,11 @@ model Company {
   description  String?
   industry     String?
   address      String?
-  website      String?   @unique
+  domain       String?   @unique
   employees    Int?
   founded_at   DateTime?
-  members      Member[]
   workspace_id String
+  members      Member[]
   workspace    Workspace @relation(fields: [workspace_id], references: [id], onDelete: Cascade)
   created_at   DateTime  @default(now())
   updated_at   DateTime  @updatedAt
@@ -81,30 +88,31 @@ model Company {
 }
 
 model Member {
-  id           String    @id @default(cuid())
-  first_name   String?
-  last_name    String?
-  full_name    String?
-  emails       String[]  @default([])
-  phones       String[]  @default([])
-  avatar_url   String?
-  job_title    String?
-  bio          String?
-  gender       GENDER?
-  address      String?
-  search       String
-  source       SOURCE
-  tags         String[]
-  slack_id     String?   @unique
-  company_id   String?
-  company      Company?  @relation(fields: [company_id], references: [id], onDelete: SetNull)
+  id         String   @id @default(cuid())
+  slack_id   String?  @unique
+  first_name String?
+  last_name  String?
+  full_name  String?
+  gender     GENDER?
+  avatar_url String?
+  bio        String?
+  emails     String[] @default([])
+  phones     String[] @default([])
+  address    String?
+  job_title  String?
+  company_id String?
+  company    Company? @relation(fields: [company_id], references: [id], onDelete: SetNull)
+  source     SOURCE
+  search     String
+  tags       String[]
+
   workspace_id String
+  workspace    Workspace @relation(fields: [workspace_id], references: [id], onDelete: Cascade)
   joined_at    DateTime?
   deleted_at   DateTime?
   created_at   DateTime  @default(now())
   updated_at   DateTime  @updatedAt
 
-  workspace  Workspace  @relation(fields: [workspace_id], references: [id], onDelete: Cascade)
   activities Activity[]
 
   @@index([id, workspace_id])
@@ -118,7 +126,7 @@ model Integration {
   token            String
   slack_user_token String?
   scopes           String
-  status           String
+  status           STATUS
   installed_at     DateTime?
   workspace_id     String
   workspace        Workspace @relation(fields: [workspace_id], references: [id], onDelete: Cascade)

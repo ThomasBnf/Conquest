@@ -30,7 +30,7 @@ export function Header<TData, TValue>({
           <Button
             variant="secondary"
             size="sm"
-            className="h-10 text-xs uppercase text-muted-foreground flex-1 rounded-none data-[state=open]:bg-accent"
+            className="h-10 text-xs uppercase text-muted-foreground flex-1 rounded-none"
           >
             {title}
             {column.getIsSorted() === "desc" ? (

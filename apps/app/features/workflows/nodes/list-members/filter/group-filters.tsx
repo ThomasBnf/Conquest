@@ -14,7 +14,7 @@ export const GroupFilters = () => {
         {groupFilters.map((group) => (
           <div
             key={group.id}
-            className="flex flex-col items-start gap-2 rounded-lg border bg-muted p-3"
+            className="flex flex-col items-start gap-2 rounded-md border bg-muted p-3"
           >
             <p className="font-medium first-letter:uppercase">
               {group.category.replace(/_/g, " ")}

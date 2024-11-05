@@ -23,35 +23,35 @@ import {
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import ky from "ky";
 import { useEffect, useMemo } from "react";
 import { useInView } from "react-intersection-observer";
+import { _listLeaderboard } from "../actions/_listLeaderboard";
 import { Columns } from "./columns";
 
 type Props = {
+  initialMembers: MemberWithActivities[] | undefined;
   tags: Tag[] | undefined;
   from: Date;
   to: Date;
 };
 
-export const LeaderbordTable = ({ tags, from, to }: Props) => {
+export const LeaderbordTable = ({ initialMembers, tags, from, to }: Props) => {
   const { ref, inView } = useInView();
   const columns = Columns(tags);
 
   const { data, isLoading, fetchNextPage, hasNextPage } = useInfiniteQuery({
     queryKey: ["leaderboard", from, to],
-    queryFn: async ({ pageParam }) =>
-      await ky
-        .get("/api/leaderboard", {
-          searchParams: {
-            page: pageParam,
-            from: from.toISOString(),
-            to: to.toISOString(),
-          },
-        })
-        .json<MemberWithActivities[]>(),
+    queryFn: async ({ pageParam }) => {
+      const rLeaderboard = await _listLeaderboard({
+        page: pageParam,
+        from,
+        to,
+      });
+      return rLeaderboard?.data;
+    },
     getNextPageParam: (_, allPages) => allPages.length + 1,
     initialPageParam: 1,
+    initialData: { pages: [initialMembers], pageParams: [1] },
   });
 
   const flatData = useMemo(() => {
@@ -69,6 +69,8 @@ export const LeaderbordTable = ({ tags, from, to }: Props) => {
   useEffect(() => {
     if (inView && hasNextPage) fetchNextPage();
   }, [inView]);
+
+  if (!flatData.length) return;
 
   return (
     <ScrollArea>
@@ -96,7 +98,7 @@ export const LeaderbordTable = ({ tags, from, to }: Props) => {
                 <IsLoading />
               </TableCell>
             </TableRow>
-          ) : table.getRowModel().rows?.length ? (
+          ) : (
             table.getRowModel().rows.map((row) => (
               <TableRow
                 key={row.id}
@@ -109,12 +111,6 @@ export const LeaderbordTable = ({ tags, from, to }: Props) => {
                 ))}
               </TableRow>
             ))
-          ) : (
-            <TableRow>
-              <TableCell colSpan={columns.length} className="h-24 text-center">
-                No members found.
-              </TableCell>
-            </TableRow>
           )}
         </TableBody>
         <TableFooter className={cn(isLoading && "border-t-0")}>

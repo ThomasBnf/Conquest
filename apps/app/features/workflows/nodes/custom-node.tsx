@@ -58,14 +58,14 @@ export const CustomNode = ({ hasEdges, ...props }: Props) => {
         }}
         className={cn(
           "relative flex w-80 flex-1 flex-col border bg-background p-3",
-          isTrigger ? "rounded-b-lg rounded-tr-lg" : "rounded-lg",
+          isTrigger ? "rounded-b-lg rounded-tr-lg" : "rounded-md",
           selected?.id === node.id && "border-main-500 ring-2 ring-ring",
         )}
       >
         <div className="flex items-center gap-2">
           <div
             className={cn(
-              "rounded-lg border p-1",
+              "rounded-md border p-1",
               isTrigger
                 ? "border-yellow-300 bg-yellow-100 text-yellow-500"
                 : "border-green-300 bg-green-100 text-green-500",

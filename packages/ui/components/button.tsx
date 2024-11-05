@@ -5,7 +5,7 @@ import { Loader2 } from "lucide-react";
 import * as React from "react";
 
 const buttonVariants = cva(
-  "inline-flex items-center rounded-lg justify-center text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:border focus-visible:border-main-400 disabled:cursor-not-allowed disabled:opacity-50",
+  "inline-flex items-center rounded-md justify-center text-sm transition-colors focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50",
   {
     variants: {
       variant: {
@@ -16,7 +16,7 @@ const buttonVariants = cva(
         outline:
           "border bg-background hover:bg-accent hover:text-accent-foreground actions-secondary",
         secondary:
-          "bg-secondary text-secondary-foreground hover:bg-secondary/70",
+          "bg-secondary text-secondary-foreground hover:bg-secondary-hover",
         ghost: "hover:bg-secondary hover:text-accent-foreground",
         dropdown: "bg-background hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",

@@ -43,12 +43,12 @@ export const NextStep = () => {
         Add the next block in the workflow
       </p>
       <div className="relative mt-2">
-        <div className="relative z-10 flex items-center gap-2 border rounded-lg h-10 px-2 bg-muted-hover">
+        <div className="relative z-10 flex items-center gap-2 border rounded-md h-10 px-2 bg-muted-hover">
           <Icon
             name={icon as keyof typeof icons}
             size={24}
             className={cn(
-              "border rounded-lg p-1",
+              "border rounded-md p-1",
               isTrigger
                 ? "border-yellow-300 bg-yellow-100 text-yellow-500"
                 : "border-green-300 bg-green-100 text-green-500",
@@ -62,7 +62,7 @@ export const NextStep = () => {
             <Badge variant="secondary">Next step</Badge>
             {/* biome-ignore lint/a11y/useKeyWithClickEvents: <explanation> */}
             <div
-              className="relative cursor-pointer z-10 flex items-center gap-2 border rounded-lg h-10 px-2 hover:bg-muted-hover transition-colors-hover"
+              className="relative cursor-pointer z-10 flex items-center gap-2 border rounded-md h-10 px-2 hover:bg-muted-hover transition-colors-hover"
               onClick={() => {
                 setPanel("actions");
                 setIsAdding(true);
@@ -73,14 +73,14 @@ export const NextStep = () => {
                   name={nextNode?.data.icon as keyof typeof icons}
                   size={24}
                   className={cn(
-                    "border rounded-lg p-1",
+                    "border rounded-md p-1",
                     isNextNodeTrigger
                       ? "border-yellow-300 bg-yellow-100 text-yellow-500"
                       : "border-green-300 bg-green-100 text-green-500",
                   )}
                 />
               ) : (
-                <Icon name="Plus" size={24} className="border rounded-lg p-1" />
+                <Icon name="Plus" size={24} className="border rounded-md p-1" />
               )}
               <p>
                 {nextNodeLabel ?? (

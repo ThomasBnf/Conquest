@@ -3,12 +3,13 @@ import { Input } from "@conquest/ui/input";
 import { TextField } from "@conquest/ui/text-field";
 import { cn } from "@conquest/ui/utils/cn";
 import { useState } from "react";
-
+import { toast } from "sonner";
 type Props = {
   defaultValue: string | null;
   placeholder?: string;
   onUpdate: (value: string) => void;
   textArea?: boolean;
+  className?: string;
 };
 
 export const EditableInput = ({
@@ -16,9 +17,33 @@ export const EditableInput = ({
   placeholder,
   onUpdate,
   textArea,
+  className,
 }: Props) => {
   const [value, setValue] = useState(defaultValue);
   const [isFocus, setIsFocus] = useState(false);
+
+  const onBlur = (value: string) => {
+    if (!value) {
+      toast.error("Field cannot be empty");
+      return;
+    }
+
+    onUpdate(value);
+    setIsFocus(false);
+  };
+
+  const onKeyDown = (key: string) => {
+    if (key === "Enter") {
+      if (!value) {
+        toast.error("Field cannot be empty");
+        return;
+      }
+      onUpdate(value ?? "");
+      setIsFocus(false);
+    }
+  };
+
+  console.log(value);
 
   if (!isFocus) {
     return (
@@ -26,7 +51,7 @@ export const EditableInput = ({
         variant="ghost"
         size="xs"
         onClick={() => setIsFocus(true)}
-        className={cn("-ml-1.5", value && "h-fit")}
+        className={cn("py-0.5", value && "h-fit", className)}
         classNameSpan={cn(value && "text-start")}
       >
         {value ? (
@@ -43,37 +68,21 @@ export const EditableInput = ({
       {textArea ? (
         <TextField
           autoFocus
-          className="h-8"
           rows={3}
           value={value ?? ""}
           onChange={(event) => setValue(event.target.value)}
-          onBlur={(event) => {
-            onUpdate(event.target.value);
-            setIsFocus(false);
-          }}
-          onKeyDown={(event) => {
-            if (event.key === "Enter") {
-              onUpdate(value ?? "");
-              setIsFocus(false);
-            }
-          }}
+          onBlur={(event) => onBlur(event.target.value)}
+          onKeyDown={(event) => onKeyDown(event.key)}
+          className={className}
         />
       ) : (
         <Input
           autoFocus
-          className="h-7 px-[3px]"
+          className="h-8 px-[5px]"
           value={value ?? ""}
           onChange={(event) => setValue(event.target.value)}
-          onBlur={(event) => {
-            onUpdate(event.target.value);
-            setIsFocus(false);
-          }}
-          onKeyDown={(event) => {
-            if (event.key === "Enter") {
-              onUpdate(value ?? "");
-              setIsFocus(false);
-            }
-          }}
+          onBlur={(event) => onBlur(event.target.value)}
+          onKeyDown={(event) => onKeyDown(event.key)}
         />
       )}
     </>

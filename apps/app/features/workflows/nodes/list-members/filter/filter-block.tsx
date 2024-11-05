@@ -26,7 +26,7 @@ export const FilterBlock = ({ groupFilter, filter }: Props) => {
 
   return (
     <div className="flex items-center gap-1">
-      <div className="flex w-full flex-col divide-y overflow-hidden rounded-lg border">
+      <div className="flex w-full flex-col divide-y overflow-hidden rounded-md border">
         <div className="flex w-full items-center divide-x">
           {hasFilters && (
             <GroupOperatorPicker

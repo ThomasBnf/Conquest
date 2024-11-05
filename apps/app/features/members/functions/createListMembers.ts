@@ -1,7 +1,7 @@
 import { safeAction } from "@/lib/safeAction";
 import { WebClient } from "@slack/web-api";
 import { z } from "zod";
-import { mergeMember } from "./mergeMember";
+import { upsertMember } from "./upsertMember";
 
 export const createListMembers = safeAction
   .metadata({
@@ -40,7 +40,7 @@ export const createListMembers = safeAction
             title,
           } = profile;
 
-          await mergeMember({
+          await upsertMember({
             slack_id: id,
             first_name,
             last_name,

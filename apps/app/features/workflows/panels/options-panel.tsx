@@ -78,7 +78,7 @@ export const OptionsPanel = () => {
                   name={icon as keyof typeof icons}
                   size={46}
                   className={cn(
-                    "border rounded-lg p-2",
+                    "border rounded-md p-2",
                     isTrigger
                       ? "border-yellow-300 bg-yellow-100 text-yellow-500"
                       : "border-green-300 bg-green-100 text-green-500",

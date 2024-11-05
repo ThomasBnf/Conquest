@@ -51,7 +51,7 @@ export const TagMemberOptions = () => {
       <Label>Tags</Label>
       <Popover>
         <PopoverTrigger asChild>
-          <div className="flex flex-wrap items-center gap-1 rounded-lg border px-2 py-[0.4375rem]">
+          <div className="flex flex-wrap items-center gap-1 rounded-md border px-2 py-[0.4375rem]">
             {selectedTags.map((tagId) => {
               const tag = tags?.find((t) => t.id === tagId);
               return tag ? (

@@ -1,11 +1,13 @@
+import { filteredDomain } from "@/features/slack/helpers/filteredDomain";
 import { prisma } from "@/lib/prisma";
 import { safeAction } from "@/lib/safeAction";
+import { type Company, CompanySchema } from "@conquest/zod/company.schema";
 import { MemberSchema } from "@conquest/zod/member.schema";
 import { z } from "zod";
 
-export const mergeMember = safeAction
+export const upsertMember = safeAction
   .metadata({
-    name: "mergeMember",
+    name: "upsertMember",
   })
   .schema(
     z.object({
@@ -36,6 +38,32 @@ export const mergeMember = safeAction
     }) => {
       const formattedEmail = email?.toLowerCase().trim();
       const formattedPhone = phone?.toLowerCase().trim();
+      const formattedDomain = formattedEmail?.split("@")[1];
+
+      let company: Company | null = null;
+
+      if (formattedDomain) {
+        const { companyName, domain } = filteredDomain(formattedDomain) ?? {};
+
+        if (companyName && domain) {
+          company = CompanySchema.parse(
+            await prisma.company.upsert({
+              where: {
+                domain,
+              },
+              update: {
+                name: companyName,
+                domain,
+              },
+              create: {
+                name: companyName,
+                domain,
+                workspace_id,
+              },
+            }),
+          );
+        }
+      }
 
       const member = await prisma.member.upsert({
         where: {
@@ -54,6 +82,7 @@ export const mergeMember = safeAction
             formattedEmail ? [formattedEmail] : undefined,
             formattedPhone ? [formattedPhone] : undefined,
           ),
+          company_id: company?.id ?? null,
         },
         create: {
           slack_id,
@@ -70,6 +99,7 @@ export const mergeMember = safeAction
             formattedEmail ? [formattedEmail] : undefined,
             formattedPhone ? [formattedPhone] : undefined,
           ),
+          company_id: company?.id ?? null,
           workspace_id,
         },
       });

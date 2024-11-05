@@ -1,27 +1,23 @@
-import { getCurrentUser } from "@/features/users/functions/getCurrentUser";
-import { prisma } from "@/lib/prisma";
-import { safeRoute } from "@/lib/safeRoute";
-import { NextResponse } from "next/server";
+"use server";
+
+import { MemberWithActivitiesSchema } from "@conquest/zod/activity.schema";
+import { authAction } from "lib/authAction";
+import { prisma } from "lib/prisma";
 import { z } from "zod";
 
-export const GET = safeRoute
-  .use(async () => {
-    return await getCurrentUser();
-  })
-  .query(
+export const _listLeaderboard = authAction
+  .metadata({ name: "_listLeaderboard" })
+  .schema(
     z.object({
-      page: z.coerce.number(),
-      from: z.coerce.date(),
-      to: z.coerce.date(),
+      page: z.number().default(0),
+      from: z.date(),
+      to: z.date(),
     }),
   )
-  .handler(async (_, { data: user, query }) => {
-    const { page, from, to } = query;
-    const workspace_id = user.workspace_id;
-
+  .action(async ({ ctx, parsedInput: { page, from, to } }) => {
     const members = await prisma.member.findMany({
       where: {
-        workspace_id,
+        workspace_id: ctx.user.workspace_id,
         AND: [
           {
             activities: {
@@ -52,5 +48,5 @@ export const GET = safeRoute
       skip: (page - 1) * 50,
     });
 
-    return NextResponse.json(members);
+    return MemberWithActivitiesSchema.array().parse(members);
   });

@@ -4,7 +4,7 @@ type Props = {
   className?: string;
 };
 
-export const SignOut = ({ className }: Props) => {
+export const LogOut = ({ className }: Props) => {
   return (
     <Image
       src="/icons/logout.svg"

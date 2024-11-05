@@ -1,6 +1,6 @@
 "use client";
 
-import { SignOut } from "@/components/icons/SignOut";
+import { LogOut } from "@/components/icons/LogOut";
 import { useUser } from "@/context/userContext";
 import { Button } from "@conquest/ui/button";
 import {
@@ -27,7 +27,7 @@ export default function Page() {
     <div className="flex h-full flex-col justify-between p-4 lg:px-8 bg-muted/30">
       <div className="flex items-center justify-between">
         <Button onClick={onClick} variant="outline" className="self-start">
-          <SignOut className="size-[18px]" />
+          <LogOut className="size-[18px]" />
           Log out
         </Button>
         <div>

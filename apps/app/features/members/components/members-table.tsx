@@ -1,6 +1,5 @@
 "use client";
 
-import { QueryInput } from "@/components/custom/query-input";
 import { IsLoading } from "@/components/states/is-loading";
 import { Columns } from "@/features/members/components/columns";
 import { useParamsMembers } from "@/hooks/useParamsMembers";
@@ -27,17 +26,19 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import ky from "ky";
 import { Fragment, useEffect, useMemo, useState } from "react";
 import { useInView } from "react-intersection-observer";
 import { useDebounce } from "use-debounce";
+import { z } from "zod";
+import { _listMembers } from "../actions/_listMembers";
 import { ActionMenu } from "./action-menu";
 
 type Props = {
+  initialMembers: MemberWithActivities[] | undefined;
   tags: Tag[] | undefined;
 };
 
-export const MembersTable = ({ tags }: Props) => {
+export const MembersTable = ({ initialMembers, tags }: Props) => {
   const { ref, inView } = useInView();
   const columns = useMemo(() => Columns({ tags }), [tags]);
 
@@ -49,25 +50,24 @@ export const MembersTable = ({ tags }: Props) => {
   const { data, isLoading, fetchNextPage, hasNextPage } = useInfiniteQuery({
     queryKey: ["members", debouncedSearch, id, desc, sorting],
     queryFn: async ({ pageParam }) => {
-      return await ky
-        .get("/api/members", {
-          searchParams: {
-            page: pageParam,
-            search: debouncedSearch,
-            id,
-            desc,
-          },
-        })
-        .json<MemberWithActivities[]>();
+      const rMembers = await _listMembers({
+        page: pageParam,
+        search: debouncedSearch,
+        id,
+        desc,
+      });
+      return rMembers?.data;
     },
     getNextPageParam: (_, allPages) => allPages.length + 1,
+    initialData: { pages: [initialMembers], pageParams: [1] },
     initialPageParam: 1,
   });
 
   const members = useMemo(() => {
     const pages = data?.pages;
+    console.log(data);
     if (!pages?.length) return [];
-    return MemberWithActivitiesSchema.array().parse(pages.flat());
+    return z.array(MemberWithActivitiesSchema).parse(pages.flat());
   }, [data?.pages]);
 
   const table = useReactTable({
@@ -87,13 +87,13 @@ export const MembersTable = ({ tags }: Props) => {
 
   return (
     <Fragment>
-      <div className="px-4 min-h-12 flex items-center border-b">
+      {/* <div className="px-4 min-h-12 flex items-center border-b">
         <QueryInput
           query={search}
           setQuery={(value) => setSearchParams({ search: value })}
           placeholder="Search in members..."
         />
-      </div>
+      </div> */}
       <ScrollArea>
         <Table className="whitespace-nowrap">
           <TableHeader className="sticky top-0 z-10 after:absolute after:inset-x-0 after:bottom-0 after:h-px after:bg-border">
@@ -112,7 +112,7 @@ export const MembersTable = ({ tags }: Props) => {
               </TableRow>
             ))}
           </TableHeader>
-          <TableBody>
+          <TableBody className={cn(members.length < 50 && "border-b")}>
             {isLoading ? (
               <TableRow>
                 <TableCell colSpan={columns.length}>
@@ -146,11 +146,13 @@ export const MembersTable = ({ tags }: Props) => {
               </TableRow>
             )}
           </TableBody>
-          <TableFooter className={cn(isLoading && "border-t-0")}>
-            <TableRow>
-              <TableCell colSpan={columns.length} ref={ref} className="p-0" />
-            </TableRow>
-          </TableFooter>
+          {members.length > 50 && (
+            <TableFooter className={cn(isLoading && "border-t-0")}>
+              <TableRow>
+                <TableCell colSpan={columns.length} ref={ref} className="p-0" />
+              </TableRow>
+            </TableFooter>
+          )}
         </Table>
         <ScrollBar orientation="horizontal" />
         <ScrollBar orientation="vertical" />

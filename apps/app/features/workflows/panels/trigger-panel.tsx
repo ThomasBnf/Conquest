@@ -57,7 +57,7 @@ export const TriggerPanel = () => {
                       classNameSpan="justify-start"
                       onClick={() => onClick(node)}
                     >
-                      <div className="p-1 rounded-lg border bg-background">
+                      <div className="p-1 rounded-md border bg-background">
                         <Icon
                           name={data.icon as keyof typeof icons}
                           size={15}

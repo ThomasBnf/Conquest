@@ -66,7 +66,7 @@ export default function Page() {
       </Link>
       <div className="mt-6 flex flex-col gap-4">
         <div className="flex items-center gap-4">
-          <div className="rounded-lg border p-3">
+          <div className="rounded-md border p-3">
             <Image src="/social/slack.svg" alt="Slack" width={24} height={24} />
           </div>
           <div>
@@ -76,7 +76,7 @@ export default function Page() {
             </p>
           </div>
         </div>
-        <div className="rounded-lg border overflow-hidden">
+        <div className="rounded-md border overflow-hidden">
           <div className="flex items-center justify-between p-4 bg-muted">
             <div className="flex items-center gap-4">
               <Link
@@ -105,7 +105,6 @@ export default function Page() {
             {!slack?.id && (
               <Button
                 loading={slack?.status === "SYNCING" || loading}
-                className={cn(buttonVariants({ variant: "default" }))}
                 onClick={onStartInstall}
               >
                 Install
@@ -117,17 +116,12 @@ export default function Page() {
               </Button>
             )}
             {slack?.status === "SYNCING" && (
-              <Button
-                loading={true}
-                className={cn(buttonVariants({ variant: "default" }))}
-              >
-                Installing...
-              </Button>
+              <Button loading>Installing...</Button>
             )}
             {slack?.status === "CONNECTED" && slack?.installed_at && (
               <DeleteDialog
                 title="Disconnect Slack"
-                description="Integrations will be removed from your workspace and all your data will be lost."
+                description="Integrations will be removed from your workspace and all your data will be lost."
                 onConfirm={onUninstall}
               >
                 Uninstall
@@ -138,8 +132,9 @@ export default function Page() {
           <div className="p-4">
             <p className="font-medium">Overview</p>
             <p className="text-muted-foreground">
-              The Slack integration makes it easy to get messages, replies,
-              reactions into Conquest.
+              Slack integration makes it easy to get messages, replies,
+              reactions into Conquest, and send direct messages to your members
+              via workflows
             </p>
           </div>
         </div>

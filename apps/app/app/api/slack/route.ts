@@ -10,7 +10,7 @@ import { updateChannel } from "@/features/channels/functions/updateChannel";
 import { getIntegration } from "@/features/integrations/functions/getIntegration";
 import { updateIntegration } from "@/features/integrations/functions/updateIntegration";
 import { getMember } from "@/features/members/functions/getMember";
-import { mergeSlackMember } from "@/features/slack/actions/mergeSlackMember";
+import { upsertSlackMember } from "@/features/slack/functions/upsertSlackMember";
 import { getFiles } from "@/features/slack/helpers/getFiles";
 import { prisma } from "@/lib/prisma";
 import { safeRoute } from "@/lib/safeRoute";
@@ -92,7 +92,7 @@ export const POST = safeRoute.body(bodySchema).handler(async (_, context) => {
       const handleMessage = async (messageEvent: GenericMessageEvent) => {
         const { user, text, thread_ts, ts, files } = messageEvent;
 
-        const rMember = await mergeSlackMember({ user, workspace_id, token });
+        const rMember = await upsertSlackMember({ user, workspace_id, token });
         const member = rMember?.data;
 
         if (!member) return NextResponse.json({ status: 200 });
@@ -176,7 +176,7 @@ export const POST = safeRoute.body(bodySchema).handler(async (_, context) => {
       const { user, item, reaction } = event;
       const { channel: channel_id, ts } = item;
 
-      const rMember = await mergeSlackMember({ user, workspace_id, token });
+      const rMember = await upsertSlackMember({ user, workspace_id, token });
       const member = rMember?.data;
 
       if (!member) return NextResponse.json({ status: 200 });
@@ -266,7 +266,7 @@ export const POST = safeRoute.body(bodySchema).handler(async (_, context) => {
 
       if (!inviter) break;
 
-      const rMember = await mergeSlackMember({ user, workspace_id, token });
+      const rMember = await upsertSlackMember({ user, workspace_id, token });
       const member = rMember?.data;
 
       if (!member) return NextResponse.json({ status: 200 });
@@ -328,7 +328,7 @@ export const POST = safeRoute.body(bodySchema).handler(async (_, context) => {
 
     case "user_change": {
       const { id, deleted } = event.user;
-      await mergeSlackMember({ user: id, workspace_id, token, deleted });
+      await upsertSlackMember({ user: id, workspace_id, token, deleted });
 
       break;
     }

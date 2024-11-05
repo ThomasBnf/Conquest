@@ -1,10 +1,10 @@
 import { DateRangePicker } from "@/components/custom/date-range-picker";
 import { Header } from "@/components/layouts/header";
 import { PageLayout } from "@/components/layouts/page-layout";
+import { _listLeaderboard } from "@/features/leaderbord/actions/_listLeaderboard";
 import { LeaderbordTable } from "@/features/leaderbord/components/leaderboard-table";
 import { Podium } from "@/features/leaderbord/components/podium";
-import { listLeaderboard } from "@/features/leaderbord/functions/listLeaderboard";
-import { listTags } from "@/features/tags/queries/listTags";
+import { listTags } from "@/features/tags/functions/listTags";
 import { searchParamsDate } from "lib/searchParamsDate";
 
 type Props = {
@@ -14,7 +14,7 @@ type Props = {
 export default async function Page({ searchParams }: Props) {
   const { from, to } = searchParamsDate.parse(searchParams);
 
-  const rMembers = await listLeaderboard({ page: 1, from, to });
+  const rMembers = await _listLeaderboard({ page: 1, from, to });
   const rTags = await listTags();
 
   const members = rMembers?.data;
@@ -30,7 +30,12 @@ export default async function Page({ searchParams }: Props) {
           <Podium key={member.id} member={member} position={position} />
         ))}
       </div>
-      <LeaderbordTable tags={tags} from={from} to={to} />
+      <LeaderbordTable
+        initialMembers={members}
+        tags={tags}
+        from={from}
+        to={to}
+      />
     </PageLayout>
   );
 }

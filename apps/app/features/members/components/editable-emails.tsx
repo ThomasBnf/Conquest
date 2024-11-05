@@ -81,7 +81,7 @@ export const EditableEmails = ({ member }: Props) => {
           );
         })}
       </div>
-      <PopoverContent align="start" className="w-80 p-0">
+      <PopoverContent align="start" className="w-64 p-0">
         <Command loop>
           <CommandList>
             <CommandGroup>

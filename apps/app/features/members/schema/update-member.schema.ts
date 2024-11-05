@@ -2,6 +2,8 @@ import { z } from "zod";
 
 export const updateMemberSchema = z.object({
   id: z.string(),
+  first_name: z.string().optional(),
+  last_name: z.string().optional(),
   emails: z.array(z.string()).optional(),
   phones: z.array(z.string()).optional(),
   job_title: z.string().optional(),

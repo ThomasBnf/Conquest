@@ -2,6 +2,7 @@ import { AppSidebar } from "@/components/layouts/app-sidebar";
 import { UserProvider } from "@/context/userContext";
 import { getCurrentUser } from "@/features/users/functions/getCurrentUser";
 import { SidebarProvider } from "@conquest/ui/sidebar";
+import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import type { PropsWithChildren } from "react";
 
@@ -14,17 +15,20 @@ export default async function Layout({
   children,
   params,
 }: PropsWithChildren<Props>) {
-  const { slug } = await params;
+  const cookieStore = cookies();
+  const defaultOpen = cookieStore.get("sidebar:state")?.value === "true";
+  const { slug } = params;
   const user = await getCurrentUser();
 
   if (!user.onboarding) redirect("/");
   if (user.workspace.slug !== slug) redirect(`/${user.workspace.slug}`);
 
   return (
-    <SidebarProvider>
+    <SidebarProvider defaultOpen={defaultOpen}>
       <UserProvider user={user}>
         <AppSidebar />
-        <div className="flex-1 h-dvh overflow-hidden">{children}</div>
+        {/* <SidebarSettings /> */}
+        <main className="flex-1 h-dvh overflow-hidden">{children}</main>
       </UserProvider>
     </SidebarProvider>
   );

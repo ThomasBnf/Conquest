@@ -1,4 +1,4 @@
-import { listTags } from "@/features/tags/queries/listTags";
+import { listTags } from "@/features/tags/functions/listTags";
 import { Tags } from "@/features/tags/tags";
 import { Separator } from "@conquest/ui/separator";
 

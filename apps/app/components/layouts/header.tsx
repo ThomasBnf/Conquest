@@ -1,3 +1,7 @@
+"use client";
+
+import { Separator } from "@conquest/ui/separator";
+import { SidebarTrigger, useSidebar } from "@conquest/ui/sidebar";
 import { cn } from "@conquest/ui/utils/cn";
 import type { HTMLAttributes, ReactNode } from "react";
 
@@ -7,6 +11,8 @@ type Props = HTMLAttributes<HTMLDivElement> & {
 };
 
 export const Header = ({ title, count, children, className }: Props) => {
+  const { open } = useSidebar();
+
   return (
     <div
       className={cn(
@@ -15,9 +21,15 @@ export const Header = ({ title, count, children, className }: Props) => {
       )}
     >
       <div className="flex items-center gap-2">
-        <h2 className="font-medium text-base">{title}</h2>
+        {!open && (
+          <>
+            <SidebarTrigger />
+            <Separator orientation="vertical" className="mr-1 h-4" />
+          </>
+        )}
+        <h2 className="font-medium">{title}</h2>
         {count && (
-          <p className="border rounded-lg px-1.5 py-0.5 font-mono actions-secondary">
+          <p className="border rounded-md px-1.5 py-0.5 font-mono actions-secondary">
             {count}
           </p>
         )}

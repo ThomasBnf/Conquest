@@ -61,7 +61,7 @@ export const WaitOptions = () => {
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="flex flex-1 border border-input shadow-sm items-center justify-between rounded-lg divide-x h-10 overflow-hidden"
+          className="flex flex-1 border border-input shadow-sm items-center justify-between rounded-md divide-x h-10 overflow-hidden"
         >
           <FormField
             control={form.control}

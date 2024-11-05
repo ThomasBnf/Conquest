@@ -16,7 +16,7 @@ export const TagCard = ({ tag }: Props) => {
     );
 
   return (
-    <div className="flex items-center justify-between rounded-lg border px-4 py-2">
+    <div className="flex items-center justify-between rounded-md border px-4 py-2">
       <div className="flex items-center gap-2">
         <div
           className="size-3 rounded-full"

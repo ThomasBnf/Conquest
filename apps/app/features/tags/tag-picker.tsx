@@ -44,33 +44,34 @@ export const TagPicker = ({ member, tags }: Props) => {
               isClickable
             />
           ))}
-          <Button
-            variant="ghost"
-            size="xs"
-            className="text-muted-foreground -ml-1.5"
-          >
+          <Button variant="ghost" size="xs" className="text-muted-foreground">
             {memberTags.length > 0 && <Plus size={15} />}
             {memberTags.length === 0 && "Add tags"}
           </Button>
         </div>
       </PopoverTrigger>
       <PopoverContent
-        className="w-60"
+        className="w-64"
+        align="start"
         onOpenAutoFocus={(e) => e.preventDefault()}
       >
-        {tags?.map((tag) => (
-          <PopoverCheckboxItem
-            key={tag.id}
-            checked={memberTags.includes(tag.id)}
-            onCheckedChange={() => handleTagToggle(tag)}
-          >
-            <div
-              className="size-3 rounded-full"
-              style={{ backgroundColor: tag.color }}
-            />
-            {tag.name}
-          </PopoverCheckboxItem>
-        ))}
+        {tags && tags?.length > 0 ? (
+          tags?.map((tag) => (
+            <PopoverCheckboxItem
+              key={tag.id}
+              checked={memberTags.includes(tag.id)}
+              onCheckedChange={() => handleTagToggle(tag)}
+            >
+              <div
+                className="size-3 rounded-full"
+                style={{ backgroundColor: tag.color }}
+              />
+              {tag.name}
+            </PopoverCheckboxItem>
+          ))
+        ) : (
+          <p className="text-muted-foreground">No tags found</p>
+        )}
       </PopoverContent>
     </Popover>
   );

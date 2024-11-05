@@ -26,7 +26,7 @@ export const SlackReaction = ({ activity }: Props) => {
 
   if (!data)
     return (
-      <div className="h-16 w-full border rounded-lg p-3">
+      <div className="h-16 w-full border rounded-md p-3">
         <Skeleton className="h-full" />
       </div>
     );
@@ -36,7 +36,7 @@ export const SlackReaction = ({ activity }: Props) => {
       <ActivityCard activity={data}>
         <SlackMarkdown activity={data} />
       </ActivityCard>
-      <p className="border border-[#1264a3] size-7 rounded-lg bg-[#e3f8ff] text-center place-content-center">
+      <p className="border border-[#1264a3] size-7 rounded-md bg-[#e3f8ff] text-center place-content-center">
         {emojiParser(slackActivity.message)}
       </p>
     </div>

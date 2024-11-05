@@ -14,7 +14,7 @@ export default function Page() {
       <div className="mt-4 grid grid-cols-2 gap-4">
         <Link
           href={`/${slug}/settings/integrations/slack`}
-          className="flex items-start gap-4 rounded-lg border p-4 hover:bg-muted-hover transition-colors"
+          className="flex items-start gap-4 rounded-md border p-4 hover:bg-muted-hover transition-colors"
         >
           <Image src="/social/slack.svg" alt="Slack" width={24} height={24} />
           <div>
