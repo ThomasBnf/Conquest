@@ -31,11 +31,14 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Company } from "../icons/Company";
 import { Integration } from "../icons/Integration";
+import { SidebarSettings } from "./sidebar-settings";
 
 export const AppSidebar = () => {
   const { slug, slack } = useUser();
   const { open } = useSidebar();
   const pathname = usePathname();
+
+  if (pathname.startsWith(`/${slug}/settings`)) return <SidebarSettings />;
 
   const routes = [
     {

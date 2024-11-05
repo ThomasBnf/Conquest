@@ -27,7 +27,7 @@ export default async function Layout({
     <SidebarProvider defaultOpen={defaultOpen}>
       <UserProvider user={user}>
         <AppSidebar />
-        {/* <SidebarSettings /> */}
+
         <main className="flex-1 h-dvh overflow-hidden">{children}</main>
       </UserProvider>
     </SidebarProvider>
