@@ -23,7 +23,12 @@ export const SlackMarkdown = ({ activity }: Props) => {
   const convertToJsx = (
     inputText: string,
   ): JSX.Element | (string | JSX.Element)[] => {
-    let result: (string | JSX.Element)[] = [inputText.replace("&amp;", "&")];
+    let result: (string | JSX.Element)[] = [
+      inputText
+        .replace(/&amp;/g, "&")
+        .replace(/&lt;/g, "<")
+        .replace(/&gt;/g, ">"),
+    ];
 
     // Link: <https://example.com|text>
     result = result.flatMap((chunk) => {

@@ -1,7 +1,6 @@
 "use client";
 
 import { type ChartConfig, ChartContainer } from "@conquest/ui/chart";
-import type { MemberWithActivities } from "@conquest/zod/activity.schema";
 import { useQuery } from "@tanstack/react-query";
 import ky from "ky";
 import { useMemo, useRef } from "react";
@@ -27,48 +26,56 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 type ChartDataItem = {
-  member: MemberWithActivities;
-  activities: number;
+  type: string;
+  count: number;
   normalizedCount: number;
 };
 
-export const MembersTop = ({ from, to }: Props) => {
+export const ActivityTypeTop = ({ from, to }: Props) => {
   const ref = useRef<HTMLDivElement>(null);
 
-  const { data: chartData } = useQuery<ChartDataItem[]>({
-    queryKey: ["members-top", from, to],
+  const { data: chartData } = useQuery<Record<string, number>>({
+    queryKey: ["activity-type-top", from, to],
     queryFn: async () => {
       const response = await ky
-        .get("/api/dashboard/members/top", {
+        .get("/api/dashboard/engagement/type", {
           searchParams: {
             from: from.toISOString(),
             to: to.toISOString(),
           },
         })
-        .json<ChartDataItem[]>();
+        .json<Record<string, number>>();
       return response;
     },
   });
 
-  const normalizedData = useMemo(() => {
+  const formattedData: ChartDataItem[] = useMemo(() => {
     if (!chartData) return [];
 
-    const maxCount = Math.max(...chartData.map((item) => item.activities));
+    const entries = Object.entries(chartData)
+      .map(([type, count]) => ({
+        type,
+        count,
+      }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 10);
 
-    return chartData.map((item) => ({
+    const maxCount = Math.max(...entries.map((item) => item.count));
+
+    return entries.map((item) => ({
       ...item,
-      normalizedCount: (item.activities / maxCount) * 100,
+      normalizedCount: (item.count / maxCount) * 100,
     }));
   }, [chartData]);
 
   return (
     <div className="flex-1 p-4 space-y-2">
-      <p className="pl-1.5 text-base font-medium">Top Members</p>
+      <p className="pl-1.5 text-base font-medium">Top Activity Types</p>
       <ResponsiveContainer height={350} width="100%">
         <ChartContainer ref={ref} config={chartConfig}>
-          <BarChart accessibilityLayer data={normalizedData} layout="vertical">
+          <BarChart accessibilityLayer data={formattedData} layout="vertical">
             <YAxis
-              dataKey="member"
+              dataKey="type"
               type="category"
               tickLine={false}
               tickMargin={10}
@@ -89,7 +96,7 @@ export const MembersTop = ({ from, to }: Props) => {
               alignmentBaseline="baseline"
             >
               <LabelList
-                dataKey="member"
+                dataKey="type"
                 position="insideLeft"
                 offset={10}
                 className="fill-muted-foreground text-xs"
@@ -103,7 +110,7 @@ export const MembersTop = ({ from, to }: Props) => {
                 }}
               />
               <LabelList
-                dataKey="activities"
+                dataKey="count"
                 position="right"
                 offset={10}
                 className="fill-muted-foreground text-xs"

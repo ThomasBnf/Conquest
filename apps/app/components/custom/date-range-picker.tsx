@@ -5,7 +5,7 @@ import { Button } from "@conquest/ui/button";
 import { Calendar } from "@conquest/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@conquest/ui/popover";
 import { cn } from "@conquest/ui/utils/cn";
-import { endOfDay, isEqual, startOfDay, subDays } from "date-fns";
+import { endOfDay, isEqual, startOfDay, startOfYear, subDays } from "date-fns";
 import { useDateRange } from "hooks/useDateRange";
 import { CalendarIcon } from "lucide-react";
 
@@ -27,6 +27,9 @@ export const DateRangePicker = () => {
   const isLast90Days =
     isEqual(from, subDays(startOfDay(new Date()), 90)) &&
     isEqual(to, endOfDay(new Date()));
+
+  const isYearToDate =
+    isEqual(from, startOfYear(new Date())) && isEqual(to, endOfDay(new Date()));
 
   const onUpdateDateRange = async (from: Date, to: Date) => {
     setDateRange({ from, to });
@@ -109,6 +112,15 @@ export const DateRangePicker = () => {
         }
       >
         90D
+      </Button>
+      <Button
+        variant={isYearToDate ? "default" : "outline"}
+        className="justify-start"
+        onClick={() =>
+          onUpdateDateRange(startOfYear(new Date()), endOfDay(new Date()))
+        }
+      >
+        Year to date
       </Button>
     </div>
   );

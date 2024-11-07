@@ -1,5 +1,6 @@
 "use client";
 
+import { ActivityTypeTop } from "./activity-type-top";
 import { ChannelsTop } from "./channels-top";
 import { EngagementChart } from "./engagement-chart";
 
@@ -15,7 +16,7 @@ export const EngagementDashboard = ({ from, to }: Props) => {
       <EngagementChart from={from} to={to} />
       <div className="flex divide-x">
         <ChannelsTop from={from} to={to} />
-        <div className="flex-1" />
+        <ActivityTypeTop from={from} to={to} />
       </div>
     </div>
   );

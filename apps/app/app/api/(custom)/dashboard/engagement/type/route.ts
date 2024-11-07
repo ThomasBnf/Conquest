@@ -1,6 +1,7 @@
 import { getCurrentUser } from "@/features/users/functions/getCurrentUser";
 import { prisma } from "@/lib/prisma";
 import { safeRoute } from "@/lib/safeRoute";
+import { ActivitySchema } from "@conquest/zod/activity.schema";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
@@ -18,32 +19,32 @@ export const GET = safeRoute
     const { from, to } = query;
     const { workspace_id } = user;
 
-    const chartData = await prisma.channel.findMany({
+    const activities = await prisma.activity.findMany({
       where: {
         workspace_id,
-        activities: {
-          some: {
-            created_at: {
-              gte: from,
-              lte: to,
-            },
-          },
+
+        created_at: {
+          gte: from,
+          lte: to,
         },
       },
-      include: {
-        _count: {
-          select: {
-            activities: true,
-          },
-        },
-      },
-      orderBy: {
-        activities: {
-          _count: "desc",
-        },
-      },
-      take: 10,
     });
+
+    const parsedActivities = z.array(ActivitySchema).parse(activities);
+
+    const groupedActivities = () => {
+      return parsedActivities.reduce<Record<string, number>>(
+        (acc, activity) => {
+          const type = activity.details?.type;
+          if (!type) return acc;
+          acc[type] = (acc[type] || 0) + 1;
+          return acc;
+        },
+        {},
+      );
+    };
+
+    const chartData = groupedActivities();
 
     return NextResponse.json(chartData);
   });

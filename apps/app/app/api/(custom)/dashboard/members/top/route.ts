@@ -39,6 +39,11 @@ export const GET = safeRoute
           },
         },
       },
+      orderBy: {
+        activities: {
+          _count: "desc",
+        },
+      },
       take: 10,
     });
 

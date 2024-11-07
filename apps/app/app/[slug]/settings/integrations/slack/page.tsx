@@ -112,9 +112,7 @@ export default function Page() {
                 Reinstall
               </Button>
             )}
-            {slack?.status === "SYNCING" && (
-              <Button loading>Installing...</Button>
-            )}
+            {slack?.status === "SYNCING" && <Button loading> Install</Button>}
             {slack?.status === "CONNECTED" && slack?.installed_at && (
               <DeleteDialog
                 title="Uninstall Slack"

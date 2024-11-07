@@ -9,6 +9,7 @@ import { ScrollArea } from "@conquest/ui/scroll-area";
 import { Separator } from "@conquest/ui/separator";
 import type { MemberWithActivities } from "@conquest/zod/activity.schema";
 import type { Tag } from "@conquest/zod/tag.schema";
+import { format } from "date-fns";
 import { EditableEmails } from "./editable-emails";
 import { EditablePhones } from "./editable-phones";
 import { FieldCard } from "./field-card";
@@ -27,6 +28,8 @@ export const MemberSidebar = ({ member, tags }: Props) => {
     first_name,
     last_name,
     full_name,
+    created_at,
+    joined_at,
   } = member;
 
   const onUpdateMember = async (
@@ -108,6 +111,17 @@ export const MemberSidebar = ({ member, tags }: Props) => {
               onUpdate={(value) => onUpdateMember("bio", value)}
               className="mt-1.5"
             />
+          </FieldCard>
+        </div>
+        <Separator />
+        <div className="p-4">
+          {joined_at && (
+            <FieldCard icon="CalendarCheck" label="Joined at">
+              <p className="pl-1.5">{format(joined_at, "PP p")}</p>
+            </FieldCard>
+          )}
+          <FieldCard icon="CalendarPlus" label="Created at">
+            <p className="pl-1.5">{format(created_at, "PP p")}</p>
           </FieldCard>
         </div>
       </ScrollArea>
