@@ -1,5 +1,6 @@
 "use client";
 
+import { _updateMember } from "@/features/members/actions/_updateMember";
 import { Button } from "@conquest/ui/button";
 import {
   Command,
@@ -14,7 +15,6 @@ import cuid from "cuid";
 import { Plus } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
-import { _updateMember } from "../actions/_updateMember";
 import { Email } from "./email";
 
 type Props = {

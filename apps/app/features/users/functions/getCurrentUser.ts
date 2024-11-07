@@ -2,6 +2,7 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { CustomError } from "@/lib/safeRoute";
 import { UserWithWorkspaceSchema } from "@conquest/zod/user.schema";
+import { redirect } from "next/navigation";
 
 export const getCurrentUser = async () => {
   const session = await auth();
@@ -23,5 +24,9 @@ export const getCurrentUser = async () => {
     },
   });
 
-  return UserWithWorkspaceSchema.parse(user);
+  const parsedUser = UserWithWorkspaceSchema.safeParse(user);
+
+  if (!parsedUser.success) redirect("/auth/login");
+
+  return parsedUser.data;
 };

@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { SOURCE } from "./source.enum";
 
 export const CompanySchema = z.object({
   id: z.string(),
@@ -10,6 +11,7 @@ export const CompanySchema = z.object({
   domain: z.string().nullable(),
   employees: z.number().nullable(),
   founded_at: z.date().nullable(),
+  source: SOURCE,
   workspace_id: z.string(),
   created_at: z.date(),
   updated_at: z.date(),

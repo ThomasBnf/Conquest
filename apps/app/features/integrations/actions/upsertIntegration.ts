@@ -10,13 +10,13 @@ export const upsertIntegration = authAction
   .metadata({ name: "upsertIntegration" })
   .schema(
     z.object({
-      external_id: z.string(),
+      external_id: z.string().optional(),
       name: z.string(),
       source: SOURCE,
       token: z.string(),
-      slack_user_token: z.string().nullable(),
+      slack_user_token: z.string().optional(),
       status: STATUS,
-      scopes: z.string(),
+      scopes: z.string().optional(),
     }),
   )
   .action(

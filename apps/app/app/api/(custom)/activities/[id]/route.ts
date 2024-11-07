@@ -1,5 +1,5 @@
-import { getActivity } from "@/features/activities/functions/getActivity";
 import { getCurrentUser } from "@/features/users/functions/getCurrentUser";
+import { prisma } from "@/lib/prisma";
 import { safeRoute } from "@/lib/safeRoute";
 import { NextResponse } from "next/server";
 import { z } from "zod";
@@ -17,10 +17,15 @@ export const GET = safeRoute
     const { id } = params;
     const workspace_id = user.workspace_id;
 
-    const rActivity = await getActivity({
-      external_id: id,
-      workspace_id,
+    const activity = await prisma.activity.findUnique({
+      where: {
+        external_id: id,
+        workspace_id,
+      },
+      include: {
+        member: true,
+      },
     });
 
-    return NextResponse.json(rActivity?.data);
+    return NextResponse.json(activity);
   });

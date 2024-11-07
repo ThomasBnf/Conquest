@@ -42,7 +42,13 @@ export const TagForm = ({
     if (tag && isEditing !== undefined) {
       await updateTag({ id: tag.id, name, color });
     } else {
-      await createTag({ name, color });
+      await createTag({
+        external_id: null,
+        name,
+        description: null,
+        color,
+        source: "MANUAL",
+      });
     }
 
     setIsVisible?.(false);

@@ -8,6 +8,7 @@ type userContext = {
   user: UserWithWorkspace | undefined;
   slug: string | null | undefined;
   slack: Integration | undefined;
+  discourse: Integration | undefined;
 };
 
 const userContext = createContext<userContext>({} as userContext);
@@ -22,6 +23,9 @@ export const UserProvider = ({ user, children }: Props) => {
   const slack = user?.workspace.integrations.find(
     (integration) => integration.source === "SLACK",
   );
+  const discourse = user?.workspace.integrations.find(
+    (integration) => integration.source === "DISCOURSE",
+  );
 
   return (
     <userContext.Provider
@@ -29,6 +33,7 @@ export const UserProvider = ({ user, children }: Props) => {
         user,
         slug,
         slack,
+        discourse,
       }}
     >
       {children}

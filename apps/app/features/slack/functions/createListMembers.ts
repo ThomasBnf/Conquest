@@ -1,7 +1,7 @@
+import { upsertMember } from "@/features/members/functions/upsertMember";
 import { safeAction } from "@/lib/safeAction";
 import { WebClient } from "@slack/web-api";
 import { z } from "zod";
-import { upsertMember } from "./upsertMember";
 
 export const createListMembers = safeAction
   .metadata({
@@ -27,7 +27,10 @@ export const createListMembers = safeAction
         const isMember = is_email_confirmed;
         const isDeleted = deleted;
 
-        if (!id) continue;
+        if (!id) {
+          console.log("No id", member);
+          continue;
+        }
 
         if (profile && isMember && !isDeleted) {
           const {
@@ -41,7 +44,8 @@ export const createListMembers = safeAction
           } = profile;
 
           await upsertMember({
-            slack_id: id,
+            id,
+            source: "SLACK",
             first_name,
             last_name,
             full_name: real_name,

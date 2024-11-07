@@ -1,8 +1,8 @@
 "use server";
 
-import { createListChannels } from "@/features/channels/functions/createListChannels";
 import { updateIntegration } from "@/features/integrations/functions/updateIntegration";
-import { createListMembers } from "@/features/members/functions/createListMembers";
+import { createListChannels } from "@/features/slack/functions/createListChannels";
+import { createListMembers } from "@/features/slack/functions/createListMembers";
 import { IntegrationSchema } from "@conquest/zod/integration.schema";
 import { WebClient } from "@slack/web-api";
 import { authAction } from "lib/authAction";

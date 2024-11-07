@@ -43,8 +43,6 @@ export const EditableInput = ({
     }
   };
 
-  console.log(value);
-
   if (!isFocus) {
     return (
       <Button

@@ -4,7 +4,9 @@ export function useIsClient() {
   const [isClient, setClient] = useState(false);
 
   useEffect(() => {
-    setClient(true);
+    setTimeout(() => {
+      setClient(true);
+    }, 100);
   }, []);
 
   return isClient;

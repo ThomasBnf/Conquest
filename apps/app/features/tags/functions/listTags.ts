@@ -3,7 +3,9 @@ import { authAction } from "lib/authAction";
 import { prisma } from "lib/prisma";
 
 export const listTags = authAction
-  .metadata({ name: "listTags" })
+  .metadata({
+    name: "listTags",
+  })
   .action(async ({ ctx }) => {
     const workspace_id = ctx.user.workspace_id;
 

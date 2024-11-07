@@ -17,8 +17,11 @@ export const MemberSchema = z.object({
   search: z.string(),
   source: SOURCE,
   tags: z.array(z.string()).default([]),
+  discourse_id: z.string().nullable(),
   slack_id: z.string().nullable(),
   workspace_id: z.string().cuid(),
+  joined_at: z.coerce.date().nullable(),
+  deleted_at: z.coerce.date().nullable(),
   created_at: z.coerce.date(),
   updated_at: z.coerce.date(),
 });

@@ -4,20 +4,22 @@ import { env } from "@/env.mjs";
 import { authAction } from "@/lib/authAction";
 import { prisma } from "@/lib/prisma";
 import { IntegrationSchema } from "@conquest/zod/integration.schema";
+import { SOURCE } from "@conquest/zod/source.enum";
 import { WebClient } from "@slack/web-api";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
-export const disconnectIntegration = authAction
+export const deleteIntegration = authAction
   .metadata({
-    name: "disconnectIntegration",
+    name: "deleteIntegration",
   })
   .schema(
     z.object({
       integration: IntegrationSchema,
+      source: SOURCE,
     }),
   )
-  .action(async ({ ctx, parsedInput: { integration } }) => {
+  .action(async ({ ctx, parsedInput: { integration, source } }) => {
     const slug = ctx.user?.workspace.slug;
     const workspace_id = ctx.user?.workspace_id;
 
@@ -45,7 +47,7 @@ export const disconnectIntegration = authAction
       where: {
         details: {
           path: ["source"],
-          equals: "SLACK",
+          equals: source,
         },
         workspace_id,
       },
@@ -53,15 +55,35 @@ export const disconnectIntegration = authAction
 
     await prisma.channel.deleteMany({
       where: {
-        source: "SLACK",
+        source,
+        workspace_id,
+      },
+    });
+
+    await prisma.company.deleteMany({
+      where: {
+        source,
+        workspace_id,
+      },
+    });
+
+    await prisma.tag.deleteMany({
+      where: {
+        source,
         workspace_id,
       },
     });
 
     await prisma.member.deleteMany({
       where: {
-        source: "SLACK",
+        source,
         workspace_id,
+      },
+    });
+
+    await prisma.integration.delete({
+      where: {
+        id: integration.id,
       },
     });
 

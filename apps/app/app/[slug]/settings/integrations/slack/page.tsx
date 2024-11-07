@@ -3,7 +3,7 @@
 import { DeleteDialog } from "@/components/custom/delete-dialog";
 import { useUser } from "@/context/userContext";
 import { env } from "@/env.mjs";
-import { disconnectIntegration } from "@/features/integrations/actions/disconnectIntegration";
+import { deleteIntegration } from "@/features/integrations/actions/deleteIntegration";
 import { oauthV2 } from "@/features/slack/actions/oauthV2";
 import { Button, buttonVariants } from "@conquest/ui/button";
 import { Separator } from "@conquest/ui/separator";
@@ -43,7 +43,7 @@ export default function Page() {
   const onUninstall = async () => {
     if (!slack?.id) return;
     setLoading(true);
-    await disconnectIntegration({ integration: slack });
+    await deleteIntegration({ integration: slack, source: "SLACK" });
     setLoading(false);
     return toast.success("Slack disconnected");
   };
@@ -103,16 +103,13 @@ export default function Page() {
               </Link>
             </div>
             {!slack?.id && (
-              <Button
-                loading={slack?.status === "SYNCING" || loading}
-                onClick={onStartInstall}
-              >
+              <Button loading={loading} onClick={onStartInstall}>
                 Install
               </Button>
             )}
             {slack?.status === "DISCONNECTED" && (
               <Button loading={loading} onClick={onStartInstall}>
-                Install
+                Reinstall
               </Button>
             )}
             {slack?.status === "SYNCING" && (
@@ -120,8 +117,8 @@ export default function Page() {
             )}
             {slack?.status === "CONNECTED" && slack?.installed_at && (
               <DeleteDialog
-                title="Disconnect Slack"
-                description="Integrations will be removed from your workspace and all your data will be lost."
+                title="Uninstall Slack"
+                description="Slack integration will be removed from your workspace and all your data will be deleted."
                 onConfirm={onUninstall}
               >
                 Uninstall

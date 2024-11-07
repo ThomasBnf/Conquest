@@ -1,8 +1,8 @@
-import { listMessages } from "@/features/slack/queries/listMessages";
+import { listMessages } from "@/features/slack/functions/listMessages";
 import { authAction } from "@/lib/authAction";
 import { WebClient } from "@slack/web-api";
 import { z } from "zod";
-import { createChannel } from "./createChannel";
+import { createChannel } from "../../channels/functions/createChannel";
 
 export const createListChannels = authAction
   .metadata({

@@ -3,14 +3,13 @@
 import { Separator } from "@conquest/ui/separator";
 import { SidebarTrigger, useSidebar } from "@conquest/ui/sidebar";
 import { cn } from "@conquest/ui/utils/cn";
-import type { HTMLAttributes, ReactNode } from "react";
+import type { HTMLAttributes } from "react";
 
 type Props = HTMLAttributes<HTMLDivElement> & {
   title: string;
-  count?: ReactNode;
 };
 
-export const Header = ({ title, count, children, className }: Props) => {
+export const Header = ({ title, children, className }: Props) => {
   const { open } = useSidebar();
 
   return (
@@ -28,11 +27,6 @@ export const Header = ({ title, count, children, className }: Props) => {
           </>
         )}
         <h2 className="font-medium">{title}</h2>
-        {count && (
-          <p className="border rounded-md px-1.5 py-0.5 font-mono actions-secondary">
-            {count}
-          </p>
-        )}
       </div>
       {children}
     </div>

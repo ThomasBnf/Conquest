@@ -2,7 +2,7 @@ import { Header } from "@/components/layouts/header";
 import { PageLayout } from "@/components/layouts/page-layout";
 import { _listMembers } from "@/features/members/actions/_listMembers";
 import { CreateMemberDialog } from "@/features/members/components/create-member-dialog";
-import { MembersTable } from "@/features/members/components/members-table";
+import { MembersTable } from "@/features/members/components/table/members-table";
 import { countMembers } from "@/features/members/functions/countMembers";
 import { listTags } from "@/features/tags/functions/listTags";
 
@@ -13,20 +13,19 @@ export default async function Page() {
     id: "full_name",
     desc: false,
   });
-
-  const initialMembers = rInitialMembers?.data;
   const rCountMembers = await countMembers();
   const rTags = await listTags();
 
+  const initialMembers = rInitialMembers?.data;
   const tags = rTags?.data;
   const count = rCountMembers?.data ?? 0;
 
   return (
     <PageLayout>
-      <Header title="Members" className="justify-between" count={count}>
+      <Header title="Members">
         <CreateMemberDialog />
       </Header>
-      <MembersTable tags={tags} initialMembers={initialMembers} />
+      <MembersTable initialMembers={initialMembers} count={count} tags={tags} />
     </PageLayout>
   );
 }

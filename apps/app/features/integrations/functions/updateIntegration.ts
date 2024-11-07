@@ -9,7 +9,7 @@ export const updateIntegration = safeAction
   })
   .schema(
     z.object({
-      external_id: z.string(),
+      external_id: z.string().nullable(),
       installed_at: z.date().nullable(),
       status: STATUS,
     }),

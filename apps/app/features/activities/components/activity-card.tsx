@@ -22,6 +22,7 @@ export const ActivityCard = ({
   const { slug } = useUser();
   const {
     member: { first_name, last_name, avatar_url, full_name },
+    details: { type },
   } = activity;
 
   return (
@@ -41,7 +42,10 @@ export const ActivityCard = ({
         )}
       >
         {badge && <Menu activity={activity} />}
-        <Link href={`/${slug}/members/${activity.member?.id}`}>
+        <Link
+          href={`/${slug}/members/${activity.member?.id}`}
+          className="h-fit"
+        >
           <Avatar className="size-8">
             <AvatarImage src={avatar_url ?? ""} />
             <AvatarFallback className="text-sm">
@@ -50,7 +54,7 @@ export const ActivityCard = ({
             </AvatarFallback>
           </Avatar>
         </Link>
-        <div className="ml-4 flex flex-col gap-1 flex-1">
+        <div className="ml-4 flex flex-col gap-1 w-full">
           <div className="flex items-baseline gap-2">
             <Link
               href={`/${slug}/members/${activity.member?.id}`}

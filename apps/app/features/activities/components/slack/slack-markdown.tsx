@@ -133,7 +133,7 @@ export const SlackMarkdown = ({ activity }: Props) => {
           return (
             <code
               key={content}
-              className="text-red-700 bg-muted border text-sm rounded-md px-0.5"
+              className="text-[#C52B51] bg-muted border text-[13px] font-[550] rounded p-0.5"
             >
               {content}
             </code>

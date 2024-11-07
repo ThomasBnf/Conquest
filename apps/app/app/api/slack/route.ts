@@ -10,7 +10,7 @@ import { updateChannel } from "@/features/channels/functions/updateChannel";
 import { getIntegration } from "@/features/integrations/functions/getIntegration";
 import { updateIntegration } from "@/features/integrations/functions/updateIntegration";
 import { getMember } from "@/features/members/functions/getMember";
-import { upsertSlackMember } from "@/features/slack/functions/upsertSlackMember";
+import { upsertMember } from "@/features/members/functions/upsertMember";
 import { getFiles } from "@/features/slack/helpers/getFiles";
 import { prisma } from "@/lib/prisma";
 import { safeRoute } from "@/lib/safeRoute";
@@ -24,15 +24,26 @@ import { z } from "zod";
 
 const web = new WebClient(env.SLACK_BOT_TOKEN);
 
-const bodySchema = z.object({
-  token: z.string(),
-  api_app_id: z.string(),
-  team_id: z.string(),
-  event: z.custom<SlackEvent>(),
-});
+const bodySchema = z
+  .object({
+    token: z.string(),
+    api_app_id: z.string(),
+    team_id: z.string(),
+    event: z.custom<SlackEvent>(),
+  })
+  .passthrough();
 
 export const POST = safeRoute.body(bodySchema).handler(async (_, context) => {
-  const { token: slack_token, api_app_id, team_id, event } = context.body;
+  const body = context.body;
+
+  if (body.type === "url_verification") {
+    return NextResponse.json({ challenge: body.challenge });
+  }
+
+  const { token: slack_token, api_app_id, team_id, event } = body;
+
+  if (!event) return NextResponse.json({ status: 200 });
+
   const { type } = event;
 
   if (slack_token !== env.SLACK_TOKEN && api_app_id !== env.SLACK_APP_ID) {
@@ -92,7 +103,31 @@ export const POST = safeRoute.body(bodySchema).handler(async (_, context) => {
       const handleMessage = async (messageEvent: GenericMessageEvent) => {
         const { user, text, thread_ts, ts, files } = messageEvent;
 
-        const rMember = await upsertSlackMember({ user, workspace_id, token });
+        const { profile } = await web.users.profile.get({ user });
+        if (!profile) return NextResponse.json({ status: 200 });
+
+        const {
+          first_name,
+          last_name,
+          real_name,
+          email,
+          phone,
+          image_1024,
+          title,
+        } = profile;
+
+        const rMember = await upsertMember({
+          id: user,
+          source: "SLACK",
+          first_name,
+          last_name,
+          full_name: real_name,
+          email,
+          phone,
+          avatar_url: image_1024,
+          job_title: title,
+          workspace_id,
+        });
         const member = rMember?.data;
 
         if (!member) return NextResponse.json({ status: 200 });
@@ -161,11 +196,13 @@ export const POST = safeRoute.body(bodySchema).handler(async (_, context) => {
             channel_id: channel.id,
             react_to: deleted_ts,
           });
+
           await deleteActivity({
             external_id: deleted_ts,
             channel_id: channel.id,
             workspace_id,
           });
+
           break;
         }
       }
@@ -176,8 +213,34 @@ export const POST = safeRoute.body(bodySchema).handler(async (_, context) => {
       const { user, item, reaction } = event;
       const { channel: channel_id, ts } = item;
 
-      const rMember = await upsertSlackMember({ user, workspace_id, token });
+      const { profile } = await web.users.profile.get({ user });
+      if (!profile) return NextResponse.json({ status: 200 });
+
+      const {
+        first_name,
+        last_name,
+        real_name,
+        email,
+        phone,
+        image_1024,
+        title,
+      } = profile;
+
+      const rMember = await upsertMember({
+        id: user,
+        source: "SLACK",
+        first_name,
+        last_name,
+        full_name: real_name,
+        email,
+        phone,
+        avatar_url: image_1024,
+        job_title: title,
+        workspace_id,
+      });
       const member = rMember?.data;
+
+      if (!member) return NextResponse.json({ status: 200 });
 
       if (!member) return NextResponse.json({ status: 200 });
 
@@ -266,7 +329,31 @@ export const POST = safeRoute.body(bodySchema).handler(async (_, context) => {
 
       if (!inviter) break;
 
-      const rMember = await upsertSlackMember({ user, workspace_id, token });
+      const { profile } = await web.users.profile.get({ user });
+      if (!profile) return NextResponse.json({ status: 200 });
+
+      const {
+        first_name,
+        last_name,
+        real_name,
+        email,
+        phone,
+        image_1024,
+        title,
+      } = profile;
+
+      const rMember = await upsertMember({
+        id: user,
+        source: "SLACK",
+        first_name,
+        last_name,
+        full_name: real_name,
+        email,
+        phone,
+        avatar_url: image_1024,
+        job_title: title,
+        workspace_id,
+      });
       const member = rMember?.data;
 
       if (!member) return NextResponse.json({ status: 200 });
@@ -328,7 +415,40 @@ export const POST = safeRoute.body(bodySchema).handler(async (_, context) => {
 
     case "user_change": {
       const { id, deleted } = event.user;
-      await upsertSlackMember({ user: id, workspace_id, token, deleted });
+
+      const response = await web.users.profile.get({ user: id });
+      console.log("response", response);
+      const profile = response.profile;
+      console.log("profile", profile);
+
+      if (!profile) return NextResponse.json({ status: 200 });
+
+      const {
+        first_name,
+        last_name,
+        real_name,
+        email,
+        phone,
+        image_1024,
+        title,
+      } = profile;
+
+      const rMember = await upsertMember({
+        id,
+        source: "SLACK",
+        first_name,
+        last_name,
+        full_name: real_name,
+        email,
+        phone,
+        avatar_url: image_1024,
+        job_title: title,
+        deleted,
+        workspace_id,
+      });
+      const member = rMember?.data;
+
+      if (!member) return NextResponse.json({ status: 200 });
 
       break;
     }

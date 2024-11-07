@@ -1,32 +1,17 @@
 "use client";
 
 import { IsLoading } from "@/components/states/is-loading";
+import { Columns } from "@/features/leaderbord/components/columns";
+import { useScrollX } from "@/features/table/hooks/useScrollX";
+import { useIsClient } from "@/hooks/useIsClient";
 import { ScrollArea, ScrollBar } from "@conquest/ui/scroll-area";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableFooter,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@conquest/ui/table";
+import { useSidebar } from "@conquest/ui/sidebar";
 import { cn } from "@conquest/ui/utils/cn";
-import {
-  type MemberWithActivities,
-  MemberWithActivitiesSchema,
-} from "@conquest/zod/activity.schema";
+import type { MemberWithActivities } from "@conquest/zod/activity.schema";
 import type { Tag } from "@conquest/zod/tag.schema";
-import { useInfiniteQuery } from "@tanstack/react-query";
-import {
-  flexRender,
-  getCoreRowModel,
-  useReactTable,
-} from "@tanstack/react-table";
-import { useEffect, useMemo } from "react";
+import { useEffect, useRef } from "react";
 import { useInView } from "react-intersection-observer";
-import { _listLeaderboard } from "../actions/_listLeaderboard";
-import { Columns } from "./columns";
+import { useListLeaderboard } from "../hooks/useListLeaderboard";
 
 type Props = {
   initialMembers: MemberWithActivities[] | undefined;
@@ -37,90 +22,106 @@ type Props = {
 
 export const LeaderbordTable = ({ initialMembers, tags, from, to }: Props) => {
   const { ref, inView } = useInView();
-  const columns = Columns(tags);
+  const { open } = useSidebar();
 
-  const { data, isLoading, fetchNextPage, hasNextPage } = useInfiniteQuery({
-    queryKey: ["leaderboard", from, to],
-    queryFn: async ({ pageParam }) => {
-      const rLeaderboard = await _listLeaderboard({
-        page: pageParam,
-        from,
-        to,
-      });
-      return rLeaderboard?.data;
+  const isClient = useIsClient();
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const scrollX = useScrollX({ isClient });
+
+  const columns = Columns({ tags });
+  const fixedColumn = columns[0];
+  const scrollableColumns = columns.slice(1);
+
+  const { members, isLoading, fetchNextPage, hasNextPage } = useListLeaderboard(
+    {
+      initialMembers,
+      from,
+      to,
     },
-    getNextPageParam: (_, allPages) => allPages.length + 1,
-    initialPageParam: 1,
-    initialData: { pages: [initialMembers], pageParams: [1] },
-  });
-
-  const flatData = useMemo(() => {
-    const pages = data?.pages;
-    if (!pages?.length) return [];
-    return MemberWithActivitiesSchema.array().parse(pages.flat()).slice(3);
-  }, [data?.pages]);
-
-  const table = useReactTable({
-    data: flatData,
-    columns,
-    getCoreRowModel: getCoreRowModel(),
-  });
+  );
 
   useEffect(() => {
     if (inView && hasNextPage) fetchNextPage();
   }, [inView]);
 
-  if (!flatData.length) return;
+  if (!isClient) return <IsLoading />;
 
   return (
-    <ScrollArea>
-      <Table className="whitespace-nowrap">
-        <TableHeader className="sticky top-0 z-10 after:absolute after:inset-x-0 after:bottom-0 after:h-px after:bg-border">
-          {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow key={headerGroup.id}>
-              {headerGroup.headers.map((header) => (
-                <TableHead key={header.id}>
-                  {header.isPlaceholder
-                    ? null
-                    : flexRender(
-                        header.column.columnDef.header,
-                        header.getContext(),
-                      )}
-                </TableHead>
-              ))}
-            </TableRow>
-          ))}
-        </TableHeader>
-        <TableBody>
-          {isLoading ? (
-            <TableRow>
-              <TableCell colSpan={columns.length}>
-                <IsLoading />
-              </TableCell>
-            </TableRow>
-          ) : (
-            table.getRowModel().rows.map((row) => (
-              <TableRow
-                key={row.id}
-                className={cn(row.getIsSelected() && "bg-muted")}
+    <div className="relative overflow-hidden h-full">
+      <ScrollArea className="h-full overflow-hidden" ref={scrollRef}>
+        <div className="sticky top-0 z-30 flex">
+          <div
+            className="sticky left-0 z-10 shrink-0 border-r border-b"
+            style={{ width: fixedColumn?.width }}
+          >
+            <div className="h-12 flex items-center">
+              {fixedColumn?.header({ members })}
+            </div>
+            {scrollX > 0 && (
+              <div className="absolute right-0 -mr-12 top-0 h-full bg-gradient-to-r from-black opacity-[0.075] to-transparent w-12" />
+            )}
+          </div>
+          <div className="flex border-b divide-x">
+            {scrollableColumns.map((column) => (
+              <div
+                key={column.id}
+                className="h-12 flex items-center"
+                style={{ width: column.width }}
               >
-                {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id}>
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </TableCell>
-                ))}
-              </TableRow>
+                {column.header({})}
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className="relative flex-grow">
+          {members.length ? (
+            members?.map((member, index) => (
+              <div key={member.id} className="border-b">
+                <div className="flex">
+                  <div
+                    className="sticky left-0 border-r bg-background"
+                    style={{ width: fixedColumn?.width }}
+                  >
+                    <div className="h-12 flex items-center">
+                      {fixedColumn?.cell({ member })}
+                    </div>
+                    {scrollX > 0 && (
+                      <div className="absolute right-0 -mr-12 top-0 h-full bg-gradient-to-r from-black opacity-[0.075] to-transparent w-12" />
+                    )}
+                  </div>
+                  <div className="flex divide-x">
+                    {scrollableColumns.map((column) => (
+                      <div
+                        key={column.id}
+                        className="h-12 flex items-center"
+                        style={{ width: column.width }}
+                      >
+                        {column.cell({ member })}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                {!isLoading && members.length - 20 === index && (
+                  <div ref={ref} />
+                )}
+              </div>
             ))
+          ) : (
+            <div
+              className={cn(
+                "mx-auto w-full absolute top-24",
+                open ? "max-w-[calc(100vw-14rem)]" : "max-w-[100vw]",
+              )}
+            >
+              <p className="text-center text-muted-foreground">
+                No members found
+              </p>
+            </div>
           )}
-        </TableBody>
-        <TableFooter className={cn(isLoading && "border-t-0")}>
-          <TableRow>
-            <TableCell colSpan={columns.length} ref={ref} className="p-0" />
-          </TableRow>
-        </TableFooter>
+        </div>
         <ScrollBar orientation="horizontal" />
         <ScrollBar orientation="vertical" />
-      </Table>
-    </ScrollArea>
+      </ScrollArea>
+    </div>
   );
 };

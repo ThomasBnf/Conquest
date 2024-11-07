@@ -78,6 +78,7 @@ model Company {
   domain       String?   @unique
   employees    Int?
   founded_at   DateTime?
+  source       SOURCE
   workspace_id String
   members      Member[]
   workspace    Workspace @relation(fields: [workspace_id], references: [id], onDelete: Cascade)
@@ -88,23 +89,25 @@ model Company {
 }
 
 model Member {
-  id         String   @id @default(cuid())
-  slack_id   String?  @unique
-  first_name String?
-  last_name  String?
-  full_name  String?
-  gender     GENDER?
-  avatar_url String?
-  bio        String?
-  emails     String[] @default([])
-  phones     String[] @default([])
-  address    String?
-  job_title  String?
-  company_id String?
-  company    Company? @relation(fields: [company_id], references: [id], onDelete: SetNull)
-  source     SOURCE
-  search     String
-  tags       String[]
+  id           String   @id @default(cuid())
+  slack_id     String?  @unique
+  discourse_id String?  @unique
+  first_name   String?
+  last_name    String?
+  full_name    String?
+  username     String?
+  gender       GENDER?
+  avatar_url   String?
+  bio          String?
+  emails       String[] @default([])
+  phones       String[] @default([])
+  address      String?
+  job_title    String?
+  company_id   String?
+  company      Company? @relation(fields: [company_id], references: [id], onDelete: SetNull)
+  source       SOURCE
+  search       String
+  tags         String[]
 
   workspace_id String
   workspace    Workspace @relation(fields: [workspace_id], references: [id], onDelete: Cascade)
@@ -120,12 +123,12 @@ model Member {
 
 model Integration {
   id               String    @id @default(cuid())
-  external_id      String    @unique
+  external_id      String?   @unique
   name             String
   source           SOURCE
   token            String
   slack_user_token String?
-  scopes           String
+  scopes           String?
   status           STATUS
   installed_at     DateTime?
   workspace_id     String
@@ -138,8 +141,11 @@ model Integration {
 
 model Tag {
   id           String    @id @default(cuid())
+  external_id  String?   @unique
   name         String
+  description  String?
   color        String
+  source       SOURCE
   workspace_id String
   workspace    Workspace @relation(fields: [workspace_id], references: [id], onDelete: Cascade)
   created_at   DateTime  @default(now())

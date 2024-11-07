@@ -41,8 +41,6 @@ export const WaitOptions = () => {
   const onSubmit = ({ duration, unit }: FormWait) => {
     if (!selected) return;
 
-    console.log(duration, unit);
-
     updateNodeData(selected.id, {
       ...parsedData,
       duration,

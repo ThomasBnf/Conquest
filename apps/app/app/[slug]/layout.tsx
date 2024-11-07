@@ -15,13 +15,13 @@ export default async function Layout({
   children,
   params,
 }: PropsWithChildren<Props>) {
-  const cookieStore = cookies();
-  const defaultOpen = cookieStore.get("sidebar:state")?.value === "true";
-  const { slug } = params;
   const user = await getCurrentUser();
 
   if (!user.onboarding) redirect("/");
-  if (user.workspace.slug !== slug) redirect(`/${user.workspace.slug}`);
+  if (user.workspace.slug !== params.slug) redirect(`/${user.workspace.slug}`);
+
+  const cookieStore = cookies();
+  const defaultOpen = cookieStore.get("sidebar:state")?.value === "true";
 
   return (
     <SidebarProvider defaultOpen={defaultOpen}>
