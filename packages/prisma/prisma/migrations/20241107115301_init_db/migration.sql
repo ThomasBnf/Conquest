@@ -1,12 +1,16 @@
 -- CreateEnum
-CREATE TYPE "SOURCE" AS ENUM ('API', 'MANUAL', 'SLACK');
+CREATE TYPE "SOURCE" AS ENUM ('API', 'MANUAL', 'SLACK', 'DISCOURSE');
 
 -- CreateEnum
 CREATE TYPE "GENDER" AS ENUM ('MALE', 'FEMALE', 'OTHER');
 
+-- CreateEnum
+CREATE TYPE "STATUS" AS ENUM ('CONNECTED', 'DISCONNECTED', 'SYNCING');
+
 -- CreateTable
 CREATE TABLE "Activity" (
     "id" TEXT NOT NULL,
+    "external_id" TEXT,
     "details" JSONB NOT NULL,
     "channel_id" TEXT,
     "member_id" TEXT NOT NULL,
@@ -42,23 +46,47 @@ CREATE TABLE "Channel" (
 );
 
 -- CreateTable
+CREATE TABLE "Company" (
+    "id" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "title" TEXT,
+    "description" TEXT,
+    "industry" TEXT,
+    "address" TEXT,
+    "domain" TEXT,
+    "employees" INTEGER,
+    "founded_at" TIMESTAMP(3),
+    "source" "SOURCE" NOT NULL,
+    "workspace_id" TEXT NOT NULL,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "Company_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "Member" (
     "id" TEXT NOT NULL,
+    "slack_id" TEXT,
+    "discourse_id" TEXT,
     "first_name" TEXT,
     "last_name" TEXT,
     "full_name" TEXT,
-    "emails" TEXT[] DEFAULT ARRAY[]::TEXT[],
-    "phone" TEXT,
-    "avatar_url" TEXT,
-    "job_title" TEXT,
-    "bio" TEXT,
+    "username" TEXT,
     "gender" "GENDER",
+    "avatar_url" TEXT,
+    "bio" TEXT,
+    "emails" TEXT[] DEFAULT ARRAY[]::TEXT[],
+    "phones" TEXT[] DEFAULT ARRAY[]::TEXT[],
     "address" TEXT,
-    "search" TEXT NOT NULL,
+    "job_title" TEXT,
+    "company_id" TEXT,
     "source" "SOURCE" NOT NULL,
+    "search" TEXT NOT NULL,
     "tags" TEXT[],
-    "slack_id" TEXT,
     "workspace_id" TEXT NOT NULL,
+    "joined_at" TIMESTAMP(3),
+    "deleted_at" TIMESTAMP(3),
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
 
@@ -68,12 +96,13 @@ CREATE TABLE "Member" (
 -- CreateTable
 CREATE TABLE "Integration" (
     "id" TEXT NOT NULL,
-    "external_id" TEXT NOT NULL,
+    "external_id" TEXT,
     "name" TEXT NOT NULL,
     "source" "SOURCE" NOT NULL,
     "token" TEXT NOT NULL,
-    "scopes" TEXT NOT NULL,
-    "status" TEXT NOT NULL,
+    "slack_user_token" TEXT,
+    "scopes" TEXT,
+    "status" "STATUS" NOT NULL,
     "installed_at" TIMESTAMP(3),
     "workspace_id" TEXT NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -83,21 +112,13 @@ CREATE TABLE "Integration" (
 );
 
 -- CreateTable
-CREATE TABLE "Organization" (
-    "id" TEXT NOT NULL,
-    "name" TEXT NOT NULL,
-    "workspace_id" TEXT NOT NULL,
-    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" TIMESTAMP(3) NOT NULL,
-
-    CONSTRAINT "Organization_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
 CREATE TABLE "Tag" (
     "id" TEXT NOT NULL,
+    "external_id" TEXT,
     "name" TEXT NOT NULL,
+    "description" TEXT,
     "color" TEXT NOT NULL,
+    "source" "SOURCE" NOT NULL,
     "workspace_id" TEXT NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
@@ -150,6 +171,9 @@ CREATE TABLE "Workspace" (
 );
 
 -- CreateIndex
+CREATE UNIQUE INDEX "Activity_external_id_key" ON "Activity"("external_id");
+
+-- CreateIndex
 CREATE INDEX "Activity_id_workspace_id_idx" ON "Activity"("id", "workspace_id");
 
 -- CreateIndex
@@ -165,7 +189,16 @@ CREATE UNIQUE INDEX "Channel_external_id_key" ON "Channel"("external_id");
 CREATE INDEX "Channel_id_workspace_id_idx" ON "Channel"("id", "workspace_id");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "Company_domain_key" ON "Company"("domain");
+
+-- CreateIndex
+CREATE INDEX "Company_id_workspace_id_idx" ON "Company"("id", "workspace_id");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "Member_slack_id_key" ON "Member"("slack_id");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Member_discourse_id_key" ON "Member"("discourse_id");
 
 -- CreateIndex
 CREATE INDEX "Member_id_workspace_id_idx" ON "Member"("id", "workspace_id");
@@ -177,7 +210,7 @@ CREATE UNIQUE INDEX "Integration_external_id_key" ON "Integration"("external_id"
 CREATE INDEX "Integration_id_workspace_id_idx" ON "Integration"("id", "workspace_id");
 
 -- CreateIndex
-CREATE INDEX "Organization_id_workspace_id_idx" ON "Organization"("id", "workspace_id");
+CREATE UNIQUE INDEX "Tag_external_id_key" ON "Tag"("external_id");
 
 -- CreateIndex
 CREATE INDEX "Tag_id_workspace_id_idx" ON "Tag"("id", "workspace_id");
@@ -213,13 +246,16 @@ ALTER TABLE "ApiKey" ADD CONSTRAINT "ApiKey_user_id_fkey" FOREIGN KEY ("user_id"
 ALTER TABLE "Channel" ADD CONSTRAINT "Channel_workspace_id_fkey" FOREIGN KEY ("workspace_id") REFERENCES "Workspace"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "Company" ADD CONSTRAINT "Company_workspace_id_fkey" FOREIGN KEY ("workspace_id") REFERENCES "Workspace"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Member" ADD CONSTRAINT "Member_company_id_fkey" FOREIGN KEY ("company_id") REFERENCES "Company"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "Member" ADD CONSTRAINT "Member_workspace_id_fkey" FOREIGN KEY ("workspace_id") REFERENCES "Workspace"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Integration" ADD CONSTRAINT "Integration_workspace_id_fkey" FOREIGN KEY ("workspace_id") REFERENCES "Workspace"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "Organization" ADD CONSTRAINT "Organization_workspace_id_fkey" FOREIGN KEY ("workspace_id") REFERENCES "Workspace"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Tag" ADD CONSTRAINT "Tag_workspace_id_fkey" FOREIGN KEY ("workspace_id") REFERENCES "Workspace"("id") ON DELETE CASCADE ON UPDATE CASCADE;
