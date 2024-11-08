@@ -36,7 +36,6 @@ export const POST = safeRoute.handler(async (_, context) => {
   const body = context.body;
 
   if (body.type === "url_verification") {
-    console.log(body);
     return NextResponse.json({ challenge: body.challenge });
   }
 
