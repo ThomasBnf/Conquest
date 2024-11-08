@@ -32,7 +32,7 @@ const bodySchema = z
   })
   .passthrough();
 
-export const POST = safeRoute.handler(async (_, context) => {
+export const POST = safeRoute.body(bodySchema).handler(async (_, context) => {
   const body = context.body;
 
   if (body.type === "url_verification") {
