@@ -1,9 +1,6 @@
 import { updateIntegration } from "@/features/integrations/functions/updateIntegration";
-import { createListChannels } from "@/features/slack/functions/createListChannels";
-import { createListMembers } from "@/features/slack/functions/createListMembers";
 import { IntegrationSchema } from "@conquest/zod/integration.schema";
-import { WebClient } from "@slack/web-api";
-import { inngest } from "./client";
+import { inngest } from "../client";
 
 export const InngestInstalSlack = inngest.createFunction(
   { id: "install-slack" },
@@ -21,14 +18,14 @@ export const InngestInstalSlack = inngest.createFunction(
 
     if (!token || !slack_user_token) return;
 
-    const web = new WebClient(token);
-
-    await step.run("createListMembers", async () => {
-      return await createListMembers({ web, workspace_id });
+    inngest.send({
+      name: "slack/create-list-members",
+      data: { workspace_id, token },
     });
 
-    await step.run("createListChannels", async () => {
-      return await createListChannels({ web, token, workspace_id });
+    inngest.send({
+      name: "slack/create-list-channels",
+      data: { workspace_id, token },
     });
 
     await step.run("updateIntegration", async () => {

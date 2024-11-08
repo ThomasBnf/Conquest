@@ -1,21 +1,16 @@
 import { createChannel } from "@/features/channels/functions/createChannel";
 import { listMessages } from "@/features/slack/functions/listMessages";
-import { safeAction } from "@/lib/safeAction";
 import { WebClient } from "@slack/web-api";
-import { z } from "zod";
+import { inngest } from "../client";
 
-export const createListChannels = safeAction
-  .metadata({
-    name: "createListChannels",
-  })
-  .schema(
-    z.object({
-      web: z.instanceof(WebClient),
-      token: z.string(),
-      workspace_id: z.string().cuid(),
-    }),
-  )
-  .action(async ({ parsedInput: { web, token, workspace_id } }) => {
+export const InngestCreateListChannels = inngest.createFunction(
+  { id: "create-list-channels" },
+  { event: "slack/create-list-channels" },
+  async ({ event }) => {
+    const { workspace_id, token } = event.data;
+
+    const web = new WebClient(token);
+
     let cursor: string | undefined;
 
     do {
@@ -29,7 +24,7 @@ export const createListChannels = safeAction
       for (const channel of channels ?? []) {
         const { name, id } = channel;
 
-        if (!name || !id) continue;
+        if (!name || !id) return;
 
         const rChannel = await createChannel({
           name: name,
@@ -39,7 +34,7 @@ export const createListChannels = safeAction
         });
         const createdChannel = rChannel?.data;
 
-        if (!createdChannel) continue;
+        if (!createdChannel) return;
 
         await web.conversations.join({
           channel: createdChannel.external_id ?? "",
@@ -51,4 +46,7 @@ export const createListChannels = safeAction
 
       cursor = response_metadata?.next_cursor;
     } while (cursor);
-  });
+
+    return { success: true };
+  },
+);
