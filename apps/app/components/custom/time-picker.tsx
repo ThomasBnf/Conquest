@@ -15,7 +15,7 @@ type Props = {
 export const TimePicker = ({ value, onChange }: Props) => {
   return (
     <Select defaultValue={value} onValueChange={(e) => onChange(e)}>
-      <SelectTrigger className="font-normal focus:ring-0 w-[120px]">
+      <SelectTrigger>
         <SelectValue placeholder="Select time" />
       </SelectTrigger>
       <SelectContent>

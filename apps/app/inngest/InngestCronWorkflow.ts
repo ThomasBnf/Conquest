@@ -11,7 +11,7 @@ import { inngest } from "./client";
 
 export const InngestCronWorkflow = inngest.createFunction(
   { id: "cron-workflow" },
-  { cron: "* * * * *" },
+  { cron: "*/15 * * * *" },
   async ({ step }) => {
     const workflows = await step.run("fetch-workflows", async () => {
       return z.array(WorkflowSchema).parse(
