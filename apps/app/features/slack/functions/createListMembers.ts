@@ -41,8 +41,6 @@ export const createListMembers = safeAction
             title,
           } = profile;
 
-          if (first_name === "Slackbot") continue;
-
           await upsertMember({
             id,
             source: "SLACK",
