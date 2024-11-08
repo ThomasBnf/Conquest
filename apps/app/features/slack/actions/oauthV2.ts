@@ -2,10 +2,10 @@
 
 import { env } from "@/env.mjs";
 import { upsertIntegration } from "@/features/integrations/actions/upsertIntegration";
-import { inngest } from "@/inngest/client";
 import { authAction } from "lib/authAction";
 import { redirect } from "next/navigation";
 import { z } from "zod";
+import { installSlack } from "../functions/installSlack";
 
 export const oauthV2 = authAction
   .metadata({
@@ -49,10 +49,7 @@ export const oauthV2 = authAction
 
     if (!integration) return;
 
-    inngest.send({
-      name: "integrations/slack",
-      data: { integration },
-    });
+    installSlack({ integration });
 
     return redirect(`/${slug}/settings/integrations/slack`);
   });

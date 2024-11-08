@@ -32,7 +32,7 @@ let members: MemberWithActivities[] = [];
 export const InngestRunWorkflow = inngest.createFunction(
   { id: "run-workflow" },
   { event: "workflow/run" },
-  async ({ event, step, logger }) => {
+  async ({ event, step }) => {
     const { workflow_id } = event.data;
 
     const workflow = await prisma.workflow.findUnique({
