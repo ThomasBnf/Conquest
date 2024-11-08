@@ -1,9 +1,9 @@
 import { createActivity } from "@/features/activities/functions/createActivity";
-import { authAction } from "lib/authAction";
+import { safeAction } from "@/lib/safeAction";
 import { prisma } from "lib/prisma";
 import { z } from "zod";
 
-export const createReaction = authAction
+export const createReaction = safeAction
   .metadata({
     name: "createReaction",
   })
@@ -14,15 +14,13 @@ export const createReaction = authAction
       channel_id: z.string().cuid(),
       react_to: z.string().nullable().optional(),
       ts: z.string(),
+      workspace_id: z.string().cuid(),
     }),
   )
   .action(
     async ({
-      ctx,
-      parsedInput: { user, message, channel_id, react_to, ts },
+      parsedInput: { user, message, channel_id, react_to, ts, workspace_id },
     }) => {
-      const workspace_id = ctx.user.workspace_id;
-
       const member = await prisma.member.findUnique({
         where: {
           slack_id: user,

@@ -1,11 +1,11 @@
+import { safeAction } from "@/lib/safeAction";
 import { ChannelSchema } from "@conquest/zod/channel.schema";
 import { WebClient } from "@slack/web-api";
-import { authAction } from "lib/authAction";
 import { prisma } from "lib/prisma";
 import { z } from "zod";
 import { createReaction } from "./createReaction";
 
-export const listReplies = authAction
+export const listReplies = safeAction
   .metadata({
     name: "listReplies",
   })
@@ -14,10 +14,10 @@ export const listReplies = authAction
       web: z.instanceof(WebClient),
       channel: ChannelSchema,
       reply_to: z.string().optional(),
+      workspace_id: z.string().cuid(),
     }),
   )
-  .action(async ({ ctx, parsedInput: { web, channel, reply_to } }) => {
-    const workspace_id = ctx.user.workspace_id;
+  .action(async ({ parsedInput: { web, channel, reply_to, workspace_id } }) => {
     let cursor: string | undefined;
 
     do {
@@ -86,6 +86,7 @@ export const listReplies = authAction
                   channel_id: channel.id,
                   react_to: activity?.external_id,
                   ts: message.ts ?? "",
+                  workspace_id,
                 });
               }
             }

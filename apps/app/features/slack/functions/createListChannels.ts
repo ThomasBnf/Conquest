@@ -1,10 +1,10 @@
+import { createChannel } from "@/features/channels/functions/createChannel";
 import { listMessages } from "@/features/slack/functions/listMessages";
-import { authAction } from "@/lib/authAction";
+import { safeAction } from "@/lib/safeAction";
 import { WebClient } from "@slack/web-api";
 import { z } from "zod";
-import { createChannel } from "../../channels/functions/createChannel";
 
-export const createListChannels = authAction
+export const createListChannels = safeAction
   .metadata({
     name: "createListChannels",
   })
@@ -12,11 +12,11 @@ export const createListChannels = authAction
     z.object({
       web: z.instanceof(WebClient),
       token: z.string(),
+      workspace_id: z.string().cuid(),
     }),
   )
-  .action(async ({ ctx: { user }, parsedInput: { web, token } }) => {
+  .action(async ({ parsedInput: { web, token, workspace_id } }) => {
     let cursor: string | undefined;
-    const workspace_id = user.workspace_id;
 
     do {
       const { channels, response_metadata } = await web.conversations.list({
@@ -46,7 +46,7 @@ export const createListChannels = authAction
           token,
         });
 
-        await listMessages({ web, channel: createdChannel });
+        await listMessages({ web, channel: createdChannel, workspace_id });
       }
 
       cursor = response_metadata?.next_cursor;

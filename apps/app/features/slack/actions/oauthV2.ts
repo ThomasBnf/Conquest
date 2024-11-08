@@ -2,11 +2,11 @@
 
 import { env } from "@/env.mjs";
 import { upsertIntegration } from "@/features/integrations/actions/upsertIntegration";
+import { inngest } from "@/inngest/client";
 import { authAction } from "lib/authAction";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
-import { installSlack } from "./installSlack";
 
 export const oauthV2 = authAction
   .metadata({
@@ -37,7 +37,7 @@ export const oauthV2 = authAction
     const data = await response.json();
     const { access_token, authed_user, team } = data;
 
-    await upsertIntegration({
+    const rIntegration = await upsertIntegration({
       external_id: team.id,
       name: team.name,
       source: "SLACK",
@@ -46,8 +46,14 @@ export const oauthV2 = authAction
       status: "SYNCING",
       scopes,
     });
+    const integration = rIntegration?.data;
 
-    installSlack();
+    if (!integration) return;
+
+    await inngest.send({
+      name: "integrations/slack",
+      data: { integration },
+    });
 
     revalidatePath(`/${slug}/settings/integrations/slack`);
     return redirect(`/${slug}/settings/integrations/slack`);

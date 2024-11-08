@@ -13,7 +13,7 @@ export const createChannel = safeAction
       name: z.string(),
       source: SOURCE,
       external_id: z.string(),
-      workspace_id: z.string(),
+      workspace_id: z.string().cuid(),
     }),
   )
   .action(

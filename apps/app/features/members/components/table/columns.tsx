@@ -1,4 +1,5 @@
 import { DateCell } from "@/components/custom/date-cell";
+import { useUser } from "@/context/userContext";
 import { ColumnHeader } from "@/features/table/column-header";
 import { TagBadge } from "@/features/tags/tag-badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@conquest/ui/avatar";
@@ -7,7 +8,6 @@ import { Checkbox } from "@conquest/ui/checkbox";
 import { cn } from "@conquest/ui/utils/cn";
 import type { MemberWithActivities } from "@conquest/zod/activity.schema";
 import type { Tag } from "@conquest/zod/tag.schema";
-import { slug } from "cuid";
 import Link from "next/link";
 import type { Dispatch, SetStateAction } from "react";
 
@@ -73,23 +73,26 @@ export const Columns = ({ tags }: Props): Column[] => [
   {
     id: "full_name",
     header: () => <ColumnHeader id="full_name" title="Full Name" width={285} />,
-    cell: ({ member }) => (
-      <Link
-        href={`/${slug}/members/${member.id}`}
-        className={cn(
-          buttonVariants({ variant: "ghost" }),
-          "flex items-center gap-2 px-1.5 truncate",
-        )}
-      >
-        <Avatar className="size-6">
-          <AvatarImage src={member.avatar_url ?? ""} />
-          <AvatarFallback className="text-sm">
-            {member.first_name?.charAt(0).toUpperCase()}
-          </AvatarFallback>
-        </Avatar>
-        <p className="font-medium truncate">{member.full_name}</p>
-      </Link>
-    ),
+    cell: ({ member }) => {
+      const { slug } = useUser();
+      return (
+        <Link
+          href={`/${slug}/members/${member.id}`}
+          className={cn(
+            buttonVariants({ variant: "ghost" }),
+            "flex items-center gap-2 px-1.5 truncate",
+          )}
+        >
+          <Avatar className="size-6">
+            <AvatarImage src={member.avatar_url ?? ""} />
+            <AvatarFallback className="text-sm">
+              {member.first_name?.charAt(0).toUpperCase()}
+            </AvatarFallback>
+          </Avatar>
+          <p className="font-medium truncate">{member.full_name}</p>
+        </Link>
+      );
+    },
     width: 285,
   },
   {

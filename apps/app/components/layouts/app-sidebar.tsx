@@ -1,5 +1,12 @@
 "use client";
 
+import { Activities } from "@/components/icons/Activities";
+import { Companies } from "@/components/icons/Companies";
+import { Dashboard } from "@/components/icons/Dashboard";
+import { Integration } from "@/components/icons/Integration";
+import { LeaderBoard } from "@/components/icons/Leaderbord";
+import { Members } from "@/components/icons/Members";
+import { Workflows } from "@/components/icons/Workflows";
 import { useUser } from "@/context/userContext";
 import { WorkspaceMenu } from "@/features/workspaces/components/workspace-menu";
 import { Loader } from "@conquest/ui/loader";
@@ -21,16 +28,9 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@conquest/ui/tooltip";
-import { Activities } from "components/icons/Activities";
-import { Dashboard } from "components/icons/Dashboard";
-import { LeaderBoard } from "components/icons/Leaderbord";
-import { Members } from "components/icons/Members";
-import { Workflows } from "components/icons/Workflows";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Company } from "../icons/Company";
-import { Integration } from "../icons/Integration";
 import { SidebarSettings } from "./sidebar-settings";
 
 export const AppSidebar = () => {
@@ -55,7 +55,7 @@ export const AppSidebar = () => {
     },
     {
       label: "Companies",
-      icon: <Company className="size-[18px]" />,
+      icon: <Companies className="size-[18px]" />,
       href: `/${slug}/companies`,
       isActive: pathname.startsWith(`/${slug}/companies`),
     },

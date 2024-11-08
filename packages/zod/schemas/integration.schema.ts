@@ -14,8 +14,8 @@ export const IntegrationSchema = z.object({
   status: STATUS.optional(),
   installed_at: z.date().nullable(),
   workspace_id: z.string().cuid(),
-  created_at: z.date(),
-  updated_at: z.date(),
+  created_at: z.coerce.date(),
+  updated_at: z.coerce.date(),
 });
 
 export type Integration = z.infer<typeof IntegrationSchema>;

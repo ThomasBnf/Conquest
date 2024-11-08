@@ -1,3 +1,4 @@
+import { TimePicker } from "@/components/custom/time-picker";
 import { useSelected } from "@/features/workflows/hooks/useSelected";
 import {
   Form,
@@ -7,7 +8,6 @@ import {
   FormLabel,
   FormMessage,
 } from "@conquest/ui/form";
-import { Input } from "@conquest/ui/input";
 import {
   Select,
   SelectContent,
@@ -127,16 +127,11 @@ export const RecurringScheduleOptions = () => {
             <FormItem>
               <FormLabel>Time</FormLabel>
               <FormControl>
-                <Input
-                  {...field}
+                <TimePicker
+                  value={field.value}
                   onChange={(e) => {
                     field.onChange(e);
-                    form.trigger("time");
-                  }}
-                  onBlur={() => {
-                    if (form.formState.isValid) {
-                      onSubmit(form.getValues());
-                    }
+                    onSubmit(form.getValues());
                   }}
                 />
               </FormControl>

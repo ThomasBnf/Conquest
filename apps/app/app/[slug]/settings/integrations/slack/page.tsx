@@ -109,7 +109,7 @@ export default function Page() {
             )}
             {slack?.status === "DISCONNECTED" && (
               <Button loading={loading} onClick={onStartInstall}>
-                Reinstall
+                Install
               </Button>
             )}
             {slack?.status === "SYNCING" && <Button loading> Install</Button>}

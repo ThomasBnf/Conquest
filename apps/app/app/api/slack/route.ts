@@ -8,7 +8,6 @@ import { deleteChannel } from "@/features/channels/functions/deleteChannel";
 import { getChannel } from "@/features/channels/functions/getChannel";
 import { updateChannel } from "@/features/channels/functions/updateChannel";
 import { getIntegration } from "@/features/integrations/functions/getIntegration";
-import { updateIntegration } from "@/features/integrations/functions/updateIntegration";
 import { getMember } from "@/features/members/functions/getMember";
 import { upsertMember } from "@/features/members/functions/upsertMember";
 import { getFiles } from "@/features/slack/helpers/getFiles";
@@ -61,10 +60,10 @@ export const POST = safeRoute.body(bodySchema).handler(async (_, context) => {
 
   switch (type) {
     case "app_uninstalled": {
-      await updateIntegration({
-        external_id: team_id,
-        status: "DISCONNECTED",
-        installed_at: null,
+      await prisma.integration.delete({
+        where: {
+          id: integration.id,
+        },
       });
       break;
     }

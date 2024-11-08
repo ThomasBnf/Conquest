@@ -6,9 +6,15 @@ import { MembersTable } from "@/features/members/components/table/members-table"
 import { countMembers } from "@/features/members/functions/countMembers";
 import { listTags } from "@/features/tags/functions/listTags";
 
-export default async function Page() {
+type Props = {
+  searchParams: {
+    search: string;
+  };
+};
+
+export default async function Page({ searchParams: { search } }: Props) {
   const rInitialMembers = await _listMembers({
-    search: "",
+    search: search ?? "",
     page: 1,
     id: "full_name",
     desc: false,

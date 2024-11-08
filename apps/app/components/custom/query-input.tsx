@@ -2,7 +2,7 @@ import { Button } from "@conquest/ui/button";
 import { Input } from "@conquest/ui/input";
 import { cn } from "@conquest/ui/utils/cn";
 import { Search, X } from "lucide-react";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 type Props = {
   query: string;
@@ -32,6 +32,10 @@ export const QueryInput = ({
     setQuery("");
     ref.current?.focus();
   };
+
+  useEffect(() => {
+    setValue(query);
+  }, [query]);
 
   return (
     <div

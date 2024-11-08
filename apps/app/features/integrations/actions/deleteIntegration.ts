@@ -81,11 +81,5 @@ export const deleteIntegration = authAction
       },
     });
 
-    await prisma.integration.delete({
-      where: {
-        id: integration.id,
-      },
-    });
-
     return revalidatePath(`/${slug}/settings/integrations`);
   });

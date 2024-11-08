@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 
 type Props = {
-  isClient: boolean;
+  dependencies: unknown[];
 };
 
-export const useHasScrollY = ({ isClient }: Props) => {
+export const useHasScrollY = ({ dependencies }: Props) => {
   const [hasScrollY, setHasScrollY] = useState(false);
 
   useEffect(() => {
@@ -25,7 +25,7 @@ export const useHasScrollY = ({ isClient }: Props) => {
     return () => {
       window.removeEventListener("resize", handleResize);
     };
-  }, [isClient]);
+  }, dependencies);
 
   return hasScrollY;
 };

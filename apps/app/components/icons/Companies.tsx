@@ -4,11 +4,11 @@ type Props = {
   className?: string;
 };
 
-export const Company = ({ className }: Props) => {
+export const Companies = ({ className }: Props) => {
   return (
     <Image
-      src="/icons/company.svg"
-      alt="company_icon"
+      src="/icons/companies.svg"
+      alt="companies_icon"
       width={24}
       height={24}
       sizes="100%"

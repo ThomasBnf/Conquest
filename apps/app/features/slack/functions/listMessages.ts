@@ -1,13 +1,13 @@
 import { createActivity } from "@/features/activities/functions/createActivity";
 import { prisma } from "@/lib/prisma";
+import { safeAction } from "@/lib/safeAction";
 import { ChannelSchema } from "@conquest/zod/channel.schema";
 import { WebClient } from "@slack/web-api";
-import { authAction } from "lib/authAction";
 import { z } from "zod";
 import { createReaction } from "./createReaction";
 import { listReplies } from "./listReplies";
 
-export const listMessages = authAction
+export const listMessages = safeAction
   .metadata({
     name: "listMessages",
   })
@@ -15,11 +15,10 @@ export const listMessages = authAction
     z.object({
       web: z.instanceof(WebClient),
       channel: ChannelSchema,
+      workspace_id: z.string().cuid(),
     }),
   )
-  .action(async ({ ctx, parsedInput: { web, channel } }) => {
-    const workspace_id = ctx.user.workspace_id;
-
+  .action(async ({ parsedInput: { web, channel, workspace_id } }) => {
     let cursor: string | undefined;
 
     do {
@@ -80,6 +79,7 @@ export const listMessages = authAction
                   channel_id: channel.id,
                   react_to: activity?.external_id,
                   ts: (Number(ts) + 1).toString(),
+                  workspace_id,
                 });
               }
             }
@@ -90,6 +90,7 @@ export const listMessages = authAction
               web,
               channel,
               reply_to: message.thread_ts,
+              workspace_id,
             });
           }
         }

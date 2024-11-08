@@ -23,16 +23,14 @@ export const createListMembers = safeAction
       });
 
       for (const member of members ?? []) {
-        const { id, is_email_confirmed, deleted, profile } = member;
-        const isMember = is_email_confirmed;
-        const isDeleted = deleted;
+        const { id, deleted: isDeleted, is_bot: isBot, profile } = member;
 
         if (!id) {
           console.log("No id", member);
           continue;
         }
 
-        if (profile && isMember && !isDeleted) {
+        if (profile && !isDeleted && !isBot) {
           const {
             first_name,
             last_name,
@@ -42,6 +40,8 @@ export const createListMembers = safeAction
             image_1024,
             title,
           } = profile;
+
+          if (first_name === "Slackbot") continue;
 
           await upsertMember({
             id,

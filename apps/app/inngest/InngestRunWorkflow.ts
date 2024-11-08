@@ -32,7 +32,7 @@ let members: MemberWithActivities[] = [];
 export const InngestRunWorkflow = inngest.createFunction(
   { id: "run-workflow" },
   { event: "workflow/run" },
-  async ({ event, step }) => {
+  async ({ event, step, logger }) => {
     const { workflow_id } = event.data;
 
     const workflow = await prisma.workflow.findUnique({
@@ -56,12 +56,13 @@ export const InngestRunWorkflow = inngest.createFunction(
               .array(MemberWithActivitiesSchema)
               .parse(_members);
 
-            if (parsedMembers.length === 0) break;
-
             const { group_filters } = parsedNode.data;
-            members = group_filters?.length
-              ? filterMembers(parsedMembers, group_filters)
-              : parsedMembers;
+
+            members =
+              group_filters?.length > 0
+                ? filterMembers(parsedMembers, group_filters)
+                : parsedMembers;
+
             break;
           }
           case "add-tag": {
@@ -169,7 +170,7 @@ export const webhook = async (node: NodeWebhook) => {
   await fetch(url, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(members),
+    body: JSON.stringify(members.length),
   });
 };
 
@@ -215,7 +216,7 @@ export const slackMessage = async (
 
     if (!channel?.id) throw new Error("No channel ID found");
 
-    const result = await web.chat.postMessage({
+    await web.chat.postMessage({
       channel: channel?.id,
       text: message,
       as_user: true,
