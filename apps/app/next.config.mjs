@@ -13,14 +13,6 @@ const nextConfig = {
       },
     ],
   },
-  compiler: {
-    removeConsole:
-      process.env.NODE_ENV === "production"
-        ? {
-            exclude: ["error", "warn", "info"],
-          }
-        : false,
-  },
 };
 
 export default nextConfig;

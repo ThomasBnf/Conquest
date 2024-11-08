@@ -39,6 +39,10 @@ export const createListChannels = safeAction
         });
         const createdChannel = rChannel?.data;
 
+        if (rChannel?.serverError) {
+          console.log("createChannel", rChannel.serverError);
+        }
+
         if (!createdChannel) continue;
 
         await web.conversations.join({

@@ -41,7 +41,7 @@ export const createListMembers = safeAction
             title,
           } = profile;
 
-          await upsertMember({
+          const rMember = await upsertMember({
             id,
             source: "SLACK",
             first_name,
@@ -53,6 +53,10 @@ export const createListMembers = safeAction
             job_title: title,
             workspace_id,
           });
+
+          if (rMember?.serverError) {
+            console.log("createMember", rMember.serverError);
+          }
         }
       }
 

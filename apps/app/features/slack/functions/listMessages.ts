@@ -64,6 +64,10 @@ export const listMessages = safeAction
             updated_at: new Date(Number(ts) * 1000),
           });
 
+          if (rActivity?.serverError) {
+            console.log("createActivity", rActivity.serverError);
+          }
+
           const activity = rActivity?.data;
 
           if (!activity) break;
@@ -86,12 +90,16 @@ export const listMessages = safeAction
           }
 
           if (reply_count) {
-            await listReplies({
+            const rActivity = await listReplies({
               web,
               channel,
               reply_to: message.thread_ts,
               workspace_id,
             });
+
+            if (rActivity?.serverError) {
+              console.log("listReplies", rActivity.serverError);
+            }
           }
         }
       }
