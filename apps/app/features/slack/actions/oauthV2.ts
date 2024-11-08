@@ -4,7 +4,6 @@ import { env } from "@/env.mjs";
 import { upsertIntegration } from "@/features/integrations/actions/upsertIntegration";
 import { inngest } from "@/inngest/client";
 import { authAction } from "lib/authAction";
-import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 
@@ -50,11 +49,10 @@ export const oauthV2 = authAction
 
     if (!integration) return;
 
-    await inngest.send({
+    inngest.send({
       name: "integrations/slack",
       data: { integration },
     });
 
-    revalidatePath(`/${slug}/settings/integrations/slack`);
     return redirect(`/${slug}/settings/integrations/slack`);
   });
