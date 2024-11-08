@@ -63,7 +63,7 @@ export const ChannelsTop = ({ from, to }: Props) => {
 
   return (
     <div className="flex-1 p-4 space-y-2">
-      <p className="pl-1.5 text-base font-medium">Top Active Channels</p>
+      <p className="pl-1.5 text-base font-medium">Top Channels</p>
       <ResponsiveContainer height={350} width="100%">
         <ChartContainer ref={ref} config={chartConfig}>
           <BarChart accessibilityLayer data={normalizedData} layout="vertical">

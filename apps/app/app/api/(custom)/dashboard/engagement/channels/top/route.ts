@@ -21,19 +21,18 @@ export const GET = safeRoute
     const chartData = await prisma.channel.findMany({
       where: {
         workspace_id,
-        activities: {
-          some: {
-            created_at: {
-              gte: from,
-              lte: to,
-            },
-          },
-        },
       },
       include: {
         _count: {
           select: {
-            activities: true,
+            activities: {
+              where: {
+                created_at: {
+                  gte: from,
+                  lte: to,
+                },
+              },
+            },
           },
         },
       },
