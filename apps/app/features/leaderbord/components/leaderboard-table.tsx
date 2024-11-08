@@ -1,5 +1,6 @@
 "use client";
 
+import { Members } from "@/components/icons/Members";
 import { IsLoading } from "@/components/states/is-loading";
 import { Columns } from "@/features/leaderbord/components/columns";
 import { useScrollX } from "@/features/table/hooks/useScrollX";
@@ -47,25 +48,25 @@ export const LeaderbordTable = ({ initialMembers, tags, from, to }: Props) => {
   if (!isClient) return <IsLoading />;
 
   return (
-    <div className="relative overflow-hidden h-full">
+    <div className="relative h-full overflow-hidden">
       <ScrollArea className="h-full overflow-hidden" ref={scrollRef}>
         <div className="sticky top-0 z-30 flex">
           <div
-            className="sticky left-0 z-10 shrink-0 border-r border-b"
+            className="sticky left-0 z-10 border-r border-b"
             style={{ width: fixedColumn?.width }}
           >
-            <div className="h-12 flex items-center">
+            <div className="flex h-12 items-center">
               {fixedColumn?.header({ members })}
             </div>
             {scrollX > 0 && (
-              <div className="absolute right-0 -mr-12 top-0 h-full bg-gradient-to-r from-black opacity-[0.075] to-transparent w-12" />
+              <div className="absolute right-0 -mr-12 top-0 h-full w-12 bg-gradient-to-r from-black to-transparent opacity-[0.075]" />
             )}
           </div>
           <div className="flex border-b divide-x">
             {scrollableColumns.map((column) => (
               <div
                 key={column.id}
-                className="h-12 flex items-center"
+                className="flex h-12 items-center"
                 style={{ width: column.width }}
               >
                 {column.header({})}
@@ -73,52 +74,53 @@ export const LeaderbordTable = ({ initialMembers, tags, from, to }: Props) => {
             ))}
           </div>
         </div>
-        <div className="relative flex-grow">
-          {members.length ? (
-            members?.map((member, index) => (
-              <div key={member.id} className="border-b">
-                <div className="flex">
-                  <div
-                    className="sticky left-0 border-r bg-background"
-                    style={{ width: fixedColumn?.width }}
-                  >
-                    <div className="h-12 flex items-center">
-                      {fixedColumn?.cell({ member })}
-                    </div>
-                    {scrollX > 0 && (
-                      <div className="absolute right-0 -mr-12 top-0 h-full bg-gradient-to-r from-black opacity-[0.075] to-transparent w-12" />
-                    )}
+        <div className="relative">
+          {members?.map((member, index) => (
+            <div key={member.id} className="border-b">
+              <div className="flex">
+                <div
+                  className="sticky left-0 border-r bg-background"
+                  style={{ width: fixedColumn?.width }}
+                >
+                  <div className="flex h-12 items-center">
+                    {fixedColumn?.cell({ member })}
                   </div>
-                  <div className="flex divide-x">
-                    {scrollableColumns.map((column) => (
-                      <div
-                        key={column.id}
-                        className="h-12 flex items-center"
-                        style={{ width: column.width }}
-                      >
-                        {column.cell({ member })}
-                      </div>
-                    ))}
-                  </div>
+                  {scrollX > 0 && (
+                    <div className="absolute right-0 -mr-12 top-0 h-full w-12 bg-gradient-to-r from-black to-transparent opacity-[0.075]" />
+                  )}
                 </div>
-                {!isLoading && members.length - 20 === index && (
-                  <div ref={ref} />
-                )}
+                <div className="flex divide-x">
+                  {scrollableColumns.map((column) => (
+                    <div
+                      key={column.id}
+                      className="flex h-12 items-center"
+                      style={{ width: column.width }}
+                    >
+                      {column.cell({ member })}
+                    </div>
+                  ))}
+                </div>
               </div>
-            ))
-          ) : (
-            <div
-              className={cn(
-                "mx-auto w-full absolute top-24",
-                open ? "max-w-[calc(100vw-14rem)]" : "max-w-[100vw]",
-              )}
-            >
-              <p className="text-center text-muted-foreground">
-                No members found
-              </p>
+              {!isLoading && members.length - 20 === index && <div ref={ref} />}
             </div>
-          )}
+          ))}
         </div>
+        {members.length === 0 && (
+          <div
+            className={cn(
+              "absolute top-36 mx-auto flex w-full flex-col items-center justify-center",
+              open ? "max-w-[calc(100vw-14rem)]" : "max-w-[100vw]",
+            )}
+          >
+            <div className="flex items-center justify-center">
+              <Members />
+            </div>
+            <p className="text-lg font-medium text-center">No members found</p>
+            <p className="text-center text-muted-foreground">
+              No more members has activity in this period
+            </p>
+          </div>
+        )}
         <ScrollBar orientation="horizontal" />
         <ScrollBar orientation="vertical" />
       </ScrollArea>

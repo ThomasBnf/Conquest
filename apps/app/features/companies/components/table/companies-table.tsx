@@ -58,23 +58,23 @@ export const CompaniesTable = ({ initialCompanies, count }: Props) => {
 
   return (
     <>
-      <div className="px-4 min-h-12 flex items-center border-b">
+      <div className="flex items-center border-b px-4 min-h-12">
         <QueryInput
           query={search}
           setQuery={(value) => setSearchParams({ search: value })}
           placeholder="Search in companies..."
         />
       </div>
-      <div className="relative overflow-hidden h-full">
+      <div className="relative h-full overflow-hidden">
         <ScrollArea className="h-full overflow-hidden" ref={scrollRef}>
           <div className="sticky top-0 z-30 flex">
             <div
               className={cn(
-                "sticky left-0 z-10 shrink-0 [&:not(:first-child)]:border-r border-b",
+                "sticky left-0 z-10 shrink-0 border-b [&:not(:first-child)]:border-r",
               )}
               style={{ width: fixedColumn[0]?.width }}
             >
-              <div className="h-12 flex items-center">
+              <div className="flex h-12 items-center">
                 {fixedColumn[0]?.header({
                   companies,
                   rowSelected,
@@ -82,7 +82,7 @@ export const CompaniesTable = ({ initialCompanies, count }: Props) => {
                 })}
               </div>
               {scrollX > 0 && (
-                <div className="absolute right-0 -mr-12 top-0 h-full bg-gradient-to-r from-black opacity-[0.075] to-transparent w-12" />
+                <div className="absolute right-0 top-0 h-full w-12 -mr-12 bg-gradient-to-r from-black to-transparent opacity-[0.075]" />
               )}
             </div>
             <div
@@ -91,18 +91,18 @@ export const CompaniesTable = ({ initialCompanies, count }: Props) => {
               )}
               style={{ width: fixedColumn[1]?.width }}
             >
-              <div className="h-12 flex items-center">
+              <div className="flex h-12 items-center">
                 {fixedColumn[1]?.header({})}
               </div>
               {scrollX > 0 && (
-                <div className="absolute right-0 -mr-12 top-0 h-full bg-gradient-to-r from-black opacity-[0.075] to-transparent w-12" />
+                <div className="absolute right-0 top-0 h-full w-12 -mr-12 bg-gradient-to-r from-black to-transparent opacity-[0.075]" />
               )}
             </div>
             <div className="flex border-b divide-x">
               {scrollableColumns.map((column) => (
                 <div
                   key={column.id}
-                  className="h-12 flex items-center"
+                  className="flex h-12 items-center"
                   style={{ width: column.width }}
                 >
                   {column.header({})}
@@ -110,96 +110,99 @@ export const CompaniesTable = ({ initialCompanies, count }: Props) => {
               ))}
             </div>
           </div>
-          <div className="relative flex-grow">
-            {companies.length ? (
-              companies?.map((company, index) => (
-                <div
-                  key={company.id}
-                  className={cn(
-                    "[&:not(:last-child)]:border-b",
-                    rowSelected.includes(company.id) && "bg-muted",
-                  )}
-                >
-                  <div className="flex">
-                    <div
-                      className={cn(
-                        "sticky left-0 [&:not(:first-child)]:border-r",
-                        rowSelected.includes(company.id)
-                          ? "bg-muted"
-                          : "bg-background",
-                      )}
-                      style={{ width: fixedColumn[0]?.width }}
-                    >
-                      <div className="h-12 flex items-center">
-                        {fixedColumn[0]?.cell({
-                          company,
-                          rowSelected,
-                          setRowSelected,
-                        })}
-                      </div>
-                      {scrollX > 0 && (
-                        <div className="absolute right-0 -mr-12 top-0 h-full bg-gradient-to-r from-black opacity-[0.075] to-transparent w-12" />
-                      )}
-                    </div>
-                    <div
-                      className={cn(
-                        "sticky left-[40px] border-r",
-                        rowSelected.includes(company.id)
-                          ? "bg-muted"
-                          : "bg-background",
-                      )}
-                      style={{ width: fixedColumn[1]?.width }}
-                    >
-                      <div className="h-12 flex items-center">
-                        {fixedColumn[1]?.cell({
-                          company,
-                          rowSelected,
-                          setRowSelected,
-                        })}
-                      </div>
-                      {scrollX > 0 && (
-                        <div className="absolute right-0 -mr-12 top-0 h-full bg-gradient-to-r from-black opacity-[0.075] to-transparent w-12" />
-                      )}
-                    </div>
-                    <div className="flex divide-x">
-                      {scrollableColumns.map((column) => (
-                        <div
-                          key={column.id}
-                          className="h-12 flex items-center"
-                          style={{ width: column.width }}
-                        >
-                          {column.cell({ company })}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                  {!isLoading && companies.length - 20 === index && (
-                    <div ref={ref} />
-                  )}
-                </div>
-              ))
-            ) : (
+          <div className="relative">
+            {companies?.map((company, index) => (
               <div
+                key={company.id}
                 className={cn(
-                  "mx-auto w-full absolute top-36 flex flex-col items-center justify-center",
-                  open ? "max-w-[calc(100vw-14rem)]" : "max-w-[100vw]",
+                  "[&:not(:last-child)]:border-b",
+                  rowSelected.includes(company.id) && "bg-muted",
                 )}
               >
-                <div className="flex items-center justify-center">
-                  <Companies />
+                <div className="flex">
+                  <div
+                    className={cn(
+                      "sticky left-0 [&:not(:first-child)]:border-r",
+                      rowSelected.includes(company.id)
+                        ? "bg-muted"
+                        : "bg-background",
+                    )}
+                    style={{ width: fixedColumn[0]?.width }}
+                  >
+                    <div className="flex h-12 items-center">
+                      {fixedColumn[0]?.cell({
+                        company,
+                        rowSelected,
+                        setRowSelected,
+                      })}
+                    </div>
+                    {scrollX > 0 && (
+                      <div className="absolute right-0 top-0 h-full w-12 -mr-12 bg-gradient-to-r from-black to-transparent opacity-[0.075]" />
+                    )}
+                  </div>
+                  <div
+                    className={cn(
+                      "sticky left-[40px] border-r",
+                      rowSelected.includes(company.id)
+                        ? "bg-muted"
+                        : "bg-background",
+                    )}
+                    style={{ width: fixedColumn[1]?.width }}
+                  >
+                    <div className="flex h-12 items-center">
+                      {fixedColumn[1]?.cell({
+                        company,
+                        rowSelected,
+                        setRowSelected,
+                      })}
+                    </div>
+                    {scrollX > 0 && (
+                      <div className="absolute right-0 top-0 h-full w-12 -mr-12 bg-gradient-to-r from-black to-transparent opacity-[0.075]" />
+                    )}
+                  </div>
+                  <div className="flex divide-x">
+                    {scrollableColumns.map((column) => (
+                      <div
+                        key={column.id}
+                        className="flex h-12 items-center"
+                        style={{ width: column.width }}
+                      >
+                        {column.cell({ company })}
+                      </div>
+                    ))}
+                  </div>
                 </div>
-                <p className="text-center font-medium text-lg">
-                  No companies found
-                </p>
-                <p className="text-center text-muted-foreground mb-4">
-                  None of your companies match the current filters
-                </p>
+                {!isLoading && companies.length - 20 === index && (
+                  <div ref={ref} />
+                )}
+              </div>
+            ))}
+          </div>
+          {companies.length === 0 && (
+            <div
+              className={cn(
+                "absolute top-36 mx-auto flex w-full flex-col items-center justify-center",
+                open ? "max-w-[calc(100vw-14rem)]" : "max-w-[100vw]",
+              )}
+            >
+              <div className="flex items-center justify-center">
+                <Companies />
+              </div>
+              <p className="text-center font-medium text-lg">
+                No companies found
+              </p>
+              <p className="text-center text-muted-foreground mb-4">
+                {debouncedSearch
+                  ? "None of your companies match the current filters"
+                  : "No companies found in your workspace"}
+              </p>
+              {debouncedSearch && (
                 <Button onClick={() => setSearchParams({ search: "" })}>
                   Clear filters
                 </Button>
-              </div>
-            )}
-          </div>
+              )}
+            </div>
+          )}
           <div
             className={cn(
               "flex bg-background",
@@ -212,7 +215,7 @@ export const CompaniesTable = ({ initialCompanies, count }: Props) => {
               style={{ width: 325 }}
             >
               <p
-                className="flex items-center justify-end h-12 px-3 border-r"
+                className="flex h-12 items-center justify-end px-3 border-r"
                 style={{ width: 325 }}
               >
                 <span className="mr-auto text-muted-foreground">Count</span>
