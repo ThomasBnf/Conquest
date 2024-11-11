@@ -26,6 +26,7 @@ export const installSlack = safeAction
     const web = new WebClient(token);
 
     await createListMembers({ web, workspace_id });
+
     await createListChannels({ web, token, workspace_id });
 
     return await updateIntegration({
