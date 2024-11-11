@@ -96,15 +96,23 @@ export const Columns = ({ tags }: Props): Column[] => [
     width: 285,
   },
   {
+    id: "job_title",
+    header: () => <ColumnHeader id="job_title" title="Job Title" width={250} />,
+    cell: ({ member }) => <p className="truncate px-2">{member.job_title}</p>,
+    width: 250,
+  },
+  {
     id: "emails",
     header: () => <ColumnHeader id="emails" title="Email" width={250} />,
     cell: ({ member }) => <p className="truncate px-2">{member.emails?.[0]}</p>,
     width: 250,
   },
   {
-    id: "source",
-    header: () => <ColumnHeader id="source" title="Source" width={250} />,
-    cell: ({ member }) => <p className="truncate px-2">{member.source}</p>,
+    id: "activities",
+    header: () => (
+      <ColumnHeader id="activities" title="Activities" width={250} />
+    ),
+    cell: ({ member }) => <p className="px-2">{member.activities.length}</p>,
     width: 250,
   },
   {
@@ -124,14 +132,6 @@ export const Columns = ({ tags }: Props): Column[] => [
     width: 250,
   },
   {
-    id: "activities",
-    header: () => (
-      <ColumnHeader id="activities" title="Activities" width={250} />
-    ),
-    cell: ({ member }) => <p className="px-2">{member.activities.length}</p>,
-    width: 250,
-  },
-  {
     id: "last_activity",
     header: () => (
       <ColumnHeader id="last_activity" title="Last activity" width={250} />
@@ -143,6 +143,12 @@ export const Columns = ({ tags }: Props): Column[] => [
     id: "joined_at",
     header: () => <ColumnHeader id="joined_at" title="Joined at" width={250} />,
     cell: ({ member }) => <DateCell date={member.joined_at} />,
+    width: 250,
+  },
+  {
+    id: "source",
+    header: () => <ColumnHeader id="source" title="Source" width={250} />,
+    cell: ({ member }) => <p className="truncate px-2">{member.source}</p>,
     width: 250,
   },
 ];

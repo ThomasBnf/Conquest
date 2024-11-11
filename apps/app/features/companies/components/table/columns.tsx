@@ -80,16 +80,6 @@ export const Columns = (): Column[] => [
     width: 285,
   },
   {
-    id: "description",
-    header: () => (
-      <ColumnHeader id="description" title="Description" width={285} />
-    ),
-    cell: ({ company }) => (
-      <p className="font-medium truncate">{company.description}</p>
-    ),
-    width: 285,
-  },
-  {
     id: "domain",
     header: () => <ColumnHeader id="domain" title="Website" width={285} />,
     cell: ({ company }) => (
@@ -105,12 +95,15 @@ export const Columns = (): Column[] => [
     ),
     width: 285,
   },
-
   {
-    id: "source",
-    header: () => <ColumnHeader id="source" title="Source" width={250} />,
-    cell: ({ company }) => <p className="truncate px-2">{company.source}</p>,
-    width: 250,
+    id: "description",
+    header: () => (
+      <ColumnHeader id="description" title="Description" width={285} />
+    ),
+    cell: ({ company }) => (
+      <p className="font-medium truncate">{company.description}</p>
+    ),
+    width: 285,
   },
   {
     id: "employees",
@@ -137,5 +130,11 @@ export const Columns = (): Column[] => [
     ),
     cell: ({ company }) => <DateCell date={company.created_at} />,
     width: 285,
+  },
+  {
+    id: "source",
+    header: () => <ColumnHeader id="source" title="Source" width={250} />,
+    cell: ({ company }) => <p className="truncate px-2">{company.source}</p>,
+    width: 250,
   },
 ];

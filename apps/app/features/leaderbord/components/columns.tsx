@@ -51,6 +51,16 @@ export const Columns = ({ tags }: Props): Column[] => [
     width: 285,
   },
   {
+    id: "job_title",
+    header: () => (
+      <p className="pl-2 bg-muted h-full place-content-center w-full">
+        Job Title
+      </p>
+    ),
+    cell: ({ member }) => <p className="truncate px-2">{member.job_title}</p>,
+    width: 250,
+  },
+  {
     id: "emails",
     header: () => (
       <p className="pl-2 bg-muted h-full place-content-center w-full">Email</p>
@@ -59,11 +69,13 @@ export const Columns = ({ tags }: Props): Column[] => [
     width: 250,
   },
   {
-    id: "source",
+    id: "activities",
     header: () => (
-      <p className="pl-2 bg-muted h-full place-content-center w-full">Source</p>
+      <p className="pl-2 bg-muted h-full place-content-center w-full">
+        Activities
+      </p>
     ),
-    cell: ({ member }) => <p className="truncate px-2">{member.source}</p>,
+    cell: ({ member }) => <p className="px-2">{member.activities.length}</p>,
     width: 250,
   },
   {
@@ -85,16 +97,6 @@ export const Columns = ({ tags }: Props): Column[] => [
     width: 250,
   },
   {
-    id: "activities",
-    header: () => (
-      <p className="pl-2 bg-muted h-full place-content-center w-full">
-        Activities
-      </p>
-    ),
-    cell: ({ member }) => <p className="px-2">{member.activities.length}</p>,
-    width: 250,
-  },
-  {
     id: "last_activity",
     header: () => (
       <p className="pl-2 bg-muted h-full place-content-center w-full">
@@ -112,6 +114,14 @@ export const Columns = ({ tags }: Props): Column[] => [
       </p>
     ),
     cell: ({ member }) => <DateCell date={member.joined_at} />,
+    width: 250,
+  },
+  {
+    id: "source",
+    header: () => (
+      <p className="pl-2 bg-muted h-full place-content-center w-full">Source</p>
+    ),
+    cell: ({ member }) => <p className="truncate px-2">{member.source}</p>,
     width: 250,
   },
 ];
