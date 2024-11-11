@@ -6,6 +6,7 @@ import { authAction } from "lib/authAction";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { installSlack } from "../functions/installSlack";
+import { tasks } from "@trigger.dev/sdk/v3";
 
 export const oauthV2 = authAction
   .metadata({
@@ -49,7 +50,7 @@ export const oauthV2 = authAction
 
     if (!integration) return;
 
-    installSlack({ integration });
+    tasks.trigger("install-slack", { integration });
 
     return redirect(`/${slug}/settings/integrations/slack`);
   });

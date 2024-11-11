@@ -106,4 +106,6 @@ export const listMessages = safeAction
 
       cursor = response_metadata?.next_cursor;
     } while (cursor);
+
+    return { success: true };
   });

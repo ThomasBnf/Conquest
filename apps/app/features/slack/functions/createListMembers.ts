@@ -41,6 +41,8 @@ export const createListMembers = safeAction
             title,
           } = profile;
 
+          if (first_name === "slackbot") continue;
+
           const rMember = await upsertMember({
             id,
             source: "SLACK",
@@ -62,6 +64,4 @@ export const createListMembers = safeAction
 
       cursor = response_metadata?.next_cursor;
     } while (cursor);
-
-    return { success: true };
   });
