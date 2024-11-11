@@ -29,4 +29,5 @@ jobs:
         env:
           TRIGGER_ACCESS_TOKEN: ${{ secrets.TRIGGER_ACCESS_TOKEN }}
         run: |
-          bun run deploy:trigger-prod
+          cd apps/app
+          bunx @trigger.dev/cli@latest deploy --publish
