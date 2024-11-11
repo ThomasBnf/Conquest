@@ -8,6 +8,7 @@ export default defineConfig({
       prismaExtension({
         version: "5.20.0",
         schema: "packages/prisma/prisma.schema.prisma",
+        migrate: true,
       }),
     ],
   },
