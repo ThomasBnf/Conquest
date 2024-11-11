@@ -14,10 +14,16 @@
       "cache": false
     },
     "build": {
-      "env": ["DATABASE_URL"],
+      "env": ["DATABASE_URL", "VERCEL", "VERCEL_ENV", "NODE_ENV"],
       "inputs": ["$TURBO_DEFAULT$", ".env"],
-      "dependsOn": ["^db:generate", "^db:deploy", "^build"],
-      "outputs": [".next/**", "!.next/cache/**", "next-env.d.ts", ".expo/**"]
+      "dependsOn": ["^db:generate", "^build"],
+      "outputs": [
+        ".next/**",
+        "!.next/cache/**",
+        "next-env.d.ts",
+        ".expo/**",
+        "dist/**"
+      ]
     },
     "start": {
       "cache": false
@@ -40,7 +46,9 @@
       "outputs": ["node_modules/.cache/tsbuildinfo.json"]
     },
     "db:generate": {
-      "cache": false
+      "cache": false,
+      "inputs": ["prisma/schema.prisma"],
+      "outputs": ["node_modules/.prisma/**"]
     },
     "db:push": {
       "cache": false

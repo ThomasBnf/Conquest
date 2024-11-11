@@ -6,7 +6,8 @@
     "db:push": "prisma db push --skip-generate",
     "db:seed": "prisma db seed",
     "db:migrate": "prisma migrate dev",
-    "db:deploy": "prisma migrate deploy"
+    "db:deploy": "prisma migrate deploy",
+    "postinstall": "prisma generate"
   },
   "prisma": {
     "seed": "bun run prisma/seed.ts"
