@@ -23,4 +23,5 @@ jobs:
       - name: 🚀 Deploy Trigger.dev
         env:
           TRIGGER_API_KEY: ${{ secrets.TRIGGER_ACCESS_TOKEN }}
-        run: bunx trigger.dev@latest deploy
+        run: |
+          bunx trigger.dev@latest deploy
