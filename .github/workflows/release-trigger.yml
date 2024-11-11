@@ -12,16 +12,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Use Node.js 20.x
-        uses: actions/setup-node@v4
+      - name: Install bun
+        uses: oven-sh/setup-bun@v1
         with:
-          node-version: "20.x"
+          bun-version: latest
 
       - name: Install dependencies
-        run: npm install
+        run: bun install
 
       - name: 🚀 Deploy Trigger.dev
-        env:
+        env: 
           TRIGGER_ACCESS_TOKEN: ${{ secrets.TRIGGER_ACCESS_TOKEN }}
         run: |
-          npx trigger.dev@latest deploy
+          bunx trigger.dev@latest deploy
