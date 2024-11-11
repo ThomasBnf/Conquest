@@ -35,6 +35,8 @@ const bodySchema = z
 export const POST = safeRoute.body(bodySchema).handler(async (_, context) => {
   const body = context.body;
 
+  console.log("ctx", context);
+
   if (body.type === "url_verification") {
     return NextResponse.json({ challenge: body.challenge });
   }
