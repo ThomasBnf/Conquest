@@ -18,22 +18,20 @@ import {
   NodeSchema,
   type NodeSlackMessage,
   type NodeTagMember,
-  type NodeWait,
   type NodeWebhook,
 } from "@conquest/zod/node.schema";
 import { WorkflowSchema } from "@conquest/zod/workflow.schema";
 import { WebClient } from "@slack/web-api";
+import { task, wait } from "@trigger.dev/sdk/v3";
 import { startOfDay, subDays } from "date-fns";
 import { z } from "zod";
-import { inngest } from "./client";
 
 let members: MemberWithActivities[] = [];
 
-export const InngestRunWorkflow = inngest.createFunction(
-  { id: "run-workflow" },
-  { event: "workflow/run" },
-  async ({ event, step }) => {
-    const { workflow_id } = event.data;
+export const runWorkflow = task({
+  id: "run-workflow",
+  run: async (payload: { workflow_id: string }) => {
+    const { workflow_id } = payload;
 
     const workflow = await prisma.workflow.findUnique({
       where: { id: workflow_id },
@@ -48,45 +46,53 @@ export const InngestRunWorkflow = inngest.createFunction(
       const parsedNode = NodeSchema.parse(node);
       const { type } = parsedNode.data;
 
-      await step.run(`${type}-${node?.id}`, async () => {
-        switch (type) {
-          case "list-members": {
-            const _members = await listMembers(workspace_id);
-            const parsedMembers = z
-              .array(MemberWithActivitiesSchema)
-              .parse(_members);
+      switch (type) {
+        case "list-members": {
+          const _members = await listMembers(workspace_id);
+          const parsedMembers = z
+            .array(MemberWithActivitiesSchema)
+            .parse(_members);
 
-            const { group_filters } = parsedNode.data;
+          const { group_filters } = parsedNode.data;
 
-            members =
-              group_filters?.length > 0
-                ? filterMembers(parsedMembers, group_filters)
-                : parsedMembers;
+          members =
+            group_filters?.length > 0
+              ? filterMembers(parsedMembers, group_filters)
+              : parsedMembers;
 
-            break;
-          }
-          case "add-tag": {
-            await addTag(parsedNode.data);
-            break;
-          }
-          case "remove-tag": {
-            await removeTag(parsedNode.data);
-            break;
-          }
-          case "slack-message": {
-            await slackMessage(parsedNode.data, workspace_id);
-            break;
-          }
-          case "webhook": {
-            await webhook(parsedNode.data);
-            break;
-          }
-          case "wait": {
-            await wait(parsedNode.data);
-            break;
-          }
+          break;
         }
-      });
+        case "add-tag": {
+          await addTag(parsedNode.data);
+          break;
+        }
+        case "remove-tag": {
+          await removeTag(parsedNode.data);
+          break;
+        }
+        case "slack-message": {
+          await slackMessage(parsedNode.data, workspace_id);
+          break;
+        }
+        case "webhook": {
+          await webhook(parsedNode.data);
+          break;
+        }
+        case "wait": {
+          const { duration, unit } = parsedNode.data;
+
+          const timeMap = {
+            seconds: 1,
+            minutes: 60,
+            hours: 60 * 60,
+            days: 24 * 60 * 60,
+          } as const;
+
+          const milliseconds = duration * timeMap[unit];
+          await wait.for({ seconds: milliseconds });
+          break;
+        }
+      }
 
       const edge = edges.find((edge) => edge.source === node?.id);
       if (!edge) {
@@ -98,7 +104,7 @@ export const InngestRunWorkflow = inngest.createFunction(
 
     return parsedWorkflow;
   },
-);
+});
 
 export const listMembers = async (workspace_id: string) => {
   return await prisma.member.findMany({
@@ -170,22 +176,8 @@ export const webhook = async (node: NodeWebhook) => {
   await fetch(url, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(members.length),
+    body: JSON.stringify(members),
   });
-};
-
-export const wait = async (node: NodeWait) => {
-  const { duration, unit } = node;
-
-  const timeMap = {
-    seconds: 1000,
-    minutes: 60 * 1000,
-    hours: 60 * 60 * 1000,
-    days: 24 * 60 * 60 * 1000,
-  } as const;
-
-  const milliseconds = duration * timeMap[unit];
-  await new Promise((resolve) => setTimeout(resolve, milliseconds));
 };
 
 export const slackMessage = async (

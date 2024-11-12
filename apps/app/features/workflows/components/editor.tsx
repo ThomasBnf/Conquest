@@ -23,7 +23,7 @@ import "@xyflow/react/dist/style.css";
 import { MousePointerClick } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
-import { _runWorkflowInngest } from "../actions/_runWorkflowInngest";
+import { _runWorkflowTrigger } from "../actions/_runWorkflowTrigger";
 import { _updateWorkflow } from "../actions/_updateWorkflow";
 import { useChanging } from "../hooks/useChanging";
 import { usePanel } from "../hooks/usePanel";
@@ -213,7 +213,7 @@ export const Editor = ({ workflow }: Props) => {
 
   const onRunWorkflow = async () => {
     setRunning(true);
-    const run = await _runWorkflowInngest({ workflow_id: workflow.id });
+    const run = await _runWorkflowTrigger({ workflow_id: workflow.id });
     if (run) toast.success("Workflow successfully run");
     setRunning(false);
   };

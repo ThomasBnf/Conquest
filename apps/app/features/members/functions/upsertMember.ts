@@ -1,7 +1,7 @@
 import { filteredDomain } from "@/features/members/helpers/filteredDomain";
-import { _runWorkflowInngest } from "@/features/workflows/actions/_runWorkflowInngest";
 import { prisma } from "@/lib/prisma";
 import { safeAction } from "@/lib/safeAction";
+import { runWorkflow } from "@/trigger/runWorkflow.trigger";
 import { type Company, CompanySchema } from "@conquest/zod/company.schema";
 import { MemberSchema } from "@conquest/zod/member.schema";
 import { SOURCE } from "@conquest/zod/source.enum";
@@ -164,7 +164,7 @@ export const upsertMember = safeAction
         );
 
         for (const workflow of filteredWorkflows) {
-          await _runWorkflowInngest({ workflow_id: workflow.id });
+          await runWorkflow.trigger({ workflow_id: workflow.id });
         }
       }
 
