@@ -1,3 +1,5 @@
+"use server";
+
 import { TagSchema } from "@conquest/zod/tag.schema";
 import { authAction } from "lib/authAction";
 import { prisma } from "lib/prisma";

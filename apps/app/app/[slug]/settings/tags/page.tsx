@@ -1,4 +1,4 @@
-import { listTags } from "@/features/tags/functions/listTags";
+import { listTags } from "@/features/tags/actions/listTags";
 import { Tags } from "@/features/tags/tags";
 import { ScrollArea } from "@conquest/ui/scroll-area";
 import { Separator } from "@conquest/ui/separator";

@@ -1,5 +1,6 @@
+import { GENDER as GENDER_ENUM } from "@conquest/prisma";
 import { z } from "zod";
 
-export const GENDER = z.enum(["MALE", "FEMALE", "OTHER"]);
+export const GENDER = z.nativeEnum(GENDER_ENUM);
 
 export type Gender = z.infer<typeof GENDER>;

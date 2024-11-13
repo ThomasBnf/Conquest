@@ -13,7 +13,7 @@ export const RepeatOnSchema = z.enum([
 ]);
 
 export const NodeTypeSchema = z.enum([
-  "recurring-schedule",
+  "recurring-workflow",
   "manual-run",
   "list-records",
   "add-tag",
@@ -62,7 +62,7 @@ export const NodeMemberCreatedSchema = NodeBaseDataSchema.extend({
 });
 
 export const NodeRecurringSchema = NodeBaseDataSchema.extend({
-  type: z.literal("recurring-schedule"),
+  type: z.literal("recurring-workflow"),
   category: z.literal("utilities"),
   frequency: FrequencySchema,
   repeat_on: z.array(RepeatOnSchema),

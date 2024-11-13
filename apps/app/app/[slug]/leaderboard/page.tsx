@@ -4,7 +4,7 @@ import { PageLayout } from "@/components/layouts/page-layout";
 import { _listLeaderboard } from "@/features/leaderbord/actions/_listLeaderboard";
 import { LeaderbordTable } from "@/features/leaderbord/components/leaderboard-table";
 import { Podium } from "@/features/leaderbord/components/podium";
-import { listTags } from "@/features/tags/functions/listTags";
+import { listTags } from "@/features/tags/actions/listTags";
 import { searchParamsDate } from "lib/searchParamsDate";
 
 type Props = {

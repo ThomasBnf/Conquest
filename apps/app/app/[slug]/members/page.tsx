@@ -4,7 +4,7 @@ import { _listMembers } from "@/features/members/actions/_listMembers";
 import { CreateMemberDialog } from "@/features/members/components/create-member-dialog";
 import { MembersTable } from "@/features/members/components/table/members-table";
 import { countMembers } from "@/features/members/functions/countMembers";
-import { listTags } from "@/features/tags/functions/listTags";
+import { listTags } from "@/features/tags/actions/listTags";
 
 type Props = {
   searchParams: {

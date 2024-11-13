@@ -15,7 +15,7 @@ import { useChanging } from "../hooks/useChanging";
 import { usePanel } from "../hooks/usePanel";
 import { useSelected } from "../hooks/useSelected";
 import { FilterOptions } from "../nodes/list-members/filter/filter.options";
-import { RecurringScheduleOptions } from "../nodes/recurring-schedule";
+import { RecurringWorkflowOptions } from "../nodes/recurring-workflow";
 import { SlackMessageOptions } from "../nodes/slack-message";
 import { TagMemberOptions } from "../nodes/tag-member";
 import { WaitOptions } from "../nodes/wait";
@@ -100,7 +100,7 @@ export const OptionsPanel = () => {
               </Button>
             </div>
             <Description id={selected.id} />
-            {type === "recurring-schedule" && <RecurringScheduleOptions />}
+            {type === "recurring-workflow" && <RecurringWorkflowOptions />}
             {type === "list-members" && <FilterOptions />}
             {type === "webhook" && <WebhookOptions />}
             {type === "add-tag" && <TagMemberOptions />}

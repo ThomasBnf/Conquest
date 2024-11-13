@@ -27,14 +27,14 @@ export const createListTags = safeAction
   .schema(
     z.object({
       workspace_id: z.string().cuid(),
-      token: z.string(),
+      api_key: z.string(),
     }),
   )
-  .action(async ({ parsedInput: { workspace_id, token } }) => {
+  .action(async ({ parsedInput: { workspace_id, api_key } }) => {
     const response = await ky
       .get("https://playground.lagrowthmachine.com/admin/badges", {
         headers: {
-          "Api-Key": token,
+          "Api-Key": api_key,
           "Api-Username": "system",
           Accept: "application/json",
         },
@@ -42,7 +42,6 @@ export const createListTags = safeAction
       .json<Record<string, unknown>[]>();
 
     const { badges, badge_types } = ResponseSchema.parse(response);
-    console.log(badges, badge_types);
 
     for (const badge of badges ?? []) {
       const { id, name, description, badge_type_id } = BadgeSchema.parse(badge);

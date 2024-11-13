@@ -26,7 +26,7 @@ import {
   FormRecurringSchema,
 } from "./form-recurring.schema";
 
-export const RecurringScheduleOptions = () => {
+export const RecurringWorkflowOptions = () => {
   const { selected } = useSelected();
   const { updateNodeData } = useReactFlow();
   const { frequency, repeat_on, time } = NodeRecurringSchema.parse(

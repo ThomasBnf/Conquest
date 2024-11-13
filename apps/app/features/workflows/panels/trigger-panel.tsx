@@ -110,9 +110,9 @@ export const nodes: {
           position: { x: 0, y: 0 },
           data: {
             icon: "Calendar",
-            label: "Recurring schedule",
-            description: "Trigger a workflow on a schedule",
-            type: "recurring-schedule",
+            label: "Recurring Workflow",
+            description: "Trigger a recurring workflow",
+            type: "recurring-workflow",
             category: "utilities",
             frequency: "daily",
             repeat_on: ["monday"],

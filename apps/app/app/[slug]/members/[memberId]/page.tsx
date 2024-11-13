@@ -5,7 +5,7 @@ import { Activities } from "@/features/activities/components/activities";
 import { _getMember } from "@/features/members/actions/_getMember";
 import { MemberMenu } from "@/features/members/components/details/member-menu";
 import { MemberSidebar } from "@/features/members/components/details/member-sidebar";
-import { listTags } from "@/features/tags/functions/listTags";
+import { listTags } from "@/features/tags/actions/listTags";
 import { ScrollArea } from "@conquest/ui/scroll-area";
 import { redirect } from "next/navigation";
 

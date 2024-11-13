@@ -123,19 +123,15 @@ model Member {
 }
 
 model Integration {
-  id               String    @id @default(cuid())
-  external_id      String?   @unique
-  name             String
-  source           SOURCE
-  token            String
-  slack_user_token String?
-  scopes           String?
-  status           STATUS
-  installed_at     DateTime?
-  workspace_id     String
-  workspace        Workspace @relation(fields: [workspace_id], references: [id], onDelete: Cascade)
-  created_at       DateTime  @default(now())
-  updated_at       DateTime  @updatedAt
+  id           String    @id @default(cuid())
+  external_id  String?   @unique
+  status       STATUS
+  details      Json
+  installed_at DateTime?
+  workspace_id String
+  workspace    Workspace @relation(fields: [workspace_id], references: [id], onDelete: Cascade)
+  created_at   DateTime  @default(now())
+  updated_at   DateTime  @updatedAt
 
   @@index([id, workspace_id])
 }

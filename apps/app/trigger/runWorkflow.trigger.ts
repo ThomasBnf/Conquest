@@ -11,7 +11,7 @@ import type {
   FilterSelect,
   FilterTag,
 } from "@conquest/zod/filters.schema";
-import { IntegrationSchema } from "@conquest/zod/integration.schema";
+import { SlackIntegrationSchema } from "@conquest/zod/integration.schema";
 import {
   type Category,
   type GroupFilter,
@@ -186,13 +186,17 @@ export const slackMessage = async (
 ) => {
   const slack = await prisma.integration.findFirst({
     where: {
-      source: "SLACK",
+      details: {
+        path: ["source"],
+        equals: "SLACK",
+      },
       workspace_id,
     },
   });
 
   if (!slack) throw new Error("No Slack integration found");
-  const { slack_user_token } = IntegrationSchema.parse(slack);
+  const { details } = SlackIntegrationSchema.parse(slack);
+  const { slack_user_token } = details;
   const { message } = node;
 
   if (!slack_user_token) throw new Error("No Slack user token found");

@@ -13,6 +13,7 @@ import { upsertMember } from "@/features/members/functions/upsertMember";
 import { getFiles } from "@/features/slack/helpers/getFiles";
 import { prisma } from "@/lib/prisma";
 import { safeRoute } from "@/lib/safeRoute";
+import type { SlackIntegration } from "@conquest/zod/integration.schema";
 import {
   type GenericMessageEvent,
   type SlackEvent,
@@ -35,8 +36,6 @@ const bodySchema = z
 export const POST = safeRoute.body(bodySchema).handler(async (_, context) => {
   const body = context.body;
 
-  console.log("ctx", context);
-
   if (body.type === "url_verification") {
     return NextResponse.json({ challenge: body.challenge });
   }
@@ -52,11 +51,12 @@ export const POST = safeRoute.body(bodySchema).handler(async (_, context) => {
   }
 
   const rIntegration = await getIntegration({ external_id: team_id });
-  const integration = rIntegration?.data;
+  const integration = rIntegration?.data as SlackIntegration;
 
   if (!integration) return NextResponse.json({ status: 200 });
 
-  const { workspace_id, token } = integration;
+  const { workspace_id } = integration;
+  const { token } = integration.details;
 
   if (!workspace_id || !token) return NextResponse.json({ status: 200 });
 
@@ -417,10 +417,7 @@ export const POST = safeRoute.body(bodySchema).handler(async (_, context) => {
     case "user_change": {
       const { id, deleted } = event.user;
 
-      const response = await web.users.profile.get({ user: id });
-      console.log("response", response);
-      const profile = response.profile;
-      console.log("profile", profile);
+      const { profile } = await web.users.profile.get({ user: id });
 
       if (!profile) return NextResponse.json({ status: 200 });
 

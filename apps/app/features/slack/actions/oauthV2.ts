@@ -2,11 +2,10 @@
 
 import { env } from "@/env.mjs";
 import { upsertIntegration } from "@/features/integrations/actions/upsertIntegration";
+import { tasks } from "@trigger.dev/sdk/v3";
 import { authAction } from "lib/authAction";
 import { redirect } from "next/navigation";
 import { z } from "zod";
-import { installSlack } from "../functions/installSlack";
-import { tasks } from "@trigger.dev/sdk/v3";
 
 export const oauthV2 = authAction
   .metadata({
@@ -39,12 +38,20 @@ export const oauthV2 = authAction
 
     const rIntegration = await upsertIntegration({
       external_id: team.id,
-      name: team.name,
-      source: "SLACK",
-      token: access_token,
-      slack_user_token: authed_user.access_token,
       status: "SYNCING",
-      scopes,
+      details: {
+        source: "SLACK",
+        name: team.name,
+        token: access_token,
+        slack_user_token: authed_user.access_token,
+        scopes,
+        score_config: {
+          post: 10,
+          reaction: 1,
+          reply: 5,
+          invite: 15,
+        },
+      },
     });
     const integration = rIntegration?.data;
 

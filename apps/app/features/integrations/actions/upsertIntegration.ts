@@ -1,7 +1,7 @@
 "use server";
 
-import { STATUS } from "@conquest/zod/integration.schema";
-import { SOURCE } from "@conquest/zod/source.enum";
+import { IntegrationDetailsSchema } from "@conquest/zod/integration.schema";
+import { STATUS } from "@conquest/zod/status.enum";
 import { authAction } from "lib/authAction";
 import { prisma } from "lib/prisma";
 import { z } from "zod";
@@ -11,51 +11,25 @@ export const upsertIntegration = authAction
   .schema(
     z.object({
       external_id: z.string().optional(),
-      name: z.string(),
-      source: SOURCE,
-      token: z.string(),
-      slack_user_token: z.string().optional(),
       status: STATUS,
-      scopes: z.string().optional(),
+      details: IntegrationDetailsSchema,
     }),
   )
-  .action(
-    async ({
-      ctx,
-      parsedInput: {
+  .action(async ({ ctx, parsedInput: { external_id, status, details } }) => {
+    return await prisma.integration.upsert({
+      where: {
         external_id,
-        name,
-        source,
-        token,
-        slack_user_token,
-        status,
-        scopes,
       },
-    }) => {
-      return await prisma.integration.upsert({
-        where: {
-          external_id,
-        },
-        update: {
-          external_id,
-          name,
-          source,
-          scopes,
-          token,
-          slack_user_token,
-          status,
-          installed_at: new Date(),
-        },
-        create: {
-          external_id,
-          name,
-          source,
-          token,
-          slack_user_token,
-          scopes,
-          status,
-          workspace_id: ctx.user?.workspace_id,
-        },
-      });
-    },
-  );
+      update: {
+        external_id,
+        details,
+        installed_at: new Date(),
+      },
+      create: {
+        external_id,
+        status,
+        details,
+        workspace_id: ctx.user?.workspace_id,
+      },
+    });
+  });

@@ -9,10 +9,10 @@ export const SlackImage = ({ url }: { url: string }) => {
     queryKey: ["slack-image", url],
     queryFn: async () => {
       const response = await fetch(
-        `/api/slack/file?url=${url}&token=${slack?.token}`,
+        `/api/slack/file?url=${url}&token=${slack?.details.token}`,
         {
           method: "GET",
-          headers: { Authorization: `Bearer ${slack?.token}` },
+          headers: { Authorization: `Bearer ${slack?.details.token}` },
         },
       );
 

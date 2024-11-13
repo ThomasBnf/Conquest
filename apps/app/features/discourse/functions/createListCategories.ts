@@ -47,7 +47,6 @@ export const createListCategories = safeAction
       );
 
       for (const category of filteredCategories ?? []) {
-        console.log(category);
         const { id, name } = CategorySchema.parse(category);
         await createChannel({
           external_id: id.toString(),

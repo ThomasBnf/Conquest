@@ -17,8 +17,8 @@ export default async function Layout({
 }: PropsWithChildren<Props>) {
   const user = await getCurrentUser();
 
-  if (!user.onboarding) redirect("/");
-  if (user.workspace.slug !== params.slug) redirect(`/${user.workspace.slug}`);
+  if (!user?.onboarding) redirect("/");
+  if (user?.workspace.slug !== params.slug) redirect(`/${user.workspace.slug}`);
 
   const cookieStore = cookies();
   const sidebarState = cookieStore.get("sidebar:state");

@@ -25,10 +25,7 @@ export const createListMembers = safeAction
       for (const member of members ?? []) {
         const { id, deleted: isDeleted, is_bot: isBot, profile } = member;
 
-        if (!id) {
-          console.log("No id", member);
-          continue;
-        }
+        if (!id) continue;
 
         if (profile && !isDeleted && !isBot) {
           const {
@@ -43,7 +40,7 @@ export const createListMembers = safeAction
 
           if (first_name === "slackbot") continue;
 
-          const rMember = await upsertMember({
+          await upsertMember({
             id,
             source: "SLACK",
             first_name,
@@ -55,10 +52,6 @@ export const createListMembers = safeAction
             job_title: title,
             workspace_id,
           });
-
-          if (rMember?.serverError) {
-            console.log("createMember", rMember.serverError);
-          }
         }
       }
 

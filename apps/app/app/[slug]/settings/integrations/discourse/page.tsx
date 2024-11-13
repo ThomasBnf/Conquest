@@ -6,7 +6,6 @@ import {
   type DiscourseAPI,
   DiscourseAPISchema,
 } from "@/features/discourse/schemas/discourseAPI";
-import { deleteIntegration } from "@/features/integrations/actions/deleteIntegration";
 import { upsertIntegration } from "@/features/integrations/actions/upsertIntegration";
 import { Button, buttonVariants } from "@conquest/ui/button";
 import {
@@ -44,7 +43,7 @@ export default function Page() {
   const onUninstall = async () => {
     if (!discourse?.id) return;
     setLoading(true);
-    await deleteIntegration({ integration: discourse, source: "DISCOURSE" });
+
     setLoading(false);
     return toast.success("Discourse disconnected");
   };
@@ -54,10 +53,18 @@ export default function Page() {
 
     const rIntegration = await upsertIntegration({
       external_id: apiKey,
-      name: user?.workspace.name ?? "",
-      source: "DISCOURSE",
-      token: apiKey,
       status: "CONNECTED",
+      details: {
+        signature: "",
+        source: "DISCOURSE",
+        api_key: apiKey,
+        score_config: {
+          post: 10,
+          reaction: 1,
+          reply: 5,
+          invite: 15,
+        },
+      },
     });
     const integration = rIntegration?.data;
 

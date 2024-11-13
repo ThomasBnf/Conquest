@@ -30,7 +30,7 @@ export const createReaction = safeAction
 
       if (!member) return;
 
-      const rActivity = await createActivity({
+      await createActivity({
         external_id: null,
         details: {
           source: "SLACK",
@@ -44,9 +44,5 @@ export const createReaction = safeAction
         created_at: new Date(Number(ts) * 1000),
         updated_at: new Date(Number(ts) * 1000),
       });
-
-      if (rActivity?.serverError) {
-        console.log("createReaction", rActivity.serverError);
-      }
     },
   );

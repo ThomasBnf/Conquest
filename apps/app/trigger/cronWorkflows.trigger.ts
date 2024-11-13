@@ -13,7 +13,9 @@ import { runWorkflow } from "./runWorkflow.trigger";
 export const cronWorkflows = schedules.task({
   id: "cron-workflows",
   cron: "*/15 * * * *",
-  run: async () => {
+  run: async (_, { ctx }) => {
+    if (ctx.environment.type !== "PRODUCTION") return;
+
     const workflows = z.array(WorkflowSchema).parse(
       await prisma.workflow.findMany({
         where: {
@@ -24,7 +26,7 @@ export const cronWorkflows = schedules.task({
 
     const recurringWorkflows = workflows.filter((workflow) =>
       workflow.nodes.find(
-        (node) => NodeSchema.parse(node).data.type === "recurring-schedule",
+        (node) => NodeSchema.parse(node).data.type === "recurring-workflow",
       ),
     );
 
@@ -34,7 +36,7 @@ export const cronWorkflows = schedules.task({
       const { id } = workflow;
 
       const nodeTrigger = workflow.nodes.find(
-        (node) => NodeSchema.parse(node).data.type === "recurring-schedule",
+        (node) => NodeSchema.parse(node).data.type === "recurring-workflow",
       );
 
       if (!nodeTrigger) continue;
