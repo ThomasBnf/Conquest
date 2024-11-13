@@ -126,7 +126,7 @@ model Integration {
   id           String    @id @default(cuid())
   external_id  String?   @unique
   status       STATUS
-  details      Json
+  details      Json?
   installed_at DateTime?
   workspace_id String
   workspace    Workspace @relation(fields: [workspace_id], references: [id], onDelete: Cascade)
