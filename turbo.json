@@ -16,7 +16,7 @@
     "build": {
       "env": ["DATABASE_URL", "VERCEL", "VERCEL_ENV", "NODE_ENV"],
       "inputs": ["$TURBO_DEFAULT$", ".env"],
-      "dependsOn": ["^db:generate", "^db:deploy", "^build"],
+      "dependsOn": ["^db:generate", "^build"],
       "outputs": [
         ".next/**",
         "!.next/cache/**",
@@ -54,7 +54,8 @@
       "cache": false
     },
     "db:deploy": {
-      "cache": false
+      "cache": false,
+      "dependsOn": ["^db:generate"]
     }
   }
 }
