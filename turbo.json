@@ -16,7 +16,7 @@
     "build": {
       "env": ["DATABASE_URL", "VERCEL", "VERCEL_ENV", "NODE_ENV"],
       "inputs": ["$TURBO_DEFAULT$", ".env"],
-      "dependsOn": ["^db:generate", "^db:deploy", "^build"],
+      "dependsOn": ["^db:generate", "^db:push", "^build"],
       "outputs": [
         ".next/**",
         "!.next/cache/**",
@@ -51,11 +51,13 @@
       "outputs": ["node_modules/.prisma/**"]
     },
     "db:push": {
-      "cache": false
+      "cache": false,
+      "inputs": ["prisma/schema.prisma"]
     },
     "db:deploy": {
       "cache": false,
-      "inputs": ["prisma/migrations/**"]
+      "inputs": ["prisma/migrations/**"],
+      "dependsOn": ["^db:push"]
     }
   }
 }
