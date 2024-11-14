@@ -93,7 +93,7 @@ export const RecurringWorkflowOptions = () => {
                 <FormControl>
                   <ToggleGroup
                     type="multiple"
-                    onValueChange={(value: RepeatOn) => {
+                    onValueChange={(value: RepeatOn[]) => {
                       field.onChange(value);
                       onSubmit(form.getValues());
                     }}
