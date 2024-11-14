@@ -1,7 +1,7 @@
 "use client";
 
-import { buttonVariants } from "@/components/button";
-import { cn } from "@/utils/cn";
+import { buttonVariants } from "@conquest/ui/button";
+import { cn } from "@conquest/ui/cn";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { X } from "lucide-react";
 import * as React from "react";

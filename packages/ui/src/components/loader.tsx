@@ -1,4 +1,4 @@
-import { cn } from "@/utils/cn";
+import { cn } from "@conquest/ui/cn";
 import { Loader2 } from "lucide-react";
 
 type Props = {

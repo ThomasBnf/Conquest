@@ -1,18 +1,18 @@
 "use client";
 
-import { Button } from "@/components/button";
-import { Input } from "@/components/input";
-import { Separator } from "@/components/separator";
-import { Sheet, SheetContent } from "@/components/sheet";
-import { Skeleton } from "@/components/skeleton";
+import { Button } from "@conquest/ui/button";
+import { cn } from "@conquest/ui/cn";
+import { useIsMobile } from "@conquest/ui/hooks/use-mobile";
+import { Input } from "@conquest/ui/input";
+import { Separator } from "@conquest/ui/separator";
+import { Sheet, SheetContent } from "@conquest/ui/sheet";
+import { Skeleton } from "@conquest/ui/skeleton";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@/components/tooltip";
-import { useIsMobile } from "@/hooks/use-mobile";
-import { cn } from "@/utils/cn";
+} from "@conquest/ui/tooltip";
 import { Slot } from "@radix-ui/react-slot";
 import { type VariantProps, cva } from "class-variance-authority";
 import { PanelLeft } from "lucide-react";

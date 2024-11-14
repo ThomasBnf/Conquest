@@ -1,7 +1,7 @@
 "use client";
 
-import { Label } from "@/components/label";
-import { cn } from "@/utils/cn";
+import { Label } from "@conquest/ui/label";
+import { cn } from "@conquest/ui/cn";
 import type * as LabelPrimitive from "@radix-ui/react-label";
 import { Slot } from "@radix-ui/react-slot";
 import * as React from "react";

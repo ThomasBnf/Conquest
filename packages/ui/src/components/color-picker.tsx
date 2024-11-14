@@ -1,8 +1,8 @@
 "use client";
 
-import { Button } from "@/components/button";
-import { Input } from "@/components/input";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/popover";
+import { Button } from "@conquest/ui/button";
+import { Input } from "@conquest/ui/input";
+import { Popover, PopoverContent, PopoverTrigger } from "@conquest/ui/popover";
 import { ChevronDown } from "lucide-react";
 import { forwardRef, useCallback, useState } from "react";
 import { HexColorPicker } from "react-colorful";

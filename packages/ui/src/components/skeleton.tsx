@@ -1,4 +1,4 @@
-import { cn } from "@/utils/cn";
+import { cn } from "@conquest/ui/cn";
 
 function Skeleton({
   className,

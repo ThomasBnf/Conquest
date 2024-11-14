@@ -1,7 +1,7 @@
 "use client";
 
-import { Checkbox } from "@/components/checkbox";
-import { cn } from "@/utils/cn";
+import { Checkbox } from "@conquest/ui/checkbox";
+import { cn } from "@conquest/ui/cn";
 import * as PopoverPrimitive from "@radix-ui/react-popover";
 import * as React from "react";
 

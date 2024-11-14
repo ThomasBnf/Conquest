@@ -1,5 +1,5 @@
-import { Textarea } from "@/components/textarea";
-import { cn } from "@/utils/cn";
+import { cn } from "@conquest/ui/cn";
+import { Textarea } from "@conquest/ui/textarea";
 import {
   type ChangeEvent,
   type ComponentPropsWithoutRef,
