@@ -97,12 +97,8 @@ CREATE TABLE "Member" (
 CREATE TABLE "Integration" (
     "id" TEXT NOT NULL,
     "external_id" TEXT,
-    "name" TEXT NOT NULL,
-    "source" "SOURCE" NOT NULL,
-    "token" TEXT NOT NULL,
-    "slack_user_token" TEXT,
-    "scopes" TEXT,
     "status" "STATUS" NOT NULL,
+    "details" JSONB NOT NULL,
     "installed_at" TIMESTAMP(3),
     "workspace_id" TEXT NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
