@@ -1,6 +1,6 @@
 import { Button } from "@conquest/ui/button";
+import { cn } from "@conquest/ui/cn";
 import { Input } from "@conquest/ui/input";
-import { cn } from "@conquest/ui/utils/cn";
 import { Search, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 

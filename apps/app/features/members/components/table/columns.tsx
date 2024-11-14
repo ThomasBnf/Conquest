@@ -5,7 +5,7 @@ import { TagBadge } from "@/features/tags/tag-badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@conquest/ui/avatar";
 import { buttonVariants } from "@conquest/ui/button";
 import { Checkbox } from "@conquest/ui/checkbox";
-import { cn } from "@conquest/ui/utils/cn";
+import { cn } from "@conquest/ui/cn";
 import type { MemberWithActivities } from "@conquest/zod/activity.schema";
 import type { Tag } from "@conquest/zod/tag.schema";
 import Link from "next/link";
@@ -108,12 +108,83 @@ export const Columns = ({ tags }: Props): Column[] => [
     width: 250,
   },
   {
-    id: "activities",
+    id: "posts",
+    header: () => <ColumnHeader id="posts" title="Posts" width={125} />,
+    cell: ({ member }) => {
+      const posts = member.activities.filter(
+        (activity) => activity.details.type === "POST",
+      );
+      return <p className="px-2 text-end w-full">{posts.length}</p>;
+    },
+    width: 125,
+  },
+  {
+    id: "replies",
+    header: () => <ColumnHeader id="replies" title="Replies" width={125} />,
+    cell: ({ member }) => {
+      const replies = member.activities.filter(
+        (activity) => activity.details.type === "REPLY",
+      );
+      return <p className="px-2 text-end w-full">{replies.length}</p>;
+    },
+    width: 125,
+  },
+  {
+    id: "reactions",
+    header: () => <ColumnHeader id="reactions" title="Reactions" width={125} />,
+    cell: ({ member }) => {
+      const reactions = member.activities.filter(
+        (activity) => activity.details.type === "REACTIONS",
+      );
+      return <p className="px-2 text-end w-full">{reactions.length}</p>;
+    },
+    width: 125,
+  },
+  {
+    id: "invitations",
     header: () => (
-      <ColumnHeader id="activities" title="Activities" width={250} />
+      <ColumnHeader id="invitations" title="Invitations" width={125} />
     ),
-    cell: ({ member }) => <p className="px-2">{member.activities.length}</p>,
-    width: 250,
+    cell: ({ member }) => {
+      const invitations = member.activities.filter(
+        (activity) => activity.details.type === "INVITATION",
+      );
+      return <p className="px-2 text-end w-full">{invitations.length}</p>;
+    },
+    width: 125,
+  },
+  {
+    id: "points",
+    header: () => <ColumnHeader id="points" title="Points" width={125} />,
+    cell: ({ member }) => {
+      const { slack, discourse } = useUser();
+
+      const points = member.activities.reduce((total, activity) => {
+        const source = activity.details.source;
+        const integration =
+          source === "SLACK"
+            ? slack?.details.points_config
+            : source === "DISCOURSE"
+              ? discourse?.details.points_config
+              : undefined;
+
+        switch (activity.details.type) {
+          case "POST":
+            return total + (integration?.post ?? 0);
+          case "REACTION":
+            return total + (integration?.reaction ?? 0);
+          case "REPLY":
+            return total + (integration?.reply ?? 0);
+          case "INVITATION":
+            return total + (integration?.invitation ?? 0);
+          default:
+            return total;
+        }
+      }, 0);
+
+      return <p className="px-2 text-end w-full">{points}</p>;
+    },
+    width: 125,
   },
   {
     id: "tags",

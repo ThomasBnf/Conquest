@@ -1,5 +1,5 @@
+import { cn } from "@conquest/ui/cn";
 import "@conquest/ui/globals.css";
-import { cn } from "@conquest/ui/utils/cn";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import Script from "next/script";

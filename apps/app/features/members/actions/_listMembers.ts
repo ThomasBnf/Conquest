@@ -6,6 +6,10 @@ import {
   type MemberWithActivities,
   MemberWithActivitiesSchema,
 } from "@conquest/zod/activity.schema";
+import {
+  IntegrationSchema,
+  type PointsConfig,
+} from "@conquest/zod/integration.schema";
 import type { Prisma } from "@prisma/client";
 import { z } from "zod";
 
@@ -53,9 +57,80 @@ export const _listMembers = authAction
         );
       }
 
+      if (id === "posts") {
+        return parsedMembers.sort((a, b) =>
+          desc ? sortByPosts(a, b) : -sortByPosts(a, b),
+        );
+      }
+
+      if (id === "replies") {
+        return parsedMembers.sort((a, b) =>
+          desc ? sortByReplies(a, b) : -sortByReplies(a, b),
+        );
+      }
+
+      if (id === "reactions") {
+        return parsedMembers.sort((a, b) =>
+          desc ? sortByReactions(a, b) : -sortByReactions(a, b),
+        );
+      }
+
+      if (id === "invitations") {
+        return parsedMembers.sort((a, b) =>
+          desc ? sortByInvitations(a, b) : -sortByInvitations(a, b),
+        );
+      }
+
+      if (id === "points") {
+        const integration = await prisma.integration.findFirst({
+          where: {
+            workspace_id,
+            details: {
+              path: ["source"],
+              equals: parsedMembers[0]?.source,
+            },
+          },
+        });
+        const pointsConfig =
+          IntegrationSchema.parse(integration)?.details.points_config;
+
+        return parsedMembers.sort((a, b) => {
+          const pointsA = calculatePoints(a.activities, pointsConfig);
+          const pointsB = calculatePoints(b.activities, pointsConfig);
+          return desc ? pointsB - pointsA : pointsA - pointsB;
+        });
+      }
+
       return parsedMembers;
     },
   );
+
+const getOrderBy = (
+  id: string,
+  desc: boolean,
+): Prisma.MemberOrderByWithRelationInput => {
+  if (!id) {
+    return { last_name: desc ? "desc" : "asc" };
+  }
+
+  if (id === "activities") {
+    return { activities: { _count: desc ? "desc" : "asc" } };
+  }
+
+  if (
+    id === "last_activity" ||
+    id === "created_at" ||
+    id === "posts" ||
+    id === "reactions" ||
+    id === "replies" ||
+    id === "invitations" ||
+    id === "points"
+  ) {
+    return {};
+  }
+
+  return { [id]: desc ? "desc" : "asc" };
+};
 
 const sortByLastActivity = (
   a: MemberWithActivities,
@@ -72,21 +147,65 @@ const sortByCreatedAt = (a: MemberWithActivities, b: MemberWithActivities) => {
   return joinedAtB - joinedAtA;
 };
 
-const getOrderBy = (
-  id: string,
-  desc: boolean,
-): Prisma.MemberOrderByWithRelationInput => {
-  if (!id) {
-    return { last_name: desc ? "desc" : "asc" };
-  }
+const sortByPosts = (a: MemberWithActivities, b: MemberWithActivities) => {
+  const postsA = a.activities.filter(
+    (activity) => activity.details.type === "POST",
+  ).length;
+  const postsB = b.activities.filter(
+    (activity) => activity.details.type === "POST",
+  ).length;
+  return postsB - postsA;
+};
 
-  if (id === "activities") {
-    return { activities: { _count: desc ? "desc" : "asc" } };
-  }
+const sortByReplies = (a: MemberWithActivities, b: MemberWithActivities) => {
+  const repliesA = a.activities.filter(
+    (activity) => activity.details.type === "REPLY",
+  ).length;
+  const repliesB = b.activities.filter(
+    (activity) => activity.details.type === "REPLY",
+  ).length;
+  return repliesB - repliesA;
+};
 
-  if (id === "last_activity" || id === "created_at") {
-    return {};
-  }
+const sortByReactions = (a: MemberWithActivities, b: MemberWithActivities) => {
+  const reactionsA = a.activities.filter(
+    (activity) => activity.details.type === "REACTION",
+  ).length;
+  const reactionsB = b.activities.filter(
+    (activity) => activity.details.type === "REACTION",
+  ).length;
+  return reactionsB - reactionsA;
+};
 
-  return { [id]: desc ? "desc" : "asc" };
+const sortByInvitations = (
+  a: MemberWithActivities,
+  b: MemberWithActivities,
+) => {
+  const invitationsA = a.activities.filter(
+    (activity) => activity.details.type === "INVITATION",
+  ).length;
+  const invitationsB = b.activities.filter(
+    (activity) => activity.details.type === "INVITATION",
+  ).length;
+  return invitationsB - invitationsA;
+};
+
+const calculatePoints = (
+  activities: MemberWithActivities["activities"],
+  pointsConfig: PointsConfig,
+) => {
+  return activities.reduce((total, activity) => {
+    switch (activity.details.type) {
+      case "POST":
+        return total + (pointsConfig?.post ?? 0);
+      case "REACTION":
+        return total + (pointsConfig?.reaction ?? 0);
+      case "REPLY":
+        return total + (pointsConfig?.reply ?? 0);
+      case "INVITATION":
+        return total + (pointsConfig?.invitation ?? 0);
+      default:
+        return total;
+    }
+  }, 0);
 };

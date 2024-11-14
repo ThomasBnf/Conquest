@@ -1,8 +1,8 @@
 "use client";
 
+import { cn } from "@conquest/ui/cn";
 import { Separator } from "@conquest/ui/separator";
 import { SidebarTrigger, useSidebar } from "@conquest/ui/sidebar";
-import { cn } from "@conquest/ui/utils/cn";
 import type { HTMLAttributes } from "react";
 
 type Props = HTMLAttributes<HTMLDivElement> & {

@@ -2,7 +2,7 @@
 
 import { useUser } from "@/context/userContext";
 import { Avatar, AvatarFallback, AvatarImage } from "@conquest/ui/avatar";
-import { cn } from "@conquest/ui/utils/cn";
+import { cn } from "@conquest/ui/cn";
 import type { ActivityWithMember } from "@conquest/zod/activity.schema";
 import Link from "next/link";
 import type { PropsWithChildren, ReactNode } from "react";

@@ -1,4 +1,4 @@
-import { createTag } from "@/features/tags/actions/createTag";
+import { prisma } from "@/lib/prisma";
 import { safeAction } from "@/lib/safeAction";
 import ky from "ky";
 import { z } from "zod";
@@ -26,13 +26,14 @@ export const createListTags = safeAction
   })
   .schema(
     z.object({
-      workspace_id: z.string().cuid(),
       api_key: z.string(),
+      community_url: z.string(),
+      workspace_id: z.string().cuid(),
     }),
   )
-  .action(async ({ parsedInput: { workspace_id, api_key } }) => {
+  .action(async ({ parsedInput: { api_key, community_url, workspace_id } }) => {
     const response = await ky
-      .get("https://playground.lagrowthmachine.com/admin/badges", {
+      .get(`${community_url}/admin/badges`, {
         headers: {
           "Api-Key": api_key,
           "Api-Username": "system",
@@ -41,7 +42,7 @@ export const createListTags = safeAction
       })
       .json<Record<string, unknown>[]>();
 
-    const { badges, badge_types } = ResponseSchema.parse(response);
+    const { badges } = ResponseSchema.parse(response);
 
     for (const badge of badges ?? []) {
       const { id, name, description, badge_type_id } = BadgeSchema.parse(badge);
@@ -59,12 +60,15 @@ export const createListTags = safeAction
         }
       };
 
-      await createTag({
-        external_id: id.toString(),
-        name,
-        description,
-        color: getColor(),
-        source: "DISCOURSE",
+      await prisma.tag.create({
+        data: {
+          external_id: id.toString(),
+          name,
+          description,
+          color: getColor(),
+          source: "DISCOURSE",
+          workspace_id,
+        },
       });
     }
   });

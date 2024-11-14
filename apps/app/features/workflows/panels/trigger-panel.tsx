@@ -83,24 +83,24 @@ export const nodes: {
   }[];
 } = {
   categories: [
-    {
-      label: "Members",
-      nodes: [
-        {
-          id: cuid(),
-          type: "custom",
-          position: { x: 0, y: 0 },
-          data: {
-            icon: "User",
-            label: "Member created",
-            description: "Trigger a workflow when a member is created",
-            type: "member-created",
-            category: "members",
-            isTrigger: true,
-          },
-        },
-      ],
-    },
+    // {
+    //   label: "Members",
+    //   nodes: [
+    //     {
+    //       id: cuid(),
+    //       type: "custom",
+    //       position: { x: 0, y: 0 },
+    //       data: {
+    //         icon: "User",
+    //         label: "Member created",
+    //         description: "Trigger a workflow when a member is created",
+    //         type: "member-created",
+    //         category: "members",
+    //         isTrigger: true,
+    //       },
+    //     },
+    //   ],
+    // },
     {
       label: "Utilities",
       nodes: [

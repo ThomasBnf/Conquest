@@ -2,7 +2,7 @@ import { DateCell } from "@/components/custom/date-cell";
 import { TagBadge } from "@/features/tags/tag-badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@conquest/ui/avatar";
 import { buttonVariants } from "@conquest/ui/button";
-import { cn } from "@conquest/ui/utils/cn";
+import { cn } from "@conquest/ui/cn";
 import type { MemberWithActivities } from "@conquest/zod/activity.schema";
 import type { Tag } from "@conquest/zod/tag.schema";
 import { slug } from "cuid";

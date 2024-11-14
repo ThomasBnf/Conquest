@@ -2,7 +2,7 @@ import { DateCell } from "@/components/custom/date-cell";
 import { ColumnHeader } from "@/features/table/column-header";
 import { buttonVariants } from "@conquest/ui/button";
 import { Checkbox } from "@conquest/ui/checkbox";
-import { cn } from "@conquest/ui/utils/cn";
+import { cn } from "@conquest/ui/cn";
 import type { Company } from "@conquest/zod/company.schema";
 import { slug } from "cuid";
 import Link from "next/link";

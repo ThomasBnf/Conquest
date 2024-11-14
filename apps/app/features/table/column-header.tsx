@@ -2,13 +2,13 @@
 
 import { useParamsMembers } from "@/hooks/useParamsMembers";
 import { Button } from "@conquest/ui/button";
+import { cn } from "@conquest/ui/cn";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@conquest/ui/dropdown-menu";
-import { cn } from "@conquest/ui/utils/cn";
 import type { MemberWithActivities } from "@conquest/zod/activity.schema";
 import { CaretSortIcon } from "@radix-ui/react-icons";
 import { ArrowDownIcon, ArrowUpIcon } from "lucide-react";

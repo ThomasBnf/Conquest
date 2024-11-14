@@ -16,7 +16,7 @@ import {
   SelectValue,
 } from "@conquest/ui/select";
 import { ToggleGroup, ToggleGroupItem } from "@conquest/ui/toggle-group";
-import { NodeRecurringSchema } from "@conquest/zod/node.schema";
+import { NodeRecurringSchema, type RepeatOn } from "@conquest/zod/node.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useReactFlow } from "@xyflow/react";
 import { weekdays } from "constant/weekdays";
@@ -93,7 +93,7 @@ export const RecurringWorkflowOptions = () => {
                 <FormControl>
                   <ToggleGroup
                     type="multiple"
-                    onValueChange={(value) => {
+                    onValueChange={(value: RepeatOn) => {
                       field.onChange(value);
                       onSubmit(form.getValues());
                     }}

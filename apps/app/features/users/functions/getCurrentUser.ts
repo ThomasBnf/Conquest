@@ -23,9 +23,5 @@ export const getCurrentUser = async () => {
     },
   });
 
-  const parsedUser = UserWithWorkspaceSchema.safeParse(user);
-
-  // if (!parsedUser.success) redirect("/auth/login");
-
-  return parsedUser.data;
+  return UserWithWorkspaceSchema.parse(user);
 };

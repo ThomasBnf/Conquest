@@ -3,7 +3,6 @@ import { prisma } from "@/lib/prisma";
 import { safeAction } from "@/lib/safeAction";
 import ky from "ky";
 import { z } from "zod";
-import { BadgeSchema } from "./createListTags";
 
 const MemberSchema = z.object({
   id: z.number(),
@@ -15,17 +14,27 @@ const MemberSchema = z.object({
   created_at: z.coerce.date(),
 });
 
+const UserBadgeSchema = z.object({
+  id: z.number(),
+  badge_id: z.number(),
+});
+
+const BadgesSchema = z.object({
+  user_badges: z.array(UserBadgeSchema),
+});
+
 export const createListMembers = safeAction
   .metadata({
     name: "createListMembers",
   })
   .schema(
     z.object({
+      api_key: z.string(),
+      community_url: z.string(),
       workspace_id: z.string().cuid(),
-      token: z.string(),
     }),
   )
-  .action(async ({ parsedInput: { workspace_id, token } }) => {
+  .action(async ({ parsedInput: { api_key, community_url, workspace_id } }) => {
     let page = 0;
     let hasMore = true;
 
@@ -33,9 +42,9 @@ export const createListMembers = safeAction
 
     do {
       const members = await ky
-        .get("https://playground.lagrowthmachine.com/admin/users/list/active", {
+        .get(`${community_url}/admin/users/list/active`, {
           headers: {
-            "Api-Key": token,
+            "Api-Key": api_key,
             "Api-Username": "system",
             Accept: "application/json",
           },
@@ -59,28 +68,28 @@ export const createListMembers = safeAction
         } = MemberSchema.parse(member);
 
         const badges = await ky
-          .get(
-            `https://playground.lagrowthmachine.com/user-badges/${username}`,
-            {
-              headers: {
-                "Api-Key": token,
-                "Api-Username": "system",
-                Accept: "application/json",
-              },
-              searchParams: {
-                show_emails: true,
-                stats: true,
-                page,
-              },
+          .get(`${community_url}/user-badges/${username}`, {
+            headers: {
+              "Api-Key": api_key,
+              "Api-Username": "system",
+              Accept: "application/json",
             },
-          )
+            searchParams: {
+              show_emails: true,
+              stats: true,
+              page,
+            },
+          })
           .json<Record<string, unknown>[]>();
 
-        const parsedBadges = BadgeSchema.array().parse(badges);
-
-        const userTags = tags.filter((tag) =>
-          badges.some((badge) => badge.tag_id === tag.external_id),
-        );
+        const parsedBadges = BadgesSchema.parse(badges);
+        const userTags = tags
+          .filter((tag) =>
+            parsedBadges.user_badges.some(
+              (badge) => badge.badge_id === Number(tag.external_id),
+            ),
+          )
+          .map((tag) => tag.id);
 
         await upsertMember({
           id: id.toString(),
@@ -92,6 +101,7 @@ export const createListMembers = safeAction
           email: email,
           job_title: title,
           avatar_url: avatar_template,
+          tags: userTags,
           joined_at: created_at,
           deleted: false,
           workspace_id,

@@ -1,5 +1,5 @@
 import { Button } from "@conquest/ui/button";
-import { cn } from "@conquest/ui/utils/cn";
+import { cn } from "@conquest/ui/cn";
 import type { Tag } from "@conquest/zod/tag.schema";
 import { X } from "lucide-react";
 

@@ -8,7 +8,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@conquest/ui/card";
-import { cn } from "@conquest/ui/utils/cn";
+import { cn } from "@conquest/ui/cn";
 import type { MemberWithActivities } from "@conquest/zod/activity.schema";
 import Link from "next/link";
 

@@ -4,12 +4,12 @@ import { DeleteDialog } from "@/components/custom/delete-dialog";
 import { useUser } from "@/context/userContext";
 import { env } from "@/env.mjs";
 import { deleteIntegration } from "@/features/integrations/actions/deleteIntegration";
+import { PointConfig } from "@/features/integrations/components/point-config";
 import { oauthV2 } from "@/features/slack/actions/oauthV2";
 import { Button, buttonVariants } from "@conquest/ui/button";
-import { Card, CardContent, CardFooter, CardHeader } from "@conquest/ui/card";
-import { Input } from "@conquest/ui/input";
+import { Card, CardContent, CardHeader } from "@conquest/ui/card";
+import { cn } from "@conquest/ui/cn";
 import { Separator } from "@conquest/ui/separator";
-import { cn } from "@conquest/ui/utils/cn";
 import { ArrowLeft, ExternalLink } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -127,7 +127,7 @@ export default function Page() {
               )}
             </>
           </CardHeader>
-          <CardContent className="p-0">
+          <CardContent className="p-0 mb-0.5">
             <div className="p-4">
               <p className="font-medium text-base">Overview</p>
               <p className="text-muted-foreground text-balance">
@@ -136,69 +136,13 @@ export default function Page() {
                 messages through automated workflows.
               </p>
             </div>
-            <Separator />
-            <div className="p-4">
-              <p className="font-medium text-base">Points</p>
-              <p className="text-muted-foreground text-balance">
-                Personalize activity points based on your team&apos;s needs.
-              </p>
-              <div className="flex flex-col gap-4 mt-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="font-medium">Post</p>
-                    <p className="text-muted-foreground">
-                      Set the points when a member post a new message on public
-                      channel.
-                    </p>
-                  </div>
-                  <Input
-                    className="w-16 text-end"
-                    defaultValue={slack?.details.score_config.post}
-                  />
-                </div>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="font-medium">Reply</p>
-                    <p className="text-muted-foreground">
-                      Set the points when a member reply to a post.
-                    </p>
-                  </div>
-                  <Input
-                    className="w-16 text-end"
-                    defaultValue={slack?.details.score_config.reply}
-                  />
-                </div>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="font-medium">Reaction</p>
-                    <p className="text-muted-foreground">
-                      Set the points when a member react to a post or reply.
-                    </p>
-                  </div>
-                  <Input
-                    className="w-16 text-end"
-                    defaultValue={slack?.details.score_config.reaction}
-                  />
-                </div>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="font-medium">Invite</p>
-                    <p className="text-muted-foreground">
-                      Set the points when a member invite another member to the
-                      workspace.
-                    </p>
-                  </div>
-                  <Input
-                    className="w-16 text-end"
-                    defaultValue={slack?.details.score_config.invite}
-                  />
-                </div>
-              </div>
-            </div>
+            {slack?.id && (
+              <>
+                <Separator />
+                <PointConfig integration={slack} />
+              </>
+            )}
           </CardContent>
-          <CardFooter className="justify-end">
-            <Button>Save changes</Button>
-          </CardFooter>
         </Card>
       </div>
     </div>

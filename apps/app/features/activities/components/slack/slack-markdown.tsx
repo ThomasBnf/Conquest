@@ -1,6 +1,6 @@
 import { emojiParser } from "@/features/activities/helpers/emoji-parser";
 import { Button, buttonVariants } from "@conquest/ui/button";
-import { cn } from "@conquest/ui/utils/cn";
+import { cn } from "@conquest/ui/cn";
 import {
   ActivitySlackSchema,
   type ActivityWithMember,

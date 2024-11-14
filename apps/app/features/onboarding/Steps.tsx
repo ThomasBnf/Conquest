@@ -1,4 +1,4 @@
-import { cn } from "@conquest/ui/utils/cn";
+import { cn } from "@conquest/ui/cn";
 
 type Props = {
   step: number;

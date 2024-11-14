@@ -1,5 +1,5 @@
 import { Icon } from "@/components/icons/Icon";
-import { cn } from "@conquest/ui/utils/cn";
+import { cn } from "@conquest/ui/cn";
 import type { icons } from "lucide-react";
 import type { PropsWithChildren } from "react";
 

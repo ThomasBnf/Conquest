@@ -2,6 +2,7 @@
 
 import { _updateMember } from "@/features/members/actions/_updateMember";
 import { Button, buttonVariants } from "@conquest/ui/button";
+import { cn } from "@conquest/ui/cn";
 import {
   Command,
   CommandEmpty,
@@ -12,7 +13,6 @@ import {
 } from "@conquest/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@conquest/ui/popover";
 import { Skeleton } from "@conquest/ui/skeleton";
-import { cn } from "@conquest/ui/utils/cn";
 import type { Member } from "@conquest/zod/member.schema";
 import { CommandLoading } from "cmdk";
 import { X } from "lucide-react";

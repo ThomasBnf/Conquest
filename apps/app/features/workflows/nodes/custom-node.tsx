@@ -1,7 +1,7 @@
 import { Badge } from "@conquest/ui/badge";
 import { Button } from "@conquest/ui/button";
+import { cn } from "@conquest/ui/cn";
 import { Separator } from "@conquest/ui/separator";
-import { cn } from "@conquest/ui/utils/cn";
 import { type NodeProps, Position, useReactFlow } from "@xyflow/react";
 import { Icon } from "components/icons/Icon";
 import { Plus, Target, type icons } from "lucide-react";

@@ -1,6 +1,6 @@
+import { PhoneInput } from "@/components/custom/phone-input";
 import { Button } from "@conquest/ui/button";
-import { PhoneInput } from "@conquest/ui/phone-input";
-import { cn } from "@conquest/ui/utils/cn";
+import { cn } from "@conquest/ui/cn";
 import { useState } from "react";
 
 type Props = {

@@ -403,7 +403,7 @@ export const POST = safeRoute.body(bodySchema).handler(async (_, context) => {
         details: {
           message: `<@${inviter}> invited to channel`,
           source: "SLACK",
-          type: "INVITE",
+          type: "INVITATION",
           files: [],
           invite_by: inviter,
         },

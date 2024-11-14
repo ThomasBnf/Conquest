@@ -1,7 +1,11 @@
 "use server";
 
-import { IntegrationDetailsSchema } from "@conquest/zod/integration.schema";
+import {
+  IntegrationDetailsSchema,
+  IntegrationSchema,
+} from "@conquest/zod/integration.schema";
 import { STATUS } from "@conquest/zod/status.enum";
+import { tasks } from "@trigger.dev/sdk/v3";
 import { authAction } from "lib/authAction";
 import { prisma } from "lib/prisma";
 import { z } from "zod";
@@ -16,7 +20,7 @@ export const upsertIntegration = authAction
     }),
   )
   .action(async ({ ctx, parsedInput: { external_id, status, details } }) => {
-    return await prisma.integration.upsert({
+    const integration = await prisma.integration.upsert({
       where: {
         external_id,
       },
@@ -32,4 +36,12 @@ export const upsertIntegration = authAction
         workspace_id: ctx.user?.workspace_id,
       },
     });
+
+    const parsedIntegration = IntegrationSchema.parse(integration);
+
+    if (parsedIntegration.details.source === "DISCOURSE") {
+      tasks.trigger("install-discourse", { integration: parsedIntegration });
+    }
+
+    return parsedIntegration;
   });

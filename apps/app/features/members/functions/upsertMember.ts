@@ -136,7 +136,7 @@ export const upsertMember = safeAction
           job_title: job_title ?? null,
           tags,
           company_id: company?.id ?? null,
-          source: "SLACK",
+          source,
           search: search(
             { full_name },
             formattedEmail ? [formattedEmail] : undefined,

@@ -1,10 +1,9 @@
 "use client";
 
-import { IsLoading } from "@/components/states/is-loading";
-import { ActionMenu } from "@/features/table/action-menu";
-
 import { QueryInput } from "@/components/custom/query-input";
 import { Members } from "@/components/icons/Members";
+import { IsLoading } from "@/components/states/is-loading";
+import { ActionMenu } from "@/features/table/action-menu";
 import { useScrollX } from "@/features/table/hooks/useScrollX";
 import { useHasScrollY } from "@/features/table/hooks/usehasScrollY";
 import { useIsClient } from "@/hooks/useIsClient";
@@ -12,7 +11,7 @@ import { useParamsMembers } from "@/hooks/useParamsMembers";
 import { Button } from "@conquest/ui/button";
 import { ScrollArea, ScrollBar } from "@conquest/ui/scroll-area";
 import { useSidebar } from "@conquest/ui/sidebar";
-import { cn } from "@conquest/ui/utils/cn";
+import { cn } from "@conquest/ui/cn";
 import type { MemberWithActivities } from "@conquest/zod/activity.schema";
 import type { Tag } from "@conquest/zod/tag.schema";
 import { useEffect, useRef, useState } from "react";

@@ -1,8 +1,8 @@
 import { Icon } from "@/components/icons/Icon";
 import { Badge } from "@conquest/ui/badge";
 import { Button } from "@conquest/ui/button";
+import { cn } from "@conquest/ui/cn";
 import { Label } from "@conquest/ui/label";
-import { cn } from "@conquest/ui/utils/cn";
 import { useReactFlow } from "@xyflow/react";
 import { X, type icons } from "lucide-react";
 import { useAdding } from "../hooks/useAdding";

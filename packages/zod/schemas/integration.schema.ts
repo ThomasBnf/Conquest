@@ -1,11 +1,11 @@
 import { STATUS } from "@conquest/zod/status.enum";
 import { z } from "zod";
 
-const ScoreConfigSchema = z.object({
+export const PointsConfigSchema = z.object({
   post: z.number().default(1),
   reaction: z.number().default(1),
   reply: z.number().default(1),
-  invite: z.number().default(1),
+  invitation: z.number().default(1),
 });
 
 const BaseSchema = z.object({
@@ -24,14 +24,15 @@ const SlackDetailsSchema = z.object({
   token: z.string(),
   slack_user_token: z.string(),
   scopes: z.string(),
-  score_config: ScoreConfigSchema,
+  points_config: PointsConfigSchema,
 });
 
 const DiscourseDetailsSchema = z.object({
   source: z.literal("DISCOURSE"),
+  community_url: z.string(),
   api_key: z.string(),
   signature: z.string(),
-  score_config: ScoreConfigSchema,
+  points_config: PointsConfigSchema,
 });
 
 export const IntegrationDetailsSchema = z.discriminatedUnion("source", [
@@ -54,5 +55,6 @@ export const IntegrationSchema = z.union([
 
 export type Integration = z.infer<typeof IntegrationSchema>;
 export type IntegrationDetails = z.infer<typeof IntegrationDetailsSchema>;
+export type PointsConfig = z.infer<typeof PointsConfigSchema>;
 export type SlackIntegration = z.infer<typeof SlackIntegrationSchema>;
 export type DiscourseIntegration = z.infer<typeof DiscourseIntegrationSchema>;

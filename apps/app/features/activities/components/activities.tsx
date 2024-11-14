@@ -2,8 +2,8 @@
 
 import { IsLoading } from "@/components/states/is-loading";
 import { useIsClient } from "@/hooks/useIsClient";
+import { cn } from "@conquest/ui/cn";
 import { Separator } from "@conquest/ui/separator";
-import { cn } from "@conquest/ui/utils/cn";
 import type { ActivityWithMember } from "@conquest/zod/activity.schema";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { format, isYesterday } from "date-fns";

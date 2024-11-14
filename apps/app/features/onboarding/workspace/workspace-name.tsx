@@ -1,4 +1,5 @@
 import { getSlug } from "@/features/workspaces/actions/getSlug";
+import { cn } from "@conquest/ui/cn";
 import {
   FormControl,
   FormField,
@@ -7,7 +8,6 @@ import {
   FormMessage,
 } from "@conquest/ui/form";
 import { Input } from "@conquest/ui/input";
-import { cn } from "@conquest/ui/utils/cn";
 import { Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { type UseFormReturn, useWatch } from "react-hook-form";
