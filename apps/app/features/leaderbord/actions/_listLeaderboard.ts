@@ -18,26 +18,24 @@ export const _listLeaderboard = authAction
     const members = await prisma.member.findMany({
       where: {
         workspace_id: ctx.user.workspace_id,
-        AND: [
-          {
-            activities: {
-              every: {
-                created_at: {
-                  gte: from,
-                  lte: to,
-                },
-              },
+        activities: {
+          some: {
+            created_at: {
+              gte: from,
+              lte: to,
             },
           },
-          {
-            activities: {
-              some: {},
-            },
-          },
-        ],
+        },
       },
       include: {
-        activities: true,
+        activities: {
+          where: {
+            created_at: {
+              gte: from,
+              lte: to,
+            },
+          },
+        },
       },
       orderBy: {
         activities: {
