@@ -30,9 +30,7 @@ export const _listMembers = authAction
 
       const members = await prisma.member.findMany({
         where: {
-          search: search
-            ? { contains: search, mode: "insensitive" }
-            : undefined,
+          search: { contains: search, mode: "insensitive" },
           workspace_id,
         },
         include: {
@@ -113,18 +111,14 @@ const getOrderBy = (
     return { last_name: desc ? "desc" : "asc" };
   }
 
-  if (id === "activities") {
-    return { activities: { _count: desc ? "desc" : "asc" } };
-  }
-
   if (
-    id === "last_activity" ||
-    id === "created_at" ||
     id === "posts" ||
     id === "reactions" ||
     id === "replies" ||
     id === "invitations" ||
-    id === "points"
+    id === "points" ||
+    id === "last_activity" ||
+    id === "created_at"
   ) {
     return {};
   }

@@ -134,7 +134,7 @@ export const Columns = ({ tags }: Props): Column[] => [
     header: () => <ColumnHeader id="reactions" title="Reactions" width={125} />,
     cell: ({ member }) => {
       const reactions = member.activities.filter(
-        (activity) => activity.details.type === "REACTIONS",
+        (activity) => activity.details.type === "REACTION",
       );
       return <p className="px-2 text-end w-full">{reactions.length}</p>;
     },

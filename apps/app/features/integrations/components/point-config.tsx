@@ -1,4 +1,3 @@
-import { Button } from "@conquest/ui/button";
 import {
   Form,
   FormControl,
@@ -66,7 +65,7 @@ export const PointConfig = ({ integration }: Props) => {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)}>
+      <form>
         <div className="p-4">
           <p className="font-medium text-base">Points</p>
           <p className="text-muted-foreground text-balance">
@@ -87,7 +86,11 @@ export const PointConfig = ({ integration }: Props) => {
                 render={({ field }) => (
                   <FormItem>
                     <FormControl>
-                      <Input {...field} className="w-16 text-end" />
+                      <Input
+                        {...field}
+                        onBlur={() => form.handleSubmit(onSubmit)()}
+                        className="w-16 text-end"
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -107,7 +110,11 @@ export const PointConfig = ({ integration }: Props) => {
                 render={({ field }) => (
                   <FormItem>
                     <FormControl>
-                      <Input {...field} className="w-16 text-end" />
+                      <Input
+                        {...field}
+                        onBlur={() => form.handleSubmit(onSubmit)()}
+                        className="w-16 text-end"
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -127,7 +134,11 @@ export const PointConfig = ({ integration }: Props) => {
                 render={({ field }) => (
                   <FormItem>
                     <FormControl>
-                      <Input {...field} className="w-16 text-end" />
+                      <Input
+                        {...field}
+                        onBlur={() => form.handleSubmit(onSubmit)()}
+                        className="w-16 text-end"
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -148,7 +159,11 @@ export const PointConfig = ({ integration }: Props) => {
                 render={({ field }) => (
                   <FormItem>
                     <FormControl>
-                      <Input {...field} className="w-16 text-end" />
+                      <Input
+                        {...field}
+                        onBlur={() => form.handleSubmit(onSubmit)()}
+                        className="w-16 text-end"
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -156,11 +171,6 @@ export const PointConfig = ({ integration }: Props) => {
               />
             </div>
           </div>
-        </div>
-        <div className="flex justify-end p-4">
-          <Button type="submit" loading={loading}>
-            Save changes
-          </Button>
         </div>
       </form>
     </Form>

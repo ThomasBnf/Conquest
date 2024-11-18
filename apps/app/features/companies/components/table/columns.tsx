@@ -1,10 +1,10 @@
 import { DateCell } from "@/components/custom/date-cell";
+import { useUser } from "@/context/userContext";
 import { ColumnHeader } from "@/features/table/column-header";
 import { buttonVariants } from "@conquest/ui/button";
 import { Checkbox } from "@conquest/ui/checkbox";
 import { cn } from "@conquest/ui/cn";
 import type { Company } from "@conquest/zod/company.schema";
-import { slug } from "cuid";
 import Link from "next/link";
 import type { Dispatch, SetStateAction } from "react";
 
@@ -66,17 +66,20 @@ export const Columns = (): Column[] => [
   {
     id: "name",
     header: () => <ColumnHeader id="name" title="Name" width={285} />,
-    cell: ({ company }) => (
-      <Link
-        href={`/${slug}/companies/${company.id}`}
-        className={cn(
-          buttonVariants({ variant: "ghost" }),
-          "flex items-center gap-2 px-1.5 truncate",
-        )}
-      >
-        <p className="font-medium truncate">{company.name}</p>
-      </Link>
-    ),
+    cell: ({ company }) => {
+      const { slug } = useUser();
+      return (
+        <Link
+          href={`/${slug}/companies/${company.id}`}
+          className={cn(
+            buttonVariants({ variant: "ghost" }),
+            "flex items-center gap-2 px-1.5 truncate",
+          )}
+        >
+          <p className="font-medium truncate">{company.name}</p>
+        </Link>
+      );
+    },
     width: 285,
   },
   {

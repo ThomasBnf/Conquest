@@ -13,13 +13,13 @@ import type { MemberWithActivities } from "@conquest/zod/activity.schema";
 import Link from "next/link";
 
 type Props = {
-  member: MemberWithActivities;
+  member: MemberWithActivities & { points: number };
   position: number;
 };
 
 export const Podium = ({ member, position }: Props) => {
   const { slug } = useUser();
-  const { full_name, activities } = member;
+  const { full_name, points } = member;
 
   return (
     <Card>
@@ -40,7 +40,7 @@ export const Podium = ({ member, position }: Props) => {
             {position === 2 && "🥉"}
           </p>
         </CardTitle>
-        <CardDescription>{activities.length} activities</CardDescription>
+        <CardDescription>{points} points</CardDescription>
       </CardHeader>
     </Card>
   );

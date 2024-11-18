@@ -26,6 +26,8 @@ export default async function Page({ searchParams: { search } }: Props) {
   const tags = rTags?.data;
   const count = rCountMembers?.data ?? 0;
 
+  console.dir(initialMembers, { depth: Number.POSITIVE_INFINITY });
+
   return (
     <PageLayout>
       <Header title="Members">
