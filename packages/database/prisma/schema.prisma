@@ -97,6 +97,7 @@ model Member {
   last_name    String?
   full_name    String?
   username     String?
+  locale       String?
   gender       GENDER?
   avatar_url   String?
   bio          String?

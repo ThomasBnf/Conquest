@@ -331,7 +331,11 @@ export const POST = safeRoute.body(bodySchema).handler(async (_, context) => {
       if (!inviter) break;
 
       const { profile } = await web.users.profile.get({ user });
+
       if (!profile) return NextResponse.json({ status: 200 });
+
+      const { user: userInfo } = await web.users.info({ user });
+      const locale = userInfo?.locale;
 
       const {
         first_name,
@@ -351,6 +355,7 @@ export const POST = safeRoute.body(bodySchema).handler(async (_, context) => {
         full_name: real_name,
         email,
         phone,
+        locale,
         avatar_url: image_1024,
         job_title: title,
         workspace_id,
@@ -421,6 +426,9 @@ export const POST = safeRoute.body(bodySchema).handler(async (_, context) => {
 
       if (!profile) return NextResponse.json({ status: 200 });
 
+      const { user: userInfo } = await web.users.info({ user: id });
+      const locale = userInfo?.locale;
+
       const {
         first_name,
         last_name,
@@ -439,6 +447,7 @@ export const POST = safeRoute.body(bodySchema).handler(async (_, context) => {
         full_name: real_name,
         email,
         phone,
+        locale,
         avatar_url: image_1024,
         job_title: title,
         deleted,

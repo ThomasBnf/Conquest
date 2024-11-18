@@ -19,15 +19,18 @@ export const createListMembers = safeAction
     do {
       const { members, response_metadata } = await web.users.list({
         limit: 100,
+        include_locale: true,
         cursor,
       });
 
       for (const member of members ?? []) {
+        console.log(member);
         const { id, deleted: isDeleted, is_bot: isBot, profile } = member;
 
         if (!id) continue;
 
         if (profile && !isDeleted && !isBot) {
+          const { locale } = member;
           const {
             first_name,
             last_name,
@@ -48,6 +51,7 @@ export const createListMembers = safeAction
             full_name: real_name,
             email,
             phone,
+            locale,
             avatar_url: image_1024,
             job_title: title,
             workspace_id,
