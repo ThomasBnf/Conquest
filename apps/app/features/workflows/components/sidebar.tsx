@@ -12,7 +12,7 @@ export const Sidebar = () => {
   const { isChanging } = useChanging();
 
   return (
-    <div className="max-w-sm w-full h-full bg-background border-l">
+    <div className="max-w-md w-full h-full bg-background border-l">
       {selected && <OptionsPanel />}
       {!isChanging && panel === "workflow" && <WorkflowPanel />}
       {!isChanging && panel === "triggers" && <TriggerPanel />}

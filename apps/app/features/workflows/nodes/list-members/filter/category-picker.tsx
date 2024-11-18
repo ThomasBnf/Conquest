@@ -30,16 +30,21 @@ export const CategoryPicker = () => {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" className="w-44">
-        {categories.map((category) => (
-          <DropdownMenuSub key={category}>
+        {filters.map((category) => (
+          <DropdownMenuSub key={category.label}>
             <DropdownMenuSubTrigger className="capitalize">
-              {category.replace(/_/g, " ")}
+              {category.label}
             </DropdownMenuSubTrigger>
             <DropdownMenuSubContent>
-              {filters.map((filter) => (
+              {category.filters.map((filter) => (
                 <DropdownMenuItem
                   key={filter.id}
-                  onClick={() => onAddGroupFilter({ category, filter })}
+                  onClick={() =>
+                    onAddGroupFilter({
+                      category: category.category,
+                      filter,
+                    })
+                  }
                 >
                   {filter.label}
                 </DropdownMenuItem>
@@ -73,33 +78,104 @@ export const CategoryPicker = () => {
   );
 };
 
-const categories: Category[] = [
-  "activities",
-  "last_activity",
-  "first_activity",
-];
-
-const filters: Filter[] = [
+const filters: {
+  label: string;
+  category: Category;
+  filters: Filter[];
+}[] = [
   {
-    id: "1",
-    label: "Type",
-    field: "type",
-    operator: "contains",
-    values: [],
+    label: "Member",
+    category: "member",
+    filters: [
+      {
+        id: "1",
+        label: "Localisation",
+        field: "localisation",
+        operator: "contains",
+        values: [],
+      },
+    ],
   },
   {
-    id: "2",
-    label: "Source",
-    field: "source",
-    operator: "contains",
-    values: [],
+    label: "Activities",
+    category: "activities",
+    filters: [
+      {
+        id: "1",
+        label: "Type",
+        field: "type",
+        operator: "contains",
+        values: [],
+      },
+      {
+        id: "2",
+        label: "Source",
+        field: "source",
+        operator: "contains",
+        values: [],
+      },
+      {
+        id: "3",
+        label: "Creation date",
+        field: "created_at",
+        operator: "is",
+        days: 1,
+      },
+    ],
   },
   {
-    id: "3",
-    label: "Creation date",
-    field: "created_at",
-    operator: "is",
-    days: 1,
+    label: "First activity",
+    category: "first_activity",
+    filters: [
+      {
+        id: "1",
+        label: "Type",
+        field: "type",
+        operator: "contains",
+        values: [],
+      },
+      {
+        id: "2",
+        label: "Source",
+        field: "source",
+        operator: "contains",
+        values: [],
+      },
+      {
+        id: "3",
+        label: "Creation date",
+        field: "created_at",
+        operator: "is",
+        days: 1,
+      },
+    ],
+  },
+  {
+    label: "Last activity",
+    category: "last_activity",
+    filters: [
+      {
+        id: "1",
+        label: "Type",
+        field: "type",
+        operator: "contains",
+        values: [],
+      },
+      {
+        id: "2",
+        label: "Source",
+        field: "source",
+        operator: "contains",
+        values: [],
+      },
+      {
+        id: "3",
+        label: "Creation date",
+        field: "created_at",
+        operator: "is",
+        days: 1,
+      },
+    ],
   },
 ];
 

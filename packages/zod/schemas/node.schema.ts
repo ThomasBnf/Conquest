@@ -22,6 +22,7 @@ export const NodeTypeSchema = z.enum([
 ]);
 
 export const CategorySchema = z.enum([
+  "member",
   "last_activity",
   "first_activity",
   "activities",

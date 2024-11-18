@@ -9,6 +9,7 @@ export const MemberSchema = z.object({
   full_name: z.string().nullable(),
   emails: z.array(z.string()).default([]),
   phones: z.array(z.string()).default([]),
+  locale: z.string().nullable(),
   avatar_url: z.string().nullable(),
   bio: z.string().nullable(),
   job_title: z.string().nullable(),

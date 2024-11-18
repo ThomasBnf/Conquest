@@ -270,6 +270,8 @@ const createFilterOperation = (filter: Filter) => {
   if (!filter?.field) return { execute: () => true };
 
   switch (filter.field) {
+    case "localisation":
+      return createLocaleFilter(filter);
     case "type":
       return createTypeFilter(filter);
     case "source":
@@ -283,6 +285,27 @@ const createFilterOperation = (filter: Filter) => {
     default:
       return { execute: () => true };
   }
+};
+
+export const createLocaleFilter = (filter: FilterSelect) => {
+  const { operator, values } = filter;
+
+  if (!values?.length) return { execute: () => true };
+
+  return {
+    execute: ({ member }: { member: MemberWithActivities }) => {
+      const memberLocale = member.locale;
+
+      switch (operator) {
+        case "contains":
+          return values.includes(memberLocale ?? "");
+        case "not_contains":
+          return !values.includes(memberLocale ?? "");
+        default:
+          return true;
+      }
+    },
+  };
 };
 
 export const createTypeFilter = (filter: FilterSelect) => {

@@ -217,6 +217,12 @@ export const Columns = ({ tags }: Props): Column[] => [
     width: 250,
   },
   {
+    id: "locale",
+    header: () => <ColumnHeader id="locale" title="Locale" width={250} />,
+    cell: ({ member }) => <p className="truncate px-2">{member.locale}</p>,
+    width: 250,
+  },
+  {
     id: "source",
     header: () => <ColumnHeader id="source" title="Source" width={250} />,
     cell: ({ member }) => <p className="truncate px-2">{member.source}</p>,

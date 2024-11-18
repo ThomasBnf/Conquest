@@ -6,6 +6,7 @@ import { Trash2 } from "lucide-react";
 import { DatePicker } from "./pickers/date-picker";
 import { FieldPicker } from "./pickers/field-picker";
 import { GroupOperatorPicker } from "./pickers/group-operator";
+import { LocalePicker } from "./pickers/locale-picker";
 import { OperatorPicker } from "./pickers/operator-picker";
 import { QueryInput } from "./pickers/query-input";
 import { SourcePicker } from "./pickers/source-picker";
@@ -38,6 +39,7 @@ export const FilterBlock = ({ groupFilter, filter }: Props) => {
         </div>
         <div className="flex items-center divide-x">
           <OperatorPicker filter={filter} />
+          {field === "localisation" && <LocalePicker filter={filter} />}
           {field === "type" && <TypePicker filter={filter} />}
           {field === "source" && <SourcePicker filter={filter} />}
           {field === "created_at" && <DatePicker filter={filter} />}

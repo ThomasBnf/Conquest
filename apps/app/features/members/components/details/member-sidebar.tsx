@@ -28,6 +28,7 @@ export const MemberSidebar = ({ member, tags }: Props) => {
     first_name,
     last_name,
     full_name,
+    locale,
     created_at,
     joined_at,
   } = member;
@@ -64,6 +65,9 @@ export const MemberSidebar = ({ member, tags }: Props) => {
       <div className="p-4">
         <FieldCard icon="Code" label="Source">
           <p className="pl-1.5">{source}</p>
+        </FieldCard>
+        <FieldCard icon="Flag" label="Localisation">
+          <p className="pl-1.5">{locale}</p>
         </FieldCard>
         <FieldCard icon="Tag" label="Tags">
           <TagPicker member={member} tags={tags} />
