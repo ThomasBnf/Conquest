@@ -57,10 +57,11 @@ export const TriggerPanel = () => {
                       classNameSpan="justify-start"
                       onClick={() => onClick(node)}
                     >
-                      <div className="p-1 rounded-md border bg-background">
+                      <div className="border rounded-md bg-blue-100 border-blue-200 p-1">
                         <Icon
                           name={data.icon as keyof typeof icons}
                           size={15}
+                          className="text-blue-500"
                         />
                       </div>
                       <p className="font-medium">{data.label}</p>
@@ -83,24 +84,24 @@ export const nodes: {
   }[];
 } = {
   categories: [
-    // {
-    //   label: "Members",
-    //   nodes: [
-    //     {
-    //       id: cuid(),
-    //       type: "custom",
-    //       position: { x: 0, y: 0 },
-    //       data: {
-    //         icon: "User",
-    //         label: "Member created",
-    //         description: "Trigger a workflow when a member is created",
-    //         type: "member-created",
-    //         category: "members",
-    //         isTrigger: true,
-    //       },
-    //     },
-    //   ],
-    // },
+    {
+      label: "Members",
+      nodes: [
+        {
+          id: cuid(),
+          type: "custom",
+          position: { x: 0, y: 0 },
+          data: {
+            icon: "User",
+            label: "Member created",
+            description: "Trigger a workflow when a member is created",
+            type: "member-created",
+            category: "members",
+            isTrigger: true,
+          },
+        },
+      ],
+    },
     {
       label: "Utilities",
       nodes: [

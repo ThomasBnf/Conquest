@@ -50,7 +50,7 @@ export const NextStep = () => {
             className={cn(
               "border rounded-md p-1",
               isTrigger
-                ? "border-yellow-300 bg-yellow-100 text-yellow-500"
+                ? "border-blue-300 bg-blue-100 text-blue-500"
                 : "border-green-300 bg-green-100 text-green-500",
             )}
           />
@@ -75,7 +75,7 @@ export const NextStep = () => {
                   className={cn(
                     "border rounded-md p-1",
                     isNextNodeTrigger
-                      ? "border-yellow-300 bg-yellow-100 text-yellow-500"
+                      ? "border-blue-300 bg-blue-100 text-blue-500"
                       : "border-green-300 bg-green-100 text-green-500",
                   )}
                 />
