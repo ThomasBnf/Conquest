@@ -1,3 +1,4 @@
+import { getPoints } from "@/features/members/helpers/getPoints";
 import { prisma } from "@/lib/prisma";
 import {
   type Activity,
@@ -11,7 +12,11 @@ import type {
   FilterSelect,
   FilterTag,
 } from "@conquest/zod/filters.schema";
-import { SlackIntegrationSchema } from "@conquest/zod/integration.schema";
+import {
+  type Integration,
+  IntegrationSchema,
+  SlackIntegrationSchema,
+} from "@conquest/zod/integration.schema";
 import {
   type Category,
   type GroupFilter,
@@ -27,6 +32,7 @@ import { startOfDay, subDays } from "date-fns";
 import { z } from "zod";
 
 let members: MemberWithActivities[] = [];
+let integrations: Integration[];
 
 export const runWorkflow = task({
   id: "run-workflow",
@@ -38,6 +44,14 @@ export const runWorkflow = task({
     });
     const parsedWorkflow = WorkflowSchema.parse(workflow);
     const { nodes, edges, workspace_id } = parsedWorkflow;
+
+    integrations = IntegrationSchema.array().parse(
+      await prisma.integration.findMany({
+        where: {
+          workspace_id,
+        },
+      }),
+    );
 
     let node = nodes.find((node) => "isTrigger" in node.data);
     let hasNextNode = true;
@@ -171,7 +185,6 @@ export const webhook = async (node: NodeWebhook) => {
   const { url } = node;
 
   if (!url) throw new Error("No URL provided");
-  if (!members?.length) return;
 
   await fetch(url, {
     method: "POST",
@@ -424,18 +437,20 @@ export const createNumberFilter = (filter: FilterNumber) => {
   if (typeof value !== "number") return { execute: () => true };
 
   return {
-    execute: ({ activities }: { activities: Activity[] }) => {
-      const count = activities?.length ?? 0;
+    execute: ({ member }: { member: MemberWithActivities }) => {
+      const points = getPoints({ integrations, member });
+
+      console.log(points);
 
       switch (operator) {
         case "equals":
-          return count === value;
+          return points === value;
         case "not_equals":
-          return count !== value;
+          return points !== value;
         case "greater_than":
-          return count > value;
+          return points > value;
         case "less_than":
-          return count < value;
+          return points < value;
         default:
           return true;
       }
