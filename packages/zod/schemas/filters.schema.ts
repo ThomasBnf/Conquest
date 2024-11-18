@@ -43,8 +43,8 @@ export const FilterDateSchema = FilterBaseSchema.extend({
   days: z.number().default(1),
 });
 
-export const FilterCountSchema = FilterBaseSchema.extend({
-  field: z.literal("activities_count"),
+export const FilterNumberSchema = FilterBaseSchema.extend({
+  field: z.literal("points"),
   operator: NumberOperatorSchema,
   value: z.number().default(1),
 });
@@ -58,7 +58,7 @@ export const FilterTagSchema = FilterBaseSchema.extend({
 export const FilterSchema = z.discriminatedUnion("field", [
   FilterSelectSchema,
   FilterDateSchema,
-  FilterCountSchema,
+  FilterNumberSchema,
   FilterTagSchema,
 ]);
 
@@ -67,7 +67,7 @@ export const FilterSchema = z.discriminatedUnion("field", [
 export type Filter = z.infer<typeof FilterSchema>;
 export type FilterSelect = z.infer<typeof FilterSelectSchema>;
 export type FilterDate = z.infer<typeof FilterDateSchema>;
-export type FilterCount = z.infer<typeof FilterCountSchema>;
+export type FilterNumber = z.infer<typeof FilterNumberSchema>;
 export type FilterTag = z.infer<typeof FilterTagSchema>;
 
 export type DynamicDate = z.infer<typeof DynamicDateSchema>;

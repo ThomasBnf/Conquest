@@ -1,5 +1,6 @@
 import { DateCell } from "@/components/custom/date-cell";
 import { useUser } from "@/context/userContext";
+import { getPoints } from "@/features/members/helpers/getPoints";
 import { TagBadge } from "@/features/tags/tag-badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@conquest/ui/avatar";
 import { buttonVariants } from "@conquest/ui/button";
@@ -134,29 +135,7 @@ export const Columns = ({ tags }: Props): Column[] => [
     ),
     cell: ({ member }) => {
       const { slack, discourse } = useUser();
-
-      const points = member.activities.reduce((total, activity) => {
-        const source = activity.details.source;
-        const integration =
-          source === "SLACK"
-            ? slack?.details.points_config
-            : source === "DISCOURSE"
-              ? discourse?.details.points_config
-              : undefined;
-
-        switch (activity.details.type) {
-          case "POST":
-            return total + (integration?.post ?? 0);
-          case "REACTION":
-            return total + (integration?.reaction ?? 0);
-          case "REPLY":
-            return total + (integration?.reply ?? 0);
-          case "INVITATION":
-            return total + (integration?.invitation ?? 0);
-          default:
-            return total;
-        }
-      }, 0);
+      const points = getPoints({ integrations: [slack, discourse], member });
 
       return <p className="px-2 text-end w-full">{points}</p>;
     },

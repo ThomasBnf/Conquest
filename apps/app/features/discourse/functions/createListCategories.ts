@@ -21,17 +21,18 @@ export const createListCategories = safeAction
   })
   .schema(
     z.object({
+      api_key: z.string(),
+      community_url: z.string(),
       workspace_id: z.string().cuid(),
-      token: z.string(),
     }),
   )
-  .action(async ({ parsedInput: { workspace_id, token } }) => {
+  .action(async ({ parsedInput: { api_key, community_url, workspace_id } }) => {
     let hasMore = true;
     do {
       const categories = await ky
-        .get("https://playground.lagrowthmachine.com/categories", {
+        .get(`${community_url}/categories`, {
           headers: {
-            "Api-Key": token,
+            "Api-Key": api_key,
             "Api-Username": "system",
             Accept: "application/json",
           },

@@ -4,17 +4,12 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuSeparator,
   DropdownMenuSub,
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@conquest/ui/dropdown-menu";
-import type {
-  Filter,
-  FilterCount,
-  FilterTag,
-} from "@conquest/zod/filters.schema";
+import type { Filter } from "@conquest/zod/filters.schema";
 import type { Category } from "@conquest/zod/node.schema";
 import { Plus } from "lucide-react";
 
@@ -52,27 +47,6 @@ export const CategoryPicker = () => {
             </DropdownMenuSubContent>
           </DropdownMenuSub>
         ))}
-        <DropdownMenuSeparator />
-        <DropdownMenuItem
-          onClick={() =>
-            onAddGroupFilter({
-              category: "activities_count",
-              filter: countFilter,
-            })
-          }
-        >
-          Activities count
-        </DropdownMenuItem>
-        <DropdownMenuItem
-          onClick={() =>
-            onAddGroupFilter({
-              category: "tags",
-              filter: tagFilter,
-            })
-          }
-        >
-          Tags
-        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );
@@ -89,10 +63,24 @@ const filters: {
     filters: [
       {
         id: "1",
+        label: "Tags",
+        field: "tags",
+        operator: "contains",
+        values: [],
+      },
+      {
+        id: "2",
         label: "Localisation",
         field: "localisation",
         operator: "contains",
         values: [],
+      },
+      {
+        id: "3",
+        label: "Points",
+        field: "points",
+        operator: "greater_than",
+        value: 1,
       },
     ],
   },
@@ -178,19 +166,3 @@ const filters: {
     ],
   },
 ];
-
-const countFilter: FilterCount = {
-  id: "4",
-  label: "Activities count",
-  field: "activities_count",
-  operator: "greater_than",
-  value: 1,
-};
-
-const tagFilter: FilterTag = {
-  id: "4",
-  label: "Tags",
-  field: "tags",
-  operator: "contains",
-  values: [],
-};

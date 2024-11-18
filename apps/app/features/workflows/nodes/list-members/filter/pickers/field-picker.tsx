@@ -6,51 +6,23 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@conquest/ui/dropdown-menu";
-import {
-  type Filter,
-  FilterDateSchema,
-  FilterSelectSchema,
-} from "@conquest/zod/filters.schema";
+import type { Filter } from "@conquest/zod/filters.schema";
+import type { Category } from "@conquest/zod/node.schema";
 import { ChevronDown } from "lucide-react";
 
 type Props = {
+  category: Category;
   filter: Filter;
 };
 
-export const FieldPicker = ({ filter }: Props) => {
+export const FieldPicker = ({ category, filter }: Props) => {
   const { onUpdateFilter } = useFilters();
 
   const onUpdateField = (selectedFilter: Filter) => {
-    if (selectedFilter.field === "activities_count") return;
-
-    if (selectedFilter.field === "created_at") {
-      const parsedFilter = FilterDateSchema.parse({
-        ...selectedFilter,
-        id: filter.id,
-      });
-
-      const { operator, field, days } = parsedFilter;
-
-      onUpdateFilter({
-        ...parsedFilter,
-        operator,
-        field,
-        days,
-      });
-    } else {
-      const parsedFilter = FilterSelectSchema.parse({
-        ...selectedFilter,
-        id: filter.id,
-      });
-
-      const { operator, field } = parsedFilter;
-
-      onUpdateFilter({
-        ...parsedFilter,
-        operator,
-        field,
-      });
-    }
+    onUpdateFilter({
+      ...selectedFilter,
+      id: filter.id,
+    });
   };
 
   return (
@@ -68,39 +40,133 @@ export const FieldPicker = ({ filter }: Props) => {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start">
-        {filters.map((selectedFilter) => (
-          <DropdownMenuItem
-            key={selectedFilter.id}
-            onClick={() => onUpdateField(selectedFilter)}
-          >
-            {selectedFilter.label}
-          </DropdownMenuItem>
-        ))}
+        {filters
+          .filter((f) => f.category === category)
+          .flatMap((filterGroup) => filterGroup.filters)
+          .map((selectedFilter) => (
+            <DropdownMenuItem
+              key={selectedFilter.id}
+              onClick={() => onUpdateField(selectedFilter)}
+            >
+              {selectedFilter.label}
+            </DropdownMenuItem>
+          ))}
       </DropdownMenuContent>
     </DropdownMenu>
   );
 };
 
-const filters: Filter[] = [
+const filters: {
+  label: string;
+  category: Category;
+  filters: Filter[];
+}[] = [
   {
-    id: "1",
-    label: "Type",
-    field: "type",
-    operator: "contains",
-    values: [],
+    label: "Member",
+    category: "member",
+    filters: [
+      {
+        id: "1",
+        label: "Tags",
+        field: "tags",
+        operator: "contains",
+        values: [],
+      },
+      {
+        id: "2",
+        label: "Localisation",
+        field: "localisation",
+        operator: "contains",
+        values: [],
+      },
+      {
+        id: "3",
+        label: "Points",
+        field: "points",
+        operator: "greater_than",
+        value: 1,
+      },
+    ],
   },
   {
-    id: "2",
-    label: "Source",
-    field: "source",
-    operator: "contains",
-    values: [],
+    label: "Activities",
+    category: "activities",
+    filters: [
+      {
+        id: "1",
+        label: "Type",
+        field: "type",
+        operator: "contains",
+        values: [],
+      },
+      {
+        id: "2",
+        label: "Source",
+        field: "source",
+        operator: "contains",
+        values: [],
+      },
+      {
+        id: "3",
+        label: "Creation date",
+        field: "created_at",
+        operator: "is",
+        days: 1,
+      },
+    ],
   },
   {
-    id: "3",
-    label: "Created at",
-    field: "created_at",
-    operator: "is",
-    days: 1,
+    label: "First activity",
+    category: "first_activity",
+    filters: [
+      {
+        id: "1",
+        label: "Type",
+        field: "type",
+        operator: "contains",
+        values: [],
+      },
+      {
+        id: "2",
+        label: "Source",
+        field: "source",
+        operator: "contains",
+        values: [],
+      },
+      {
+        id: "3",
+        label: "Creation date",
+        field: "created_at",
+        operator: "is",
+        days: 1,
+      },
+    ],
+  },
+  {
+    label: "Last activity",
+    category: "last_activity",
+    filters: [
+      {
+        id: "1",
+        label: "Type",
+        field: "type",
+        operator: "contains",
+        values: [],
+      },
+      {
+        id: "2",
+        label: "Source",
+        field: "source",
+        operator: "contains",
+        values: [],
+      },
+      {
+        id: "3",
+        label: "Creation date",
+        field: "created_at",
+        operator: "is",
+        days: 1,
+      },
+    ],
   },
 ];

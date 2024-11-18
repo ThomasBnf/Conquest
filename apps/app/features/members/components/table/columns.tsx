@@ -10,6 +10,7 @@ import type { MemberWithActivities } from "@conquest/zod/activity.schema";
 import type { Tag } from "@conquest/zod/tag.schema";
 import Link from "next/link";
 import type { Dispatch, SetStateAction } from "react";
+import { getPoints } from "../../helpers/getPoints";
 
 type Column = {
   id: string;
@@ -158,29 +159,7 @@ export const Columns = ({ tags }: Props): Column[] => [
     header: () => <ColumnHeader id="points" title="Points" width={125} />,
     cell: ({ member }) => {
       const { slack, discourse } = useUser();
-
-      const points = member.activities.reduce((total, activity) => {
-        const source = activity.details.source;
-        const integration =
-          source === "SLACK"
-            ? slack?.details.points_config
-            : source === "DISCOURSE"
-              ? discourse?.details.points_config
-              : undefined;
-
-        switch (activity.details.type) {
-          case "POST":
-            return total + (integration?.post ?? 0);
-          case "REACTION":
-            return total + (integration?.reaction ?? 0);
-          case "REPLY":
-            return total + (integration?.reply ?? 0);
-          case "INVITATION":
-            return total + (integration?.invitation ?? 0);
-          default:
-            return total;
-        }
-      }, 0);
+      const points = getPoints({ integrations: [slack, discourse], member });
 
       return <p className="px-2 text-end w-full">{points}</p>;
     },

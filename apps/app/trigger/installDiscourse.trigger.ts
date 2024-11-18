@@ -1,3 +1,4 @@
+import { createListCategories } from "@/features/discourse/functions/createListCategories";
 import { createListMembers } from "@/features/discourse/functions/createListMembers";
 import { createListTags } from "@/features/discourse/functions/createListTags";
 import { updateIntegration } from "@/features/integrations/functions/updateIntegration";
@@ -23,7 +24,7 @@ export const installDiscourse = schemaTask({
 
     await createListTags({ api_key, community_url, workspace_id });
     await createListMembers({ api_key, community_url, workspace_id });
-    // await createListCategories({ token, workspace_id });
+    await createListCategories({ api_key, community_url, workspace_id });
   },
   onSuccess: async (payload) => {
     const { external_id } = payload.integration;

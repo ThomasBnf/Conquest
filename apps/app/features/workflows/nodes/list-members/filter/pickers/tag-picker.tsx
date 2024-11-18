@@ -83,6 +83,9 @@ export const TagPicker = ({ filter }: Props) => {
             </PopoverCheckboxItem>
           ))
         )}
+        {tags?.length === 0 && (
+          <p className="text-muted-foreground">No tags found</p>
+        )}
       </PopoverContent>
     </Popover>
   );

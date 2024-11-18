@@ -35,15 +35,15 @@ export const FilterBlock = ({ groupFilter, filter }: Props) => {
               isFirstFilter={isFirstFilter}
             />
           )}
-          <FieldPicker filter={filter} />
+          <FieldPicker category={groupFilter.category} filter={filter} />
         </div>
         <div className="flex items-center divide-x">
           <OperatorPicker filter={filter} />
           {field === "localisation" && <LocalePicker filter={filter} />}
+          {field === "points" && <QueryInput filter={filter} />}
           {field === "type" && <TypePicker filter={filter} />}
           {field === "source" && <SourcePicker filter={filter} />}
           {field === "created_at" && <DatePicker filter={filter} />}
-          {field === "activities_count" && <QueryInput filter={filter} />}
           {field === "tags" && <TagPicker filter={filter} />}
           <Button
             variant="outline"

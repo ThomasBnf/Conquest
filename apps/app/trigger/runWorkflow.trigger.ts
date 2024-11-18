@@ -6,8 +6,8 @@ import {
 } from "@conquest/zod/activity.schema";
 import type {
   Filter,
-  FilterCount,
   FilterDate,
+  FilterNumber,
   FilterSelect,
   FilterTag,
 } from "@conquest/zod/filters.schema";
@@ -280,8 +280,8 @@ const createFilterOperation = (filter: Filter) => {
       return createTagFilter(filter);
     case "created_at":
       return createDateFilter(filter);
-    case "activities_count":
-      return createCountFilter(filter);
+    case "points":
+      return createNumberFilter(filter);
     default:
       return { execute: () => true };
   }
@@ -419,7 +419,7 @@ export const createDateFilter = (filter: FilterDate) => {
   };
 };
 
-export const createCountFilter = (filter: FilterCount) => {
+export const createNumberFilter = (filter: FilterNumber) => {
   const { operator, value } = filter;
   if (typeof value !== "number") return { execute: () => true };
 

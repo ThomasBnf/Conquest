@@ -24,50 +24,11 @@ export const OperatorPicker = ({ filter }: Props) => {
   const { onUpdateFilter } = useFilters();
 
   const onUpdateOperator = ({ operator }: { operator: Operator }) => {
-    if (filter.field === "created_at") {
-      const parsedOperator = DateOperatorSchema.parse(operator);
-
-      onUpdateFilter({
-        ...filter,
-        operator: parsedOperator,
-      });
-    }
-
-    if (filter.field === "source") {
-      const parsedOperator = BaseOperatorSchema.parse(operator);
-
-      onUpdateFilter({
-        ...filter,
-        operator: parsedOperator,
-      });
-    }
-
-    if (filter.field === "type") {
-      const parsedOperator = BaseOperatorSchema.parse(operator);
-
-      onUpdateFilter({
-        ...filter,
-        operator: parsedOperator,
-      });
-    }
-
-    if (filter.field === "activities_count") {
-      const parsedOperator = NumberOperatorSchema.parse(operator);
-
-      onUpdateFilter({
-        ...filter,
-        operator: parsedOperator,
-      });
-    }
-
-    if (filter.field === "tags") {
-      const parsedOperator = BaseOperatorSchema.parse(operator);
-
-      onUpdateFilter({
-        ...filter,
-        operator: parsedOperator,
-      });
-    }
+    const parsedOperator = BaseOperatorSchema.parse(operator);
+    onUpdateFilter({
+      ...filter,
+      operator: parsedOperator,
+    } as Filter);
   };
 
   return (
@@ -88,7 +49,11 @@ export const OperatorPicker = ({ filter }: Props) => {
             return DateOperatorSchema.safeParse(operator).success;
           }
 
-          if (filter.field === "activities_count") {
+          if (filter.field === "tags") {
+            return BaseOperatorSchema.safeParse(operator).success;
+          }
+
+          if (filter.field === "points") {
             return NumberOperatorSchema.safeParse(operator).success;
           }
 
