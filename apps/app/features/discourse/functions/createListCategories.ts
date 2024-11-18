@@ -1,4 +1,3 @@
-import { createChannel } from "@/features/channels/functions/createChannel";
 import { safeAction } from "@/lib/safeAction";
 import ky from "ky";
 import { z } from "zod";
@@ -6,12 +5,19 @@ import { z } from "zod";
 const CategorySchema = z.object({
   id: z.number(),
   name: z.string(),
+  slug: z.string(),
   read_restricted: z.boolean(),
 });
 
 const CategoryListSchema = z.object({
   category_list: z.object({
     categories: z.array(CategorySchema),
+  }),
+});
+
+const TopicListSchema = z.object({
+  topic_list: z.object({
+    topics: z.array(z.any()),
   }),
 });
 
@@ -48,13 +54,27 @@ export const createListCategories = safeAction
       );
 
       for (const category of filteredCategories ?? []) {
-        const { id, name } = CategorySchema.parse(category);
-        await createChannel({
-          external_id: id.toString(),
-          name,
-          source: "DISCOURSE",
-          workspace_id,
-        });
+        const { id, name, slug } = CategorySchema.parse(category);
+        // await createChannel({
+        //   external_id: id.toString(),
+        //   name,
+        //   source: "DISCOURSE",
+        //   workspace_id,
+        // });
+
+        const result = await ky
+          .get(`${community_url}/c/${slug}/${id}`, {
+            headers: {
+              "Api-Key": api_key,
+              "Api-Username": "system",
+              Accept: "application/json",
+            },
+          })
+          .json<Record<string, unknown>[]>();
+
+        const topics = TopicListSchema.parse(result).topic_list.topics;
+
+        console.log(topics);
       }
 
       hasMore = categories?.length > 0;
