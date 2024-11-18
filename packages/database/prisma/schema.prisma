@@ -72,13 +72,13 @@ model Channel {
 model Company {
   id           String    @id @default(cuid())
   name         String
-  title        String?
-  description  String?
   industry     String?
   address      String?
   domain       String?   @unique
   employees    Int?
   founded_at   DateTime?
+  logo_url     String?
+  tags         String[]
   source       SOURCE
   workspace_id String
   members      Member[]
@@ -103,7 +103,6 @@ model Member {
   bio          String?
   emails       String[] @default([])
   phones       String[] @default([])
-  address      String?
   job_title    String?
   company_id   String?
   company      Company? @relation(fields: [company_id], references: [id], onDelete: SetNull)

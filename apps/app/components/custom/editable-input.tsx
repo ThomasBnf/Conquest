@@ -3,7 +3,6 @@ import { cn } from "@conquest/ui/cn";
 import { Input } from "@conquest/ui/input";
 import { TextField } from "@conquest/ui/text-field";
 import { useState } from "react";
-import { toast } from "sonner";
 type Props = {
   defaultValue: string | null;
   placeholder?: string;
@@ -24,7 +23,7 @@ export const EditableInput = ({
 
   const onBlur = (value: string) => {
     if (!value) {
-      toast.error("Field cannot be empty");
+      setIsFocus(false);
       return;
     }
 
@@ -35,7 +34,7 @@ export const EditableInput = ({
   const onKeyDown = (key: string) => {
     if (key === "Enter") {
       if (!value) {
-        toast.error("Field cannot be empty");
+        setIsFocus(false);
         return;
       }
       onUpdate(value ?? "");
@@ -49,11 +48,11 @@ export const EditableInput = ({
         variant="ghost"
         size="xs"
         onClick={() => setIsFocus(true)}
-        className={cn("py-0.5", value && "h-fit", className)}
+        className={cn(className)}
         classNameSpan={cn(value && "text-start")}
       >
         {value ? (
-          value
+          <span className="line-clamp-1">{value}</span>
         ) : (
           <span className="text-muted-foreground">{placeholder}</span>
         )}
@@ -71,12 +70,12 @@ export const EditableInput = ({
           onChange={(event) => setValue(event.target.value)}
           onBlur={(event) => onBlur(event.target.value)}
           onKeyDown={(event) => onKeyDown(event.key)}
-          className={className}
+          className={cn("p-[5px]", className)}
         />
       ) : (
         <Input
           autoFocus
-          className="h-8 px-[5px]"
+          className="h-8 p-[5px] "
           value={value ?? ""}
           onChange={(event) => setValue(event.target.value)}
           onBlur={(event) => onBlur(event.target.value)}

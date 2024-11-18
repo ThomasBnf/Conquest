@@ -42,6 +42,7 @@ export const EditableEmails = ({ member }: Props) => {
       });
       return toast.error("Invalid email format");
     }
+
     const updatedEmails = emails.map((email) =>
       email.id === id ? { id: email.id, content: newEmail } : email,
     );
@@ -63,32 +64,43 @@ export const EditableEmails = ({ member }: Props) => {
 
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen}>
-      <div className="flex flex-col gap-1 w-fit">
-        {emails.map((email) => {
-          if (email.content === "") return;
-          return (
-            <PopoverTrigger asChild key={email.id}>
-              <Button
-                key={email.id}
-                variant="outline"
-                size="xs"
-                className="text-blue-500 hover:text-blue-500 justify-start w-fit"
-                onClick={() => setIsOpen(true)}
-              >
-                {email.content}
-              </Button>
-            </PopoverTrigger>
-          );
-        })}
-      </div>
-      <PopoverContent align="start" className="w-64 p-0">
+      <PopoverTrigger asChild className="w-full cursor-pointer">
+        {emails.filter((email) => email.content !== "").length > 0 ? (
+          <div className="flex flex-col gap-1 w-full hover:bg-muted rounded-md p-1">
+            {emails.map((email) => {
+              if (email.content === "") return;
+              return (
+                <Button
+                  key={email.id}
+                  variant="outline"
+                  size="xs"
+                  className="text-blue-500 hover:text-blue-500 hover:bg-background justify-start w-fit"
+                  onClick={() => setIsOpen(true)}
+                >
+                  {email.content}
+                </Button>
+              );
+            })}
+          </div>
+        ) : (
+          <Button
+            variant="ghost"
+            size="xs"
+            classNameSpan="text-muted-foreground justify-start"
+          >
+            Set emails
+          </Button>
+        )}
+      </PopoverTrigger>
+      <PopoverContent align="start" className="w-72 p-0">
         <Command loop>
           <CommandList>
             <CommandGroup>
-              {emails.map((email) => (
+              {emails.map((email, index) => (
                 <Email
                   key={email.id}
                   email={email}
+                  index={index}
                   setIsOpen={setIsOpen}
                   onChangeEmail={(newEmail) =>
                     onChangeEmail(email.id, newEmail.email)
@@ -97,7 +109,7 @@ export const EditableEmails = ({ member }: Props) => {
                 />
               ))}
               <Separator className="-mx-2 w-[calc(100%+1rem)] my-1" />
-              <CommandItem onClick={onAddEmail} onSelect={onAddEmail}>
+              <CommandItem onSelect={onAddEmail}>
                 <Plus size={15} />
                 <p>Add email</p>
               </CommandItem>

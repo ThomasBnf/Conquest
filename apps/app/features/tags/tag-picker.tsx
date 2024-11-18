@@ -8,6 +8,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@conquest/ui/popover";
+import type { Company } from "@conquest/zod/company.schema";
 import type { Member } from "@conquest/zod/member.schema";
 import type { Tag } from "@conquest/zod/tag.schema";
 import { Plus } from "lucide-react";
@@ -15,20 +16,20 @@ import { useState } from "react";
 import { TagBadge } from "./tag-badge";
 
 type Props = {
-  member: Member;
+  record: Member | Company;
   tags: Tag[] | undefined;
 };
 
-export const TagPicker = ({ member, tags }: Props) => {
-  const [memberTags, setMemberTags] = useState(member?.tags);
+export const TagPicker = ({ record, tags }: Props) => {
+  const [recordTags, setRecordTags] = useState(record?.tags ?? []);
 
   const handleTagToggle = async (tag: Tag) => {
-    setMemberTags((prevTags) => {
+    setRecordTags((prevTags) => {
       const updatedTags = prevTags.includes(tag.id)
         ? prevTags.filter((id) => id !== tag.id)
         : [...prevTags, tag.id];
 
-      _updateMember({ id: member.id, tags: updatedTags });
+      _updateMember({ id: record.id, tags: updatedTags });
       return updatedTags;
     });
   };
@@ -37,7 +38,7 @@ export const TagPicker = ({ member, tags }: Props) => {
     <Popover>
       <PopoverTrigger asChild>
         <div className="flex flex-wrap items-center gap-1.5">
-          {memberTags.map((tagId) => (
+          {recordTags?.map((tagId) => (
             <TagBadge
               key={tagId}
               tag={tags?.find((t) => t.id === tagId)}
@@ -45,13 +46,13 @@ export const TagPicker = ({ member, tags }: Props) => {
             />
           ))}
           <Button variant="ghost" size="xs" className="text-muted-foreground">
-            {memberTags.length > 0 && <Plus size={15} />}
-            {memberTags.length === 0 && "Add tags"}
+            {recordTags?.length > 0 && <Plus size={15} />}
+            {recordTags?.length === 0 && "Add tags"}
           </Button>
         </div>
       </PopoverTrigger>
       <PopoverContent
-        className="w-64"
+        className="w-72"
         align="start"
         onOpenAutoFocus={(e) => e.preventDefault()}
       >
@@ -59,7 +60,7 @@ export const TagPicker = ({ member, tags }: Props) => {
           tags?.map((tag) => (
             <PopoverCheckboxItem
               key={tag.id}
-              checked={memberTags.includes(tag.id)}
+              checked={recordTags?.includes(tag.id)}
               onCheckedChange={() => handleTagToggle(tag)}
             >
               <div

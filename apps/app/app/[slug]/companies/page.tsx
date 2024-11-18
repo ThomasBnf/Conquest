@@ -16,6 +16,8 @@ export default async function Page() {
   const companies = rCompanies?.data;
   const count = rCountCompanies?.data ?? 0;
 
+  console.log(companies);
+
   return (
     <PageLayout>
       <Header title="Companies" className="justify-between" />

@@ -1,8 +1,8 @@
 import { PhoneInput } from "@/components/custom/phone-input";
 import { Button } from "@conquest/ui/button";
-import { CommandItem } from "@conquest/ui/command";
+import { CommandItem } from "cmdk";
 import { Trash2 } from "lucide-react";
-import { type FocusEvent, useState } from "react";
+import { useState } from "react";
 
 type Props = {
   phone: { id: string; content: string };
@@ -22,26 +22,24 @@ export const Phone = ({
   return (
     <CommandItem className="flex h-8 items-center justify-between gap-1">
       {phone.content ? (
-        <p className="truncate">{phone.content}</p>
+        <p className="truncate pl-1">{phone.content}</p>
       ) : (
         <PhoneInput
           autoFocus
-          placeholder="phone@example.com"
+          defaultCountry="FR"
           className="h-8 px-0"
           value={value}
           onChange={(value) => setValue(value)}
-          onBlur={(event: FocusEvent<HTMLInputElement>) => {
-            if (value === "") {
-              onDeletePhone(phone.id);
-            } else {
-              onChangePhone({ id: phone.id, phone: event.target.value });
-            }
-          }}
           onKeyDown={(event) => {
             if (event.key === "Enter") {
-              if (value === "") return;
-              onChangePhone({ id: phone.id, phone: value });
               setIsOpen(false);
+              setTimeout(() => {
+                if (value === "") {
+                  onDeletePhone(phone.id);
+                } else {
+                  onChangePhone({ id: phone.id, phone: value });
+                }
+              }, 100);
             }
             if (event.key === "Escape") {
               setIsOpen(false);
@@ -53,7 +51,7 @@ export const Phone = ({
       <Button
         variant="outline"
         size="icon"
-        className="ml-4 shrink-0"
+        className="shrink-0 mr-1"
         onClick={() => onDeletePhone(phone.id)}
       >
         <Trash2 size={15} />

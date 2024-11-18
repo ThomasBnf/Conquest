@@ -94,17 +94,7 @@ export const Columns = (): Column[] => [
     id: "industry",
     header: () => <ColumnHeader id="industry" title="Industry" width={285} />,
     cell: ({ company }) => (
-      <p className="font-medium truncate px-2">{company.description}</p>
-    ),
-    width: 285,
-  },
-  {
-    id: "description",
-    header: () => (
-      <ColumnHeader id="description" title="Description" width={285} />
-    ),
-    cell: ({ company }) => (
-      <p className="font-medium truncate">{company.description}</p>
+      <p className="font-medium truncate px-2">{company.industry}</p>
     ),
     width: 285,
   },

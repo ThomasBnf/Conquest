@@ -32,7 +32,8 @@ export const EditablePhones = ({ member }: Props) => {
   };
 
   const onChangePhone = (id: string, newPhone: string) => {
-    const phoneRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const phoneRegex = /^\+(?:[0-9] ?){6,14}[0-9]$/;
+
     if (!phoneRegex.test(newPhone)) {
       const newPhones = phones.filter((phone) => phone.id !== id);
       setPhones(newPhones);
@@ -40,8 +41,9 @@ export const EditablePhones = ({ member }: Props) => {
         id: member.id,
         phones: newPhones.map((phone) => phone.content),
       });
-      return toast.error("Invalid phone format");
+      return toast.error("invalid phone number");
     }
+
     const updatedPhones = phones.map((phone) =>
       phone.id === id ? { id: phone.id, content: newPhone } : phone,
     );
@@ -63,41 +65,62 @@ export const EditablePhones = ({ member }: Props) => {
 
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen}>
-      <div className="flex flex-col gap-1 w-fit">
-        {phones.map((phone) => {
-          if (phone.content === "") return;
-          return (
-            <PopoverTrigger asChild key={phone.id}>
-              <Button
-                key={phone.id}
-                variant="outline"
-                size="xs"
-                className="text-blue-500 hover:text-blue-500 justify-start w-fit"
-                onClick={() => setIsOpen(true)}
-              >
-                {phone.content}
-              </Button>
-            </PopoverTrigger>
-          );
-        })}
-      </div>
-      <PopoverContent align="start" className="w-64 p-0">
+      <PopoverTrigger asChild className="w-full cursor-pointer">
+        {phones.filter((phone) => phone.content !== "").length > 0 ? (
+          <div className="flex flex-col gap-1 w-full hover:bg-muted rounded-md p-1">
+            {phones.map((phone) => {
+              if (phone.content === "") return;
+              return (
+                <Button
+                  key={phone.id}
+                  variant="outline"
+                  size="xs"
+                  className="text-blue-500 hover:text-blue-500 hover:bg-background justify-start w-fit"
+                  onClick={() => setIsOpen(true)}
+                >
+                  {phone.content}
+                </Button>
+              );
+            })}
+          </div>
+        ) : (
+          <Button
+            variant="ghost"
+            size="xs"
+            className="w-fit"
+            classNameSpan="text-muted-foreground justify-start"
+            onClick={() => {
+              setIsOpen(true);
+              if (phones.length === 0) {
+                onAddPhone();
+              }
+            }}
+          >
+            Set phones
+          </Button>
+        )}
+      </PopoverTrigger>
+      <PopoverContent align="start" className="w-72 p-0">
         <Command loop>
           <CommandList>
             <CommandGroup>
-              {phones.map((phone) => (
-                <Phone
-                  key={phone.id}
-                  phone={phone}
-                  setIsOpen={setIsOpen}
-                  onChangePhone={(newPhone) =>
-                    onChangePhone(phone.id, newPhone.phone)
-                  }
-                  onDeletePhone={onDeletePhone}
-                />
-              ))}
+              {phones.length > 0 ? (
+                phones.map((phone) => (
+                  <Phone
+                    key={phone.id}
+                    phone={phone}
+                    setIsOpen={setIsOpen}
+                    onChangePhone={(newPhone) =>
+                      onChangePhone(phone.id, newPhone.phone)
+                    }
+                    onDeletePhone={onDeletePhone}
+                  />
+                ))
+              ) : (
+                <p className="text-muted-foreground p-1">No phones set</p>
+              )}
               <Separator className="-mx-2 w-[calc(100%+1rem)] my-1" />
-              <CommandItem onClick={onAddPhone} onSelect={onAddPhone}>
+              <CommandItem onSelect={onAddPhone}>
                 <Plus size={15} />
                 <p>Add phone</p>
               </CommandItem>

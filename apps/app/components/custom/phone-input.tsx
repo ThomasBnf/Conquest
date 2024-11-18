@@ -55,7 +55,9 @@ const InputComponent = React.forwardRef<HTMLInputElement, InputProps>(
   ({ className, ...props }, ref) => (
     <Input
       autoFocus
-      className={cn("rounded-e-lg rounded-s-none", className)}
+      placeholder={props.value?.toString()}
+      variant="transparent"
+      className={cn(className)}
       {...props}
       ref={ref}
       h="sm"
@@ -89,16 +91,11 @@ const CountrySelect = ({
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button
-          type="button"
-          variant={"outline"}
-          className={cn("flex gap-1 rounded-e-none rounded-s-lg px-3")}
-          disabled={disabled}
-        >
+        <Button variant="ghost">
           <FlagComponent country={value} countryName={value} />
           <ChevronsUpDown
             className={cn(
-              "-mr-2 h-4 w-4 opacity-50",
+              "size-3.5 opacity-50",
               disabled ? "hidden" : "opacity-100",
             )}
           />
@@ -110,7 +107,7 @@ const CountrySelect = ({
             <CommandInput placeholder="Search country..." />
             <CommandEmpty>No country found.</CommandEmpty>
             <CommandGroup>
-              <ScrollArea className="max-h-60">
+              <ScrollArea className="h-60">
                 {options
                   .filter((x) => x.value)
                   .map((option) => (
@@ -144,7 +141,7 @@ const FlagComponent = ({ country, countryName }: RPNInput.FlagProps) => {
   const Flag = flags[country];
 
   return (
-    <span className="flex h-4 w-6 overflow-hidden rounded-sm bg-foreground/20">
+    <span className="flex h-3.5 w-5 overflow-hidden rounded">
       {Flag && <Flag title={countryName} />}
     </span>
   );

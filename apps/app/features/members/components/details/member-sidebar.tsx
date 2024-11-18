@@ -1,7 +1,9 @@
 "use client";
 
-import { AddressInput } from "@/components/custom/address-input";
+import { EditableEmails } from "@/components/custom/editable-emails";
 import { EditableInput } from "@/components/custom/editable-input";
+import { EditablePhones } from "@/components/custom/editable-phones";
+import { FieldCard } from "@/components/custom/field-card";
 import { _updateMember } from "@/features/members/actions/_updateMember";
 import { TagPicker } from "@/features/tags/tag-picker";
 import { Avatar, AvatarFallback, AvatarImage } from "@conquest/ui/avatar";
@@ -10,9 +12,6 @@ import { Separator } from "@conquest/ui/separator";
 import type { MemberWithActivities } from "@conquest/zod/activity.schema";
 import type { Tag } from "@conquest/zod/tag.schema";
 import { format } from "date-fns";
-import { EditableEmails } from "./editable-emails";
-import { EditablePhones } from "./editable-phones";
-import { FieldCard } from "./field-card";
 
 type Props = {
   member: MemberWithActivities;
@@ -39,6 +38,7 @@ export const MemberSidebar = ({ member, tags }: Props) => {
       | "last_name"
       | "phone"
       | "job_title"
+      | "address"
       | "bio"
       | "source",
     value: string,
@@ -47,7 +47,7 @@ export const MemberSidebar = ({ member, tags }: Props) => {
   };
 
   return (
-    <div className="flex flex-col h-full flex-1 max-w-sm">
+    <div className="flex flex-col h-full flex-1 max-w-md">
       <div className="flex items-center gap-2 p-4">
         <Avatar className="size-12">
           <AvatarImage src={avatar_url ?? ""} />
@@ -62,7 +62,7 @@ export const MemberSidebar = ({ member, tags }: Props) => {
         </div>
       </div>
       <Separator />
-      <div className="p-4">
+      <div className="p-4 space-y-2">
         <FieldCard icon="Code" label="Source">
           <p className="pl-1.5">{source}</p>
         </FieldCard>
@@ -70,12 +70,12 @@ export const MemberSidebar = ({ member, tags }: Props) => {
           <p className="pl-1.5">{locale}</p>
         </FieldCard>
         <FieldCard icon="Tag" label="Tags">
-          <TagPicker member={member} tags={tags} />
+          <TagPicker record={member} tags={tags} />
         </FieldCard>
       </div>
       <Separator />
       <ScrollArea className="flex-1">
-        <div className="p-4">
+        <div className="p-4 space-y-2">
           <p className="text-xs text-muted-foreground">MEMBER DETAILS</p>
           <FieldCard icon="User" label="First name">
             <EditableInput
@@ -104,21 +104,17 @@ export const MemberSidebar = ({ member, tags }: Props) => {
           <FieldCard icon="Phone" label="Phone">
             <EditablePhones member={member} />
           </FieldCard>
-          <FieldCard icon="MapPin" label="Address">
-            <AddressInput member={member} />
-          </FieldCard>
-          <FieldCard icon="AlignLeft" label="Bio" className="items-start">
+          <FieldCard icon="AlignLeft" label="Bio">
             <EditableInput
               textArea
               defaultValue={member.bio}
               placeholder="Set bio"
               onUpdate={(value) => onUpdateMember("bio", value)}
-              className="mt-1.5"
             />
           </FieldCard>
         </div>
         <Separator />
-        <div className="p-4">
+        <div className="p-4 space-y-2">
           {joined_at && (
             <FieldCard icon="CalendarCheck" label="Joined at">
               <p className="pl-1.5">{format(joined_at, "PP p")}</p>

@@ -28,7 +28,6 @@ export const PATCH = safeRoute
       avatar_url,
       bio,
       gender,
-      address,
       source,
       tags,
     } = body;
@@ -46,7 +45,6 @@ export const PATCH = safeRoute
         avatar_url,
         bio,
         gender,
-        address,
         source,
         tags,
         search:

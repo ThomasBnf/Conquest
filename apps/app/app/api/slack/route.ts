@@ -30,6 +30,8 @@ const bodySchema = z
     api_app_id: z.string(),
     team_id: z.string(),
     event: z.custom<SlackEvent>(),
+    type: z.string().optional(),
+    challenge: z.string().optional(),
   })
   .passthrough();
 
@@ -38,6 +40,10 @@ export const POST = safeRoute.body(bodySchema).handler(async (_, context) => {
 
   if (body.type === "url_verification") {
     return NextResponse.json({ challenge: body.challenge });
+  }
+
+  if (!body.event || typeof body.event !== "object") {
+    return NextResponse.json({ status: 200 });
   }
 
   const { token: slack_token, api_app_id, team_id, event } = body;
@@ -49,6 +55,8 @@ export const POST = safeRoute.body(bodySchema).handler(async (_, context) => {
   if (slack_token !== env.SLACK_TOKEN && api_app_id !== env.SLACK_APP_ID) {
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
   }
+
+  console.log(event);
 
   const rIntegration = await getIntegration({ external_id: team_id });
   const integration = rIntegration?.data as SlackIntegration;

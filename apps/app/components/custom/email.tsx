@@ -6,6 +6,7 @@ import { useState } from "react";
 
 type Props = {
   email: { id: string; content: string };
+  index: number;
   setIsOpen: (isOpen: boolean) => void;
   onChangeEmail: ({ id, email }: { id: string; email: string }) => void;
   onDeleteEmail: (email: string) => void;
@@ -13,6 +14,7 @@ type Props = {
 
 export const Email = ({
   email,
+  index,
   setIsOpen,
   onChangeEmail,
   onDeleteEmail,
@@ -31,13 +33,6 @@ export const Email = ({
           className="h-8 px-0"
           value={value}
           onChange={(event) => setValue(event.target.value)}
-          onBlur={(event) => {
-            if (value === "") {
-              onDeleteEmail(email.id);
-            } else {
-              onChangeEmail({ id: email.id, email: event.target.value });
-            }
-          }}
           onKeyDown={(event) => {
             if (event.key === "Enter") {
               if (value === "") return;
@@ -51,14 +46,16 @@ export const Email = ({
           }}
         />
       )}
-      <Button
-        variant="outline"
-        size="icon"
-        className="ml-4 shrink-0"
-        onClick={() => onDeleteEmail(email.id)}
-      >
-        <Trash2 size={15} />
-      </Button>
+      {index > 0 && (
+        <Button
+          variant="outline"
+          size="icon"
+          className="ml-auto shrink-0"
+          onClick={() => onDeleteEmail(email.id)}
+        >
+          <Trash2 size={15} />
+        </Button>
+      )}
     </CommandItem>
   );
 };

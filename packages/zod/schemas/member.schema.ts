@@ -14,7 +14,6 @@ export const MemberSchema = z.object({
   bio: z.string().nullable(),
   job_title: z.string().nullable(),
   gender: GENDER.nullable(),
-  address: z.string().nullable(),
   search: z.string(),
   source: SOURCE,
   tags: z.array(z.string()).default([]),

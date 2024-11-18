@@ -35,7 +35,6 @@ export const POST = safeRoute
       avatar_url,
       bio,
       gender,
-      address,
       source,
       tags,
     } = body;
@@ -50,7 +49,6 @@ export const POST = safeRoute
         avatar_url,
         bio,
         gender,
-        address,
         source,
         tags,
         search:

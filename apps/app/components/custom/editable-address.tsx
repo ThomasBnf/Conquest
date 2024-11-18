@@ -1,6 +1,3 @@
-"use client";
-
-import { _updateMember } from "@/features/members/actions/_updateMember";
 import { Button, buttonVariants } from "@conquest/ui/button";
 import { cn } from "@conquest/ui/cn";
 import {
@@ -13,19 +10,19 @@ import {
 } from "@conquest/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@conquest/ui/popover";
 import { Skeleton } from "@conquest/ui/skeleton";
-import type { Member } from "@conquest/zod/member.schema";
 import { CommandLoading } from "cmdk";
 import { X } from "lucide-react";
 import { useRef, useState } from "react";
 import usePlacesAutocomplete from "use-places-autocomplete";
 
 type Props = {
-  member: Member;
+  address: string | null;
+  onUpdate: (value: string) => void;
 };
 
-export function AddressInput({ member }: Props) {
+export function EditableAddress({ address, onUpdate }: Props) {
   const [open, setOpen] = useState(false);
-  const [selectedAddress, setSelectedAddress] = useState(member.address);
+  const [selectedAddress, setSelectedAddress] = useState(address);
   const ref = useRef<HTMLInputElement>(null);
 
   const {
@@ -41,10 +38,10 @@ export function AddressInput({ member }: Props) {
     },
   });
 
-  const onSelect = (address: string | null) => {
+  const onSelect = (newAddress: string) => {
     setOpen(false);
-    setSelectedAddress(address);
-    _updateMember({ id: member.id, address });
+    setSelectedAddress(newAddress);
+    onUpdate(newAddress);
   };
 
   return (
@@ -60,7 +57,7 @@ export function AddressInput({ member }: Props) {
           <span className="text-muted-foreground">Set address</span>
         )}
       </PopoverTrigger>
-      <PopoverContent className="w-64 p-0" align="start">
+      <PopoverContent className="w-72 p-0" align="start">
         <Command className="relative">
           <CommandInput
             ref={ref}
