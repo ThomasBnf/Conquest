@@ -12,6 +12,7 @@ import {
   type Filter,
   NumberOperatorSchema,
   type Operator,
+  OperatorSchema,
 } from "@conquest/zod/filters.schema";
 import { OPERATORS } from "constant/operators";
 import { ChevronDown } from "lucide-react";
@@ -24,7 +25,7 @@ export const OperatorPicker = ({ filter }: Props) => {
   const { onUpdateFilter } = useFilters();
 
   const onUpdateOperator = ({ operator }: { operator: Operator }) => {
-    const parsedOperator = BaseOperatorSchema.parse(operator);
+    const parsedOperator = OperatorSchema.parse(operator);
     onUpdateFilter({
       ...filter,
       operator: parsedOperator,

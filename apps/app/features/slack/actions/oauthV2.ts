@@ -46,10 +46,10 @@ export const oauthV2 = authAction
         slack_user_token: authed_user.access_token,
         scopes,
         points_config: {
-          post: 10,
+          post: 3,
+          reply: 2,
           reaction: 1,
-          reply: 5,
-          invitation: 15,
+          invitation: 5,
         },
       },
     });

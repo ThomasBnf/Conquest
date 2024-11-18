@@ -31,7 +31,7 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
 export default function Page() {
-  const { user, slug, discourse } = useUser();
+  const { slug, discourse } = useUser();
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
@@ -69,10 +69,10 @@ export default function Page() {
         source: "DISCOURSE",
         api_key,
         points_config: {
-          post: 10,
+          post: 3,
           reaction: 1,
-          reply: 5,
-          invitation: 15,
+          reply: 2,
+          invitation: 5,
         },
       },
     });

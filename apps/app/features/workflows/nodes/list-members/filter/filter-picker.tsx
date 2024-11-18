@@ -7,7 +7,7 @@ import {
   DropdownMenuTrigger,
 } from "@conquest/ui/dropdown-menu";
 import type { Filter } from "@conquest/zod/filters.schema";
-import type { GroupFilter } from "@conquest/zod/node.schema";
+import type { Category, GroupFilter } from "@conquest/zod/node.schema";
 import { Plus } from "lucide-react";
 
 type Props = {
@@ -26,39 +26,133 @@ export const FilterPicker = ({ groupFilter }: Props) => {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start">
-        {filters.map((filter) => (
-          <DropdownMenuItem
-            key={filter.id}
-            onClick={() => onAddFilter({ groupFilter, filter })}
-          >
-            {filter.label}
-          </DropdownMenuItem>
-        ))}
+        {filters
+          .filter((f) => f.category === groupFilter.category)
+          .flatMap((filterGroup) => filterGroup.filters)
+          .map((filter) => (
+            <DropdownMenuItem
+              key={filter.id}
+              onClick={() => onAddFilter({ groupFilter, filter })}
+            >
+              {filter.label}
+            </DropdownMenuItem>
+          ))}
       </DropdownMenuContent>
     </DropdownMenu>
   );
 };
 
-const filters: Filter[] = [
+const filters: {
+  label: string;
+  category: Category;
+  filters: Filter[];
+}[] = [
   {
-    id: "1",
-    label: "Type",
-    field: "type",
-    operator: "contains",
-    values: [],
+    label: "Member",
+    category: "member",
+    filters: [
+      {
+        id: "1",
+        label: "Tags",
+        field: "tags",
+        operator: "contains",
+        values: [],
+      },
+      {
+        id: "2",
+        label: "Localisation",
+        field: "localisation",
+        operator: "contains",
+        values: [],
+      },
+      {
+        id: "3",
+        label: "Points",
+        field: "points",
+        operator: "greater_than",
+        value: 1,
+      },
+    ],
   },
   {
-    id: "2",
-    label: "Source",
-    field: "source",
-    operator: "contains",
-    values: [],
+    label: "Activities",
+    category: "activities",
+    filters: [
+      {
+        id: "1",
+        label: "Type",
+        field: "type",
+        operator: "contains",
+        values: [],
+      },
+      {
+        id: "2",
+        label: "Source",
+        field: "source",
+        operator: "contains",
+        values: [],
+      },
+      {
+        id: "3",
+        label: "Creation date",
+        field: "created_at",
+        operator: "is",
+        days: 1,
+      },
+    ],
   },
   {
-    id: "3",
-    label: "Creation date",
-    field: "created_at",
-    operator: "is",
-    days: 1,
+    label: "First activity",
+    category: "first_activity",
+    filters: [
+      {
+        id: "1",
+        label: "Type",
+        field: "type",
+        operator: "contains",
+        values: [],
+      },
+      {
+        id: "2",
+        label: "Source",
+        field: "source",
+        operator: "contains",
+        values: [],
+      },
+      {
+        id: "3",
+        label: "Creation date",
+        field: "created_at",
+        operator: "is",
+        days: 1,
+      },
+    ],
+  },
+  {
+    label: "Last activity",
+    category: "last_activity",
+    filters: [
+      {
+        id: "1",
+        label: "Type",
+        field: "type",
+        operator: "contains",
+        values: [],
+      },
+      {
+        id: "2",
+        label: "Source",
+        field: "source",
+        operator: "contains",
+        values: [],
+      },
+      {
+        id: "3",
+        label: "Creation date",
+        field: "created_at",
+        operator: "is",
+        days: 1,
+      },
+    ],
   },
 ];
