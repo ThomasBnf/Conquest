@@ -1,5 +1,6 @@
 import { Button } from "@conquest/ui/button";
 import { Label } from "@conquest/ui/label";
+import { ScrollArea } from "@conquest/ui/scroll-area";
 import { useReactFlow } from "@xyflow/react";
 import { Icon } from "components/icons/Icon";
 import cuid from "cuid";
@@ -32,7 +33,7 @@ export const TriggerPanel = () => {
   };
 
   return (
-    <div className="p-6">
+    <ScrollArea className="flex-1 p-6">
       <div>
         <Label>Triggers</Label>
         <p className="text-muted-foreground">
@@ -73,7 +74,7 @@ export const TriggerPanel = () => {
           );
         })}
       </div>
-    </div>
+    </ScrollArea>
   );
 };
 

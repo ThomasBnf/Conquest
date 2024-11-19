@@ -28,7 +28,7 @@ export const OptionsPanel = () => {
   const { selected, setSelected } = useSelected();
   const { isAdding } = useAdding();
   const { isChanging, setIsChanging } = useChanging();
-  const { getNodes, getEdges, deleteElements } = useReactFlow();
+  const { getEdges, deleteElements } = useReactFlow();
 
   if (!selected) return;
 
@@ -70,7 +70,7 @@ export const OptionsPanel = () => {
       {(isChanging || isAdding) && panel === "actions" && <ActionPanel />}
       {(isChanging || isAdding) && panel === "triggers" && <TriggerPanel />}
       {!isChanging && panel === "node" && (
-        <ScrollArea className="flex-grow h-[calc(100vh-10rem)]">
+        <ScrollArea className="flex-1">
           <div className="flex flex-col gap-4 p-6">
             <div className="flex justify-between gap-2">
               <div className="flex items-center gap-2">
@@ -113,7 +113,7 @@ export const OptionsPanel = () => {
         </ScrollArea>
       )}
       {!isChanging && !isTrigger && (
-        <div className="flex justify-end p-4">
+        <div className="flex justify-end p-4 shrink-0">
           <DeleteDialog
             title="Delete Workflow"
             description="Are you sure you want to delete this workflow?"

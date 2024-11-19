@@ -1,35 +1,110 @@
+"use client";
+
 import { cn } from "@conquest/ui/cn";
-import { Textarea } from "@conquest/ui/textarea";
-import {
-  type ChangeEvent,
-  type ComponentPropsWithoutRef,
-  forwardRef,
-} from "react";
+import * as React from "react";
+import { useImperativeHandle } from "react";
+import { Textarea } from "./textarea";
 
-export const TextField = forwardRef<
-  HTMLTextAreaElement,
-  ComponentPropsWithoutRef<"textarea">
->(({ onChange, className, rows = 1, ...props }, ref) => {
-  const handleChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
-    const textarea = e.currentTarget;
-    if (textarea) {
-      textarea.style.height = "auto";
-      textarea.style.height = `${textarea.scrollHeight + 2}px`;
+interface UseAutosizeTextAreaProps {
+  textAreaRef: React.MutableRefObject<HTMLTextAreaElement | null>;
+  minHeight?: number;
+  maxHeight?: number;
+  triggerAutoSize: string;
+}
+
+export const useAutosizeTextArea = ({
+  textAreaRef,
+  triggerAutoSize,
+  maxHeight = Number.MAX_SAFE_INTEGER,
+  minHeight = 0,
+}: UseAutosizeTextAreaProps) => {
+  const [init, setInit] = React.useState(true);
+
+  React.useEffect(() => {
+    // We need to reset the height momentarily to get the correct scrollHeight for the textarea
+    const offsetBorder = 2;
+    const textAreaElement = textAreaRef.current;
+    if (textAreaElement) {
+      if (init) {
+        textAreaElement.style.minHeight = `${minHeight + offsetBorder}px`;
+        if (maxHeight > minHeight) {
+          textAreaElement.style.maxHeight = `${maxHeight}px`;
+        }
+        setInit(false);
+      }
+      textAreaElement.style.height = `${minHeight + offsetBorder}px`;
+      const scrollHeight = textAreaElement.scrollHeight;
+      // We then set the height directly, outside of the render loop
+      // Trying to set this with state or a ref will product an incorrect value.
+      if (scrollHeight > maxHeight) {
+        textAreaElement.style.height = `${maxHeight}px`;
+      } else {
+        textAreaElement.style.height = `${scrollHeight + offsetBorder}px`;
+      }
     }
-  };
+  }, [textAreaRef.current, triggerAutoSize]);
+};
 
-  return (
-    <Textarea
-      ref={ref}
-      onChange={(e) => {
-        handleChange(e);
-        onChange?.(e);
-      }}
-      rows={rows}
-      className={cn(className, "w-full resize-none outline-none")}
-      {...props}
-    />
-  );
-});
+export type AutosizeTextAreaRef = {
+  textArea: HTMLTextAreaElement;
+  maxHeight: number;
+  minHeight: number;
+};
+
+type AutosizeTextAreaProps = {
+  maxHeight?: number;
+  minHeight?: number;
+} & React.TextareaHTMLAttributes<HTMLTextAreaElement>;
+
+export const TextField = React.forwardRef<
+  AutosizeTextAreaRef,
+  AutosizeTextAreaProps
+>(
+  (
+    {
+      maxHeight = Number.MAX_SAFE_INTEGER,
+      minHeight = 52,
+      className,
+      onChange,
+      value,
+      ...props
+    }: AutosizeTextAreaProps,
+    ref: React.Ref<AutosizeTextAreaRef>,
+  ) => {
+    const textAreaRef = React.useRef<HTMLTextAreaElement | null>(null);
+    const [triggerAutoSize, setTriggerAutoSize] = React.useState("");
+
+    useAutosizeTextArea({
+      textAreaRef,
+      triggerAutoSize: triggerAutoSize,
+      maxHeight,
+      minHeight,
+    });
+
+    useImperativeHandle(ref, () => ({
+      textArea: textAreaRef.current as HTMLTextAreaElement,
+      focus: () => textAreaRef?.current?.focus(),
+      maxHeight,
+      minHeight,
+    }));
+
+    React.useEffect(() => {
+      setTriggerAutoSize(value as string);
+    }, [props?.defaultValue, value]);
+
+    return (
+      <Textarea
+        {...props}
+        value={value}
+        ref={textAreaRef}
+        className={cn("resize-none", className)}
+        onChange={(e) => {
+          setTriggerAutoSize(e.target.value);
+          onChange?.(e);
+        }}
+      />
+    );
+  },
+);
 
 TextField.displayName = "TextField";
