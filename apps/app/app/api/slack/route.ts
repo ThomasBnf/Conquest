@@ -38,8 +38,6 @@ const bodySchema = z
 export const POST = safeRoute.body(bodySchema).handler(async (_, context) => {
   const body = context.body;
 
-  console.log(body);
-
   if (body.type === "url_verification") {
     return NextResponse.json({ challenge: body.challenge });
   }
@@ -57,8 +55,6 @@ export const POST = safeRoute.body(bodySchema).handler(async (_, context) => {
   if (slack_token !== env.SLACK_TOKEN && api_app_id !== env.SLACK_APP_ID) {
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
   }
-
-  console.log(event);
 
   const rIntegration = await getIntegration({ external_id: team_id });
   const integration = rIntegration?.data as SlackIntegration;
