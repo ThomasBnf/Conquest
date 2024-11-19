@@ -7,6 +7,7 @@ import {
   FormLabel,
 } from "@conquest/ui/form";
 import { Input } from "@conquest/ui/input";
+import { TextField } from "@conquest/ui/text-field";
 import { NodeWebhookSchema } from "@conquest/zod/node.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useReactFlow } from "@xyflow/react";
@@ -15,9 +16,9 @@ import { type FormUrl, FormUrlSchema } from "./form-url.schema";
 
 export const WebhookOptions = () => {
   const { selected } = useSelected();
-  const { getNodes, setNodes } = useReactFlow();
+  const { setNodes } = useReactFlow();
 
-  const { url } = NodeWebhookSchema.parse(selected?.data);
+  const { url, body } = NodeWebhookSchema.parse(selected?.data);
 
   const form = useForm<FormUrl>({
     resolver: zodResolver(FormUrlSchema),
@@ -26,7 +27,7 @@ export const WebhookOptions = () => {
     },
   });
 
-  const onSubmit = ({ url }: FormUrl) => {
+  const onSubmit = ({ url, body }: FormUrl) => {
     if (!selected) return;
 
     setNodes((nodes) =>
@@ -40,7 +41,7 @@ export const WebhookOptions = () => {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
         <FormField
           control={form.control}
           name="url"
@@ -58,6 +59,18 @@ export const WebhookOptions = () => {
                     }
                   }}
                 />
+              </FormControl>
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="body"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Body</FormLabel>
+              <FormControl>
+                <TextField {...field} placeholder="Body" />
               </FormControl>
             </FormItem>
           )}

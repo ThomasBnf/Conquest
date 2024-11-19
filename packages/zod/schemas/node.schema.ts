@@ -95,6 +95,7 @@ export const NodeWebhookSchema = NodeBaseDataSchema.extend({
   type: z.literal("webhook"),
   category: z.literal("utilities"),
   url: z.string().url().optional(),
+  body: z.string().optional(),
 });
 
 export const NodeWaitSchema = NodeBaseDataSchema.extend({

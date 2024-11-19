@@ -38,6 +38,8 @@ const bodySchema = z
 export const POST = safeRoute.body(bodySchema).handler(async (_, context) => {
   const body = context.body;
 
+  console.dir(body, { depth: Number.POSITIVE_INFINITY });
+
   if (body.type === "url_verification") {
     return NextResponse.json({ challenge: body.challenge });
   }
