@@ -22,23 +22,17 @@ import {
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
-const web = new WebClient(env.SLACK_BOT_TOKEN);
-
 const bodySchema = z
   .object({
     token: z.string(),
     api_app_id: z.string(),
     team_id: z.string(),
     event: z.custom<SlackEvent>(),
-    type: z.string().optional(),
-    challenge: z.string().optional(),
   })
   .passthrough();
 
 export const POST = safeRoute.body(bodySchema).handler(async (_, context) => {
   const body = context.body;
-
-  console.dir(body, { depth: Number.POSITIVE_INFINITY });
 
   if (body.type === "url_verification") {
     return NextResponse.json({ challenge: body.challenge });
@@ -67,6 +61,8 @@ export const POST = safeRoute.body(bodySchema).handler(async (_, context) => {
   const { token } = integration.details;
 
   if (!workspace_id || !token) return NextResponse.json({ status: 200 });
+
+  const web = new WebClient(token);
 
   switch (type) {
     case "app_uninstalled": {
@@ -248,8 +244,6 @@ export const POST = safeRoute.body(bodySchema).handler(async (_, context) => {
         workspace_id,
       });
       const member = rMember?.data;
-
-      if (!member) return NextResponse.json({ status: 200 });
 
       if (!member) return NextResponse.json({ status: 200 });
 

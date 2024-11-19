@@ -14,7 +14,6 @@ export const env = createEnv({
     SLACK_APP_ID: z.string(),
     SLACK_CLIENT_SECRET: z.string(),
     SLACK_SIGNING_SECRET: z.string(),
-    SLACK_BOT_TOKEN: z.string(),
 
     GOOGLE_API_KEY: z.string(),
   },
@@ -30,7 +29,6 @@ export const env = createEnv({
     SLACK_APP_ID: process.env.SLACK_APP_ID,
     SLACK_CLIENT_SECRET: process.env.SLACK_CLIENT_SECRET,
     SLACK_SIGNING_SECRET: process.env.SLACK_SIGNING_SECRET,
-    SLACK_BOT_TOKEN: process.env.SLACK_BOT_TOKEN,
 
     NEXT_PUBLIC_SLACK_REDIRECT_URI: process.env.NEXT_PUBLIC_SLACK_REDIRECT_URI,
     NEXT_PUBLIC_SLACK_CLIENT_ID: process.env.NEXT_PUBLIC_SLACK_CLIENT_ID,

@@ -440,8 +440,6 @@ export const createNumberFilter = (filter: FilterNumber) => {
     execute: ({ member }: { member: MemberWithActivities }) => {
       const points = getPoints({ integrations, member });
 
-      console.log(points);
-
       switch (operator) {
         case "equals":
           return points === value;

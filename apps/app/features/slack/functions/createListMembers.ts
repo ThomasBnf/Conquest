@@ -24,7 +24,6 @@ export const createListMembers = safeAction
       });
 
       for (const member of members ?? []) {
-        console.log(member);
         const { id, deleted: isDeleted, is_bot: isBot, profile } = member;
 
         if (!id) continue;
