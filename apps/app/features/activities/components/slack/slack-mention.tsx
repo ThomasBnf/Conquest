@@ -14,7 +14,7 @@ export const SlackMention = ({ slack_id }: Props) => {
   return (
     <Link
       href={`/${slug}/members/${id}`}
-      className="bg-[#E5EFF5] text-[#1264a3] rounded-md p-0.5 px-1 cursor-pointer"
+      className="cursor-pointer rounded-md bg-[#E5EFF5] p-0.5 px-1 text-[#1264a3]"
     >
       @{full_name}
     </Link>

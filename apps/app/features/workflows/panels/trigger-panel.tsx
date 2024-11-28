@@ -40,7 +40,7 @@ export const TriggerPanel = () => {
           Pick an event to start this workflow
         </p>
       </div>
-      <div className="flex flex-col gap-1 mt-2">
+      <div className="mt-2 flex flex-col gap-1">
         {nodes.categories.map((category) => {
           return (
             <div key={category.label} className="mt-2">
@@ -58,11 +58,10 @@ export const TriggerPanel = () => {
                       classNameSpan="justify-start"
                       onClick={() => onClick(node)}
                     >
-                      <div className="border rounded-md bg-blue-100 border-blue-200 p-1">
+                      <div className="rounded-md border p-1">
                         <Icon
                           name={data.icon as keyof typeof icons}
                           size={15}
-                          className="text-blue-500"
                         />
                       </div>
                       <p className="font-medium">{data.label}</p>

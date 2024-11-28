@@ -28,22 +28,24 @@ export default async function Page({ params: { memberId, slug } }: Props) {
   if (!member) redirect(`/${slug}/members`);
 
   return (
-    <PageLayout>
-      <HeaderSubPage title="Members" currentPage={member.full_name ?? ""}>
-        <MemberMenu member={member} />
-      </HeaderSubPage>
-      <div className="flex divide-x h-full overflow-hidden">
-        <ScrollArea className="flex-1">
-          {activities && (
-            <Activities
-              member_id={memberId}
-              initialActivities={activities}
-              className="px-8"
-            />
-          )}
-        </ScrollArea>
-        <MemberSidebar member={member} tags={tags} />
-      </div>
-    </PageLayout>
+    <div className="flex h-full w-full p-1">
+      <PageLayout className="flex h-full rounded-lg border shadow-lg">
+        <HeaderSubPage>
+          <MemberMenu member={member} />
+        </HeaderSubPage>
+        <div className="flex h-full divide-x overflow-hidden">
+          <ScrollArea className="flex-1">
+            {activities && (
+              <Activities
+                member_id={memberId}
+                initialActivities={activities}
+                className="px-8"
+              />
+            )}
+          </ScrollArea>
+          <MemberSidebar member={member} tags={tags} />
+        </div>
+      </PageLayout>
+    </div>
   );
 }

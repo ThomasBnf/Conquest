@@ -77,8 +77,8 @@ const filters: {
       },
       {
         id: "3",
-        label: "Points",
-        field: "points",
+        label: "Love",
+        field: "love",
         operator: "greater_than",
         value: 1,
       },

@@ -27,7 +27,7 @@ export const Columns = (): Column[] => [
   {
     id: "select",
     header: ({ companies, rowSelected, setRowSelected }) => (
-      <div className="flex items-center justify-center size-12 bg-muted">
+      <div className="flex size-12 items-center justify-center bg-muted">
         <Checkbox
           checked={
             !rowSelected?.length
@@ -48,7 +48,7 @@ export const Columns = (): Column[] => [
       </div>
     ),
     cell: ({ company, rowSelected, setRowSelected }) => (
-      <div className="flex items-center justify-center size-12">
+      <div className="flex size-12 items-center justify-center">
         <Checkbox
           checked={rowSelected?.includes(company.id)}
           onCheckedChange={(checked) =>
@@ -73,10 +73,10 @@ export const Columns = (): Column[] => [
           href={`/${slug}/companies/${company.id}`}
           className={cn(
             buttonVariants({ variant: "ghost" }),
-            "flex items-center gap-2 px-1.5 truncate",
+            "flex items-center gap-2 truncate px-1.5",
           )}
         >
-          <p className="font-medium truncate">{company.name}</p>
+          <p className="truncate font-medium">{company.name}</p>
         </Link>
       );
     },
@@ -86,7 +86,7 @@ export const Columns = (): Column[] => [
     id: "domain",
     header: () => <ColumnHeader id="domain" title="Website" width={285} />,
     cell: ({ company }) => (
-      <p className="font-medium truncate px-2">https://{company.domain}</p>
+      <p className="truncate px-2 font-medium">https://{company.domain}</p>
     ),
     width: 285,
   },
@@ -94,7 +94,7 @@ export const Columns = (): Column[] => [
     id: "industry",
     header: () => <ColumnHeader id="industry" title="Industry" width={285} />,
     cell: ({ company }) => (
-      <p className="font-medium truncate px-2">{company.industry}</p>
+      <p className="truncate px-2 font-medium">{company.industry}</p>
     ),
     width: 285,
   },
@@ -104,7 +104,7 @@ export const Columns = (): Column[] => [
       <ColumnHeader id="employees" title="# Employees" width={285} />
     ),
     cell: ({ company }) => (
-      <p className="font-medium truncate px-2">{company.employees}</p>
+      <p className="truncate px-2 font-medium">{company.employees}</p>
     ),
     width: 285,
   },

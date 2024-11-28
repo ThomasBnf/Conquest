@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { safeAction } from "@/lib/safeAction";
-import { STATUS } from "@conquest/zod/status.enum";
+import { STATUS } from "@conquest/zod/enum/status.enum";
 import { z } from "zod";
 
 export const updateIntegration = safeAction
@@ -15,7 +15,7 @@ export const updateIntegration = safeAction
     }),
   )
   .action(async ({ parsedInput: { external_id, installed_at, status } }) => {
-    return await prisma.integration.updateMany({
+    return await prisma.integrations.updateMany({
       where: {
         external_id,
       },

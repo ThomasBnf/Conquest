@@ -1,3 +1,4 @@
+import type { users as UserPrisma } from "@prisma/client";
 import { z } from "zod";
 import { WorkspaceSchema } from "./workspace.schema";
 
@@ -12,7 +13,7 @@ export const UserSchema = z.object({
   workspace_id: z.string().cuid(),
   created_at: z.date(),
   updated_at: z.date(),
-});
+}) satisfies z.ZodType<UserPrisma>;
 
 export const UserWithWorkspaceSchema = UserSchema.extend({
   workspace: WorkspaceSchema,

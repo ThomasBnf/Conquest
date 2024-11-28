@@ -12,7 +12,7 @@ type Props = {
 export const EngagementDashboard = ({ from, to }: Props) => {
   return (
     <div className="divide-y border-b">
-      <p className="p-4 text-lg font-medium bg-muted">Engagement metrics</p>
+      <p className="bg-muted p-4 font-medium text-lg">Engagement metrics</p>
       <EngagementChart from={from} to={to} />
       <div className="flex divide-x">
         <ChannelsTop from={from} to={to} />

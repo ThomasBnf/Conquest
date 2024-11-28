@@ -1,8 +1,9 @@
 "use client";
 
+import { Discourse } from "@/components/icons/Discourse";
+import { Slack } from "@/components/icons/Slack";
 import { useUser } from "@/context/userContext";
 import { ScrollArea } from "@conquest/ui/scroll-area";
-import Image from "next/image";
 import Link from "next/link";
 
 export default function Page() {
@@ -11,13 +12,13 @@ export default function Page() {
   const integrations = [
     {
       href: `/${slug}/settings/integrations/slack`,
-      src: "/social/slack.svg",
+      logo: <Slack />,
       name: "Slack",
       description: "Synchronize your members with Slack",
     },
     {
       href: `/${slug}/settings/integrations/discourse`,
-      src: "/social/discourse.svg",
+      src: <Discourse />,
       name: "Discourse",
       description: "Synchronize your members with Discourse",
     },
@@ -26,7 +27,7 @@ export default function Page() {
   return (
     <ScrollArea className="h-dvh">
       <div className="mx-auto flex max-w-3xl flex-col py-24">
-        <p className="text-2xl font-medium">Integrations</p>
+        <p className="font-medium text-2xl">Integrations</p>
         <p className="text-muted-foreground">
           Synchronize data across platforms
         </p>
@@ -35,16 +36,11 @@ export default function Page() {
             <Link
               href={integration.href}
               key={integration.name}
-              className="flex items-start gap-4 rounded-md border p-4 hover:bg-muted-hover transition-colors"
+              className="flex items-start gap-4 rounded-md border p-4 transition-colors hover:bg-muted-hover"
             >
-              <Image
-                src={integration.src}
-                alt={integration.name}
-                width={24}
-                height={24}
-              />
+              {integration.logo}
               <div>
-                <p className="text-lg font-medium leading-tight">
+                <p className="font-medium text-lg leading-tight">
                   {integration.name}
                 </p>
                 <p className="text-muted-foreground">

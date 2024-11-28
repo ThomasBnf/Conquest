@@ -17,7 +17,7 @@ export const GET = safeRoute
   .handler(async (_, { query, data: user }) => {
     const { from, to } = query;
 
-    const members = await prisma.member.findMany({
+    const members = await prisma.members.findMany({
       where: {
         workspace_id: user.workspace_id,
         activities: {

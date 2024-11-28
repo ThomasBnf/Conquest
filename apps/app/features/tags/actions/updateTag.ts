@@ -18,7 +18,7 @@ export const updateTag = authAction
   .action(async ({ ctx, parsedInput: { id, name, color } }) => {
     const workspace_id = ctx.user.workspace_id;
 
-    const tag = await prisma.tag.update({
+    const tag = await prisma.tags.update({
       where: {
         id,
         workspace_id,

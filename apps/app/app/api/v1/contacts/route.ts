@@ -1,7 +1,7 @@
 import { getAuthenticatedUser } from "@/features/auth/functions/getAuthenticatedUser";
-import { GENDER } from "@conquest/zod/gender.enum";
+import { GENDER } from "@conquest/zod/enum/gender.enum";
+import { SOURCE } from "@conquest/zod/enum/source.enum";
 import { MemberSchema } from "@conquest/zod/member.schema";
-import { SOURCE } from "@conquest/zod/source.enum";
 import { prisma } from "lib/prisma";
 import { safeRoute } from "lib/safeRoute";
 import { NextResponse } from "next/server";
@@ -39,7 +39,7 @@ export const POST = safeRoute
       tags,
     } = body;
 
-    const member = await prisma.member.create({
+    const member = await prisma.members.create({
       data: {
         first_name,
         last_name,

@@ -1,6 +1,6 @@
 "use client";
 
-import { cn } from "@conquest/ui/cn";
+import { cn } from "../utils/cn";
 import * as React from "react";
 import { useImperativeHandle } from "react";
 import { Textarea } from "./textarea";

@@ -24,18 +24,18 @@ export default function Page() {
   };
 
   return (
-    <div className="flex h-full flex-col justify-between p-4 lg:px-8 bg-muted/30">
+    <div className="flex h-full flex-col justify-between bg-muted/30 p-4 lg:px-8">
       <div className="flex items-center justify-between">
         <Button onClick={onClick} variant="outline" className="self-start">
           <LogOut className="size-[18px]" />
           Log out
         </Button>
         <div>
-          <p className="text-xs text-muted-foreground">Logged in as:</p>
+          <p className="text-muted-foreground text-xs">Logged in as:</p>
           <p className="text-sm">{user?.email}</p>
         </div>
       </div>
-      <Card className="max-w-xl mx-auto w-full">
+      <Card className="mx-auto w-full max-w-xl">
         <CardHeader>
           <Steps step={step} />
           <CardTitle>Welcome to Conquest</CardTitle>

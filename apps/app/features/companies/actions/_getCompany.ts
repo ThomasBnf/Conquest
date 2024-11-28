@@ -2,7 +2,7 @@
 
 import { authAction } from "@/lib/authAction";
 import { prisma } from "@/lib/prisma";
-import { CompanySchema } from "@conquest/zod/company.schema";
+import { CompanyWithMembersSchema } from "@conquest/zod/company.schema";
 import { z } from "zod";
 
 export const _getCompany = authAction
@@ -11,15 +11,18 @@ export const _getCompany = authAction
   })
   .schema(
     z.object({
-      id: z.string(),
+      id: z.string().nullable(),
     }),
   )
   .action(async ({ ctx: { user }, parsedInput: { id } }) => {
     const workspace_id = user.workspace_id;
 
-    const company = await prisma.company.findUnique({
+    if (!id) return null;
+
+    const company = await prisma.companies.findUnique({
       where: { id, workspace_id },
+      include: { members: true },
     });
 
-    return CompanySchema.parse(company);
+    return CompanyWithMembersSchema.parse(company);
   });

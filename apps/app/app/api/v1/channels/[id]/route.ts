@@ -22,7 +22,7 @@ export const PATCH = safeRoute
     const { id } = params;
     const { name } = body;
 
-    await prisma.channel.update({
+    await prisma.channels.update({
       where: {
         id,
         workspace_id: data.workspace_id,
@@ -47,7 +47,7 @@ export const DELETE = safeRoute
   .handler(async (_, { params, data }) => {
     const { id } = params;
 
-    await prisma.channel.delete({
+    await prisma.channels.delete({
       where: {
         id,
         workspace_id: data.workspace_id,

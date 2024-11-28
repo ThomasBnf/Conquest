@@ -14,11 +14,12 @@ export const _deleteApiKey = authAction
   )
   .action(async ({ ctx, parsedInput: { id } }) => {
     const slug = ctx.user.workspace.slug;
+    const workspace_id = ctx.user.workspace_id;
 
-    await prisma.apiKey.delete({
+    await prisma.apikeys.delete({
       where: {
         id,
-        user_id: ctx.user.id,
+        workspace_id,
       },
     });
 

@@ -13,42 +13,35 @@ export const createListChannels = safeAction
       web: z.instanceof(WebClient),
       token: z.string(),
       workspace_id: z.string().cuid(),
+      channels: z.array(z.string()),
     }),
   )
-  .action(async ({ parsedInput: { web, token, workspace_id } }) => {
-    let cursor: string | undefined;
-
-    do {
-      const { channels, response_metadata } = await web.conversations.list({
-        limit: 100,
-        cursor,
-        types: "public_channel,private_channel",
-        exclude_archived: true,
+  .action(async ({ parsedInput: { web, token, workspace_id, channels } }) => {
+    for (const channelId of channels) {
+      const { channel } = await web.conversations.info({
+        channel: channelId,
+        token,
       });
 
-      for (const channel of channels ?? []) {
-        const { name, id } = channel;
+      const { name, id } = channel ?? {};
 
-        if (!name || !id) continue;
+      if (!name || !id) continue;
 
-        const rChannel = await createChannel({
-          name: name,
-          source: "SLACK",
-          external_id: id,
-          workspace_id,
-        });
-        const createdChannel = rChannel?.data;
+      const rChannel = await createChannel({
+        name: name,
+        source: "SLACK",
+        external_id: id,
+        workspace_id,
+      });
+      const createdChannel = rChannel?.data;
 
-        if (!createdChannel) continue;
+      if (!createdChannel) continue;
 
-        await web.conversations.join({
-          channel: createdChannel.external_id ?? "",
-          token,
-        });
+      await web.conversations.join({
+        channel: createdChannel.external_id ?? "",
+        token,
+      });
 
-        await listMessages({ web, channel: createdChannel, workspace_id });
-      }
-
-      cursor = response_metadata?.next_cursor;
-    } while (cursor);
+      await listMessages({ web, channel: createdChannel, workspace_id });
+    }
   });

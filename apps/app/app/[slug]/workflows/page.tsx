@@ -30,9 +30,9 @@ export default async function Page({ params: { slug } }: Props) {
           >
             <Link
               href={`/${slug}/workflows/${workflow.id}`}
-              className="flex flex-1 items-center h-12"
+              className="flex h-12 flex-1 items-center"
             >
-              <p className="font-medium w-96 truncate">{workflow.name}</p>
+              <p className="w-96 truncate font-medium">{workflow.name}</p>
             </Link>
             <div className="flex items-center gap-6">
               <IsPublished workflow={workflow} />

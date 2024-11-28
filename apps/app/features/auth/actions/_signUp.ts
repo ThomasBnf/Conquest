@@ -14,14 +14,14 @@ export const _signUp = safeAction
   .action(async ({ parsedInput: { email, password } }) => {
     const hashed_password = await hash(password, 10);
 
-    const workspace = await prisma.workspace.create({
+    const workspace = await prisma.workspaces.create({
       data: {
         name: "",
         slug: cuid(),
       },
     });
 
-    const user = await prisma.user.create({
+    const user = await prisma.users.create({
       data: {
         workspace_id: workspace.id,
         email,

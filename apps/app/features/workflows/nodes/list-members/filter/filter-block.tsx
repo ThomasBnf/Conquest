@@ -1,17 +1,17 @@
 import { useFilters } from "@/context/filtersContext";
+import { DatePicker } from "@/features/workflows/pickers/date-picker";
+import { FieldPicker } from "@/features/workflows/pickers/field-picker";
+import { GroupOperatorPicker } from "@/features/workflows/pickers/group-operator";
+import { LocalisationPicker } from "@/features/workflows/pickers/localisation-picker";
+import { OperatorPicker } from "@/features/workflows/pickers/operator-picker";
+import { QueryInput } from "@/features/workflows/pickers/query-input";
+import { SourcePicker } from "@/features/workflows/pickers/source-picker";
+import { TagPicker } from "@/features/workflows/pickers/tag-picker";
+import { TypePicker } from "@/features/workflows/pickers/type-picker";
 import { Button } from "@conquest/ui/button";
 import type { Filter } from "@conquest/zod/filters.schema";
 import type { GroupFilter } from "@conquest/zod/node.schema";
 import { Trash2 } from "lucide-react";
-import { DatePicker } from "./pickers/date-picker";
-import { FieldPicker } from "./pickers/field-picker";
-import { GroupOperatorPicker } from "./pickers/group-operator";
-import { LocalePicker } from "./pickers/locale-picker";
-import { OperatorPicker } from "./pickers/operator-picker";
-import { QueryInput } from "./pickers/query-input";
-import { SourcePicker } from "./pickers/source-picker";
-import { TagPicker } from "./pickers/tag-picker";
-import { TypePicker } from "./pickers/type-picker";
 
 type Props = {
   groupFilter: GroupFilter;
@@ -39,8 +39,8 @@ export const FilterBlock = ({ groupFilter, filter }: Props) => {
         </div>
         <div className="flex items-center divide-x">
           <OperatorPicker filter={filter} />
-          {field === "localisation" && <LocalePicker filter={filter} />}
-          {field === "points" && <QueryInput filter={filter} />}
+          {field === "localisation" && <LocalisationPicker filter={filter} />}
+          {field === "love" && <QueryInput filter={filter} />}
           {field === "type" && <TypePicker filter={filter} />}
           {field === "source" && <SourcePicker filter={filter} />}
           {field === "created_at" && <DatePicker filter={filter} />}
@@ -48,7 +48,7 @@ export const FilterBlock = ({ groupFilter, filter }: Props) => {
           <Button
             variant="outline"
             onClick={() => onDeleteFilter(filter)}
-            className="rounded-none border-b-0 border-l border-t-0"
+            className="rounded-none border-t-0 border-b-0 border-l"
           >
             <Trash2 size={14} />
           </Button>

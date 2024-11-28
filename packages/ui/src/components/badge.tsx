@@ -1,6 +1,6 @@
-import { cn } from "@conquest/ui/cn";
 import { type VariantProps, cva } from "class-variance-authority";
 import type * as React from "react";
+import { cn } from "../utils/cn";
 
 const badgeVariants = cva(
   "inline-flex items-center rounded-md border px-1.5 py-0.5 text-xs transition-colors focus:outline-none focus:ring-2 focus:ring-ring",

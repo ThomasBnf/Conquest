@@ -7,7 +7,9 @@ import {
   ChartTooltipContent,
 } from "@conquest/ui/chart";
 import { Skeleton } from "@conquest/ui/skeleton";
+import type { MemberWithActivities } from "@conquest/zod/activity.schema";
 import { useQuery } from "@tanstack/react-query";
+import { eachDayOfInterval, format } from "date-fns";
 import ky from "ky";
 import { useState } from "react";
 import {
@@ -39,16 +41,10 @@ type Props = {
 };
 
 type ChartDataProps = {
-  totalMembers: number;
-  totalActiveMembers: number;
-  data: ChartDataItem[];
-};
-
-type ChartDataItem = {
-  date: string;
-  members: number;
-  newMembers: number;
-  activeMembers: number;
+  total_members: number;
+  new_members: number;
+  active_members: number;
+  members: MemberWithActivities[];
 };
 
 export const MembersChart = ({ from, to }: Props) => {
@@ -70,13 +66,55 @@ export const MembersChart = ({ from, to }: Props) => {
     },
   });
 
-  const { totalMembers, totalActiveMembers, data } = chartData ?? {
-    totalMembers: 0,
-    totalActiveMembers: 0,
-    data: [],
+  const { total_members, new_members, active_members, members } = chartData ?? {
+    total_members: 0,
+    new_members: 0,
+    active_members: 0,
+    members: [],
   };
-  const totalNewMembers =
-    data?.reduce((acc, curr) => acc + curr.newMembers, 0) ?? 0;
+
+  const getChartData = () => {
+    const dates = eachDayOfInterval({ start: from, end: to });
+    let totalMembers = 0;
+
+    return dates.map((date) => {
+      const formattedDate = format(date, "yyyy-MM-dd");
+
+      const membersOnDate = members.filter((member) => {
+        if (!member.created_at) return false;
+        return (
+          format(new Date(member.created_at), "yyyy-MM-dd") === formattedDate
+        );
+      });
+
+      const newMembersOnDate = members.filter((member) => {
+        if (!member.joined_at) return false;
+        return (
+          format(new Date(member.joined_at), "yyyy-MM-dd") === formattedDate
+        );
+      });
+
+      const activeMembersOnDate = members.filter((member) => {
+        if (!member.activities?.length) return false;
+        return member.activities.some(
+          (activity) =>
+            format(new Date(activity.created_at), "yyyy-MM-dd") ===
+            formattedDate,
+        );
+      });
+
+      totalMembers += membersOnDate.length;
+
+      return {
+        date: formattedDate,
+        members: totalMembers,
+        newMembers: newMembersOnDate.length,
+        activeMembers: activeMembersOnDate.length,
+      };
+    });
+  };
+
+  const chartDataByDate = getChartData();
 
   return (
     <div className="divide-y">
@@ -89,16 +127,16 @@ export const MembersChart = ({ from, to }: Props) => {
             className="flex flex-1 flex-col justify-center gap-1 p-6 data-[active=true]:bg-muted"
             onClick={() => setActiveChart(key as keyof typeof chartConfig)}
           >
-            <span className="text-sm text-muted-foreground">
+            <span className="text-muted-foreground text-sm">
               {config.label}
             </span>
             {isLoading ? (
               <Skeleton className="h-9 w-12" />
             ) : (
-              <span className="text-lg font-bold leading-none sm:text-3xl">
-                {key === "members" && totalMembers}
-                {key === "newMembers" && totalNewMembers}
-                {key === "activeMembers" && totalActiveMembers}
+              <span className="font-bold text-lg leading-none sm:text-3xl">
+                {key === "members" && total_members}
+                {key === "newMembers" && new_members}
+                {key === "activeMembers" && active_members}
               </span>
             )}
           </button>
@@ -107,7 +145,7 @@ export const MembersChart = ({ from, to }: Props) => {
       <ResponsiveContainer height={300}>
         <ChartContainer config={chartConfig}>
           <AreaChart
-            data={data}
+            data={chartDataByDate}
             margin={{ top: 24, left: 24, right: 24, bottom: 5 }}
           >
             <CartesianGrid vertical={false} />

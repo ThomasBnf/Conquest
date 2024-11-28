@@ -1,4 +1,4 @@
-import { prisma } from "@/lib/prisma";
+import { prisma } from "@conquest/database";
 import {
   NodeRecurringSchema,
   NodeSchema,
@@ -17,7 +17,7 @@ export const cronWorkflows = schedules.task({
     if (ctx.environment.type !== "PRODUCTION") return;
 
     const workflows = z.array(WorkflowSchema).parse(
-      await prisma.workflow.findMany({
+      await prisma.workflows.findMany({
         where: {
           published: true,
         },

@@ -17,7 +17,7 @@ export const _deleteWorkflow = authAction
   )
   .action(async ({ ctx, parsedInput: { id } }) => {
     const slug = ctx.user.workspace.slug;
-    await prisma.workflow.delete({
+    await prisma.workflows.delete({
       where: {
         id,
         workspace_id: ctx.user.workspace_id,

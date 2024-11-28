@@ -1,5 +1,5 @@
-import { cn } from "@conquest/ui/cn";
 import * as React from "react";
+import { cn } from "../utils/cn";
 
 const Card = React.forwardRef<
   HTMLDivElement,
@@ -35,7 +35,7 @@ const CardTitle = React.forwardRef<
   <h3
     ref={ref}
     className={cn(
-      "text-lg font-semibold leading-none tracking-tight",
+      "font-semibold text-lg leading-none tracking-tight",
       className,
     )}
     {...props}
@@ -57,7 +57,7 @@ const CardContent = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <div
     ref={ref}
-    className={cn("p-4 bg-background border mx-0.5 rounded-md", className)}
+    className={cn("mx-0.5 rounded-md border bg-background p-4", className)}
     {...props}
   />
 ));

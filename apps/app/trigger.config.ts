@@ -3,6 +3,7 @@ import { defineConfig } from "@trigger.dev/sdk/v3";
 
 export default defineConfig({
   project: "proj_svkvhdhlspmnalydmzbs",
+  logLevel: "log",
   build: {
     extensions: [
       prismaExtension({
@@ -10,7 +11,14 @@ export default defineConfig({
       }),
     ],
   },
-  runtime: "node",
-  logLevel: "log",
-  dirs: ["./trigger"],
+  retries: {
+    enabledInDev: true,
+    default: {
+      maxAttempts: 3,
+      minTimeoutInMs: 1000,
+      maxTimeoutInMs: 10000,
+      factor: 2,
+      randomize: true,
+    },
+  },
 });

@@ -15,14 +15,18 @@ export const getMember = safeAction
     }),
   )
   .action(async ({ parsedInput: { id, slack_id, workspace_id } }) => {
-    const member = await prisma.member.findUnique({
+    const member = await prisma.members.findUnique({
       where: {
         id,
         slack_id,
         workspace_id,
       },
       include: {
-        activities: true,
+        activities: {
+          include: {
+            activity_type: true,
+          },
+        },
       },
     });
 

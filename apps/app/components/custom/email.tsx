@@ -6,16 +6,16 @@ import { useState } from "react";
 
 type Props = {
   email: { id: string; content: string };
-  index: number;
-  setIsOpen: (isOpen: boolean) => void;
+  hasEmails: boolean;
+  setOpen: (open: boolean) => void;
   onChangeEmail: ({ id, email }: { id: string; email: string }) => void;
   onDeleteEmail: (email: string) => void;
 };
 
 export const Email = ({
   email,
-  index,
-  setIsOpen,
+  hasEmails,
+  setOpen,
   onChangeEmail,
   onDeleteEmail,
 }: Props) => {
@@ -37,16 +37,16 @@ export const Email = ({
             if (event.key === "Enter") {
               if (value === "") return;
               onChangeEmail({ id: email.id, email: value });
-              setIsOpen(false);
+              setOpen(false);
             }
             if (event.key === "Escape") {
-              setIsOpen(false);
+              setOpen(false);
               onDeleteEmail(email.id);
             }
           }}
         />
       )}
-      {index > 0 && (
+      {hasEmails && (
         <Button
           variant="outline"
           size="icon"

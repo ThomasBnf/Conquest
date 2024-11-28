@@ -22,7 +22,7 @@ export const updateIntegration = authAction
     }) => {
       const slug = ctx.user.workspace.slug;
 
-      const updatedIntegration = await prisma.integration.update({
+      const updatedIntegration = await prisma.integrations.update({
         where: { id: integration.id },
         data: {
           details: {

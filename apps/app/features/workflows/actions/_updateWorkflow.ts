@@ -27,7 +27,7 @@ export const _updateWorkflow = authAction
       ctx,
       parsedInput: { id, nodes, edges, name, description, published },
     }) => {
-      const updatedWorkflow = await prisma.workflow.update({
+      const updatedWorkflow = await prisma.workflows.update({
         where: {
           id,
           workspace_id: ctx.user.workspace_id,

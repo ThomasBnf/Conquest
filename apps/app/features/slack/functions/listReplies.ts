@@ -1,3 +1,4 @@
+import { getActivityType } from "@/features/activities-types/actions/getActivityType";
 import { safeAction } from "@/lib/safeAction";
 import { ChannelSchema } from "@conquest/zod/channel.schema";
 import { WebClient } from "@slack/web-api";
@@ -20,6 +21,20 @@ export const listReplies = safeAction
   .action(async ({ parsedInput: { web, channel, reply_to, workspace_id } }) => {
     let cursor: string | undefined;
 
+    const rTypeReply = await getActivityType({
+      key: "slack:reply",
+      workspace_id,
+    });
+    const rTypeReaction = await getActivityType({
+      key: "slack:reaction",
+      workspace_id,
+    });
+
+    const type_reply = rTypeReply?.data;
+    const type_reaction = rTypeReaction?.data;
+
+    if (!type_reply || !type_reaction) return;
+
     do {
       const { messages, response_metadata } = await web.conversations.replies({
         limit: 100,
@@ -31,7 +46,7 @@ export const listReplies = safeAction
       for (const message of messages?.slice(1) ?? []) {
         const { text, ts, user, reactions, files } = message;
 
-        const member = await prisma.member.findUnique({
+        const member = await prisma.members.findUnique({
           where: {
             slack_id: user,
             workspace_id,
@@ -39,34 +54,28 @@ export const listReplies = safeAction
         });
 
         if (member) {
-          const activity = await prisma.activity.upsert({
+          const activity = await prisma.activities.upsert({
             where: {
               external_id: ts,
             },
             update: {
-              details: {
-                source: "SLACK",
-                type: "REPLY",
-                message: text ?? "",
-                files: files?.map(({ title, url_private }) => ({
-                  title: title ?? "",
-                  url: url_private ?? "",
-                })),
-                reply_to,
-              },
+              message: text ?? "",
+              activity_type_id: type_reply.id,
+              // files: files?.map(({ title, url_private }) => ({
+              //   title: title ?? "",
+              //   url: url_private ?? "",
+              // })),
+              reply_to,
             },
             create: {
               external_id: ts,
-              details: {
-                source: "SLACK",
-                type: "REPLY",
-                message: text ?? "",
-                files: files?.map(({ title, url_private }) => ({
-                  title: title ?? "",
-                  url: url_private ?? "",
-                })),
-                reply_to,
-              },
+              message: text ?? "",
+              activity_type_id: type_reply.id,
+              // files: files?.map(({ title, url_private }) => ({
+              //   title: title ?? "",
+              //   url: url_private ?? "",
+              // })),
+              reply_to,
               channel_id: channel.id,
               member_id: member.id,
               workspace_id,
@@ -86,6 +95,7 @@ export const listReplies = safeAction
                   channel_id: channel.id,
                   react_to: activity?.external_id,
                   ts: message.ts ?? "",
+                  activity_type_id: type_reaction.id,
                   workspace_id,
                 });
               }

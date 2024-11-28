@@ -46,16 +46,13 @@
       "outputs": ["node_modules/.cache/tsbuildinfo.json"]
     },
     "db:generate": {
-      "cache": false,
-      "inputs": ["prisma/schema.prisma"],
-      "outputs": ["node_modules/.prisma/**"]
+      "cache": false
     },
     "db:push": {
       "cache": false
     },
     "db:deploy": {
-      "cache": false,
-      "inputs": ["prisma/migrations/**"]
+      "cache": false
     }
   }
 }

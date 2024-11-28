@@ -14,14 +14,23 @@ export const createReaction = safeAction
       channel_id: z.string().cuid(),
       react_to: z.string().nullable().optional(),
       ts: z.string(),
+      activity_type_id: z.string().cuid(),
       workspace_id: z.string().cuid(),
     }),
   )
   .action(
     async ({
-      parsedInput: { user, message, channel_id, react_to, ts, workspace_id },
+      parsedInput: {
+        user,
+        message,
+        channel_id,
+        react_to,
+        ts,
+        activity_type_id,
+        workspace_id,
+      },
     }) => {
-      const member = await prisma.member.findUnique({
+      const member = await prisma.members.findUnique({
         where: {
           slack_id: user,
           workspace_id,
@@ -32,12 +41,9 @@ export const createReaction = safeAction
 
       await createActivity({
         external_id: null,
-        details: {
-          source: "SLACK",
-          type: "REACTION",
-          message,
-          react_to,
-        },
+        activity_type_id,
+        message,
+        react_to,
         channel_id,
         member_id: member.id,
         workspace_id,

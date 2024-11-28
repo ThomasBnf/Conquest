@@ -47,7 +47,7 @@ export const _updateUser = authAction
       data.date_range = date_range;
     }
 
-    const user = await prisma.user.update({
+    const user = await prisma.users.update({
       where: {
         id: ctx.user?.id,
       },

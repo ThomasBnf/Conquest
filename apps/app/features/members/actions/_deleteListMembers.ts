@@ -17,7 +17,7 @@ export const _deleteListMembers = authAction
   .action(async ({ ctx, parsedInput: { ids } }) => {
     const slug = ctx.user.workspace.slug;
 
-    await prisma.member.deleteMany({
+    await prisma.members.deleteMany({
       where: {
         id: {
           in: ids,

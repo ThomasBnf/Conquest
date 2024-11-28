@@ -1,7 +1,7 @@
 import { Icon } from "@/components/icons/Icon";
+import { Slack } from "@/components/icons/Slack";
 import { Badge } from "@conquest/ui/badge";
 import { Button } from "@conquest/ui/button";
-import { cn } from "@conquest/ui/cn";
 import { Label } from "@conquest/ui/label";
 import { useReactFlow } from "@xyflow/react";
 import { X, type icons } from "lucide-react";
@@ -43,44 +43,42 @@ export const NextStep = () => {
         Add the next block in the workflow
       </p>
       <div className="relative mt-2">
-        <div className="relative z-10 flex items-center gap-2 border rounded-md h-10 px-2 bg-muted-hover">
-          <Icon
-            name={icon as keyof typeof icons}
-            size={24}
-            className={cn(
-              "border rounded-md p-1",
-              isTrigger
-                ? "border-blue-300 bg-blue-100 text-blue-500"
-                : "border-green-300 bg-green-100 text-green-500",
-            )}
-          />
+        <div className="relative z-10 flex h-10 items-center gap-2 rounded-md border bg-muted-hover px-2">
+          {icon === "Slack" ? (
+            <Slack size={24} className="rounded-md border p-1" />
+          ) : (
+            <Icon
+              name={icon as keyof typeof icons}
+              size={24}
+              className="rounded-md border p-1"
+            />
+          )}
           <p>{label}</p>
         </div>
-        <div className="flex mt-2">
-          <div className="w-5 h-20  border-l border-bl-lg border-b rounded-l-lg ml-4 -mt-8" />
-          <div className="space-y-1.5 w-full">
+        <div className="mt-2 flex">
+          <div className="border-bl-lg -mt-8 ml-4 h-20 w-5 rounded-l-lg border-b border-l" />
+          <div className="w-full space-y-1.5">
             <Badge variant="secondary">Next step</Badge>
             {/* biome-ignore lint/a11y/useKeyWithClickEvents: <explanation> */}
             <div
-              className="relative cursor-pointer z-10 flex items-center gap-2 border rounded-md h-10 px-2 hover:bg-muted-hover transition-colors-hover"
+              className="transition-colors-hover relative z-10 flex h-10 cursor-pointer items-center gap-2 rounded-md border px-2 hover:bg-muted-hover"
               onClick={() => {
                 setPanel("actions");
                 setIsAdding(true);
               }}
             >
               {nextNode ? (
-                <Icon
-                  name={nextNode?.data.icon as keyof typeof icons}
-                  size={24}
-                  className={cn(
-                    "border rounded-md p-1",
-                    isNextNodeTrigger
-                      ? "border-blue-300 bg-blue-100 text-blue-500"
-                      : "border-green-300 bg-green-100 text-green-500",
-                  )}
-                />
+                nextNode.data.icon === "Slack" ? (
+                  <Slack size={24} className="rounded-md border p-1" />
+                ) : (
+                  <Icon
+                    name={nextNode?.data.icon as keyof typeof icons}
+                    size={24}
+                    className="rounded-md border p-1"
+                  />
+                )
               ) : (
-                <Icon name="Plus" size={24} className="border rounded-md p-1" />
+                <Icon name="Plus" size={24} className="rounded-md border p-1" />
               )}
               <p>
                 {nextNodeLabel ?? (

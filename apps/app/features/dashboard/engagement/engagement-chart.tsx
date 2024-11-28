@@ -51,10 +51,6 @@ export const EngagementChart = ({ from, to }: Props) => {
     },
   });
 
-  const maxValue = Math.max(
-    ...(chartData?.map((item) => item.engagementRate) ?? [0]),
-  );
-
   return (
     <ResponsiveContainer height={300}>
       <ChartContainer config={chartConfig}>
@@ -81,7 +77,7 @@ export const EngagementChart = ({ from, to }: Props) => {
               });
             }}
           />
-          <YAxis hide domain={[0, maxValue]} />
+          <YAxis hide />
           <ChartTooltip
             content={
               <ChartTooltipContent

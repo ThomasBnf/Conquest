@@ -6,14 +6,14 @@ import { useState } from "react";
 
 type Props = {
   phone: { id: string; content: string };
-  setIsOpen: (isOpen: boolean) => void;
+  setOpen: (isOpen: boolean) => void;
   onChangePhone: ({ id, phone }: { id: string; phone: string }) => void;
   onDeletePhone: (phone: string) => void;
 };
 
 export const Phone = ({
   phone,
-  setIsOpen,
+  setOpen,
   onChangePhone,
   onDeletePhone,
 }: Props) => {
@@ -32,7 +32,7 @@ export const Phone = ({
           onChange={(value) => setValue(value)}
           onKeyDown={(event) => {
             if (event.key === "Enter") {
-              setIsOpen(false);
+              setOpen(false);
               setTimeout(() => {
                 if (value === "") {
                   onDeletePhone(phone.id);
@@ -42,7 +42,7 @@ export const Phone = ({
               }, 100);
             }
             if (event.key === "Escape") {
-              setIsOpen(false);
+              setOpen(false);
               onDeletePhone(phone.id);
             }
           }}
@@ -51,7 +51,7 @@ export const Phone = ({
       <Button
         variant="outline"
         size="icon"
-        className="shrink-0 mr-1"
+        className="mr-1 shrink-0"
         onClick={() => onDeletePhone(phone.id)}
       >
         <Trash2 size={15} />

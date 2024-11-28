@@ -5,7 +5,7 @@ import members from "./members.json";
 const prisma = new PrismaClient();
 
 export const seed = async () => {
-  const workspace = await prisma.workspace.findFirst();
+  const workspace = await prisma.workspaces.findFirst();
   const workspace_id = workspace?.id;
   const today = new Date();
 
@@ -14,7 +14,7 @@ export const seed = async () => {
   }
 
   for (const member of members) {
-    await prisma.member.create({
+    await prisma.members.create({
       data: {
         workspace_id,
         first_name: member.firstName,
@@ -25,34 +25,33 @@ export const seed = async () => {
         avatar_url: null,
         bio: null,
         gender: null,
-        address: null,
         search: `${member.firstName.toLowerCase()} ${member.lastName.toLowerCase()} ${member.emails.join(" ")}`,
         source: "API",
         tags: [],
         created_at: subDays(today, member.activities[0]?.daysAgo ?? 0),
         updated_at: subDays(today, member.activities[0]?.daysAgo ?? 0),
-        activities: {
-          create: member.activities.map((activity) => ({
-            details: {
-              source: "API",
-              type: activity.type,
-              message:
-                activity.message ||
-                (activity.type === "SIGNUP"
-                  ? "New member registered"
-                  : activity.type === "LOGIN"
-                    ? "First login completed"
-                    : activity.type === "POST"
-                      ? "First message posted"
-                      : activity.type === "REPLY"
-                        ? "First reply posted"
-                        : activity.message),
-            },
-            workspace_id,
-            created_at: subDays(today, activity.daysAgo),
-            updated_at: subDays(today, activity.daysAgo),
-          })),
-        },
+        // activities: {
+        //   create: member.activities.map((activity) => ({
+        //     details: {
+        //       source: "API",
+        //       type: activity.type,
+        //       message:
+        //         activity.message ||
+        //         (activity.type === "SIGNUP"
+        //           ? "New member registered"
+        //           : activity.type === "LOGIN"
+        //             ? "First login completed"
+        //             : activity.type === "POST"
+        //               ? "First message posted"
+        //               : activity.type === "REPLY"
+        //                 ? "First reply posted"
+        //                 : activity.message),
+        //     },
+        //     workspace_id,
+        //     created_at: subDays(today, activity.daysAgo),
+        //     updated_at: subDays(today, activity.daysAgo),
+        //   })),
+        // },
       },
     });
   }

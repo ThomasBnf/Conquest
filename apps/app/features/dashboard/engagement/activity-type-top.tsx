@@ -69,7 +69,7 @@ export const ActivityTypeTop = ({ from, to }: Props) => {
   }, [chartData]);
 
   return (
-    <div className="flex-1 p-4 space-y-2">
+    <div className="flex-1 space-y-2 p-4">
       <p className="pl-1.5 text-base font-medium">Top Activity Types</p>
       <ResponsiveContainer height={350} width="100%">
         <ChartContainer ref={ref} config={chartConfig}>

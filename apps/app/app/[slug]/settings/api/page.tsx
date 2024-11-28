@@ -10,7 +10,7 @@ export default async function Page() {
   return (
     <ScrollArea className="h-dvh">
       <div className="mx-auto flex max-w-3xl flex-col py-24">
-        <p className="text-2xl font-medium">API</p>
+        <p className="font-medium text-2xl">API</p>
         <div className="mt-6 flex flex-col gap-4">
           <div>
             <p className="font-medium">API Keys</p>

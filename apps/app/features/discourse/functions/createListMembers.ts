@@ -38,7 +38,7 @@ export const createListMembers = safeAction
     let page = 0;
     let hasMore = true;
 
-    const tags = await prisma.tag.findMany({ where: { workspace_id } });
+    const tags = await prisma.tags.findMany({ where: { workspace_id } });
 
     do {
       const members = await ky

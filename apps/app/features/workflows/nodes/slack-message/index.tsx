@@ -13,6 +13,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useReactFlow } from "@xyflow/react";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
+import { useDebouncedCallback } from "use-debounce";
+import { VariablePicker } from "../../pickers/variable-picker";
 import { type FormSlack, FormSlackSchema } from "./form-slack.schema";
 
 export const SlackMessageOptions = () => {
@@ -44,9 +46,21 @@ export const SlackMessageOptions = () => {
     });
   };
 
+  const debouncedSubmit = useDebouncedCallback(
+    (newMessage: string) => onSubmit({ message: newMessage }),
+    500,
+  );
+
+  const onSetVariable = (variable: string) => {
+    const newMessage = message + variable;
+
+    form.setValue("message", newMessage);
+    onSubmit({ message: newMessage });
+  };
+
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
         <FormField
           control={form.control}
           name="message"
@@ -58,8 +72,8 @@ export const SlackMessageOptions = () => {
                   {...field}
                   placeholder="Add a message"
                   onChange={(e) => {
-                    field.onChange(e);
-                    onSubmit({ message: e.target.value });
+                    form.setValue("message", e.target.value);
+                    debouncedSubmit(e.target.value);
                   }}
                 />
               </FormControl>
@@ -67,6 +81,7 @@ export const SlackMessageOptions = () => {
             </FormItem>
           )}
         />
+        <VariablePicker onClick={onSetVariable} />
       </form>
     </Form>
   );

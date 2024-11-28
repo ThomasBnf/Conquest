@@ -32,7 +32,7 @@ export const PATCH = safeRoute
       tags,
     } = body;
 
-    const member = await prisma.member.update({
+    const member = await prisma.members.update({
       where: {
         id,
       },
@@ -68,7 +68,7 @@ export const DELETE = safeRoute
   .handler(async (_, { params, data }) => {
     const { id } = params;
 
-    await prisma.member.delete({
+    await prisma.members.delete({
       where: {
         id,
         workspace_id: data.workspace_id,

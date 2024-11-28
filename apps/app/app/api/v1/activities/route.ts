@@ -13,21 +13,18 @@ export const POST = safeRoute
     z.object({
       member_id: z.string().cuid(),
       channel_id: z.string().cuid().optional(),
-      type: z.string(),
+      activity_type_id: z.string().cuid(),
       message: z.string(),
     }),
   )
   .handler(async (_, { body, data }) => {
-    const { member_id, channel_id, type, message } = body;
+    const { member_id, channel_id, activity_type_id, message } = body;
 
-    const activity = await prisma.activity.create({
+    const activity = await prisma.activities.create({
       data: {
         member_id,
-        details: {
-          source: "API",
-          type,
-          message,
-        },
+        activity_type_id,
+        message,
         channel_id: channel_id ?? null,
         workspace_id: data.workspace_id,
       },

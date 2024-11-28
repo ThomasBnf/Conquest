@@ -26,7 +26,7 @@ export const SlackImage = ({ url }: { url: string }) => {
     return (
       <iframe
         src={data.url}
-        className="w-full h-64"
+        className="h-64 w-full"
         title={url}
         allowFullScreen
       />
@@ -40,7 +40,7 @@ export const SlackImage = ({ url }: { url: string }) => {
       alt={url}
       width={1200}
       height={800}
-      className="border rounded w-full"
+      className="w-full rounded border"
     />
   );
 };

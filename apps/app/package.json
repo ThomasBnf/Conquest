@@ -14,6 +14,9 @@
     "deploy:trigger-prod": "npx trigger.dev@3.0.0 deploy",
     "deploy:trigger": "npx trigger.dev@3.0.0 deploy --env staging"
   },
+  "exports": {
+    "./prisma": "./lib/prisma.ts"
+  },
   "dependencies": {
     "@auth/prisma-adapter": "^2.7.0",
     "@conquest/database": "workspace:*",
@@ -25,7 +28,7 @@
     "@tanstack/react-query": "^5.59.13",
     "@tanstack/react-query-devtools": "^5.59.13",
     "@tanstack/react-table": "^8.20.5",
-    "@trigger.dev/sdk": "3.2.0",
+    "@trigger.dev/sdk": "3.2.2",
     "@types/bcryptjs": "^2.4.6",
     "@xyflow/react": "^12.3.2",
     "bcryptjs": "^2.4.3",
@@ -52,12 +55,10 @@
   },
   "devDependencies": {
     "@tanstack/eslint-plugin-query": "^5.59.7",
-    "@trigger.dev/build": "3.2.0",
+    "@trigger.dev/build": "3.2.2",
     "@types/node": "^22.7.5",
     "@types/react": "^18.3.11",
     "@types/react-dom": "^18.3.1",
-    "prettier": "^3.3.3",
-    "prettier-plugin-tailwindcss": "^0.6.8",
     "typescript": "^5.6.3"
   }
 }

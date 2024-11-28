@@ -2,9 +2,10 @@ import { filteredDomain } from "@/features/members/helpers/filteredDomain";
 import { prisma } from "@/lib/prisma";
 import { safeAction } from "@/lib/safeAction";
 import { runWorkflow } from "@/trigger/runWorkflow.trigger";
+import { MemberWithActivitiesSchema } from "@conquest/zod/activity.schema";
 import { type Company, CompanySchema } from "@conquest/zod/company.schema";
+import { SOURCE } from "@conquest/zod/enum/source.enum";
 import { MemberSchema } from "@conquest/zod/member.schema";
-import { SOURCE } from "@conquest/zod/source.enum";
 import { WorkflowSchema } from "@conquest/zod/workflow.schema";
 import { z } from "zod";
 
@@ -20,7 +21,7 @@ export const upsertMember = safeAction
       last_name: z.string().optional(),
       full_name: z.string().optional(),
       username: z.string().optional(),
-      locale: z.string().optional(),
+      localisation: z.string().optional(),
       email: z.string().optional(),
       phone: z.string().optional(),
       job_title: z.string().nullable().optional(),
@@ -40,7 +41,7 @@ export const upsertMember = safeAction
         last_name,
         full_name,
         username,
-        locale,
+        localisation,
         email,
         phone,
         avatar_url,
@@ -62,7 +63,7 @@ export const upsertMember = safeAction
 
         if (companyName && domain) {
           company = CompanySchema.parse(
-            await prisma.company.upsert({
+            await prisma.companies.upsert({
               where: {
                 domain,
               },
@@ -105,7 +106,7 @@ export const upsertMember = safeAction
       };
       const idInput = idParser();
 
-      const member = await prisma.member.upsert({
+      const member = await prisma.members.upsert({
         where,
         update: {
           first_name: first_name ?? null,
@@ -114,7 +115,7 @@ export const upsertMember = safeAction
           username: username ?? null,
           emails: formattedEmail ? [formattedEmail] : undefined,
           phones: formattedPhone ? [formattedPhone] : undefined,
-          locale,
+          localisation,
           avatar_url: avatar_url ?? null,
           job_title: job_title ?? null,
           tags,
@@ -133,7 +134,7 @@ export const upsertMember = safeAction
           last_name: last_name ?? null,
           full_name: full_name ?? null,
           username: username ?? null,
-          locale,
+          localisation,
           avatar_url: avatar_url ?? null,
           emails: formattedEmail ? [formattedEmail] : undefined,
           phones: formattedPhone ? [formattedPhone] : undefined,
@@ -149,13 +150,16 @@ export const upsertMember = safeAction
           joined_at: joined_at ?? null,
           workspace_id,
         },
+        include: {
+          activities: true,
+        },
       });
 
       const isNewMember = member.created_at === member.updated_at;
 
       if (isNewMember) {
         const workflows = z.array(WorkflowSchema).parse(
-          await prisma.workflow.findMany({
+          await prisma.workflows.findMany({
             where: {
               published: true,
               workspace_id,
@@ -168,7 +172,10 @@ export const upsertMember = safeAction
         );
 
         for (const workflow of filteredWorkflows) {
-          await runWorkflow.trigger({ workflow_id: workflow.id });
+          await runWorkflow.trigger({
+            workflow_id: workflow.id,
+            created_member: MemberWithActivitiesSchema.parse(member),
+          });
         }
       }
 

@@ -18,7 +18,7 @@ export const GET = safeRoute
     const { from, to } = query;
     const { workspace_id } = user;
 
-    const chartData = await prisma.channel.findMany({
+    const chartData = await prisma.channels.findMany({
       where: {
         workspace_id,
       },

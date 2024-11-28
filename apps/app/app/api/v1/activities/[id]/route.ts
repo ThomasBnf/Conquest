@@ -16,7 +16,7 @@ export const DELETE = safeRoute
   .handler(async (_, { params, data }) => {
     const { id } = params;
 
-    await prisma.activity.delete({
+    await prisma.activities.delete({
       where: {
         id,
         workspace_id: data.workspace_id,

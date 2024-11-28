@@ -10,7 +10,7 @@ export const _createWorkflow = authAction
     name: "_createWorkflow",
   })
   .action(async ({ ctx }) => {
-    const workflow = await prisma.workflow.create({
+    const workflow = await prisma.workflows.create({
       data: {
         workspace_id: ctx.user.workspace.id,
         name: "Untitled workflow",

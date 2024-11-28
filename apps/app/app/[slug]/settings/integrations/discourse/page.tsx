@@ -7,7 +7,6 @@ import {
 } from "@/features/discourse/schemas/discourseAPI";
 import { deleteIntegration } from "@/features/integrations/actions/deleteIntegration";
 import { upsertIntegration } from "@/features/integrations/actions/upsertIntegration";
-import { PointConfig } from "@/features/integrations/components/point-config";
 import { Button, buttonVariants } from "@conquest/ui/button";
 import { Card, CardContent, CardHeader } from "@conquest/ui/card";
 import { cn } from "@conquest/ui/cn";
@@ -68,12 +67,6 @@ export default function Page() {
         signature: "",
         source: "DISCOURSE",
         api_key,
-        points_config: {
-          post: 3,
-          reaction: 1,
-          reply: 2,
-          invitation: 5,
-        },
       },
     });
     const integration = rIntegration?.data;
@@ -110,7 +103,7 @@ export default function Page() {
             />
           </div>
           <div>
-            <p className="text-lg font-medium">Discourse</p>
+            <p className="font-medium text-lg">Discourse</p>
             <p className="text-muted-foreground">
               Synchronize your members with Discourse
             </p>
@@ -152,10 +145,10 @@ export default function Page() {
               </Button>
             )}
           </CardHeader>
-          <CardContent className="p-0 mb-0.5">
+          <CardContent className="mb-0.5 p-0">
             <div className="p-4">
               <p className="font-medium text-base">Overview</p>
-              <p className="text-muted-foreground text-balance">
+              <p className="text-balance text-muted-foreground">
                 Connect your Discourse workspace to automatically sync messages,
                 collect member interactions, and send personalized direct
                 messages through automated workflows.
@@ -164,7 +157,7 @@ export default function Page() {
             {!discourse?.id && (
               <>
                 <Separator />
-                <div className="p-4 space-y-6">
+                <div className="space-y-6 p-4">
                   <Form {...form}>
                     <form
                       onSubmit={form.handleSubmit(onInstall)}
@@ -212,12 +205,6 @@ export default function Page() {
                     </form>
                   </Form>
                 </div>
-              </>
-            )}
-            {discourse?.id && (
-              <>
-                <Separator />
-                <PointConfig integration={discourse} />
               </>
             )}
           </CardContent>

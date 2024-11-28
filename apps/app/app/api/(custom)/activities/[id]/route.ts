@@ -17,7 +17,7 @@ export const GET = safeRoute
     const { id } = params;
     const workspace_id = user.workspace_id;
 
-    const activity = await prisma.activity.findUnique({
+    const activity = await prisma.activities.findUnique({
       where: {
         external_id: id,
         workspace_id,

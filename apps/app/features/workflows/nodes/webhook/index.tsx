@@ -11,7 +11,10 @@ import { TextField } from "@conquest/ui/text-field";
 import { NodeWebhookSchema } from "@conquest/zod/node.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useReactFlow } from "@xyflow/react";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
+import { useDebouncedCallback } from "use-debounce";
+import { VariablePicker } from "../../pickers/variable-picker";
 import { type FormUrl, FormUrlSchema } from "./form-url.schema";
 
 export const WebhookOptions = () => {
@@ -24,6 +27,7 @@ export const WebhookOptions = () => {
     resolver: zodResolver(FormUrlSchema),
     defaultValues: {
       url,
+      body,
     },
   });
 
@@ -33,11 +37,32 @@ export const WebhookOptions = () => {
     setNodes((nodes) =>
       nodes.map((node) =>
         node.id === selected.id
-          ? { ...node, data: { ...node.data, url } }
+          ? { ...node, data: { ...node.data, url, body } }
           : node,
       ),
     );
   };
+
+  const debouncedSubmit = useDebouncedCallback(
+    (newBody: string) => onSubmit({ url, body: newBody }),
+    500,
+  );
+
+  const onSetVariable = (variable: string) => {
+    const newBody = (body ?? "") + variable;
+
+    form.setValue("body", newBody);
+    onSubmit({ url, body: newBody });
+  };
+
+  useEffect(() => {
+    if (selected) {
+      const { url, body } = NodeWebhookSchema.parse(selected.data);
+
+      form.setValue("url", url);
+      form.setValue("body", body);
+    }
+  }, [selected]);
 
   return (
     <Form {...form}>
@@ -55,7 +80,7 @@ export const WebhookOptions = () => {
                   onBlur={(e) => {
                     form.setValue("url", e.target.value);
                     if (e.target.value !== "") {
-                      onSubmit({ url: e.target.value });
+                      onSubmit({ url: e.target.value, body });
                     }
                   }}
                 />
@@ -63,18 +88,28 @@ export const WebhookOptions = () => {
             </FormItem>
           )}
         />
-        <FormField
-          control={form.control}
-          name="body"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Body</FormLabel>
-              <FormControl>
-                <TextField {...field} placeholder="Body" />
-              </FormControl>
-            </FormItem>
-          )}
-        />
+        <div className="space-y-2">
+          <FormField
+            control={form.control}
+            name="body"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Body</FormLabel>
+                <FormControl>
+                  <TextField
+                    {...field}
+                    placeholder="Body"
+                    onChange={(e) => {
+                      form.setValue("body", e.target.value);
+                      debouncedSubmit(e.target.value);
+                    }}
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+          <VariablePicker onClick={onSetVariable} />
+        </div>
       </form>
     </Form>
   );

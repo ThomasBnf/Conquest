@@ -1,3 +1,4 @@
+import { Slack } from "@/components/icons/Slack";
 import { Badge } from "@conquest/ui/badge";
 import { Button } from "@conquest/ui/button";
 import { cn } from "@conquest/ui/cn";
@@ -30,6 +31,7 @@ export const CustomNode = ({ hasEdges, ...props }: Props) => {
 
   const { category, icon, label, description } = node.data;
   const isTrigger = useMemo(() => "isTrigger" in node.data, [node]);
+  const isLoop = useMemo(() => node.data.type === "loop", [node]);
 
   const hasEdge = useMemo(
     () => hasEdges.find((edge) => edge.id === node.id),
@@ -42,7 +44,7 @@ export const CustomNode = ({ hasEdges, ...props }: Props) => {
         <div
           className={cn(
             "absolute -top-[24px] flex h-6 items-center gap-1 rounded-t-lg border-x border-t bg-muted px-1.5 text-muted-foreground",
-            node?.id === props.id && "bg-muted text-main-500 ",
+            node?.id === props.id && "bg-muted text-main-500",
           )}
         >
           <Target size={15} />
@@ -54,6 +56,7 @@ export const CustomNode = ({ hasEdges, ...props }: Props) => {
         onClick={() => {
           setPanel("node");
           setIsChanging(false);
+          setIsAdding(false);
           setSelected(node);
         }}
         className={cn(
@@ -63,15 +66,12 @@ export const CustomNode = ({ hasEdges, ...props }: Props) => {
         )}
       >
         <div className="flex items-center gap-2">
-          <div
-            className={cn(
-              "rounded-md border p-1",
-              isTrigger
-                ? "border-blue-300 bg-blue-100 text-blue-500"
-                : "border-green-300 bg-green-100 text-green-500",
+          <div className="rounded-md border p-1">
+            {icon === "Slack" ? (
+              <Slack size={16} />
+            ) : (
+              <Icon name={icon as keyof typeof icons} size={16} />
             )}
-          >
-            <Icon name={icon as keyof typeof icons} size={16} />
           </div>
           <p className="font-medium">{label}</p>
           <Badge variant="secondary" className="ml-auto">
@@ -79,27 +79,61 @@ export const CustomNode = ({ hasEdges, ...props }: Props) => {
           </Badge>
         </div>
         <Separator className="my-3" />
-        <p className="text-balance text-muted-foreground">
+        <p className="line-clamp-1 text-muted-foreground">
           {description === "" ? "No description" : description}
         </p>
         {!isTrigger && <CustomHandle position={Position.Top} type="target" />}
-        <CustomHandle position={Position.Bottom} type="source" />
+        {!isLoop && <CustomHandle position={Position.Bottom} type="source" />}
       </div>
       {!hasEdge && (
         <>
-          <div className="h-7 w-px bg-border absolute -bottom-9 left-1/2 -translate-x-1/2" />
+          <div className="absolute -bottom-9 left-1/2 h-7 w-px -translate-x-1/2 bg-border" />
           <Button
             size="icon"
             className="absolute -bottom-16 left-1/2 -translate-x-1/2"
             onClick={() => {
               setPanel("actions");
               setIsAdding(true);
+              setIsChanging(false);
               setSelected(node);
             }}
           >
             <Plus size={16} />
           </Button>
         </>
+      )}
+      {isLoop && (
+        <div className="absolute left-1/2 top-8 -z-10 h-48 w-96 -translate-x-1/2 rounded-lg border border-dashed">
+          <p className="absolute left-1/2 top-28 -translate-x-1/2 text-xs text-muted-foreground">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                setPanel("actions");
+                setIsAdding(true);
+                setIsChanging(false);
+                setSelected(node);
+              }}
+            >
+              <Plus size={20} className="rounded border p-0.5" />
+              Select first step
+            </Button>
+          </p>
+          <div className="absolute -bottom-9 left-1/2 h-7 w-px -translate-x-1/2 bg-border" />
+          <CustomHandle position={Position.Bottom} type="source" />
+          <Button
+            size="icon"
+            className="absolute -bottom-16 left-1/2 -translate-x-1/2"
+            onClick={() => {
+              setPanel("actions");
+              setIsAdding(true);
+              setIsChanging(false);
+              setSelected(node);
+            }}
+          >
+            <Plus size={16} />
+          </Button>
+        </div>
       )}
     </div>
   );

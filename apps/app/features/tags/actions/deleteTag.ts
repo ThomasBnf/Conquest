@@ -13,7 +13,7 @@ export const deleteTag = authAction
     }),
   )
   .action(async ({ ctx, parsedInput: { id } }) => {
-    await prisma.tag.delete({
+    await prisma.tags.delete({
       where: { id, workspace_id: ctx.user.workspace_id },
     });
 

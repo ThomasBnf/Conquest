@@ -44,7 +44,7 @@ export const FilterDateSchema = FilterBaseSchema.extend({
 });
 
 export const FilterNumberSchema = FilterBaseSchema.extend({
-  field: z.literal("points"),
+  field: z.literal("love"),
   operator: NumberOperatorSchema,
   value: z.number().default(1),
 });

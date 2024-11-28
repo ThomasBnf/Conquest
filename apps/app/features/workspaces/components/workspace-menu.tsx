@@ -33,7 +33,7 @@ export const WorkspaceMenu = () => {
       <SidebarMenuItem className="flex items-center justify-between">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <SidebarMenuButton className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground font-medium w-fit">
+            <SidebarMenuButton className="w-fit font-medium data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground">
               {open ? user?.workspace.name : user?.workspace.name.charAt(0)}
               <ChevronsUpDown className="!size-3.5" />
             </SidebarMenuButton>

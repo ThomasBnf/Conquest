@@ -25,7 +25,7 @@ export default async function Page({ searchParams }: Props) {
       <Header title="Leaderboard" className="justify-between">
         <DateRangePicker />
       </Header>
-      <div className="grid grid-cols-3 gap-4 p-4 border-b">
+      <div className="grid grid-cols-3 gap-4 border-b p-4">
         {members?.slice(0, 3).map((member, position) => (
           <Podium key={member.id} member={member} position={position} />
         ))}

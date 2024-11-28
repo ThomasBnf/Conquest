@@ -1,4 +1,4 @@
-import Image from "next/image";
+import { Slack } from "@/components/icons/Slack";
 
 type Props = {
   label: string;
@@ -6,10 +6,10 @@ type Props = {
 
 export const SlackBadge = ({ label }: Props) => {
   return (
-    <div className="absolute -top-[22px] left-0 w-fit rounded-t bg-slack px-1.5 pb-2 pt-0.5">
+    <div className="-top-[22px] absolute left-0 w-fit rounded-t bg-slack px-1.5 pt-0.5 pb-2">
       <div className="flex items-center gap-1.5">
-        <Image src="/social/slack.svg" alt="Slack" width={12} height={12} />
-        <p className="text-[11px] font-medium tracking-tight text-white">
+        <Slack size={12} />
+        <p className="font-medium text-[11px] text-white tracking-tight">
           {label}
         </p>
       </div>

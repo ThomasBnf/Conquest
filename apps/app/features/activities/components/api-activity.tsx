@@ -11,11 +11,12 @@ type Props = {
 export const APIActivity = ({ activity }: Props) => {
   const { avatar_url, first_name, last_name, full_name } =
     activity.member ?? {};
-  const { message, type } = activity.details;
+  const { message } = activity;
+  const { key } = activity.activity_type;
 
   return (
-    <div className="relative mt-5 rounded-[7px] from-main-500 bg-gradient-to-br from-0% to-border to-70% p-px shadow-sm">
-      <ActivityBadge label={`API - ${type}`} />
+    <div className="relative mt-5 rounded-[7px] bg-gradient-to-br from-0% from-main-500 to-70% to-border p-px shadow-sm">
+      <ActivityBadge label={`API - ${key}`} />
       <div className="relative flex rounded-[6px] bg-background p-6">
         <Menu activity={activity} />
         <Avatar className="size-8">
@@ -27,10 +28,10 @@ export const APIActivity = ({ activity }: Props) => {
         </Avatar>
         <div className="ml-4 flex flex-col gap-1">
           <div className="flex items-baseline gap-2">
-            <p className="text-sm font-medium leading-none">{full_name}</p>
+            <p className="font-medium text-sm leading-none">{full_name}</p>
             <CreatedAt activity={activity} />
           </div>
-          <p className="text-muted-foreground text-sm whitespace-pre-wrap">
+          <p className="whitespace-pre-wrap text-muted-foreground text-sm">
             {message}
           </p>
         </div>

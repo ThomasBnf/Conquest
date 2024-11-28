@@ -1,5 +1,5 @@
-import { cn } from "@conquest/ui/cn";
 import * as React from "react";
+import { cn } from "../utils/cn";
 
 const Table = React.forwardRef<
   HTMLTableElement,
@@ -55,7 +55,7 @@ const TableRow = React.forwardRef<
   <tr
     ref={ref}
     className={cn(
-      "border-b divide-x transition-colors hover:bg-muted-hover",
+      "divide-x border-b transition-colors hover:bg-muted-hover",
       className,
     )}
     {...props}

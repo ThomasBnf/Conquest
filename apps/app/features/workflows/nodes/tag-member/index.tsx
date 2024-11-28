@@ -98,7 +98,7 @@ export const TagMemberOptions = () => {
               <PopoverItem key={tag.id} onClick={() => handleSelectTag(tag)}>
                 <Checkbox checked={selectedTags.includes(tag.id)} />
                 <div
-                  className="size-3 rounded-full shrink-0"
+                  className="size-3 shrink-0 rounded-full"
                   style={{ backgroundColor: tag.color }}
                 />
                 <p className="truncate">{tag.name}</p>

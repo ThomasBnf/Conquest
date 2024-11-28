@@ -1,10 +1,15 @@
 import { getCurrentUser } from "@/features/users/functions/getCurrentUser";
 import { prisma } from "@/lib/prisma";
 import { safeRoute } from "@/lib/safeRoute";
-import { MemberWithActivitiesSchema } from "@conquest/zod/activity.schema";
-import { eachDayOfInterval, format } from "date-fns";
+import type { MemberWithActivitiesSchema } from "@conquest/zod/activity.schema";
 import { NextResponse } from "next/server";
 import { z } from "zod";
+
+type QueryResult = {
+  total_members: number;
+  total_active_members: number;
+  members: z.infer<typeof MemberWithActivitiesSchema>[];
+};
 
 export const GET = safeRoute
   .use(async () => {
@@ -20,74 +25,87 @@ export const GET = safeRoute
     const { from, to } = query;
     const { workspace_id } = user;
 
-    const totalMembers = await prisma.member.count({
-      where: {
-        workspace_id,
-      },
-    });
+    const [result] = await prisma.$queryRaw<[QueryResult]>`
+    WITH MemberData AS (
+      SELECT 
+        m.*,
+        COALESCE(
+          JSON_AGG(
+            JSON_BUILD_OBJECT(
+              'id', a.id,
+              'created_at', TO_CHAR(a.created_at, 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"')
+            )
+          ) FILTER (WHERE a.id IS NOT NULL),
+          '[]'::json
+        ) as activities
+      FROM Members m
+      LEFT JOIN Activities a ON m.id = a.member_id
+      WHERE m.workspace_id = ${workspace_id}
+      GROUP BY m.id
+    )
+    SELECT 
+      CAST((
+        SELECT COUNT(*) 
+        FROM Members 
+        WHERE workspace_id = ${workspace_id}
+      ) AS INTEGER) as total_members,
+      CAST((
+        SELECT COUNT(DISTINCT m.id) 
+        FROM Members m 
+        WHERE m.workspace_id = ${workspace_id}
+        AND m.joined_at BETWEEN ${from} AND ${to}
+      ) AS INTEGER) as new_members,
+      CAST((
+        SELECT COUNT(DISTINCT m.id) 
+        FROM Members m
+        JOIN Activities a ON m.id = a.member_id
+        WHERE m.workspace_id = ${workspace_id}
+        AND a.created_at BETWEEN ${from} AND ${to}
+      ) AS INTEGER) as active_members,
+      COALESCE(JSON_AGG(md.*), '[]'::json) as members
+    FROM MemberData md
+  `;
 
-    const totalActiveMembers = await prisma.member.count({
-      where: {
-        workspace_id,
-        activities: {
-          some: {
-            created_at: {
-              gte: from,
-              lte: to,
-            },
-          },
-        },
-      },
-    });
+    // const parsedMembers = z
+    //   .array(MemberWithActivitiesSchema)
+    //   .parse(result.members);
+    // const dates = eachDayOfInterval({ start: from, end: to });
 
-    const members = await prisma.member.findMany({
-      where: {
-        workspace_id,
-        created_at: {
-          gte: from,
-          lte: to,
-        },
-      },
-      include: {
-        activities: true,
-      },
-      orderBy: {
-        created_at: "asc",
-      },
-    });
+    // console.log(parsedMembers);
 
-    const parsedMembers = z.array(MemberWithActivitiesSchema).parse(members);
-    const dates = eachDayOfInterval({ start: from, end: to });
+    // let count = 0;
 
-    let count = 0;
+    // const data = dates.map((currentDate) => {
+    //   const date = format(currentDate, "PP");
 
-    const data = dates.map((currentDate) => {
-      const date = format(currentDate, "PP");
+    //   const newMembers = parsedMembers.filter((member) => {
+    //     if (!member.joined_at) return false;
+    //     return format(member.joined_at, "PP") === date;
+    //   });
+    //   const activeMembers = parsedMembers.filter((member) => {
+    //     if (!member.activities?.length) return false;
+    //     return member.activities.some(
+    //       (activity) => format(activity.created_at, "PP") === date,
+    //     );
+    //   });
 
-      const newMembers = parsedMembers.filter(
-        (member) => format(member.created_at, "PP") === date,
-      );
-      const activeMembers = parsedMembers.filter((member) =>
-        member.activities.some(
-          (activity) => format(activity.created_at, "PP") === date,
-        ),
-      );
+    //   count += newMembers.length;
 
-      count += newMembers.length;
+    //   return {
+    //     date,
+    //     members: count,
+    //     newMembers: newMembers.length,
+    //     activeMembers: activeMembers.length,
+    //   };
+    // });
 
-      return {
-        date,
-        members: count,
-        newMembers: newMembers.length,
-        activeMembers: activeMembers.length,
-      };
-    });
+    // const chartData = {
+    //   totalMembers: result.total_members,
+    //   totalActiveMembers: result.total_active_members,
+    //   data,
+    // };
 
-    const chartData = {
-      totalMembers,
-      totalActiveMembers,
-      data,
-    };
+    console.log(result);
 
-    return NextResponse.json(chartData);
+    return NextResponse.json(result);
   });

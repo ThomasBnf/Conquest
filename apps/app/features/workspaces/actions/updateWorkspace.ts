@@ -18,18 +18,21 @@ export const updateWorkspace = authAction
       company_size: z.string().optional(),
     }),
   )
-  .action(async ({ parsedInput: { name, slug, source }, ctx }) => {
-    const workspace = await prisma.workspace.update({
-      where: {
-        id: ctx.user?.workspace_id,
-      },
-      data: {
-        name,
-        slug,
-        source,
-      },
-    });
+  .action(
+    async ({ parsedInput: { name, slug, source, company_size }, ctx }) => {
+      const workspace = await prisma.workspaces.update({
+        where: {
+          id: ctx.user?.workspace_id,
+        },
+        data: {
+          name,
+          slug,
+          source,
+          company_size,
+        },
+      });
 
-    revalidatePath("/");
-    return WorkspaceSchema.parse(workspace);
-  });
+      revalidatePath("/");
+      return WorkspaceSchema.parse(workspace);
+    },
+  );

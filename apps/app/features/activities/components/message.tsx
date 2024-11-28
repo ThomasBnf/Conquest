@@ -9,13 +9,13 @@ type Props = {
 };
 
 export const Message = ({ activity }: Props) => {
-  const { type } = activity.details;
+  const { key } = activity.activity_type;
 
-  if (type === "REACTION") {
+  if (key === "slack:reaction") {
     return <SlackReaction activity={activity} />;
   }
 
-  if (type === "REPLY") {
+  if (key === "slack:reply") {
     return <SlackReply activity={activity} />;
   }
 

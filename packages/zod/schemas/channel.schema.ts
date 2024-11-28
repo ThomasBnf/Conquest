@@ -1,5 +1,6 @@
+import type { channels as ChannelPrisma } from "@prisma/client";
 import { z } from "zod";
-import { SOURCE } from "./source.enum";
+import { SOURCE } from "./enum/source.enum";
 
 export const ChannelSchema = z.object({
   id: z.string().cuid(),
@@ -9,7 +10,7 @@ export const ChannelSchema = z.object({
   workspace_id: z.string().cuid(),
   created_at: z.date(),
   updated_at: z.date(),
-});
+}) satisfies z.ZodType<ChannelPrisma>;
 
 export const ChannelWithActivitiesCountSchema = ChannelSchema.extend({
   _count: z.object({

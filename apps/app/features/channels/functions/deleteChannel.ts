@@ -12,7 +12,7 @@ export const deleteChannel = safeAction
     }),
   )
   .action(async ({ parsedInput: { external_id } }) => {
-    return await prisma.channel.delete({
+    return await prisma.channels.delete({
       where: {
         external_id,
       },

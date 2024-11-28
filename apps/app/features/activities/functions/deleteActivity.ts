@@ -17,7 +17,7 @@ export const deleteActivity = safeAction
   .action(
     async ({ parsedInput: { id, channel_id, external_id, workspace_id } }) => {
       if (!id) {
-        return await prisma.activity.deleteMany({
+        return await prisma.activities.deleteMany({
           where: {
             external_id,
             channel_id,
@@ -26,7 +26,7 @@ export const deleteActivity = safeAction
         });
       }
 
-      return await prisma.activity.delete({
+      return await prisma.activities.delete({
         where: { id },
       });
     },

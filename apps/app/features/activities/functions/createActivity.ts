@@ -1,8 +1,5 @@
 import { safeAction } from "@/lib/safeAction";
-import {
-  ActivityDetailsSchema,
-  ActivitySchema,
-} from "@conquest/zod/activity.schema";
+import { ActivitySchema } from "@conquest/zod/activity.schema";
 import { prisma } from "lib/prisma";
 import { z } from "zod";
 
@@ -13,7 +10,11 @@ export const createActivity = safeAction
   .schema(
     z.object({
       external_id: z.string().nullable(),
-      details: ActivityDetailsSchema,
+      activity_type_id: z.string().cuid(),
+      message: z.string(),
+      react_to: z.string().nullable().optional(),
+      reply_to: z.string().nullable().optional(),
+      invite_by: z.string().nullable().optional(),
       channel_id: z.string().nullable(),
       member_id: z.string(),
       workspace_id: z.string(),
@@ -25,7 +26,11 @@ export const createActivity = safeAction
     async ({
       parsedInput: {
         external_id,
-        details,
+        activity_type_id,
+        message,
+        react_to,
+        reply_to,
+        invite_by,
         channel_id,
         member_id,
         workspace_id,
@@ -33,10 +38,14 @@ export const createActivity = safeAction
         updated_at,
       },
     }) => {
-      const activity = await prisma.activity.create({
+      const activity = await prisma.activities.create({
         data: {
           external_id,
-          details,
+          activity_type_id,
+          message,
+          react_to,
+          reply_to,
+          invite_by,
           channel_id,
           member_id,
           workspace_id,

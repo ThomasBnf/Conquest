@@ -19,12 +19,13 @@ export const _listActivities = authAction
     const { member_id, page } = parsedInput;
     const workspace_id = ctx.user.workspace_id;
 
-    const activities = await prisma.activity.findMany({
+    const activities = await prisma.activities.findMany({
       where: {
         member_id,
         workspace_id,
       },
       include: {
+        activity_type: true,
         member: true,
       },
       orderBy: {

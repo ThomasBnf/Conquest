@@ -1,10 +1,10 @@
 "use server";
 
+import { STATUS } from "@conquest/zod/enum/status.enum";
 import {
   IntegrationDetailsSchema,
   IntegrationSchema,
 } from "@conquest/zod/integration.schema";
-import { STATUS } from "@conquest/zod/status.enum";
 import { tasks } from "@trigger.dev/sdk/v3";
 import { authAction } from "lib/authAction";
 import { prisma } from "lib/prisma";
@@ -20,7 +20,7 @@ export const upsertIntegration = authAction
     }),
   )
   .action(async ({ ctx, parsedInput: { external_id, status, details } }) => {
-    const integration = await prisma.integration.upsert({
+    const integration = await prisma.integrations.upsert({
       where: {
         external_id,
       },

@@ -1,12 +1,6 @@
-import { STATUS } from "@conquest/zod/status.enum";
+import type { integrations as IntegrationPrisma } from "@prisma/client";
 import { z } from "zod";
-
-export const PointsConfigSchema = z.object({
-  post: z.number().default(1),
-  reaction: z.number().default(1),
-  reply: z.number().default(1),
-  invitation: z.number().default(1),
-});
+import { STATUS } from "./enum/status.enum";
 
 const BaseSchema = z.object({
   id: z.string().cuid(),
@@ -24,7 +18,6 @@ const SlackDetailsSchema = z.object({
   token: z.string(),
   slack_user_token: z.string(),
   scopes: z.string(),
-  points_config: PointsConfigSchema,
 });
 
 const DiscourseDetailsSchema = z.object({
@@ -32,7 +25,6 @@ const DiscourseDetailsSchema = z.object({
   community_url: z.string(),
   api_key: z.string(),
   signature: z.string(),
-  points_config: PointsConfigSchema,
 });
 
 export const IntegrationDetailsSchema = z.discriminatedUnion("source", [
@@ -51,10 +43,9 @@ export const DiscourseIntegrationSchema = BaseSchema.extend({
 export const IntegrationSchema = z.union([
   SlackIntegrationSchema,
   DiscourseIntegrationSchema,
-]);
+]) satisfies z.ZodType<IntegrationPrisma>;
 
 export type Integration = z.infer<typeof IntegrationSchema>;
 export type IntegrationDetails = z.infer<typeof IntegrationDetailsSchema>;
-export type PointsConfig = z.infer<typeof PointsConfigSchema>;
 export type SlackIntegration = z.infer<typeof SlackIntegrationSchema>;
 export type DiscourseIntegration = z.infer<typeof DiscourseIntegrationSchema>;

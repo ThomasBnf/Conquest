@@ -7,7 +7,7 @@ export const listWorkflows = authAction
     name: "listWorkflows",
   })
   .action(async ({ ctx }) => {
-    const workflows = await prisma.workflow.findMany({
+    const workflows = await prisma.workflows.findMany({
       where: {
         workspace_id: ctx.user.workspace.id,
       },

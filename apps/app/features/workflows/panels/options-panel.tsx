@@ -1,8 +1,8 @@
 import { DeleteDialog } from "@/components/custom/delete-dialog";
 import { Icon } from "@/components/icons/Icon";
+import { Slack } from "@/components/icons/Slack";
 import { Badge } from "@conquest/ui/badge";
 import { Button } from "@conquest/ui/button";
-import { cn } from "@conquest/ui/cn";
 import { ScrollArea } from "@conquest/ui/scroll-area";
 import { Separator } from "@conquest/ui/separator";
 import { useReactFlow } from "@xyflow/react";
@@ -49,8 +49,8 @@ export const OptionsPanel = () => {
   };
 
   return (
-    <div className="flex flex-col divide-y h-full">
-      <div className="flex h-12 items-center px-4 shrink-0">
+    <div className="flex h-full flex-col divide-y">
+      <div className="flex h-12 shrink-0 items-center px-4">
         <Button
           variant="ghost"
           onClick={() => {
@@ -74,16 +74,15 @@ export const OptionsPanel = () => {
           <div className="flex flex-col gap-4 p-6">
             <div className="flex justify-between gap-2">
               <div className="flex items-center gap-2">
-                <Icon
-                  name={icon as keyof typeof icons}
-                  size={46}
-                  className={cn(
-                    "border rounded-md p-2",
-                    isTrigger
-                      ? "border-blue-300 bg-blue-100 text-blue-500"
-                      : "border-green-300 bg-green-100 text-green-500",
-                  )}
-                />
+                {icon === "Slack" ? (
+                  <Slack size={44} className="rounded-md border p-2.5" />
+                ) : (
+                  <Icon
+                    name={icon as keyof typeof icons}
+                    size={44}
+                    className="rounded-md border p-2.5"
+                  />
+                )}
                 <div className="space-y-1">
                   <Badge variant="secondary">{category}</Badge>
                   <p className="font-medium">{label}</p>
@@ -112,8 +111,8 @@ export const OptionsPanel = () => {
           </div>
         </ScrollArea>
       )}
-      {!isChanging && !isTrigger && (
-        <div className="flex justify-end p-4 shrink-0">
+      {!isChanging && !isTrigger && !isAdding && (
+        <div className="flex shrink-0 justify-end p-4">
           <DeleteDialog
             title="Delete Workflow"
             description="Are you sure you want to delete this workflow?"

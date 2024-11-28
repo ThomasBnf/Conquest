@@ -58,7 +58,7 @@ export const CompaniesTable = ({ initialCompanies, count }: Props) => {
 
   return (
     <>
-      <div className="flex items-center border-b px-4 min-h-12">
+      <div className="flex min-h-12 items-center border-b px-4">
         <QueryInput
           query={search}
           setQuery={(value) => setSearchParams({ search: value })}
@@ -82,12 +82,12 @@ export const CompaniesTable = ({ initialCompanies, count }: Props) => {
                 })}
               </div>
               {scrollX > 0 && (
-                <div className="absolute right-0 top-0 h-full w-12 -mr-12 bg-gradient-to-r from-black to-transparent opacity-[0.075]" />
+                <div className="absolute right-0 top-0 -mr-12 h-full w-12 bg-gradient-to-r from-black to-transparent opacity-[0.075]" />
               )}
             </div>
             <div
               className={cn(
-                "sticky left-[40px] z-10 shrink-0 border-r border-b",
+                "sticky left-[40px] z-10 shrink-0 border-b border-r",
               )}
               style={{ width: fixedColumn[1]?.width }}
             >
@@ -95,10 +95,10 @@ export const CompaniesTable = ({ initialCompanies, count }: Props) => {
                 {fixedColumn[1]?.header({})}
               </div>
               {scrollX > 0 && (
-                <div className="absolute right-0 top-0 h-full w-12 -mr-12 bg-gradient-to-r from-black to-transparent opacity-[0.075]" />
+                <div className="absolute right-0 top-0 -mr-12 h-full w-12 bg-gradient-to-r from-black to-transparent opacity-[0.075]" />
               )}
             </div>
-            <div className="flex border-b divide-x">
+            <div className="flex divide-x border-b">
               {scrollableColumns.map((column) => (
                 <div
                   key={column.id}
@@ -137,7 +137,7 @@ export const CompaniesTable = ({ initialCompanies, count }: Props) => {
                       })}
                     </div>
                     {scrollX > 0 && (
-                      <div className="absolute right-0 top-0 h-full w-12 -mr-12 bg-gradient-to-r from-black to-transparent opacity-[0.075]" />
+                      <div className="absolute right-0 top-0 -mr-12 h-full w-12 bg-gradient-to-r from-black to-transparent opacity-[0.075]" />
                     )}
                   </div>
                   <div
@@ -157,7 +157,7 @@ export const CompaniesTable = ({ initialCompanies, count }: Props) => {
                       })}
                     </div>
                     {scrollX > 0 && (
-                      <div className="absolute right-0 top-0 h-full w-12 -mr-12 bg-gradient-to-r from-black to-transparent opacity-[0.075]" />
+                      <div className="absolute right-0 top-0 -mr-12 h-full w-12 bg-gradient-to-r from-black to-transparent opacity-[0.075]" />
                     )}
                   </div>
                   <div className="flex divide-x">
@@ -188,10 +188,10 @@ export const CompaniesTable = ({ initialCompanies, count }: Props) => {
               <div className="flex items-center justify-center">
                 <Companies />
               </div>
-              <p className="text-center font-medium text-lg">
+              <p className="text-center text-lg font-medium">
                 No companies found
               </p>
-              <p className="text-center text-muted-foreground mb-4">
+              <p className="mb-4 text-center text-muted-foreground">
                 {debouncedSearch
                   ? "None of your companies match the current filters"
                   : "No companies found in your workspace"}
@@ -215,12 +215,12 @@ export const CompaniesTable = ({ initialCompanies, count }: Props) => {
               style={{ width: 325 }}
             >
               <p
-                className="flex h-12 items-center justify-end px-3 border-r"
+                className="flex h-12 items-center justify-end border-r px-3"
                 style={{ width: 325 }}
               >
                 <span className="mr-auto text-muted-foreground">Count</span>
                 <span className="mx-1 font-mono">{companies.length} /</span>
-                <span className="text-muted-foreground font-mono">{count}</span>
+                <span className="font-mono text-muted-foreground">{count}</span>
               </p>
             </div>
           </div>

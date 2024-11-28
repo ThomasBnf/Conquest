@@ -4,100 +4,90 @@ import { MemberSchema } from "@conquest/zod/member.schema";
 import { authAction } from "lib/authAction";
 import { prisma } from "lib/prisma";
 import { revalidatePath } from "next/cache";
-import {
-  type UpdateMember,
-  updateMemberSchema,
-} from "../schema/update-member.schema";
 
 export const updateMember = authAction
   .metadata({
     name: "updateMember",
   })
-  .schema(updateMemberSchema)
-  .action(async ({ ctx, parsedInput }) => {
-    const {
-      id,
-      first_name,
-      last_name,
-      emails,
-      phones,
-      job_title,
-      address,
-      bio,
-      tags,
-    } = updateMemberSchema.parse(parsedInput);
-
-    const member = await prisma.member.findUnique({
-      where: {
+  .schema(MemberSchema.partial())
+  .action(
+    async ({
+      ctx,
+      parsedInput: {
         id,
-        workspace_id: ctx.user.workspace_id,
+        first_name,
+        last_name,
+        company_id,
+        emails,
+        phones,
+        job_title,
+        bio,
+        tags,
       },
-      select: {
-        first_name: true,
-        last_name: true,
-        full_name: true,
-        emails: true,
-        phones: true,
-      },
-    });
+    }) => {
+      const member = await prisma.members.findUnique({
+        where: {
+          id,
+          workspace_id: ctx.user.workspace_id,
+        },
+        select: {
+          first_name: true,
+          last_name: true,
+          full_name: true,
+          emails: true,
+          phones: true,
+        },
+      });
 
-    const data: UpdateMember & { full_name?: string } = { id };
+      const updatedFirstName = first_name ?? member?.first_name ?? "";
+      const updatedLastName = last_name ?? member?.last_name ?? "";
+      const updatedFullName = `${updatedFirstName} ${updatedLastName}`.trim();
 
-    const updatedFirstName = first_name
-      ? first_name
-      : (member?.first_name ?? "");
-    const updatedLastName = last_name ? last_name : (member?.last_name ?? "");
-
-    if (first_name) data.first_name = updatedFirstName;
-    if (last_name) data.last_name = updatedLastName;
-    if (first_name || last_name) {
-      data.full_name =
-        `${updatedFirstName ?? ""} ${updatedLastName ?? ""}`.trim();
-    }
-    if (emails) data.emails = emails;
-    if (phones) data.phones = phones;
-    if (job_title) data.job_title = job_title;
-    if (address) data.address = address;
-    if (bio) data.bio = bio;
-    if (tags) data.tags = tags;
-
-    const updatedMember = await prisma.member.update({
-      where: {
-        id,
-        workspace_id: ctx.user.workspace_id,
-      },
-      data: {
-        ...data,
-        search: search({
-          first_name: data.first_name ?? member?.first_name ?? null,
-          last_name: data.last_name ?? member?.last_name ?? null,
-          emails: data.emails ?? member?.emails ?? [],
-          phones: data.phones ?? member?.phones ?? [],
+      const updatedData = {
+        ...(first_name && { first_name: updatedFirstName }),
+        ...(last_name && { last_name: updatedLastName }),
+        ...((first_name || last_name) && { full_name: updatedFullName }),
+        ...(emails && { emails }),
+        ...(phones && { phones }),
+        ...(job_title && { job_title }),
+        ...(bio && { bio }),
+        ...(tags && { tags }),
+        ...(company_id && { company_id }),
+        search: generateSearchString({
+          first_name: first_name ?? member?.first_name ?? null,
+          last_name: last_name ?? member?.last_name ?? null,
+          emails: emails ?? member?.emails ?? [],
+          phones: phones ?? member?.phones ?? [],
         }),
-      },
-    });
+      };
 
-    revalidatePath(`/${ctx.user.workspace.slug}/members`);
-    return MemberSchema.parse(updatedMember);
-  });
+      const updatedMember = await prisma.members.update({
+        where: {
+          id,
+          workspace_id: ctx.user.workspace_id,
+        },
+        data: updatedData,
+      });
 
-const search = ({
+      revalidatePath(`/${ctx.user.workspace.slug}/members`);
+      return MemberSchema.parse(updatedMember);
+    },
+  );
+
+const generateSearchString = ({
   first_name,
   last_name,
   emails,
   phones,
 }: {
-  first_name: string | null | undefined;
-  last_name: string | null | undefined;
-  emails: string[] | undefined;
-  phones: string[] | undefined;
+  first_name: string | null;
+  last_name: string | null;
+  emails: string[];
+  phones: string[];
 }) => {
-  const searchTerms = [
-    first_name,
-    last_name,
-    ...(emails ?? []),
-    ...(phones ?? []),
-  ].filter(Boolean);
+  const searchTerms = [first_name, last_name, ...emails, ...phones].filter(
+    Boolean,
+  );
 
   return searchTerms.join(" ").trim().toLowerCase();
 };

@@ -1,18 +1,21 @@
 "use client";
 
 import { EditableAddress } from "@/components/custom/editable-address";
+import { EditableDate } from "@/components/custom/editable-date";
 import { EditableInput } from "@/components/custom/editable-input";
+import { EditableMembers } from "@/components/custom/editable-members";
 import { FieldCard } from "@/components/custom/field-card";
 import { TagPicker } from "@/features/tags/tag-picker";
 import { Avatar, AvatarFallback, AvatarImage } from "@conquest/ui/avatar";
 import { ScrollArea } from "@conquest/ui/scroll-area";
 import { Separator } from "@conquest/ui/separator";
-import type { Company } from "@conquest/zod/company.schema";
+import type { CompanyWithMembers } from "@conquest/zod/company.schema";
 import type { Tag } from "@conquest/zod/tag.schema";
 import { format } from "date-fns";
+import { _updateCompany } from "../actions/_updateCompany";
 
 type Props = {
-  company: Company;
+  company: CompanyWithMembers;
   tags: Tag[] | undefined;
 };
 
@@ -33,20 +36,18 @@ export const CompanySidebar = ({ company, tags }: Props) => {
   const onUpdateCompany = async (
     field:
       | "name"
-      | "title"
-      | "description"
       | "domain"
       | "industry"
       | "employees"
       | "address"
       | "founded_at",
-    value: string,
+    value: string | Date,
   ) => {
-    // await _updateMember({ id, [field]: value });
+    await _updateCompany({ id, [field]: value });
   };
 
   return (
-    <div className="flex flex-col h-full flex-1 max-w-md">
+    <div className="flex h-full max-w-md flex-1 flex-col">
       <div className="flex items-center gap-2 p-4">
         <Avatar className="size-12">
           <AvatarImage src={logo_url ?? ""} />
@@ -55,12 +56,12 @@ export const CompanySidebar = ({ company, tags }: Props) => {
           </AvatarFallback>
         </Avatar>
         <div>
-          <p className="text-base font-medium leading-tight">{name}</p>
-          <p className="text-xs text-muted-foreground">{id}</p>
+          <p className="font-medium text-base leading-tight">{name}</p>
+          <p className="text-muted-foreground text-xs">{id}</p>
         </div>
       </div>
       <Separator />
-      <div className="p-4 space-y-2">
+      <div className="space-y-2 p-4">
         <FieldCard icon="Code" label="Source">
           <p className="pl-1.5">{source}</p>
         </FieldCard>
@@ -70,14 +71,17 @@ export const CompanySidebar = ({ company, tags }: Props) => {
       </div>
       <Separator />
       <ScrollArea className="flex-1">
-        <div className="p-4 space-y-2">
-          <p className="text-xs text-muted-foreground">COMPANY DETAILS</p>
+        <div className="space-y-2 p-4">
+          <p className="text-muted-foreground text-xs">COMPANY DETAILS</p>
           <FieldCard icon="Building2" label="Name">
             <EditableInput
               defaultValue={name}
               placeholder="Set name"
               onUpdate={(value) => onUpdateCompany("name", value)}
             />
+          </FieldCard>
+          <FieldCard icon="Users" label="Members">
+            <EditableMembers company={company} />
           </FieldCard>
           <FieldCard icon="Globe" label="Domain">
             <EditableInput
@@ -108,16 +112,15 @@ export const CompanySidebar = ({ company, tags }: Props) => {
           </FieldCard>
         </div>
         <Separator />
-        <div className="p-4 space-y-2">
+        <div className="space-y-2 p-4">
           <FieldCard icon="CalendarCheck" label="Founded at">
-            <EditableInput
-              defaultValue={founded_at ? format(founded_at, "PP p") : ""}
-              placeholder="Set founded date"
+            <EditableDate
+              defaultValue={founded_at ? format(founded_at, "PP p") : undefined}
               onUpdate={(value) => onUpdateCompany("founded_at", value)}
             />
           </FieldCard>
           <FieldCard icon="CalendarPlus" label="Created at">
-            <p className="pl-1.5">{format(created_at, "PP p")}</p>
+            <p className="pl-1.5">{format(created_at, "PPP p")}</p>
           </FieldCard>
         </div>
       </ScrollArea>

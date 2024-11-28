@@ -1,7 +1,7 @@
-import crypto from "node:crypto";
+import { prisma } from "@/lib/prisma";
 import { safeRoute } from "@/lib/safeRoute";
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import crypto from "node:crypto";
 
 const DISCOURSE_WEBHOOK_SECRET = "9567a3dc9def";
 
@@ -11,7 +11,7 @@ export const POST = safeRoute.handler(async (request, context) => {
 
   switch (body) {
     case "category": {
-      const channel = await prisma.channel.upsert({
+      const channel = await prisma.channels.upsert({
         where: {
           external_id: body.id,
         },

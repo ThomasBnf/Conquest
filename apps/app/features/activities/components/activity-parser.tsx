@@ -6,7 +6,7 @@ type Props = {
 };
 
 export const ActivityParser = ({ activity }: Props) => {
-  const { source } = activity.details;
+  const { source } = activity.activity_type;
 
   switch (source) {
     case "API":

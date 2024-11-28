@@ -11,7 +11,7 @@ export const updateChannel = safeAction
     }),
   )
   .action(async ({ parsedInput: { external_id, name } }) => {
-    return await prisma.channel.update({
+    return await prisma.channels.update({
       where: {
         external_id,
       },

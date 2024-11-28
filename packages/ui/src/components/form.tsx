@@ -1,7 +1,5 @@
 "use client";
 
-import { Label } from "@conquest/ui/label";
-import { cn } from "@conquest/ui/cn";
 import type * as LabelPrimitive from "@radix-ui/react-label";
 import { Slot } from "@radix-ui/react-slot";
 import * as React from "react";
@@ -13,6 +11,8 @@ import {
   FormProvider,
   useFormContext,
 } from "react-hook-form";
+import { cn } from "../utils/cn";
+import { Label } from "./label";
 
 const Form = FormProvider;
 
@@ -95,7 +95,7 @@ const FormLabel = React.forwardRef<
     <Label
       ref={ref}
       className={cn(
-        "text-sm font-medium text-foreground",
+        "font-medium text-foreground text-sm",
         error && "text-destructive",
         className,
       )}
@@ -161,7 +161,7 @@ const FormMessage = React.forwardRef<
     <p
       ref={ref}
       id={formMessageId}
-      className={cn("text-xs text-destructive", className)}
+      className={cn("text-destructive text-xs", className)}
       {...props}
     >
       {body}

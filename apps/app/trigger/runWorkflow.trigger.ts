@@ -1,7 +1,7 @@
-import { getPoints } from "@/features/members/helpers/getPoints";
 import { prisma } from "@/lib/prisma";
 import {
   type Activity,
+  type ActivityWithType,
   type MemberWithActivities,
   MemberWithActivitiesSchema,
 } from "@conquest/zod/activity.schema";
@@ -12,11 +12,8 @@ import type {
   FilterSelect,
   FilterTag,
 } from "@conquest/zod/filters.schema";
-import {
-  type Integration,
-  IntegrationSchema,
-  SlackIntegrationSchema,
-} from "@conquest/zod/integration.schema";
+import { SlackIntegrationSchema } from "@conquest/zod/integration.schema";
+import { MemberSchema } from "@conquest/zod/member.schema";
 import {
   type Category,
   type GroupFilter,
@@ -32,26 +29,23 @@ import { startOfDay, subDays } from "date-fns";
 import { z } from "zod";
 
 let members: MemberWithActivities[] = [];
-let integrations: Integration[];
+let createdMember: MemberWithActivities | null = null;
 
 export const runWorkflow = task({
   id: "run-workflow",
-  run: async (payload: { workflow_id: string }) => {
-    const { workflow_id } = payload;
+  run: async (payload: {
+    workflow_id: string;
+    created_member?: MemberWithActivities;
+  }) => {
+    const { workflow_id, created_member } = payload;
+    console.log(payload);
+    createdMember = created_member ?? null;
 
-    const workflow = await prisma.workflow.findUnique({
+    const workflow = await prisma.workflows.findUnique({
       where: { id: workflow_id },
     });
     const parsedWorkflow = WorkflowSchema.parse(workflow);
     const { nodes, edges, workspace_id } = parsedWorkflow;
-
-    integrations = IntegrationSchema.array().parse(
-      await prisma.integration.findMany({
-        where: {
-          workspace_id,
-        },
-      }),
-    );
 
     let node = nodes.find((node) => "isTrigger" in node.data);
     let hasNextNode = true;
@@ -121,18 +115,51 @@ export const runWorkflow = task({
 });
 
 export const listMembers = async (workspace_id: string) => {
-  return await prisma.member.findMany({
-    where: {
-      workspace_id,
-    },
-    include: {
-      activities: {
-        orderBy: {
-          created_at: "desc",
-        },
-      },
-    },
-  });
+  return await prisma.$queryRaw`
+    SELECT 
+            m.*,
+            CAST(COALESCE(SUM(CASE 
+                WHEN a.created_at > NOW() - INTERVAL '3 months' 
+                THEN at.weight 
+                ELSE 0 
+            END), 0) AS INTEGER) as love,
+            CAST(COALESCE(MAX(CASE 
+                WHEN a.created_at > NOW() - INTERVAL '3 months' 
+                THEN at.weight
+                ELSE 0 
+            END), 0) AS INTEGER) as level,
+            COALESCE(
+                json_agg(
+                    CASE WHEN a.id IS NOT NULL THEN
+                        json_build_object(
+                            'id', a.id,
+                            'external_id', COALESCE(a.external_id, ''),
+                            'message', COALESCE(a.message, ''),
+                            'reply_to', COALESCE(a.reply_to, ''),
+                            'react_to', COALESCE(a.react_to, ''),
+                            'invite_by', COALESCE(a.invite_by, ''),
+                            'channel_id', a.channel_id,
+                            'member_id', a.member_id,
+                            'workspace_id', a.workspace_id,
+                            'activity_type_id', a.activity_type_id,
+                            'created_at', TO_CHAR(a.created_at, 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"'),
+                            'updated_at', TO_CHAR(a.updated_at, 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"'),
+                            'activity_type', row_to_json(at.*)
+                        )
+                    ELSE NULL END
+                    ORDER BY a.created_at DESC
+                ) FILTER (WHERE a.id IS NOT NULL),
+                '[]'::json
+            ) as activities
+        FROM 
+            members m
+            LEFT JOIN activities a ON m.id = a.member_id
+            LEFT JOIN activities_types at ON a.activity_type_id = at.id
+        WHERE 
+            m.workspace_id = ${workspace_id}
+        GROUP BY 
+            m.id
+      `;
 };
 
 export const addTag = async (node: NodeTagMember) => {
@@ -145,7 +172,7 @@ export const addTag = async (node: NodeTagMember) => {
     const hasTags = tags.some((tag) => memberTags.includes(tag));
 
     if (!hasTags) {
-      await prisma.member.update({
+      await prisma.members.update({
         where: {
           id: member.id,
         },
@@ -167,7 +194,7 @@ export const removeTag = async (node: NodeTagMember) => {
     const hasTags = tags.some((tag) => memberTags.includes(tag));
 
     if (hasTags) {
-      await prisma.member.update({
+      await prisma.members.update({
         where: {
           id: member.id,
         },
@@ -182,14 +209,51 @@ export const removeTag = async (node: NodeTagMember) => {
 };
 
 export const webhook = async (node: NodeWebhook) => {
-  const { url } = node;
+  const { url, body } = node;
 
   if (!url) throw new Error("No URL provided");
+
+  let formattedBody = body
+    ?.replace(/\\n/g, "\n")
+    .replace("{{created_member}}", JSON.stringify(createdMember, null, 2))
+    .replace(
+      "{{matching_members}}",
+      JSON.stringify(
+        members.map((member) => ({
+          ...member,
+          activities: member.activities?.map((activity) => activity.id) ?? [],
+        })),
+        null,
+        2,
+      ),
+    )
+    .replace(
+      "{{matching_members.count}}",
+      JSON.stringify({ count: members?.length }),
+    );
+
+  for (const [key] of Object.entries(MemberSchema.shape)) {
+    formattedBody = formattedBody?.replace(
+      `{{created_member.${key}}}`,
+      String(createdMember?.[key as keyof typeof createdMember] ?? null),
+    );
+  }
+
+  for (const [key] of Object.entries(MemberSchema.shape)) {
+    formattedBody = formattedBody?.replace(
+      `{{matching_members.${key}}}`,
+      JSON.stringify(
+        members
+          ?.map((member) => member[key as keyof typeof member])
+          .filter(Boolean) ?? [],
+      ),
+    );
+  }
 
   await fetch(url, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(members),
+    body: formattedBody,
   });
 };
 
@@ -197,7 +261,7 @@ export const slackMessage = async (
   node: NodeSlackMessage,
   workspace_id: string,
 ) => {
-  const slack = await prisma.integration.findFirst({
+  const slack = await prisma.integrations.findFirst({
     where: {
       details: {
         path: ["source"],
@@ -208,6 +272,7 @@ export const slackMessage = async (
   });
 
   if (!slack) throw new Error("No Slack integration found");
+
   const { details } = SlackIntegrationSchema.parse(slack);
   const { slack_user_token } = details;
   const { message } = node;
@@ -293,7 +358,7 @@ const createFilterOperation = (filter: Filter) => {
       return createTagFilter(filter);
     case "created_at":
       return createDateFilter(filter);
-    case "points":
+    case "love":
       return createNumberFilter(filter);
     default:
       return { execute: () => true };
@@ -307,7 +372,7 @@ export const createLocaleFilter = (filter: FilterSelect) => {
 
   return {
     execute: ({ member }: { member: MemberWithActivities }) => {
-      const memberLocale = member.locale;
+      const memberLocale = member.localisation;
 
       switch (operator) {
         case "contains":
@@ -327,17 +392,17 @@ export const createTypeFilter = (filter: FilterSelect) => {
   if (!values?.length) return { execute: () => true };
 
   return {
-    execute: ({ activities }: { activities: Activity[] }) => {
+    execute: ({ activities }: { activities: ActivityWithType[] }) => {
       if (!activities?.length) return false;
 
       switch (operator) {
         case "contains":
           return activities.some((activity) =>
-            values.includes(activity.details.type),
+            values.includes(activity.activity_type.key),
           );
         case "not_contains":
           return activities.every(
-            (activity) => !values.includes(activity.details.type),
+            (activity) => !values.includes(activity.activity_type.key),
           );
         default:
           return true;
@@ -352,17 +417,17 @@ export const createSourceFilter = (filter: FilterSelect) => {
   if (!values?.length) return { execute: () => true };
 
   return {
-    execute: ({ activities }: { activities: Activity[] }) => {
+    execute: ({ activities }: { activities: ActivityWithType[] }) => {
       if (!activities?.length) return false;
 
       switch (operator) {
         case "contains":
           return activities.some((activity) =>
-            values.includes(activity.details.source),
+            values.includes(activity.activity_type.source),
           );
         case "not_contains":
           return activities.every(
-            (activity) => !values.includes(activity.details.source),
+            (activity) => !values.includes(activity.activity_type.source),
           );
         default:
           return true;
@@ -438,17 +503,17 @@ export const createNumberFilter = (filter: FilterNumber) => {
 
   return {
     execute: ({ member }: { member: MemberWithActivities }) => {
-      const points = getPoints({ integrations, member });
+      const love = member.love ?? 0;
 
       switch (operator) {
         case "equals":
-          return points === value;
+          return love === value;
         case "not_equals":
-          return points !== value;
+          return love !== value;
         case "greater_than":
-          return points > value;
+          return love > value;
         case "less_than":
-          return points < value;
+          return love < value;
         default:
           return true;
       }

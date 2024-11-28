@@ -15,11 +15,13 @@ export const _createApiKey = authAction
   )
   .action(async ({ ctx, parsedInput: { name } }) => {
     const slug = ctx.user.workspace.slug;
-    const apiKey = await prisma.apiKey.create({
+    const workspace_id = ctx.user.workspace_id;
+
+    const apiKey = await prisma.apikeys.create({
       data: {
         name,
         token: await generateId(24),
-        user_id: ctx.user.id,
+        workspace_id,
       },
     });
 

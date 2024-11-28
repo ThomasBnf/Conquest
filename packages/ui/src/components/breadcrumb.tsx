@@ -1,7 +1,7 @@
-import { cn } from "@conquest/ui/cn";
 import { Slot } from "@radix-ui/react-slot";
 import { ChevronRight, MoreHorizontal } from "lucide-react";
 import * as React from "react";
+import { cn } from "../utils/cn";
 
 const Breadcrumb = React.forwardRef<
   HTMLElement,
@@ -18,7 +18,7 @@ const BreadcrumbList = React.forwardRef<
   <ol
     ref={ref}
     className={cn(
-      "flex flex-wrap items-center gap-1 break-words text-sm text-muted-foreground",
+      "flex flex-wrap items-center gap-1 break-words text-muted-foreground text-sm",
       className,
     )}
     {...props}

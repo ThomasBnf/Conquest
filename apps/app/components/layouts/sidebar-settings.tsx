@@ -15,6 +15,7 @@ import { Tags } from "components/icons/Tags";
 import { User } from "components/icons/User";
 import { ArrowLeft } from "lucide-react";
 import { usePathname } from "next/navigation";
+import { ActivitiesTypes } from "../icons/ActivitiesTypes";
 import { Integration } from "../icons/Integration";
 
 export const SidebarSettings = () => {
@@ -33,6 +34,12 @@ export const SidebarSettings = () => {
       label: "Tags",
       href: `/${slug}/settings/tags`,
       isActive: pathname.startsWith(`/${slug}/settings/tags`),
+    },
+    {
+      icon: <ActivitiesTypes className="size-[16px]" />,
+      label: "Activities types",
+      href: `/${slug}/settings/activities-types`,
+      isActive: pathname.startsWith(`/${slug}/settings/activities-types`),
     },
     {
       icon: <Integration className="size-[18px]" />,

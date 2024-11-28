@@ -1,5 +1,4 @@
 import { createListCategories } from "@/features/discourse/functions/createListCategories";
-import { updateIntegration } from "@/features/integrations/functions/updateIntegration";
 import { DiscourseIntegrationSchema } from "@conquest/zod/integration.schema";
 import { schemaTask } from "@trigger.dev/sdk/v3";
 import { z } from "zod";
@@ -27,10 +26,15 @@ export const installDiscourse = schemaTask({
   onSuccess: async (payload) => {
     const { external_id } = payload.integration;
 
-    await updateIntegration({
-      external_id,
-      installed_at: new Date(),
-      status: "CONNECTED",
-    });
+    // await updateIntegration({
+    //   integration:{}
+    //   external_id,
+    //   installed_at: new Date(),
+    //   status: "CONNECTED",
+    //   post: 1,
+    //   reply: 1,
+    //   reaction: 1,
+    //   invitation: 1,
+    // });
   },
 });

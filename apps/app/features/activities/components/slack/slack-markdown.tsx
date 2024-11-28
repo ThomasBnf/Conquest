@@ -1,10 +1,7 @@
 import { emojiParser } from "@/features/activities/helpers/emoji-parser";
 import { Button, buttonVariants } from "@conquest/ui/button";
 import { cn } from "@conquest/ui/cn";
-import {
-  ActivitySlackSchema,
-  type ActivityWithMember,
-} from "@conquest/zod/activity.schema";
+import type { ActivityWithMember } from "@conquest/zod/activity.schema";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
@@ -17,8 +14,7 @@ type Props = {
 export const SlackMarkdown = ({ activity }: Props) => {
   const [show, setShow] = useState(false);
 
-  const slackActivity = ActivitySlackSchema.parse(activity.details);
-  const { message } = slackActivity;
+  const { message } = activity;
 
   const convertToJsx = (
     inputText: string,
@@ -49,7 +45,7 @@ export const SlackMarkdown = ({ activity }: Props) => {
                 target="_blank"
                 className={cn(
                   buttonVariants({ variant: "link" }),
-                  "p-0 h-fit text-[#1264a3] text-balance",
+                  "h-fit text-balance p-0 text-[#1264a3]",
                 )}
               >
                 {text || url}
@@ -120,7 +116,7 @@ export const SlackMarkdown = ({ activity }: Props) => {
         if (part.match(/^```[^`]+```$/)) {
           const content = part.slice(3, -3);
           return (
-            <pre key={content} className="bg-muted p-2 border rounded">
+            <pre key={content} className="rounded border bg-muted p-2">
               {content}
             </pre>
           );
@@ -138,7 +134,7 @@ export const SlackMarkdown = ({ activity }: Props) => {
           return (
             <code
               key={content}
-              className="text-[#C52B51] bg-muted border text-[13px] font-[550] rounded p-0.5"
+              className="rounded border bg-muted p-0.5 text-[13px] font-[550] text-[#C52B51]"
             >
               {content}
             </code>

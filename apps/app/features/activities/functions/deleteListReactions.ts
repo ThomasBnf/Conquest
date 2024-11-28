@@ -11,29 +11,14 @@ export const deleteListReactions = safeAction
     }),
   )
   .action(async ({ parsedInput: { channel_id, react_to } }) => {
-    return await prisma.activity.deleteMany({
+    return await prisma.activities.deleteMany({
       where: {
         channel_id,
-        AND: [
-          {
-            details: {
-              path: ["react_to"],
-              equals: react_to,
-            },
-          },
-          {
-            details: {
-              path: ["source"],
-              equals: "SLACK",
-            },
-          },
-          {
-            details: {
-              path: ["type"],
-              equals: "REACTION",
-            },
-          },
-        ],
+        react_to,
+        activity_type: {
+          source: "SLACK",
+          key: "slack:reaction",
+        },
       },
     });
   });

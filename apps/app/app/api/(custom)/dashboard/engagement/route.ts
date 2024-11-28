@@ -19,8 +19,7 @@ export const GET = safeRoute
     const { from, to } = query;
     const { workspace_id } = user;
 
-    // Get all activities in date range
-    const activities = await prisma.activity.findMany({
+    const activities = await prisma.activities.findMany({
       where: {
         workspace_id,
         created_at: {
@@ -30,15 +29,14 @@ export const GET = safeRoute
       },
       select: {
         created_at: true,
-        member_id: true, // Add member_id to track unique members
+        member_id: true,
       },
       orderBy: {
         created_at: "asc",
       },
     });
 
-    // Get all members count for each day
-    const membersPerDay = await prisma.member.groupBy({
+    const membersPerDay = await prisma.members.groupBy({
       by: ["created_at"],
       where: {
         workspace_id,
@@ -49,10 +47,8 @@ export const GET = safeRoute
       _count: true,
     });
 
-    // Generate array of dates between from and to
     const dates = eachDayOfInterval({ start: from, end: to });
 
-    // Calculate running total of members for each day
     let runningMemberCount = 0;
     const memberCountByDate = new Map();
 
@@ -61,20 +57,17 @@ export const GET = safeRoute
       memberCountByDate.set(format(created_at, "PP"), runningMemberCount);
     }
 
-    // Calculate activities per day with unique members
     const activitiesByDate = new Map();
     const uniqueMembersByDate = new Map();
 
     for (const { created_at, member_id } of activities) {
       const dateKey = format(created_at, "PP");
 
-      // Track unique members per day
       if (!uniqueMembersByDate.has(dateKey)) {
         uniqueMembersByDate.set(dateKey, new Set());
       }
       uniqueMembersByDate.get(dateKey).add(member_id);
 
-      // Track total activities
       activitiesByDate.set(dateKey, (activitiesByDate.get(dateKey) || 0) + 1);
     }
 
@@ -84,7 +77,6 @@ export const GET = safeRoute
       const totalMembers = memberCountByDate.get(dateStr) || runningMemberCount;
       const uniqueActiveMembers = uniqueMembersByDate.get(dateStr)?.size || 0;
 
-      // Calculate engagement rate based on unique active members instead of activities
       return {
         date: dateStr,
         activities: dailyActivities,

@@ -1,6 +1,5 @@
 import { prisma } from "@/lib/prisma";
 import { safeAction } from "@/lib/safeAction";
-import { ActivityDetailsSchema } from "@conquest/zod/activity.schema";
 import { z } from "zod";
 
 export const updateActivity = safeAction
@@ -8,16 +7,29 @@ export const updateActivity = safeAction
   .schema(
     z.object({
       external_id: z.string(),
-      details: ActivityDetailsSchema,
+      message: z.string(),
+      activity_type_id: z.string(),
+      // files: _files,
+      reply_to: z.string().optional(),
     }),
   )
-  .action(async ({ parsedInput: { external_id, details } }) => {
-    return await prisma.activity.update({
-      where: {
-        external_id,
-      },
-      data: {
-        details,
-      },
-    });
-  });
+  .action(
+    async ({
+      parsedInput: { external_id, message, activity_type_id, reply_to },
+    }) => {
+      return await prisma.activities.update({
+        where: {
+          external_id,
+        },
+        data: {
+          message,
+          activity_type: {
+            connect: {
+              id: activity_type_id,
+            },
+          },
+          reply_to,
+        },
+      });
+    },
+  );

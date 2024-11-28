@@ -22,18 +22,18 @@ export const ActionMenu = ({ rowSelected, setRowSelected, count }: Props) => {
 
     if (error) return toast.error(error);
     toast.success("Members deleted");
-    queryClient.invalidateQueries({ queryKey: ["members"] });
+    queryClient.invalidateQueries({ queryKey: ["members"], exact: false });
     setRowSelected([]);
   };
 
   return (
-    <div className="absolute bottom-10 inset-x-0 w-fit mx-auto">
-      <div className="bg-foreground border border-foreground text-background pl-2.5 pr-1 py-1 rounded-lg flex items-center actions-primary divide-background/50 overflow-hidden">
-        <p className="border-r pr-2 border-r-background/30 py-1">
+    <div className="absolute inset-x-0 bottom-10 mx-auto w-fit">
+      <div className="actions-primary flex items-center divide-background/50 overflow-hidden rounded-lg border border-foreground bg-foreground py-1 pl-2.5 pr-1 text-background">
+        <p className="border-r border-r-background/30 py-1 pr-2">
           {rowSelected.length}
-          <span className="text-muted-foreground mx-1">of</span>
+          <span className="mx-1 text-muted-foreground">of</span>
           {count}
-          <span className="text-muted-foreground ml-1">selected</span>
+          <span className="ml-1 text-muted-foreground">selected</span>
         </p>
         <DeleteDialog
           title="Delete Members"

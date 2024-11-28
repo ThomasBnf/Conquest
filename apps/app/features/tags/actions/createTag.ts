@@ -1,6 +1,6 @@
 "use server";
 
-import { SOURCE } from "@conquest/zod/source.enum";
+import { SOURCE } from "@conquest/zod/enum/source.enum";
 import { TagSchema } from "@conquest/zod/tag.schema";
 import { authAction } from "lib/authAction";
 import { prisma } from "lib/prisma";
@@ -25,7 +25,7 @@ export const createTag = authAction
       ctx,
       parsedInput: { external_id, name, description, source, color },
     }) => {
-      const tag = await prisma.tag.create({
+      const tag = await prisma.tags.create({
         data: {
           external_id,
           name,

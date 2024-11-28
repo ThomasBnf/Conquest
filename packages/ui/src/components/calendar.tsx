@@ -1,10 +1,10 @@
 "use client";
 
-import { buttonVariants } from "@conquest/ui/button";
-import { cn } from "@conquest/ui/cn";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import type * as React from "react";
 import { DayPicker } from "react-day-picker";
+import { cn } from "../utils/cn";
+import { buttonVariants } from "./button";
 
 export type CalendarProps = React.ComponentProps<typeof DayPicker>;
 

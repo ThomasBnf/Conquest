@@ -48,14 +48,13 @@ export const EditableInput = ({
         variant="ghost"
         size="xs"
         onClick={() => setIsFocus(true)}
-        className={cn(className)}
-        classNameSpan={cn(value && "text-start")}
-      >
-        {value ? (
-          <span className="line-clamp-1">{value}</span>
-        ) : (
-          <span className="text-muted-foreground">{placeholder}</span>
+        className={cn(className, "h-8 w-full")}
+        classNameSpan={cn(
+          "justify-start text-start",
+          value ? "line-clamp-1" : "text-muted-foreground",
         )}
+      >
+        {value === "" || value === null ? placeholder : value}
       </Button>
     );
   }
@@ -75,7 +74,7 @@ export const EditableInput = ({
       ) : (
         <Input
           autoFocus
-          className="h-8 p-[5px] "
+          className="h-8 p-[5px]"
           value={value ?? ""}
           onChange={(event) => setValue(event.target.value)}
           onBlur={(event) => onBlur(event.target.value)}

@@ -1,10 +1,7 @@
 import { SlackMarkdown } from "@/features/activities/components/slack/slack-markdown";
 import { emojiParser } from "@/features/activities/helpers/emoji-parser";
 import { Skeleton } from "@conquest/ui/skeleton";
-import {
-  ActivitySlackSchema,
-  type ActivityWithMember,
-} from "@conquest/zod/activity.schema";
+import type { ActivityWithMember } from "@conquest/zod/activity.schema";
 import { useQuery } from "@tanstack/react-query";
 import ky from "ky";
 import { ActivityCard } from "../activity-card";
@@ -14,19 +11,19 @@ type Props = {
 };
 
 export const SlackReaction = ({ activity }: Props) => {
-  const slackActivity = ActivitySlackSchema.parse(activity.details);
+  const { react_to } = activity;
 
   const { data } = useQuery({
-    queryKey: ["react_to", slackActivity.react_to],
+    queryKey: ["react_to", activity.react_to],
     queryFn: async () =>
       await ky
-        .get(`/api/activities/${slackActivity.react_to}`)
+        .get(`/api/activities/${activity.react_to}`)
         .json<ActivityWithMember>(),
   });
 
   if (!data)
     return (
-      <div className="h-16 w-full border rounded-md p-3">
+      <div className="h-16 w-full rounded-md border p-3">
         <Skeleton className="h-full" />
       </div>
     );
@@ -36,8 +33,8 @@ export const SlackReaction = ({ activity }: Props) => {
       <ActivityCard activity={data}>
         <SlackMarkdown activity={data} />
       </ActivityCard>
-      <p className="border border-[#1264a3] size-7 rounded-md bg-[#e3f8ff] text-center place-content-center">
-        {emojiParser(slackActivity.message)}
+      <p className="size-7 place-content-center rounded-md border border-[#1264a3] bg-[#e3f8ff] text-center">
+        {emojiParser(activity.message)}
       </p>
     </div>
   );

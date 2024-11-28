@@ -8,7 +8,7 @@ type Props = {
 export const Loader = ({ className }: Props) => {
   return (
     <Loader2
-      className={cn("animate-spin size-5 text-muted-foreground", className)}
+      className={cn("size-5 animate-spin text-muted-foreground", className)}
     />
   );
 };

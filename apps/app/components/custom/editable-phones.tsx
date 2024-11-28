@@ -22,7 +22,7 @@ type Props = {
 };
 
 export const EditablePhones = ({ member }: Props) => {
-  const [isOpen, setIsOpen] = useState(false);
+  const [open, setOpen] = useState(false);
   const [phones, setPhones] = useState<{ id: string; content: string }[]>(
     member.phones.map((phone) => ({ id: cuid(), content: phone })),
   );
@@ -64,10 +64,10 @@ export const EditablePhones = ({ member }: Props) => {
   };
 
   return (
-    <Popover open={isOpen} onOpenChange={setIsOpen}>
+    <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild className="w-full cursor-pointer">
         {phones.filter((phone) => phone.content !== "").length > 0 ? (
-          <div className="flex flex-col gap-1 w-full hover:bg-muted rounded-md p-1">
+          <div className="flex w-full flex-col gap-1 rounded-md p-1 hover:bg-muted">
             {phones.map((phone) => {
               if (phone.content === "") return;
               return (
@@ -75,8 +75,8 @@ export const EditablePhones = ({ member }: Props) => {
                   key={phone.id}
                   variant="outline"
                   size="xs"
-                  className="text-blue-500 hover:text-blue-500 hover:bg-background justify-start w-fit"
-                  onClick={() => setIsOpen(true)}
+                  className="w-fit justify-start border-blue-200 text-blue-500 hover:bg-background hover:text-blue-500"
+                  onClick={() => setOpen(true)}
                 >
                   {phone.content}
                 </Button>
@@ -90,7 +90,7 @@ export const EditablePhones = ({ member }: Props) => {
             className="w-fit"
             classNameSpan="text-muted-foreground justify-start"
             onClick={() => {
-              setIsOpen(true);
+              setOpen(true);
               if (phones.length === 0) {
                 onAddPhone();
               }
@@ -100,7 +100,7 @@ export const EditablePhones = ({ member }: Props) => {
           </Button>
         )}
       </PopoverTrigger>
-      <PopoverContent align="start" className="w-72 p-0">
+      <PopoverContent align="start" className="w-[297px] p-0">
         <Command loop>
           <CommandList>
             <CommandGroup>
@@ -109,7 +109,7 @@ export const EditablePhones = ({ member }: Props) => {
                   <Phone
                     key={phone.id}
                     phone={phone}
-                    setIsOpen={setIsOpen}
+                    setOpen={setOpen}
                     onChangePhone={(newPhone) =>
                       onChangePhone(phone.id, newPhone.phone)
                     }
@@ -117,9 +117,9 @@ export const EditablePhones = ({ member }: Props) => {
                   />
                 ))
               ) : (
-                <p className="text-muted-foreground p-1">No phones set</p>
+                <p className="p-1 text-muted-foreground">No phones set</p>
               )}
-              <Separator className="-mx-2 w-[calc(100%+1rem)] my-1" />
+              <Separator className="-mx-2 my-1 w-[calc(100%+1rem)]" />
               <CommandItem onSelect={onAddPhone}>
                 <Plus size={15} />
                 <p>Add phone</p>

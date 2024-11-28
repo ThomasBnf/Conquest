@@ -65,9 +65,9 @@ export const CompanyActivities = ({
   if (!isClient) return <IsLoading />;
 
   return (
-    <div className={cn("mx-auto pt-6 pb-12 max-w-3xl", className)}>
+    <div className={cn("mx-auto max-w-3xl pb-12 pt-6", className)}>
       {Object.entries(groupedActivities).map(([date, activities]) => (
-        <div key={date} className="space-y-14 mb-10">
+        <div key={date} className="mb-10 space-y-14">
           <div className="my-4 flex items-center">
             <Separator className="flex-1" />
             <p className="mx-4 rounded-md border bg-muted p-1 leading-none">

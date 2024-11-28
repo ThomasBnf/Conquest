@@ -59,7 +59,7 @@ export const WaitOptions = () => {
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="flex flex-1 border border-input shadow-sm items-center justify-between rounded-md divide-x h-10 overflow-hidden"
+          className="flex h-10 flex-1 items-center justify-between divide-x overflow-hidden rounded-md border border-input shadow-sm"
         >
           <FormField
             control={form.control}
@@ -92,7 +92,7 @@ export const WaitOptions = () => {
                     }
                     defaultValue={field.value}
                   >
-                    <SelectTrigger className="border-none px-2 w-28 h-10 shadow-none bg-muted-hover m-0 rounded-none">
+                    <SelectTrigger className="m-0 h-10 w-28 rounded-none border-none bg-muted-hover px-2 shadow-none">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>

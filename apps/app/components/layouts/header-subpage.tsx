@@ -1,31 +1,15 @@
 "use client";
 
-import { useUser } from "@/context/userContext";
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@conquest/ui/breadcrumb";
+import { Button } from "@conquest/ui/button";
 import { Separator } from "@conquest/ui/separator";
 import { SidebarTrigger, useSidebar } from "@conquest/ui/sidebar";
-import Link from "next/link";
+import { X } from "lucide-react";
+import { useRouter } from "next/navigation";
 import type { PropsWithChildren } from "react";
 
-type Props = {
-  title: string;
-  currentPage: string;
-};
-
-export const HeaderSubPage = ({
-  title,
-  currentPage,
-  children,
-}: PropsWithChildren<Props>) => {
-  const { slug } = useUser();
+export const HeaderSubPage = ({ children }: PropsWithChildren) => {
   const { open } = useSidebar();
+  const router = useRouter();
 
   return (
     <div className="flex min-h-12 shrink-0 items-center justify-between px-4">
@@ -36,19 +20,17 @@ export const HeaderSubPage = ({
             <Separator orientation="vertical" className="mr-1 h-4" />
           </>
         )}
-        <Breadcrumb>
-          <BreadcrumbList>
-            <BreadcrumbItem>
-              <BreadcrumbLink asChild>
-                <Link href={`/${slug}/${title.toLowerCase()}`}>{title}</Link>
-              </BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbPage>{currentPage}</BreadcrumbPage>
-            </BreadcrumbItem>
-          </BreadcrumbList>
-        </Breadcrumb>
+        <Button
+          variant="outline"
+          size="icon"
+          className="group"
+          onClick={() => router.back()}
+        >
+          <X
+            size={16}
+            className="text-muted-foreground group-hover:text-foreground"
+          />
+        </Button>
       </div>
       {children}
     </div>

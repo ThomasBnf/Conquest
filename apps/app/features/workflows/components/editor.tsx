@@ -25,6 +25,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { _runWorkflowTrigger } from "../actions/_runWorkflowTrigger";
 import { _updateWorkflow } from "../actions/_updateWorkflow";
+import { useAdding } from "../hooks/useAdding";
 import { useChanging } from "../hooks/useChanging";
 import { usePanel } from "../hooks/usePanel";
 import { useSelected } from "../hooks/useSelected";
@@ -41,6 +42,7 @@ export const Editor = ({ workflow }: Props) => {
   const { panel, setPanel } = usePanel();
   const { selected, setSelected } = useSelected();
   const { setIsChanging } = useChanging();
+  const { setIsAdding } = useAdding();
   const {
     toObject,
     deleteElements,
@@ -92,6 +94,8 @@ export const Editor = ({ workflow }: Props) => {
               setTimeout(() => {
                 setPanel("node");
                 setSelected(item);
+                setIsAdding(false);
+                setIsChanging(false);
                 fitView({
                   nodes: [item],
                   duration: 250,
@@ -110,6 +114,7 @@ export const Editor = ({ workflow }: Props) => {
 
               setTimeout(() => {
                 setPanel("node");
+                setIsAdding(false);
                 setIsChanging(false);
                 setSelected(item);
                 onSave();
@@ -132,6 +137,8 @@ export const Editor = ({ workflow }: Props) => {
               deleteElements({ nodes: [{ id }] });
               setTimeout(() => {
                 setPanel("workflow");
+                setIsAdding(false);
+                setIsChanging(false);
                 setSelected(undefined);
                 onSave();
               }, 0);
@@ -254,7 +261,7 @@ export const Editor = ({ workflow }: Props) => {
         {hasManualTrigger && (
           <Button
             onClick={onRunWorkflow}
-            className="absolute top-4 right-4 z-50 cursor-pointer"
+            className="absolute right-4 top-4 z-50 cursor-pointer"
             loading={running}
           >
             <MousePointerClick size={16} />

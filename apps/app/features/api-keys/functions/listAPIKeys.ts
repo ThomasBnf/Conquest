@@ -7,9 +7,11 @@ export const listAPIKeys = authAction
     name: "listAPIKeys",
   })
   .action(async ({ ctx }) => {
-    const apiKeys = await prisma.apiKey.findMany({
+    const workspace_id = ctx.user.workspace_id;
+
+    const apiKeys = await prisma.apikeys.findMany({
       where: {
-        user_id: ctx.user.id,
+        workspace_id,
       },
     });
     return APIKeySchema.array().parse(apiKeys);

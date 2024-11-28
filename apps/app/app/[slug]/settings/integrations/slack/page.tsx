@@ -1,17 +1,16 @@
 "use client";
 
 import { DeleteDialog } from "@/components/custom/delete-dialog";
+import { Slack } from "@/components/icons/Slack";
 import { useUser } from "@/context/userContext";
 import { env } from "@/env.mjs";
 import { deleteIntegration } from "@/features/integrations/actions/deleteIntegration";
-import { PointConfig } from "@/features/integrations/components/point-config";
 import { oauthV2 } from "@/features/slack/actions/oauthV2";
+import { ChannelsList } from "@/features/slack/components/channel-list";
 import { Button, buttonVariants } from "@conquest/ui/button";
 import { Card, CardContent, CardHeader } from "@conquest/ui/card";
 import { cn } from "@conquest/ui/cn";
-import { Separator } from "@conquest/ui/separator";
 import { ArrowLeft, ExternalLink } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -29,7 +28,6 @@ export default function Page() {
     "channels:history,channels:join,channels:read,files:read,groups:history,groups:read,links:read,reactions:read,team:read,users.profile:read,users:read,users:read.email";
 
   const onStartInstall = () => {
-    setLoading(true);
     const baseUrl = "https://slack.com/oauth/v2/authorize";
     const clientId = `client_id=${env.NEXT_PUBLIC_SLACK_CLIENT_ID}`;
     const scopesParams = `scope=${scopes}`;
@@ -39,19 +37,35 @@ export default function Page() {
     router.push(
       `${baseUrl}?${clientId}&${scopesParams}&${userScopeParams}&${redirectURI}`,
     );
-    setLoading(false);
   };
 
   const onUninstall = async () => {
     if (!slack?.id) return;
-    setLoading(true);
-    await deleteIntegration({ integration: slack, source: "SLACK" });
-    setLoading(false);
+
+    await deleteIntegration({
+      integration: slack,
+      source: "SLACK",
+    });
     return toast.success("Slack disconnected");
   };
 
+  const onAuth = async () => {
+    if (!code) return;
+
+    const rAuth = await oauthV2({ code, scopes });
+    const error = rAuth?.serverError;
+
+    if (error) {
+      toast.error(error);
+    }
+    setLoading(false);
+  };
+
   useEffect(() => {
-    if (code) oauthV2({ code, scopes });
+    if (code) {
+      setLoading(true);
+      onAuth();
+    }
   }, [code]);
 
   return (
@@ -69,10 +83,10 @@ export default function Page() {
       <div className="mt-6 flex flex-col gap-4">
         <div className="flex items-center gap-4">
           <div className="rounded-md border p-3">
-            <Image src="/social/slack.svg" alt="Slack" width={24} height={24} />
+            <Slack />
           </div>
           <div>
-            <p className="text-lg font-medium">Slack</p>
+            <p className="font-medium text-lg">Slack</p>
             <p className="text-muted-foreground">
               Sync your Slack workspace with Conquest
             </p>
@@ -104,44 +118,30 @@ export default function Page() {
                 slack.com
               </Link>
             </div>
-            <>
-              {!slack?.id && (
-                <Button loading={loading} onClick={onStartInstall}>
-                  Install
-                </Button>
-              )}
-              {slack?.status === "DISCONNECTED" && (
-                <Button loading={loading} onClick={onStartInstall}>
-                  Install
-                </Button>
-              )}
-              {slack?.status === "SYNCING" && <Button loading> Install</Button>}
-              {slack?.status === "CONNECTED" && slack?.installed_at && (
-                <DeleteDialog
-                  title="Uninstall Slack"
-                  description="Slack integration will be removed from your workspace and all your data will be deleted."
-                  onConfirm={onUninstall}
-                >
-                  Uninstall
-                </DeleteDialog>
-              )}
-            </>
+            {slack?.id ? (
+              <DeleteDialog
+                title="Uninstall Slack"
+                description="Slack integration will be removed from your workspace and all your data will be deleted."
+                onConfirm={onUninstall}
+              >
+                Uninstall
+              </DeleteDialog>
+            ) : (
+              <Button loading={loading} onClick={onStartInstall}>
+                Install
+              </Button>
+            )}
           </CardHeader>
-          <CardContent className="p-0 mb-0.5">
+          <CardContent className="mb-0.5 p-0">
             <div className="p-4">
               <p className="font-medium text-base">Overview</p>
-              <p className="text-muted-foreground text-balance">
+              <p className="text-balance text-muted-foreground">
                 Connect your Slack workspace to automatically sync messages,
                 collect member interactions, and send personalized direct
                 messages through automated workflows.
               </p>
             </div>
-            {slack?.id && (
-              <>
-                <Separator />
-                <PointConfig integration={slack} />
-              </>
-            )}
+            {slack?.id && slack?.status !== "INSTALLED" && <ChannelsList />}
           </CardContent>
         </Card>
       </div>

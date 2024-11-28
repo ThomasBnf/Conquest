@@ -2,10 +2,10 @@
 
 import { env } from "@/env.mjs";
 import { upsertIntegration } from "@/features/integrations/actions/upsertIntegration";
-import { tasks } from "@trigger.dev/sdk/v3";
 import { authAction } from "lib/authAction";
 import { redirect } from "next/navigation";
 import { z } from "zod";
+import { createActivitiesTypes } from "./createActivitiesTypes";
 
 export const oauthV2 = authAction
   .metadata({
@@ -38,26 +38,20 @@ export const oauthV2 = authAction
 
     const rIntegration = await upsertIntegration({
       external_id: team.id,
-      status: "SYNCING",
+      status: "CONNECTED",
       details: {
         source: "SLACK",
         name: team.name,
         token: access_token,
         slack_user_token: authed_user.access_token,
         scopes,
-        points_config: {
-          post: 3,
-          reply: 2,
-          reaction: 1,
-          invitation: 5,
-        },
       },
     });
     const integration = rIntegration?.data;
 
     if (!integration) return;
 
-    tasks.trigger("install-slack", { integration });
+    createActivitiesTypes();
 
     return redirect(`/${slug}/settings/integrations/slack`);
   });

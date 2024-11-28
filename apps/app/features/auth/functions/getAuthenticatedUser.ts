@@ -4,20 +4,20 @@ import { CustomError } from "lib/safeRoute";
 export const getAuthenticatedUser = async (request: Request) => {
   const token = request.headers.get("Authorization")?.split(" ")[1];
 
-  const apiKey = await prisma.apiKey.findUnique({
+  const apiKey = await prisma.apikeys.findUnique({
     where: {
       token,
     },
     select: {
-      user_id: true,
+      workspace_id: true,
     },
   });
 
   if (!apiKey) throw new CustomError("Unauthorized: Invalid API key", 401);
 
-  const user = await prisma.user.findUnique({
+  const user = await prisma.users.findUnique({
     where: {
-      id: apiKey?.user_id,
+      id: apiKey?.workspace_id,
     },
   });
 

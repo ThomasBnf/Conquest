@@ -1,5 +1,7 @@
+import { Slack } from "@/components/icons/Slack";
 import { Button } from "@conquest/ui/button";
 import { Label } from "@conquest/ui/label";
+import { NodeLoopSchema } from "@conquest/zod/node.schema";
 import { useReactFlow } from "@xyflow/react";
 import { Icon } from "components/icons/Icon";
 import cuid from "cuid";
@@ -14,34 +16,48 @@ export const ActionPanel = () => {
   const { addNodes, updateNodeData } = useReactFlow();
 
   const onSelect = (node: WorkflowNode) => {
+    const isLoop = selected?.data.type === "loop";
+
+    console.log(node);
+
+    if (isLoop && selected) {
+      const nodeLoop = NodeLoopSchema.parse(node.data);
+
+      return updateNodeData(selected.id, {
+        id: selected.id,
+        ...nodeLoop,
+        sub_nodes: [...nodeLoop.sub_nodes, node.id],
+      });
+    }
+
     if (isChanging && selected) {
-      updateNodeData(selected.id, {
+      return updateNodeData(selected.id, {
         id: selected.id,
         ...node.data,
       });
-    } else {
-      addNodes([
-        {
-          ...node,
-          id: cuid(),
-          position: {
-            x: selected?.position.x ?? 0,
-            y: (selected?.position.y ?? 0) + 200,
-          },
-        },
-      ]);
     }
+
+    addNodes([
+      {
+        ...node,
+        id: cuid(),
+        position: {
+          x: selected?.position.x ?? 0,
+          y: (selected?.position.y ?? 0) + 200,
+        },
+      },
+    ]);
   };
 
   return (
-    <div className="p-6 flex-grow">
+    <div className="p-6">
       <div>
         <Label>Next step</Label>
         <p className="text-muted-foreground">
           Set the next block in the workflow
         </p>
       </div>
-      <div className="flex flex-col gap-1 mt-2">
+      <div className="mt-2 flex flex-col gap-1">
         {nodes.categories.map((category) => {
           return (
             <div key={category.label} className="mt-2">
@@ -59,12 +75,15 @@ export const ActionPanel = () => {
                       classNameSpan="justify-start"
                       onClick={() => onSelect(node)}
                     >
-                      <div className="border rounded-md bg-green-100 border-green-200 p-1">
-                        <Icon
-                          name={data.icon as keyof typeof icons}
-                          size={15}
-                          className="text-green-500"
-                        />
+                      <div className="rounded-md border p-1">
+                        {data.icon === "Slack" ? (
+                          <Slack size={15} />
+                        ) : (
+                          <Icon
+                            name={data.icon as keyof typeof icons}
+                            size={15}
+                          />
+                        )}
                       </div>
                       <p className="font-medium">{data.label}</p>
                     </Button>
@@ -143,7 +162,7 @@ export const nodes: {
           type: "custom",
           position: { x: 0, y: 0 },
           data: {
-            icon: "MessageCircle",
+            icon: "Slack",
             label: "Send Slack message",
             description: "",
             type: "slack-message",

@@ -52,8 +52,8 @@ export const CreateMemberDialog = () => {
   const onSubmit = async ({ first_name, last_name, email }: CreateMember) => {
     setLoading(true);
     const rMember = await _createMember({ first_name, last_name, email });
-    const member = rMember?.data;
     const error = rMember?.serverError;
+    const member = rMember?.data;
 
     if (error) toast.error(error);
     if (member) router.push(`/${slug}/members/${member.id}`);

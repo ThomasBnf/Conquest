@@ -108,7 +108,7 @@ export const RecurringWorkflowOptions = () => {
                             ? "default"
                             : "outline"
                         }
-                        className="capitalize w-full"
+                        className="w-full capitalize"
                       >
                         {day.slice(0, 3)}
                       </ToggleGroupItem>

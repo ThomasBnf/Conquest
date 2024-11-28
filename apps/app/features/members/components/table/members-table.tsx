@@ -9,10 +9,9 @@ import { useHasScrollY } from "@/features/table/hooks/usehasScrollY";
 import { useIsClient } from "@/hooks/useIsClient";
 import { useParamsMembers } from "@/hooks/useParamsMembers";
 import { Button } from "@conquest/ui/button";
+import { cn } from "@conquest/ui/cn";
 import { ScrollArea, ScrollBar } from "@conquest/ui/scroll-area";
 import { useSidebar } from "@conquest/ui/sidebar";
-import { cn } from "@conquest/ui/cn";
-import type { MemberWithActivities } from "@conquest/zod/activity.schema";
 import type { Tag } from "@conquest/zod/tag.schema";
 import { useEffect, useRef, useState } from "react";
 import { useInView } from "react-intersection-observer";
@@ -21,12 +20,11 @@ import { useListMembers } from "../../hooks/useListMembers";
 import { Columns } from "./columns";
 
 type Props = {
-  initialMembers: MemberWithActivities[] | undefined;
   count: number;
   tags: Tag[] | undefined;
 };
 
-export const MembersTable = ({ initialMembers, count, tags }: Props) => {
+export const MembersTable = ({ count, tags }: Props) => {
   const { ref, inView } = useInView();
   const { open } = useSidebar();
   const [{ search, id, desc }, setSearchParams] = useParamsMembers();
@@ -34,7 +32,6 @@ export const MembersTable = ({ initialMembers, count, tags }: Props) => {
   const [debouncedSearch] = useDebounce(search, 500);
 
   const { members, isLoading, fetchNextPage, hasNextPage } = useListMembers({
-    initialMembers,
     debouncedSearch,
     id,
     desc,
@@ -57,7 +54,7 @@ export const MembersTable = ({ initialMembers, count, tags }: Props) => {
 
   return (
     <>
-      <div className="flex items-center border-b px-4 min-h-12">
+      <div className="flex min-h-12 items-center border-b px-4">
         <QueryInput
           query={search}
           setQuery={(value) => setSearchParams({ search: value })}
@@ -81,7 +78,7 @@ export const MembersTable = ({ initialMembers, count, tags }: Props) => {
                 })}
               </div>
               {scrollX > 0 && (
-                <div className="absolute right-0 top-0 h-full w-12 -mr-12 bg-gradient-to-r from-black to-transparent opacity-[0.075]" />
+                <div className="-mr-12 absolute top-0 right-0 h-full w-12 bg-gradient-to-r from-black to-transparent opacity-[0.075]" />
               )}
             </div>
             <div
@@ -94,7 +91,7 @@ export const MembersTable = ({ initialMembers, count, tags }: Props) => {
                 {fixedColumn[1]?.header({})}
               </div>
               {scrollX > 0 && (
-                <div className="absolute right-0 top-0 h-full w-12 -mr-12 bg-gradient-to-r from-black to-transparent opacity-[0.075]" />
+                <div className="-mr-12 absolute top-0 right-0 h-full w-12 bg-gradient-to-r from-black to-transparent opacity-[0.075]" />
               )}
             </div>
             <div className="flex divide-x border-b">
@@ -136,7 +133,7 @@ export const MembersTable = ({ initialMembers, count, tags }: Props) => {
                       })}
                     </div>
                     {scrollX > 0 && (
-                      <div className="absolute right-0 top-0 h-full w-12 -mr-12 bg-gradient-to-r from-black to-transparent opacity-[0.075]" />
+                      <div className="-mr-12 absolute top-0 right-0 h-full w-12 bg-gradient-to-r from-black to-transparent opacity-[0.075]" />
                     )}
                   </div>
                   <div
@@ -156,7 +153,7 @@ export const MembersTable = ({ initialMembers, count, tags }: Props) => {
                       })}
                     </div>
                     {scrollX > 0 && (
-                      <div className="absolute right-0 top-0 h-full w-12 -mr-12 bg-gradient-to-r from-black to-transparent opacity-[0.075]" />
+                      <div className="-mr-12 absolute top-0 right-0 h-full w-12 bg-gradient-to-r from-black to-transparent opacity-[0.075]" />
                     )}
                   </div>
                   <div className="flex divide-x">
@@ -177,7 +174,7 @@ export const MembersTable = ({ initialMembers, count, tags }: Props) => {
               </div>
             ))}
           </div>
-          {members.length === 0 && (
+          {members.length === 0 && !isLoading && (
             <div
               className={cn(
                 "absolute top-36 mx-auto flex w-full flex-col items-center justify-center",

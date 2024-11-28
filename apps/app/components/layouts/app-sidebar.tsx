@@ -28,9 +28,10 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@conquest/ui/tooltip";
-import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { Settings } from "../icons/Settings";
+import { Slack } from "../icons/Slack";
 import { SidebarSettings } from "./sidebar-settings";
 
 export const AppSidebar = () => {
@@ -114,6 +115,14 @@ export const AppSidebar = () => {
           <SidebarMenu>
             <SidebarMenuItem>
               <SidebarMenuButton asChild>
+                <Link href={`/${slug}/settings`}>
+                  <Settings className="size-[18px]" />
+                  <span>Settings</span>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+            <SidebarMenuItem>
+              <SidebarMenuButton asChild>
                 <Link href={`/${slug}/settings/integrations`}>
                   <Integration className="size-[18px]" />
                   <span>Integrations</span>
@@ -124,10 +133,10 @@ export const AppSidebar = () => {
           <SidebarRail />
         </SidebarFooter>
         {slack?.status === "SYNCING" && (
-          <div className="border-t h-10 px-4 text-sm flex items-center gap-2 bg-background">
-            <Image src="/social/slack.svg" alt="Slack" width={16} height={16} />
+          <div className="flex h-10 items-center gap-2 border-t bg-background px-4 text-sm">
+            <Slack size={16} />
             <p>Collecting data</p>
-            <Loader className="size-4 ml-auto" />
+            <Loader className="ml-auto size-4" />
           </div>
         )}
       </Sidebar>

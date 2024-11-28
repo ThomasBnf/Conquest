@@ -1,4 +1,5 @@
 import { env } from "@/env.mjs";
+import { getActivityType } from "@/features/activities-types/actions/getActivityType";
 import { createActivity } from "@/features/activities/functions/createActivity";
 import { deleteActivity } from "@/features/activities/functions/deleteActivity";
 import { deleteListReactions } from "@/features/activities/functions/deleteListReactions";
@@ -64,9 +65,32 @@ export const POST = safeRoute.body(bodySchema).handler(async (_, context) => {
 
   const web = new WebClient(token);
 
+  const rTypePost = await getActivityType({ key: "slack:post", workspace_id });
+  const rTypeReply = await getActivityType({
+    key: "slack:reply",
+    workspace_id,
+  });
+  const rTypeInvitation = await getActivityType({
+    key: "slack:invitation",
+    workspace_id,
+  });
+  const rTypeReaction = await getActivityType({
+    key: "slack:reaction",
+    workspace_id,
+  });
+
+  const type_post = rTypePost?.data;
+  const type_reply = rTypeReply?.data;
+  const type_invitation = rTypeInvitation?.data;
+  const type_reaction = rTypeReaction?.data;
+
+  if (!type_post || !type_reply || !type_invitation || !type_reaction) {
+    return NextResponse.json({ status: 200 });
+  }
+
   switch (type) {
     case "app_uninstalled": {
-      await prisma.integration.delete({
+      await prisma.integrations.delete({
         where: {
           id: integration.id,
         },
@@ -145,18 +169,19 @@ export const POST = safeRoute.body(bodySchema).handler(async (_, context) => {
 
         if (!channel) return NextResponse.json({ status: 200 });
 
+        if (!type_post || !type_reply)
+          return NextResponse.json({ status: 200 });
+
         const _files = getFiles(files);
+
         await createActivity({
           external_id: ts,
           member_id: member.id,
           channel_id: channel.id,
-          details: {
-            message: text ?? "",
-            source: "SLACK",
-            type: thread_ts ? "REPLY" : "POST",
-            files: _files,
-            reply_to: thread_ts,
-          },
+          message: text ?? "",
+          activity_type_id: thread_ts ? type_reply.id : type_post.id,
+          // files: _files,
+          reply_to: thread_ts,
           workspace_id,
         });
       };
@@ -174,15 +199,13 @@ export const POST = safeRoute.body(bodySchema).handler(async (_, context) => {
             event.message as GenericMessageEvent;
 
           const _files = getFiles(files);
+
           await updateActivity({
             external_id: ts,
-            details: {
-              message: text ?? "",
-              source: "SLACK",
-              type: thread_ts ? "REPLY" : "POST",
-              files: _files,
-              reply_to: thread_ts,
-            },
+            message: text ?? "",
+            activity_type_id: thread_ts ? type_reply.id : type_post.id,
+            // files: _files,
+            reply_to: thread_ts,
           });
           break;
         }
@@ -255,17 +278,15 @@ export const POST = safeRoute.body(bodySchema).handler(async (_, context) => {
 
       if (!channel) return NextResponse.json({ status: 200 });
 
+      if (!type) return NextResponse.json({ status: 200 });
+
       await createActivity({
         external_id: null,
         member_id: member.id,
         channel_id: channel.id,
-        details: {
-          source: "SLACK",
-          type: "REACTION",
-          message: reaction,
-          files: [],
-          react_to: ts,
-        },
+        activity_type_id: type_reaction.id,
+        message: reaction,
+        react_to: ts,
         workspace_id,
       });
       break;
@@ -291,34 +312,16 @@ export const POST = safeRoute.body(bodySchema).handler(async (_, context) => {
 
       if (!channel) return NextResponse.json({ status: 200 });
 
-      await prisma.activity.deleteMany({
+      await prisma.activities.deleteMany({
         where: {
           member_id: member.id,
           channel_id: channel.id,
           AND: [
             {
-              details: {
-                path: ["react_to"],
-                equals: ts,
-              },
+              react_to: ts,
             },
             {
-              details: {
-                path: ["message"],
-                equals: reaction,
-              },
-            },
-            {
-              details: {
-                path: ["source"],
-                equals: "SLACK",
-              },
-            },
-            {
-              details: {
-                path: ["type"],
-                equals: "REACTION",
-              },
+              message: reaction,
             },
           ],
         },
@@ -337,7 +340,7 @@ export const POST = safeRoute.body(bodySchema).handler(async (_, context) => {
       if (!profile) return NextResponse.json({ status: 200 });
 
       const { user: userInfo } = await web.users.info({ user });
-      const locale = userInfo?.locale;
+      const localisation = userInfo?.locale;
 
       const {
         first_name,
@@ -357,7 +360,7 @@ export const POST = safeRoute.body(bodySchema).handler(async (_, context) => {
         full_name: real_name,
         email,
         phone,
-        locale,
+        localisation,
         avatar_url: image_1024,
         job_title: title,
         workspace_id,
@@ -376,13 +379,10 @@ export const POST = safeRoute.body(bodySchema).handler(async (_, context) => {
 
       const currentTimestamp = Math.floor(Number.parseFloat(event_ts));
 
-      const activity = await prisma.activity.findFirst({
+      const activity = await prisma.activities.findFirst({
         where: {
           member_id: member.id,
-          details: {
-            path: ["invite_by"],
-            equals: inviter,
-          },
+          invite_by: inviter,
           AND: [
             {
               created_at: {
@@ -403,17 +403,23 @@ export const POST = safeRoute.body(bodySchema).handler(async (_, context) => {
 
       if (activity) return NextResponse.json({ status: 200 });
 
+      const type = await prisma.activities_types.findFirst({
+        where: {
+          workspace_id,
+          key: "slack:invitation",
+        },
+      });
+
+      if (!type) return NextResponse.json({ status: 200 });
+
       await createActivity({
         external_id: null,
         member_id: member.id,
         channel_id: channelData.id,
-        details: {
-          message: `<@${inviter}> invited to channel`,
-          source: "SLACK",
-          type: "INVITATION",
-          files: [],
-          invite_by: inviter,
-        },
+        message: `<@${inviter}> invited to channel`,
+        activity_type_id: type_invitation.id,
+        // files: [],
+        invite_by: inviter,
         created_at: new Date(Number.parseFloat(event_ts) * 1000),
         updated_at: new Date(Number.parseFloat(event_ts) * 1000),
         workspace_id,
@@ -429,7 +435,7 @@ export const POST = safeRoute.body(bodySchema).handler(async (_, context) => {
       if (!profile) return NextResponse.json({ status: 200 });
 
       const { user: userInfo } = await web.users.info({ user: id });
-      const locale = userInfo?.locale;
+      const localisation = userInfo?.locale;
 
       const {
         first_name,
@@ -449,7 +455,7 @@ export const POST = safeRoute.body(bodySchema).handler(async (_, context) => {
         full_name: real_name,
         email,
         phone,
-        locale,
+        localisation,
         avatar_url: image_1024,
         job_title: title,
         deleted,

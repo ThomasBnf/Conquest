@@ -1,9 +1,6 @@
 import { SlackMarkdown } from "@/features/activities/components/slack/slack-markdown";
 import { Skeleton } from "@conquest/ui/skeleton";
-import {
-  ActivitySlackSchema,
-  type ActivityWithMember,
-} from "@conquest/zod/activity.schema";
+import type { ActivityWithMember } from "@conquest/zod/activity.schema";
 import { useQuery } from "@tanstack/react-query";
 import ky from "ky";
 import { ActivityCard } from "../activity-card";
@@ -13,19 +10,17 @@ type Props = {
 };
 
 export const SlackReply = ({ activity }: Props) => {
-  const slackActivity = ActivitySlackSchema.parse(activity.details);
+  const { reply_to } = activity;
 
   const { data } = useQuery({
-    queryKey: ["reply_to", slackActivity.reply_to],
+    queryKey: ["reply_to", reply_to],
     queryFn: async () =>
-      await ky
-        .get(`/api/activities/${slackActivity.reply_to}`)
-        .json<ActivityWithMember>(),
+      await ky.get(`/api/activities/${reply_to}`).json<ActivityWithMember>(),
   });
 
   if (!data)
     return (
-      <div className="h-16 w-full border rounded-md p-3">
+      <div className="h-16 w-full rounded-md border p-3">
         <Skeleton className="h-full" />
       </div>
     );

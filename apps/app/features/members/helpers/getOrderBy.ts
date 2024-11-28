@@ -1,9 +1,9 @@
-import type { Prisma } from "@prisma/client";
+import type { Prisma } from "@conquest/database";
 
 export const getOrderBy = (
   id: string,
   desc: boolean,
-): Prisma.MemberOrderByWithRelationInput => {
+): Prisma.membersOrderByWithRelationInput => {
   if (!id) {
     return { last_name: desc ? "desc" : "asc" };
   }

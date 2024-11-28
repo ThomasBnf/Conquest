@@ -1,4 +1,5 @@
 import { DateCell } from "@/components/custom/date-cell";
+import { SourceBadge } from "@/components/custom/source-badge";
 import { useUser } from "@/context/userContext";
 import { ColumnHeader } from "@/features/table/column-header";
 import { TagBadge } from "@/features/tags/tag-badge";
@@ -6,11 +7,16 @@ import { Avatar, AvatarFallback, AvatarImage } from "@conquest/ui/avatar";
 import { buttonVariants } from "@conquest/ui/button";
 import { Checkbox } from "@conquest/ui/checkbox";
 import { cn } from "@conquest/ui/cn";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@conquest/ui/tooltip";
 import type { MemberWithActivities } from "@conquest/zod/activity.schema";
 import type { Tag } from "@conquest/zod/tag.schema";
 import Link from "next/link";
 import type { Dispatch, SetStateAction } from "react";
-import { getPoints } from "../../helpers/getPoints";
 
 type Column = {
   id: string;
@@ -35,7 +41,7 @@ export const Columns = ({ tags }: Props): Column[] => [
   {
     id: "select",
     header: ({ members, rowSelected, setRowSelected }) => (
-      <div className="flex items-center justify-center size-12 bg-muted">
+      <div className="flex size-12 items-center justify-center bg-muted">
         <Checkbox
           checked={
             !rowSelected?.length
@@ -56,7 +62,7 @@ export const Columns = ({ tags }: Props): Column[] => [
       </div>
     ),
     cell: ({ member, rowSelected, setRowSelected }) => (
-      <div className="flex items-center justify-center size-12">
+      <div className="flex size-12 items-center justify-center">
         <Checkbox
           checked={rowSelected?.includes(member.id)}
           onCheckedChange={(checked) =>
@@ -81,7 +87,7 @@ export const Columns = ({ tags }: Props): Column[] => [
           href={`/${slug}/members/${member.id}`}
           className={cn(
             buttonVariants({ variant: "ghost" }),
-            "flex items-center gap-2 px-1.5 truncate",
+            "flex items-center gap-2 truncate px-1.5",
           )}
         >
           <Avatar className="size-6">
@@ -90,7 +96,7 @@ export const Columns = ({ tags }: Props): Column[] => [
               {member.first_name?.charAt(0).toUpperCase()}
             </AvatarFallback>
           </Avatar>
-          <p className="font-medium truncate">{member.full_name}</p>
+          <p className="truncate font-medium">{member.full_name}</p>
         </Link>
       );
     },
@@ -109,59 +115,79 @@ export const Columns = ({ tags }: Props): Column[] => [
     width: 250,
   },
   {
-    id: "posts",
-    header: () => <ColumnHeader id="posts" title="Posts" width={125} />,
+    id: "level",
+    header: () => <ColumnHeader id="level" title="Level" width={125} />,
     cell: ({ member }) => {
-      const posts = member.activities.filter(
-        (activity) => activity.details.type === "POST",
-      );
-      return <p className="px-2 text-end w-full">{posts.length}</p>;
+      return <p className="w-full px-2 text-end">{member.level}</p>;
     },
     width: 125,
   },
   {
-    id: "replies",
-    header: () => <ColumnHeader id="replies" title="Replies" width={125} />,
+    id: "love",
+    header: () => <ColumnHeader id="love" title="Love" width={125} />,
     cell: ({ member }) => {
-      const replies = member.activities.filter(
-        (activity) => activity.details.type === "REPLY",
+      const activities_types = member.activities?.reduce(
+        (acc, activity) => {
+          const name = activity.activity_type.name;
+          const weight = activity.activity_type.weight;
+          acc[name] = {
+            count: (acc[name]?.count ?? 0) + 1,
+            weight,
+          };
+          return acc;
+        },
+        {} as Record<string, { count: number; weight: number }>,
       );
-      return <p className="px-2 text-end w-full">{replies.length}</p>;
-    },
-    width: 125,
-  },
-  {
-    id: "reactions",
-    header: () => <ColumnHeader id="reactions" title="Reactions" width={125} />,
-    cell: ({ member }) => {
-      const reactions = member.activities.filter(
-        (activity) => activity.details.type === "REACTION",
-      );
-      return <p className="px-2 text-end w-full">{reactions.length}</p>;
-    },
-    width: 125,
-  },
-  {
-    id: "invitations",
-    header: () => (
-      <ColumnHeader id="invitations" title="Invitations" width={125} />
-    ),
-    cell: ({ member }) => {
-      const invitations = member.activities.filter(
-        (activity) => activity.details.type === "INVITATION",
-      );
-      return <p className="px-2 text-end w-full">{invitations.length}</p>;
-    },
-    width: 125,
-  },
-  {
-    id: "points",
-    header: () => <ColumnHeader id="points" title="Points" width={125} />,
-    cell: ({ member }) => {
-      const { slack, discourse } = useUser();
-      const points = getPoints({ integrations: [slack, discourse], member });
 
-      return <p className="px-2 text-end w-full">{points}</p>;
+      const sorted_activities_types = Object.entries(activities_types ?? {})
+        .sort(([, a], [, b]) => b.weight - a.weight)
+        .reduce(
+          (acc, [key, value]) => {
+            acc[key] = value;
+            return acc;
+          },
+          {} as Record<string, { count: number; weight: number }>,
+        );
+
+      return (
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger className="w-full">
+              <p className="w-full px-2 text-end">{member.love}</p>
+            </TooltipTrigger>
+            <TooltipContent>
+              <div>
+                {Object.entries(sorted_activities_types ?? {}).map(
+                  ([name, { count, weight }]) => (
+                    <div
+                      key={name}
+                      className="flex items-center justify-between text-sm"
+                    >
+                      <p className="w-36">{name}</p>
+                      <p>
+                        {count} * {weight} = {count * weight}
+                      </p>
+                    </div>
+                  ),
+                )}
+                <div
+                  className={cn(
+                    "flex items-center justify-between text-sm",
+                    member.love > 0 && "mt-2",
+                  )}
+                >
+                  <p className="w-36">Total love</p>
+                  <p>{member.love}</p>
+                </div>
+                <div className="flex items-center justify-between text-sm">
+                  <p className="w-36">Total activities</p>
+                  <p>{member.activities?.length}</p>
+                </div>
+              </div>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      );
     },
     width: 125,
   },
@@ -169,7 +195,7 @@ export const Columns = ({ tags }: Props): Column[] => [
     id: "tags",
     header: () => <ColumnHeader id="tags" title="Tags" width={250} />,
     cell: ({ member }) => {
-      const memberTags = tags?.filter((tag) => member.tags.includes(tag.id));
+      const memberTags = tags?.filter((tag) => member.tags?.includes(tag.id));
 
       return (
         <div className="flex flex-wrap gap-1 px-2">
@@ -186,7 +212,9 @@ export const Columns = ({ tags }: Props): Column[] => [
     header: () => (
       <ColumnHeader id="last_activity" title="Last activity" width={250} />
     ),
-    cell: ({ member }) => <DateCell date={member.activities[0]?.created_at} />,
+    cell: ({ member }) => (
+      <DateCell date={member.activities?.[0]?.created_at} />
+    ),
     width: 250,
   },
   {
@@ -196,15 +224,21 @@ export const Columns = ({ tags }: Props): Column[] => [
     width: 250,
   },
   {
-    id: "locale",
-    header: () => <ColumnHeader id="locale" title="Localisation" width={250} />,
-    cell: ({ member }) => <p className="truncate px-2">{member.locale}</p>,
+    id: "localisation",
+    header: () => (
+      <ColumnHeader id="localisation" title="Localisation" width={250} />
+    ),
+    cell: ({ member }) => (
+      <p className="truncate px-2">{member.localisation}</p>
+    ),
     width: 250,
   },
   {
     id: "source",
     header: () => <ColumnHeader id="source" title="Source" width={250} />,
-    cell: ({ member }) => <p className="truncate px-2">{member.source}</p>,
+    cell: ({ member }) => (
+      <SourceBadge source={member.source} className="mx-2" />
+    ),
     width: 250,
   },
 ];

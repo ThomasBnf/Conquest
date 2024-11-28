@@ -13,8 +13,9 @@ export const installSlack = schemaTask({
   },
   schema: z.object({
     integration: SlackIntegrationSchema,
+    channels: z.array(z.string()),
   }),
-  run: async ({ integration }) => {
+  run: async ({ integration, channels }) => {
     const { workspace_id } = integration;
     const { token, slack_user_token } = integration.details;
 
@@ -23,15 +24,18 @@ export const installSlack = schemaTask({
     const web = new WebClient(token);
 
     await createListMembers({ web, workspace_id });
-    await createListChannels({ web, token, workspace_id });
+    await createListChannels({ web, token, workspace_id, channels });
+
+    return { success: true };
   },
+
   onSuccess: async (payload) => {
     const { external_id } = payload.integration;
 
     await updateIntegration({
       external_id,
       installed_at: new Date(),
-      status: "CONNECTED",
+      status: "INSTALLED",
     });
   },
 });

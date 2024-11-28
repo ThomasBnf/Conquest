@@ -11,7 +11,7 @@ export const listTags = authAction
   .action(async ({ ctx }) => {
     const workspace_id = ctx.user.workspace_id;
 
-    const tags = await prisma.tag.findMany({
+    const tags = await prisma.tags.findMany({
       where: {
         workspace_id,
       },

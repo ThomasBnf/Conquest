@@ -29,7 +29,7 @@ export const createListMembers = safeAction
         if (!id) continue;
 
         if (profile && !isDeleted && !isBot) {
-          const { locale } = member;
+          const { locale: localisation } = member;
           const {
             first_name,
             last_name,
@@ -50,7 +50,7 @@ export const createListMembers = safeAction
             full_name: real_name,
             email,
             phone,
-            locale,
+            localisation,
             avatar_url: image_1024,
             job_title: title,
             workspace_id,

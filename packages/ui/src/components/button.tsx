@@ -1,8 +1,8 @@
-import { cn } from "@conquest/ui/cn";
 import { Slot } from "@radix-ui/react-slot";
 import { type VariantProps, cva } from "class-variance-authority";
 import { Loader2 } from "lucide-react";
 import * as React from "react";
+import { cn } from "../utils/cn";
 
 const buttonVariants = cva(
   "inline-flex items-center rounded-md justify-center text-sm transition-colors focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50",
@@ -52,6 +52,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       size,
       asChild = false,
       loading = false,
+      disabled = false,
       classNameSpan,
       ...props
     },
@@ -65,20 +66,20 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
           loading && "cursor-not-allowed",
           buttonVariants({ variant, size, className }),
         )}
-        disabled={loading}
+        disabled={loading || disabled}
         ref={ref}
         {...props}
       >
         <span
           className={cn(
-            "flex items-center justify-center w-full gap-1.5",
+            "flex w-full items-center justify-center gap-1.5",
             loading && "invisible",
             classNameSpan,
           )}
         >
           {props.children}
         </span>
-        {loading && <Loader2 className="size-4 absolute animate-spin" />}
+        {loading && <Loader2 className="absolute size-4 animate-spin" />}
       </Comp>
     );
   },

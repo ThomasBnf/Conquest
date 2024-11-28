@@ -10,7 +10,7 @@ export default async function Page() {
   return (
     <ScrollArea className="h-dvh">
       <div className="mx-auto flex max-w-3xl flex-col py-24">
-        <p className="text-2xl font-medium">Tags</p>
+        <p className="font-medium text-2xl">Tags</p>
         <p className="text-muted-foreground">Manage community tags</p>
         <Separator className="my-4" />
         <Tags tags={tags} />

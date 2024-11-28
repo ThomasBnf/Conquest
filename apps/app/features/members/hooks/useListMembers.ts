@@ -1,25 +1,16 @@
-import {
-  type MemberWithActivities,
-  MemberWithActivitiesSchema,
-} from "@conquest/zod/activity.schema";
+import { MemberWithActivitiesSchema } from "@conquest/zod/activity.schema";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 import { z } from "zod";
 import { _listMembers } from "../actions/_listMembers";
 
 type Props = {
-  initialMembers: MemberWithActivities[] | undefined;
   debouncedSearch: string;
   id: string;
   desc: boolean;
 };
 
-export const useListMembers = ({
-  initialMembers,
-  debouncedSearch,
-  id,
-  desc,
-}: Props) => {
+export const useListMembers = ({ debouncedSearch, id, desc }: Props) => {
   const { data, isLoading, fetchNextPage, hasNextPage } = useInfiniteQuery({
     queryKey: ["members", debouncedSearch, id, desc],
     queryFn: async ({ pageParam }) => {
@@ -31,17 +22,13 @@ export const useListMembers = ({
       });
       return rMembers?.data;
     },
-    getNextPageParam: (_, allPages) => allPages.length + 1,
-    placeholderData: (previousData) => {
-      if (!previousData) {
-        return {
-          pages: [initialMembers],
-          pageParams: [1],
-        };
-      }
-      return previousData;
+    getNextPageParam: (_, allPages) => {
+      const PAGE_SIZE = 50;
+      const lastPage = allPages[allPages.length - 1];
+      if (!lastPage || lastPage.length < PAGE_SIZE) return undefined;
+      return allPages.length + 1;
     },
-    initialPageParam: 1,
+    initialPageParam: 0,
   });
 
   const members = useMemo(() => {

@@ -6,7 +6,7 @@ export const countCompanies = authAction
   .action(async ({ ctx }) => {
     const workspace_id = ctx.user.workspace_id;
 
-    return await prisma.company.count({
+    return await prisma.companies.count({
       where: {
         workspace_id,
       },

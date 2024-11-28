@@ -18,7 +18,7 @@ export const _listCompanies = authAction
   .action(async ({ ctx: { user }, parsedInput: { name, page, id, desc } }) => {
     const workspace_id = user.workspace_id;
 
-    const companies = await prisma.company.findMany({
+    const companies = await prisma.companies.findMany({
       where: {
         name: name ? { contains: name, mode: "insensitive" } : undefined,
         workspace_id,

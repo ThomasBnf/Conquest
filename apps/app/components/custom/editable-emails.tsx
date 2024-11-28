@@ -22,7 +22,7 @@ type Props = {
 };
 
 export const EditableEmails = ({ member }: Props) => {
-  const [isOpen, setIsOpen] = useState(false);
+  const [open, setOpen] = useState(false);
   const [emails, setEmails] = useState<{ id: string; content: string }[]>(
     member.emails.map((email) => ({ id: cuid(), content: email })),
   );
@@ -63,10 +63,10 @@ export const EditableEmails = ({ member }: Props) => {
   };
 
   return (
-    <Popover open={isOpen} onOpenChange={setIsOpen}>
+    <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild className="w-full cursor-pointer">
         {emails.filter((email) => email.content !== "").length > 0 ? (
-          <div className="flex flex-col gap-1 w-full hover:bg-muted rounded-md p-1">
+          <div className="flex w-full flex-col gap-1 rounded-md p-1 hover:bg-muted">
             {emails.map((email) => {
               if (email.content === "") return;
               return (
@@ -74,8 +74,8 @@ export const EditableEmails = ({ member }: Props) => {
                   key={email.id}
                   variant="outline"
                   size="xs"
-                  className="text-blue-500 hover:text-blue-500 hover:bg-background justify-start w-fit"
-                  onClick={() => setIsOpen(true)}
+                  className="w-fit justify-start border-blue-200 text-blue-500 hover:bg-background hover:text-blue-500"
+                  onClick={() => setOpen(true)}
                 >
                   {email.content}
                 </Button>
@@ -92,23 +92,23 @@ export const EditableEmails = ({ member }: Props) => {
           </Button>
         )}
       </PopoverTrigger>
-      <PopoverContent align="start" className="w-72 p-0">
+      <PopoverContent align="start" className="w-[297px] p-0">
         <Command loop>
           <CommandList>
             <CommandGroup>
-              {emails.map((email, index) => (
+              {emails.map((email) => (
                 <Email
                   key={email.id}
                   email={email}
-                  index={index}
-                  setIsOpen={setIsOpen}
+                  hasEmails={emails.length > 1}
+                  setOpen={setOpen}
                   onChangeEmail={(newEmail) =>
                     onChangeEmail(email.id, newEmail.email)
                   }
                   onDeleteEmail={onDeleteEmail}
                 />
               ))}
-              <Separator className="-mx-2 w-[calc(100%+1rem)] my-1" />
+              <Separator className="-mx-2 my-1 w-[calc(100%+1rem)]" />
               <CommandItem onSelect={onAddEmail}>
                 <Plus size={15} />
                 <p>Add email</p>

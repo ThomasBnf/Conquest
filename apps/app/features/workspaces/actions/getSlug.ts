@@ -12,7 +12,7 @@ export const getSlug = safeAction
     }),
   )
   .action(async ({ parsedInput: { slug } }) => {
-    const count = await prisma.workspace.count({
+    const count = await prisma.workspaces.count({
       where: {
         slug,
       },

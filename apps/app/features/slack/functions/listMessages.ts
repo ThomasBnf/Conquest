@@ -1,3 +1,4 @@
+import { getActivityType } from "@/features/activities-types/actions/getActivityType";
 import { createActivity } from "@/features/activities/functions/createActivity";
 import { prisma } from "@/lib/prisma";
 import { safeAction } from "@/lib/safeAction";
@@ -21,6 +22,20 @@ export const listMessages = safeAction
   .action(async ({ parsedInput: { web, channel, workspace_id } }) => {
     let cursor: string | undefined;
 
+    const rTypePost = await getActivityType({
+      key: "slack:post",
+      workspace_id,
+    });
+    const rTypeReaction = await getActivityType({
+      key: "slack:reaction",
+      workspace_id,
+    });
+
+    const type_post = rTypePost?.data;
+    const type_reaction = rTypeReaction?.data;
+
+    if (!type_post || !type_reaction) return;
+
     do {
       const result = await web.conversations.history({
         channel: channel.external_id ?? "",
@@ -36,7 +51,7 @@ export const listMessages = safeAction
         const { text, ts, user, reactions, reply_count, files, subtype } =
           message;
 
-        const member = await prisma.member.findUnique({
+        const member = await prisma.members.findUnique({
           where: {
             slack_id: user,
             workspace_id,
@@ -45,18 +60,15 @@ export const listMessages = safeAction
 
         if (subtype === "channel_join") continue;
 
-        if (member) {
+        if (member && type_post) {
           const rActivity = await createActivity({
             external_id: ts ?? null,
-            details: {
-              source: "SLACK",
-              type: "POST",
-              message: text ?? "",
-              files: files?.map(({ title, url_private }) => ({
-                title: title ?? "",
-                url: url_private ?? "",
-              })),
-            },
+            activity_type_id: type_post.id,
+            message: text ?? "",
+            // files: files?.map(({ title, url_private }) => ({
+            //   title: title ?? "",
+            //   url: url_private ?? "",
+            // })),
             channel_id: channel.id,
             member_id: member.id,
             workspace_id,
@@ -79,6 +91,7 @@ export const listMessages = safeAction
                   channel_id: channel.id,
                   react_to: activity?.external_id,
                   ts: (Number(ts) + 1).toString(),
+                  activity_type_id: type_reaction.id,
                   workspace_id,
                 });
               }

@@ -22,7 +22,6 @@ export const ActivityCard = ({
   const { slug } = useUser();
   const {
     member: { first_name, last_name, avatar_url, full_name },
-    details: { type },
   } = activity;
 
   return (
@@ -30,7 +29,7 @@ export const ActivityCard = ({
       className={cn(
         "relative rounded-[7px] p-px shadow-sm",
         badge
-          ? "bg-gradient-to-br from-slack from-0% to-border to-70%"
+          ? "bg-gradient-to-br from-0% from-slack to-70% to-border"
           : "border",
       )}
     >
@@ -54,11 +53,11 @@ export const ActivityCard = ({
             </AvatarFallback>
           </Avatar>
         </Link>
-        <div className="ml-4 flex flex-col gap-1 w-full">
+        <div className="ml-4 flex w-full flex-col gap-1">
           <div className="flex items-baseline gap-2">
             <Link
               href={`/${slug}/members/${activity.member?.id}`}
-              className="text-sm font-medium leading-none hover:underline"
+              className="font-medium text-sm leading-none hover:underline"
             >
               {full_name}
             </Link>

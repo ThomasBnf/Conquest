@@ -14,7 +14,7 @@ export const getChannel = safeAction
     }),
   )
   .action(async ({ parsedInput: { external_id, workspace_id } }) => {
-    const channel = await prisma.channel.findUnique({
+    const channel = await prisma.channels.findUnique({
       where: {
         external_id,
         workspace_id,

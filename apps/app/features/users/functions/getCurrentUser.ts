@@ -10,7 +10,7 @@ export const getCurrentUser = async () => {
     throw new CustomError("Session not found!", 401);
   }
 
-  const user = await prisma.user.findUnique({
+  const user = await prisma.users.findUnique({
     where: {
       id: session.user.id,
     },

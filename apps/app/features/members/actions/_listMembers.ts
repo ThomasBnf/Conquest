@@ -2,15 +2,7 @@
 
 import { authAction } from "@/lib/authAction";
 import { prisma } from "@/lib/prisma";
-import {
-  type MemberWithActivities,
-  MemberWithActivitiesSchema,
-} from "@conquest/zod/activity.schema";
-import {
-  IntegrationSchema,
-  type PointsConfig,
-} from "@conquest/zod/integration.schema";
-import type { Prisma } from "@prisma/client";
+import { MemberWithActivitiesSchema } from "@conquest/zod/activity.schema";
 import { z } from "zod";
 
 export const _listMembers = authAction
@@ -26,180 +18,94 @@ export const _listMembers = authAction
   .action(
     async ({ ctx: { user }, parsedInput: { search, page, id, desc } }) => {
       const workspace_id = user.workspace_id;
-      const orderBy = getOrderBy(id, desc);
 
-      const members = await prisma.member.findMany({
-        where: {
-          search: { contains: search, mode: "insensitive" },
-          workspace_id,
-        },
-        include: {
-          activities: true,
-        },
-        orderBy,
-        take: 50,
-        skip: (page - 1) * 50,
-      });
+      const members = await prisma.$queryRaw`
+        SELECT 
+            m.*,
+            CAST(COALESCE(SUM(CASE 
+                WHEN a.created_at > NOW() - INTERVAL '3 months' 
+                THEN at.weight 
+                ELSE 0 
+            END), 0) AS INTEGER) as love,
+            CAST(COALESCE(MAX(CASE 
+                WHEN a.created_at > NOW() - INTERVAL '3 months' 
+                THEN at.weight
+                ELSE 0 
+            END), 0) AS INTEGER) as level,
+            COALESCE(
+                json_agg(
+                    CASE WHEN a.id IS NOT NULL THEN
+                        json_build_object(
+                            'id', a.id,
+                            'external_id', COALESCE(a.external_id, ''),
+                            'message', COALESCE(a.message, ''),
+                            'reply_to', COALESCE(a.reply_to, ''),
+                            'react_to', COALESCE(a.react_to, ''),
+                            'invite_by', COALESCE(a.invite_by, ''),
+                            'channel_id', a.channel_id,
+                            'member_id', a.member_id,
+                            'workspace_id', a.workspace_id,
+                            'activity_type_id', a.activity_type_id,
+                            'created_at', TO_CHAR(a.created_at, 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"'),
+                            'updated_at', TO_CHAR(a.updated_at, 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"'),
+                            'activity_type', row_to_json(at.*)
+                        )
+                    ELSE NULL END
+                ) FILTER (WHERE a.id IS NOT NULL),
+                '[]'::json
+            ) as activities
+        FROM 
+            members m
+            LEFT JOIN activities a ON m.id = a.member_id
+            LEFT JOIN activities_types at ON a.activity_type_id = at.id
+        WHERE 
+            m.workspace_id = ${workspace_id}
+            AND m.search ILIKE '%' || ${search} || '%'
+        GROUP BY 
+            m.id
+        ORDER BY 
+            CASE WHEN ${desc} = true THEN
+                CASE ${id}
+                    WHEN 'love' THEN SUM(CASE WHEN a.created_at > NOW() - INTERVAL '3 months' THEN at.weight ELSE 0 END)
+                    WHEN 'level' THEN MAX(CASE WHEN a.created_at > NOW() - INTERVAL '3 months' THEN at.weight ELSE 0 END)
+                    ELSE NULL
+                END
+            END DESC NULLS LAST,
+            CASE WHEN ${desc} = true THEN
+                CASE ${id}
+                    WHEN 'full_name' THEN m.full_name
+                    WHEN 'job_title' THEN m.job_title
+                    WHEN 'emails' THEN m.emails[1]
+                    WHEN 'tags' THEN m.tags[0]
+                    WHEN 'joined_at' THEN m.joined_at::text
+                    WHEN 'localisation' THEN m.localisation
+                    WHEN 'source' THEN CAST(m.source AS TEXT)
+                    ELSE NULL
+                END
+            END DESC NULLS LAST,
+            CASE WHEN ${desc} = false THEN
+                CASE ${id}
+                    WHEN 'love' THEN SUM(CASE WHEN a.created_at > NOW() - INTERVAL '3 months' THEN at.weight ELSE 0 END)
+                    WHEN 'level' THEN MAX(CASE WHEN a.created_at > NOW() - INTERVAL '3 months' THEN at.weight ELSE 0 END)
+                    ELSE NULL
+                END
+            END ASC NULLS LAST,
+            CASE WHEN ${desc} = false THEN
+                CASE ${id}
+                    WHEN 'full_name' THEN m.full_name
+                    WHEN 'job_title' THEN m.job_title
+                    WHEN 'emails' THEN m.emails[1]
+                    WHEN 'tags' THEN m.tags[0]
+                    WHEN 'joined_at' THEN m.joined_at::text
+                    WHEN 'localisation' THEN m.localisation
+                    WHEN 'source' THEN CAST(m.source AS TEXT)
+                    ELSE NULL
+                END
+            END ASC NULLS LAST
+        LIMIT 50
+        OFFSET ${page * 50}
+      `;
 
-      const parsedMembers = MemberWithActivitiesSchema.array().parse(members);
-
-      if (id === "last_activity") {
-        return parsedMembers.sort((a, b) =>
-          desc ? sortByLastActivity(a, b) : -sortByLastActivity(a, b),
-        );
-      }
-
-      if (id === "created_at") {
-        return parsedMembers.sort((a, b) =>
-          desc ? sortByCreatedAt(a, b) : -sortByCreatedAt(a, b),
-        );
-      }
-
-      if (id === "posts") {
-        return parsedMembers.sort((a, b) =>
-          desc ? sortByPosts(a, b) : -sortByPosts(a, b),
-        );
-      }
-
-      if (id === "replies") {
-        return parsedMembers.sort((a, b) =>
-          desc ? sortByReplies(a, b) : -sortByReplies(a, b),
-        );
-      }
-
-      if (id === "reactions") {
-        return parsedMembers.sort((a, b) =>
-          desc ? sortByReactions(a, b) : -sortByReactions(a, b),
-        );
-      }
-
-      if (id === "invitations") {
-        return parsedMembers.sort((a, b) =>
-          desc ? sortByInvitations(a, b) : -sortByInvitations(a, b),
-        );
-      }
-
-      if (id === "points") {
-        const integration = await prisma.integration.findFirst({
-          where: {
-            workspace_id,
-            details: {
-              path: ["source"],
-              equals: parsedMembers[0]?.source,
-            },
-          },
-        });
-        const pointsConfig =
-          IntegrationSchema.parse(integration)?.details.points_config;
-
-        return parsedMembers.sort((a, b) => {
-          const pointsA = calculatePoints(a.activities, pointsConfig);
-          const pointsB = calculatePoints(b.activities, pointsConfig);
-          return desc ? pointsB - pointsA : pointsA - pointsB;
-        });
-      }
-
-      return parsedMembers;
+      return MemberWithActivitiesSchema.array().parse(members);
     },
   );
-
-const getOrderBy = (
-  id: string,
-  desc: boolean,
-): Prisma.MemberOrderByWithRelationInput => {
-  if (!id) {
-    return { last_name: desc ? "desc" : "asc" };
-  }
-
-  if (
-    id === "posts" ||
-    id === "reactions" ||
-    id === "replies" ||
-    id === "invitations" ||
-    id === "points" ||
-    id === "last_activity" ||
-    id === "created_at"
-  ) {
-    return {};
-  }
-
-  return { [id]: desc ? "desc" : "asc" };
-};
-
-const sortByLastActivity = (
-  a: MemberWithActivities,
-  b: MemberWithActivities,
-) => {
-  const lastActivityA = a.activities[0]?.created_at?.getTime() ?? 0;
-  const lastActivityB = b.activities[0]?.created_at?.getTime() ?? 0;
-  return lastActivityB - lastActivityA;
-};
-
-const sortByCreatedAt = (a: MemberWithActivities, b: MemberWithActivities) => {
-  const joinedAtA = a.created_at?.getTime() ?? 0;
-  const joinedAtB = b.created_at?.getTime() ?? 0;
-  return joinedAtB - joinedAtA;
-};
-
-const sortByPosts = (a: MemberWithActivities, b: MemberWithActivities) => {
-  const postsA = a.activities.filter(
-    (activity) => activity.details.type === "POST",
-  ).length;
-  const postsB = b.activities.filter(
-    (activity) => activity.details.type === "POST",
-  ).length;
-  return postsB - postsA;
-};
-
-const sortByReplies = (a: MemberWithActivities, b: MemberWithActivities) => {
-  const repliesA = a.activities.filter(
-    (activity) => activity.details.type === "REPLY",
-  ).length;
-  const repliesB = b.activities.filter(
-    (activity) => activity.details.type === "REPLY",
-  ).length;
-  return repliesB - repliesA;
-};
-
-const sortByReactions = (a: MemberWithActivities, b: MemberWithActivities) => {
-  const reactionsA = a.activities.filter(
-    (activity) => activity.details.type === "REACTION",
-  ).length;
-  const reactionsB = b.activities.filter(
-    (activity) => activity.details.type === "REACTION",
-  ).length;
-  return reactionsB - reactionsA;
-};
-
-const sortByInvitations = (
-  a: MemberWithActivities,
-  b: MemberWithActivities,
-) => {
-  const invitationsA = a.activities.filter(
-    (activity) => activity.details.type === "INVITATION",
-  ).length;
-  const invitationsB = b.activities.filter(
-    (activity) => activity.details.type === "INVITATION",
-  ).length;
-  return invitationsB - invitationsA;
-};
-
-const calculatePoints = (
-  activities: MemberWithActivities["activities"],
-  pointsConfig: PointsConfig,
-) => {
-  return activities.reduce((total, activity) => {
-    switch (activity.details.type) {
-      case "POST":
-        return total + (pointsConfig?.post ?? 0);
-      case "REACTION":
-        return total + (pointsConfig?.reaction ?? 0);
-      case "REPLY":
-        return total + (pointsConfig?.reply ?? 0);
-      case "INVITATION":
-        return total + (pointsConfig?.invitation ?? 0);
-      default:
-        return total;
-    }
-  }, 0);
-};

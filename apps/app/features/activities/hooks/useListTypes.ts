@@ -1,11 +1,11 @@
-import { _listTypes } from "@/features/activities/actions/_listTypes";
 import { useQuery } from "@tanstack/react-query";
+import { _listKeys } from "../actions/_listKeys";
 
-export const useListTypes = () => {
+export const useListKeys = () => {
   const { data, isLoading } = useQuery({
-    queryKey: ["types"],
-    queryFn: () => _listTypes(),
+    queryKey: ["keys"],
+    queryFn: () => _listKeys(),
   });
 
-  return { types: data?.data, isLoading };
+  return { keys: data?.data, isLoading };
 };

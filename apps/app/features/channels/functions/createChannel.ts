@@ -1,6 +1,6 @@
 import { safeAction } from "@/lib/safeAction";
 import { ChannelSchema } from "@conquest/zod/channel.schema";
-import { SOURCE } from "@conquest/zod/source.enum";
+import { SOURCE } from "@conquest/zod/enum/source.enum";
 import { prisma } from "lib/prisma";
 import { z } from "zod";
 
@@ -18,7 +18,7 @@ export const createChannel = safeAction
   )
   .action(
     async ({ parsedInput: { name, source, external_id, workspace_id } }) => {
-      const channel = await prisma.channel.create({
+      const channel = await prisma.channels.create({
         data: {
           name,
           source,

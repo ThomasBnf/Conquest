@@ -17,7 +17,7 @@ export const POST = safeRoute
   .handler(async (_, { body, data }) => {
     const { name } = body;
 
-    const channel = await prisma.channel.create({
+    const channel = await prisma.channels.create({
       data: {
         name,
         source: "API",
@@ -33,7 +33,7 @@ export const GET = safeRoute
     return await getAuthenticatedUser(request);
   })
   .handler(async (_, { data }) => {
-    const channels = await prisma.channel.findMany({
+    const channels = await prisma.channels.findMany({
       where: {
         workspace_id: data.workspace_id,
       },

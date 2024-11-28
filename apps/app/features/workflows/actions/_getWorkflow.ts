@@ -18,7 +18,7 @@ export const _getWorkflow = authAction
   .action(async ({ ctx, parsedInput: { id } }) => {
     const workspace_id = ctx.user.workspace_id;
 
-    const workflow = await prisma.workflow.findUnique({
+    const workflow = await prisma.workflows.findUnique({
       where: {
         id,
         workspace_id,

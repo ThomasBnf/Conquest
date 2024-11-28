@@ -16,7 +16,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         if (validatedFields.success) {
           const { email, password } = validatedFields.data;
 
-          const user = await prisma.user.findUnique({
+          const user = await prisma.users.findUnique({
             where: {
               email,
             },

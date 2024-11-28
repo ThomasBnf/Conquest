@@ -29,7 +29,7 @@ export const TagBadge = ({ tag, isClickable = false, onDelete }: Props) => {
         <Button
           variant="ghost"
           size="xs"
-          className="size-4  text-muted-foreground"
+          className="size-4 text-muted-foreground"
           onClick={onDelete}
         >
           <X size={14} className="shrink-0" />

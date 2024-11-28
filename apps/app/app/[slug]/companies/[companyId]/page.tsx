@@ -30,9 +30,9 @@ export default async function Page({ params: { companyId, slug } }: Props) {
   if (!company) redirect(`/${slug}/companies`);
 
   return (
-    <PageLayout>
-      <HeaderSubPage title="Companies" currentPage={company.name ?? ""} />
-      <div className="flex divide-x h-full overflow-hidden">
+    <PageLayout className="m-1 rounded-lg border">
+      <HeaderSubPage />
+      <div className="flex h-full divide-x overflow-hidden">
         <ScrollArea className="flex-1">
           {activities && (
             <CompanyActivities

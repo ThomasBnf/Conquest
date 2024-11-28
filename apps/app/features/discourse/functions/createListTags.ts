@@ -60,7 +60,7 @@ export const createListTags = safeAction
         }
       };
 
-      await prisma.tag.create({
+      await prisma.tags.create({
         data: {
           external_id: id.toString(),
           name,

@@ -67,7 +67,7 @@ export const ColumnHeader = ({
           ) : isSorted === "asc" ? (
             <ArrowUpIcon size={14} className="ml-auto" />
           ) : (
-            <CaretSortIcon className="size-4 ml-auto" />
+            <CaretSortIcon className="ml-auto size-4" />
           )}
         </Button>
       </DropdownMenuTrigger>
