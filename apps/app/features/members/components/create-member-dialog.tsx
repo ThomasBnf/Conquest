@@ -51,6 +51,7 @@ export const CreateMemberDialog = () => {
 
   const onSubmit = async ({ first_name, last_name, email }: CreateMember) => {
     setLoading(true);
+
     const rMember = await _createMember({ first_name, last_name, email });
     const error = rMember?.serverError;
     const member = rMember?.data;
