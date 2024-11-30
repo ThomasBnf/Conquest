@@ -14,7 +14,7 @@ export const Sidebar = () => {
   const { isAdding } = useAdding();
 
   return (
-    <div className="h-full w-full max-w-md border-l bg-background">
+    <div className="h-full w-full max-w-[500px] border-l bg-background">
       {!isAdding && selected && <OptionsPanel />}
       {!isChanging && panel === "workflow" && <WorkflowPanel />}
       {!isChanging && panel === "triggers" && <TriggerPanel />}

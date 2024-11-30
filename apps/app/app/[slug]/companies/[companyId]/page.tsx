@@ -4,7 +4,7 @@ import { _listCompanyActivities } from "@/features/activities/actions/_listCompa
 import { CompanyActivities } from "@/features/activities/components/company-activities";
 import { _getCompany } from "@/features/companies/actions/_getCompany";
 import { CompanySidebar } from "@/features/companies/components/company-sidebar";
-import { listTags } from "@/features/tags/actions/listTags";
+import { _listTags } from "@/features/tags/actions/listTags";
 import { ScrollArea } from "@conquest/ui/scroll-area";
 import { redirect } from "next/navigation";
 
@@ -21,7 +21,7 @@ export default async function Page({ params: { companyId, slug } }: Props) {
     company_id: companyId,
     page: 1,
   });
-  const rTags = await listTags();
+  const rTags = await _listTags();
 
   const company = rCompany?.data;
   const tags = rTags?.data;

@@ -85,6 +85,7 @@ export const AppSidebar = () => {
       <Sidebar collapsible="offcanvas">
         <SidebarHeader>
           <WorkspaceMenu />
+          {/* <CommandSearch /> */}
         </SidebarHeader>
         <SidebarContent>
           <SidebarGroup>

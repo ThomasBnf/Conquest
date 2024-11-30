@@ -7,16 +7,15 @@ import {
 } from "@conquest/zod/activity.schema";
 import type {
   Filter,
+  FilterActivity,
   FilterDate,
   FilterNumber,
   FilterSelect,
-  FilterTag,
+  FilterText,
 } from "@conquest/zod/filters.schema";
 import { SlackIntegrationSchema } from "@conquest/zod/integration.schema";
 import { MemberSchema } from "@conquest/zod/member.schema";
 import {
-  type Category,
-  type GroupFilter,
   NodeSchema,
   type NodeSlackMessage,
   type NodeTagMember,
@@ -38,7 +37,6 @@ export const runWorkflow = task({
     created_member?: MemberWithActivities;
   }) => {
     const { workflow_id, created_member } = payload;
-    console.log(payload);
     createdMember = created_member ?? null;
 
     const workflow = await prisma.workflows.findUnique({
@@ -61,11 +59,11 @@ export const runWorkflow = task({
             .array(MemberWithActivitiesSchema)
             .parse(_members);
 
-          const { group_filters } = parsedNode.data;
+          const { filters } = parsedNode.data;
 
           members =
-            group_filters?.length > 0
-              ? filterMembers(parsedMembers, group_filters)
+            filters?.length > 0
+              ? filterMembers(parsedMembers, filters)
               : parsedMembers;
 
           break;
@@ -221,7 +219,7 @@ export const webhook = async (node: NodeWebhook) => {
       JSON.stringify(
         members.map((member) => ({
           ...member,
-          activities: member.activities?.map((activity) => activity.id) ?? [],
+          activities: member.activities?.length ?? 0,
         })),
         null,
         2,
@@ -300,156 +298,112 @@ export const slackMessage = async (
 
 export const filterMembers = (
   members: MemberWithActivities[],
-  groupFilters: GroupFilter[],
+  filters: Filter[],
 ) => {
-  if (!groupFilters?.length) return members;
+  if (!filters?.length) return members;
 
-  return members.filter((member) =>
-    groupFilters.every((group) => {
-      if (!group.filters?.length) return true;
-
-      const record = getRecordForCategory(member, group.category);
-      if (!record) return false;
-
-      return group.filters.every((filter) => {
-        const operation = createFilterOperation(filter);
-        return operation.execute({
-          member: record,
-          activities: record.activities || [],
-        });
+  return members.filter((member) => {
+    return filters.every((filter) => {
+      const operation = createFilterOperation(filter);
+      return operation.execute({
+        member,
+        activities: member.activities || [],
       });
-    }),
-  );
-};
-
-const getRecordForCategory = (
-  member: MemberWithActivities,
-  category: Category,
-): MemberWithActivities | null => {
-  if (!member) return null;
-
-  switch (category) {
-    case "last_activity":
-      return {
-        ...member,
-        activities: member.activities?.slice(-1) || [],
-      };
-    case "first_activity":
-      return {
-        ...member,
-        activities: member.activities?.slice(0, 1) || [],
-      };
-    default:
-      return member;
-  }
+    });
+  });
 };
 
 const createFilterOperation = (filter: Filter) => {
-  if (!filter?.field) return { execute: () => true };
-
-  switch (filter.field) {
-    case "localisation":
-      return createLocaleFilter(filter);
-    case "type":
-      return createTypeFilter(filter);
-    case "source":
-      return createSourceFilter(filter);
-    case "tags":
-      return createTagFilter(filter);
-    case "created_at":
-      return createDateFilter(filter);
-    case "love":
+  switch (filter.type) {
+    case "text":
+      return createTextFilter(filter);
+    case "number":
       return createNumberFilter(filter);
+    case "select":
+      return createSelectFilter(filter);
+    case "date":
+      return createDateFilter(filter);
+    case "activity":
+      return createActivityFilter(filter);
     default:
       return { execute: () => true };
   }
 };
 
-export const createLocaleFilter = (filter: FilterSelect) => {
+const createTextFilter = (filter: FilterText) => {
+  const { field, operator, value } = filter;
+
+  return {
+    execute: ({ member }: { member: MemberWithActivities }) => {
+      switch (operator) {
+        case "contains":
+          return member[field]?.includes(value);
+        case "not_contains":
+          return !member[field]?.includes(value);
+        default:
+          return true;
+      }
+    },
+  };
+};
+
+const createNumberFilter = (filter: FilterNumber) => {
+  const { operator, value } = filter;
+
+  return {
+    execute: ({ member }: { member: MemberWithActivities }) => {
+      const field = (() => {
+        switch (filter.field) {
+          case "love":
+            return member.love;
+          case "level":
+            return member.level;
+        }
+      })();
+
+      switch (operator) {
+        case ">":
+          return field > value;
+        case ">=":
+          return field >= value;
+        case "=":
+          return field === value;
+        case "!=":
+          return field !== value;
+        case "<=":
+          return field <= value;
+        case "<":
+          return field < value;
+        default:
+          return true;
+      }
+    },
+  };
+};
+
+export const createSelectFilter = (filter: FilterSelect) => {
   const { operator, values } = filter;
 
   if (!values?.length) return { execute: () => true };
 
   return {
     execute: ({ member }: { member: MemberWithActivities }) => {
-      const memberLocale = member.localisation;
+      const field = (() => {
+        switch (filter.field) {
+          case "localisation":
+            return member.localisation;
+          case "tags":
+            return member.tags;
+          case "source":
+            return member.source;
+        }
+      })();
 
       switch (operator) {
         case "contains":
-          return values.includes(memberLocale ?? "");
+          return values.some((value) => field?.includes(value));
         case "not_contains":
-          return !values.includes(memberLocale ?? "");
-        default:
-          return true;
-      }
-    },
-  };
-};
-
-export const createTypeFilter = (filter: FilterSelect) => {
-  const { operator, values } = filter;
-
-  if (!values?.length) return { execute: () => true };
-
-  return {
-    execute: ({ activities }: { activities: ActivityWithType[] }) => {
-      if (!activities?.length) return false;
-
-      switch (operator) {
-        case "contains":
-          return activities.some((activity) =>
-            values.includes(activity.activity_type.key),
-          );
-        case "not_contains":
-          return activities.every(
-            (activity) => !values.includes(activity.activity_type.key),
-          );
-        default:
-          return true;
-      }
-    },
-  };
-};
-
-export const createSourceFilter = (filter: FilterSelect) => {
-  const { operator, values } = filter;
-
-  if (!values?.length) return { execute: () => true };
-
-  return {
-    execute: ({ activities }: { activities: ActivityWithType[] }) => {
-      if (!activities?.length) return false;
-
-      switch (operator) {
-        case "contains":
-          return activities.some((activity) =>
-            values.includes(activity.activity_type.source),
-          );
-        case "not_contains":
-          return activities.every(
-            (activity) => !values.includes(activity.activity_type.source),
-          );
-        default:
-          return true;
-      }
-    },
-  };
-};
-
-export const createTagFilter = (filter: FilterTag) => {
-  const { operator, values } = filter;
-
-  if (!values?.length) return { execute: () => true };
-
-  return {
-    execute: ({ member }: { member: MemberWithActivities }) => {
-      const memberTags = member.tags || [];
-
-      switch (operator) {
-        case "contains":
-          return values.some((value) => memberTags.includes(value));
-        case "not_contains":
-          return !values.some((value) => memberTags.includes(value));
+          return !values.some((value) => field?.includes(value));
         default:
           return true;
       }
@@ -482,14 +436,6 @@ export const createDateFilter = (filter: FilterDate) => {
               startOfDay(new Date(activity.created_at)).getTime() !==
               compareDate.getTime(),
           );
-        case "after":
-          return activities.some(
-            (activity) => new Date(activity.created_at) > compareDate,
-          );
-        case "before":
-          return activities.every(
-            (activity) => new Date(activity.created_at) < compareDate,
-          );
         default:
           return true;
       }
@@ -497,23 +443,43 @@ export const createDateFilter = (filter: FilterDate) => {
   };
 };
 
-export const createNumberFilter = (filter: FilterNumber) => {
-  const { operator, value } = filter;
-  if (typeof value !== "number") return { execute: () => true };
+const createActivityFilter = (filter: FilterActivity) => {
+  const { activity_type, operator, value, channel } = filter;
 
   return {
-    execute: ({ member }: { member: MemberWithActivities }) => {
-      const love = member.love ?? 0;
+    execute: ({ activities }: { activities: ActivityWithType[] }) => {
+      if (!activities?.length) return false;
+
+      const compareDate = getDynamicDate(filter);
+      if (!compareDate) return false;
+
+      const filteredActivities = activities.filter((activity) => {
+        const activityDate = startOfDay(new Date(activity.created_at));
+        const matchesType = activity_type.some(
+          (type) => type.key === activity.activity_type.key,
+        );
+        const matchesChannel =
+          !channel.id || activity.channel_id === channel.id;
+        const matchesDate = activityDate.getTime() >= compareDate.getTime();
+
+        return matchesType && matchesChannel && matchesDate;
+      });
+
+      const count = filteredActivities.length;
 
       switch (operator) {
-        case "equals":
-          return love === value;
-        case "not_equals":
-          return love !== value;
-        case "greater_than":
-          return love > value;
-        case "less_than":
-          return love < value;
+        case "<":
+          return count < value;
+        case "<=":
+          return count <= value;
+        case "=":
+          return count === value;
+        case "!=":
+          return count !== value;
+        case ">":
+          return count > value;
+        case ">=":
+          return count >= value;
         default:
           return true;
       }
@@ -521,8 +487,8 @@ export const createNumberFilter = (filter: FilterNumber) => {
   };
 };
 
-const getDynamicDate = (filter: FilterDate) => {
-  const { dynamic_date, days } = filter;
+const getDynamicDate = (filter: FilterDate | FilterActivity) => {
+  const { dynamic_date } = filter;
   if (!dynamic_date) return null;
 
   const today = startOfDay(new Date());
@@ -532,12 +498,10 @@ const getDynamicDate = (filter: FilterDate) => {
       return today;
     case "yesterday":
       return subDays(today, 1);
-    case "7_days_ago":
+    case "7 days":
       return subDays(today, 7);
-    case "30_days_ago":
+    case "30 days":
       return subDays(today, 30);
-    case "days_ago":
-      return typeof days === "number" ? subDays(today, days) : null;
     default:
       return null;
   }

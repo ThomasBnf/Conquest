@@ -60,7 +60,7 @@ export const QueryInput = ({
         onBlur={() => setIsFocus(false)}
         placeholder={placeholder}
         variant="transparent"
-        className="h-8"
+        className="h-[30px]"
       />
       {query && (
         <Button

@@ -2,7 +2,7 @@
 
 import { QueryInput } from "@/components/custom/query-input";
 import { Members } from "@/components/icons/Members";
-import { IsLoading } from "@/components/states/is-loading";
+import { FilterButton } from "@/features/filters/filter-button";
 import { ActionMenu } from "@/features/table/action-menu";
 import { useScrollX } from "@/features/table/hooks/useScrollX";
 import { useHasScrollY } from "@/features/table/hooks/usehasScrollY";
@@ -12,12 +12,14 @@ import { Button } from "@conquest/ui/button";
 import { cn } from "@conquest/ui/cn";
 import { ScrollArea, ScrollBar } from "@conquest/ui/scroll-area";
 import { useSidebar } from "@conquest/ui/sidebar";
+import type { Filter } from "@conquest/zod/filters.schema";
 import type { Tag } from "@conquest/zod/tag.schema";
 import { useEffect, useRef, useState } from "react";
 import { useInView } from "react-intersection-observer";
 import { useDebounce } from "use-debounce";
 import { useListMembers } from "../../hooks/useListMembers";
 import { Columns } from "./columns";
+import TableLoadingState from "./table-loading-state";
 
 type Props = {
   count: number;
@@ -30,11 +32,13 @@ export const MembersTable = ({ count, tags }: Props) => {
   const [{ search, id, desc }, setSearchParams] = useParamsMembers();
   const [rowSelected, setRowSelected] = useState<string[]>([]);
   const [debouncedSearch] = useDebounce(search, 500);
+  const [filters, setFilters] = useState<Filter[]>([]);
 
   const { members, isLoading, fetchNextPage, hasNextPage } = useListMembers({
     debouncedSearch,
     id,
     desc,
+    filters,
   });
 
   const isClient = useIsClient();
@@ -50,16 +54,17 @@ export const MembersTable = ({ count, tags }: Props) => {
     if (inView && hasNextPage) fetchNextPage();
   }, [inView]);
 
-  if (!isClient) return <IsLoading />;
+  if (!isClient || isLoading) return <TableLoadingState />;
 
   return (
     <>
-      <div className="flex min-h-12 items-center border-b px-4">
+      <div className="flex h-fit flex-wrap items-center gap-1 border-b px-4 py-2">
         <QueryInput
           query={search}
           setQuery={(value) => setSearchParams({ search: value })}
           placeholder="Search in members..."
         />
+        <FilterButton filters={filters} setFilters={setFilters} />
       </div>
       <div className="relative h-full overflow-hidden">
         <ScrollArea className="h-full overflow-hidden" ref={scrollRef}>
@@ -110,67 +115,71 @@ export const MembersTable = ({ count, tags }: Props) => {
             {members?.map((member, index) => (
               <div
                 key={member.id}
-                className={cn(
-                  "[&:not(:last-child)]:border-b",
-                  rowSelected.includes(member.id) && "bg-muted",
-                )}
+                className="group [&:not(:last-child)]:border-b"
               >
-                <div className="flex">
-                  <div
-                    className={cn(
-                      "sticky left-0 [&:not(:first-child)]:border-r",
-                      rowSelected.includes(member.id)
-                        ? "bg-muted"
-                        : "bg-background",
-                    )}
-                    style={{ width: fixedColumn[0]?.width }}
-                  >
-                    <div className="flex h-12 items-center">
-                      {fixedColumn[0]?.cell({
-                        member,
-                        rowSelected,
-                        setRowSelected,
-                      })}
-                    </div>
-                    {scrollX > 0 && (
-                      <div className="-mr-12 absolute top-0 right-0 h-full w-12 bg-gradient-to-r from-black to-transparent opacity-[0.075]" />
-                    )}
-                  </div>
-                  <div
-                    className={cn(
-                      "sticky left-[40px] border-r",
-                      rowSelected.includes(member.id)
-                        ? "bg-muted"
-                        : "bg-background",
-                    )}
-                    style={{ width: fixedColumn[1]?.width }}
-                  >
-                    <div className="flex h-12 items-center">
-                      {fixedColumn[1]?.cell({
-                        member,
-                        rowSelected,
-                        setRowSelected,
-                      })}
-                    </div>
-                    {scrollX > 0 && (
-                      <div className="-mr-12 absolute top-0 right-0 h-full w-12 bg-gradient-to-r from-black to-transparent opacity-[0.075]" />
-                    )}
-                  </div>
-                  <div className="flex divide-x">
-                    {scrollableColumns.map((column) => (
-                      <div
-                        key={column.id}
-                        className="flex h-12 items-center"
-                        style={{ width: column.width }}
-                      >
-                        {column.cell({ member })}
+                <div
+                  className={cn(
+                    "group-hover:bg-muted",
+                    rowSelected.includes(member.id) && "bg-muted",
+                  )}
+                >
+                  <div className="flex">
+                    <div
+                      className={cn(
+                        "sticky left-0 group-hover:bg-muted [&:not(:first-child)]:border-r",
+                        rowSelected.includes(member.id)
+                          ? "bg-muted"
+                          : "bg-background",
+                      )}
+                      style={{ width: fixedColumn[0]?.width }}
+                    >
+                      <div className="flex h-12 items-center">
+                        {fixedColumn[0]?.cell({
+                          member,
+                          rowSelected,
+                          setRowSelected,
+                        })}
                       </div>
-                    ))}
+                      {scrollX > 0 && (
+                        <div className="-mr-12 absolute top-0 right-0 h-full w-12 bg-gradient-to-r from-black to-transparent opacity-[0.075]" />
+                      )}
+                    </div>
+                    <div
+                      className={cn(
+                        "sticky left-[40px] border-r group-hover:bg-muted",
+                        rowSelected.includes(member.id)
+                          ? "bg-muted"
+                          : "bg-background",
+                      )}
+                      style={{ width: fixedColumn[1]?.width }}
+                    >
+                      <div className="flex h-12 items-center">
+                        {fixedColumn[1]?.cell({
+                          member,
+                          rowSelected,
+                          setRowSelected,
+                        })}
+                      </div>
+                      {scrollX > 0 && (
+                        <div className="-mr-12 absolute top-0 right-0 h-full w-12 bg-gradient-to-r from-black to-transparent opacity-[0.075]" />
+                      )}
+                    </div>
+                    <div className="flex divide-x">
+                      {scrollableColumns.map((column) => (
+                        <div
+                          key={column.id}
+                          className="flex h-12 items-center"
+                          style={{ width: column.width }}
+                        >
+                          {column.cell({ member })}
+                        </div>
+                      ))}
+                    </div>
                   </div>
+                  {!isLoading && members.length - 20 === index && (
+                    <div ref={ref} />
+                  )}
                 </div>
-                {!isLoading && members.length - 20 === index && (
-                  <div ref={ref} />
-                )}
               </div>
             ))}
           </div>

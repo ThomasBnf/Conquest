@@ -38,10 +38,7 @@ export const WorkspaceMenu = () => {
               <ChevronsUpDown className="!size-3.5" />
             </SidebarMenuButton>
           </DropdownMenuTrigger>
-          <DropdownMenuContent
-            className="w-[--radix-dropdown-menu-trigger-width]"
-            align="start"
-          >
+          <DropdownMenuContent className="w-[200px]" align="start">
             <DropdownMenuItem>
               <span className="font-medium">{user?.workspace.name}</span>
             </DropdownMenuItem>

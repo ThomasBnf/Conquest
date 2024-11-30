@@ -4,9 +4,9 @@ import { TagSchema } from "@conquest/zod/tag.schema";
 import { authAction } from "lib/authAction";
 import { prisma } from "lib/prisma";
 
-export const listTags = authAction
+export const _listTags = authAction
   .metadata({
-    name: "listTags",
+    name: "_listTags",
   })
   .action(async ({ ctx }) => {
     const workspace_id = ctx.user.workspace_id;
