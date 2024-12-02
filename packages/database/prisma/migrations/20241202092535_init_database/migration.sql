@@ -1,86 +1,11 @@
-/*
-  Warnings:
+-- CreateEnum
+CREATE TYPE "SOURCE" AS ENUM ('API', 'MANUAL', 'SLACK', 'DISCOURSE');
 
-  - You are about to drop the `Activity` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `ApiKey` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `Channel` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `Company` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `Integration` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `Member` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `Tag` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `User` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `Workflow` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `Workspace` table. If the table is not empty, all the data it contains will be lost.
+-- CreateEnum
+CREATE TYPE "GENDER" AS ENUM ('MALE', 'FEMALE', 'OTHER');
 
-*/
--- AlterEnum
-ALTER TYPE "STATUS" ADD VALUE 'INSTALLED';
-
--- DropForeignKey
-ALTER TABLE "Activity" DROP CONSTRAINT "Activity_channel_id_fkey";
-
--- DropForeignKey
-ALTER TABLE "Activity" DROP CONSTRAINT "Activity_member_id_fkey";
-
--- DropForeignKey
-ALTER TABLE "Activity" DROP CONSTRAINT "Activity_workspace_id_fkey";
-
--- DropForeignKey
-ALTER TABLE "ApiKey" DROP CONSTRAINT "ApiKey_user_id_fkey";
-
--- DropForeignKey
-ALTER TABLE "Channel" DROP CONSTRAINT "Channel_workspace_id_fkey";
-
--- DropForeignKey
-ALTER TABLE "Company" DROP CONSTRAINT "Company_workspace_id_fkey";
-
--- DropForeignKey
-ALTER TABLE "Integration" DROP CONSTRAINT "Integration_workspace_id_fkey";
-
--- DropForeignKey
-ALTER TABLE "Member" DROP CONSTRAINT "Member_company_id_fkey";
-
--- DropForeignKey
-ALTER TABLE "Member" DROP CONSTRAINT "Member_workspace_id_fkey";
-
--- DropForeignKey
-ALTER TABLE "Tag" DROP CONSTRAINT "Tag_workspace_id_fkey";
-
--- DropForeignKey
-ALTER TABLE "User" DROP CONSTRAINT "User_workspace_id_fkey";
-
--- DropForeignKey
-ALTER TABLE "Workflow" DROP CONSTRAINT "Workflow_workspace_id_fkey";
-
--- DropTable
-DROP TABLE "Activity";
-
--- DropTable
-DROP TABLE "ApiKey";
-
--- DropTable
-DROP TABLE "Channel";
-
--- DropTable
-DROP TABLE "Company";
-
--- DropTable
-DROP TABLE "Integration";
-
--- DropTable
-DROP TABLE "Member";
-
--- DropTable
-DROP TABLE "Tag";
-
--- DropTable
-DROP TABLE "User";
-
--- DropTable
-DROP TABLE "Workflow";
-
--- DropTable
-DROP TABLE "Workspace";
+-- CreateEnum
+CREATE TYPE "STATUS" AS ENUM ('CONNECTED', 'SYNCING', 'INSTALLED', 'DISCONNECTED');
 
 -- CreateTable
 CREATE TABLE "activities" (
