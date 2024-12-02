@@ -126,12 +126,19 @@ export const Columns = ({ tags }: Props): Column[] => [
     id: "love",
     header: () => <ColumnHeader id="love" title="Love" width={125} />,
     cell: ({ member }) => {
-      const activities_types = member.activities?.reduce(
+      const threeMonthsAgo = new Date();
+      threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
+
+      const recentActivities = member.activities?.filter(
+        (activity) => new Date(activity.created_at) >= threeMonthsAgo,
+      );
+
+      const activities_types = recentActivities?.reduce(
         (acc, activity) => {
-          const key = activity.activity_type.key;
+          const name = activity.activity_type.name;
           const weight = activity.activity_type.weight;
-          acc[key] = {
-            count: (acc[key]?.count ?? 0) + 1,
+          acc[name] = {
+            count: (acc[name]?.count ?? 0) + 1,
             weight,
           };
           return acc;
@@ -142,8 +149,8 @@ export const Columns = ({ tags }: Props): Column[] => [
       const sorted_activities_types = Object.entries(activities_types ?? {})
         .sort(([, a], [, b]) => b.weight - a.weight)
         .reduce(
-          (acc, [key, value]) => {
-            acc[key] = value;
+          (acc, [name, value]) => {
+            acc[name] = value;
             return acc;
           },
           {} as Record<string, { count: number; weight: number }>,
@@ -158,12 +165,12 @@ export const Columns = ({ tags }: Props): Column[] => [
             <TooltipContent>
               <div>
                 {Object.entries(sorted_activities_types ?? {}).map(
-                  ([key, { count, weight }]) => (
+                  ([name, { count, weight }]) => (
                     <div
-                      key={key}
+                      key={name}
                       className="flex items-center justify-between text-sm"
                     >
-                      <p className="w-36">{key}</p>
+                      <p className="w-36">{name}</p>
                       <p>
                         {count} * {weight} = {count * weight}
                       </p>
@@ -176,12 +183,12 @@ export const Columns = ({ tags }: Props): Column[] => [
                     member.love > 0 && "mt-2",
                   )}
                 >
-                  <p className="w-36">Total love</p>
+                  <p className="w-36">Total Love</p>
                   <p>{member.love}</p>
                 </div>
                 <div className="flex items-center justify-between text-sm">
-                  <p className="w-36">Total activities</p>
-                  <p>{member.activities?.length}</p>
+                  <p className="w-36">Total Activities</p>
+                  <p>{recentActivities?.length}</p>
                 </div>
               </div>
             </TooltipContent>
