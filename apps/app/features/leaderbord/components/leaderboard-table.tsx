@@ -52,14 +52,14 @@ export const LeaderbordTable = ({ initialMembers, tags, from, to }: Props) => {
       <ScrollArea className="h-full overflow-hidden" ref={scrollRef}>
         <div className="sticky top-0 z-30 flex">
           <div
-            className="sticky left-0 z-10 border-b border-r"
+            className="sticky left-0 z-10 border-r border-b"
             style={{ width: fixedColumn?.width }}
           >
             <div className="flex h-12 items-center">
               {fixedColumn?.header({ members })}
             </div>
             {scrollX > 0 && (
-              <div className="absolute right-0 top-0 -mr-12 h-full w-12 bg-gradient-to-r from-black to-transparent opacity-[0.075]" />
+              <div className="-mr-12 absolute top-0 right-0 h-full w-12 bg-gradient-to-r from-black to-transparent opacity-[0.075]" />
             )}
           </div>
           <div className="flex divide-x border-b">
@@ -86,7 +86,7 @@ export const LeaderbordTable = ({ initialMembers, tags, from, to }: Props) => {
                     {fixedColumn?.cell({ member })}
                   </div>
                   {scrollX > 0 && (
-                    <div className="absolute right-0 top-0 -mr-12 h-full w-12 bg-gradient-to-r from-black to-transparent opacity-[0.075]" />
+                    <div className="-mr-12 absolute top-0 right-0 h-full w-12 bg-gradient-to-r from-black to-transparent opacity-[0.075]" />
                   )}
                 </div>
                 <div className="flex divide-x">
@@ -115,7 +115,7 @@ export const LeaderbordTable = ({ initialMembers, tags, from, to }: Props) => {
             <div className="flex items-center justify-center">
               <Members />
             </div>
-            <p className="text-center text-lg font-medium">No members found</p>
+            <p className="text-center font-medium text-lg">No members found</p>
             <p className="text-center text-muted-foreground">
               No more members has activity in this period
             </p>
