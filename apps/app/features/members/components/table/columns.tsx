@@ -126,14 +126,7 @@ export const Columns = ({ tags }: Props): Column[] => [
     id: "love",
     header: () => <ColumnHeader id="love" title="Love" width={125} />,
     cell: ({ member }) => {
-      const threeMonthsAgo = new Date();
-      threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
-
-      const recentActivities = member.activities?.filter(
-        (activity) => new Date(activity.created_at) >= threeMonthsAgo,
-      );
-
-      const activities_types = recentActivities?.reduce(
+      const activities_types = member.activities?.reduce(
         (acc, activity) => {
           const name = activity.activity_type.name;
           const weight = activity.activity_type.weight;
@@ -149,8 +142,8 @@ export const Columns = ({ tags }: Props): Column[] => [
       const sorted_activities_types = Object.entries(activities_types ?? {})
         .sort(([, a], [, b]) => b.weight - a.weight)
         .reduce(
-          (acc, [name, value]) => {
-            acc[name] = value;
+          (acc, [key, value]) => {
+            acc[key] = value;
             return acc;
           },
           {} as Record<string, { count: number; weight: number }>,
@@ -183,12 +176,12 @@ export const Columns = ({ tags }: Props): Column[] => [
                     member.love > 0 && "mt-2",
                   )}
                 >
-                  <p className="w-36">Total Love</p>
+                  <p className="w-36">Total love</p>
                   <p>{member.love}</p>
                 </div>
                 <div className="flex items-center justify-between text-sm">
-                  <p className="w-36">Total Activities</p>
-                  <p>{recentActivities?.length}</p>
+                  <p className="w-36">Total activities</p>
+                  <p>{member.activities?.length}</p>
                 </div>
               </div>
             </TooltipContent>
@@ -212,12 +205,6 @@ export const Columns = ({ tags }: Props): Column[] => [
         </div>
       );
     },
-    width: 250,
-  },
-  {
-    id: "phones",
-    header: () => <ColumnHeader id="phones" title="Phones" width={250} />,
-    cell: ({ member }) => <p className="truncate px-2">{member.phones?.[0]}</p>,
     width: 250,
   },
   {

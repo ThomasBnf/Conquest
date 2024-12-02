@@ -14,7 +14,7 @@ import { useAdding } from "../hooks/useAdding";
 import { useChanging } from "../hooks/useChanging";
 import { usePanel } from "../hooks/usePanel";
 import { useSelected } from "../hooks/useSelected";
-import { FilterOptions } from "../nodes/list-members/filter.options";
+import { FilterOptions } from "../nodes/list-members/filter/filter.options";
 import { RecurringWorkflowOptions } from "../nodes/recurring-workflow";
 import { SlackMessageOptions } from "../nodes/slack-message";
 import { TagMemberOptions } from "../nodes/tag-member";

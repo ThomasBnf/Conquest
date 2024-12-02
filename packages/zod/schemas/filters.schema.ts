@@ -1,8 +1,13 @@
 import { z } from "zod";
 
 export const BaseOperatorSchema = z.enum(["contains", "not_contains"]);
-export const DateOperatorSchema = z.enum(["is", "is_not"]);
-export const NumberOperatorSchema = z.enum([">", ">=", "=", "!=", "<=", "<"]);
+export const DateOperatorSchema = z.enum(["is", "is_not", "before", "after"]);
+export const NumberOperatorSchema = z.enum([
+  "equals",
+  "not_equals",
+  "less_than",
+  "greater_than",
+]);
 
 export const OperatorSchema = z.union([
   BaseOperatorSchema,
@@ -13,10 +18,9 @@ export const OperatorSchema = z.union([
 export const DynamicDateSchema = z.enum([
   "today",
   "yesterday",
-  "7 days",
-  "30 days",
-  "90 days",
-  "365 days",
+  "7_days_ago",
+  "30_days_ago",
+  "days_ago",
 ]);
 
 // SCHEMAS
@@ -27,58 +31,35 @@ export const FilterBaseSchema = z.object({
 });
 
 export const FilterSelectSchema = FilterBaseSchema.extend({
-  type: z.literal("select"),
-  field: z.enum(["source", "localisation", "tags"]),
+  field: z.enum(["localisation", "type", "source"]),
   operator: BaseOperatorSchema,
   values: z.array(z.string()).default([]),
 });
 
 export const FilterDateSchema = FilterBaseSchema.extend({
-  type: z.literal("date"),
   field: z.literal("created_at"),
   operator: DateOperatorSchema,
   dynamic_date: DynamicDateSchema.optional(),
   days: z.number().default(1),
 });
 
-export const FilterTextSchema = FilterBaseSchema.extend({
-  type: z.literal("text"),
-  field: z.enum(["job_title", "emails", "phones"]),
-  operator: BaseOperatorSchema,
-  value: z.string().default(""),
-});
-
 export const FilterNumberSchema = FilterBaseSchema.extend({
-  type: z.literal("number"),
-  field: z.enum(["love", "level"]),
+  field: z.literal("love"),
   operator: NumberOperatorSchema,
   value: z.number().default(1),
 });
 
-export const FilterActivitySchema = FilterBaseSchema.extend({
-  type: z.literal("activity"),
-  activity_type: z
-    .object({
-      key: z.string(),
-      name: z.string(),
-    })
-    .array(),
-  operator: NumberOperatorSchema,
-  value: z.number().int().positive(),
-  channel: z.object({
-    id: z.string(),
-    label: z.string(),
-  }),
-  dynamic_date: DynamicDateSchema.optional(),
-  days: z.number().default(1),
+export const FilterTagSchema = FilterBaseSchema.extend({
+  field: z.literal("tags"),
+  operator: BaseOperatorSchema,
+  values: z.array(z.string()).default([]),
 });
 
-export const FilterSchema = z.discriminatedUnion("type", [
+export const FilterSchema = z.discriminatedUnion("field", [
   FilterSelectSchema,
   FilterDateSchema,
-  FilterTextSchema,
   FilterNumberSchema,
-  FilterActivitySchema,
+  FilterTagSchema,
 ]);
 
 // TYPES
@@ -86,10 +67,8 @@ export const FilterSchema = z.discriminatedUnion("type", [
 export type Filter = z.infer<typeof FilterSchema>;
 export type FilterSelect = z.infer<typeof FilterSelectSchema>;
 export type FilterDate = z.infer<typeof FilterDateSchema>;
-export type FilterText = z.infer<typeof FilterTextSchema>;
 export type FilterNumber = z.infer<typeof FilterNumberSchema>;
-export type FilterActivity = z.infer<typeof FilterActivitySchema>;
-export type DynamicDate = z.infer<typeof DynamicDateSchema>;
+export type FilterTag = z.infer<typeof FilterTagSchema>;
 
+export type DynamicDate = z.infer<typeof DynamicDateSchema>;
 export type Operator = z.infer<typeof OperatorSchema>;
-export type NumberOperator = z.infer<typeof NumberOperatorSchema>;

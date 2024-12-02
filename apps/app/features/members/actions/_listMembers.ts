@@ -2,15 +2,7 @@
 
 import { authAction } from "@/lib/authAction";
 import { prisma } from "@/lib/prisma";
-import { Prisma } from "@conquest/database";
 import { MemberWithActivitiesSchema } from "@conquest/zod/activity.schema";
-import {
-  FilterActivitySchema,
-  FilterNumberSchema,
-  FilterSchema,
-  FilterSelectSchema,
-  FilterTextSchema,
-} from "@conquest/zod/filters.schema";
 import { z } from "zod";
 
 export const _listMembers = authAction
@@ -21,96 +13,11 @@ export const _listMembers = authAction
       page: z.number(),
       id: z.string(),
       desc: z.boolean(),
-      filters: z.array(FilterSchema).optional(),
     }),
   )
   .action(
-    async ({
-      ctx: { user },
-      parsedInput: { search, page, id, desc, filters },
-    }) => {
+    async ({ ctx: { user }, parsedInput: { search, page, id, desc } }) => {
       const workspace_id = user.workspace_id;
-
-      const filterConditions =
-        filters?.map((filter) => {
-          if (filter.type === "text") {
-            const { value, operator, field } = FilterTextSchema.parse(filter);
-            const fieldCondition = Prisma.raw(field);
-            const likePattern = `%${value}%`;
-
-            switch (operator) {
-              case "contains":
-                return Prisma.sql`m.${fieldCondition}::text ILIKE ${likePattern}`;
-              case "not_contains":
-                return Prisma.sql`m.${fieldCondition}::text NOT ILIKE ${likePattern}`;
-              default:
-                return Prisma.sql`TRUE`;
-            }
-          }
-
-          if (filter.type === "select") {
-            const { values, operator, field } =
-              FilterSelectSchema.parse(filter);
-            const fieldCondition = Prisma.raw(field);
-            const likePattern = `%${values.join(",")}%`;
-
-            switch (operator) {
-              case "contains":
-                return Prisma.sql`m.${fieldCondition}::text ILIKE ${likePattern}`;
-              case "not_contains":
-                return Prisma.sql`m.${fieldCondition}::text NOT ILIKE ${likePattern}`;
-              default:
-                return Prisma.sql`TRUE`;
-            }
-          }
-
-          if (filter.type === "number") {
-            const { value, operator, field } = FilterNumberSchema.parse(filter);
-            const fieldCondition = Prisma.raw(field);
-
-            switch (operator) {
-              case ">":
-                return Prisma.sql`m.${fieldCondition} > ${value}`;
-              case ">=":
-                return Prisma.sql`m.${fieldCondition} >= ${value}`;
-              case "=":
-                return Prisma.sql`m.${fieldCondition} = ${value}`;
-              case "!=":
-                return Prisma.sql`m.${fieldCondition} != ${value}`;
-              case "<":
-                return Prisma.sql`m.${fieldCondition} < ${value}`;
-              case "<=":
-                return Prisma.sql`m.${fieldCondition} <= ${value}`;
-              default:
-                return Prisma.sql`TRUE`;
-            }
-          }
-
-          if (filter.type === "activity" && filter.activity_type.length) {
-            const {
-              activity_type,
-              operator,
-              value: count,
-              dynamic_date,
-            } = FilterActivitySchema.parse(filter);
-
-            if (activity_type.length === 0) return Prisma.sql`TRUE`;
-            const intervalStr = `'${dynamic_date}'::interval`;
-
-            return Prisma.sql`(
-              SELECT COUNT(*)::integer
-              FROM activities a2
-              JOIN activities_types at2 ON a2.activity_type_id = at2.id
-              WHERE a2.member_id = m.id
-              AND at2.key = ANY(${Prisma.raw(
-                `ARRAY[${activity_type.map((v) => `'${v.key}'`).join(",")}]`,
-              )})
-              AND a2.created_at > NOW() - ${Prisma.raw(intervalStr)}
-            ) ${Prisma.raw(operator)} ${count}`;
-          }
-
-          return Prisma.sql`TRUE`;
-        }) ?? [];
 
       const members = await prisma.$queryRaw`
         SELECT 
@@ -153,12 +60,7 @@ export const _listMembers = authAction
             LEFT JOIN activities_types at ON a.activity_type_id = at.id
         WHERE 
             m.workspace_id = ${workspace_id}
-            AND (m.search::text ILIKE ${`%${search}%`})
-            ${
-              filterConditions.length > 0
-                ? Prisma.sql`AND (${Prisma.join(filterConditions, " AND ")})`
-                : Prisma.sql``
-            }
+            AND m.search ILIKE '%' || ${search} || '%'
         GROUP BY 
             m.id
         ORDER BY 
@@ -173,8 +75,8 @@ export const _listMembers = authAction
                 CASE ${id}
                     WHEN 'full_name' THEN m.full_name
                     WHEN 'job_title' THEN m.job_title
-                    WHEN 'emails' THEN array_to_string(m.emails, ',')
-                    WHEN 'tags' THEN array_to_string(m.tags, ',')
+                    WHEN 'emails' THEN m.emails[1]
+                    WHEN 'tags' THEN m.tags[0]
                     WHEN 'joined_at' THEN m.joined_at::text
                     WHEN 'localisation' THEN m.localisation
                     WHEN 'source' THEN CAST(m.source AS TEXT)
@@ -192,8 +94,8 @@ export const _listMembers = authAction
                 CASE ${id}
                     WHEN 'full_name' THEN m.full_name
                     WHEN 'job_title' THEN m.job_title
-                    WHEN 'emails' THEN array_to_string(m.emails, ',')
-                    WHEN 'tags' THEN array_to_string(m.tags, ',')
+                    WHEN 'emails' THEN m.emails[1]
+                    WHEN 'tags' THEN m.tags[0]
                     WHEN 'joined_at' THEN m.joined_at::text
                     WHEN 'localisation' THEN m.localisation
                     WHEN 'source' THEN CAST(m.source AS TEXT)

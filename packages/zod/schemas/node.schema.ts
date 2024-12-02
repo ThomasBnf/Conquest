@@ -30,6 +30,13 @@ export const CategorySchema = z.enum([
   "tags",
 ]);
 
+export const GroupFilterSchema = z.object({
+  id: z.string().cuid(),
+  category: CategorySchema,
+  operator: z.enum(["and", "or"]),
+  filters: z.array(FilterSchema),
+});
+
 // NODES
 
 export const NodeBaseSchema = z.object({
@@ -75,7 +82,7 @@ export const NodeManualRunSchema = NodeBaseDataSchema.extend({
 export const NodeListMembersSchema = NodeBaseDataSchema.extend({
   type: z.literal("list-members"),
   category: z.literal("records"),
-  filters: z.array(FilterSchema),
+  group_filters: z.array(GroupFilterSchema),
 });
 
 export const NodeTagMemberSchema = NodeBaseDataSchema.extend({
@@ -132,6 +139,7 @@ export type NodeData = z.infer<typeof NodeDataSchema>;
 export type Frequency = z.infer<typeof FrequencySchema>;
 export type RepeatOn = z.infer<typeof RepeatOnSchema>;
 export type Category = z.infer<typeof CategorySchema>;
+export type GroupFilter = z.infer<typeof GroupFilterSchema>;
 
 export type NodeMemberCreated = z.infer<typeof NodeMemberCreatedSchema>;
 export type NodeRecurring = z.infer<typeof NodeRecurringSchema>;

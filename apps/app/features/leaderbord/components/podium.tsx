@@ -25,14 +25,14 @@ type Props = {
 
 export const Podium = ({ member, position }: Props) => {
   const { slug } = useUser();
-  const { full_name } = member;
+  const { full_name, love } = member;
 
   const activities_types = member.activities?.reduce(
     (acc, activity) => {
-      const key = activity.activity_type.key;
+      const name = activity.activity_type.name;
       const weight = activity.activity_type.weight;
-      acc[key] = {
-        count: (acc[key]?.count ?? 0) + 1,
+      acc[name] = {
+        count: (acc[name]?.count ?? 0) + 1,
         weight,
       };
       return acc;
@@ -76,12 +76,12 @@ export const Podium = ({ member, position }: Props) => {
               <TooltipContent>
                 <div>
                   {Object.entries(sorted_activities_types ?? {}).map(
-                    ([key, { count, weight }]) => (
+                    ([name, { count, weight }]) => (
                       <div
-                        key={key}
+                        key={name}
                         className="flex items-center justify-between text-sm"
                       >
-                        <p className="w-36">{key}</p>
+                        <p className="w-36">{name}</p>
                         <p>
                           {count} * {weight} = {count * weight}
                         </p>

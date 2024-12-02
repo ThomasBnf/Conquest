@@ -118,7 +118,7 @@ export const nodes: {
             description: "",
             type: "list-members",
             category: "records",
-            filters: [],
+            group_filters: [],
           },
         },
       ],

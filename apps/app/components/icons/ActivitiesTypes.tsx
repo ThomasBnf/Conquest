@@ -3,7 +3,7 @@ type Props = {
   className?: string;
 };
 
-export const ActivityTypes = ({ size = 24, className }: Props) => {
+export const ActivitiesTypes = ({ size = 24, className }: Props) => {
   return (
     <svg
       xmlnsXlink="http://www.w3.org/1999/xlink"

@@ -13,6 +13,7 @@ export const _logIn = safeAction
       await signIn("credentials", {
         email,
         password,
+        redirect: true,
         redirectTo: redirectTo || "/",
       });
     } catch (error) {

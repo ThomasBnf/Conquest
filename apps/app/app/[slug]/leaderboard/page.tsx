@@ -4,7 +4,7 @@ import { PageLayout } from "@/components/layouts/page-layout";
 import { _listLeaderboard } from "@/features/leaderbord/actions/_listLeaderboard";
 import { LeaderbordTable } from "@/features/leaderbord/components/leaderboard-table";
 import { Podium } from "@/features/leaderbord/components/podium";
-import { _listTags } from "@/features/tags/actions/listTags";
+import { listTags } from "@/features/tags/actions/listTags";
 import { searchParamsDate } from "lib/searchParamsDate";
 
 type Props = {
@@ -15,7 +15,7 @@ export default async function Page({ searchParams }: Props) {
   const { from, to } = searchParamsDate.parse(searchParams);
 
   const rMembers = await _listLeaderboard({ page: 1, from, to });
-  const rTags = await _listTags();
+  const rTags = await listTags();
 
   const members = rMembers?.data;
   const tags = rTags?.data;
