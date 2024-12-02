@@ -57,7 +57,7 @@ model activities_types {
   id        String  @id @default(cuid())
   name      String
   source    SOURCE
-  key       String  @unique
+  key       String
   weight    Int     @default(1)
   deletable Boolean @default(true)
 
