@@ -1,6 +1,4 @@
-"use client";
-
-import { useParamsMembers } from "@/hooks/useParamsMembers";
+import { tableParsers } from "@/lib/searchParamsTable";
 import { Button } from "@conquest/ui/button";
 import { cn } from "@conquest/ui/cn";
 import {
@@ -12,6 +10,7 @@ import {
 import type { MemberWithActivities } from "@conquest/zod/activity.schema";
 import { CaretSortIcon } from "@radix-ui/react-icons";
 import { ArrowDownIcon, ArrowUpIcon } from "lucide-react";
+import { useQueryStates } from "nuqs";
 import type { Dispatch, SetStateAction } from "react";
 
 export type Column = {
@@ -44,10 +43,10 @@ export const ColumnHeader = ({
   className,
   isSorted,
 }: Props) => {
-  const [_, setParamsMembers] = useParamsMembers();
+  const [_, setParams] = useQueryStates(tableParsers);
 
   const onSort = (desc: boolean) => {
-    setParamsMembers({
+    setParams({
       id,
       desc,
     });

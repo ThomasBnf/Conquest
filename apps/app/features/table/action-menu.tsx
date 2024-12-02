@@ -28,7 +28,7 @@ export const ActionMenu = ({ rowSelected, setRowSelected, count }: Props) => {
 
   return (
     <div className="absolute inset-x-0 bottom-10 mx-auto w-fit">
-      <div className="actions-primary flex items-center divide-background/50 overflow-hidden rounded-lg border border-foreground bg-foreground py-1 pl-2.5 pr-1 text-background">
+      <div className="actions-primary flex items-center divide-background/50 overflow-hidden rounded-lg border border-foreground bg-foreground py-1 pr-1 pl-2.5 text-background">
         <p className="border-r border-r-background/30 py-1 pr-2">
           {rowSelected.length}
           <span className="mx-1 text-muted-foreground">of</span>

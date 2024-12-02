@@ -10,6 +10,9 @@ export const env = createEnv({
     PORT: z.coerce.number().default(3000),
   },
   server: {
+    AUTH_SECRET: z.string(),
+    AUTH_URL: z.string(),
+
     SLACK_TOKEN: z.string(),
     SLACK_APP_ID: z.string(),
     SLACK_CLIENT_SECRET: z.string(),
@@ -18,12 +21,17 @@ export const env = createEnv({
     GOOGLE_API_KEY: z.string(),
   },
   client: {
+    NEXT_PUBLIC_BASE_URL: z.string(),
     NEXT_PUBLIC_SLACK_REDIRECT_URI: z.string(),
     NEXT_PUBLIC_SLACK_CLIENT_ID: z.string(),
   },
   runtimeEnv: {
     PORT: process.env.PORT,
     VERCEL_URL: process.env.VERCEL_URL,
+    NEXT_PUBLIC_BASE_URL: process.env.NEXT_PUBLIC_BASE_URL,
+
+    AUTH_SECRET: process.env.AUTH_SECRET,
+    AUTH_URL: process.env.AUTH_URL,
 
     SLACK_TOKEN: process.env.SLACK_TOKEN,
     SLACK_APP_ID: process.env.SLACK_APP_ID,

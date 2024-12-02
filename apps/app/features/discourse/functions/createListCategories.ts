@@ -73,8 +73,6 @@ export const createListCategories = safeAction
           .json<Record<string, unknown>[]>();
 
         const topics = TopicListSchema.parse(result).topic_list.topics;
-
-        console.log(topics);
       }
 
       hasMore = categories?.length > 0;

@@ -29,9 +29,7 @@ export const ActivityWithMemberSchema = ActivityWithTypeSchema.extend({
 });
 
 export const MemberWithActivitiesSchema = MemberSchema.extend({
-  level: z.number().default(0),
-  love: z.number().default(0),
-  activities: z.array(ActivityWithTypeSchema).default([]),
+  activities: z.array(ActivityWithTypeSchema).nullable(),
 });
 
 export type Activity = z.infer<typeof ActivitySchema>;

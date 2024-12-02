@@ -164,10 +164,13 @@ model members {
   avatar_url   String?
   bio          String?
   job_title    String?
-  search       String
   emails       String[] @default([])
   phones       String[] @default([])
   tags         String[] @default([])
+  level        Int      @default(0)
+  love         Int      @default(0)
+  presence     Int      @default(0)
+  search       String?
   gender       GENDER?
   source       SOURCE
 
@@ -178,10 +181,12 @@ model members {
 
   activities activities[]
 
-  joined_at  DateTime?
-  deleted_at DateTime?
-  created_at DateTime  @default(now())
-  updated_at DateTime  @updatedAt
+  first_activity DateTime?
+  last_activity  DateTime?
+  joined_at      DateTime?
+  deleted_at     DateTime?
+  created_at     DateTime  @default(now())
+  updated_at     DateTime  @updatedAt
 
   @@index([id, workspace_id])
 }

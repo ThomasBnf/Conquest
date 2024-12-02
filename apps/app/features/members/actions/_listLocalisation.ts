@@ -19,7 +19,6 @@ export const _listLocalisation = authAction
 
     return parsedMembers.reduce<string[]>((uniqueLocalisations, member) => {
       const localisation = member.localisation;
-      console.log("localisation", localisation);
 
       if (localisation && !uniqueLocalisations.includes(localisation)) {
         uniqueLocalisations.push(localisation);

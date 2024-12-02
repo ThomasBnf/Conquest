@@ -38,7 +38,6 @@ export const runWorkflow = task({
     created_member?: MemberWithActivities;
   }) => {
     const { workflow_id, created_member } = payload;
-    console.log(payload);
     createdMember = created_member ?? null;
 
     const workflow = await prisma.workflows.findUnique({

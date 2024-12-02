@@ -1,7 +1,7 @@
 import { Badge } from "@conquest/ui/badge";
+import { cn } from "@conquest/ui/cn";
 import type { Source } from "@conquest/zod/enum/source.enum";
 import { Slack } from "../icons/Slack";
-import { cn } from "@conquest/ui/cn";
 
 type Props = {
   source: Source;

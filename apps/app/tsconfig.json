@@ -1,9 +1,11 @@
 {
   "extends": "@conquest/typescript/nextjs.json",
   "compilerOptions": {
+    "moduleResolution": "bundler",
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./*"]
+      "@/*": ["./*"],
+      "@conquest/*": ["../../packages/*"]
     },
     "strict": true
   },

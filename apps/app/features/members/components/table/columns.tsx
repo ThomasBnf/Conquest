@@ -7,26 +7,22 @@ import { Avatar, AvatarFallback, AvatarImage } from "@conquest/ui/avatar";
 import { buttonVariants } from "@conquest/ui/button";
 import { Checkbox } from "@conquest/ui/checkbox";
 import { cn } from "@conquest/ui/cn";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@conquest/ui/tooltip";
-import type { MemberWithActivities } from "@conquest/zod/activity.schema";
+import type { Member } from "@conquest/zod/member.schema";
 import type { Tag } from "@conquest/zod/tag.schema";
 import Link from "next/link";
 import type { Dispatch, SetStateAction } from "react";
+import { LevelTooltip } from "../level-tooltip";
+import { LoveTooltip } from "../love-tooltip";
 
 type Column = {
   id: string;
   header: (args: {
-    members?: MemberWithActivities[];
+    members?: Member[];
     rowSelected?: string[];
     setRowSelected?: Dispatch<SetStateAction<string[]>>;
   }) => React.ReactNode;
   cell: (args: {
-    member: MemberWithActivities;
+    member: Member;
     rowSelected?: string[];
     setRowSelected?: Dispatch<SetStateAction<string[]>>;
   }) => React.ReactNode;
@@ -116,87 +112,19 @@ export const Columns = ({ tags }: Props): Column[] => [
   },
   {
     id: "level",
-    header: () => <ColumnHeader id="level" title="Level" width={125} />,
+    header: () => <ColumnHeader id="level" title="Level" width={150} />,
     cell: ({ member }) => {
-      return <p className="w-full px-2 text-end">{member.level}</p>;
+      return <LevelTooltip member={member} />;
     },
-    width: 125,
+    width: 150,
   },
   {
     id: "love",
-    header: () => <ColumnHeader id="love" title="Love" width={125} />,
+    header: () => <ColumnHeader id="love" title="Love" width={150} />,
     cell: ({ member }) => {
-      const threeMonthsAgo = new Date();
-      threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
-
-      const recentActivities = member.activities?.filter(
-        (activity) => new Date(activity.created_at) >= threeMonthsAgo,
-      );
-
-      const activities_types = recentActivities?.reduce(
-        (acc, activity) => {
-          const name = activity.activity_type.name;
-          const weight = activity.activity_type.weight;
-          acc[name] = {
-            count: (acc[name]?.count ?? 0) + 1,
-            weight,
-          };
-          return acc;
-        },
-        {} as Record<string, { count: number; weight: number }>,
-      );
-
-      const sorted_activities_types = Object.entries(activities_types ?? {})
-        .sort(([, a], [, b]) => b.weight - a.weight)
-        .reduce(
-          (acc, [name, value]) => {
-            acc[name] = value;
-            return acc;
-          },
-          {} as Record<string, { count: number; weight: number }>,
-        );
-
-      return (
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger className="w-full">
-              <p className="w-full px-2 text-end">{member.love}</p>
-            </TooltipTrigger>
-            <TooltipContent>
-              <div>
-                {Object.entries(sorted_activities_types ?? {}).map(
-                  ([name, { count, weight }]) => (
-                    <div
-                      key={name}
-                      className="flex items-center justify-between text-sm"
-                    >
-                      <p className="w-36">{name}</p>
-                      <p>
-                        {count} * {weight} = {count * weight}
-                      </p>
-                    </div>
-                  ),
-                )}
-                <div
-                  className={cn(
-                    "flex items-center justify-between text-sm",
-                    member.love > 0 && "mt-2",
-                  )}
-                >
-                  <p className="w-36">Total Love</p>
-                  <p>{member.love}</p>
-                </div>
-                <div className="flex items-center justify-between text-sm">
-                  <p className="w-36">Total Activities</p>
-                  <p>{recentActivities?.length}</p>
-                </div>
-              </div>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-      );
+      return <LoveTooltip member={member} />;
     },
-    width: 125,
+    width: 150,
   },
   {
     id: "tags",
@@ -215,13 +143,19 @@ export const Columns = ({ tags }: Props): Column[] => [
     width: 250,
   },
   {
+    id: "first_activity",
+    header: () => (
+      <ColumnHeader id="first_activity" title="First activity" width={250} />
+    ),
+    cell: ({ member }) => <DateCell date={member.first_activity} />,
+    width: 250,
+  },
+  {
     id: "last_activity",
     header: () => (
       <ColumnHeader id="last_activity" title="Last activity" width={250} />
     ),
-    cell: ({ member }) => (
-      <DateCell date={member.activities?.[0]?.created_at} />
-    ),
+    cell: ({ member }) => <DateCell date={member.last_activity} />,
     width: 250,
   },
   {

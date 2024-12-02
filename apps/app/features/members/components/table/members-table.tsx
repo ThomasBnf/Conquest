@@ -2,40 +2,33 @@
 
 import { QueryInput } from "@/components/custom/query-input";
 import { Members } from "@/components/icons/Members";
-import { IsLoading } from "@/components/states/is-loading";
 import { ActionMenu } from "@/features/table/action-menu";
 import { useScrollX } from "@/features/table/hooks/useScrollX";
 import { useHasScrollY } from "@/features/table/hooks/usehasScrollY";
+import { Pagination } from "@/features/table/pagination";
+import { TableSkeleton } from "@/features/table/table-skeletton";
 import { useIsClient } from "@/hooks/useIsClient";
-import { useParamsMembers } from "@/hooks/useParamsMembers";
-import { Button } from "@conquest/ui/button";
-import { cn } from "@conquest/ui/cn";
-import { ScrollArea, ScrollBar } from "@conquest/ui/scroll-area";
-import { useSidebar } from "@conquest/ui/sidebar";
+import { tableParsers } from "@/lib/searchParamsTable";
+import { Button } from "@conquest/ui/src/components/button";
+import { ScrollArea, ScrollBar } from "@conquest/ui/src/components/scroll-area";
+import { useSidebar } from "@conquest/ui/src/components/sidebar";
+import { cn } from "@conquest/ui/src/utils/cn";
+import type { Member } from "@conquest/zod/member.schema";
 import type { Tag } from "@conquest/zod/tag.schema";
-import { useEffect, useRef, useState } from "react";
-import { useInView } from "react-intersection-observer";
-import { useDebounce } from "use-debounce";
-import { useListMembers } from "../../hooks/useListMembers";
+import { useQueryStates } from "nuqs";
+import { useRef, useState } from "react";
 import { Columns } from "./columns";
 
 type Props = {
   count: number;
   tags: Tag[] | undefined;
+  members: Member[] | undefined;
 };
 
-export const MembersTable = ({ count, tags }: Props) => {
-  const { ref, inView } = useInView();
+export const MembersTable = ({ count, tags, members }: Props) => {
   const { open } = useSidebar();
-  const [{ search, id, desc }, setSearchParams] = useParamsMembers();
+  const [{ search }, setParams] = useQueryStates(tableParsers);
   const [rowSelected, setRowSelected] = useState<string[]>([]);
-  const [debouncedSearch] = useDebounce(search, 500);
-
-  const { members, isLoading, fetchNextPage, hasNextPage } = useListMembers({
-    debouncedSearch,
-    id,
-    desc,
-  });
 
   const isClient = useIsClient();
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -46,18 +39,12 @@ export const MembersTable = ({ count, tags }: Props) => {
   const fixedColumn = columns.slice(0, 2);
   const scrollableColumns = columns.slice(2);
 
-  useEffect(() => {
-    if (inView && hasNextPage) fetchNextPage();
-  }, [inView]);
-
-  if (!isClient) return <IsLoading />;
-
   return (
     <>
       <div className="flex min-h-12 items-center border-b px-4">
         <QueryInput
           query={search}
-          setQuery={(value) => setSearchParams({ search: value })}
+          setQuery={(value) => setParams({ search: value })}
           placeholder="Search in members..."
         />
       </div>
@@ -107,74 +94,76 @@ export const MembersTable = ({ count, tags }: Props) => {
             </div>
           </div>
           <div className="relative flex-grow">
-            {members?.map((member, index) => (
-              <div
-                key={member.id}
-                className={cn(
-                  "[&:not(:last-child)]:border-b",
-                  rowSelected.includes(member.id) && "bg-muted",
-                )}
-              >
-                <div className="flex">
-                  <div
-                    className={cn(
-                      "sticky left-0 [&:not(:first-child)]:border-r",
-                      rowSelected.includes(member.id)
-                        ? "bg-muted"
-                        : "bg-background",
-                    )}
-                    style={{ width: fixedColumn[0]?.width }}
-                  >
-                    <div className="flex h-12 items-center">
-                      {fixedColumn[0]?.cell({
-                        member,
-                        rowSelected,
-                        setRowSelected,
-                      })}
-                    </div>
-                    {scrollX > 0 && (
-                      <div className="-mr-12 absolute top-0 right-0 h-full w-12 bg-gradient-to-r from-black to-transparent opacity-[0.075]" />
-                    )}
-                  </div>
-                  <div
-                    className={cn(
-                      "sticky left-[40px] border-r",
-                      rowSelected.includes(member.id)
-                        ? "bg-muted"
-                        : "bg-background",
-                    )}
-                    style={{ width: fixedColumn[1]?.width }}
-                  >
-                    <div className="flex h-12 items-center">
-                      {fixedColumn[1]?.cell({
-                        member,
-                        rowSelected,
-                        setRowSelected,
-                      })}
-                    </div>
-                    {scrollX > 0 && (
-                      <div className="-mr-12 absolute top-0 right-0 h-full w-12 bg-gradient-to-r from-black to-transparent opacity-[0.075]" />
-                    )}
-                  </div>
-                  <div className="flex divide-x">
-                    {scrollableColumns.map((column) => (
-                      <div
-                        key={column.id}
-                        className="flex h-12 items-center"
-                        style={{ width: column.width }}
-                      >
-                        {column.cell({ member })}
+            {isClient ? (
+              members?.map((member) => (
+                <div
+                  key={member.id}
+                  className={cn(
+                    "[&:not(:last-child)]:border-b",
+                    rowSelected.includes(member.id) && "bg-muted",
+                    !hasScrollY && "border-b",
+                  )}
+                >
+                  <div className="flex">
+                    <div
+                      className={cn(
+                        "sticky left-0 [&:not(:first-child)]:border-r",
+                        rowSelected.includes(member.id)
+                          ? "bg-muted"
+                          : "bg-background",
+                      )}
+                      style={{ width: fixedColumn[0]?.width }}
+                    >
+                      <div className="flex h-12 items-center">
+                        {fixedColumn[0]?.cell({
+                          member,
+                          rowSelected,
+                          setRowSelected,
+                        })}
                       </div>
-                    ))}
+                      {scrollX > 0 && (
+                        <div className="-mr-12 absolute top-0 right-0 h-full w-12 bg-gradient-to-r from-black to-transparent opacity-[0.075]" />
+                      )}
+                    </div>
+                    <div
+                      className={cn(
+                        "sticky left-[40px] border-r",
+                        rowSelected.includes(member.id)
+                          ? "bg-muted"
+                          : "bg-background",
+                      )}
+                      style={{ width: fixedColumn[1]?.width }}
+                    >
+                      <div className="flex h-12 items-center">
+                        {fixedColumn[1]?.cell({
+                          member,
+                          rowSelected,
+                          setRowSelected,
+                        })}
+                      </div>
+                      {scrollX > 0 && (
+                        <div className="-mr-12 absolute top-0 right-0 h-full w-12 bg-gradient-to-r from-black to-transparent opacity-[0.075]" />
+                      )}
+                    </div>
+                    <div className="flex divide-x">
+                      {scrollableColumns.map((column) => (
+                        <div
+                          key={column.id}
+                          className="flex h-12 items-center"
+                          style={{ width: column.width }}
+                        >
+                          {column.cell({ member })}
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </div>
-                {!isLoading && members.length - 20 === index && (
-                  <div ref={ref} />
-                )}
-              </div>
-            ))}
+              ))
+            ) : (
+              <TableSkeleton />
+            )}
           </div>
-          {members.length === 0 && !isLoading && (
+          {members?.length === 0 && (
             <div
               className={cn(
                 "absolute top-36 mx-auto flex w-full flex-col items-center justify-center",
@@ -188,38 +177,17 @@ export const MembersTable = ({ count, tags }: Props) => {
                 No members found
               </p>
               <p className="mb-4 text-center text-muted-foreground">
-                {debouncedSearch
+                {search
                   ? "None of your members match the current filters"
                   : "No members found in your workspace"}
               </p>
-              {debouncedSearch && (
-                <Button onClick={() => setSearchParams({ search: "" })}>
+              {search && (
+                <Button onClick={() => setParams({ search: "" })}>
                   Clear filters
                 </Button>
               )}
             </div>
           )}
-          <div
-            className={cn(
-              "flex bg-background",
-              members.length > 0 ? "border-t" : "border-b",
-              hasScrollY ? "sticky bottom-0" : "border-b",
-            )}
-          >
-            <div
-              className="sticky left-0 border-r bg-background"
-              style={{ width: 325 }}
-            >
-              <p
-                className="flex h-12 items-center justify-end border-r px-3"
-                style={{ width: 325 }}
-              >
-                <span className="mr-auto text-muted-foreground">Count</span>
-                <span className="mx-1 font-mono">{members.length} /</span>
-                <span className="font-mono text-muted-foreground">{count}</span>
-              </p>
-            </div>
-          </div>
           {rowSelected.length > 0 && (
             <ActionMenu
               rowSelected={rowSelected}
@@ -231,6 +199,7 @@ export const MembersTable = ({ count, tags }: Props) => {
           <ScrollBar orientation="vertical" />
         </ScrollArea>
       </div>
+      <Pagination count={count} />
     </>
   );
 };

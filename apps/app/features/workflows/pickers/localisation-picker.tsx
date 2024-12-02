@@ -21,8 +21,6 @@ export const LocalisationPicker = ({ filter }: Props) => {
   const { localisations, isLoading } = useListLocalisation();
   const [values, setValues] = useState(filter.values);
 
-  console.log(localisations);
-
   const onUpdateLocalisation = (localisation: string) => {
     setValues((prev) => {
       const updatedValues = prev.includes(localisation)

@@ -65,7 +65,7 @@ export const Activities = ({
   if (!isClient) return <IsLoading />;
 
   return (
-    <div className={cn("mx-auto max-w-3xl pb-12 pt-6", className)}>
+    <div className={cn("mx-auto max-w-3xl pt-6 pb-12", className)}>
       {Object.entries(groupedActivities).map(([date, activities]) => (
         <div key={date} className="mb-10 space-y-14">
           <div className="my-4 flex items-center">

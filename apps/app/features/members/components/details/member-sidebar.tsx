@@ -47,7 +47,6 @@ export const MemberSidebar = ({ member, tags }: Props) => {
       | "source",
     value: string | null,
   ) => {
-    console.log(value);
     await _updateMember({ id, [field]: value });
   };
 

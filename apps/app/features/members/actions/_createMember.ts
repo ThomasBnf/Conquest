@@ -40,7 +40,6 @@ export const _createMember = authAction
         full_name: `${first_name} ${last_name}`,
         emails: [email],
         source: "MANUAL",
-        search: `${first_name} ${last_name} ${email}`.trim().toLowerCase(),
         workspace_id: ctx.user.workspace_id,
       },
     });

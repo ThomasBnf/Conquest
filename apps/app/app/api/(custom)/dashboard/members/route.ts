@@ -71,8 +71,6 @@ export const GET = safeRoute
     //   .parse(result.members);
     // const dates = eachDayOfInterval({ start: from, end: to });
 
-    // console.log(parsedMembers);
-
     // let count = 0;
 
     // const data = dates.map((currentDate) => {
@@ -104,8 +102,6 @@ export const GET = safeRoute
     //   totalActiveMembers: result.total_active_members,
     //   data,
     // };
-
-    console.log(result);
 
     return NextResponse.json(result);
   });

@@ -18,8 +18,6 @@ export const ActionPanel = () => {
   const onSelect = (node: WorkflowNode) => {
     const isLoop = selected?.data.type === "loop";
 
-    console.log(node);
-
     if (isLoop && selected) {
       const nodeLoop = NodeLoopSchema.parse(node.data);
 
