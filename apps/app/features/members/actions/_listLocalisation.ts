@@ -4,9 +4,9 @@ import { MemberSchema } from "@conquest/zod/member.schema";
 import { authAction } from "lib/authAction";
 import { prisma } from "lib/prisma";
 
-export const _listLocalisation = authAction
+export const _listlocale = authAction
   .metadata({
-    name: "_listLocalisation",
+    name: "_listlocale",
   })
   .action(async ({ ctx }) => {
     const members = await prisma.members.findMany({
@@ -17,12 +17,12 @@ export const _listLocalisation = authAction
 
     const parsedMembers = MemberSchema.array().parse(members);
 
-    return parsedMembers.reduce<string[]>((uniqueLocalisations, member) => {
-      const localisation = member.localisation;
+    return parsedMembers.reduce<string[]>((uniquelocales, member) => {
+      const locale = member.locale;
 
-      if (localisation && !uniqueLocalisations.includes(localisation)) {
-        uniqueLocalisations.push(localisation);
+      if (locale && !uniquelocales.includes(locale)) {
+        uniquelocales.push(locale);
       }
-      return uniqueLocalisations;
+      return uniquelocales;
     }, []);
   });

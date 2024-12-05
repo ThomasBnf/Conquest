@@ -1,7 +1,7 @@
 import { DateRangePicker } from "@/components/custom/date-range-picker";
 import { Header } from "@/components/layouts/header";
-import { EngagementDashboard } from "@/features/dashboard/engagement/engagement-dashboard";
-import { MemberDashboard } from "@/features/dashboard/members/member-dashboard";
+import { EngagementDashboard } from "@/features/dashboard/engagement-dashboard";
+import { MemberDashboard } from "@/features/dashboard/member-dashboard";
 import { ScrollArea } from "@conquest/ui/scroll-area";
 import { searchParamsDate } from "lib/searchParamsDate";
 

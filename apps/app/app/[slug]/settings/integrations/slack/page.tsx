@@ -1,37 +1,39 @@
 "use client";
 
+import { deleteIntegration } from "@/actions/integrations/deleteIntegration";
 import { DeleteDialog } from "@/components/custom/delete-dialog";
 import { Slack } from "@/components/icons/Slack";
 import { useUser } from "@/context/userContext";
 import { env } from "@/env.mjs";
-import { deleteIntegration } from "@/features/integrations/actions/deleteIntegration";
 import { oauthV2 } from "@/features/slack/actions/oauthV2";
 import { ChannelsList } from "@/features/slack/components/channel-list";
+import { SCOPES } from "@/features/slack/constant/scopes";
+import { USER_SCOPES } from "@/features/slack/constant/user-scopes";
 import { Button, buttonVariants } from "@conquest/ui/button";
 import { Card, CardContent, CardHeader } from "@conquest/ui/card";
 import { cn } from "@conquest/ui/cn";
 import { ArrowLeft, ExternalLink } from "lucide-react";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
-export default function Page() {
-  const { slug, slack } = useUser();
-  const [loading, setLoading] = useState(false);
-  const router = useRouter();
-  const params = useSearchParams();
-  const code = params.get("code");
+type Props = {
+  searchParams: {
+    code: string | null;
+  };
+};
 
-  const user_scope = "chat:write,im:write,channels:write";
-  const scopes =
-    "channels:history,channels:join,channels:read,files:read,groups:history,groups:read,links:read,reactions:read,team:read,users.profile:read,users:read,users:read.email";
+export default function Page({ searchParams: { code } }: Props) {
+  const { slug, slack } = useUser();
+  const [loading, setLoading] = useState(!!code);
+  const router = useRouter();
 
   const onStartInstall = () => {
     const baseUrl = "https://slack.com/oauth/v2/authorize";
     const clientId = `client_id=${env.NEXT_PUBLIC_SLACK_CLIENT_ID}`;
-    const scopesParams = `scope=${scopes}`;
-    const userScopeParams = `user_scope=${user_scope}`;
+    const scopesParams = `scope=${SCOPES}`;
+    const userScopeParams = `user_scope=${USER_SCOPES}`;
     const redirectURI = `redirect_uri=${encodeURIComponent(`${env.NEXT_PUBLIC_SLACK_REDIRECT_URI}/${slug}/settings/integrations/slack`)}`;
 
     router.push(
@@ -52,7 +54,7 @@ export default function Page() {
   const onAuth = async () => {
     if (!code) return;
 
-    const rAuth = await oauthV2({ code, scopes });
+    const rAuth = await oauthV2({ code, scopes: SCOPES });
     const error = rAuth?.serverError;
 
     if (error) {
@@ -62,10 +64,7 @@ export default function Page() {
   };
 
   useEffect(() => {
-    if (code) {
-      setLoading(true);
-      onAuth();
-    }
+    if (code) onAuth();
   }, [code]);
 
   return (

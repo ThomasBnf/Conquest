@@ -1,5 +1,5 @@
-import { useAdding } from "../hooks/useAdding";
-import { useChanging } from "../hooks/useChanging";
+import { Button } from "@conquest/ui/src/components/button";
+import { ArrowLeft } from "lucide-react";
 import { usePanel } from "../hooks/usePanel";
 import { useSelected } from "../hooks/useSelected";
 import { ActionPanel } from "../panels/action-panel";
@@ -8,17 +8,33 @@ import { TriggerPanel } from "../panels/trigger-panel";
 import { WorkflowPanel } from "../panels/workflow-panel";
 
 export const Sidebar = () => {
-  const { panel } = usePanel();
-  const { selected } = useSelected();
-  const { isChanging } = useChanging();
-  const { isAdding } = useAdding();
+  const { panel, setPanel } = usePanel();
+  const { selected, setSelected } = useSelected();
+
+  const onBack = () => {
+    if (panel === "node") {
+      setSelected(undefined);
+      setPanel("workflow");
+      return;
+    }
+
+    setPanel("node");
+  };
 
   return (
-    <div className="h-full w-full max-w-md border-l bg-background">
-      {!isAdding && selected && <OptionsPanel />}
-      {!isChanging && panel === "workflow" && <WorkflowPanel />}
-      {!isChanging && panel === "triggers" && <TriggerPanel />}
-      {!isChanging && panel === "actions" && <ActionPanel />}
+    <div className="h-full w-full max-w-md divide-y border-l bg-background">
+      {panel !== "workflow" && (
+        <div className="flex h-12 shrink-0 items-center px-4">
+          <Button variant="ghost" onClick={onBack}>
+            <ArrowLeft size={16} />
+            Back
+          </Button>
+        </div>
+      )}
+      {selected && panel === "node" && <OptionsPanel />}
+      {panel === "workflow" && <WorkflowPanel />}
+      {panel === "triggers" && <TriggerPanel />}
+      {panel?.startsWith("actions") && <ActionPanel />}
     </div>
   );
 };

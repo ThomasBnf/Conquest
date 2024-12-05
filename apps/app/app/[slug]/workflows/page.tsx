@@ -3,7 +3,8 @@ import { PageLayout } from "@/components/layouts/page-layout";
 import { CreateWorkflow } from "@/features/workflows/components/create-workflow";
 import { IsPublished } from "@/features/workflows/components/isPublished";
 import { WorkflowMenu } from "@/features/workflows/components/workflow-menu";
-import { listWorkflows } from "@/features/workflows/functions/listWorkflows";
+import { getCurrentUser } from "@/queries/users/getCurrentUser";
+import { listWorkflows } from "@/queries/workflows/listWorkflows";
 import { ScrollArea } from "@conquest/ui/scroll-area";
 import Link from "next/link";
 
@@ -14,8 +15,8 @@ type Props = {
 };
 
 export default async function Page({ params: { slug } }: Props) {
-  const rWorkflows = await listWorkflows();
-  const workflows = rWorkflows?.data;
+  const { workspace_id } = await getCurrentUser();
+  const workflows = await listWorkflows({ workspace_id });
 
   return (
     <PageLayout>

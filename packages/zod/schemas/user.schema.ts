@@ -11,8 +11,8 @@ export const UserSchema = z.object({
   full_name: z.string().nullable(),
   onboarding: z.date().nullable(),
   workspace_id: z.string().cuid(),
-  created_at: z.date(),
-  updated_at: z.date(),
+  created_at: z.coerce.date(),
+  updated_at: z.coerce.date(),
 }) satisfies z.ZodType<UserPrisma>;
 
 export const UserWithWorkspaceSchema = UserSchema.extend({

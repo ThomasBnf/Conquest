@@ -6,7 +6,7 @@ export function useIsClient() {
   useEffect(() => {
     setTimeout(() => {
       setClient(true);
-    }, 50);
+    }, 0);
   }, []);
 
   return isClient;

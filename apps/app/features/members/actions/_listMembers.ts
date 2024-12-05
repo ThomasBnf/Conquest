@@ -78,7 +78,7 @@ export const _listMembers = authAction
                     WHEN 'emails' THEN m.emails[1]
                     WHEN 'tags' THEN m.tags[0]
                     WHEN 'joined_at' THEN m.joined_at::text
-                    WHEN 'localisation' THEN m.localisation
+                    WHEN 'locale' THEN m.locale
                     WHEN 'source' THEN CAST(m.source AS TEXT)
                     ELSE NULL
                 END
@@ -97,7 +97,7 @@ export const _listMembers = authAction
                     WHEN 'emails' THEN m.emails[1]
                     WHEN 'tags' THEN m.tags[0]
                     WHEN 'joined_at' THEN m.joined_at::text
-                    WHEN 'localisation' THEN m.localisation
+                    WHEN 'locale' THEN m.locale
                     WHEN 'source' THEN CAST(m.source AS TEXT)
                     ELSE NULL
                 END

@@ -1,7 +1,6 @@
 import { PhoneInput } from "@/components/custom/phone-input";
 import { Button } from "@conquest/ui/button";
-import { CommandItem } from "cmdk";
-import { Trash2 } from "lucide-react";
+import { X } from "lucide-react";
 import { useState } from "react";
 
 type Props = {
@@ -20,14 +19,14 @@ export const Phone = ({
   const [value, setValue] = useState(phone.content);
 
   return (
-    <CommandItem className="flex h-8 items-center justify-between gap-1">
+    <div className="group flex h-8 items-center justify-between gap-1">
       {phone.content ? (
         <p className="truncate pl-1">{phone.content}</p>
       ) : (
         <PhoneInput
           autoFocus
           defaultCountry="FR"
-          className="h-8 px-0"
+          className="h-8 w-full px-0"
           value={value}
           onChange={(value) => setValue(value)}
           onKeyDown={(event) => {
@@ -54,8 +53,8 @@ export const Phone = ({
         className="mr-1 shrink-0"
         onClick={() => onDeletePhone(phone.id)}
       >
-        <Trash2 size={15} />
+        <X size={15} />
       </Button>
-    </CommandItem>
+    </div>
   );
 };

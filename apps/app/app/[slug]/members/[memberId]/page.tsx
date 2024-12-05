@@ -1,11 +1,12 @@
 import { HeaderSubPage } from "@/components/layouts/header-subpage";
 import { PageLayout } from "@/components/layouts/page-layout";
-import { _listActivities } from "@/features/activities/actions/_listActivities";
-import { Activities } from "@/features/activities/components/activities";
-import { _getMember } from "@/features/members/actions/_getMember";
+import { MemberActivities } from "@/features/activities/member-activities";
 import { MemberMenu } from "@/features/members/components/details/member-menu";
 import { MemberSidebar } from "@/features/members/components/details/member-sidebar";
-import { listTags } from "@/features/tags/actions/listTags";
+import { listMemberActivities } from "@/queries/activities/listMemberActivities";
+import { getMember } from "@/queries/members/getMember";
+import { listTags } from "@/queries/tags/listTags";
+import { getCurrentUser } from "@/queries/users/getCurrentUser";
 import { ScrollArea } from "@conquest/ui/scroll-area";
 import { redirect } from "next/navigation";
 
@@ -17,13 +18,16 @@ type Props = {
 };
 
 export default async function Page({ params: { memberId, slug } }: Props) {
-  const rMember = await _getMember({ id: memberId });
-  const rActivities = await _listActivities({ member_id: memberId, page: 1 });
-  const rTags = await listTags();
+  const user = await getCurrentUser();
+  const workspace_id = user.workspace_id;
 
-  const member = rMember?.data;
-  const tags = rTags?.data;
-  const activities = rActivities?.data;
+  const member = await getMember({ id: memberId, workspace_id });
+  const activities = await listMemberActivities({
+    member_id: memberId,
+    workspace_id,
+    page: 1,
+  });
+  const tags = await listTags({ workspace_id });
 
   if (!member) redirect(`/${slug}/members`);
 
@@ -35,13 +39,10 @@ export default async function Page({ params: { memberId, slug } }: Props) {
         </HeaderSubPage>
         <div className="flex h-full divide-x overflow-hidden">
           <ScrollArea className="flex-1">
-            {activities && (
-              <Activities
-                member_id={memberId}
-                initialActivities={activities}
-                className="px-8"
-              />
-            )}
+            <MemberActivities
+              member_id={memberId}
+              initialActivities={activities}
+            />
           </ScrollArea>
           <MemberSidebar member={member} tags={tags} />
         </div>

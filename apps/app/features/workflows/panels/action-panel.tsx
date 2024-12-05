@@ -1,34 +1,21 @@
 import { Slack } from "@/components/icons/Slack";
 import { Button } from "@conquest/ui/button";
 import { Label } from "@conquest/ui/label";
-import { NodeLoopSchema } from "@conquest/zod/node.schema";
 import { useReactFlow } from "@xyflow/react";
 import { Icon } from "components/icons/Icon";
 import cuid from "cuid";
 import type { icons } from "lucide-react";
-import { useChanging } from "../hooks/useChanging";
+import { usePanel } from "../hooks/usePanel";
 import { useSelected } from "../hooks/useSelected";
-import type { WorkflowNode } from "./types/workflow-node.type";
+import type { WorkflowNode } from "./schemas/workflow-node.type";
 
 export const ActionPanel = () => {
   const { selected } = useSelected();
-  const { isChanging } = useChanging();
+  const { panel } = usePanel();
   const { addNodes, updateNodeData } = useReactFlow();
 
   const onSelect = (node: WorkflowNode) => {
-    const isLoop = selected?.data.type === "loop";
-
-    if (isLoop && selected) {
-      const nodeLoop = NodeLoopSchema.parse(node.data);
-
-      return updateNodeData(selected.id, {
-        id: selected.id,
-        ...nodeLoop,
-        sub_nodes: [...nodeLoop.sub_nodes, node.id],
-      });
-    }
-
-    if (isChanging && selected) {
+    if (selected && panel === "actions-change") {
       return updateNodeData(selected.id, {
         id: selected.id,
         ...node.data,
@@ -116,7 +103,7 @@ export const nodes: {
             description: "",
             type: "list-members",
             category: "records",
-            group_filters: [],
+            filters: [],
           },
         },
       ],

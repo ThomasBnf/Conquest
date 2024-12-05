@@ -1,5 +1,6 @@
 "use client";
-
+import { runWorkflow } from "@/actions/workflows/runWorkflow";
+import { updateWorkflow } from "@/actions/workflows/updateWorkflow";
 import { Button } from "@conquest/ui/button";
 import { NodeDataSchema } from "@conquest/zod/node.schema";
 import type { Workflow } from "@conquest/zod/workflow.schema";
@@ -23,15 +24,11 @@ import "@xyflow/react/dist/style.css";
 import { MousePointerClick } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
-import { _runWorkflowTrigger } from "../actions/_runWorkflowTrigger";
-import { _updateWorkflow } from "../actions/_updateWorkflow";
-import { useAdding } from "../hooks/useAdding";
-import { useChanging } from "../hooks/useChanging";
 import { usePanel } from "../hooks/usePanel";
 import { useSelected } from "../hooks/useSelected";
 import { CustomEdge } from "../nodes/custom-edge";
 import { CustomNode } from "../nodes/custom-node";
-import type { WorkflowNode } from "../panels/types/workflow-node.type";
+import type { WorkflowNode } from "../panels/schemas/workflow-node.type";
 import { Sidebar } from "./sidebar";
 
 type Props = {
@@ -41,8 +38,6 @@ type Props = {
 export const Editor = ({ workflow }: Props) => {
   const { panel, setPanel } = usePanel();
   const { selected, setSelected } = useSelected();
-  const { setIsChanging } = useChanging();
-  const { setIsAdding } = useAdding();
   const {
     toObject,
     deleteElements,
@@ -53,7 +48,6 @@ export const Editor = ({ workflow }: Props) => {
   } = useReactFlow();
 
   const [running, setRunning] = useState(false);
-
   const [nodes, setNodes] = useNodesState<WorkflowNode>(workflow.nodes);
   const [edges, setEdges] = useEdgesState<Edge>(workflow.edges);
 
@@ -94,8 +88,6 @@ export const Editor = ({ workflow }: Props) => {
               setTimeout(() => {
                 setPanel("node");
                 setSelected(item);
-                setIsAdding(false);
-                setIsChanging(false);
                 fitView({
                   nodes: [item],
                   duration: 250,
@@ -114,8 +106,6 @@ export const Editor = ({ workflow }: Props) => {
 
               setTimeout(() => {
                 setPanel("node");
-                setIsAdding(false);
-                setIsChanging(false);
                 setSelected(item);
                 onSave();
               }, 0);
@@ -137,8 +127,6 @@ export const Editor = ({ workflow }: Props) => {
               deleteElements({ nodes: [{ id }] });
               setTimeout(() => {
                 setPanel("workflow");
-                setIsAdding(false);
-                setIsChanging(false);
                 setSelected(undefined);
                 onSave();
               }, 0);
@@ -190,7 +178,7 @@ export const Editor = ({ workflow }: Props) => {
   );
 
   const onSave = async () => {
-    _updateWorkflow({
+    updateWorkflow({
       id: workflow.id,
       nodes: toObject().nodes.map((node) => {
         const data = NodeDataSchema.parse(node.data);
@@ -220,7 +208,7 @@ export const Editor = ({ workflow }: Props) => {
 
   const onRunWorkflow = async () => {
     setRunning(true);
-    const run = await _runWorkflowTrigger({ workflow_id: workflow.id });
+    const run = await runWorkflow({ workflow_id: workflow.id });
     if (run) toast.success("Workflow successfully run");
     setRunning(false);
   };
@@ -261,7 +249,7 @@ export const Editor = ({ workflow }: Props) => {
         {hasManualTrigger && (
           <Button
             onClick={onRunWorkflow}
-            className="absolute right-4 top-4 z-50 cursor-pointer"
+            className="absolute top-4 right-4 z-50 cursor-pointer"
             loading={running}
           >
             <MousePointerClick size={16} />

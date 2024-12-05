@@ -1,6 +1,6 @@
-import { ApiKeyCard } from "@/features/api-keys/components/ApiKeyCard";
-import { FormAPIKey } from "@/features/api-keys/components/FormAPI";
-import { listAPIKeys } from "@/features/api-keys/functions/listAPIKeys";
+import { ApiKeyCard } from "@/features/api-keys/api-key-card";
+import { FormAPIKey } from "@/features/api-keys/form-api-key";
+import { listAPIKeys } from "@/queries/api-keys/listAPIKeys";
 import { ScrollArea } from "@conquest/ui/scroll-area";
 
 export default async function Page() {

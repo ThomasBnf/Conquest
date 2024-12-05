@@ -1,23 +1,27 @@
 "use client";
 
+import { updateMember } from "@/actions/members/updateMember";
 import { EditableCompany } from "@/components/custom/editable-company";
 import { EditableEmails } from "@/components/custom/editable-emails";
 import { EditableInput } from "@/components/custom/editable-input";
 import { EditablePhones } from "@/components/custom/editable-phones";
 import { FieldCard } from "@/components/custom/field-card";
-import { _updateMember } from "@/features/members/actions/_updateMember";
+import { LocaleBadge } from "@/components/custom/locale-badge";
+import { SourceBadge } from "@/components/custom/source-badge";
 import { TagPicker } from "@/features/tags/tag-picker";
 import { Avatar, AvatarFallback, AvatarImage } from "@conquest/ui/avatar";
 import { Badge } from "@conquest/ui/badge";
 import { ScrollArea } from "@conquest/ui/scroll-area";
 import { Separator } from "@conquest/ui/separator";
-import type { MemberWithActivities } from "@conquest/zod/activity.schema";
+import type { MemberWithCompany } from "@conquest/zod/schemas/member.schema";
 import type { Tag } from "@conquest/zod/tag.schema";
 import { format } from "date-fns";
 import { Gauge, Heart } from "lucide-react";
+import { LevelTooltip } from "../level-tooltip";
+import { LoveTooltip } from "../love-tooltip";
 
 type Props = {
-  member: MemberWithActivities;
+  member: MemberWithCompany;
   tags: Tag[] | undefined;
 };
 
@@ -29,10 +33,11 @@ export const MemberSidebar = ({ member, tags }: Props) => {
     avatar_url,
     first_name,
     last_name,
-    full_name,
-    localisation,
-    created_at,
+    locale,
+    first_activity,
+    last_activity,
     joined_at,
+    created_at,
   } = member;
 
   const onUpdateMember = async (
@@ -44,10 +49,11 @@ export const MemberSidebar = ({ member, tags }: Props) => {
       | "job_title"
       | "address"
       | "bio"
-      | "source",
-    value: string | null,
+      | "source"
+      | "tags",
+    value: string | null | string[],
   ) => {
-    await _updateMember({ id, [field]: value });
+    await updateMember({ id, [field]: value });
   };
 
   return (
@@ -62,31 +68,37 @@ export const MemberSidebar = ({ member, tags }: Props) => {
             </AvatarFallback>
           </Avatar>
           <div>
-            <p className="font-medium text-base leading-tight">{full_name}</p>
+            <p className="font-medium text-base leading-tight">
+              {first_name} {last_name}
+            </p>
             <p className="text-muted-foreground text-xs">{id}</p>
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <Badge variant="outline" className="gap-2 text-sm">
-            <Gauge size={15} className="text-main-500" />
-            {member.level}
+          <Badge variant="outline" className="gap-1 text-sm">
+            <Gauge size={15} className="shrink-0 text-main-500" />
+            <LevelTooltip member={member} showIcon={false} />
           </Badge>
-          <Badge variant="outline" className="gap-2 text-sm">
-            <Heart size={14} className="fill-red-500 text-red-500" />
-            {member.love}
+          <Badge variant="outline" className="gap-1 text-sm">
+            <Heart size={14} className="shrink-0 fill-red-500 text-red-500" />
+            <LoveTooltip member={member} showIcon={false} />
           </Badge>
         </div>
       </div>
       <Separator />
       <div className="space-y-2 p-4">
         <FieldCard icon="Code" label="Source">
-          <p className="pl-1.5">{source}</p>
+          <SourceBadge source={source} />
         </FieldCard>
-        <FieldCard icon="Flag" label="Localisation">
-          <p className="pl-1.5">{localisation}</p>
+        <FieldCard icon="Flag" label="Locale">
+          <LocaleBadge country={locale} />
         </FieldCard>
         <FieldCard icon="Tag" label="Tags">
-          <TagPicker record={member} tags={tags} />
+          <TagPicker
+            record={member}
+            tags={tags}
+            onUpdate={(value) => onUpdateMember("tags", value)}
+          />
         </FieldCard>
       </div>
       <Separator />
@@ -109,7 +121,7 @@ export const MemberSidebar = ({ member, tags }: Props) => {
           </FieldCard>
           <FieldCard icon="Building2" label="Company">
             <EditableCompany
-              defaultValue={member.company_id}
+              member={member}
               onUpdate={(value) => onUpdateMember("company_id", value)}
             />
           </FieldCard>
@@ -137,13 +149,23 @@ export const MemberSidebar = ({ member, tags }: Props) => {
         </div>
         <Separator />
         <div className="space-y-2 p-4">
+          {first_activity && (
+            <FieldCard icon="Calendar" label="First activity">
+              <p className="pl-1.5">{format(first_activity, "PP, HH'h'mm")}</p>
+            </FieldCard>
+          )}
+          {last_activity && (
+            <FieldCard icon="CalendarSearch" label="Last activity">
+              <p className="pl-1.5">{format(last_activity, "PP, HH'h'mm")}</p>
+            </FieldCard>
+          )}
           {joined_at && (
             <FieldCard icon="CalendarCheck" label="Joined at">
-              <p className="pl-1.5">{format(joined_at, "PPP p")}</p>
+              <p className="pl-1.5">{format(joined_at, "PP, HH'h'mm")}</p>
             </FieldCard>
           )}
           <FieldCard icon="CalendarPlus" label="Created at">
-            <p className="pl-1.5">{format(created_at, "PPP p")}</p>
+            <p className="pl-1.5">{format(created_at, "PP, HH'h'mm")}</p>
           </FieldCard>
         </div>
       </ScrollArea>

@@ -7,11 +7,9 @@ import { type NodeProps, Position, useReactFlow } from "@xyflow/react";
 import { Icon } from "components/icons/Icon";
 import { Plus, Target, type icons } from "lucide-react";
 import { useMemo } from "react";
-import { useAdding } from "../hooks/useAdding";
-import { useChanging } from "../hooks/useChanging";
 import { usePanel } from "../hooks/usePanel";
 import { useSelected } from "../hooks/useSelected";
-import type { WorkflowNode } from "../panels/types/workflow-node.type";
+import type { WorkflowNode } from "../panels/schemas/workflow-node.type";
 import { CustomHandle } from "./custom-handle";
 
 type Props = NodeProps<WorkflowNode> & {
@@ -21,8 +19,6 @@ type Props = NodeProps<WorkflowNode> & {
 export const CustomNode = ({ hasEdges, ...props }: Props) => {
   const { setPanel } = usePanel();
   const { selected, setSelected } = useSelected();
-  const { setIsAdding } = useAdding();
-  const { setIsChanging } = useChanging();
   const { getNode } = useReactFlow();
 
   const node = getNode(props.id) as WorkflowNode | undefined;
@@ -43,7 +39,7 @@ export const CustomNode = ({ hasEdges, ...props }: Props) => {
       {isTrigger && (
         <div
           className={cn(
-            "absolute -top-[24px] flex h-6 items-center gap-1 rounded-t-lg border-x border-t bg-muted px-1.5 text-muted-foreground",
+            "-top-[24px] absolute flex h-6 items-center gap-1 rounded-t-lg border-x border-t bg-muted px-1.5 text-muted-foreground",
             node?.id === props.id && "bg-muted text-main-500",
           )}
         >
@@ -55,8 +51,6 @@ export const CustomNode = ({ hasEdges, ...props }: Props) => {
       <div
         onClick={() => {
           setPanel("node");
-          setIsChanging(false);
-          setIsAdding(false);
           setSelected(node);
         }}
         className={cn(
@@ -87,14 +81,12 @@ export const CustomNode = ({ hasEdges, ...props }: Props) => {
       </div>
       {!hasEdge && (
         <>
-          <div className="absolute -bottom-9 left-1/2 h-7 w-px -translate-x-1/2 bg-border" />
+          <div className="-bottom-9 -translate-x-1/2 absolute left-1/2 h-7 w-px bg-border" />
           <Button
             size="icon"
-            className="absolute -bottom-16 left-1/2 -translate-x-1/2"
+            className="-bottom-16 -translate-x-1/2 absolute left-1/2"
             onClick={() => {
               setPanel("actions");
-              setIsAdding(true);
-              setIsChanging(false);
               setSelected(node);
             }}
           >
@@ -103,15 +95,13 @@ export const CustomNode = ({ hasEdges, ...props }: Props) => {
         </>
       )}
       {isLoop && (
-        <div className="absolute left-1/2 top-8 -z-10 h-48 w-96 -translate-x-1/2 rounded-lg border border-dashed">
-          <p className="absolute left-1/2 top-28 -translate-x-1/2 text-xs text-muted-foreground">
+        <div className="-z-10 -translate-x-1/2 absolute top-8 left-1/2 h-48 w-96 rounded-lg border border-dashed">
+          <p className="-translate-x-1/2 absolute top-28 left-1/2 text-muted-foreground text-xs">
             <Button
               variant="outline"
               size="sm"
               onClick={() => {
                 setPanel("actions");
-                setIsAdding(true);
-                setIsChanging(false);
                 setSelected(node);
               }}
             >
@@ -119,15 +109,13 @@ export const CustomNode = ({ hasEdges, ...props }: Props) => {
               Select first step
             </Button>
           </p>
-          <div className="absolute -bottom-9 left-1/2 h-7 w-px -translate-x-1/2 bg-border" />
+          <div className="-bottom-9 -translate-x-1/2 absolute left-1/2 h-7 w-px bg-border" />
           <CustomHandle position={Position.Bottom} type="source" />
           <Button
             size="icon"
-            className="absolute -bottom-16 left-1/2 -translate-x-1/2"
+            className="-bottom-16 -translate-x-1/2 absolute left-1/2"
             onClick={() => {
               setPanel("actions");
-              setIsAdding(true);
-              setIsChanging(false);
               setSelected(node);
             }}
           >

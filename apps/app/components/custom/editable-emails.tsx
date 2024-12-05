@@ -1,15 +1,13 @@
 "use client";
 
-import { _updateMember } from "@/features/members/actions/_updateMember";
+import { updateMember } from "@/actions/members/updateMember";
 import { Button } from "@conquest/ui/button";
 import {
-  Command,
-  CommandGroup,
-  CommandItem,
-  CommandList,
-} from "@conquest/ui/command";
-import { Popover, PopoverContent, PopoverTrigger } from "@conquest/ui/popover";
-import { Separator } from "@conquest/ui/separator";
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@conquest/ui/src/components/dropdown-menu";
 import type { Member } from "@conquest/zod/member.schema";
 import cuid from "cuid";
 import { Plus } from "lucide-react";
@@ -33,10 +31,11 @@ export const EditableEmails = ({ member }: Props) => {
 
   const onChangeEmail = (id: string, newEmail: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
     if (!emailRegex.test(newEmail)) {
       const newEmails = emails.filter((email) => email.id !== id);
       setEmails(newEmails);
-      _updateMember({
+      updateMember({
         id: member.id,
         emails: newEmails.map((email) => email.content),
       });
@@ -47,7 +46,7 @@ export const EditableEmails = ({ member }: Props) => {
       email.id === id ? { id: email.id, content: newEmail } : email,
     );
     setEmails(updatedEmails);
-    _updateMember({
+    updateMember({
       id: member.id,
       emails: updatedEmails.map((email) => email.content),
     });
@@ -56,15 +55,15 @@ export const EditableEmails = ({ member }: Props) => {
   const onDeleteEmail = (id: string) => {
     const updatedEmails = emails.filter((email) => email.id !== id);
     setEmails(updatedEmails);
-    _updateMember({
+    updateMember({
       id: member.id,
       emails: updatedEmails.map((email) => email.content),
     });
   };
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild className="w-full cursor-pointer">
+    <DropdownMenu open={open} onOpenChange={setOpen}>
+      <DropdownMenuTrigger asChild className="w-full cursor-pointer">
         {emails.filter((email) => email.content !== "").length > 0 ? (
           <div className="flex w-full flex-col gap-1 rounded-md p-1 hover:bg-muted">
             {emails.map((email) => {
@@ -75,7 +74,6 @@ export const EditableEmails = ({ member }: Props) => {
                   variant="outline"
                   size="xs"
                   className="w-fit justify-start border-blue-200 text-blue-500 hover:bg-background hover:text-blue-500"
-                  onClick={() => setOpen(true)}
                 >
                   {email.content}
                 </Button>
@@ -85,17 +83,16 @@ export const EditableEmails = ({ member }: Props) => {
         ) : (
           <Button
             variant="ghost"
-            size="xs"
             classNameSpan="text-muted-foreground justify-start"
           >
             Set emails
           </Button>
         )}
-      </PopoverTrigger>
-      <PopoverContent align="start" className="w-[297px] p-0">
-        <Command loop>
-          <CommandList>
-            <CommandGroup>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="start" className="w-[297px]">
+        {emails.length > 0 && (
+          <>
+            <div className="space-y-0.5">
               {emails.map((email) => (
                 <Email
                   key={email.id}
@@ -108,15 +105,20 @@ export const EditableEmails = ({ member }: Props) => {
                   onDeleteEmail={onDeleteEmail}
                 />
               ))}
-              <Separator className="-mx-2 my-1 w-[calc(100%+1rem)]" />
-              <CommandItem onSelect={onAddEmail}>
-                <Plus size={15} />
-                <p>Add email</p>
-              </CommandItem>
-            </CommandGroup>
-          </CommandList>
-        </Command>
-      </PopoverContent>
-    </Popover>
+            </div>
+            <DropdownMenuSeparator />
+          </>
+        )}
+        <Button
+          variant="ghost"
+          className="w-full"
+          classNameSpan="justify-start"
+          onClick={onAddEmail}
+        >
+          <Plus size={15} />
+          Add email
+        </Button>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 };

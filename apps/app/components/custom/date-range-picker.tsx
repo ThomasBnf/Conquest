@@ -1,16 +1,17 @@
 "use client";
 
 import { formatDateRange } from "@/helpers/format-date-range";
+import { dateParser } from "@/lib/searchParamsDate";
 import { Button } from "@conquest/ui/button";
 import { Calendar } from "@conquest/ui/calendar";
 import { cn } from "@conquest/ui/cn";
 import { Popover, PopoverContent, PopoverTrigger } from "@conquest/ui/popover";
 import { endOfDay, isEqual, startOfDay, startOfYear, subDays } from "date-fns";
-import { useDateRange } from "hooks/useDateRange";
 import { CalendarIcon } from "lucide-react";
+import { useQueryStates } from "nuqs";
 
 export const DateRangePicker = () => {
-  const [{ from, to }, setDateRange] = useDateRange();
+  const [{ from, to }, setDateParams] = useQueryStates(dateParser);
 
   const isYesterday =
     isEqual(from, subDays(startOfDay(new Date()), 1)) &&
@@ -32,7 +33,7 @@ export const DateRangePicker = () => {
     isEqual(from, startOfYear(new Date())) && isEqual(to, endOfDay(new Date()));
 
   const onUpdateDateRange = async (from: Date, to: Date) => {
-    setDateRange({ from, to });
+    setDateParams({ from, to });
   };
 
   return (
@@ -55,7 +56,7 @@ export const DateRangePicker = () => {
             defaultMonth={from}
             selected={{ from, to }}
             onSelect={(range) => {
-              setDateRange({
+              setDateParams({
                 from: range?.from ?? null,
                 to: range?.to ?? null,
               });

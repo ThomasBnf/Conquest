@@ -1,5 +1,5 @@
 import { UserProvider } from "@/context/userContext";
-import { getCurrentUser } from "@/features/users/functions/getCurrentUser";
+import { getCurrentUser } from "@/queries/users/getCurrentUser";
 import { redirect } from "next/navigation";
 import type { PropsWithChildren } from "react";
 

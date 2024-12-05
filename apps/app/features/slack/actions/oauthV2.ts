@@ -1,7 +1,7 @@
 "use server";
 
+import { upsertIntegration } from "@/actions/integrations/upsertIntegration";
 import { env } from "@/env.mjs";
-import { upsertIntegration } from "@/features/integrations/actions/upsertIntegration";
 import { authAction } from "lib/authAction";
 import { redirect } from "next/navigation";
 import { z } from "zod";

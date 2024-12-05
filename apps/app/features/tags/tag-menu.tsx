@@ -10,7 +10,7 @@ import { AlertDialog } from "components/custom/alert-dialog";
 import { Edit2, MoreHorizontal, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
-import { deleteTag } from "./actions/deleteTag";
+import { deleteTag } from "../../actions/tags/deleteTag";
 
 type Props = {
   tag: Tag;

@@ -1,6 +1,7 @@
 import type { activities as ActivityPrisma } from "@prisma/client";
 import { z } from "zod";
 import { ActivityTypeSchema } from "./activity-type.schema";
+import { CompanySchema } from "./company.schema";
 import { MemberSchema } from "./member.schema";
 
 export const ActivitySchema = z.object({
@@ -24,15 +25,23 @@ export const ActivityWithTypeSchema = ActivitySchema.extend({
   activity_type: ActivityTypeSchema,
 });
 
-export const ActivityWithMemberSchema = ActivityWithTypeSchema.extend({
+export const ActivityWithMemberSchema = ActivitySchema.extend({
+  member: MemberSchema,
+});
+
+export const ActivityWithTypeAndMemberSchema = ActivityWithTypeSchema.extend({
   member: MemberSchema,
 });
 
 export const MemberWithActivitiesSchema = MemberSchema.extend({
-  activities: z.array(ActivityWithTypeSchema).nullable(),
+  activities: z.array(ActivityWithTypeSchema).default([]),
+  company: CompanySchema.nullable(),
 });
 
 export type Activity = z.infer<typeof ActivitySchema>;
 export type ActivityWithType = z.infer<typeof ActivityWithTypeSchema>;
 export type ActivityWithMember = z.infer<typeof ActivityWithMemberSchema>;
+export type ActivityWithTypeAndMember = z.infer<
+  typeof ActivityWithTypeAndMemberSchema
+>;
 export type MemberWithActivities = z.infer<typeof MemberWithActivitiesSchema>;

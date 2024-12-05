@@ -1,15 +1,13 @@
 "use client";
 
-import { _updateMember } from "@/features/members/actions/_updateMember";
+import { updateMember } from "@/actions/members/updateMember";
 import { Button } from "@conquest/ui/button";
 import {
-  Command,
-  CommandGroup,
-  CommandItem,
-  CommandList,
-} from "@conquest/ui/command";
-import { Popover, PopoverContent, PopoverTrigger } from "@conquest/ui/popover";
-import { Separator } from "@conquest/ui/separator";
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@conquest/ui/src/components/dropdown-menu";
 import type { Member } from "@conquest/zod/member.schema";
 import cuid from "cuid";
 import { Plus } from "lucide-react";
@@ -37,7 +35,7 @@ export const EditablePhones = ({ member }: Props) => {
     if (!phoneRegex.test(newPhone)) {
       const newPhones = phones.filter((phone) => phone.id !== id);
       setPhones(newPhones);
-      _updateMember({
+      updateMember({
         id: member.id,
         phones: newPhones.map((phone) => phone.content),
       });
@@ -48,7 +46,7 @@ export const EditablePhones = ({ member }: Props) => {
       phone.id === id ? { id: phone.id, content: newPhone } : phone,
     );
     setPhones(updatedPhones);
-    _updateMember({
+    updateMember({
       id: member.id,
       phones: updatedPhones.map((phone) => phone.content),
     });
@@ -57,15 +55,15 @@ export const EditablePhones = ({ member }: Props) => {
   const onDeletePhone = (id: string) => {
     const updatedPhones = phones.filter((phone) => phone.id !== id);
     setPhones(updatedPhones);
-    _updateMember({
+    updateMember({
       id: member.id,
       phones: updatedPhones.map((phone) => phone.content),
     });
   };
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild className="w-full cursor-pointer">
+    <DropdownMenu open={open} onOpenChange={setOpen}>
+      <DropdownMenuTrigger asChild className="w-full cursor-pointer">
         {phones.filter((phone) => phone.content !== "").length > 0 ? (
           <div className="flex w-full flex-col gap-1 rounded-md p-1 hover:bg-muted">
             {phones.map((phone) => {
@@ -86,8 +84,6 @@ export const EditablePhones = ({ member }: Props) => {
         ) : (
           <Button
             variant="ghost"
-            size="xs"
-            className="w-fit"
             classNameSpan="text-muted-foreground justify-start"
             onClick={() => {
               setOpen(true);
@@ -99,13 +95,13 @@ export const EditablePhones = ({ member }: Props) => {
             Set phones
           </Button>
         )}
-      </PopoverTrigger>
-      <PopoverContent align="start" className="w-[297px] p-0">
-        <Command loop>
-          <CommandList>
-            <CommandGroup>
-              {phones.length > 0 ? (
-                phones.map((phone) => (
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="start" className="w-[297px]">
+        <div className="space-y-0.5">
+          {phones.length > 0 && (
+            <>
+              <div className="space-y-0.5">
+                {phones.map((phone) => (
                   <Phone
                     key={phone.id}
                     phone={phone}
@@ -115,19 +111,22 @@ export const EditablePhones = ({ member }: Props) => {
                     }
                     onDeletePhone={onDeletePhone}
                   />
-                ))
-              ) : (
-                <p className="p-1 text-muted-foreground">No phones set</p>
-              )}
-              <Separator className="-mx-2 my-1 w-[calc(100%+1rem)]" />
-              <CommandItem onSelect={onAddPhone}>
-                <Plus size={15} />
-                <p>Add phone</p>
-              </CommandItem>
-            </CommandGroup>
-          </CommandList>
-        </Command>
-      </PopoverContent>
-    </Popover>
+                ))}
+              </div>
+              <DropdownMenuSeparator />
+            </>
+          )}
+        </div>
+        <Button
+          variant="ghost"
+          className="w-full"
+          classNameSpan="justify-start"
+          onClick={onAddPhone}
+        >
+          <Plus size={15} />
+          Add phone
+        </Button>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 };

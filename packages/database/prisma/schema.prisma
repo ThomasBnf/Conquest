@@ -158,9 +158,8 @@ model members {
   discourse_id String?  @unique
   first_name   String?
   last_name    String?
-  full_name    String?
   username     String?
-  localisation String?
+  locale       String?
   avatar_url   String?
   bio          String?
   job_title    String?
@@ -170,7 +169,6 @@ model members {
   level        Int      @default(0)
   love         Int      @default(0)
   presence     Int      @default(0)
-  search       String?
   gender       GENDER?
   source       SOURCE
 

@@ -118,7 +118,7 @@ CREATE TABLE "members" (
     "last_name" TEXT,
     "full_name" TEXT,
     "username" TEXT,
-    "localisation" TEXT,
+    "locale" TEXT,
     "avatar_url" TEXT,
     "bio" TEXT,
     "job_title" TEXT,

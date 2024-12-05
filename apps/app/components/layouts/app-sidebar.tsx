@@ -8,7 +8,7 @@ import { LeaderBoard } from "@/components/icons/Leaderbord";
 import { Members } from "@/components/icons/Members";
 import { Workflows } from "@/components/icons/Workflows";
 import { useUser } from "@/context/userContext";
-import { WorkspaceMenu } from "@/features/workspaces/components/workspace-menu";
+import { WorkspaceMenu } from "@/features/workspaces/workspace-menu";
 import { Loader } from "@conquest/ui/loader";
 import {
   Sidebar,

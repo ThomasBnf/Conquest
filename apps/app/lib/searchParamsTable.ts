@@ -10,7 +10,7 @@ export const tableParsers = {
     shallow: false,
     clearOnDefault: true,
   }),
-  desc: parseAsBoolean.withDefault(true).withOptions({
+  desc: parseAsBoolean.withDefault(false).withOptions({
     shallow: false,
     clearOnDefault: true,
   }),

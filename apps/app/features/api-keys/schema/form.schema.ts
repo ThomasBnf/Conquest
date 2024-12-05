@@ -1,7 +1,7 @@
 import { z } from "zod";
 
-export const FormAPISchema = z.object({
+export const FormApiKeySchema = z.object({
   name: z.string().min(1),
 });
 
-export type FormAPI = z.infer<typeof FormAPISchema>;
+export type FormApiKey = z.infer<typeof FormApiKeySchema>;

@@ -10,8 +10,8 @@ export const TagSchema = z.object({
   color: z.string(),
   source: SOURCE,
   workspace_id: z.string().cuid(),
-  created_at: z.date(),
-  updated_at: z.date(),
+  created_at: z.coerce.date(),
+  updated_at: z.coerce.date(),
 }) satisfies z.ZodType<TagPrisma>;
 
 export type Tag = z.infer<typeof TagSchema>;

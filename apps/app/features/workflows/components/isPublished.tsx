@@ -1,9 +1,9 @@
 "use client";
 
-import { _updateWorkflow } from "@/features/workflows/actions/_updateWorkflow";
+import { updateWorkflow } from "@/actions/workflows/updateWorkflow";
 import { Switch } from "@conquest/ui/switch";
 import type { Workflow } from "@conquest/zod/workflow.schema";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 
 type Props = {
@@ -14,19 +14,9 @@ export const IsPublished = ({ workflow }: Props) => {
   const [isPublished, setIsPublished] = useState(workflow.published);
   const queryClient = useQueryClient();
 
-  const { mutate } = useMutation({
-    mutationFn: _updateWorkflow,
-    onSuccess: () => {
-      queryClient.refetchQueries({ queryKey: ["workflow", workflow.id] });
-    },
-  });
-
   const onTogglePublished = async () => {
     setIsPublished(!isPublished);
-    mutate({
-      id: workflow.id,
-      published: !isPublished,
-    });
+    updateWorkflow({ id: workflow.id, published: !isPublished });
   };
 
   return (

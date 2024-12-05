@@ -5,19 +5,17 @@ import { useReactFlow } from "@xyflow/react";
 import { Icon } from "components/icons/Icon";
 import cuid from "cuid";
 import type { icons } from "lucide-react";
-import { useChanging } from "../hooks/useChanging";
 import { usePanel } from "../hooks/usePanel";
 import { useSelected } from "../hooks/useSelected";
-import type { WorkflowNode } from "./types/workflow-node.type";
+import type { WorkflowNode } from "./schemas/workflow-node.type";
 
 export const TriggerPanel = () => {
   const { setPanel } = usePanel();
   const { selected, setSelected } = useSelected();
-  const { isChanging, setIsChanging } = useChanging();
   const { setNodes, updateNodeData } = useReactFlow();
 
   const onClick = (node: WorkflowNode) => {
-    if (isChanging && selected) {
+    if (selected) {
       const newNode = {
         ...selected,
         data: node.data,
@@ -29,7 +27,6 @@ export const TriggerPanel = () => {
       setNodes((prev) => [...prev, node]);
     }
     setPanel("node");
-    setIsChanging(false);
   };
 
   return (

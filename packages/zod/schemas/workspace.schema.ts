@@ -9,8 +9,8 @@ export const WorkspaceSchema = z.object({
   company_size: z.string().nullable(),
   slug: z.string(),
   integrations: z.array(IntegrationSchema).default([]),
-  created_at: z.date(),
-  updated_at: z.date(),
+  created_at: z.coerce.date(),
+  updated_at: z.coerce.date(),
 }) satisfies z.ZodType<WorkspacePrisma>;
 
 export type Workspace = z.infer<typeof WorkspaceSchema>;

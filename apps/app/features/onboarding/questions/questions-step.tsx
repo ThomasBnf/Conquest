@@ -1,6 +1,6 @@
+import { updateUser } from "@/actions/users/updateUser";
+import { updateWorkspace } from "@/actions/workspaces/updateWorkspace";
 import { useUser } from "@/context/userContext";
-import { _updateUser } from "@/features/users/actions/_updateUser";
-import { updateWorkspace } from "@/features/workspaces/actions/updateWorkspace";
 import { Button } from "@conquest/ui/button";
 import { CardContent, CardFooter } from "@conquest/ui/card";
 import { Form } from "@conquest/ui/form";
@@ -35,7 +35,7 @@ export const QuestionsStep = () => {
   const onSubmit = async ({ company_size, source }: Questions) => {
     setLoading(true);
 
-    const rUser = await _updateUser({ onboarding: new Date() });
+    const rUser = await updateUser({ onboarding: new Date() });
     const error = rUser?.serverError;
 
     if (error) {

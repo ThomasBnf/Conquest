@@ -2,11 +2,11 @@ import { Header } from "@/components/layouts/header";
 import { PageLayout } from "@/components/layouts/page-layout";
 import { CreateMemberDialog } from "@/features/members/components/create-member-dialog";
 import { MembersTable } from "@/features/members/components/table/members-table";
-import { getCurrentUser } from "@/features/users/functions/getCurrentUser";
 import { searchParamsTable } from "@/lib/searchParamsTable";
 import { countMembers } from "@/queries/members/countMembers";
 import { listMembers } from "@/queries/members/listMembers";
 import { listTags } from "@/queries/tags/listTags";
+import { getCurrentUser } from "@/queries/users/getCurrentUser";
 
 type Props = {
   searchParams: Record<string, string | string[] | undefined>;

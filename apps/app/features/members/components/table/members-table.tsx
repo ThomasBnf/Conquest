@@ -13,7 +13,7 @@ import { Button } from "@conquest/ui/src/components/button";
 import { ScrollArea, ScrollBar } from "@conquest/ui/src/components/scroll-area";
 import { useSidebar } from "@conquest/ui/src/components/sidebar";
 import { cn } from "@conquest/ui/src/utils/cn";
-import type { Member } from "@conquest/zod/member.schema";
+import type { MemberWithCompany } from "@conquest/zod/member.schema";
 import type { Tag } from "@conquest/zod/tag.schema";
 import { useQueryStates } from "nuqs";
 import { useRef, useState } from "react";
@@ -22,7 +22,7 @@ import { Columns } from "./columns";
 type Props = {
   count: number;
   tags: Tag[] | undefined;
-  members: Member[] | undefined;
+  members: MemberWithCompany[] | undefined;
 };
 
 export const MembersTable = ({ count, tags, members }: Props) => {
@@ -160,10 +160,10 @@ export const MembersTable = ({ count, tags, members }: Props) => {
                 </div>
               ))
             ) : (
-              <TableSkeleton />
+              <TableSkeleton isMembers />
             )}
           </div>
-          {members?.length === 0 && (
+          {isClient && members?.length === 0 && (
             <div
               className={cn(
                 "absolute top-36 mx-auto flex w-full flex-col items-center justify-center",

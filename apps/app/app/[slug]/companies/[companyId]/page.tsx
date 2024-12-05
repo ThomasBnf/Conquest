@@ -1,10 +1,11 @@
 import { HeaderSubPage } from "@/components/layouts/header-subpage";
 import { PageLayout } from "@/components/layouts/page-layout";
-import { _listCompanyActivities } from "@/features/activities/actions/_listCompanyActivities";
-import { CompanyActivities } from "@/features/activities/components/company-activities";
-import { _getCompany } from "@/features/companies/actions/_getCompany";
-import { CompanySidebar } from "@/features/companies/components/company-sidebar";
-import { listTags } from "@/features/tags/actions/listTags";
+import { CompanyActivities } from "@/features/activities/company-activities";
+import { CompanySidebar } from "@/features/companies/company-sidebar";
+import { listCompanyActivities } from "@/queries/activities/listCompanyActivities";
+import { getCompany } from "@/queries/companies/getCompany";
+import { listTags } from "@/queries/tags/listTags";
+import { getCurrentUser } from "@/queries/users/getCurrentUser";
 import { ScrollArea } from "@conquest/ui/scroll-area";
 import { redirect } from "next/navigation";
 
@@ -16,31 +17,30 @@ type Props = {
 };
 
 export default async function Page({ params: { companyId, slug } }: Props) {
-  const rCompany = await _getCompany({ id: companyId });
-  const rActivities = await _listCompanyActivities({
-    company_id: companyId,
-    page: 1,
-  });
-  const rTags = await listTags();
+  const user = await getCurrentUser();
+  const workspace_id = user.workspace_id;
 
-  const company = rCompany?.data;
-  const tags = rTags?.data;
-  const activities = rActivities?.data;
+  const company = await getCompany({ company_id: companyId, workspace_id });
 
   if (!company) redirect(`/${slug}/companies`);
+
+  const activities = await listCompanyActivities({
+    company_id: company.id,
+    workspace_id,
+    page: 1,
+  });
+  const tags = await listTags({ workspace_id });
 
   return (
     <PageLayout className="m-1 rounded-lg border">
       <HeaderSubPage />
       <div className="flex h-full divide-x overflow-hidden">
         <ScrollArea className="flex-1">
-          {activities && (
-            <CompanyActivities
-              company_id={companyId}
-              initialActivities={activities}
-              className="px-8"
-            />
-          )}
+          <CompanyActivities
+            company_id={companyId}
+            initialActivities={activities}
+            className="px-8"
+          />
         </ScrollArea>
         <CompanySidebar company={company} tags={tags} />
       </div>

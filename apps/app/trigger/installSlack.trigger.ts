@@ -1,7 +1,8 @@
-import { updateIntegration } from "@/features/integrations/functions/updateIntegration";
-import { createListChannels } from "@/features/slack/functions/createListChannels";
+import { updateIntegration } from "@/queries/integrations/updateIntegration";
+import { createListChannels } from "@/queries/slack/createListChannels";
 import { createListMembers } from "@/queries/slack/createListMembers";
 import { getMembersMetrics } from "@/queries/slack/getMembersMetrics";
+import { listMessages } from "@/queries/slack/listMessages";
 import { SlackIntegrationSchema } from "@conquest/zod/integration.schema";
 import { WebClient } from "@slack/web-api";
 import { schemaTask } from "@trigger.dev/sdk/v3";
@@ -24,13 +25,22 @@ export const installSlack = schemaTask({
 
     const web = new WebClient(token);
 
+    const createdChannels = await createListChannels({
+      web,
+      token,
+      workspace_id,
+      channels,
+    });
     const members = await createListMembers({ web, workspace_id });
-    await createListChannels({ web, token, workspace_id, channels });
+
+    for (const channel of createdChannels) {
+      await listMessages({ web, channel, workspace_id });
+    }
+
     await getMembersMetrics({ members, workspace_id });
 
-    return { success: true };
+    return members;
   },
-
   onSuccess: async (payload) => {
     const { external_id } = payload.integration;
 

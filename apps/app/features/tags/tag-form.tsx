@@ -1,3 +1,5 @@
+import { createTag } from "@/actions/tags/createTag";
+import { updateTag } from "@/actions/tags/updateTag";
 import { Button } from "@conquest/ui/button";
 import { ColorPicker } from "@conquest/ui/color-picker";
 import { Form, FormControl, FormField, FormItem } from "@conquest/ui/form";
@@ -8,8 +10,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { colors } from "constant/colors";
 import { Check } from "lucide-react";
 import { useForm } from "react-hook-form";
-import { createTag } from "./actions/createTag";
-import { updateTag } from "./actions/updateTag";
 import { type FormTag, FormTagSchema } from "./schema/form.schema";
 
 type Props = {

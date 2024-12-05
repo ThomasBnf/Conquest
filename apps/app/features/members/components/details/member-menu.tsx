@@ -10,13 +10,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@conquest/ui/dropdown-menu";
-import type { MemberWithActivities } from "@conquest/zod/activity.schema";
+import type { MemberWithCompany } from "@conquest/zod/schemas/member.schema";
 import { Copy, MoreHorizontal, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
 type Props = {
-  member: MemberWithActivities;
+  member: MemberWithCompany;
 };
 
 export const MemberMenu = ({ member }: Props) => {

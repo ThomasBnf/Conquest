@@ -1,4 +1,5 @@
 import { DateCell } from "@/components/custom/date-cell";
+import { LocaleBadge } from "@/components/custom/locale-badge";
 import { SourceBadge } from "@/components/custom/source-badge";
 import { useUser } from "@/context/userContext";
 import { ColumnHeader } from "@/features/table/column-header";
@@ -7,7 +8,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@conquest/ui/avatar";
 import { buttonVariants } from "@conquest/ui/button";
 import { Checkbox } from "@conquest/ui/checkbox";
 import { cn } from "@conquest/ui/cn";
-import type { Member } from "@conquest/zod/member.schema";
+import type { MemberWithCompany } from "@conquest/zod/member.schema";
 import type { Tag } from "@conquest/zod/tag.schema";
 import Link from "next/link";
 import type { Dispatch, SetStateAction } from "react";
@@ -17,12 +18,12 @@ import { LoveTooltip } from "../love-tooltip";
 type Column = {
   id: string;
   header: (args: {
-    members?: Member[];
+    members?: MemberWithCompany[];
     rowSelected?: string[];
     setRowSelected?: Dispatch<SetStateAction<string[]>>;
   }) => React.ReactNode;
   cell: (args: {
-    member: Member;
+    member: MemberWithCompany;
     rowSelected?: string[];
     setRowSelected?: Dispatch<SetStateAction<string[]>>;
   }) => React.ReactNode;
@@ -92,22 +93,26 @@ export const Columns = ({ tags }: Props): Column[] => [
               {member.first_name?.charAt(0).toUpperCase()}
             </AvatarFallback>
           </Avatar>
-          <p className="truncate font-medium">{member.full_name}</p>
+          <p className="truncate font-medium">
+            {member.first_name} {member.last_name}
+          </p>
         </Link>
       );
     },
     width: 285,
   },
   {
-    id: "job_title",
-    header: () => <ColumnHeader id="job_title" title="Job Title" width={250} />,
-    cell: ({ member }) => <p className="truncate px-2">{member.job_title}</p>,
+    id: "company",
+    header: () => <ColumnHeader id="company" title="Company" width={250} />,
+    cell: ({ member }) => (
+      <p className="truncate px-2">{member.company_name}</p>
+    ),
     width: 250,
   },
   {
-    id: "emails",
-    header: () => <ColumnHeader id="emails" title="Email" width={250} />,
-    cell: ({ member }) => <p className="truncate px-2">{member.emails?.[0]}</p>,
+    id: "job_title",
+    header: () => <ColumnHeader id="job_title" title="Job Title" width={250} />,
+    cell: ({ member }) => <p className="truncate px-2">{member.job_title}</p>,
     width: 250,
   },
   {
@@ -125,6 +130,30 @@ export const Columns = ({ tags }: Props): Column[] => [
       return <LoveTooltip member={member} />;
     },
     width: 150,
+  },
+  {
+    id: "last_activity",
+    header: () => (
+      <ColumnHeader id="last_activity" title="Last activity" width={250} />
+    ),
+    cell: ({ member }) => <DateCell date={member.last_activity} />,
+    width: 250,
+  },
+  {
+    id: "locale",
+    header: () => <ColumnHeader id="locale" title="locale" width={250} />,
+    cell: ({ member }) => (
+      <div className="px-2">
+        <LocaleBadge country={member.locale} />
+      </div>
+    ),
+    width: 250,
+  },
+  {
+    id: "emails",
+    header: () => <ColumnHeader id="emails" title="Email" width={250} />,
+    cell: ({ member }) => <p className="truncate px-2">{member.emails?.[0]}</p>,
+    width: 250,
   },
   {
     id: "tags",
@@ -151,29 +180,12 @@ export const Columns = ({ tags }: Props): Column[] => [
     width: 250,
   },
   {
-    id: "last_activity",
-    header: () => (
-      <ColumnHeader id="last_activity" title="Last activity" width={250} />
-    ),
-    cell: ({ member }) => <DateCell date={member.last_activity} />,
-    width: 250,
-  },
-  {
     id: "joined_at",
     header: () => <ColumnHeader id="joined_at" title="Joined at" width={250} />,
     cell: ({ member }) => <DateCell date={member.joined_at} />,
     width: 250,
   },
-  {
-    id: "localisation",
-    header: () => (
-      <ColumnHeader id="localisation" title="Localisation" width={250} />
-    ),
-    cell: ({ member }) => (
-      <p className="truncate px-2">{member.localisation}</p>
-    ),
-    width: 250,
-  },
+
   {
     id: "source",
     header: () => <ColumnHeader id="source" title="Source" width={250} />,

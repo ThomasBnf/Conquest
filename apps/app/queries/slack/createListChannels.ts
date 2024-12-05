@@ -1,6 +1,6 @@
-import { createChannel } from "@/features/channels/functions/createChannel";
-import { listMessages } from "@/features/slack/functions/listMessages";
+import type { Channel } from "@conquest/zod/schemas/channel.schema";
 import type { WebClient } from "@slack/web-api";
+import { createChannel } from "../channels/createChannel";
 
 type Props = {
   web: WebClient;
@@ -15,6 +15,8 @@ export const createListChannels = async ({
   workspace_id,
   channels,
 }: Props) => {
+  const listOfChannels: Channel[] = [];
+
   for (const channelId of channels) {
     const { channel } = await web.conversations.info({
       channel: channelId,
@@ -25,13 +27,12 @@ export const createListChannels = async ({
 
     if (!name || !id) continue;
 
-    const rChannel = await createChannel({
+    const createdChannel = await createChannel({
       name: name,
       source: "SLACK",
       external_id: id,
       workspace_id,
     });
-    const createdChannel = rChannel?.data;
 
     if (!createdChannel) continue;
 
@@ -40,6 +41,8 @@ export const createListChannels = async ({
       token,
     });
 
-    await listMessages({ web, channel: createdChannel, workspace_id });
+    listOfChannels.push(createdChannel);
   }
+
+  return listOfChannels;
 };

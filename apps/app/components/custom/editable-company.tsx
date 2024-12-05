@@ -1,6 +1,5 @@
 import { useUser } from "@/context/userContext";
-import { _getCompany } from "@/features/companies/actions/_getCompany";
-import { _listCompanies } from "@/features/companies/actions/_listCompanies";
+import { useListCompanies } from "@/queries/hooks/useListCompanies";
 import { Button } from "@conquest/ui/button";
 import {
   Command,
@@ -10,68 +9,54 @@ import {
   CommandList,
 } from "@conquest/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@conquest/ui/popover";
-import { Skeleton } from "@conquest/ui/skeleton";
-import { useQuery } from "@tanstack/react-query";
+import { Skeleton } from "@conquest/ui/src/components/skeleton";
+import type { Company } from "@conquest/zod/schemas/company.schema";
+import type { MemberWithCompany } from "@conquest/zod/schemas/member.schema";
+import { CommandLoading } from "cmdk";
 import { X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 type Props = {
-  defaultValue: string | null;
+  member: MemberWithCompany;
   onUpdate: (value: string | null) => void;
 };
 
-export const EditableCompany = ({ defaultValue, onUpdate }: Props) => {
+export const EditableCompany = ({ member, onUpdate }: Props) => {
   const { slug } = useUser();
+  const [memberCompany, setMemberCompany] = useState(member.company_name);
   const [open, setOpen] = useState(false);
   const router = useRouter();
 
-  const { data: companies } = useQuery({
-    queryKey: ["companies"],
-    queryFn: async () => {
-      const rCompanies = await _listCompanies({
-        name: "",
-        page: 1,
-        id: "name",
-        desc: false,
-      });
-      return rCompanies?.data;
-    },
-  });
+  const { data: companies, isLoading } = useListCompanies();
 
-  const { data: company, isLoading } = useQuery({
-    queryKey: ["company", defaultValue],
-    queryFn: async () => {
-      const rCompany = await _getCompany({ id: defaultValue });
-      return rCompany?.data;
-    },
-  });
+  const onUpdateMemberCompany = (company: Company | null) => {
+    if (company === memberCompany) return;
+    setMemberCompany(company?.name ?? null);
+    onUpdate(company?.id ?? null);
+  };
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild className="w-full cursor-pointer">
-        {isLoading ? (
-          <div className="h-[32.5px] rounded-md p-1">
-            <Skeleton className="h-6 w-24" />
-          </div>
-        ) : company ? (
-          <div className="h-[32.5px] rounded-md p-1 hover:bg-muted">
+        {memberCompany ? (
+          <div className="h-8 rounded-md p-1 hover:bg-muted">
             <Button
               variant="outline"
               size="xs"
               className="w-fit justify-start border-blue-200 text-blue-500 hover:bg-background hover:text-blue-500"
               onClick={(e) => {
                 e.stopPropagation();
-                router.push(`/${slug}/companies/${company.id}`);
+                router.push(`/${slug}/companies/${member.company_id}`);
               }}
             >
-              {company.name}
+              {memberCompany}
               {open && (
                 // biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
                 <div
                   onClick={(e) => {
                     e.stopPropagation();
-                    onUpdate(null);
+                    onUpdateMemberCompany(null);
                   }}
                 >
                   <X size={15} />
@@ -82,8 +67,6 @@ export const EditableCompany = ({ defaultValue, onUpdate }: Props) => {
         ) : (
           <Button
             variant="ghost"
-            size="xs"
-            className="h-8"
             classNameSpan="text-muted-foreground justify-start"
             onClick={() => setOpen(true)}
           >
@@ -96,17 +79,23 @@ export const EditableCompany = ({ defaultValue, onUpdate }: Props) => {
           <CommandInput placeholder="Search company..." />
           <CommandList>
             <CommandGroup>
-              {companies?.map((company) => (
-                <CommandItem
-                  key={company.id}
-                  onSelect={() => {
-                    onUpdate(company.id);
-                    setOpen(false);
-                  }}
-                >
-                  {company.name}
-                </CommandItem>
-              ))}
+              {isLoading ? (
+                <CommandLoading>
+                  <Skeleton className="h-6 w-full" />
+                </CommandLoading>
+              ) : (
+                companies?.map((company) => (
+                  <CommandItem
+                    key={company.id}
+                    onSelect={() => {
+                      setOpen(false);
+                      onUpdateMemberCompany(company);
+                    }}
+                  >
+                    {company.name}
+                  </CommandItem>
+                ))
+              )}
             </CommandGroup>
           </CommandList>
         </Command>

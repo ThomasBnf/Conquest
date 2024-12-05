@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { MemberSchema } from "@conquest/zod/member.schema";
+import { MemberWithCompanySchema } from "@conquest/zod/member.schema";
 
 type Props = {
   search: string;
@@ -21,9 +21,15 @@ export const listMembers = async ({
   const searchParsed = search.toLowerCase().trim();
 
   const members = await prisma.$queryRaw`
-    SELECT * FROM members m
+    SELECT 
+      m.*,
+      c.id as company_id,
+      c.name as company_name
+    FROM members m
+    LEFT JOIN companies c ON m.company_id = c.id
     WHERE 
-      LOWER(COALESCE(m.full_name, '')) LIKE '%' || ${searchParsed} || '%'
+      LOWER(COALESCE(m.first_name, '')) LIKE '%' || ${searchParsed} || '%'
+      OR LOWER(COALESCE(m.last_name, '')) LIKE '%' || ${searchParsed} || '%'
       OR EXISTS (
         SELECT 1 FROM unnest(m.emails) email 
         WHERE LOWER(email) LIKE '%' || ${searchParsed} || '%'
@@ -33,7 +39,7 @@ export const listMembers = async ({
         WHERE LOWER(phone) LIKE '%' || ${searchParsed} || '%'
       )
       AND m.workspace_id = ${workspace_id}
-    GROUP BY m.id
+    GROUP BY m.id, c.id
     ORDER BY 
             CASE WHEN ${desc} = true THEN
                 CASE ${id}
@@ -44,12 +50,12 @@ export const listMembers = async ({
             END DESC NULLS LAST,
             CASE WHEN ${desc} = true THEN
                 CASE ${id}
-                    WHEN 'full_name' THEN m.full_name
+                    WHEN 'full_name' THEN m.first_name || ' ' || m.last_name
                     WHEN 'job_title' THEN m.job_title
                     WHEN 'emails' THEN m.emails[0]
                     WHEN 'tags' THEN m.tags[0]
                     WHEN 'joined_at' THEN m.joined_at::text
-                    WHEN 'localisation' THEN m.localisation
+                    WHEN 'locale' THEN m.locale
                     WHEN 'source' THEN m.source::text
                     WHEN 'first_activity' THEN m.first_activity::text
                     WHEN 'last_activity' THEN m.last_activity::text
@@ -65,12 +71,12 @@ export const listMembers = async ({
             END ASC NULLS LAST,
             CASE WHEN ${desc} = false THEN
                 CASE ${id}
-                    WHEN 'full_name' THEN m.full_name
+                    WHEN 'full_name' THEN m.first_name || ' ' || m.last_name
                     WHEN 'job_title' THEN m.job_title
                     WHEN 'emails' THEN m.emails[0]
                     WHEN 'tags' THEN m.tags[0]
                     WHEN 'joined_at' THEN m.joined_at::text
-                    WHEN 'localisation' THEN m.localisation
+                    WHEN 'locale' THEN m.locale
                     WHEN 'source' THEN m.source::text
                     WHEN 'first_activity' THEN m.first_activity::text
                     WHEN 'last_activity' THEN m.last_activity::text
@@ -81,5 +87,5 @@ export const listMembers = async ({
     OFFSET ${(page - 1) * pageSize}
   `;
 
-  return MemberSchema.array().parse(members);
+  return MemberWithCompanySchema.array().parse(members);
 };

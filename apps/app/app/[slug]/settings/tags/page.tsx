@@ -1,11 +1,14 @@
-import { listTags } from "@/features/tags/actions/listTags";
 import { Tags } from "@/features/tags/tags";
+import { listTags } from "@/queries/tags/listTags";
+import { getCurrentUser } from "@/queries/users/getCurrentUser";
 import { ScrollArea } from "@conquest/ui/scroll-area";
 import { Separator } from "@conquest/ui/separator";
 
 export default async function Page() {
-  const rTags = await listTags();
-  const tags = rTags?.data;
+  const user = await getCurrentUser();
+  const workspace_id = user.workspace_id;
+
+  const tags = await listTags({ workspace_id });
 
   return (
     <ScrollArea className="h-dvh">

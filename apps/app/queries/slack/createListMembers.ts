@@ -1,4 +1,4 @@
-import { upsertMember } from "@/features/members/functions/upsertMember";
+import { upsertMember } from "@/queries/members/upsertMember";
 import type { Member } from "@conquest/zod/schemas/member.schema";
 import type { WebClient } from "@slack/web-api";
 
@@ -24,34 +24,25 @@ export const createListMembers = async ({ web, workspace_id }: Props) => {
       if (!id) continue;
 
       if (profile && !isDeleted && !isBot) {
-        const { locale: localisation } = member;
-        const {
-          first_name,
-          last_name,
-          real_name,
-          email,
-          phone,
-          image_1024,
-          title,
-        } = profile;
+        const { locale } = member;
+        const { first_name, last_name, email, phone, image_1024, title } =
+          profile;
 
         if (first_name === "slackbot") continue;
 
-        const rMember = await upsertMember({
+        const createdMember = await upsertMember({
           id,
           source: "SLACK",
           first_name,
           last_name,
-          full_name: real_name,
           email,
           phone,
-          localisation,
+          locale,
           avatar_url: image_1024,
           job_title: title,
           workspace_id,
+          isDeleted,
         });
-
-        const createdMember = rMember?.data;
 
         if (!createdMember) continue;
 

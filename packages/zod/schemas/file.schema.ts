@@ -9,4 +9,9 @@ export const FileSchema = z.object({
   updated_at: z.coerce.date(),
 });
 
+export const FileWithTypeSchema = FileSchema.extend({
+  type: z.enum(["image", "pdf"]),
+});
+
 export type File = z.infer<typeof FileSchema>;
+export type FileWithType = z.infer<typeof FileWithTypeSchema>;

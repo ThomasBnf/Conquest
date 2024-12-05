@@ -6,7 +6,7 @@ export const APIKeySchema = z.object({
   name: z.string(),
   token: z.string(),
   workspace_id: z.string().cuid(),
-  created_at: z.date(),
+  created_at: z.coerce.date(),
 }) satisfies z.ZodType<APIKeyPrisma>;
 
 export type APIKey = z.infer<typeof APIKeySchema>;

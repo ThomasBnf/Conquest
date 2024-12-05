@@ -1,6 +1,6 @@
 import { AppSidebar } from "@/components/layouts/app-sidebar";
 import { UserProvider } from "@/context/userContext";
-import { getCurrentUser } from "@/features/users/functions/getCurrentUser";
+import { getCurrentUser } from "@/queries/users/getCurrentUser";
 import { SidebarProvider } from "@conquest/ui/sidebar";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";

@@ -1,5 +1,5 @@
-"use client";
-
+import { updateWorkflow } from "@/actions/workflows/updateWorkflow";
+import { useGetWorkflow } from "@/queries/hooks/useGetWorkflow";
 import {
   Form,
   FormControl,
@@ -11,41 +11,34 @@ import {
 import { Input } from "@conquest/ui/input";
 import { TextField } from "@conquest/ui/text-field";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { usePathname } from "next/navigation";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { _getWorkflow } from "../actions/_getWorkflow";
-import { _updateWorkflow } from "../actions/_updateWorkflow";
 import {
   type FormWorkflow,
   FormWorkflowSchema,
-} from "./types/form-workflow.schema";
+} from "./schemas/form-workflow.schema";
 
 export const WorkflowPanel = () => {
   const pathname = usePathname();
   const id = pathname.split("/").at(-1) as string;
   const queryClient = useQueryClient();
 
-  const { data } = useQuery({
-    queryKey: ["workflow", id],
-    queryFn: () => _getWorkflow({ id }),
-  });
-
-  const { mutate } = useMutation({
-    mutationFn: _updateWorkflow,
-    onSuccess: () => {
-      queryClient.refetchQueries({ queryKey: ["workflow", id] });
-    },
-  });
-
-  const workflow = data?.data;
+  const { data: workflow } = useGetWorkflow({ workflow_id: id });
 
   const form = useForm<FormWorkflow>({
     resolver: zodResolver(FormWorkflowSchema),
     defaultValues: {
       name: workflow?.name ?? "",
       description: workflow?.description ?? "",
+    },
+  });
+
+  const { mutate } = useMutation({
+    mutationFn: updateWorkflow,
+    onSuccess: () => {
+      queryClient.refetchQueries({ queryKey: ["workflow", id] });
     },
   });
 

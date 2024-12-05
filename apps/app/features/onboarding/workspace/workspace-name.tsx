@@ -1,4 +1,4 @@
-import { getSlug } from "@/features/workspaces/actions/getSlug";
+import { getSlug } from "@/actions/workspaces/getSlug";
 import { cn } from "@conquest/ui/cn";
 import {
   FormControl,

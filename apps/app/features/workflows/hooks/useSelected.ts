@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import type { WorkflowNode } from "../panels/types/workflow-node.type";
+import type { WorkflowNode } from "../panels/schemas/workflow-node.type";
 
 type SelectedState = {
   selected: WorkflowNode | undefined;

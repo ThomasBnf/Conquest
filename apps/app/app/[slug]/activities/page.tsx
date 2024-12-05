@@ -1,18 +1,24 @@
 import { Header } from "@/components/layouts/header";
 import { PageLayout } from "@/components/layouts/page-layout";
-import { _listActivities } from "@/features/activities/actions/_listActivities";
-import { Activities } from "@/features/activities/components/activities";
+import { Activities } from "@/features/activities/activities";
+import { listActivities } from "@/queries/activities/listActivities";
+import { getCurrentUser } from "@/queries/users/getCurrentUser";
 import { ScrollArea } from "@conquest/ui/scroll-area";
+import { notFound } from "next/navigation";
 
 export default async function Page() {
-  const rActivities = await _listActivities({ page: 1 });
-  const activities = rActivities?.data;
+  const user = await getCurrentUser();
+  const { workspace_id } = user;
+
+  if (!workspace_id) return notFound();
+
+  const activities = await listActivities({ page: 1, workspace_id });
 
   return (
     <PageLayout>
       <Header title="Activities" />
       <ScrollArea>
-        {activities && <Activities initialActivities={activities} />}
+        <Activities initialActivities={activities} />
       </ScrollArea>
     </PageLayout>
   );

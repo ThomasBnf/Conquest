@@ -1,7 +1,6 @@
 import { Button } from "@conquest/ui/button";
-import { CommandItem } from "@conquest/ui/command";
 import { Input } from "@conquest/ui/input";
-import { Trash2 } from "lucide-react";
+import { X } from "lucide-react";
 import { useState } from "react";
 
 type Props = {
@@ -22,7 +21,7 @@ export const Email = ({
   const [value, setValue] = useState(email.content);
 
   return (
-    <CommandItem className="flex h-8 items-center justify-between gap-1">
+    <div className="group flex h-8 items-center justify-between gap-1 px-2">
       {email.content ? (
         <p className="truncate">{email.content}</p>
       ) : (
@@ -46,16 +45,14 @@ export const Email = ({
           }}
         />
       )}
-      {hasEmails && (
-        <Button
-          variant="outline"
-          size="icon"
-          className="ml-auto shrink-0"
-          onClick={() => onDeleteEmail(email.id)}
-        >
-          <Trash2 size={15} />
-        </Button>
-      )}
-    </CommandItem>
+      <Button
+        variant="outline"
+        size="icon"
+        className="ml-auto shrink-0 opacity-0 group-hover:opacity-100"
+        onClick={() => onDeleteEmail(email.id)}
+      >
+        <X size={15} />
+      </Button>
+    </div>
   );
 };

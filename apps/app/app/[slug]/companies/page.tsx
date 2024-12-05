@@ -1,27 +1,38 @@
 import { Header } from "@/components/layouts/header";
 import { PageLayout } from "@/components/layouts/page-layout";
-import { _listCompanies } from "@/features/companies/actions/_listCompanies";
-import { CompaniesTable } from "@/features/companies/components/table/companies-table";
-import { countCompanies } from "@/features/companies/functions/countCompanies";
+import { CompaniesTable } from "@/features/companies/companies-table";
+import { searchParamsTable } from "@/lib/searchParamsTable";
+import { countCompanies } from "@/queries/companies/countCompanies";
+import { listCompanies } from "@/queries/companies/listCompanies";
+import { listTags } from "@/queries/tags/listTags";
+import { getCurrentUser } from "@/queries/users/getCurrentUser";
 
-export default async function Page() {
-  const rCompanies = await _listCompanies({
-    page: 1,
-    name: "",
-    id: "name",
-    desc: false,
+type Props = {
+  searchParams: Record<string, string | string[] | undefined>;
+};
+
+export default async function Page({ searchParams }: Props) {
+  const { search, id, desc, page, pageSize } =
+    searchParamsTable.parse(searchParams);
+
+  const user = await getCurrentUser();
+  const workspace_id = user.workspace_id;
+
+  const companies = await listCompanies({
+    search,
+    id,
+    desc,
+    page,
+    pageSize,
+    workspace_id,
   });
-  const rCountCompanies = await countCompanies();
-
-  const companies = rCompanies?.data;
-  const count = rCountCompanies?.data ?? 0;
+  const count = await countCompanies({ workspace_id });
+  const tags = await listTags({ workspace_id });
 
   return (
     <PageLayout>
       <Header title="Companies" className="justify-between" />
-      {companies && (
-        <CompaniesTable initialCompanies={companies} count={count} />
-      )}
+      {companies && <CompaniesTable companies={companies} count={count} />}
     </PageLayout>
   );
 }

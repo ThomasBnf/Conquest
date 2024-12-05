@@ -1,7 +1,7 @@
 "use client";
 
+import { createWorkflow } from "@/actions/workflows/createWorkflow";
 import { useUser } from "@/context/userContext";
-import { _createWorkflow } from "@/features/workflows/actions/_createWorkflow";
 import { Button } from "@conquest/ui/button";
 import { Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -16,7 +16,7 @@ export const CreateWorkflow = () => {
   const handleCreateWorkflow = async () => {
     setLoading(true);
 
-    const rWorkflow = await _createWorkflow();
+    const rWorkflow = await createWorkflow();
     const error = rWorkflow?.serverError;
     const workflow = rWorkflow?.data;
 

@@ -1,6 +1,3 @@
-"use client";
-
-import { _updateMember } from "@/features/members/actions/_updateMember";
 import { Button } from "@conquest/ui/button";
 import {
   Popover,
@@ -18,9 +15,10 @@ import { TagBadge } from "./tag-badge";
 type Props = {
   record: Member | Company;
   tags: Tag[] | undefined;
+  onUpdate: (tags: string[]) => void;
 };
 
-export const TagPicker = ({ record, tags }: Props) => {
+export const TagPicker = ({ record, tags, onUpdate }: Props) => {
   const [recordTags, setRecordTags] = useState(record?.tags ?? []);
 
   const handleTagToggle = async (tag: Tag) => {
@@ -29,28 +27,28 @@ export const TagPicker = ({ record, tags }: Props) => {
         ? prevTags.filter((id) => id !== tag.id)
         : [...prevTags, tag.id];
 
-      _updateMember({ id: record.id, tags: updatedTags });
+      onUpdate(updatedTags);
       return updatedTags;
     });
   };
 
   return (
     <Popover>
-      <PopoverTrigger asChild>
-        <div className="flex flex-wrap items-center gap-1.5">
-          {recordTags?.map((tagId) => (
-            <TagBadge
-              key={tagId}
-              tag={tags?.find((t) => t.id === tagId)}
-              isClickable
-            />
-          ))}
-          <Button variant="ghost" size="xs" className="text-muted-foreground">
-            {recordTags?.length > 0 && <Plus size={15} />}
-            {recordTags?.length === 0 && "Add tags"}
+      <div className="flex w-full flex-wrap items-center gap-1.5">
+        {recordTags?.map((tagId) => (
+          <TagBadge key={tagId} tag={tags?.find((t) => t.id === tagId)} />
+        ))}
+        <PopoverTrigger asChild>
+          <Button
+            variant="ghost"
+            className="w-full text-muted-foreground"
+            classNameSpan="justify-start"
+          >
+            <Plus size={15} />
+            Add tags
           </Button>
-        </div>
-      </PopoverTrigger>
+        </PopoverTrigger>
+      </div>
       <PopoverContent
         className="w-72"
         align="start"

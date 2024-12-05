@@ -8,7 +8,7 @@ export const WorkflowSchema = z.object({
   name: z.string(),
   description: z.string().nullable(),
   published: z.boolean(),
-  last_run_at: z.date().nullable(),
+  last_run_at: z.coerce.date().nullable(),
   nodes: z.array(NodeSchema),
   edges: z.array(EdgeSchema),
   workspace_id: z.string().cuid(),

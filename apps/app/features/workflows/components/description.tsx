@@ -1,7 +1,7 @@
 import {
   type FormDescription,
   FormDescriptionSchema,
-} from "@/features/workflows/panels/types/form-description.schema";
+} from "@/features/workflows/panels/schemas/form-description.schema";
 import {
   Form,
   FormControl,
@@ -15,7 +15,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useReactFlow } from "@xyflow/react";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
-import type { WorkflowNode } from "../panels/types/workflow-node.type";
+import type { WorkflowNode } from "../panels/schemas/workflow-node.type";
 
 type Props = {
   id: string;

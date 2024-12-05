@@ -1,6 +1,6 @@
-import { listActivitiesType } from "@/features/activities-types/actions/listActivitiesType";
-import { ActivityType } from "@/features/activities-types/components/activity-type";
-import { CreateActivityType } from "@/features/activities-types/components/create-activity-type";
+import { listActivitiesType } from "@/actions/activity-types/listActivitiesType";
+import { ActivityType } from "@/features/activities-types/activity-type";
+import { CreateActivityType } from "@/features/activities-types/create-activity-type";
 import { ScrollArea } from "@conquest/ui/scroll-area";
 import { Separator } from "@conquest/ui/separator";
 

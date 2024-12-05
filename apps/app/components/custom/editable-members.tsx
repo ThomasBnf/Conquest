@@ -1,5 +1,6 @@
+import { updateMemberCompany } from "@/actions/members/updateMemberCompany";
 import { useUser } from "@/context/userContext";
-import { _listAllMembers } from "@/features/members/actions/_listAllMembers";
+import { useListMembers } from "@/queries/hooks/useListMembers";
 import { Avatar, AvatarFallback, AvatarImage } from "@conquest/ui/avatar";
 import { Button } from "@conquest/ui/button";
 import {
@@ -11,13 +12,15 @@ import {
 } from "@conquest/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@conquest/ui/popover";
 import { Skeleton } from "@conquest/ui/skeleton";
-import type { CompanyWithMembers } from "@conquest/zod/company.schema";
-import { useQuery } from "@tanstack/react-query";
+import type { Company } from "@conquest/zod/schemas/company.schema";
+import type { Member } from "@conquest/zod/schemas/member.schema";
+import { X } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 type Props = {
-  company: CompanyWithMembers;
+  company: Company;
 };
 
 export const EditableMembers = ({ company }: Props) => {
@@ -25,22 +28,50 @@ export const EditableMembers = ({ company }: Props) => {
   const [open, setOpen] = useState(false);
   const router = useRouter();
 
-  const { data: members, isLoading } = useQuery({
-    queryKey: ["members"],
-    queryFn: async () => {
-      const rMembers = await _listAllMembers();
-      return rMembers?.data;
-    },
-  });
+  const { data: members, isLoading } = useListMembers();
+  const [companyMembers, setCompanyMembers] = useState<Member[]>([]);
+
+  const onUpdate = async (memberId: string) => {
+    const isMemberInCompany = companyMembers?.some(
+      (member) => member.id === memberId,
+    );
+
+    const response = await updateMemberCompany({
+      id: memberId,
+      company_id: isMemberInCompany ? null : company.id,
+    });
+
+    if (response?.serverError) {
+      toast.error(response.serverError);
+      return;
+    }
+
+    setCompanyMembers((prev) =>
+      isMemberInCompany
+        ? prev.filter((member) => member.id !== memberId)
+        : [...prev, members?.find((member) => member.id === memberId)!],
+    );
+    toast.success(
+      isMemberInCompany
+        ? "Member removed from company"
+        : "Member added to company",
+    );
+  };
+
+  useEffect(() => {
+    setCompanyMembers(
+      members?.filter((member) => member.company_id === company.id) ?? [],
+    );
+  }, [members, company.id]);
 
   if (isLoading) return <Skeleton className="h-5 w-24" />;
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild className="w-full cursor-pointer">
-        {company.members.length > 0 ? (
+        {companyMembers && companyMembers.length > 0 ? (
           <div className="flex w-full flex-col gap-1 rounded-md p-1 hover:bg-muted">
-            {company.members.map((member) => {
+            {companyMembers.map((member) => {
               return (
                 <Button
                   key={member.id}
@@ -52,7 +83,18 @@ export const EditableMembers = ({ company }: Props) => {
                     router.push(`/${slug}/members/${member.id}`);
                   }}
                 >
-                  {member.full_name}
+                  {member.first_name} {member.last_name}
+                  {open && (
+                    // biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
+                    <div
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onUpdate(member.id);
+                      }}
+                    >
+                      <X size={15} />
+                    </div>
+                  )}
                 </Button>
               );
             })}
@@ -81,6 +123,7 @@ export const EditableMembers = ({ company }: Props) => {
                     key={member.id}
                     onSelect={() => {
                       setOpen(false);
+                      onUpdate(member.id);
                     }}
                     className="flex items-center gap-2"
                   >
@@ -92,7 +135,7 @@ export const EditableMembers = ({ company }: Props) => {
                       </AvatarFallback>
                     </Avatar>
                     <div className="flex w-full flex-col text-xs">
-                      {member.full_name}
+                      {member.first_name} {member.last_name}
                       <span className="text-muted-foreground">
                         {member.emails[0]}
                       </span>

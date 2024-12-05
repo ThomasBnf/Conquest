@@ -8,7 +8,7 @@ import { WorkflowSchema } from "@conquest/zod/workflow.schema";
 import { schedules } from "@trigger.dev/sdk/v3";
 import { format } from "date-fns";
 import { z } from "zod";
-import { runWorkflow } from "./runWorkflow.trigger";
+import { runWorkflowTrigger } from "./runWorkflow.trigger";
 
 export const cronWorkflows = schedules.task({
   id: "cron-workflows",
@@ -48,7 +48,7 @@ export const cronWorkflows = schedules.task({
       const isTimeToRun = time === currentTime;
 
       if (frequency === "daily" && isTimeToRun) {
-        await runWorkflow.trigger({ workflow_id: id });
+        await runWorkflowTrigger.trigger({ workflow_id: id });
         continue;
       }
 
@@ -56,7 +56,7 @@ export const cronWorkflows = schedules.task({
       const shouldRunToday = repeat_on.includes(currentDay);
 
       if (shouldRunToday && isTimeToRun) {
-        await runWorkflow.trigger({ workflow_id: id });
+        await runWorkflowTrigger.trigger({ workflow_id: id });
       }
     }
   },

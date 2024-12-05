@@ -75,7 +75,7 @@ export function EditableAddress({ address, onUpdate }: Props) {
             <Button
               variant="ghost"
               size="icon"
-              className="absolute right-1 top-1.5"
+              className="absolute top-1.5 right-1"
               onClick={() => {
                 setValue("");
                 ref.current?.focus();

@@ -15,7 +15,8 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "tailwind.config.ts"
+    "tailwind.config.ts",
+    "features/slack/constant/user-scopes"
   ],
   "exclude": ["node_modules"]
 }

@@ -9,9 +9,8 @@ export const MemberSchema = z.object({
   discourse_id: z.string().nullable(),
   first_name: z.string().nullable(),
   last_name: z.string().nullable(),
-  full_name: z.string().nullable(),
   username: z.string().nullable(),
-  localisation: z.string().nullable(),
+  locale: z.string().nullable(),
   avatar_url: z.string().nullable(),
   bio: z.string().nullable(),
   job_title: z.string().nullable(),
@@ -21,7 +20,6 @@ export const MemberSchema = z.object({
   level: z.number(),
   love: z.number(),
   presence: z.number(),
-  search: z.string(),
   gender: GENDER.nullable(),
   source: SOURCE,
   company_id: z.string().cuid().nullable(),
@@ -34,4 +32,10 @@ export const MemberSchema = z.object({
   updated_at: z.coerce.date(),
 }) satisfies z.ZodType<members>;
 
+export const MemberWithCompanySchema = MemberSchema.extend({
+  company_id: z.string().cuid().nullable(),
+  company_name: z.string().nullable(),
+});
+
 export type Member = z.infer<typeof MemberSchema>;
+export type MemberWithCompany = z.infer<typeof MemberWithCompanySchema>;
