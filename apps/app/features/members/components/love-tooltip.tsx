@@ -63,11 +63,11 @@ export const LoveTooltip = ({ member, showIcon = true }: Props) => {
             )}
           >
             <p className="w-36">Total Love</p>
-            <p>{data?.total_love}</p>
+            <p>{data?.total_love ?? 0}</p>
           </div>
           <div className="flex items-center justify-between text-sm">
             <p className="w-36">Total Activities</p>
-            <p>{data?.total_activities}</p>
+            <p>{data?.total_activities ?? 0}</p>
           </div>
         </div>
       </TooltipContent>

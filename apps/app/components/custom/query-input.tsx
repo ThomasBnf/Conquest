@@ -40,7 +40,7 @@ export const QueryInput = ({
   return (
     <div
       className={cn(
-        "actions-secondary relative flex w-full max-w-xs items-center rounded-md border px-2",
+        "actions-secondary relative flex w-full max-w-64 items-center rounded-md border px-2",
         isFocus && "border-main-400 ring-2 ring-ring",
         className,
       )}
