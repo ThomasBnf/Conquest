@@ -7,12 +7,12 @@ import {
   CommandList,
 } from "@conquest/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@conquest/ui/popover";
-import type { FilterActivity } from "@conquest/zod/filters.schema";
+import type { DynamicDate, FilterActivity } from "@conquest/zod/filters.schema";
 import { useState } from "react";
 
 type Props = {
   filter: FilterActivity;
-  handleUpdateDate: (date: string) => void;
+  handleUpdateDate: (dynamic_date: DynamicDate) => void;
 };
 
 export const RelativePicker = ({ filter, handleUpdateDate }: Props) => {
@@ -47,4 +47,4 @@ export const RelativePicker = ({ filter, handleUpdateDate }: Props) => {
   );
 };
 
-const RELATIVES = ["7 days", "30 days", "90 days", "365 days"];
+const RELATIVES: DynamicDate[] = ["7 days", "30 days", "90 days", "365 days"];

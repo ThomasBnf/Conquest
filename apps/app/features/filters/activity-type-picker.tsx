@@ -12,21 +12,29 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from "@conquest/ui/popover";
 import { Skeleton } from "@conquest/ui/skeleton";
 import {
-  type Filter,
   type FilterActivity,
   FilterActivitySchema,
 } from "@conquest/zod/filters.schema";
 import { CommandLoading } from "cmdk";
-import { type Dispatch, type SetStateAction, useState } from "react";
+import { useState } from "react";
 
 type Props = {
   filter: FilterActivity;
-  setFilters: Dispatch<SetStateAction<Filter[]>>;
+  handleUpdateActivityTypes: ({
+    key,
+    name,
+  }: {
+    key: string;
+    name: string;
+  }) => void;
 };
 
-export const ActivityTypePicker = ({ filter, setFilters }: Props) => {
+export const ActivityTypePicker = ({
+  filter,
+  handleUpdateActivityTypes,
+}: Props) => {
   const { data, isLoading } = useListActivityTypes();
-  const [open, setOpen] = useState(filter.activity_type.length === 0);
+  const [open, setOpen] = useState(filter.activity_types.length === 0);
 
   const filterActivity = FilterActivitySchema.parse(filter);
 
@@ -42,47 +50,24 @@ export const ActivityTypePicker = ({ filter, setFilters }: Props) => {
     {} as Record<string, Record<string, string>>,
   );
 
-  const handleUpdateFilter = ({
-    key,
-    name,
-  }: {
-    key: string;
-    name: string;
-  }) => {
-    const isActivityTypeSelected = filterActivity.activity_type.some(
-      (type) => type.key === key,
-    );
-
-    setFilters((filters) =>
-      filters.map((_filter) =>
-        _filter.id === filter.id
-          ? {
-              ..._filter,
-              activity_type: isActivityTypeSelected
-                ? filterActivity.activity_type.filter(
-                    (type) => type.key !== key,
-                  )
-                : [...filterActivity.activity_type, { key, name }],
-            }
-          : _filter,
-      ),
-    );
-  };
-
-  const hasActivityTypes = filterActivity.activity_type.length;
+  const activityTypesList = filterActivity.activity_types;
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button variant="dropdown">
-          {hasActivityTypes > 0 ? (
-            `${hasActivityTypes} ${hasActivityTypes > 1 ? "activities" : "activity"}`
+        <Button variant="dropdown" className="shrink-0">
+          {activityTypesList.length > 0 ? (
+            activityTypesList.length > 4 ? (
+              `${activityTypesList.length} activities`
+            ) : (
+              activityTypesList.map((type) => type.name).join(", ")
+            )
           ) : (
             <p className="text-muted-foreground">Select</p>
           )}
         </Button>
       </PopoverTrigger>
-      <PopoverContent align="start" className="p-0">
+      <PopoverContent align="start" className="max-w-2xl p-0">
         <Command>
           <CommandInput placeholder="Search..." />
           <CommandList>
@@ -104,10 +89,10 @@ export const ActivityTypePicker = ({ filter, setFilters }: Props) => {
                   {Object.entries(types).map(([key, name]) => (
                     <CommandItem
                       key={key}
-                      onSelect={() => handleUpdateFilter({ key, name })}
+                      onSelect={() => handleUpdateActivityTypes({ key, name })}
                     >
                       <Checkbox
-                        checked={filterActivity.activity_type.some(
+                        checked={filterActivity.activity_types.some(
                           (type) => type.key === key,
                         )}
                         className="mr-2"

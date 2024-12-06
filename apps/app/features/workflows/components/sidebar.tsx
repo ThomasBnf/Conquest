@@ -22,7 +22,7 @@ export const Sidebar = () => {
   };
 
   return (
-    <div className="h-full w-full max-w-md divide-y border-l bg-background">
+    <div className="h-full w-full max-w-sm divide-y border-l bg-background">
       {panel !== "workflow" && (
         <div className="flex h-12 shrink-0 items-center px-4">
           <Button variant="ghost" onClick={onBack}>

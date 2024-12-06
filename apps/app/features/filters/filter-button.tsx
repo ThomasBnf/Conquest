@@ -10,7 +10,6 @@ import {
   CommandList,
 } from "@conquest/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@conquest/ui/popover";
-import { ScrollArea } from "@conquest/ui/src/components/scroll-area";
 import type {
   Filter,
   FilterActivity,
@@ -19,8 +18,8 @@ import type {
 } from "@conquest/zod/filters.schema";
 import cuid from "cuid";
 import { ListFilter } from "lucide-react";
+import { usePathname } from "next/navigation";
 import { type Dispatch, type SetStateAction, useRef, useState } from "react";
-import { FiltersList } from "./filters-list";
 import { useTab } from "./hooks/useTab";
 import { InputDialog } from "./input-dialog";
 import { SelectPicker } from "./select-picker";
@@ -41,6 +40,8 @@ export const FilterButton = ({
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const refButton = useRef<HTMLButtonElement>(null);
+  const pathname = usePathname();
+  const isWorkflow = pathname.includes("/workflows");
 
   useClickOutside(ref, () => {
     if (refButton.current) return;
@@ -118,11 +119,6 @@ export const FilterButton = ({
           filters.length > 0 && "gap-1",
         )}
       >
-        <FiltersList
-          filters={filters}
-          setFilters={setFilters}
-          handleUpdateNode={handleUpdateNode}
-        />
         <Popover open={open} onOpenChange={setOpen}>
           <PopoverTrigger asChild>
             <Button ref={refButton} variant="outline">
@@ -141,31 +137,29 @@ export const FilterButton = ({
             ) : (
               <Command>
                 <CommandInput placeholder="Search filter..." />
-                <CommandEmpty>No filter found.</CommandEmpty>
-                <ScrollArea>
-                  <CommandList>
-                    <CommandGroup heading="Member">
-                      {filtersMember.map((filter) => (
-                        <CommandItem
-                          key={filter.id}
-                          onSelect={() => handleFilterSelect(filter)}
-                        >
-                          {filter.label}
-                        </CommandItem>
-                      ))}
-                    </CommandGroup>
-                    <CommandGroup heading="Activity">
-                      {filtersActivity.map((filter) => (
-                        <CommandItem
-                          key={filter.id}
-                          onSelect={() => handleFilterSelect(filter)}
-                        >
-                          {filter.label}
-                        </CommandItem>
-                      ))}
-                    </CommandGroup>
-                  </CommandList>
-                </ScrollArea>
+                <CommandList>
+                  <CommandEmpty>No filter found.</CommandEmpty>
+                  <CommandGroup heading="Member">
+                    {filtersMember.map((filter) => (
+                      <CommandItem
+                        key={filter.id}
+                        onSelect={() => handleFilterSelect(filter)}
+                      >
+                        {filter.label}
+                      </CommandItem>
+                    ))}
+                  </CommandGroup>
+                  <CommandGroup heading="Activity">
+                    {filtersActivity.map((filter) => (
+                      <CommandItem
+                        key={filter.id}
+                        onSelect={() => handleFilterSelect(filter)}
+                      >
+                        {filter.label}
+                      </CommandItem>
+                    ))}
+                  </CommandGroup>
+                </CommandList>
               </Command>
             )}
           </PopoverContent>
@@ -239,7 +233,7 @@ const filtersActivity: Filter[] = [
     id: "1",
     label: "Activity type",
     type: "activity",
-    activity_type: [],
+    activity_types: [],
     operator: ">",
     value: 1,
     channel: {

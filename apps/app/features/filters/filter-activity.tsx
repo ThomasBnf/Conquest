@@ -1,6 +1,7 @@
 import { Button } from "@conquest/ui/button";
 import { Separator } from "@conquest/ui/separator";
 import {
+  type DynamicDate,
   type Filter,
   FilterActivitySchema,
   NumberOperatorSchema,
@@ -38,6 +39,36 @@ export const FilterActivity = ({
     });
   };
 
+  const handleUpdateActivityTypes = ({
+    key,
+    name,
+  }: {
+    key: string;
+    name: string;
+  }) => {
+    const isActivityTypeSelected = filterActivity.activity_types.some(
+      (type) => type.key === key,
+    );
+
+    setFilters((prevFilters) => {
+      const newFilters = prevFilters.map((f) =>
+        f.id === filter.id
+          ? {
+              ...f,
+              activity_types: isActivityTypeSelected
+                ? filterActivity.activity_types.filter(
+                    (type) => type.key !== key,
+                  )
+                : [...filterActivity.activity_types, { key, name }],
+            }
+          : f,
+      );
+
+      handleUpdateNode?.(newFilters);
+      return newFilters;
+    });
+  };
+
   const handleUpdateOperator = (operator: Operator) => {
     if (filter.type === "activity") {
       const numberOperator = NumberOperatorSchema.parse(operator);
@@ -69,10 +100,10 @@ export const FilterActivity = ({
     });
   };
 
-  const handleUpdateDate = (date: string) => {
+  const handleUpdateDate = (dynamic_date: DynamicDate) => {
     setFilters((prev) => {
       const newFilters = prev.map((f) =>
-        f.id === filter.id ? { ...filter, date } : f,
+        f.id === filter.id ? { ...filter, dynamic_date } : f,
       );
 
       handleUpdateNode?.(newFilters);
@@ -86,22 +117,22 @@ export const FilterActivity = ({
         Who did
       </p>
       <Separator orientation="vertical" />
-      <ActivityTypePicker filter={filter} setFilters={setFilters} />
+      <ActivityTypePicker
+        filter={filter}
+        handleUpdateActivityTypes={handleUpdateActivityTypes}
+      />
       <Separator orientation="vertical" />
       <OperatorPicker
         filter={filterActivity}
-        handleUpdateOperator={handleUpdateOperator}
+        handleUpdate={handleUpdateOperator}
       />
       <Separator orientation="vertical" />
-      <div className="flex items-center gap-1">
-        <InputDialog
-          type="number"
-          filter={filter}
-          handleApply={handleApply}
-          triggerButton
-        />
-        <p className="text-muted-foreground">times</p>
-      </div>
+      <InputDialog
+        type="number"
+        filter={filter}
+        handleApply={handleApply}
+        triggerButton
+      />
       <Separator orientation="vertical" />
       <RelativePicker
         filter={filterActivity}

@@ -13,18 +13,18 @@ export default async function Page() {
       <div className="mx-auto flex max-w-3xl flex-col py-24">
         <div className="flex items-end justify-between">
           <div>
-            <p className="font-medium text-2xl">Activities Types</p>
-            <p className="text-muted-foreground">Manage activities types</p>
+            <p className="font-medium text-2xl">Activity Types</p>
+            <p className="text-muted-foreground">Manage activity types</p>
           </div>
           <CreateActivityType />
         </div>
         <Separator className="my-4" />
         <div className="flex flex-col gap-4">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between gap-4">
             <p className="w-52 text-muted-foreground">Name</p>
             <p className="w-32 text-muted-foreground">Source</p>
             <p className="flex-1 text-muted-foreground">Key</p>
-            <p className="w-28 text-muted-foreground">Weight</p>
+            <p className="w-24 text-muted-foreground">Weight</p>
             <div className="w-6" />
           </div>
           {activitiesTypes?.map((activityType) => (

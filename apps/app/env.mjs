@@ -11,7 +11,6 @@ export const env = createEnv({
   },
   server: {
     AUTH_SECRET: z.string(),
-    AUTH_URL: z.string(),
 
     SLACK_TOKEN: z.string(),
     SLACK_APP_ID: z.string(),
@@ -31,7 +30,6 @@ export const env = createEnv({
     NEXT_PUBLIC_BASE_URL: process.env.NEXT_PUBLIC_BASE_URL,
 
     AUTH_SECRET: process.env.AUTH_SECRET,
-    AUTH_URL: process.env.AUTH_URL,
 
     SLACK_TOKEN: process.env.SLACK_TOKEN,
     SLACK_APP_ID: process.env.SLACK_APP_ID,

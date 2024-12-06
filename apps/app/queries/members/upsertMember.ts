@@ -49,11 +49,11 @@ export const upsertMember = async ({
             domain,
           },
           update: {
-            name: companyName,
+            name: companyName.charAt(0).toUpperCase() + companyName.slice(1),
             domain,
           },
           create: {
-            name: companyName,
+            name: companyName.charAt(0).toUpperCase() + companyName.slice(1),
             domain,
             source,
             workspace_id,

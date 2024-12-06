@@ -39,9 +39,7 @@ import { type FormSchema, formSchema } from "./schema/form.schema";
 export const CreateActivityType = () => {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  const sources = Object.values(SOURCE.enum).filter(
-    (source) => source !== "MANUAL",
-  );
+  const sources = Object.values(SOURCE.enum);
 
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),

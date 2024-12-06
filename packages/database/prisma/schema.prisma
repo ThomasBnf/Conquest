@@ -10,9 +10,17 @@ datasource db {
 
 enum SOURCE {
   API
+  BREVO
+  DISCOURSE
+  GITHUB
+  HUBSPOT
+  LINKEDIN
+  LIVESTORM
   MANUAL
   SLACK
-  DISCOURSE
+  X
+  YOUTUBE
+  ZENDESK
 }
 
 enum GENDER {

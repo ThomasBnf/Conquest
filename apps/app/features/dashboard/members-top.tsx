@@ -29,12 +29,17 @@ export const MembersTop = ({ from, to }: Props) => {
 
   const { data: topMembers } = useListTopMembers({ from, to });
 
+  const chartData = topMembers?.map((member) => ({
+    ...member,
+    full_name: `${member.first_name} ${member.last_name}`,
+  }));
+
   return (
     <div className="flex-1 space-y-2 p-4">
       <p className="pl-1.5 font-medium text-base">Top Members</p>
       <ResponsiveContainer height={350} width="100%">
         <ChartContainer ref={ref} config={chartConfig}>
-          <BarChart accessibilityLayer data={topMembers} layout="vertical">
+          <BarChart accessibilityLayer data={chartData} layout="vertical">
             <YAxis
               dataKey="full_name"
               type="category"

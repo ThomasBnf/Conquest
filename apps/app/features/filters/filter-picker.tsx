@@ -73,15 +73,12 @@ export const FilterPicker = ({
   };
 
   return (
-    <div className="flex h-8 items-center overflow-hidden rounded-md border">
+    <div className="flex h-8 w-fit items-center overflow-hidden rounded-md border">
       <p className="h-full place-content-center bg-muted px-1">
         {filter.label}
       </p>
       <Separator orientation="vertical" />
-      <OperatorPicker
-        filter={filter}
-        handleUpdateOperator={handleUpdateOperator}
-      />
+      <OperatorPicker filter={filter} handleUpdate={handleUpdateOperator} />
       <Separator orientation="vertical" />
       {filter.type === "select" ? (
         <SelectPicker filter={filter} setFilters={setFilters} triggerButton />

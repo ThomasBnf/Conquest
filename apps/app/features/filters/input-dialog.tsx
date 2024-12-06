@@ -71,9 +71,9 @@ export const InputDialog = ({
 
   const form = useForm<FormSchema>({
     resolver: zodResolver(FormSchema),
-    defaultValues: triggerButton
-      ? { query: filterValue?.value ?? "" }
-      : undefined,
+    defaultValues: {
+      query: filterValue?.value,
+    },
   });
 
   const onSubmit = ({ query }: FormSchema) => {
@@ -140,7 +140,11 @@ export const InputDialog = ({
     return (
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
-          <Button variant="dropdown">{filterValue?.value}</Button>
+          <Button variant="dropdown" className="shrink-0">
+            {filterValue?.value}
+            {filter.type === "activity" &&
+              (filter.value > 1 ? " times" : " time")}
+          </Button>
         </DialogTrigger>
         {dialogContent}
       </Dialog>

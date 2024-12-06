@@ -57,7 +57,7 @@ export const FilterNumberSchema = FilterBaseSchema.extend({
 
 export const FilterActivitySchema = FilterBaseSchema.extend({
   type: z.literal("activity"),
-  activity_type: z
+  activity_types: z
     .object({
       key: z.string(),
       name: z.string(),

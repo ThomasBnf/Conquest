@@ -8,7 +8,7 @@ type Props = {
 
 export const ActivityType = ({ activityType }: Props) => {
   return (
-    <div className="flex items-center">
+    <div className="flex items-center gap-4">
       <p className="w-52 truncate font-medium">{activityType.name}</p>
       <div className="w-32">
         <SourceBadge source={activityType.source} />
@@ -16,7 +16,7 @@ export const ActivityType = ({ activityType }: Props) => {
       <p className="flex-1 truncate text-muted-foreground">
         {activityType.key}
       </p>
-      <p className="w-28 font-mono">{activityType.weight}</p>
+      <p className="w-24 font-mono">{activityType.weight}</p>
       <ActivityTypeMenu activityType={activityType} />
     </div>
   );

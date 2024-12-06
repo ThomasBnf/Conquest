@@ -6,6 +6,8 @@ import { prisma } from "@/lib/prisma";
 import { SOURCE } from "@conquest/zod/enum/source.enum";
 import { IntegrationSchema } from "@conquest/zod/integration.schema";
 import { WebClient } from "@slack/web-api";
+import { slug } from "cuid";
+import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
 export const deleteIntegration = authAction
@@ -83,5 +85,5 @@ export const deleteIntegration = authAction
       },
     });
 
-    return { success: true };
+    return revalidatePath(`/${slug}/settings/integrations`);
   });

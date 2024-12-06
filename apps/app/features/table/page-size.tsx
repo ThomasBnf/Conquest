@@ -17,7 +17,7 @@ export const PageSize = () => {
       onValueChange={(value) => setParams({ pageSize: Number(value) })}
     >
       <SelectTrigger className="w-fit min-w-20">
-        <SelectValue />
+        <SelectValue>{pageSize}</SelectValue>
       </SelectTrigger>
       <SelectContent>
         <SelectItem value="10">10</SelectItem>

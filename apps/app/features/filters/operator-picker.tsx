@@ -19,10 +19,10 @@ import { useState } from "react";
 
 type Props = {
   filter: Filter;
-  handleUpdateOperator: (operator: Operator) => void;
+  handleUpdate: (operator: Operator) => void;
 };
 
-export const OperatorPicker = ({ filter, handleUpdateOperator }: Props) => {
+export const OperatorPicker = ({ filter, handleUpdate }: Props) => {
   const [open, setOpen] = useState(false);
 
   return (
@@ -52,7 +52,7 @@ export const OperatorPicker = ({ filter, handleUpdateOperator }: Props) => {
                 <CommandItem
                   key={operator}
                   onSelect={() => {
-                    handleUpdateOperator(operator);
+                    handleUpdate(operator);
                     setOpen(false);
                   }}
                 >

@@ -433,7 +433,7 @@ export const createDateFilter = (filter: FilterDate) => {
 };
 
 const createActivityFilter = (filter: FilterActivity) => {
-  const { activity_type, operator, value, channel } = filter;
+  const { activity_types, operator, value } = filter;
 
   return {
     execute: ({ activities }: { activities: ActivityWithType[] }) => {
@@ -444,14 +444,12 @@ const createActivityFilter = (filter: FilterActivity) => {
 
       const filteredActivities = activities.filter((activity) => {
         const activityDate = startOfDay(new Date(activity.created_at));
-        const matchesType = activity_type.some(
-          (type) => type.key === activity.activity_type.key,
+        const matchesType = activity_types.some(
+          (activityType) => activityType.key === activity.activity_type.key,
         );
-        const matchesChannel =
-          !channel.id || activity.channel_id === channel.id;
         const matchesDate = activityDate >= compareDate;
 
-        return matchesType && matchesChannel && matchesDate;
+        return matchesType && matchesDate;
       });
 
       const count = filteredActivities.length;

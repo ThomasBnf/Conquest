@@ -14,6 +14,7 @@ import { ScrollArea, ScrollBar } from "@conquest/ui/src/components/scroll-area";
 import { useSidebar } from "@conquest/ui/src/components/sidebar";
 import { cn } from "@conquest/ui/src/utils/cn";
 import type { MemberWithCompany } from "@conquest/zod/member.schema";
+import type { Filter } from "@conquest/zod/schemas/filters.schema";
 import type { Tag } from "@conquest/zod/tag.schema";
 import { useQueryStates } from "nuqs";
 import { useRef, useState } from "react";
@@ -29,6 +30,7 @@ export const MembersTable = ({ count, tags, members }: Props) => {
   const { open } = useSidebar();
   const [{ search }, setParams] = useQueryStates(tableParsers);
   const [rowSelected, setRowSelected] = useState<string[]>([]);
+  const [filters, setFilters] = useState<Filter[]>([]);
 
   const isClient = useIsClient();
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -41,7 +43,7 @@ export const MembersTable = ({ count, tags, members }: Props) => {
 
   return (
     <>
-      <div className="flex min-h-12 items-center border-b px-4">
+      <div className="flex min-h-12 items-center px-4">
         <QueryInput
           query={search}
           setQuery={(value) => setParams({ search: value })}

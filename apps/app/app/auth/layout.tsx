@@ -1,15 +1,11 @@
-import type { ReactNode } from "react";
+import type { PropsWithChildren } from "react";
 
-type Props = {
-  children: ReactNode;
-};
-
-export default function Layout({ children }: Props) {
+export default function Layout({ children }: PropsWithChildren) {
   return (
     <div className="flex h-full flex-col items-center justify-between py-10">
       <div />
       {children}
-      <p className="text-xs text-muted-foreground">
+      <p className="text-muted-foreground text-xs">
         © {new Date().getFullYear()} - Conquest
       </p>
     </div>
