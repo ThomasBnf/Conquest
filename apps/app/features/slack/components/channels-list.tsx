@@ -64,7 +64,7 @@ export const ChannelsList = () => {
   }, [run]);
 
   return (
-    <>
+    <div className="p-4">
       <Separator />
       <p className="mt-4 font-medium text-base">Imported channels</p>
       {isLoading ? (
@@ -106,6 +106,6 @@ export const ChannelsList = () => {
           </Button>
         </>
       )}
-    </>
+    </div>
   );
 };

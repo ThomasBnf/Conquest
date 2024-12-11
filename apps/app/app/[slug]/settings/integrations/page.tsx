@@ -1,5 +1,6 @@
 "use client";
 
+import { Discourse } from "@/components/icons/Discourse";
 import { Slack } from "@/components/icons/Slack";
 import { useUser } from "@/context/userContext";
 import { ScrollArea } from "@conquest/ui/scroll-area";
@@ -14,6 +15,12 @@ export default function Page() {
       logo: <Slack />,
       name: "Slack",
       description: "Synchronize your members with Slack",
+    },
+    {
+      href: `/${slug}/settings/integrations/discourse`,
+      logo: <Discourse />,
+      name: "Discourse",
+      description: "Synchronize your members with Discourse",
     },
   ];
 

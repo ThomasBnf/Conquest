@@ -1,11 +1,8 @@
 "use client";
 
-import { Slack } from "@/components/icons/Slack";
+import { Discourse } from "@/components/icons/Discourse";
 import { useUser } from "@/context/userContext";
 import { IntegrationHeader } from "@/features/integrations/integration-header";
-import { ChannelsList } from "@/features/slack/components/channels-list";
-import { InstallButton } from "@/features/slack/components/install-button";
-import { UninstallButton } from "@/features/slack/components/uninstall_button";
 import { buttonVariants } from "@conquest/ui/src/components/button";
 import {
   Card,
@@ -23,22 +20,22 @@ type Props = {
 };
 
 export default function Page({ searchParams: { code } }: Props) {
-  const { slack } = useUser();
+  const { discourse } = useUser();
 
   return (
     <div className="mx-auto flex max-w-3xl flex-col gap-4 py-16">
       <IntegrationHeader />
       <div className="flex items-center gap-4">
         <div className="rounded-md border p-3">
-          <Slack />
+          <Discourse />
         </div>
-        <p className="font-medium text-lg">Slack</p>
+        <p className="font-medium text-lg">Discourse</p>
       </div>
       <Card>
         <CardHeader className="flex h-14 flex-row items-center justify-between space-y-0">
           <div className="flex items-center">
             <Link
-              href="https://doc.useconquest.com/slack"
+              href="https://doc.useconquest.com/discourse"
               target="_blank"
               className={cn(
                 buttonVariants({ variant: "link", size: "xs" }),
@@ -49,19 +46,16 @@ export default function Page({ searchParams: { code } }: Props) {
               <p>Documentation</p>
             </Link>
           </div>
-          {!slack?.id && <InstallButton code={code} />}
-          {slack?.status === "INSTALLED" && <UninstallButton />}
         </CardHeader>
         <CardContent className="mb-0.5 p-0">
           <div className="p-4">
             <p className="font-medium text-base">Overview</p>
             <p className="text-balance text-muted-foreground">
-              Connect your Slack workspace to automatically sync messages,
+              Connect your Discourse workspace to automatically sync messages,
               collect member interactions, and send personalized direct messages
               through automated workflows.
             </p>
           </div>
-          {slack?.id && <ChannelsList />}
         </CardContent>
       </Card>
     </div>
