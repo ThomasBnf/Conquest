@@ -2,7 +2,14 @@ import { z } from "zod";
 
 export const BaseOperatorSchema = z.enum(["contains", "not_contains"]);
 export const DateOperatorSchema = z.enum(["is", "is_not"]);
-export const NumberOperatorSchema = z.enum([">", ">=", "=", "!=", "<=", "<"]);
+export const NumberOperatorSchema = z.enum([
+  "greater",
+  "greater or equal",
+  "equal",
+  "not equal",
+  "less or equal",
+  "less",
+]);
 
 export const OperatorSchema = z.union([
   BaseOperatorSchema,

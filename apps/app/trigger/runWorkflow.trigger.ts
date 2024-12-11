@@ -352,17 +352,17 @@ const createNumberFilter = (filter: FilterNumber) => {
       })();
 
       switch (operator) {
-        case ">":
+        case "greater":
           return field > value;
-        case ">=":
+        case "greater or equal":
           return field >= value;
-        case "=":
+        case "equal":
           return field === value;
-        case "!=":
+        case "not equal":
           return field !== value;
-        case "<=":
+        case "less or equal":
           return field <= value;
-        case "<":
+        case "less":
           return field < value;
         default:
           return true;
@@ -384,17 +384,17 @@ const createLevelFilter = (filter: FilterLevel) => {
       })();
 
       switch (operator) {
-        case ">":
+        case "greater":
           return field > value;
-        case ">=":
+        case "greater or equal":
           return field >= value;
-        case "=":
+        case "equal":
           return field === value;
-        case "!=":
+        case "not equal":
           return field !== value;
-        case "<=":
+        case "less or equal":
           return field <= value;
-        case "<":
+        case "less":
           return field < value;
         default:
           return true;
@@ -488,17 +488,17 @@ const createActivityFilter = (filter: FilterActivity) => {
       const count = filteredActivities.length;
 
       switch (operator) {
-        case "<":
+        case "less":
           return count < value;
-        case "<=":
+        case "less or equal":
           return count <= value;
-        case "=":
+        case "equal":
           return count === value;
-        case "!=":
+        case "not equal":
           return count !== value;
-        case ">":
+        case "greater":
           return count > value;
-        case ">=":
+        case "greater or equal":
           return count >= value;
         default:
           return true;

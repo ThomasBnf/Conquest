@@ -1,11 +1,11 @@
 import { useOpenFilters } from "@/hooks/useOpenFilters";
+import { Button } from "@conquest/ui/src/components/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@conquest/ui/dropdown-menu";
-import { Button } from "@conquest/ui/src/components/button";
+} from "@conquest/ui/src/components/dropdown-menu";
 import {
   Popover,
   PopoverContent,
@@ -41,7 +41,7 @@ export const FiltersList = ({
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
-      <div className="flex w-fit items-center divide-x overflow-hidden rounded-md border">
+      <div className="flex h-8 w-fit items-center divide-x overflow-hidden rounded-md border">
         <PopoverTrigger asChild>
           <Button variant="dropdown">
             Advanced filters{" "}

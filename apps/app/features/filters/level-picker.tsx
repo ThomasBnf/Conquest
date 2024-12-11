@@ -55,7 +55,7 @@ export const LevelPicker = ({
 
   const commandContent = (
     <Command>
-      <CommandInput placeholder="Search value..." />
+      <CommandInput placeholder="Search level..." />
       <CommandList>
         <CommandGroup>
           {Array.from({ length: 12 }, (_, i) => 12 - i).map((level) => (

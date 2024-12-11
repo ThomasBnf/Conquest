@@ -85,17 +85,17 @@ export const members = new Hono()
           const fieldCondition = Prisma.raw(field);
 
           switch (operator) {
-            case ">":
+            case "greater":
               return Prisma.sql`m.${fieldCondition} > ${value}`;
-            case ">=":
+            case "greater or equal":
               return Prisma.sql`m.${fieldCondition} >= ${value}`;
-            case "=":
+            case "equal":
               return Prisma.sql`m.${fieldCondition} = ${value}`;
-            case "!=":
+            case "not equal":
               return Prisma.sql`m.${fieldCondition} != ${value}`;
-            case "<":
+            case "less":
               return Prisma.sql`m.${fieldCondition} < ${value}`;
-            case "<=":
+            case "less or equal":
               return Prisma.sql`m.${fieldCondition} <= ${value}`;
             default:
               return Prisma.sql`TRUE`;
@@ -107,17 +107,17 @@ export const members = new Hono()
           const fieldCondition = Prisma.raw(field);
 
           switch (operator) {
-            case ">":
+            case "greater":
               return Prisma.sql`m.${fieldCondition} > ${value}`;
-            case ">=":
+            case "greater or equal":
               return Prisma.sql`m.${fieldCondition} >= ${value}`;
-            case "=":
+            case "equal":
               return Prisma.sql`m.${fieldCondition} = ${value}`;
-            case "!=":
+            case "not equal":
               return Prisma.sql`m.${fieldCondition} != ${value}`;
-            case "<":
+            case "less":
               return Prisma.sql`m.${fieldCondition} < ${value}`;
-            case "<=":
+            case "less or equal":
               return Prisma.sql`m.${fieldCondition} <= ${value}`;
             default:
               return Prisma.sql`TRUE`;

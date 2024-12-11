@@ -3,7 +3,6 @@ import { Button } from "@conquest/ui/button";
 import {
   Command,
   CommandGroup,
-  CommandInput,
   CommandItem,
   CommandList,
 } from "@conquest/ui/command";
@@ -33,13 +32,14 @@ export const OperatorPicker = ({ filter, handleUpdate }: Props) => {
         </Button>
       </PopoverTrigger>
       <PopoverContent align="start" className="p-0">
-        <Command>
-          <CommandInput placeholder="Search..." />
+        <Command className="w-28">
           <CommandList>
             <CommandGroup>
               {OPERATORS.filter((operator) => {
                 switch (filter.type) {
                   case "number":
+                    return operator in NumberOperatorSchema.Values;
+                  case "level":
                     return operator in NumberOperatorSchema.Values;
                   case "date":
                     return operator in DateOperatorSchema.Values;

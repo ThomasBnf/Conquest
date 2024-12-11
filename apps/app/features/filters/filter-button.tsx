@@ -39,6 +39,12 @@ export const FilterButton = ({ filters, setFilters, handleUpdate }: Props) => {
   const refButton = useRef<HTMLButtonElement>(null);
 
   useClickOutside(ref, () => {
+    if (refButton.current) {
+      return setTimeout(() => {
+        setFilter(undefined);
+        setTab(undefined);
+      }, 100);
+    }
     setOpen(false);
     setTimeout(() => {
       setFilter(undefined);
@@ -186,7 +192,7 @@ const filtersMember: Filter[] = [
     label: "Level",
     type: "level",
     field: "level",
-    operator: ">=",
+    operator: "greater or equal",
     value: 1,
   },
   {
@@ -194,7 +200,7 @@ const filtersMember: Filter[] = [
     label: "Love",
     type: "number",
     field: "love",
-    operator: ">=",
+    operator: "greater or equal",
     value: 1,
   },
   {
@@ -245,7 +251,7 @@ const filtersActivity: Filter[] = [
     label: "Activity type",
     type: "activity",
     activity_types: [],
-    operator: ">=",
+    operator: "greater or equal",
     value: 1,
     channel: {
       id: "",
