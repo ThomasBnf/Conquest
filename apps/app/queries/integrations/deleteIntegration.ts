@@ -1,6 +1,5 @@
 "use server";
 
-import { env } from "@/env.mjs";
 import { prisma } from "@/lib/prisma";
 import type { SOURCE } from "@conquest/database";
 import {
@@ -29,8 +28,8 @@ export const deleteIntegration = async ({ source, integration }: Props) => {
 
     await web.apps.uninstall({
       token: slack?.details.token,
-      client_id: env.NEXT_PUBLIC_SLACK_CLIENT_ID,
-      client_secret: env.SLACK_CLIENT_SECRET,
+      client_id: process.env.NEXT_PUBLIC_SLACK_CLIENT_ID!,
+      client_secret: process.env.SLACK_CLIENT_SECRET!,
     });
   }
 

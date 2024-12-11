@@ -12,8 +12,7 @@
     "start": "next start",
     "typecheck": "tsc --noEmit",
     "trigger:dev": "npx trigger.dev dev",
-    "deploy:trigger-prod": "npx trigger.dev@3.0.0 deploy",
-    "deploy:trigger": "npx trigger.dev@3.0.0 deploy --env staging"
+    "trigger:deploy": "npx trigger.dev@latest deploy"
   },
   "exports": {
     "./prisma": "./lib/prisma.ts"

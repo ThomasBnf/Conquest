@@ -17,7 +17,7 @@ export const DateCell = ({ date }: Props) => {
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger>
-          <p className="px-2">
+          <p className="h-full p-2.5">
             {formatDistance(date, new Date(), { addSuffix: true })}
           </p>
         </TooltipTrigger>

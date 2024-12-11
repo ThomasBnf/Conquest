@@ -63,7 +63,7 @@ export const MembersTable = ({ count, tags }: Props) => {
 
   return (
     <>
-      <div className="flex min-h-12 items-center gap-2 px-4">
+      <div className="flex items-center gap-2 px-4 py-2">
         <QueryInput
           query={search}
           setQuery={(value) => setParams({ search: value })}
@@ -93,26 +93,19 @@ export const MembersTable = ({ count, tags }: Props) => {
               )}
               style={{ width: fixedColumn[0]?.width }}
             >
-              <div className="flex h-12 items-center">
+              <div className="flex items-center">
                 {fixedColumn[0]?.header({
                   members,
                   rowSelected,
                   setRowSelected,
                 })}
               </div>
-              {scrollX > 0 && (
-                <div className="-mr-12 absolute top-0 right-0 h-full w-12 bg-gradient-to-r from-black to-transparent opacity-[0.075]" />
-              )}
             </div>
             <div
-              className={cn(
-                "sticky left-[40px] z-10 shrink-0 border-r border-b",
-              )}
+              className={cn("sticky left-[40px] z-10 flex border-r border-b")}
               style={{ width: fixedColumn[1]?.width }}
             >
-              <div className="flex h-12 items-center">
-                {fixedColumn[1]?.header({})}
-              </div>
+              {fixedColumn[1]?.header({})}
               {scrollX > 0 && (
                 <div className="-mr-12 absolute top-0 right-0 h-full w-12 bg-gradient-to-r from-black to-transparent opacity-[0.075]" />
               )}
@@ -121,7 +114,7 @@ export const MembersTable = ({ count, tags }: Props) => {
               {scrollableColumns.map((column) => (
                 <div
                   key={column.id}
-                  className="flex h-12 items-center"
+                  className="flex items-center"
                   style={{ width: column.width }}
                 >
                   {column.header({})}
@@ -145,40 +138,36 @@ export const MembersTable = ({ count, tags }: Props) => {
                   <div className="flex">
                     <div
                       className={cn(
-                        "sticky left-0 [&:not(:first-child)]:border-r",
+                        "sticky left-0 flex items-center justify-center [&:not(:first-child)]:border-r",
                         rowSelected.includes(member.id)
                           ? "bg-muted"
                           : "bg-background",
                       )}
                       style={{ width: fixedColumn[0]?.width }}
                     >
-                      <div className="flex h-12 items-center">
-                        {fixedColumn[0]?.cell({
-                          member,
-                          rowSelected,
-                          setRowSelected,
-                        })}
-                      </div>
+                      {fixedColumn[0]?.cell({
+                        member,
+                        rowSelected,
+                        setRowSelected,
+                      })}
                       {scrollX > 0 && (
                         <div className="-mr-12 absolute top-0 right-0 h-full w-12 bg-gradient-to-r from-black to-transparent opacity-[0.075]" />
                       )}
                     </div>
                     <div
                       className={cn(
-                        "sticky left-[40px] border-r",
+                        "sticky left-[40px] flex items-center border-r",
                         rowSelected.includes(member.id)
                           ? "bg-muted"
                           : "bg-background",
                       )}
                       style={{ width: fixedColumn[1]?.width }}
                     >
-                      <div className="flex h-12 items-center">
-                        {fixedColumn[1]?.cell({
-                          member,
-                          rowSelected,
-                          setRowSelected,
-                        })}
-                      </div>
+                      {fixedColumn[1]?.cell({
+                        member,
+                        rowSelected,
+                        setRowSelected,
+                      })}
                       {scrollX > 0 && (
                         <div className="-mr-12 absolute top-0 right-0 h-full w-12 bg-gradient-to-r from-black to-transparent opacity-[0.075]" />
                       )}
@@ -187,8 +176,8 @@ export const MembersTable = ({ count, tags }: Props) => {
                       {scrollableColumns.map((column) => (
                         <div
                           key={column.id}
-                          className="flex h-12 items-center"
                           style={{ width: column.width }}
+                          className="flex items-center"
                         >
                           {column.cell({ member })}
                         </div>
@@ -228,7 +217,6 @@ export const MembersTable = ({ count, tags }: Props) => {
             <ActionMenu
               rowSelected={rowSelected}
               setRowSelected={setRowSelected}
-              count={count}
             />
           )}
           <ScrollBar orientation="horizontal" />

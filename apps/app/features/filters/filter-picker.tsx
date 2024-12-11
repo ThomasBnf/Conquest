@@ -1,8 +1,8 @@
 import { Button } from "@conquest/ui/button";
 import { Separator } from "@conquest/ui/separator";
 import {
-  BaseOperatorSchema,
   type Filter,
+  FilterSchema,
   type Operator,
 } from "@conquest/zod/filters.schema";
 import { X } from "lucide-react";
@@ -14,7 +14,7 @@ import { SelectPicker } from "./select-picker";
 type Props = {
   filter: Filter;
   setFilters: Dispatch<SetStateAction<Filter[]>>;
-  handleUpdate?: (filters: Filter[]) => void;
+  handleUpdate: (filters: Filter[]) => void;
 };
 
 export const FilterPicker = ({ filter, setFilters, handleUpdate }: Props) => {
@@ -24,24 +24,22 @@ export const FilterPicker = ({ filter, setFilters, handleUpdate }: Props) => {
     setFilters((prevFilters) => {
       const newFilters = prevFilters.filter((f) => f.id !== filter.id);
 
-      handleUpdate?.(newFilters);
+      handleUpdate(newFilters);
       return newFilters;
     });
   };
 
   const handleUpdateOperator = (operator: Operator) => {
-    if (filter.type === "text") {
-      const baseOperator = BaseOperatorSchema.parse(operator);
+    setFilters((prevFilters) => {
+      const newFilters = FilterSchema.array().parse(
+        prevFilters.map((f) =>
+          f.id === filter.id ? { ...filter, operator: operator } : f,
+        ),
+      );
 
-      setFilters((prevFilters) => {
-        const newFilters = prevFilters.map((f) =>
-          f.id === filter.id ? { ...filter, operator: baseOperator } : f,
-        );
-
-        handleUpdate?.(newFilters);
-        return newFilters;
-      });
-    }
+      handleUpdate(newFilters);
+      return newFilters;
+    });
   };
 
   const handleApply = (query: string | number) => {
@@ -51,7 +49,7 @@ export const FilterPicker = ({ filter, setFilters, handleUpdate }: Props) => {
           f.id === filter.id ? { ...filter, value: query.toString() } : f,
         );
 
-        handleUpdate?.(newFilters);
+        handleUpdate(newFilters);
         return newFilters;
       });
     }
@@ -62,7 +60,7 @@ export const FilterPicker = ({ filter, setFilters, handleUpdate }: Props) => {
           f.id === filter.id ? { ...filter, value: Number(query) } : f,
         );
 
-        handleUpdate?.(newFilters);
+        handleUpdate(newFilters);
         return newFilters;
       });
     }

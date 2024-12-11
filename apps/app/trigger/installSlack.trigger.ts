@@ -47,8 +47,6 @@ export const installSlack = schemaTask({
       members = await createListMembers({ web, workspace_id });
     }
 
-    console.log(members);
-
     for (const channel of createdChannels) {
       await listMessages({ web, channel, workspace_id });
     }

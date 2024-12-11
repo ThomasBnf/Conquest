@@ -59,18 +59,16 @@ export const Columns = ({ tags }: Props): Column[] => [
       </div>
     ),
     cell: ({ member, rowSelected, setRowSelected }) => (
-      <div className="flex size-12 items-center justify-center">
-        <Checkbox
-          checked={rowSelected?.includes(member.id)}
-          onCheckedChange={(checked) =>
-            setRowSelected?.(
-              checked
-                ? [...(rowSelected ?? []), member.id]
-                : (rowSelected ?? []).filter((id) => id !== member.id),
-            )
-          }
-        />
-      </div>
+      <Checkbox
+        checked={rowSelected?.includes(member.id)}
+        onCheckedChange={(checked) =>
+          setRowSelected?.(
+            checked
+              ? [...(rowSelected ?? []), member.id]
+              : (rowSelected ?? []).filter((id) => id !== member.id),
+          )
+        }
+      />
     ),
     width: 40,
   },
@@ -104,15 +102,13 @@ export const Columns = ({ tags }: Props): Column[] => [
   {
     id: "company",
     header: () => <ColumnHeader id="company" title="Company" width={250} />,
-    cell: ({ member }) => (
-      <p className="truncate px-2">{member.company_name}</p>
-    ),
+    cell: ({ member }) => <p className="truncate p-2">{member.company_name}</p>,
     width: 250,
   },
   {
     id: "job_title",
     header: () => <ColumnHeader id="job_title" title="Job Title" width={250} />,
-    cell: ({ member }) => <p className="truncate px-2">{member.job_title}</p>,
+    cell: ({ member }) => <p className="truncate p-2">{member.job_title}</p>,
     width: 250,
   },
   {
@@ -120,7 +116,7 @@ export const Columns = ({ tags }: Props): Column[] => [
     header: () => <ColumnHeader id="level" title="Level" width={185} />,
     cell: ({ member }) => {
       return (
-        <div className="flex w-full items-center justify-end px-2">
+        <div className="flex w-full items-center justify-end p-2">
           <LevelTooltip member={member} />
         </div>
       );
@@ -132,7 +128,7 @@ export const Columns = ({ tags }: Props): Column[] => [
     header: () => <ColumnHeader id="love" title="Love" width={185} />,
     cell: ({ member }) => {
       return (
-        <div className="flex w-full items-center justify-end px-2">
+        <div className="flex w-full items-center justify-end p-2">
           <LoveTooltip member={member} />
         </div>
       );
@@ -151,7 +147,7 @@ export const Columns = ({ tags }: Props): Column[] => [
     id: "locale",
     header: () => <ColumnHeader id="locale" title="Locale" width={250} />,
     cell: ({ member }) => (
-      <div className="px-2">
+      <div className="p-2">
         <LocaleBadge country={member.locale} />
       </div>
     ),
@@ -160,7 +156,7 @@ export const Columns = ({ tags }: Props): Column[] => [
   {
     id: "emails",
     header: () => <ColumnHeader id="emails" title="Email" width={250} />,
-    cell: ({ member }) => <p className="truncate px-2">{member.emails?.[0]}</p>,
+    cell: ({ member }) => <p className="truncate p-2">{member.emails?.[0]}</p>,
     width: 250,
   },
   {
@@ -170,7 +166,7 @@ export const Columns = ({ tags }: Props): Column[] => [
       const memberTags = tags?.filter((tag) => member.tags?.includes(tag.id));
 
       return (
-        <div className="flex flex-wrap gap-1 px-2">
+        <div className="flex flex-wrap gap-1 p-2">
           {memberTags?.map((tag) => (
             <TagBadge key={tag.id} tag={tag} />
           ))}
@@ -198,7 +194,7 @@ export const Columns = ({ tags }: Props): Column[] => [
     id: "source",
     header: () => <ColumnHeader id="source" title="Source" width={250} />,
     cell: ({ member }) => (
-      <SourceBadge source={member.source} className="mx-2" />
+      <SourceBadge source={member.source} className="m-2" />
     ),
     width: 250,
   },
