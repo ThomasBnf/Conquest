@@ -18,6 +18,12 @@ export const _signUp = safeAction
       data: {
         name: "",
         slug: cuid(),
+        members_preferences: {
+          id: "full_name",
+          desc: true,
+          pageSize: 25,
+          filters: [],
+        },
       },
     });
 

@@ -35,10 +35,10 @@ export const TableSkeleton = ({
                   "flex h-12 w-[250px] items-center px-3",
                   (isMembers || isLeaderboard) &&
                     index === 2 &&
-                    "w-[150px] justify-end",
+                    "w-[185px] justify-end",
                   (isMembers || isLeaderboard) &&
                     index === 3 &&
-                    "w-[150px] justify-end",
+                    "w-[185px] justify-end",
                 )}
               >
                 <Skeleton className="h-4 w-24" />

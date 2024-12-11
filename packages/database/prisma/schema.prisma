@@ -251,11 +251,13 @@ model workflows {
 }
 
 model workspaces {
-  id           String  @id @default(cuid())
-  name         String
-  slug         String  @unique
-  source       String?
-  company_size String?
+  id                  String  @id @default(cuid())
+  name                String
+  slug                String  @unique
+  source              String?
+  company_size        String?
+  trigger_token       String? @unique
+  members_preferences Json
 
   users        users[]
   members      members[]

@@ -43,17 +43,20 @@ export const upsertMember = async ({
     const { companyName, domain } = filteredDomain(formattedDomain) ?? {};
 
     if (companyName && domain) {
+      const formattedCompanyName =
+        companyName.charAt(0).toUpperCase() + companyName.slice(1);
+
       company = CompanySchema.parse(
         await prisma.companies.upsert({
           where: {
             domain,
           },
           update: {
-            name: companyName.charAt(0).toUpperCase() + companyName.slice(1),
+            name: formattedCompanyName,
             domain,
           },
           create: {
-            name: companyName.charAt(0).toUpperCase() + companyName.slice(1),
+            name: formattedCompanyName,
             domain,
             source,
             workspace_id,

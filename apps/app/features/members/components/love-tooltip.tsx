@@ -1,3 +1,4 @@
+import { Love } from "@/components/icons/Love";
 import { client } from "@/lib/rpc";
 import {
   Tooltip,
@@ -35,11 +36,9 @@ export const LoveTooltip = ({ member, showIcon = true }: Props) => {
       <TooltipTrigger
         onMouseEnter={() => setHover(true)}
         onMouseLeave={() => setHover(false)}
-        className={cn(
-          "flex h-full w-full items-center justify-end gap-1",
-          showIcon && "gap-2 px-2",
-        )}
+        className="flex items-center justify-end gap-1.5"
       >
+        <Love size={18} />
         <p>{member.love}</p>
         {showIcon && <InfoIcon size={13} className="text-muted-foreground" />}
       </TooltipTrigger>

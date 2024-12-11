@@ -20,6 +20,6 @@ type PanelState = {
 };
 
 export const usePanel = create<PanelState>((set) => ({
-  panel: undefined,
+  panel: "workflow",
   setPanel: (panel) => set({ panel }),
 }));

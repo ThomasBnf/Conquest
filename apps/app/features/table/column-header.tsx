@@ -34,6 +34,7 @@ type Props = {
   width: number;
   className?: string;
   isSorted?: "asc" | "desc" | false;
+  isLeaderboard?: boolean;
 };
 
 export const ColumnHeader = ({
@@ -42,6 +43,7 @@ export const ColumnHeader = ({
   width,
   className,
   isSorted,
+  isLeaderboard,
 }: Props) => {
   const [_, setParams] = useQueryStates(tableParsers);
 
@@ -51,6 +53,10 @@ export const ColumnHeader = ({
       desc,
     });
   };
+
+  if (isLeaderboard) {
+    return <p className="text-muted-foreground">{title}</p>;
+  }
 
   return (
     <DropdownMenu>

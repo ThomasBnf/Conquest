@@ -11,6 +11,8 @@ export const Sidebar = () => {
   const { panel, setPanel } = usePanel();
   const { selected, setSelected } = useSelected();
 
+  const hasPanel = panel !== undefined;
+
   const onBack = () => {
     if (panel === "node") {
       setSelected(undefined);
@@ -23,7 +25,7 @@ export const Sidebar = () => {
 
   return (
     <div className="h-full w-full max-w-sm divide-y border-l bg-background">
-      {panel !== "workflow" && (
+      {hasPanel && panel !== "workflow" && (
         <div className="flex h-12 shrink-0 items-center px-4">
           <Button variant="ghost" onClick={onBack}>
             <ArrowLeft size={16} />

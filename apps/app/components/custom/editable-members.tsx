@@ -1,6 +1,6 @@
 import { updateMemberCompany } from "@/actions/members/updateMemberCompany";
 import { useUser } from "@/context/userContext";
-import { useListMembers } from "@/queries/hooks/useListMembers";
+import { useListAllMembers } from "@/queries/hooks/useListAllMembers";
 import { Avatar, AvatarFallback, AvatarImage } from "@conquest/ui/avatar";
 import { Button } from "@conquest/ui/button";
 import {
@@ -28,7 +28,7 @@ export const EditableMembers = ({ company }: Props) => {
   const [open, setOpen] = useState(false);
   const router = useRouter();
 
-  const { data: members, isLoading } = useListMembers();
+  const { data: members, isLoading } = useListAllMembers();
   const [companyMembers, setCompanyMembers] = useState<Member[]>([]);
 
   const onUpdate = async (memberId: string) => {

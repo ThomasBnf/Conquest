@@ -1,6 +1,9 @@
 "use server";
 
-import { WorkspaceSchema } from "@conquest/zod/workspace.schema";
+import {
+  MembersPreferencesSchema,
+  WorkspaceSchema,
+} from "@conquest/zod/workspace.schema";
 import { authAction } from "lib/authAction";
 import { prisma } from "lib/prisma";
 import { revalidatePath } from "next/cache";
@@ -16,10 +19,14 @@ export const updateWorkspace = authAction
         .enum(["google", "twitter", "linkedin", "reddit", "youtube", "friend"])
         .optional(),
       company_size: z.string().optional(),
+      members_preferences: MembersPreferencesSchema.optional(),
     }),
   )
   .action(
-    async ({ parsedInput: { name, slug, source, company_size }, ctx }) => {
+    async ({
+      parsedInput: { name, slug, source, company_size, members_preferences },
+      ctx,
+    }) => {
       const workspace = await prisma.workspaces.update({
         where: {
           id: ctx.user?.workspace_id,
@@ -29,6 +36,7 @@ export const updateWorkspace = authAction
           slug,
           source,
           company_size,
+          members_preferences,
         },
       });
 

@@ -3,10 +3,10 @@ import { prisma } from "@/lib/prisma";
 import type { getAuthUser } from "@/queries/users/getAuthUser";
 import { activities } from "@/server/activities/route";
 import { activityTypes } from "@/server/activity-types/route";
+import { channels } from "@/server/channels/route";
 import { companies } from "@/server/companies/route";
 import { dashboard } from "@/server/dashboard/route";
 import { files } from "@/server/files/route";
-import { leaderboard } from "@/server/leaderboard/route";
 import { members } from "@/server/members/route";
 import { slack } from "@/server/slack/route";
 import { tags } from "@/server/tags/route";
@@ -79,10 +79,10 @@ app.get("/auth/session", async (c) => {
 const api = app
   .route("/activities", activities)
   .route("/activityTypes", activityTypes)
+  .route("/channels", channels)
   .route("/companies", companies)
   .route("/dashboard", dashboard)
   .route("/files", files)
-  .route("/leaderboard", leaderboard)
   .route("/members", members)
   .route("/slack", slack)
   .route("/tags", tags)

@@ -4,7 +4,6 @@ import { Activities } from "@/components/icons/Activities";
 import { Companies } from "@/components/icons/Companies";
 import { Dashboard } from "@/components/icons/Dashboard";
 import { Integration } from "@/components/icons/Integration";
-import { LeaderBoard } from "@/components/icons/Leaderbord";
 import { Members } from "@/components/icons/Members";
 import { Workflows } from "@/components/icons/Workflows";
 import { useUser } from "@/context/userContext";
@@ -59,12 +58,6 @@ export const AppSidebar = () => {
       icon: <Companies className="size-[18px]" />,
       href: `/${slug}/companies`,
       isActive: pathname.startsWith(`/${slug}/companies`),
-    },
-    {
-      label: "Leaderboard",
-      icon: <LeaderBoard className="size-[18px]" />,
-      href: `/${slug}/leaderboard`,
-      isActive: pathname.startsWith(`/${slug}/leaderboard`),
     },
     {
       label: "Activities",

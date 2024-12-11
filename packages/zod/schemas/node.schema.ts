@@ -97,13 +97,6 @@ export const NodeWaitSchema = NodeBaseDataSchema.extend({
   unit: z.enum(["seconds", "minutes", "hours", "days"]),
 });
 
-export const NodeLoopSchema = NodeBaseDataSchema.extend({
-  type: z.literal("loop"),
-  category: z.literal("utilities"),
-  iterable: z.string(),
-  sub_nodes: z.array(z.string()),
-});
-
 export const NodeWebhookSchema = NodeBaseDataSchema.extend({
   type: z.literal("webhook"),
   category: z.literal("utilities"),
@@ -119,12 +112,21 @@ export const NodeDataSchema = z.discriminatedUnion("type", [
   NodeTagMemberSchema,
   NodeSlackMessage,
   NodeWaitSchema,
-  NodeLoopSchema,
   NodeWebhookSchema,
 ]);
 
 export const NodeSchema = NodeBaseSchema.extend({
   data: NodeDataSchema,
+});
+
+export const NodeDataLoopSchema = NodeBaseDataSchema.extend({
+  type: z.literal("loop"),
+  category: z.literal("utilities"),
+  sub_nodes: NodeSchema.array(),
+});
+
+export const NodeLoopSchema = NodeBaseSchema.extend({
+  data: NodeDataLoopSchema,
 });
 
 export type Node = z.infer<typeof NodeSchema>;
@@ -140,5 +142,6 @@ export type NodeListMembers = z.infer<typeof NodeListMembersSchema>;
 export type NodeTagMember = z.infer<typeof NodeTagMemberSchema>;
 export type NodeSlackMessage = z.infer<typeof NodeSlackMessage>;
 export type NodeWait = z.infer<typeof NodeWaitSchema>;
-export type NodeLoop = z.infer<typeof NodeLoopSchema>;
 export type NodeWebhook = z.infer<typeof NodeWebhookSchema>;
+export type NodeDataLoop = z.infer<typeof NodeDataLoopSchema>;
+export type NodeLoop = z.infer<typeof NodeLoopSchema>;

@@ -1,4 +1,10 @@
-import { parseAsBoolean, parseAsInteger, parseAsString } from "nuqs";
+import { FilterSchema } from "@conquest/zod/schemas/filters.schema";
+import {
+  parseAsArrayOf,
+  parseAsBoolean,
+  parseAsInteger,
+  parseAsString,
+} from "nuqs";
 import { createSearchParamsCache } from "nuqs/server";
 
 export const tableParsers = {
@@ -6,11 +12,11 @@ export const tableParsers = {
     shallow: false,
     clearOnDefault: true,
   }),
-  id: parseAsString.withDefault("full_name").withOptions({
+  id: parseAsString.withDefault("level").withOptions({
     shallow: false,
     clearOnDefault: true,
   }),
-  desc: parseAsBoolean.withDefault(false).withOptions({
+  desc: parseAsBoolean.withDefault(true).withOptions({
     shallow: false,
     clearOnDefault: true,
   }),
@@ -19,6 +25,10 @@ export const tableParsers = {
     clearOnDefault: true,
   }),
   pageSize: parseAsInteger.withDefault(50).withOptions({
+    shallow: false,
+    clearOnDefault: true,
+  }),
+  filters: parseAsArrayOf(FilterSchema).withDefault([]).withOptions({
     shallow: false,
     clearOnDefault: true,
   }),

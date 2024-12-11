@@ -46,6 +46,8 @@ export const listMessages = async ({ web, channel, workspace_id }: Props) => {
         workspace_id,
       });
 
+      if (!member) continue;
+
       if (subtype === "channel_join") continue;
 
       if (member) {

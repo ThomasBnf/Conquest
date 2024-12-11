@@ -1,4 +1,4 @@
-import { AlertDialog } from "@/components/custom/alert-dialog";
+import { useOpenFilters } from "@/hooks/useOpenFilters";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,7 +13,7 @@ import {
 } from "@conquest/ui/src/components/popover";
 import type { Filter } from "@conquest/zod/filters.schema";
 import { MoreVertical, Trash2 } from "lucide-react";
-import { type Dispatch, type SetStateAction, useState } from "react";
+import type { Dispatch, SetStateAction } from "react";
 import { FilterActivity } from "./filter-activity";
 import { FilterButton } from "./filter-button";
 import { FilterPicker } from "./filter-picker";
@@ -21,26 +21,26 @@ import { FilterPicker } from "./filter-picker";
 type Props = {
   filters: Filter[];
   setFilters: Dispatch<SetStateAction<Filter[]>>;
-  handleUpdateNode?: (filters: Filter[]) => void;
+  handleUpdate?: (filters: Filter[]) => void;
   align?: "start" | "end";
 };
 
 export const FiltersList = ({
   filters,
   setFilters,
-  handleUpdateNode,
+  handleUpdate,
   align,
 }: Props) => {
-  const [open, setOpen] = useState(false);
+  const { open, setOpen } = useOpenFilters();
 
   const onClearFilters = async () => {
     setFilters([]);
-    handleUpdateNode?.([]);
+    handleUpdate?.([]);
     return 0;
   };
 
   return (
-    <Popover>
+    <Popover open={open} onOpenChange={setOpen}>
       <div className="flex w-fit items-center divide-x overflow-hidden rounded-md border">
         <PopoverTrigger asChild>
           <Button variant="dropdown">
@@ -50,15 +50,8 @@ export const FiltersList = ({
             </span>
           </Button>
         </PopoverTrigger>
-        <AlertDialog
-          title="Delete filters"
-          description="Are you sure you want to delete all filters?"
-          onConfirm={onClearFilters}
-          open={open}
-          setOpen={setOpen}
-        />
         <DropdownMenu>
-          <DropdownMenuTrigger>
+          <DropdownMenuTrigger asChild>
             <Button variant="dropdown">
               <MoreVertical size={15} className="text-muted-foreground" />
             </Button>
@@ -66,7 +59,7 @@ export const FiltersList = ({
           <DropdownMenuContent align="end">
             <DropdownMenuItem
               className="text-destructive focus:text-destructive"
-              onClick={() => setOpen(true)}
+              onClick={onClearFilters}
             >
               <Trash2 size={15} />
               Delete {filters.length > 1 ? "filters" : "filter"}
@@ -85,7 +78,7 @@ export const FiltersList = ({
                       key={filter.id}
                       filter={filter}
                       setFilters={setFilters}
-                      handleUpdateNode={handleUpdateNode}
+                      handleUpdate={handleUpdate}
                     />
                   );
                 }
@@ -95,7 +88,7 @@ export const FiltersList = ({
                       key={filter.id}
                       filter={filter}
                       setFilters={setFilters}
-                      handleUpdateNode={handleUpdateNode}
+                      handleUpdate={handleUpdate}
                     />
                   );
                 }
@@ -107,7 +100,7 @@ export const FiltersList = ({
           <FilterButton
             filters={filters}
             setFilters={setFilters}
-            handleUpdateNode={handleUpdateNode}
+            handleUpdate={handleUpdate}
           />
           <Button variant="ghost" onClick={onClearFilters}>
             Clear all filters

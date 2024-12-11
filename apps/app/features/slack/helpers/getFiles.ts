@@ -25,7 +25,12 @@ type Props = {
 };
 
 export const createFiles = async ({ files, activity_id }: Props) => {
-  if (!files?.length || !activity_id) return;
+  if (
+    !files?.length ||
+    files.map((file) => !file.url_private).includes(true) ||
+    !activity_id
+  )
+    return;
 
   const createdFiles = files.map((file) => ({
     title: file.title,

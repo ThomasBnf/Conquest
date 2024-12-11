@@ -1,11 +1,12 @@
+import { Level } from "@/components/icons/Level";
 import { getLevelLabel } from "@/helpers/getLevelLabel";
+import { getPresenceLabel } from "@/helpers/getPresenceLabel";
 import { client } from "@/lib/rpc";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@conquest/ui/src/components/tooltip";
-import { cn } from "@conquest/ui/src/utils/cn";
 import type { Member } from "@conquest/zod/schemas/member.schema";
 import { useQuery } from "@tanstack/react-query";
 import { InfoIcon } from "lucide-react";
@@ -36,22 +37,31 @@ export const LevelTooltip = ({ member, showIcon = true }: Props) => {
       <TooltipTrigger
         onMouseEnter={() => setHover(true)}
         onMouseLeave={() => setHover(false)}
-        className={cn(
-          "flex h-full w-full items-center justify-end gap-1",
-          showIcon && "gap-2 px-2",
-        )}
+        className="flex items-center justify-end gap-1.5"
       >
+        <Level size={18} />
         <p>{getLevelLabel(member.level)}</p>
         {showIcon && <InfoIcon size={13} className="text-muted-foreground" />}
       </TooltipTrigger>
-      <TooltipContent className="text-start" align="end">
-        <div className="flex items-center justify-between text-sm">
-          <p className="w-36">Max Weight Activity</p>
-          <p>{data?.max_weight || 0}</p>
+      <TooltipContent className="space-y-2 text-start" align="end">
+        <div>
+          <div className="flex items-center justify-between">
+            <p className="w-52">Max Weight Activity</p>
+            <p>{data?.max_weight || 0}</p>
+          </div>
+          <p className="opacity-70">
+            {
+              data?.details.find((detail) => detail.weight === data?.max_weight)
+                ?.activity_name
+            }
+          </p>
         </div>
-        <div className="flex items-center justify-between text-sm">
-          <p className="w-36">Presence</p>
-          <p>{member?.presence || 0}</p>
+        <div>
+          <div className="flex items-center justify-between">
+            <p className="w-52">Presence</p>
+            <p>{member?.presence || 0}</p>
+          </div>
+          <p className="opacity-70">{getPresenceLabel(member?.presence)}</p>
         </div>
         <div className="mt-4 flex items-center justify-between text-sm">
           <p className="w-36">Level</p>

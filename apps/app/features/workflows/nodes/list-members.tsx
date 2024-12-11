@@ -14,7 +14,7 @@ export const ListMembers = () => {
   const parsedNode = NodeListMembersSchema.parse(selected?.data);
   const [filters, setFilters] = useState<Filter[]>(parsedNode.filters);
 
-  const handleUpdateNode = (filters: Filter[]) => {
+  const handleUpdate = (filters: Filter[]) => {
     if (!selected) return;
 
     updateNode(selected.id, {
@@ -33,14 +33,14 @@ export const ListMembers = () => {
         <FiltersList
           filters={filters}
           setFilters={setFilters}
-          handleUpdateNode={handleUpdateNode}
+          handleUpdate={handleUpdate}
           align="end"
         />
       ) : (
         <FilterButton
           filters={filters}
           setFilters={setFilters}
-          handleUpdateNode={handleUpdateNode}
+          handleUpdate={handleUpdate}
         />
       )}
     </div>

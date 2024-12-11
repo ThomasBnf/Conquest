@@ -1,6 +1,7 @@
 {
   "extends": "@conquest/typescript/react-library.json",
   "compilerOptions": {
+    "jsx": "react",
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]

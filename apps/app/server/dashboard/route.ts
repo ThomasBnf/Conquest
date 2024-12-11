@@ -208,6 +208,12 @@ export const dashboard = new Hono()
         },
         include: {
           activities: {
+            where: {
+              created_at: {
+                gte: from,
+                lte: to,
+              },
+            },
             include: {
               activity_type: true,
             },

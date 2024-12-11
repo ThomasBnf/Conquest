@@ -117,19 +117,27 @@ export const Columns = ({ tags }: Props): Column[] => [
   },
   {
     id: "level",
-    header: () => <ColumnHeader id="level" title="Level" width={150} />,
+    header: () => <ColumnHeader id="level" title="Level" width={185} />,
     cell: ({ member }) => {
-      return <LevelTooltip member={member} />;
+      return (
+        <div className="flex w-full items-center justify-end px-2">
+          <LevelTooltip member={member} />
+        </div>
+      );
     },
-    width: 150,
+    width: 185,
   },
   {
     id: "love",
-    header: () => <ColumnHeader id="love" title="Love" width={150} />,
+    header: () => <ColumnHeader id="love" title="Love" width={185} />,
     cell: ({ member }) => {
-      return <LoveTooltip member={member} />;
+      return (
+        <div className="flex w-full items-center justify-end px-2">
+          <LoveTooltip member={member} />
+        </div>
+      );
     },
-    width: 150,
+    width: 185,
   },
   {
     id: "last_activity",
@@ -141,7 +149,7 @@ export const Columns = ({ tags }: Props): Column[] => [
   },
   {
     id: "locale",
-    header: () => <ColumnHeader id="locale" title="locale" width={250} />,
+    header: () => <ColumnHeader id="locale" title="Locale" width={250} />,
     cell: ({ member }) => (
       <div className="px-2">
         <LocaleBadge country={member.locale} />

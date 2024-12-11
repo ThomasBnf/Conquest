@@ -1,4 +1,5 @@
 import { LocaleBadge } from "@/components/custom/locale-badge";
+import { SourceBadge } from "@/components/custom/source-badge";
 import { useUser } from "@/context/userContext";
 import { client } from "@/lib/rpc";
 import { Button } from "@conquest/ui/button";
@@ -14,6 +15,7 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from "@conquest/ui/popover";
 import { Skeleton } from "@conquest/ui/skeleton";
 import { type Filter, FilterSelectSchema } from "@conquest/zod/filters.schema";
+import type { Source } from "@conquest/zod/schemas/enum/source.enum";
 import { type Tag, TagSchema } from "@conquest/zod/tag.schema";
 import { useQuery } from "@tanstack/react-query";
 import { CommandLoading } from "cmdk";
@@ -26,7 +28,7 @@ type Props = {
   setFilters: Dispatch<SetStateAction<Filter[]>>;
   setOpenDropdown?: Dispatch<SetStateAction<boolean>>;
   triggerButton?: boolean;
-  handleUpdateNode?: (filters: Filter[]) => void;
+  handleUpdate?: (filters: Filter[]) => void;
 };
 
 export const SelectPicker = ({
@@ -34,17 +36,16 @@ export const SelectPicker = ({
   setFilters,
   setOpenDropdown,
   triggerButton,
-  handleUpdateNode,
+  handleUpdate,
 }: Props) => {
   const { user } = useUser();
   const { setTab } = useTab();
   const [open, setOpen] = useState(false);
 
-  const selectFilter = FilterSelectSchema.parse(filter);
-
   const { data: items, isLoading } = useQuery({
     queryKey: ["items", filter?.id],
     queryFn: async () => {
+      const selectFilter = FilterSelectSchema.parse(filter);
       switch (selectFilter.field) {
         case "locale": {
           const response = await client.api.members.locales.$get();
@@ -88,7 +89,7 @@ export const SelectPicker = ({
             )
           : [...prevFilters, { ...filterSelect, values: [value] }];
 
-        handleUpdateNode?.(updatedFilters);
+        handleUpdate?.(updatedFilters);
         setTab(undefined);
         return updatedFilters;
       });
@@ -118,7 +119,15 @@ export const SelectPicker = ({
                 return (
                   <CommandItem key={item} onSelect={() => handleSelect(item)}>
                     {filter.field === "locale" ? (
-                      <LocaleBadge country={item} />
+                      <LocaleBadge
+                        country={item}
+                        className="border-none bg-transparent p-0"
+                      />
+                    ) : filter.field === "source" ? (
+                      <SourceBadge
+                        source={item as Source}
+                        className="border-none bg-transparent p-0"
+                      />
                     ) : (
                       item
                     )}
@@ -165,7 +174,12 @@ export const SelectPicker = ({
                 filter.field === "locale" ? (
                   <LocaleBadge
                     country={selectedItem}
-                    className="border-none bg-transparent"
+                    className="border-none bg-transparent p-0"
+                  />
+                ) : filter.field === "source" ? (
+                  <SourceBadge
+                    source={selectedItem as Source}
+                    className="border-none bg-transparent p-0"
                   />
                 ) : (
                   selectedItem

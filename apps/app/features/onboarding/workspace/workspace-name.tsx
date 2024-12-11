@@ -10,7 +10,7 @@ import {
 import { Input } from "@conquest/ui/input";
 import { Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { type UseFormReturn, useWatch } from "react-hook-form";
+import type { UseFormReturn } from "react-hook-form";
 import { useDebounce } from "use-debounce";
 import type { Workspace } from "../schemas/create-workspace.schema";
 
@@ -21,12 +21,7 @@ type Props = {
 export const WorkspaceFields = ({ form }: Props) => {
   const [isFocus, setFocus] = useState(false);
   const [isLoading, setLoading] = useState(false);
-  const companyName = useWatch({
-    control: form.control,
-    name: "workspace_name",
-  });
-
-  const [debouncedValue, setValue] = useDebounce(companyName, 500);
+  const [debouncedValue, setValue] = useDebounce("", 500);
 
   const checkSlug = async (slug: string) => {
     setLoading(true);
@@ -35,6 +30,7 @@ export const WorkspaceFields = ({ form }: Props) => {
 
     if (slugData === 0) {
       form.clearErrors("slug");
+      form.setValue("slug", slug);
       setFocus(false);
     } else if (slugData === 1) {
       form.setError("slug", { message: "Slug already taken" });

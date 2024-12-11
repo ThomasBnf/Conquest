@@ -5,17 +5,20 @@ import { getMemberPresence } from "./getMemberPresence";
 
 type Props = {
   members: Member[];
-  workspace_id: string;
 };
 
-export const getMembersMetrics = async ({ members, workspace_id }: Props) => {
+export const getMembersMetrics = async ({ members }: Props) => {
   const last3months = startOfMonth(subMonths(new Date(), 3));
 
   for (const member of members) {
     const activities = await prisma.activities.findMany({
       where: {
         member_id: member.id,
-        workspace_id,
+        activity_type: {
+          weight: {
+            gt: 0,
+          },
+        },
       },
       include: {
         activity_type: true,

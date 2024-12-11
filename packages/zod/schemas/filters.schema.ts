@@ -52,7 +52,7 @@ export const FilterNumberSchema = FilterBaseSchema.extend({
   type: z.literal("number"),
   field: z.enum(["love", "level"]),
   operator: NumberOperatorSchema,
-  value: z.number().default(1),
+  value: z.number().min(0).default(1),
 });
 
 export const FilterActivitySchema = FilterBaseSchema.extend({
@@ -64,7 +64,7 @@ export const FilterActivitySchema = FilterBaseSchema.extend({
     })
     .array(),
   operator: NumberOperatorSchema,
-  value: z.number().int().positive(),
+  value: z.number().min(0).default(1),
   channel: z.object({
     id: z.string(),
     label: z.string(),

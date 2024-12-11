@@ -1,7 +1,11 @@
 "use client";
 
+import { updateWorkspace } from "@/actions/workspaces/updateWorkspace";
 import { QueryInput } from "@/components/custom/query-input";
 import { Members } from "@/components/icons/Members";
+import { useUser } from "@/context/userContext";
+import { FilterButton } from "@/features/filters/filter-button";
+import { FiltersList } from "@/features/filters/filters-list";
 import { ActionMenu } from "@/features/table/action-menu";
 import { useScrollX } from "@/features/table/hooks/useScrollX";
 import { useHasScrollY } from "@/features/table/hooks/usehasScrollY";
@@ -9,11 +13,11 @@ import { Pagination } from "@/features/table/pagination";
 import { TableSkeleton } from "@/features/table/table-skeletton";
 import { useIsClient } from "@/hooks/useIsClient";
 import { tableParsers } from "@/lib/searchParamsTable";
+import { useListMembers } from "@/queries/hooks/useListMembers";
 import { Button } from "@conquest/ui/src/components/button";
 import { ScrollArea, ScrollBar } from "@conquest/ui/src/components/scroll-area";
 import { useSidebar } from "@conquest/ui/src/components/sidebar";
 import { cn } from "@conquest/ui/src/utils/cn";
-import type { MemberWithCompany } from "@conquest/zod/member.schema";
 import type { Filter } from "@conquest/zod/schemas/filters.schema";
 import type { Tag } from "@conquest/zod/tag.schema";
 import { useQueryStates } from "nuqs";
@@ -23,14 +27,19 @@ import { Columns } from "./columns";
 type Props = {
   count: number;
   tags: Tag[] | undefined;
-  members: MemberWithCompany[] | undefined;
 };
 
-export const MembersTable = ({ count, tags, members }: Props) => {
+export const MembersTable = ({ count, tags }: Props) => {
+  const { members_preferences } = useUser();
   const { open } = useSidebar();
-  const [{ search }, setParams] = useQueryStates(tableParsers);
+  const [{ search, id, desc, pageSize }, setParams] =
+    useQueryStates(tableParsers);
   const [rowSelected, setRowSelected] = useState<string[]>([]);
-  const [filters, setFilters] = useState<Filter[]>([]);
+  const [filters, setFilters] = useState<Filter[]>(
+    members_preferences?.filters || [],
+  );
+
+  const { data: members, isLoading } = useListMembers({ filters });
 
   const isClient = useIsClient();
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -41,14 +50,39 @@ export const MembersTable = ({ count, tags, members }: Props) => {
   const fixedColumn = columns.slice(0, 2);
   const scrollableColumns = columns.slice(2);
 
+  const handleUpdate = async (filters: Filter[]) => {
+    await updateWorkspace({
+      members_preferences: {
+        id,
+        desc,
+        pageSize,
+        filters,
+      },
+    });
+  };
+
   return (
     <>
-      <div className="flex min-h-12 items-center px-4">
+      <div className="flex min-h-12 items-center gap-2 px-4">
         <QueryInput
           query={search}
           setQuery={(value) => setParams({ search: value })}
           placeholder="Search in members..."
         />
+        {filters.length > 0 ? (
+          <FiltersList
+            filters={filters}
+            setFilters={setFilters}
+            handleUpdate={handleUpdate}
+            align="start"
+          />
+        ) : (
+          <FilterButton
+            filters={filters}
+            setFilters={setFilters}
+            handleUpdate={handleUpdate}
+          />
+        )}
       </div>
       <div className="relative h-full overflow-hidden">
         <ScrollArea className="h-full overflow-hidden" ref={scrollRef}>
@@ -96,7 +130,9 @@ export const MembersTable = ({ count, tags, members }: Props) => {
             </div>
           </div>
           <div className="relative flex-grow">
-            {isClient ? (
+            {isLoading ? (
+              <TableSkeleton isMembers />
+            ) : (
               members?.map((member) => (
                 <div
                   key={member.id}
@@ -161,11 +197,9 @@ export const MembersTable = ({ count, tags, members }: Props) => {
                   </div>
                 </div>
               ))
-            ) : (
-              <TableSkeleton isMembers />
             )}
           </div>
-          {isClient && members?.length === 0 && (
+          {!isLoading && members?.length === 0 && (
             <div
               className={cn(
                 "absolute top-36 mx-auto flex w-full flex-col items-center justify-center",

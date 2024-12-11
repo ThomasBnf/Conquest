@@ -9,14 +9,12 @@ import { FieldCard } from "@/components/custom/field-card";
 import { LocaleBadge } from "@/components/custom/locale-badge";
 import { SourceBadge } from "@/components/custom/source-badge";
 import { TagPicker } from "@/features/tags/tag-picker";
-import { Avatar, AvatarFallback, AvatarImage } from "@conquest/ui/avatar";
 import { Badge } from "@conquest/ui/badge";
 import { ScrollArea } from "@conquest/ui/scroll-area";
 import { Separator } from "@conquest/ui/separator";
 import type { MemberWithCompany } from "@conquest/zod/schemas/member.schema";
 import type { Tag } from "@conquest/zod/tag.schema";
 import { format } from "date-fns";
-import { Gauge, Heart } from "lucide-react";
 import { LevelTooltip } from "../level-tooltip";
 import { LoveTooltip } from "../love-tooltip";
 
@@ -60,39 +58,16 @@ export const MemberSidebar = ({ member, tags }: Props) => {
     <div className="flex h-full max-w-md flex-1 flex-col">
       <div className="space-y-4 p-4">
         <div className="flex items-center gap-2">
-          <Avatar className="size-12">
-            <AvatarImage src={avatar_url ?? ""} />
-            <AvatarFallback className="text-sm">
-              {first_name?.charAt(0).toUpperCase()}
-              {last_name?.charAt(0).toUpperCase()}
-            </AvatarFallback>
-          </Avatar>
-          <div>
-            <p className="font-medium text-base leading-tight">
-              {first_name} {last_name}
-            </p>
-            <p className="text-muted-foreground text-xs">{id}</p>
-          </div>
-        </div>
-        <div className="flex items-center gap-2">
-          <Badge variant="outline" className="gap-1 text-sm">
-            <Gauge size={15} className="shrink-0 text-main-500" />
+          <Badge variant="outline">
             <LevelTooltip member={member} showIcon={false} />
           </Badge>
-          <Badge variant="outline" className="gap-1 text-sm">
-            <Heart size={14} className="shrink-0 fill-red-500 text-red-500" />
+          <Badge variant="outline">
             <LoveTooltip member={member} showIcon={false} />
           </Badge>
         </div>
       </div>
       <Separator />
       <div className="space-y-2 p-4">
-        <FieldCard icon="Code" label="Source">
-          <SourceBadge source={source} />
-        </FieldCard>
-        <FieldCard icon="Flag" label="Locale">
-          <LocaleBadge country={locale} />
-        </FieldCard>
         <FieldCard icon="Tag" label="Tags">
           <TagPicker
             record={member}
@@ -101,10 +76,9 @@ export const MemberSidebar = ({ member, tags }: Props) => {
           />
         </FieldCard>
       </div>
-      <Separator />
       <ScrollArea className="flex-1">
+        <Separator />
         <div className="space-y-2 p-4">
-          <p className="mb-4 text-muted-foreground text-xs">MEMBER DETAILS</p>
           <FieldCard icon="User" label="First name">
             <EditableInput
               defaultValue={first_name}
@@ -145,6 +119,15 @@ export const MemberSidebar = ({ member, tags }: Props) => {
               placeholder="Set bio"
               onUpdate={(value) => onUpdateMember("bio", value)}
             />
+          </FieldCard>
+        </div>
+        <Separator />
+        <div className="space-y-2 p-4">
+          <FieldCard icon="Code" label="Source">
+            <SourceBadge source={source} />
+          </FieldCard>
+          <FieldCard icon="Flag" label="Locale">
+            <LocaleBadge country={locale} />
           </FieldCard>
         </div>
         <Separator />

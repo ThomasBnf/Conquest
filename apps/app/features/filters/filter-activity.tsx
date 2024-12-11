@@ -18,14 +18,10 @@ import { RelativePicker } from "./relative-picker";
 type Props = {
   filter: _FilterActivity;
   setFilters: Dispatch<SetStateAction<Filter[]>>;
-  handleUpdateNode?: (filters: Filter[]) => void;
+  handleUpdate?: (filters: Filter[]) => void;
 };
 
-export const FilterActivity = ({
-  filter,
-  setFilters,
-  handleUpdateNode,
-}: Props) => {
+export const FilterActivity = ({ filter, setFilters, handleUpdate }: Props) => {
   if (!filter) return null;
 
   const filterActivity = FilterActivitySchema.parse(filter);
@@ -34,7 +30,7 @@ export const FilterActivity = ({
     setFilters((prevFilters) => {
       const newFilters = prevFilters.filter((f) => f.id !== filter.id);
 
-      handleUpdateNode?.(newFilters);
+      handleUpdate?.(newFilters);
       return newFilters;
     });
   };
@@ -64,7 +60,7 @@ export const FilterActivity = ({
           : f,
       );
 
-      handleUpdateNode?.(newFilters);
+      handleUpdate?.(newFilters);
       return newFilters;
     });
   };
@@ -78,7 +74,7 @@ export const FilterActivity = ({
           f.id === filter.id ? { ...filter, operator: numberOperator } : f,
         );
 
-        handleUpdateNode?.(newFilters);
+        handleUpdate?.(newFilters);
         return newFilters;
       });
     }
@@ -95,7 +91,7 @@ export const FilterActivity = ({
         ? prev.map((f) => (f.id === filter.id ? updatedFilter : f))
         : [...prev, updatedFilter];
 
-      handleUpdateNode?.(newFilters);
+      handleUpdate?.(newFilters);
       return newFilters;
     });
   };
@@ -106,7 +102,7 @@ export const FilterActivity = ({
         f.id === filter.id ? { ...filter, dynamic_date } : f,
       );
 
-      handleUpdateNode?.(newFilters);
+      handleUpdate?.(newFilters);
       return newFilters;
     });
   };

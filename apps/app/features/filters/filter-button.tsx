@@ -1,9 +1,9 @@
 import { useClickOutside } from "@/hooks/useClickOutside";
+import { useOpenFilters } from "@/hooks/useOpenFilters";
 import { Button } from "@conquest/ui/button";
 import { cn } from "@conquest/ui/cn";
 import {
   Command,
-  CommandEmpty,
   CommandGroup,
   CommandInput,
   CommandItem,
@@ -18,7 +18,6 @@ import type {
 } from "@conquest/zod/filters.schema";
 import cuid from "cuid";
 import { ListFilter } from "lucide-react";
-import { usePathname } from "next/navigation";
 import { type Dispatch, type SetStateAction, useRef, useState } from "react";
 import { useTab } from "./hooks/useTab";
 import { InputDialog } from "./input-dialog";
@@ -27,26 +26,21 @@ import { SelectPicker } from "./select-picker";
 type Props = {
   filters: Filter[];
   setFilters: Dispatch<SetStateAction<Filter[]>>;
-  handleUpdateNode?: (filters: Filter[]) => void;
+  handleUpdate?: (filters: Filter[]) => void;
 };
 
-export const FilterButton = ({
-  filters,
-  setFilters,
-  handleUpdateNode,
-}: Props) => {
+export const FilterButton = ({ filters, setFilters, handleUpdate }: Props) => {
   const { tab, setTab } = useTab();
-  const [filter, setFilter] = useState<Filter>();
+  const { setOpen: setOpenFilters } = useOpenFilters();
   const [open, setOpen] = useState(false);
+  const [filter, setFilter] = useState<Filter>();
   const ref = useRef<HTMLDivElement>(null);
   const refButton = useRef<HTMLButtonElement>(null);
-  const pathname = usePathname();
-  const isWorkflow = pathname.includes("/workflows");
 
   useClickOutside(ref, () => {
-    if (refButton.current) return;
     setOpen(false);
     setTimeout(() => {
+      setFilter(undefined);
       setTab(undefined);
     }, 100);
   });
@@ -75,6 +69,7 @@ export const FilterButton = ({
         setTimeout(() => {
           setFilter(filterWithId);
           setFilters((filters) => [...filters, filterWithId]);
+          setOpenFilters(true);
         }, 100);
         return;
       }
@@ -97,7 +92,7 @@ export const FilterButton = ({
         ? prev.map((f) => (f.id === filter.id ? updatedFilter : f))
         : [...prev, updatedFilter];
 
-      handleUpdateNode?.(newFilters);
+      handleUpdate?.(newFilters);
 
       return newFilters;
     });
@@ -132,15 +127,14 @@ export const FilterButton = ({
                 filter={filter}
                 setFilters={setFilters}
                 setOpenDropdown={setOpen}
-                handleUpdateNode={handleUpdateNode}
+                handleUpdate={handleUpdate}
               />
             ) : (
               <Command>
                 <CommandInput placeholder="Search filter..." />
                 <CommandList>
-                  <CommandEmpty>No filter found.</CommandEmpty>
-                  <CommandGroup heading="Member">
-                    {filtersMember.map((filter) => (
+                  <CommandGroup heading="Activity">
+                    {filtersActivity.map((filter) => (
                       <CommandItem
                         key={filter.id}
                         onSelect={() => handleFilterSelect(filter)}
@@ -149,8 +143,8 @@ export const FilterButton = ({
                       </CommandItem>
                     ))}
                   </CommandGroup>
-                  <CommandGroup heading="Activity">
-                    {filtersActivity.map((filter) => (
+                  <CommandGroup heading="Member">
+                    {filtersMember.map((filter) => (
                       <CommandItem
                         key={filter.id}
                         onSelect={() => handleFilterSelect(filter)}
@@ -172,10 +166,18 @@ export const FilterButton = ({
 const filtersMember: Filter[] = [
   {
     id: "1",
+    label: "Tags",
+    type: "select",
+    field: "tags",
+    operator: "contains",
+    values: [],
+  },
+  {
+    id: "1",
     label: "Level",
     type: "number",
     field: "level",
-    operator: ">",
+    operator: ">=",
     value: 1,
   },
   {
@@ -183,8 +185,24 @@ const filtersMember: Filter[] = [
     label: "Love",
     type: "number",
     field: "love",
-    operator: ">",
+    operator: ">=",
     value: 1,
+  },
+  {
+    id: "1",
+    label: "Source",
+    type: "select",
+    field: "source",
+    operator: "contains",
+    values: [],
+  },
+  {
+    id: "1",
+    label: "Locale",
+    type: "select",
+    field: "locale",
+    operator: "contains",
+    values: [],
   },
   {
     id: "1",
@@ -210,22 +228,6 @@ const filtersMember: Filter[] = [
     operator: "contains",
     value: "",
   },
-  {
-    id: "1",
-    label: "Locale",
-    type: "select",
-    field: "locale",
-    operator: "contains",
-    values: [],
-  },
-  {
-    id: "1",
-    label: "Source",
-    type: "select",
-    field: "source",
-    operator: "contains",
-    values: [],
-  },
 ];
 
 const filtersActivity: Filter[] = [
@@ -234,7 +236,7 @@ const filtersActivity: Filter[] = [
     label: "Activity type",
     type: "activity",
     activity_types: [],
-    operator: ">",
+    operator: ">=",
     value: 1,
     channel: {
       id: "",

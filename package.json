@@ -20,7 +20,8 @@
     "typecheck": "turbo typecheck"
   },
   "dependencies": {
-    "@t3-oss/env-nextjs": "^0.11.1"
+    "@t3-oss/env-nextjs": "^0.11.1",
+    "partysocket": "^1.0.2"
   },
   "devDependencies": {
     "@biomejs/biome": "1.9.3",

@@ -6,7 +6,7 @@ import { Form } from "@conquest/ui/form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowRightIcon } from "lucide-react";
 import { type Dispatch, type SetStateAction, useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { toast } from "sonner";
 import {
   type Workspace,
@@ -32,8 +32,18 @@ export const WorkspaceStep = ({ setStep }: Props) => {
     },
   });
 
+  const [first_name, last_name, workspace_name, slug] = useWatch({
+    control: form.control,
+    name: ["first_name", "last_name", "workspace_name", "slug"],
+  });
+
   const isDisabled =
-    loading || !form.formState.isValid || !!form.formState.errors.slug;
+    loading ||
+    !first_name ||
+    !last_name ||
+    !workspace_name ||
+    !slug ||
+    !!form.formState.errors.slug;
 
   const onSubmit = async ({
     first_name,

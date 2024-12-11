@@ -1,11 +1,15 @@
 "use server";
 
-import { upsertIntegration } from "@/actions/integrations/upsertIntegration";
 import { env } from "@/env.mjs";
+import { SCOPES } from "@/features/slack/constant/scopes";
+import { USER_SCOPES } from "@/features/slack/constant/user-scopes";
+import { prisma } from "@/lib/prisma";
+import { createIntegration } from "@/queries/integrations/createIntegration";
+import { auth } from "@trigger.dev/sdk/v3";
 import { authAction } from "lib/authAction";
 import { redirect } from "next/navigation";
 import { z } from "zod";
-import { createActivitiesTypes } from "./createActivitiesTypes";
+import { createActivitiesTypes } from "../../features/slack/actions/createActivitiesTypes";
 
 export const oauthV2 = authAction
   .metadata({
@@ -14,11 +18,11 @@ export const oauthV2 = authAction
   .schema(
     z.object({
       code: z.string(),
-      scopes: z.string(),
     }),
   )
-  .action(async ({ ctx: { user }, parsedInput: { code, scopes } }) => {
+  .action(async ({ ctx: { user }, parsedInput: { code } }) => {
     const slug = user.workspace.slug;
+    const workspace_id = user.workspace_id;
 
     const response = await fetch("https://slack.com/api/oauth.v2.access", {
       method: "POST",
@@ -36,20 +40,33 @@ export const oauthV2 = authAction
     const data = await response.json();
     const { access_token, authed_user, team } = data;
 
-    const rIntegration = await upsertIntegration({
+    const integration = await createIntegration({
       external_id: team.id,
-      status: "CONNECTED",
       details: {
         source: "SLACK",
         name: team.name,
         token: access_token,
         slack_user_token: authed_user.access_token,
-        scopes,
+        scopes: SCOPES,
+        user_scopes: USER_SCOPES,
       },
+      workspace_id,
     });
-    const integration = rIntegration?.data;
 
     if (!integration) return;
+
+    const triggerToken = await auth.createTriggerPublicToken("install-slack", {
+      multipleUse: true,
+    });
+
+    await prisma.workspaces.update({
+      where: {
+        id: workspace_id,
+      },
+      data: {
+        trigger_token: triggerToken,
+      },
+    });
 
     createActivitiesTypes();
 

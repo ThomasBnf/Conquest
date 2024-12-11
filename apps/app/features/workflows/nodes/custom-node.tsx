@@ -27,7 +27,7 @@ export const CustomNode = ({ hasEdges, ...props }: Props) => {
 
   const { category, icon, label, description } = node.data;
   const isTrigger = useMemo(() => "isTrigger" in node.data, [node]);
-  const isLoop = useMemo(() => node.data.type === "loop", [node]);
+  // const isLoop = useMemo(() => node.data.type === "loop", [node]);
 
   const hasEdge = useMemo(
     () => hasEdges.find((edge) => edge.id === node.id),
@@ -77,9 +77,10 @@ export const CustomNode = ({ hasEdges, ...props }: Props) => {
           {description === "" ? "No description" : description}
         </p>
         {!isTrigger && <CustomHandle position={Position.Top} type="target" />}
-        {!isLoop && <CustomHandle position={Position.Bottom} type="source" />}
+        <CustomHandle position={Position.Bottom} type="source" />
       </div>
       {!hasEdge && (
+        // && !isLoop
         <>
           <div className="-bottom-9 -translate-x-1/2 absolute left-1/2 h-7 w-px bg-border" />
           <Button
@@ -94,9 +95,9 @@ export const CustomNode = ({ hasEdges, ...props }: Props) => {
           </Button>
         </>
       )}
-      {isLoop && (
-        <div className="-z-10 -translate-x-1/2 absolute top-8 left-1/2 h-48 w-96 rounded-lg border border-dashed">
-          <p className="-translate-x-1/2 absolute top-28 left-1/2 text-muted-foreground text-xs">
+      {/* {isLoop && (
+        <div className="-z-10 -translate-x-1/2 absolute top-8 left-1/2 h-48 w-full">
+          <div className="-translate-x-1/2 absolute left-1/2 flex h-48 w-[calc(100%+40px)] items-center justify-center rounded-lg border border-dashed">
             <Button
               variant="outline"
               size="sm"
@@ -108,7 +109,7 @@ export const CustomNode = ({ hasEdges, ...props }: Props) => {
               <Plus size={20} className="rounded border p-0.5" />
               Select first step
             </Button>
-          </p>
+          </div>
           <div className="-bottom-9 -translate-x-1/2 absolute left-1/2 h-7 w-px bg-border" />
           <CustomHandle position={Position.Bottom} type="source" />
           <Button
@@ -122,7 +123,7 @@ export const CustomNode = ({ hasEdges, ...props }: Props) => {
             <Plus size={16} />
           </Button>
         </div>
-      )}
+      )} */}
     </div>
   );
 };
