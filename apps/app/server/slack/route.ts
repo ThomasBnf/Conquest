@@ -32,7 +32,7 @@ export const slack = new Hono()
   .post(
     "/",
     zValidator(
-      "form",
+      "json",
       z.object({
         token: z.string(),
         api_app_id: z.string(),
@@ -46,7 +46,7 @@ export const slack = new Hono()
         api_app_id,
         team_id,
         event,
-      } = c.req.valid("form");
+      } = c.req.valid("json");
 
       if (!event || typeof event !== "object") {
         return c.json({ status: 200 });
