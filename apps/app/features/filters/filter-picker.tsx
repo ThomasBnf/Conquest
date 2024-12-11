@@ -8,6 +8,7 @@ import {
 import { X } from "lucide-react";
 import type { Dispatch, SetStateAction } from "react";
 import { InputDialog } from "./input-dialog";
+import { LevelPicker } from "./level-picker";
 import { OperatorPicker } from "./operator-picker";
 import { SelectPicker } from "./select-picker";
 
@@ -92,6 +93,13 @@ export const FilterPicker = ({ filter, setFilters, handleUpdate }: Props) => {
         />
       ) : filter.type === "date" ? (
         <p className="px-1">{filter.days}</p>
+      ) : filter.type === "level" ? (
+        <LevelPicker
+          filter={filter}
+          setFilters={setFilters}
+          handleUpdate={handleUpdate}
+          triggerButton
+        />
       ) : null}
       <Separator orientation="vertical" />
       <Button

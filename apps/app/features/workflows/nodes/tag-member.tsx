@@ -1,4 +1,3 @@
-import { useUser } from "@/context/userContext";
 import { TagBadge } from "@/features/tags/tag-badge";
 import { useSelected } from "@/features/workflows/hooks/useSelected";
 import { useListTags } from "@/queries/hooks/useListTags";
@@ -19,14 +18,11 @@ import { Plus, TagIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 
 export const TagMember = () => {
-  const { user } = useUser();
   const { selected } = useSelected();
   const { updateNodeData } = useReactFlow();
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
-  const { data: tags, isLoading } = useListTags({
-    workspace_id: user?.workspace_id ?? "",
-  });
+  const { data: tags, isLoading } = useListTags();
 
   const parsedData = NodeTagMemberSchema.parse(selected?.data);
 

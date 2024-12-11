@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { getAuthUser } from "@/queries/users/getAuthUser";
 import {
   FilterActivitySchema,
+  FilterLevelSchema,
   FilterNumberSchema,
   FilterSchema,
   FilterSelectSchema,
@@ -74,6 +75,28 @@ export const members = new Hono()
               return Prisma.sql`m.${fieldCondition}::text ILIKE ${likePattern}`;
             case "not_contains":
               return Prisma.sql`m.${fieldCondition}::text NOT ILIKE ${likePattern}`;
+            default:
+              return Prisma.sql`TRUE`;
+          }
+        }
+
+        if (filter.type === "level") {
+          const { value, operator, field } = FilterLevelSchema.parse(filter);
+          const fieldCondition = Prisma.raw(field);
+
+          switch (operator) {
+            case ">":
+              return Prisma.sql`m.${fieldCondition} > ${value}`;
+            case ">=":
+              return Prisma.sql`m.${fieldCondition} >= ${value}`;
+            case "=":
+              return Prisma.sql`m.${fieldCondition} = ${value}`;
+            case "!=":
+              return Prisma.sql`m.${fieldCondition} != ${value}`;
+            case "<":
+              return Prisma.sql`m.${fieldCondition} < ${value}`;
+            case "<=":
+              return Prisma.sql`m.${fieldCondition} <= ${value}`;
             default:
               return Prisma.sql`TRUE`;
           }

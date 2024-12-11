@@ -64,8 +64,8 @@ export const AddTagDialog = ({ rowSelected, setRowSelected }: Props) => {
 
   return (
     <Dialog>
-      <DialogTrigger>
-        <Button>Add tag</Button>
+      <DialogTrigger asChild>
+        <Button variant="dark">Add tag</Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>

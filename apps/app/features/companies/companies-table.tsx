@@ -190,7 +190,6 @@ export const CompaniesTable = ({ companies, count }: Props) => {
             <ActionMenu
               rowSelected={rowSelected}
               setRowSelected={setRowSelected}
-              count={count}
             />
           )}
           <ScrollBar orientation="horizontal" />

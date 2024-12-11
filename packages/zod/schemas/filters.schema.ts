@@ -50,9 +50,16 @@ export const FilterTextSchema = FilterBaseSchema.extend({
 
 export const FilterNumberSchema = FilterBaseSchema.extend({
   type: z.literal("number"),
-  field: z.enum(["love", "level"]),
+  field: z.enum(["love"]),
   operator: NumberOperatorSchema,
   value: z.number().min(0).default(1),
+});
+
+export const FilterLevelSchema = FilterBaseSchema.extend({
+  type: z.literal("level"),
+  field: z.enum(["level"]),
+  operator: NumberOperatorSchema,
+  value: z.number().min(1).max(12),
 });
 
 export const FilterActivitySchema = FilterBaseSchema.extend({
@@ -78,6 +85,7 @@ export const FilterSchema = z.discriminatedUnion("type", [
   FilterDateSchema,
   FilterTextSchema,
   FilterNumberSchema,
+  FilterLevelSchema,
   FilterActivitySchema,
 ]);
 
@@ -88,6 +96,7 @@ export type FilterSelect = z.infer<typeof FilterSelectSchema>;
 export type FilterDate = z.infer<typeof FilterDateSchema>;
 export type FilterText = z.infer<typeof FilterTextSchema>;
 export type FilterNumber = z.infer<typeof FilterNumberSchema>;
+export type FilterLevel = z.infer<typeof FilterLevelSchema>;
 export type FilterActivity = z.infer<typeof FilterActivitySchema>;
 export type DynamicDate = z.infer<typeof DynamicDateSchema>;
 

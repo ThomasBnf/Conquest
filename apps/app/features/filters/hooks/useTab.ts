@@ -1,8 +1,8 @@
 import { create } from "zustand";
 
 type Props = {
-  tab: "input" | "select" | "activity" | undefined;
-  setTab: (tab: "input" | "select" | "activity" | undefined) => void;
+  tab: "input" | "select" | "activity" | "level" | undefined;
+  setTab: (tab: "input" | "select" | "activity" | "level" | undefined) => void;
 };
 
 export const useTab = create<Props>((set) => ({

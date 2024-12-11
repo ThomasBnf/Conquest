@@ -9,6 +9,7 @@ import type {
   Filter,
   FilterActivity,
   FilterDate,
+  FilterLevel,
   FilterNumber,
   FilterSelect,
   FilterText,
@@ -298,6 +299,8 @@ const createFilterOperation = (filter: Filter) => {
       return createNumberFilter(filter);
     case "select":
       return createSelectFilter(filter);
+    case "level":
+      return createLevelFilter(filter);
     case "date":
       return createDateFilter(filter);
     case "activity":
@@ -345,6 +348,36 @@ const createNumberFilter = (filter: FilterNumber) => {
         switch (filter.field) {
           case "love":
             return member.love;
+        }
+      })();
+
+      switch (operator) {
+        case ">":
+          return field > value;
+        case ">=":
+          return field >= value;
+        case "=":
+          return field === value;
+        case "!=":
+          return field !== value;
+        case "<=":
+          return field <= value;
+        case "<":
+          return field < value;
+        default:
+          return true;
+      }
+    },
+  };
+};
+
+const createLevelFilter = (filter: FilterLevel) => {
+  const { operator, value } = filter;
+
+  return {
+    execute: ({ member }: { member: MemberWithActivities }) => {
+      const field = (() => {
+        switch (filter.field) {
           case "level":
             return member.level;
         }

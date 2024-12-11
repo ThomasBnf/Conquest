@@ -21,6 +21,7 @@ const buttonVariants = cva(
         dropdown:
           "bg-background hover:bg-accent hover:text-accent-foreground rounded-none",
         link: "text-primary underline-offset-4 hover:underline",
+        dark: "bg-background/15 hover:bg-background/20 border-foreground/10 actions-secondary",
         transparent: "",
       },
       size: {

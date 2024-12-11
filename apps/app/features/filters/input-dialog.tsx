@@ -77,16 +77,6 @@ export const InputDialog = ({
   });
 
   const onSubmit = ({ query }: FormSchema) => {
-    if (filter.type === "number") {
-      const filterNumber = FilterNumberSchema.parse(filter);
-      if (filterNumber.field === "level") {
-        if (Number(query) > 12) {
-          return form.setError("query", {
-            message: "Level cannot be greater than 12",
-          });
-        }
-      }
-    }
     handleApply(query);
     setOpen(false);
   };

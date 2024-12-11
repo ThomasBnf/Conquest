@@ -21,12 +21,13 @@ import { ListFilter } from "lucide-react";
 import { type Dispatch, type SetStateAction, useRef, useState } from "react";
 import { useTab } from "./hooks/useTab";
 import { InputDialog } from "./input-dialog";
+import { LevelPicker } from "./level-picker";
 import { SelectPicker } from "./select-picker";
 
 type Props = {
   filters: Filter[];
   setFilters: Dispatch<SetStateAction<Filter[]>>;
-  handleUpdate?: (filters: Filter[]) => void;
+  handleUpdate: (filters: Filter[]) => void;
 };
 
 export const FilterButton = ({ filters, setFilters, handleUpdate }: Props) => {
@@ -47,27 +48,28 @@ export const FilterButton = ({ filters, setFilters, handleUpdate }: Props) => {
 
   const handleFilterSelect = (filter: Filter) => {
     const filterWithId = { ...filter, id: cuid() };
+    setFilter(filterWithId);
 
     switch (filter.type) {
       case "text": {
-        setFilter(filterWithId);
         setTab("input");
         return;
       }
       case "number": {
-        setFilter(filterWithId);
         setTab("input");
         return;
       }
       case "select": {
-        setFilter(filterWithId);
         setTab("select");
+        return;
+      }
+      case "level": {
+        setTab("level");
         return;
       }
       case "activity": {
         setOpen(false);
         setTimeout(() => {
-          setFilter(filterWithId);
           setFilters((filters) => [...filters, filterWithId]);
           setOpenFilters(true);
         }, 100);
@@ -92,7 +94,7 @@ export const FilterButton = ({ filters, setFilters, handleUpdate }: Props) => {
         ? prev.map((f) => (f.id === filter.id ? updatedFilter : f))
         : [...prev, updatedFilter];
 
-      handleUpdate?.(newFilters);
+      handleUpdate(newFilters);
 
       return newFilters;
     });
@@ -128,6 +130,13 @@ export const FilterButton = ({ filters, setFilters, handleUpdate }: Props) => {
                 setFilters={setFilters}
                 setOpenDropdown={setOpen}
                 handleUpdate={handleUpdate}
+              />
+            ) : tab === "level" ? (
+              <LevelPicker
+                filter={filter}
+                setFilters={setFilters}
+                handleUpdate={handleUpdate}
+                setOpenDropdown={setOpen}
               />
             ) : (
               <Command>
@@ -175,7 +184,7 @@ const filtersMember: Filter[] = [
   {
     id: "1",
     label: "Level",
-    type: "number",
+    type: "level",
     field: "level",
     operator: ">=",
     value: 1,
