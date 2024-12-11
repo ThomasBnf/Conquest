@@ -18,6 +18,9 @@ export const activityTypes = new Hono()
       where: {
         workspace_id,
       },
+      orderBy: {
+        weight: "desc",
+      },
     });
 
     return c.json(ActivityTypeSchema.array().parse(activityTypes));

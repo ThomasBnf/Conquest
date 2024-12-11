@@ -27,7 +27,7 @@ export const CustomNode = ({ hasEdges, ...props }: Props) => {
 
   const { category, icon, label, description } = node.data;
   const isTrigger = useMemo(() => "isTrigger" in node.data, [node]);
-  // const isLoop = useMemo(() => node.data.type === "loop", [node]);
+  const isLoop = useMemo(() => node.data.type === "loop", [node]);
 
   const hasEdge = useMemo(
     () => hasEdges.find((edge) => edge.id === node.id),
@@ -79,8 +79,7 @@ export const CustomNode = ({ hasEdges, ...props }: Props) => {
         {!isTrigger && <CustomHandle position={Position.Top} type="target" />}
         <CustomHandle position={Position.Bottom} type="source" />
       </div>
-      {!hasEdge && (
-        // && !isLoop
+      {!hasEdge &&  (
         <>
           <div className="-bottom-9 -translate-x-1/2 absolute left-1/2 h-7 w-px bg-border" />
           <Button
@@ -95,7 +94,7 @@ export const CustomNode = ({ hasEdges, ...props }: Props) => {
           </Button>
         </>
       )}
-      {/* {isLoop && (
+      {isLoop && (
         <div className="-z-10 -translate-x-1/2 absolute top-8 left-1/2 h-48 w-full">
           <div className="-translate-x-1/2 absolute left-1/2 flex h-48 w-[calc(100%+40px)] items-center justify-center rounded-lg border border-dashed">
             <Button
@@ -123,7 +122,7 @@ export const CustomNode = ({ hasEdges, ...props }: Props) => {
             <Plus size={16} />
           </Button>
         </div>
-      )} */}
+      )}
     </div>
   );
 };

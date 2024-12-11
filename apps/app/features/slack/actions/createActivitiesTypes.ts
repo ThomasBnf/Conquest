@@ -13,7 +13,7 @@ export const createActivitiesTypes = authAction
     await prisma.activities_types.createMany({
       data: [
         {
-          name: "Send message",
+          name: "Write a post",
           source: "SLACK",
           key: "slack:post",
           weight: 4,
@@ -21,7 +21,7 @@ export const createActivitiesTypes = authAction
           workspace_id,
         },
         {
-          name: "Reply to message",
+          name: "Reply to post",
           source: "SLACK",
           key: "slack:reply",
           weight: 2,

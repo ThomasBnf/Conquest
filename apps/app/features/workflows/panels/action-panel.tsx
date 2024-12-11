@@ -179,6 +179,19 @@ export const nodes: {
           type: "custom",
           position: { x: 0, y: 0 },
           data: {
+            icon: "RefreshCw",
+            label: "Loop",
+            description: "",
+            type: "loop",
+            category: "utilities",
+            sub_nodes:[]
+          },
+        },
+        {
+          id: cuid(),
+          type: "custom",
+          position: { x: 0, y: 0 },
+          data: {
             icon: "Webhook",
             label: "Webhook",
             description: "",

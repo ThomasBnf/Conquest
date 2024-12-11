@@ -5,7 +5,6 @@ import { Companies } from "@/components/icons/Companies";
 import { Dashboard } from "@/components/icons/Dashboard";
 import { Integration } from "@/components/icons/Integration";
 import { Members } from "@/components/icons/Members";
-import { Workflows } from "@/components/icons/Workflows";
 import { useUser } from "@/context/userContext";
 import { WorkspaceMenu } from "@/features/workspaces/workspace-menu";
 import { Loader } from "@conquest/ui/loader";
@@ -65,12 +64,12 @@ export const AppSidebar = () => {
       href: `/${slug}/activities`,
       isActive: pathname.startsWith(`/${slug}/activities`),
     },
-    {
-      label: "Workflows",
-      icon: <Workflows className="size-[18px]" />,
-      href: `/${slug}/workflows`,
-      isActive: pathname.startsWith(`/${slug}/workflows`),
-    },
+    // {
+    //   label: "Workflows",
+    //   icon: <Workflows className="size-[18px]" />,
+    //   href: `/${slug}/workflows`,
+    //   isActive: pathname.startsWith(`/${slug}/workflows`),
+    // },
   ];
 
   return (

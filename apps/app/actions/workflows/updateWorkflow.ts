@@ -1,7 +1,7 @@
 "use server";
 
 import { EdgeSchema } from "@conquest/zod/edge.schema";
-import { NodeSchema } from "@conquest/zod/node.schema";
+import { NodeSchema } from "@conquest/zod/schemas/node.schema";
 import { WorkflowSchema } from "@conquest/zod/workflow.schema";
 import { authAction } from "lib/authAction";
 import { prisma } from "lib/prisma";
