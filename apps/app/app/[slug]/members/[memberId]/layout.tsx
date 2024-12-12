@@ -4,7 +4,6 @@ import { AddActivityDialog } from "@/features/activities/add-activity-dialog";
 import { MemberMenu } from "@/features/members/components/details/member-menu";
 import { MemberSidebar } from "@/features/members/components/details/member-sidebar";
 import { Tabs } from "@/features/members/components/tabs";
-import { listMemberActivities } from "@/queries/activities/listMemberActivities";
 import { getMember } from "@/queries/members/getMember";
 import { listTags } from "@/queries/tags/listTags";
 import { getCurrentUser } from "@/queries/users/getCurrentUser";
@@ -27,11 +26,6 @@ export default async function Layout({
   const workspace_id = user.workspace_id;
 
   const member = await getMember({ id: memberId, workspace_id });
-  const activities = await listMemberActivities({
-    member_id: memberId,
-    workspace_id,
-    page: 1,
-  });
   const tags = await listTags({ workspace_id });
 
   if (!member) redirect(`/${slug}/members`);

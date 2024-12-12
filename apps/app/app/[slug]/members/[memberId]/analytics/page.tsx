@@ -27,8 +27,6 @@ export default async function Page({ params: { memberId } }: Props) {
     workspace_id,
   });
 
-  console.log(activities);
-
   if (!member) redirect("/members");
 
   return (

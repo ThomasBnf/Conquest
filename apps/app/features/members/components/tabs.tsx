@@ -31,6 +31,7 @@ export const Tabs = () => {
         <Link
           key={tab.href}
           href={tab.href}
+          replace={true}
           className={cn(
             buttonVariants({ variant: "outline", size: "xs" }),
             "gap-2",
