@@ -1,26 +1,45 @@
 "use client";
 
+import { createIntegration } from "@/actions/integrations/createIntegration";
 import { Discourse } from "@/components/icons/Discourse";
 import { useUser } from "@/context/userContext";
+import { InstallForm } from "@/features/discourse/install-form";
 import { IntegrationHeader } from "@/features/integrations/integration-header";
-import { buttonVariants } from "@conquest/ui/src/components/button";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-} from "@conquest/ui/src/components/card";
+import { Button, buttonVariants } from "@conquest/ui/button";
+import { Card, CardContent, CardHeader } from "@conquest/ui/card";
 import { cn } from "@conquest/ui/src/utils/cn";
 import { ExternalLink } from "lucide-react";
 import Link from "next/link";
+import { useState } from "react";
+import { toast } from "sonner";
 
-type Props = {
-  searchParams: {
-    code: string | null;
-  };
-};
-
-export default function Page({ searchParams: { code } }: Props) {
+export default function Page() {
   const { discourse } = useUser();
+  const [loading, setLoading] = useState(false);
+
+  const onInstall = async () => {
+    setLoading(true);
+
+    const integration = await createIntegration({
+      details: {
+        source: "DISCOURSE",
+        community_url: "",
+        api_key: "",
+        signature: "",
+      },
+      external_id: null,
+    });
+
+    const error = integration?.serverError;
+
+    if (error) {
+      setLoading(false);
+      toast.error(error);
+      return;
+    }
+
+    setLoading(false);
+  };
 
   return (
     <div className="mx-auto flex max-w-3xl flex-col gap-4 py-16">
@@ -33,7 +52,7 @@ export default function Page({ searchParams: { code } }: Props) {
       </div>
       <Card>
         <CardHeader className="flex h-14 flex-row items-center justify-between space-y-0">
-          <div className="flex items-center">
+          <div className="flex w-full items-center justify-between">
             <Link
               href="https://doc.useconquest.com/discourse"
               target="_blank"
@@ -45,6 +64,11 @@ export default function Page({ searchParams: { code } }: Props) {
               <ExternalLink size={15} />
               <p>Documentation</p>
             </Link>
+            {!discourse?.trigger_token && (
+              <Button loading={loading} disabled={loading} onClick={onInstall}>
+                Install
+              </Button>
+            )}
           </div>
         </CardHeader>
         <CardContent className="mb-0.5 p-0">
@@ -56,6 +80,7 @@ export default function Page({ searchParams: { code } }: Props) {
               through automated workflows.
             </p>
           </div>
+          {discourse?.trigger_token && <InstallForm />}
         </CardContent>
       </Card>
     </div>

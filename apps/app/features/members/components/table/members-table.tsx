@@ -14,9 +14,9 @@ import { TableSkeleton } from "@/features/table/table-skeletton";
 import { useIsClient } from "@/hooks/useIsClient";
 import { tableParsers } from "@/lib/searchParamsTable";
 import { useListMembers } from "@/queries/hooks/useListMembers";
-import { Button } from "@conquest/ui/src/components/button";
-import { ScrollArea, ScrollBar } from "@conquest/ui/src/components/scroll-area";
-import { useSidebar } from "@conquest/ui/src/components/sidebar";
+import { Button } from "@conquest/ui/button";
+import { ScrollArea, ScrollBar } from "@conquest/ui/scroll-area";
+import { useSidebar } from "@conquest/ui/sidebar";
 import { cn } from "@conquest/ui/src/utils/cn";
 import type { Filter } from "@conquest/zod/schemas/filters.schema";
 import type { Tag } from "@conquest/zod/tag.schema";
@@ -66,7 +66,7 @@ export const MembersTable = ({ count, tags }: Props) => {
       <div className="flex items-center gap-2 px-4 py-2">
         <QueryInput
           query={search}
-          setQuery={(value) => setParams({ search: value })}
+          setQuery={(value) => setParams({ search: value, page: 1 })}
           placeholder="Search in members..."
         />
         {filters.length > 0 ? (

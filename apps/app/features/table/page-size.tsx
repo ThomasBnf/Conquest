@@ -5,7 +5,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@conquest/ui/src/components/select";
+} from "@conquest/ui/select";
 import { useQueryStates } from "nuqs";
 
 export const PageSize = () => {

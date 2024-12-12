@@ -3,6 +3,21 @@ import { z } from "zod";
 import { GENDER } from "./enum/gender.enum";
 import { SOURCE } from "./enum/source.enum";
 
+const loveLogSchema = z.object({
+  date: z.string(),
+  value: z.number(),
+});
+
+const presenceLogSchema = z.object({
+  date: z.string(),
+  value: z.number(),
+});
+
+const levelLogSchema = z.object({
+  date: z.string(),
+  value: z.number(),
+});
+
 export const MemberSchema = z.object({
   id: z.string().cuid(),
   slack_id: z.string().nullable(),
@@ -22,6 +37,9 @@ export const MemberSchema = z.object({
   presence: z.number(),
   gender: GENDER.nullable(),
   source: SOURCE,
+  love_logs: z.array(loveLogSchema),
+  presence_logs: z.array(presenceLogSchema),
+  level_logs: z.array(levelLogSchema),
   company_id: z.string().cuid().nullable(),
   workspace_id: z.string().cuid(),
   first_activity: z.coerce.date().nullable(),

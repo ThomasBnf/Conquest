@@ -1,12 +1,11 @@
 import { oauthV2 } from "@/actions/slack/oauthV2";
+import { SCOPES, USER_SCOPES } from "@/constant";
 import { useUser } from "@/context/userContext";
 import { env } from "@/env.mjs";
-import { Button } from "@conquest/ui/src/components/button";
+import { Button } from "@conquest/ui/button";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { SCOPES } from "../constant/scopes";
-import { USER_SCOPES } from "../constant/user-scopes";
 
 type Props = {
   code: string | null;

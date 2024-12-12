@@ -79,7 +79,7 @@ export const Columns = ({ tags }: Props): Column[] => [
       const { slug } = useUser();
       return (
         <Link
-          href={`/${slug}/members/${member.id}`}
+          href={`/${slug}/members/${member.id}/analytics`}
           className={cn(
             buttonVariants({ variant: "ghost" }),
             "flex items-center gap-2 truncate px-1.5",

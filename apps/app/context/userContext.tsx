@@ -11,7 +11,6 @@ import { createContext, useContext } from "react";
 type userContext = {
   user: UserWithWorkspace | undefined;
   slug: string | undefined;
-  triggerToken: string | null | undefined;
   slack: SlackIntegration | undefined;
   discourse: DiscourseIntegration | undefined;
   members_preferences: MembersPreferences | undefined;
@@ -26,7 +25,6 @@ type Props = {
 
 export const UserProvider = ({ user, children }: Props) => {
   const slug = user?.workspace.slug;
-  const triggerToken = user?.workspace.trigger_token;
 
   const slack = user?.workspace.integrations.find(
     (integration) => integration.details.source === "SLACK",
@@ -43,7 +41,6 @@ export const UserProvider = ({ user, children }: Props) => {
       value={{
         user,
         slug,
-        triggerToken,
         slack,
         discourse,
         members_preferences,

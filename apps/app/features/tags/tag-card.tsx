@@ -15,12 +15,23 @@ export const TagCard = ({ tag }: Props) => {
       <TagForm tag={tag} isEditing={isEditing} setIsEditing={setIsEditing} />
     );
 
+  const colorMap = {
+    "1": "#E7C200",
+    "2": "#CD7F31",
+    "3": "#C0C0C0",
+  };
+
+  const tagColor =
+    tag.source === "DISCOURSE"
+      ? colorMap[tag.color as keyof typeof colorMap]
+      : tag.color;
+
   return (
     <div className="flex items-center justify-between rounded-md border px-4 py-2">
       <div className="flex items-center gap-2">
         <div
           className="size-3 rounded-full"
-          style={{ backgroundColor: tag.color }}
+          style={{ backgroundColor: tagColor }}
         />
         <p className="truncate font-medium">{tag.name}</p>
       </div>

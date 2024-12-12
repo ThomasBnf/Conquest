@@ -1,6 +1,6 @@
 "use client";
 
-import { TooltipProvider } from "@conquest/ui/src/components/tooltip";
+import { TooltipProvider } from "@conquest/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type { ReactNode } from "react";
 import { Toaster } from "sonner";

@@ -3,6 +3,7 @@
 import { prisma } from "@/lib/prisma";
 import type { SOURCE } from "@conquest/database";
 import {
+  DiscourseIntegrationSchema,
   type Integration,
   SlackIntegrationSchema,
 } from "@conquest/zod/integration.schema";
@@ -14,77 +15,37 @@ type Props = {
 };
 
 export const deleteIntegration = async ({ source, integration }: Props) => {
-  const workspace_id = integration.workspace_id;
+  const { workspace_id } = integration;
 
   if (source === "SLACK") {
     const slack = SlackIntegrationSchema.parse(integration);
     const web = new WebClient(slack.details.token);
 
-    await prisma.integrations.delete({
-      where: {
-        id: slack?.id,
-      },
-    });
-
     await web.apps.uninstall({
-      token: slack?.details.token,
+      token: slack.details.token,
       client_id: process.env.NEXT_PUBLIC_SLACK_CLIENT_ID!,
       client_secret: process.env.SLACK_CLIENT_SECRET!,
     });
+
+    await prisma.integrations.delete({
+      where: { id: slack.id },
+    });
   }
 
-  await prisma.activities.deleteMany({
-    where: {
-      activity_type: {
-        source: "SLACK",
-      },
-      workspace_id,
-    },
-  });
+  if (source === "DISCOURSE") {
+    const discourse = DiscourseIntegrationSchema.parse(integration);
+    await prisma.integrations.delete({
+      where: { id: discourse.id },
+    });
+  }
 
-  await prisma.channels.deleteMany({
-    where: {
-      source,
-      workspace_id,
-    },
-  });
-
-  await prisma.companies.deleteMany({
-    where: {
-      source,
-      workspace_id,
-    },
-  });
-
-  await prisma.tags.deleteMany({
-    where: {
-      source,
-      workspace_id,
-    },
-  });
-
-  await prisma.members.deleteMany({
-    where: {
-      source,
-      workspace_id,
-    },
-  });
-
-  await prisma.activities_types.deleteMany({
-    where: {
-      source,
-      workspace_id,
-    },
-  });
-
-  await prisma.workspaces.update({
-    where: {
-      id: workspace_id,
-    },
-    data: {
-      trigger_token: null,
-    },
-  });
+  await Promise.all([
+    prisma.channels.deleteMany({ where: { source, workspace_id } }),
+    prisma.companies.deleteMany({ where: { source, workspace_id } }),
+    prisma.tags.deleteMany({ where: { source, workspace_id } }),
+    prisma.members.deleteMany({ where: { source, workspace_id } }),
+    prisma.activities_types.deleteMany({ where: { source, workspace_id } }),
+  ]);
 
   return { success: true };
 };

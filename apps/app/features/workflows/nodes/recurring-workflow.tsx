@@ -19,7 +19,7 @@ import { ToggleGroup, ToggleGroupItem } from "@conquest/ui/toggle-group";
 import { NodeRecurringSchema, type RepeatOn } from "@conquest/zod/node.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useReactFlow } from "@xyflow/react";
-import { weekdays } from "constant/weekdays";
+import { weekdays } from "constant";
 import { useForm } from "react-hook-form";
 import {
   type FormRecurring,

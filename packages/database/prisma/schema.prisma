@@ -145,11 +145,13 @@ model files {
 }
 
 model integrations {
-  id           String    @id @default(cuid())
-  external_id  String?   @unique
-  installed_at DateTime?
-  status       STATUS
-  details      Json
+  id                       String    @id @default(cuid())
+  external_id              String?   @unique
+  installed_at             DateTime?
+  status                   STATUS
+  details                  Json
+  trigger_token            String
+  trigger_token_expires_at DateTime
 
   workspace_id String
   workspace    workspaces @relation(fields: [workspace_id], references: [id], onDelete: Cascade)
@@ -161,24 +163,27 @@ model integrations {
 }
 
 model members {
-  id           String   @id @default(cuid())
-  slack_id     String?  @unique
-  discourse_id String?  @unique
-  first_name   String?
-  last_name    String?
-  username     String?
-  locale       String?
-  avatar_url   String?
-  bio          String?
-  job_title    String?
-  emails       String[] @default([])
-  phones       String[] @default([])
-  tags         String[] @default([])
-  level        Int      @default(0)
-  love         Int      @default(0)
-  presence     Int      @default(0)
-  gender       GENDER?
-  source       SOURCE
+  id            String   @id @default(cuid())
+  slack_id      String?  @unique
+  discourse_id  String?  @unique
+  first_name    String?
+  last_name     String?
+  username      String?
+  locale        String?
+  avatar_url    String?
+  bio           String?
+  job_title     String?
+  emails        String[] @default([])
+  phones        String[] @default([])
+  tags          String[] @default([])
+  level         Int      @default(0)
+  love          Int      @default(0)
+  presence      Int      @default(0)
+  gender        GENDER?
+  source        SOURCE
+  love_logs     Json[]   @default([])
+  presence_logs Json[]   @default([])
+  level_logs    Json[]   @default([])
 
   company_id   String?
   company      companies? @relation(fields: [company_id], references: [id], onDelete: SetNull)
@@ -256,7 +261,6 @@ model workspaces {
   slug                String  @unique
   source              String?
   company_size        String?
-  trigger_token       String? @unique
   members_preferences Json
 
   users        users[]

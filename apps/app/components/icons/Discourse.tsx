@@ -14,7 +14,7 @@ export const Discourse = ({ size = 24, className }: Props) => {
       fill="none"
       className={className}
     >
-      <g clip-path="url(#clip0_11180_69614)">
+      <g clipPath="url(#clip0_11180_69614)">
         <path
           d="M11.9709 0.226318C5.65043 0.226318 0.328796 5.39538 0.328796 11.7735V23.7305L11.9686 23.7191C18.289 23.7191 23.4154 18.3508 23.4154 11.975C23.4154 5.59915 18.2845 0.226318 11.9709 0.226318Z"
           fill="#231F20"

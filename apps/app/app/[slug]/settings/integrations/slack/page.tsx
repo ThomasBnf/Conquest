@@ -3,15 +3,11 @@
 import { Slack } from "@/components/icons/Slack";
 import { useUser } from "@/context/userContext";
 import { IntegrationHeader } from "@/features/integrations/integration-header";
-import { ChannelsList } from "@/features/slack/components/channels-list";
-import { InstallButton } from "@/features/slack/components/install-button";
-import { UninstallButton } from "@/features/slack/components/uninstall_button";
-import { buttonVariants } from "@conquest/ui/src/components/button";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-} from "@conquest/ui/src/components/card";
+import { ChannelsList } from "@/features/slack/channels-list";
+import { InstallButton } from "@/features/slack/install-button";
+import { UninstallButton } from "@/features/slack/uninstall_button";
+import { buttonVariants } from "@conquest/ui/button";
+import { Card, CardContent, CardHeader } from "@conquest/ui/card";
 import { cn } from "@conquest/ui/src/utils/cn";
 import { ExternalLink } from "lucide-react";
 import Link from "next/link";
@@ -61,7 +57,7 @@ export default function Page({ searchParams: { code } }: Props) {
               through automated workflows.
             </p>
           </div>
-          {slack?.id && <ChannelsList />}
+          {slack?.trigger_token && <ChannelsList />}
         </CardContent>
       </Card>
     </div>

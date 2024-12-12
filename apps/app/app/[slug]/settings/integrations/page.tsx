@@ -1,6 +1,7 @@
 "use client";
 
 import { Discourse } from "@/components/icons/Discourse";
+import { Livestorm } from "@/components/icons/Livestorm";
 import { Slack } from "@/components/icons/Slack";
 import { useUser } from "@/context/userContext";
 import { ScrollArea } from "@conquest/ui/scroll-area";
@@ -21,6 +22,12 @@ export default function Page() {
       logo: <Discourse />,
       name: "Discourse",
       description: "Synchronize your members with Discourse",
+    },
+    {
+      href: `/${slug}/settings/integrations/livestorm`,
+      logo: <Livestorm />,
+      name: "Livestorm",
+      description: "Synchronize your members with Livestorm",
     },
   ];
 

@@ -1,12 +1,13 @@
 "use client";
 
 import { useUser } from "@/context/userContext";
+
 import { useListChannels } from "@/queries/hooks/useListChannels";
 import { useListSLackChannels } from "@/queries/hooks/useListSlackChannels";
 import type { installSlack } from "@/trigger/installSlack.trigger";
 import { Button } from "@conquest/ui/button";
+import { Checkbox } from "@conquest/ui/checkbox";
 import { Separator } from "@conquest/ui/separator";
-import { Checkbox } from "@conquest/ui/src/components/checkbox";
 import { useRealtimeTaskTrigger } from "@trigger.dev/react-hooks";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -14,7 +15,7 @@ import { toast } from "sonner";
 import { LoadingChannels } from "./loading-channels";
 
 export const ChannelsList = () => {
-  const { slack, triggerToken } = useUser();
+  const { slack } = useUser();
   const [loading, setLoading] = useState(slack?.status === "SYNCING");
   const [selectedChannels, setSelectedChannels] = useState<string[]>([]);
   const router = useRouter();
@@ -22,7 +23,7 @@ export const ChannelsList = () => {
   const { submit, run } = useRealtimeTaskTrigger<typeof installSlack>(
     "install-slack",
     {
-      accessToken: triggerToken ?? "",
+      accessToken: slack?.trigger_token,
     },
   );
 
@@ -96,14 +97,11 @@ export const ChannelsList = () => {
               );
             })}
           </div>
-          <Button
-            loading={loading}
-            disabled={selectedChannels.length === 0}
-            onClick={onStart}
-            className="mt-6"
-          >
-            Let's start!
-          </Button>
+          {selectedChannels.length > 0 && (
+            <Button loading={loading} onClick={onStart} className="mt-6">
+              Let's start!
+            </Button>
+          )}
         </>
       )}
     </div>

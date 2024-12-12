@@ -16,7 +16,6 @@ export const WorkspaceSchema = z.object({
   slug: z.string(),
   source: z.string().nullable(),
   company_size: z.string().nullable(),
-  trigger_token: z.string().nullable(),
   members_preferences: MembersPreferencesSchema,
   integrations: z.array(IntegrationSchema).default([]),
   created_at: z.coerce.date(),

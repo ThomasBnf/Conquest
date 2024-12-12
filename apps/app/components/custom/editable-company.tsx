@@ -9,7 +9,7 @@ import {
   CommandList,
 } from "@conquest/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@conquest/ui/popover";
-import { Skeleton } from "@conquest/ui/src/components/skeleton";
+import { Skeleton } from "@conquest/ui/skeleton";
 import type { Company } from "@conquest/zod/schemas/company.schema";
 import type { MemberWithCompany } from "@conquest/zod/schemas/member.schema";
 import { CommandLoading } from "cmdk";

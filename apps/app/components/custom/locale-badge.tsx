@@ -1,4 +1,4 @@
-import { Badge } from "@conquest/ui/src/components/badge";
+import { Badge } from "@conquest/ui/badge";
 import { cn } from "@conquest/ui/src/utils/cn";
 import flags from "react-phone-number-input/flags";
 

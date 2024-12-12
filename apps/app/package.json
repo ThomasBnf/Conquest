@@ -33,6 +33,8 @@
     "@trigger.dev/react-hooks": "^3.3.5",
     "@trigger.dev/sdk": "3.3.5",
     "@types/bcryptjs": "^2.4.6",
+    "@uiw/react-heat-map": "^2.3.1",
+    "@uiw/react-tooltip": "^4.22.3",
     "@xyflow/react": "^12.3.2",
     "bcryptjs": "^2.4.3",
     "cmdk": "^1.0.0",

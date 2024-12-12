@@ -1,16 +1,12 @@
 import { useOpenFilters } from "@/hooks/useOpenFilters";
-import { Button } from "@conquest/ui/src/components/button";
+import { Button } from "@conquest/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@conquest/ui/src/components/dropdown-menu";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@conquest/ui/src/components/popover";
+} from "@conquest/ui/dropdown-menu";
+import { Popover, PopoverContent, PopoverTrigger } from "@conquest/ui/popover";
 import type { Filter } from "@conquest/zod/filters.schema";
 import { MoreVertical, Trash2 } from "lucide-react";
 import type { Dispatch, SetStateAction } from "react";

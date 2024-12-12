@@ -6,7 +6,18 @@ type Props = {
 };
 
 export const TagBadge = ({ tag }: Props) => {
-  if (!tag) return;
+  if (!tag) return null;
+
+  const colorMap = {
+    "1": "#E7C200",
+    "2": "#CD7F31",
+    "3": "#C0C0C0",
+  };
+
+  const tagColor =
+    tag.source === "DISCOURSE"
+      ? colorMap[tag.color as keyof typeof colorMap]
+      : tag.color;
 
   return (
     <div
@@ -16,7 +27,7 @@ export const TagBadge = ({ tag }: Props) => {
     >
       <div
         className="size-2.5 rounded-full"
-        style={{ backgroundColor: tag.color }}
+        style={{ backgroundColor: tagColor }}
       />
       <p className="leading-none">{tag.name}</p>
     </div>

@@ -17,5 +17,7 @@ export const getIntegration = safeAction
       },
     });
 
+    if (!integration) return null;
+
     return IntegrationSchema.parse(integration);
   });

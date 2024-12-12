@@ -1,8 +1,8 @@
 "use client";
 
-import { cn } from "../utils/cn";
 import * as React from "react";
 import * as RechartsPrimitive from "recharts";
+import { cn } from "../utils/cn";
 
 const THEMES = { light: "", dark: ".dark" } as const;
 
@@ -111,6 +111,7 @@ const ChartTooltipContent = React.forwardRef<
       nameKey?: string;
       labelKey?: string;
       itemType?: string;
+      valueFormatter?: (value: number) => string;
     }
 >(
   (
@@ -124,6 +125,7 @@ const ChartTooltipContent = React.forwardRef<
       label,
       labelFormatter,
       labelClassName,
+      valueFormatter,
       formatter,
       color,
       nameKey,
@@ -241,7 +243,9 @@ const ChartTooltipContent = React.forwardRef<
                       </div>
                       {item.value && (
                         <span className="font-medium font-mono text-foreground tabular-nums">
-                          {item.value.toLocaleString()}
+                          {valueFormatter
+                            ? valueFormatter(Number(item.value))
+                            : item.value.toLocaleString()}
                           {itemType}
                         </span>
                       )}

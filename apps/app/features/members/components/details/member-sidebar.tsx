@@ -9,14 +9,10 @@ import { FieldCard } from "@/components/custom/field-card";
 import { LocaleBadge } from "@/components/custom/locale-badge";
 import { SourceBadge } from "@/components/custom/source-badge";
 import { TagPicker } from "@/features/tags/tag-picker";
+import { Avatar, AvatarFallback, AvatarImage } from "@conquest/ui/avatar";
 import { Badge } from "@conquest/ui/badge";
 import { ScrollArea } from "@conquest/ui/scroll-area";
 import { Separator } from "@conquest/ui/separator";
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@conquest/ui/src/components/avatar";
 import type { MemberWithCompany } from "@conquest/zod/schemas/member.schema";
 import type { Tag } from "@conquest/zod/tag.schema";
 import { format } from "date-fns";
@@ -60,7 +56,7 @@ export const MemberSidebar = ({ member, tags }: Props) => {
   };
 
   return (
-    <div className="flex h-full max-w-md flex-1 flex-col">
+    <div className="flex h-full max-w-sm flex-1 shrink-0 flex-col">
       <div className="space-y-4 p-4">
         <div className="flex items-center gap-2">
           <Avatar className="size-9">

@@ -1,6 +1,6 @@
 import { DeleteDialog } from "@/components/custom/delete-dialog";
 import { _deleteListMembers } from "@/features/members/actions/_deleteListMembers";
-import { Button } from "@conquest/ui/src/components/button";
+import { Button } from "@conquest/ui/button";
 import { useQueryClient } from "@tanstack/react-query";
 import { X } from "lucide-react";
 import { toast } from "sonner";

@@ -1,6 +1,6 @@
 import { FormUser } from "@/features/users/form-user";
 import { getCurrentUser } from "@/queries/users/getCurrentUser";
-import { Separator } from "@conquest/ui/src/components/separator";
+import { Separator } from "@conquest/ui/separator";
 
 export default async function Page() {
   const user = await getCurrentUser();

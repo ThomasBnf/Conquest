@@ -7,7 +7,7 @@ import {
   DropdownMenuContent,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@conquest/ui/src/components/dropdown-menu";
+} from "@conquest/ui/dropdown-menu";
 import type { Member } from "@conquest/zod/member.schema";
 import cuid from "cuid";
 import { Plus } from "lucide-react";

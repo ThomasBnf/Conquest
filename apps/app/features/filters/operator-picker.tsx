@@ -1,4 +1,4 @@
-import { OPERATORS } from "@/constant/operators";
+import { OPERATORS } from "@/constant";
 import { Button } from "@conquest/ui/button";
 import {
   Command,

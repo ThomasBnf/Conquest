@@ -1,4 +1,4 @@
-import { Button } from "@conquest/ui/src/components/button";
+import { Button } from "@conquest/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { usePanel } from "../hooks/usePanel";
 import { useSelected } from "../hooks/useSelected";

@@ -2,7 +2,7 @@
 
 import { createActivity } from "@/actions/activities/createActivity";
 import { useListActivityTypes } from "@/queries/hooks/useListActivityTypes";
-import { Button } from "@conquest/ui/src/components/button";
+import { Button } from "@conquest/ui/button";
 import {
   Dialog,
   DialogBody,
@@ -11,7 +11,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@conquest/ui/src/components/dialog";
+} from "@conquest/ui/dialog";
 import {
   Form,
   FormControl,
@@ -19,15 +19,15 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@conquest/ui/src/components/form";
+} from "@conquest/ui/form";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@conquest/ui/src/components/select";
-import { TextField } from "@conquest/ui/src/components/text-field";
+} from "@conquest/ui/select";
+import { TextField } from "@conquest/ui/text-field";
 import type { MemberWithCompany } from "@conquest/zod/schemas/member.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";

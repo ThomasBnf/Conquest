@@ -6,6 +6,8 @@ const BaseSchema = z.object({
   id: z.string().cuid(),
   external_id: z.string().nullable(),
   status: STATUS,
+  trigger_token: z.string(),
+  trigger_token_expires_at: z.coerce.date(),
   installed_at: z.coerce.date().nullable(),
   workspace_id: z.string().cuid(),
   created_at: z.coerce.date(),

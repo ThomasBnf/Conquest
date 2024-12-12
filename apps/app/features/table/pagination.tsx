@@ -1,5 +1,5 @@
 import { tableParsers } from "@/lib/searchParamsTable";
-import { Button } from "@conquest/ui/src/components/button";
+import { Button } from "@conquest/ui/button";
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 import { useQueryStates } from "nuqs";
 import { PageSize } from "./page-size";

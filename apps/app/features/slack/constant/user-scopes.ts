@@ -1,1 +1,0 @@
-export const USER_SCOPES =  "chat:write,im:write,channels:write";

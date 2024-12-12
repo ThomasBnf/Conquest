@@ -1,11 +1,7 @@
 import { Love } from "@/components/icons/Love";
 import { client } from "@/lib/rpc";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@conquest/ui/src/components/tooltip";
 import { cn } from "@conquest/ui/src/utils/cn";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@conquest/ui/tooltip";
 import type { Member } from "@conquest/zod/schemas/member.schema";
 import { useQuery } from "@tanstack/react-query";
 import { InfoIcon } from "lucide-react";

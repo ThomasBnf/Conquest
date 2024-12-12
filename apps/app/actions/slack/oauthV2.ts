@@ -1,15 +1,12 @@
 "use server";
 
+import { SCOPES, USER_SCOPES } from "@/constant";
 import { env } from "@/env.mjs";
-import { SCOPES } from "@/features/slack/constant/scopes";
-import { USER_SCOPES } from "@/features/slack/constant/user-scopes";
-import { prisma } from "@/lib/prisma";
 import { createIntegration } from "@/queries/integrations/createIntegration";
-import { auth } from "@trigger.dev/sdk/v3";
 import { authAction } from "lib/authAction";
 import { redirect } from "next/navigation";
 import { z } from "zod";
-import { createActivitiesTypes } from "../../features/slack/actions/createActivitiesTypes";
+import { createActivitiesTypes } from "./createActivitiesTypes";
 
 export const oauthV2 = authAction
   .metadata({
@@ -54,19 +51,6 @@ export const oauthV2 = authAction
     });
 
     if (!integration) return;
-
-    const triggerToken = await auth.createTriggerPublicToken("install-slack", {
-      multipleUse: true,
-    });
-
-    await prisma.workspaces.update({
-      where: {
-        id: workspace_id,
-      },
-      data: {
-        trigger_token: triggerToken,
-      },
-    });
 
     createActivitiesTypes();
 

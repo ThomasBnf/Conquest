@@ -4,7 +4,7 @@ import { createSearchParamsCache } from "nuqs/server";
 
 export const dateParser = {
   from: parseAsIsoDateTime
-    .withDefault(subDays(startOfDay(new Date()), 30))
+    .withDefault(subDays(startOfDay(new Date()), 90))
     .withOptions({
       shallow: false,
       clearOnDefault: true,
