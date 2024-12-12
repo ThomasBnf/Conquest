@@ -1,5 +1,6 @@
 "use client";
 
+import { EmptyStateChart } from "@/components/states/empty-state-chart";
 import { getLevelLabel } from "@/helpers/getLevelLabel";
 import {
   type ChartConfig,
@@ -37,8 +38,9 @@ export const MemberLevelLogs = ({ member }: Props) => {
   }));
 
   return (
-    <div>
+    <div className="relative">
       <p className="mb-2 pl-4 font-medium text-lg">Level Logs</p>
+      {formattedLogs.length === 0 && <EmptyStateChart />}
       <ResponsiveContainer height={300}>
         <ChartContainer config={chartConfig}>
           <AreaChart
@@ -63,7 +65,6 @@ export const MemberLevelLogs = ({ member }: Props) => {
               content={
                 <ChartTooltipContent
                   indicator="line"
-                  className="w-60"
                   valueFormatter={(value) => getLevelLabel(Number(value))}
                 />
               }

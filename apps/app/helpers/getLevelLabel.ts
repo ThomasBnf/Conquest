@@ -25,6 +25,6 @@ export const getLevelLabel = (level: number) => {
     case 12:
       return "Ambassador I";
     default:
-      return "Explorer III";
+      return "No activity";
   }
 };

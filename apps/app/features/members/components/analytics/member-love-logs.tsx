@@ -1,5 +1,6 @@
 "use client";
 
+import { EmptyStateChart } from "@/components/states/empty-state-chart";
 import {
   type ChartConfig,
   ChartContainer,
@@ -36,8 +37,9 @@ export const MemberLoveLogs = ({ member }: Props) => {
   }));
 
   return (
-    <div>
+    <div className="relative">
       <p className="mb-2 pl-4 font-medium text-lg">Love Logs</p>
+      {formattedLogs.length === 0 && <EmptyStateChart />}
       <ResponsiveContainer height={300}>
         <ChartContainer config={chartConfig}>
           <AreaChart
@@ -58,11 +60,7 @@ export const MemberLoveLogs = ({ member }: Props) => {
                 });
               }}
             />
-            <ChartTooltip
-              content={
-                <ChartTooltipContent indicator="line" className="w-60" />
-              }
-            />
+            <ChartTooltip content={<ChartTooltipContent indicator="line" />} />
             <defs>
               <linearGradient id="fillvalue" x1="0" y1="0" x2="0" y2="1">
                 <stop

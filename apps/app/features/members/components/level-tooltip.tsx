@@ -2,6 +2,7 @@ import { Level } from "@/components/icons/Level";
 import { getLevelLabel } from "@/helpers/getLevelLabel";
 import { getPresenceLabel } from "@/helpers/getPresenceLabel";
 import { client } from "@/lib/rpc";
+import { cn } from "@conquest/ui/src/utils/cn";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@conquest/ui/tooltip";
 import type { Member } from "@conquest/zod/schemas/member.schema";
 import { useQuery } from "@tanstack/react-query";
@@ -35,8 +36,10 @@ export const LevelTooltip = ({ member, showIcon = true }: Props) => {
         onMouseLeave={() => setHover(false)}
         className="flex items-center justify-end gap-1.5"
       >
-        <Level size={18} />
-        <p>{getLevelLabel(member.level)}</p>
+        {member.level > 0 && <Level size={18} />}
+        <p className={cn(member.level === 0 && "text-muted-foreground")}>
+          {getLevelLabel(member.level)}
+        </p>
         {showIcon && <InfoIcon size={13} className="text-muted-foreground" />}
       </TooltipTrigger>
       <TooltipContent className="space-y-2 text-start" align="end">

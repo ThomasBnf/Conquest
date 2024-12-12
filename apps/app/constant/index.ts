@@ -38,3 +38,27 @@ export const SCOPES =
   "channels:history,channels:join,channels:read,files:read,groups:history,groups:read,links:read,reactions:read,team:read,users.profile:read,users:read,users:read.email";
 
 export const USER_SCOPES = "chat:write,im:write,channels:write";
+
+export const WEEKDAYS = ["Mon", "Wed", "Fri", "Sun"] as const;
+export const MONTHS = [
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
+  "May",
+  "Jun",
+  "Jul",
+  "Aug",
+  "Sep",
+  "Oct",
+  "Nov",
+  "Dec",
+] as const;
+
+export const ACTIVITY_COLORS = {
+  0: "bg-gray-100",
+  1: "bg-main-200",
+  2: "bg-main-400",
+  3: "bg-main-600",
+  4: "bg-main-900",
+} as const;

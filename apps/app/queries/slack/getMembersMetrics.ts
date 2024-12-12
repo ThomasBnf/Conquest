@@ -1,11 +1,12 @@
 import { prisma } from "@/lib/prisma";
 import type { Member } from "@conquest/zod/schemas/member.schema";
 import {
-  addWeeks,
+  eachWeekOfInterval,
   isAfter,
-  isBefore,
+  isSameWeek,
   startOfMonth,
   startOfWeek,
+  subDays,
   subMonths,
 } from "date-fns";
 import { getMemberPresence } from "./getMemberPresence";
@@ -15,12 +16,18 @@ type Props = {
 };
 
 export const getMembersMetrics = async ({ members }: Props) => {
-  const last3months = startOfMonth(subMonths(new Date(), 3));
+  const today = new Date();
+  const last3months = startOfMonth(subMonths(today, 3));
+  const last365Days = subDays(today, 365);
+  const currentWeek = startOfWeek(today);
 
   for (const member of members) {
     const activities = await prisma.activities.findMany({
       where: {
         member_id: member.id,
+        created_at: {
+          gte: last365Days,
+        },
         activity_type: {
           weight: {
             gt: 0,
@@ -35,6 +42,21 @@ export const getMembersMetrics = async ({ members }: Props) => {
       },
     });
 
+    if (!activities.length) {
+      await prisma.members.update({
+        where: { id: member.id },
+        data: {
+          love: 0,
+          presence: 0,
+          level: 0,
+          love_logs: [],
+          presence_logs: [],
+          level_logs: [],
+        },
+      });
+      continue;
+    }
+
     const last3monthsActivities = activities.filter((activity) =>
       isAfter(activity.created_at, last3months),
     );
@@ -43,66 +65,53 @@ export const getMembersMetrics = async ({ members }: Props) => {
       (acc, activity) => acc + activity.activity_type.weight,
       0,
     );
+
     const maxWeight = Math.max(
       ...last3monthsActivities.map((activity) => activity.activity_type.weight),
       0,
     );
 
-    const presence = getMemberPresence(last3monthsActivities);
-    const level = presence > maxWeight ? presence : maxWeight;
+    const presence = getMemberPresence(activities, currentWeek);
+    const level = Math.max(presence, maxWeight);
 
-    const love_logs = [];
-    const presence_logs = [];
-    const level_logs = [];
+    const weekIntervals = eachWeekOfInterval({
+      start: last365Days,
+      end: today,
+    });
 
-    if (activities.length > 0) {
-      const firstActivity = activities.at(0)?.created_at;
-      if (!firstActivity) continue;
+    const logs = weekIntervals.map((weekStart) => {
+      const activitiesUntilWeek = activities.filter(
+        (activity) => activity.created_at <= weekStart,
+      );
 
-      let currentWeekStart = startOfWeek(firstActivity);
-      const lastActivityDate = activities.at(-1)?.created_at || new Date();
+      const weekLast3months = startOfMonth(subMonths(weekStart, 3));
 
-      while (isBefore(currentWeekStart, lastActivityDate)) {
-        const nextWeekStart = addWeeks(currentWeekStart, 1);
+      const weekLast3monthsActivities = activitiesUntilWeek.filter((activity) =>
+        isAfter(activity.created_at, weekLast3months),
+      );
 
-        const weekActivities = activities.filter(
-          (activity) =>
-            isAfter(activity.created_at, currentWeekStart) &&
-            isBefore(activity.created_at, nextWeekStart),
-        );
+      const weekLove = weekLast3monthsActivities.reduce(
+        (acc, activity) => acc + activity.activity_type.weight,
+        0,
+      );
 
-        const weekLove = weekActivities.reduce(
-          (acc, activity) => acc + activity.activity_type.weight,
-          0,
-        );
+      const weekMaxWeight = Math.max(
+        ...weekLast3monthsActivities.map(
+          (activity) => activity.activity_type.weight,
+        ),
+        0,
+      );
 
-        const weekMaxWeight = Math.max(
-          ...weekActivities.map((activity) => activity.activity_type.weight),
-          0,
-        );
+      const weekPresence = getMemberPresence(activitiesUntilWeek, weekStart);
+      const weekLevel = Math.max(weekPresence, weekMaxWeight);
 
-        const weekPresence = getMemberPresence(weekActivities);
-        const weekLevel =
-          weekPresence > weekMaxWeight ? weekPresence : weekMaxWeight;
-
-        love_logs.push({
-          date: currentWeekStart,
-          value: weekLove,
-        });
-
-        presence_logs.push({
-          date: currentWeekStart,
-          value: weekPresence,
-        });
-
-        level_logs.push({
-          date: currentWeekStart,
-          value: weekLevel,
-        });
-
-        currentWeekStart = nextWeekStart;
-      }
-    }
+      return {
+        date: weekStart,
+        love: weekLove,
+        presence: weekPresence,
+        level: weekLevel,
+      };
+    });
 
     await prisma.members.update({
       where: { id: member.id },
@@ -110,11 +119,14 @@ export const getMembersMetrics = async ({ members }: Props) => {
         love,
         presence,
         level,
-        first_activity: activities[0]?.created_at,
+        first_activity: activities.at(0)?.created_at,
         last_activity: activities.at(-1)?.created_at,
-        love_logs,
-        presence_logs,
-        level_logs,
+        love_logs: logs.map(({ date, love }) => ({ date, value: love })),
+        presence_logs: logs.map(({ date, presence }) => ({
+          date,
+          value: presence,
+        })),
+        level_logs: logs.map(({ date, level }) => ({ date, value: level })),
       },
     });
   }

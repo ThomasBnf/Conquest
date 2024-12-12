@@ -383,13 +383,17 @@ export const slack = new Hono()
 
         case "user_change": {
           const { id, deleted } = event.user;
-          const { profile } = await web.users.profile.get({ user: id });
 
+          const userProfile = await web.users.profile
+            .get({ user: id })
+            .catch(() => {
+              return { profile: undefined };
+            });
+
+          const profile = userProfile.profile;
           if (!profile) return c.json({ status: 200 });
 
           const { user: userInfo } = await web.users.info({ user: id });
-          const locale = userInfo?.locale;
-
           const { first_name, last_name, email, phone, image_1024, title } =
             profile;
 
@@ -400,7 +404,7 @@ export const slack = new Hono()
             last_name,
             email,
             phone,
-            locale,
+            locale: userInfo?.locale,
             avatar_url: image_1024,
             job_title: title,
             isDeleted: deleted,
