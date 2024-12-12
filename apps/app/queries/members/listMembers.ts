@@ -1,5 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { MemberWithCompanySchema } from "@conquest/zod/member.schema";
+import { Prisma } from "@prisma/client";
+import { getOrderBy } from "../helpers/getOrderBy";
 
 type Props = {
   search: string;
@@ -19,6 +21,7 @@ export const listMembers = async ({
   workspace_id,
 }: Props) => {
   const searchParsed = search.toLowerCase().trim();
+  const orderBy = getOrderBy(id, desc);
 
   const members = await prisma.$queryRaw`
     SELECT 
@@ -40,49 +43,7 @@ export const listMembers = async ({
       )
       AND m.workspace_id = ${workspace_id}
     GROUP BY m.id, c.id
-    ORDER BY 
-            CASE WHEN ${desc} = true THEN
-                CASE ${id}
-                    WHEN 'love' THEN m.love
-                    WHEN 'level' THEN m.level
-                    ELSE NULL
-                END
-            END DESC NULLS LAST,
-            CASE WHEN ${desc} = true THEN
-                CASE ${id}
-                    WHEN 'full_name' THEN m.first_name || ' ' || m.last_name
-                    WHEN 'job_title' THEN m.job_title
-                    WHEN 'emails' THEN m.emails[0]
-                    WHEN 'tags' THEN m.tags[0]
-                    WHEN 'joined_at' THEN m.joined_at::text
-                    WHEN 'locale' THEN m.locale
-                    WHEN 'source' THEN m.source::text
-                    WHEN 'first_activity' THEN m.first_activity::text
-                    WHEN 'last_activity' THEN m.last_activity::text
-                    ELSE NULL
-                END
-            END DESC NULLS LAST,
-            CASE WHEN ${desc} = false THEN
-                CASE ${id}
-                    WHEN 'love' THEN m.love
-                    WHEN 'level' THEN m.level
-                    ELSE NULL
-                END
-            END ASC NULLS LAST,
-            CASE WHEN ${desc} = false THEN
-                CASE ${id}
-                    WHEN 'full_name' THEN m.first_name || ' ' || m.last_name
-                    WHEN 'job_title' THEN m.job_title
-                    WHEN 'emails' THEN m.emails[0]
-                    WHEN 'tags' THEN m.tags[0]
-                    WHEN 'joined_at' THEN m.joined_at::text
-                    WHEN 'locale' THEN m.locale
-                    WHEN 'source' THEN m.source::text
-                    WHEN 'first_activity' THEN m.first_activity::text
-                    WHEN 'last_activity' THEN m.last_activity::text
-                    ELSE NULL
-                END
-            END ASC NULLS LAST
+    ${Prisma.sql([orderBy])}
     LIMIT ${pageSize}
     OFFSET ${(page - 1) * pageSize}
   `;

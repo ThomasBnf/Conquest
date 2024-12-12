@@ -34,7 +34,7 @@ export const MemberPresenceLogs = ({ member }: Props) => {
 
   const formattedLogs = presence_logs.map((log) => ({
     date: format(log.date, "MMM d, yyyy"),
-    value: log.value,
+    presence: log.presence,
   }));
 
   return (
@@ -70,7 +70,7 @@ export const MemberPresenceLogs = ({ member }: Props) => {
               }
             />
             <defs>
-              <linearGradient id="fill-value" x1="0" y1="0" x2="0" y2="1">
+              <linearGradient id="fill-presence" x1="0" y1="0" x2="0" y2="1">
                 <stop
                   offset="5%"
                   stopColor="hsl(var(--chart-1))"
@@ -85,8 +85,8 @@ export const MemberPresenceLogs = ({ member }: Props) => {
             </defs>
             <Area
               type="linear"
-              dataKey="value"
-              fill="url(#fillvalue)"
+              dataKey="presence"
+              fill="url(#fill-presence)"
               fillOpacity={0.4}
               stroke="hsl(var(--chart-1))"
               strokeWidth={1.5}

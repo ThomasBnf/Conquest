@@ -32,7 +32,7 @@ export const OperatorPicker = ({ filter, handleUpdate }: Props) => {
         </Button>
       </PopoverTrigger>
       <PopoverContent align="start" className="p-0">
-        <Command className="w-28">
+        <Command className="w-36">
           <CommandList>
             <CommandGroup>
               {OPERATORS.filter((operator) => {

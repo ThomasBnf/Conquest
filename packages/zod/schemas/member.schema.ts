@@ -5,17 +5,17 @@ import { SOURCE } from "./enum/source.enum";
 
 const loveLogSchema = z.object({
   date: z.string(),
-  value: z.number(),
+  love: z.number(),
 });
 
 const presenceLogSchema = z.object({
   date: z.string(),
-  value: z.number(),
+  presence: z.number(),
 });
 
 const levelLogSchema = z.object({
   date: z.string(),
-  value: z.number(),
+  level: z.number(),
 });
 
 export const MemberSchema = z.object({

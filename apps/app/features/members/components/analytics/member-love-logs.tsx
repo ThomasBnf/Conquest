@@ -33,7 +33,7 @@ export const MemberLoveLogs = ({ member }: Props) => {
 
   const formattedLogs = love_logs.map((log) => ({
     date: format(log.date, "MMM d, yyyy"),
-    value: log.value,
+    love: log.love,
   }));
 
   return (
@@ -62,7 +62,7 @@ export const MemberLoveLogs = ({ member }: Props) => {
             />
             <ChartTooltip content={<ChartTooltipContent indicator="line" />} />
             <defs>
-              <linearGradient id="fillvalue" x1="0" y1="0" x2="0" y2="1">
+              <linearGradient id="fill-love" x1="0" y1="0" x2="0" y2="1">
                 <stop
                   offset="5%"
                   stopColor="hsl(var(--chart-1))"
@@ -77,8 +77,8 @@ export const MemberLoveLogs = ({ member }: Props) => {
             </defs>
             <Area
               type="linear"
-              dataKey="value"
-              fill="url(#fillvalue)"
+              dataKey="love"
+              fill="url(#fill-love)"
               fillOpacity={0.4}
               stroke="hsl(var(--chart-1))"
               strokeWidth={1.5}

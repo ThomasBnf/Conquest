@@ -32,7 +32,7 @@ export const TableSkeleton = ({
               <div
                 key={cuid()}
                 className={cn(
-                  "flex h-12 w-[250px] items-center px-3",
+                  "flex h-[42.5px] w-[250px] items-center px-3",
                   (isMembers || isLeaderboard) &&
                     index === 2 &&
                     "w-[185px] justify-end",

@@ -1,13 +1,8 @@
 import { prisma } from "@/lib/prisma";
+import { getFilters } from "@/queries/helpers/getFilters";
+import { getOrderBy } from "@/queries/helpers/getOrderBy";
 import { getAuthUser } from "@/queries/users/getAuthUser";
-import {
-  FilterActivitySchema,
-  FilterLevelSchema,
-  FilterNumberSchema,
-  FilterSchema,
-  FilterSelectSchema,
-  FilterTextSchema,
-} from "@conquest/zod/schemas/filters.schema";
+import { FilterSchema } from "@conquest/zod/schemas/filters.schema";
 import {
   MemberSchema,
   MemberWithCompanySchema,
@@ -48,109 +43,8 @@ export const members = new Hono()
         c.req.valid("query");
 
       const searchParsed = search.toLowerCase().trim();
-
-      const filterConditions = filters.map((filter) => {
-        if (filter.type === "text") {
-          const { value, operator, field } = FilterTextSchema.parse(filter);
-          const fieldCondition = Prisma.raw(field);
-          const likePattern = `%${value}%`;
-
-          switch (operator) {
-            case "contains":
-              return Prisma.sql`m.${fieldCondition}::text ILIKE ${likePattern}`;
-            case "not_contains":
-              return Prisma.sql`m.${fieldCondition}::text NOT ILIKE ${likePattern}`;
-            default:
-              return Prisma.sql`TRUE`;
-          }
-        }
-
-        if (filter.type === "select") {
-          const { values, operator, field } = FilterSelectSchema.parse(filter);
-          const fieldCondition = Prisma.raw(field);
-          const likePattern = `%${values.join(",")}%`;
-
-          switch (operator) {
-            case "contains":
-              return Prisma.sql`m.${fieldCondition}::text ILIKE ${likePattern}`;
-            case "not_contains":
-              return Prisma.sql`m.${fieldCondition}::text NOT ILIKE ${likePattern}`;
-            default:
-              return Prisma.sql`TRUE`;
-          }
-        }
-
-        if (filter.type === "level") {
-          const { value, operator, field } = FilterLevelSchema.parse(filter);
-          const fieldCondition = Prisma.raw(field);
-
-          switch (operator) {
-            case "greater":
-              return Prisma.sql`m.${fieldCondition} > ${value}`;
-            case "greater or equal":
-              return Prisma.sql`m.${fieldCondition} >= ${value}`;
-            case "equal":
-              return Prisma.sql`m.${fieldCondition} = ${value}`;
-            case "not equal":
-              return Prisma.sql`m.${fieldCondition} != ${value}`;
-            case "less":
-              return Prisma.sql`m.${fieldCondition} < ${value}`;
-            case "less or equal":
-              return Prisma.sql`m.${fieldCondition} <= ${value}`;
-            default:
-              return Prisma.sql`TRUE`;
-          }
-        }
-
-        if (filter.type === "number") {
-          const { value, operator, field } = FilterNumberSchema.parse(filter);
-          const fieldCondition = Prisma.raw(field);
-
-          switch (operator) {
-            case "greater":
-              return Prisma.sql`m.${fieldCondition} > ${value}`;
-            case "greater or equal":
-              return Prisma.sql`m.${fieldCondition} >= ${value}`;
-            case "equal":
-              return Prisma.sql`m.${fieldCondition} = ${value}`;
-            case "not equal":
-              return Prisma.sql`m.${fieldCondition} != ${value}`;
-            case "less":
-              return Prisma.sql`m.${fieldCondition} < ${value}`;
-            case "less or equal":
-              return Prisma.sql`m.${fieldCondition} <= ${value}`;
-            default:
-              return Prisma.sql`TRUE`;
-          }
-        }
-
-        if (filter.type === "activity" && filter.activity_types.length) {
-          const {
-            activity_types,
-            operator,
-            value: count,
-            dynamic_date,
-          } = FilterActivitySchema.parse(filter);
-
-          const intervalStr = `'${dynamic_date}'::interval`;
-
-          const activityKeys = activity_types.map((at) => at.key);
-
-          const condition = Prisma.sql`(
-            SELECT COUNT(*)
-            FROM activities a
-            JOIN activities_types at ON a.activity_type_id = at.id
-            WHERE a.member_id = m.id
-            AND at.key = ANY(${Prisma.raw(
-              `ARRAY[${activityKeys.map((key) => `'${key}'`).join(",")}]`,
-            )})
-            AND a.created_at >= NOW() - ${Prisma.raw(intervalStr)}
-          ) ${Prisma.raw(operator)} ${count}`;
-
-          return condition;
-        }
-        return;
-      });
+      const orderBy = getOrderBy(id, desc);
+      const filterBy = getFilters({ filters });
 
       const members = await prisma.$queryRaw`
         SELECT 
@@ -174,54 +68,12 @@ export const members = new Hono()
           )
           AND m.workspace_id = ${workspace_id}
           ${
-            filterConditions.length > 0
-              ? Prisma.sql`AND (${Prisma.join(filterConditions, " AND ")})`
+            filterBy.length > 0
+              ? Prisma.sql`AND (${Prisma.join(filterBy, " AND ")})`
               : Prisma.sql``
           }
         GROUP BY m.id, c.id
-        ORDER BY 
-                CASE WHEN ${desc} = true THEN
-                    CASE ${id}
-                        WHEN 'love' THEN m.love
-                        WHEN 'level' THEN m.level
-                        ELSE NULL
-                    END
-                END DESC NULLS LAST,
-                CASE WHEN ${desc} = true THEN
-                    CASE ${id}
-                        WHEN 'full_name' THEN m.first_name || ' ' || m.last_name
-                        WHEN 'job_title' THEN m.job_title
-                        WHEN 'emails' THEN m.emails[0]
-                        WHEN 'tags' THEN m.tags[0]
-                        WHEN 'joined_at' THEN m.joined_at::text
-                        WHEN 'locale' THEN m.locale
-                        WHEN 'source' THEN m.source::text
-                        WHEN 'first_activity' THEN m.first_activity::text
-                        WHEN 'last_activity' THEN m.last_activity::text
-                        ELSE NULL
-                    END
-                END DESC NULLS LAST,
-                CASE WHEN ${desc} = false THEN
-                    CASE ${id}
-                        WHEN 'love' THEN m.love
-                        WHEN 'level' THEN m.level
-                        ELSE NULL
-                    END
-                END ASC NULLS LAST,
-                CASE WHEN ${desc} = false THEN
-                    CASE ${id}
-                        WHEN 'full_name' THEN m.first_name || ' ' || m.last_name
-                        WHEN 'job_title' THEN m.job_title
-                        WHEN 'emails' THEN m.emails[0]
-                        WHEN 'tags' THEN m.tags[0]
-                        WHEN 'joined_at' THEN m.joined_at::text
-                        WHEN 'locale' THEN m.locale
-                        WHEN 'source' THEN m.source::text
-                        WHEN 'first_activity' THEN m.first_activity::text
-                        WHEN 'last_activity' THEN m.last_activity::text
-                        ELSE NULL
-                    END
-                END ASC NULLS LAST
+        ${Prisma.sql([orderBy])}
         LIMIT ${pageSize}
         OFFSET ${(page - 1) * pageSize}
       `;

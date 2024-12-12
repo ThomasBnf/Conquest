@@ -34,7 +34,7 @@ export const MemberLevelLogs = ({ member }: Props) => {
 
   const formattedLogs = level_logs.map((log) => ({
     date: format(log.date, "MMM d, yyyy"),
-    value: log.value,
+    level: log.level,
   }));
 
   return (
@@ -70,7 +70,7 @@ export const MemberLevelLogs = ({ member }: Props) => {
               }
             />
             <defs>
-              <linearGradient id="fillvalue" x1="0" y1="0" x2="0" y2="1">
+              <linearGradient id="fill-level" x1="0" y1="0" x2="0" y2="1">
                 <stop
                   offset="5%"
                   stopColor="hsl(var(--chart-1))"
@@ -85,9 +85,9 @@ export const MemberLevelLogs = ({ member }: Props) => {
             </defs>
             <Area
               type="linear"
-              dataKey="value"
+              dataKey="level"
               name="Level"
-              fill="url(#fillvalue)"
+              fill="url(#fill-level)"
               fillOpacity={0.4}
               stroke="hsl(var(--chart-1))"
               strokeWidth={1.5}

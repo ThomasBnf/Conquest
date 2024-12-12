@@ -57,7 +57,7 @@ export const LoveTooltip = ({ member, showIcon = true }: Props) => {
               data?.details.length && "mt-4",
             )}
           >
-            <p className="w-36">Total Love</p>
+            <p className="w-36">Love</p>
             <p>{data?.total_love ?? 0}</p>
           </div>
           <div className="flex items-center justify-between text-sm">
