@@ -3,19 +3,13 @@ import { z } from "zod";
 import { GENDER } from "./enum/gender.enum";
 import { SOURCE } from "./enum/source.enum";
 
-const loveLogSchema = z.object({
+export const LogSchema = z.object({
   date: z.string(),
   love: z.number(),
-});
-
-const presenceLogSchema = z.object({
-  date: z.string(),
   presence: z.number(),
-});
-
-const levelLogSchema = z.object({
-  date: z.string(),
   level: z.number(),
+  max_weight: z.number(),
+  max_weight_activity: z.string(),
 });
 
 export const MemberSchema = z.object({
@@ -37,9 +31,7 @@ export const MemberSchema = z.object({
   presence: z.number(),
   gender: GENDER.nullable(),
   source: SOURCE,
-  love_logs: z.array(loveLogSchema),
-  presence_logs: z.array(presenceLogSchema),
-  level_logs: z.array(levelLogSchema),
+  logs: z.array(LogSchema),
   company_id: z.string().cuid().nullable(),
   workspace_id: z.string().cuid(),
   first_activity: z.coerce.date().nullable(),
@@ -57,3 +49,4 @@ export const MemberWithCompanySchema = MemberSchema.extend({
 
 export type Member = z.infer<typeof MemberSchema>;
 export type MemberWithCompany = z.infer<typeof MemberWithCompanySchema>;
+export type Log = z.infer<typeof LogSchema>;

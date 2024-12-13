@@ -1,12 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import type { ActivityWithType } from "@conquest/zod/schemas/activity.schema";
-import {
-  isAfter,
-  startOfMonth,
-  startOfWeek,
-  subDays,
-  subMonths,
-} from "date-fns";
+import { isAfter, startOfMonth, startOfWeek, subMonths } from "date-fns";
 import { getMemberPresence } from "../slack/getMemberPresence";
 
 type Props = {
@@ -26,9 +20,7 @@ export const getMemberLove = async ({ memberId, activities }: Props) => {
         love: 0,
         presence: 0,
         level: 0,
-        love_logs: [],
-        presence_logs: [],
-        level_logs: [],
+        logs: [],
       },
     });
   }

@@ -19,7 +19,7 @@ import {
 } from "recharts";
 
 const chartConfig = {
-  value: {
+  presence: {
     label: "Presence",
     color: "hsl(var(--chart-1))",
   },
@@ -30,9 +30,9 @@ type Props = {
 };
 
 export const MemberPresenceLogs = ({ member }: Props) => {
-  const presence_logs = member.presence_logs;
+  const logs = member.logs;
 
-  const formattedLogs = presence_logs.map((log) => ({
+  const formattedLogs = logs.map((log) => ({
     date: format(log.date, "MMM d, yyyy"),
     presence: log.presence,
   }));
@@ -41,7 +41,7 @@ export const MemberPresenceLogs = ({ member }: Props) => {
     <div className="relative">
       <p className="mb-2 pl-4 font-medium text-lg">Presence Logs</p>
       {formattedLogs.length === 0 && <EmptyStateChart />}
-      <ResponsiveContainer height={300}>
+      <ResponsiveContainer height={300} className="pr-1">
         <ChartContainer config={chartConfig}>
           <AreaChart
             data={formattedLogs}
@@ -86,7 +86,6 @@ export const MemberPresenceLogs = ({ member }: Props) => {
             <Area
               type="linear"
               dataKey="presence"
-              name="Presence"
               fill="url(#fill-presence)"
               fillOpacity={0.4}
               stroke="hsl(var(--chart-1))"

@@ -40,10 +40,6 @@ export const getMembersMetrics = async ({ members }: Props) => {
 
     const logs = await getMemberLogs({ activities });
 
-    const loveLogs = logs.map(({ date, love }) => ({ date, love }));
-    const presenceLogs = logs.map(({ date, presence }) => ({ date, presence }));
-    const levelLogs = logs.map(({ date, level }) => ({ date, level }));
-
     await prisma.members.update({
       where: { id: member.id },
       data: {
@@ -52,9 +48,7 @@ export const getMembersMetrics = async ({ members }: Props) => {
         level,
         first_activity: activities.at(0)?.created_at,
         last_activity: activities.at(-1)?.created_at,
-        love_logs: loveLogs,
-        presence_logs: presenceLogs,
-        level_logs: levelLogs,
+        logs,
       },
     });
   }

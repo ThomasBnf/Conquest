@@ -18,7 +18,7 @@ import {
 } from "recharts";
 
 const chartConfig = {
-  value: {
+  love: {
     label: "Love",
     color: "hsl(var(--chart-1))",
   },
@@ -29,9 +29,9 @@ type Props = {
 };
 
 export const MemberLoveLogs = ({ member }: Props) => {
-  const love_logs = member.love_logs;
+  const logs = member.logs;
 
-  const formattedLogs = love_logs.map((log) => ({
+  const formattedLogs = logs.map((log) => ({
     date: format(log.date, "MMM d, yyyy"),
     love: log.love,
   }));
@@ -40,7 +40,7 @@ export const MemberLoveLogs = ({ member }: Props) => {
     <div className="relative">
       <p className="mb-2 pl-4 font-medium text-lg">Love Logs</p>
       {formattedLogs.length === 0 && <EmptyStateChart />}
-      <ResponsiveContainer height={300}>
+      <ResponsiveContainer height={300} className="pr-1">
         <ChartContainer config={chartConfig}>
           <AreaChart
             data={formattedLogs}
@@ -78,7 +78,6 @@ export const MemberLoveLogs = ({ member }: Props) => {
             <Area
               type="linear"
               dataKey="love"
-              name="Love"
               fill="url(#fill-love)"
               fillOpacity={0.4}
               stroke="hsl(var(--chart-1))"

@@ -16,42 +16,55 @@ export const getMemberLogs = async ({ activities }: Props) => {
   const today = new Date();
   const last365Days = subDays(today, 365);
 
-  const weekIntervals = eachWeekOfInterval({
-    start: last365Days,
-    end: today,
-  });
+  const weekIntervals = eachWeekOfInterval(
+    {
+      start: last365Days,
+      end: today,
+    },
+    { weekStartsOn: 1 },
+  );
 
   const logs = weekIntervals.map((weekStart) => {
-    const activitiesUntilWeek = activities.filter(
-      (activity) => activity.created_at <= weekStart,
-    );
-
     const weekLast3months = startOfMonth(subMonths(weekStart, 3));
-
-    const weekLast3monthsActivities = activitiesUntilWeek.filter((activity) =>
-      isAfter(activity.created_at, weekLast3months),
+    const activitiesUntilWeek = activities.filter(
+      (activity) =>
+        activity.created_at <= weekStart &&
+        isAfter(activity.created_at, weekLast3months),
     );
 
-    const weekLove = weekLast3monthsActivities.reduce(
+    const weekLove = activitiesUntilWeek.reduce(
       (acc, activity) => acc + activity.activity_type.weight,
       0,
     );
 
-    const weekMaxWeight = Math.max(
-      ...weekLast3monthsActivities.map(
-        (activity) => activity.activity_type.weight,
-      ),
-      0,
-    );
+    const getHighestWeightActivity = (activities: ActivityWithType[]) => {
+      if (!activities.length) return null;
+
+      return activities.reduce((highest, current) =>
+        current.activity_type.weight > (highest?.activity_type.weight ?? 0)
+          ? current
+          : highest,
+      );
+    };
+
+    const weekMaxWeightActivity = getHighestWeightActivity(activitiesUntilWeek);
+    const { source, name, weight } = weekMaxWeightActivity?.activity_type ?? {};
+    const maxWeight = weight ?? 0;
+
+    const maxWeightActivityString = weekMaxWeightActivity
+      ? `${source?.slice(0, 1).toUpperCase()}${source?.slice(1).toLowerCase()} - ${name}`
+      : "No activity";
 
     const weekPresence = getMemberPresence(activitiesUntilWeek, weekStart);
-    const weekLevel = Math.max(weekPresence, weekMaxWeight);
+    const weekLevel = Math.max(weekPresence, maxWeight);
 
     return {
       date: weekStart,
       love: weekLove,
       presence: weekPresence,
       level: weekLevel,
+      max_weight: maxWeight,
+      max_weight_activity: maxWeightActivityString,
     };
   });
 

@@ -24,11 +24,6 @@ type Props = {
   }[];
 };
 
-type ActivitySummary = {
-  count: number;
-  activities: Set<string>;
-};
-
 type ActivityLevel = 0 | 1 | 2 | 3 | 4;
 
 const getActivityLevel = (count: number): ActivityLevel => {
@@ -70,13 +65,17 @@ const summarizeActivities = (activities: ActivityWithType[]) =>
     (acc, activity) => {
       const key = activity.activity_type.source;
       if (!acc[key]) {
-        acc[key] = { count: 0, activities: new Set() };
+        acc[key] = { count: 0, activities: new Map() };
       }
+      const activityName = activity.activity_type.name;
+      acc[key].activities.set(
+        activityName,
+        (acc[key].activities.get(activityName) || 0) + 1,
+      );
       acc[key].count++;
-      acc[key].activities.add(activity.activity_type.name);
       return acc;
     },
-    {} as Record<string, ActivitySummary>,
+    {} as Record<string, { count: number; activities: Map<string, number> }>,
   );
 
 const ActivitySummaryDisplay = ({
@@ -89,9 +88,9 @@ const ActivitySummaryDisplay = ({
       {Object.entries(summary).map(([source, data]) => (
         <div key={source} className="opacity-70">
           <p className="capitalize">{source.toLowerCase()}</p>
-          {Array.from(data.activities).map((activity) => (
+          {Array.from(data.activities.entries()).map(([activity, count]) => (
             <p key={activity}>
-              {data.count} {activity}
+              {count} {activity}
             </p>
           ))}
         </div>
