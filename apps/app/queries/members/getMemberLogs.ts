@@ -9,11 +9,10 @@ import {
 import { getMemberPresence } from "../slack/getMemberPresence";
 
 type Props = {
-  memberId: string;
   activities: ActivityWithType[];
 };
 
-export const getMemberLogs = async ({ memberId, activities }: Props) => {
+export const getMemberLogs = async ({ activities }: Props) => {
   const today = new Date();
   const last365Days = subDays(today, 365);
 

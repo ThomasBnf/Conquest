@@ -17,7 +17,6 @@ type Props = {
 export const getMemberLove = async ({ memberId, activities }: Props) => {
   const today = new Date();
   const last3months = startOfMonth(subMonths(today, 3));
-  const last365Days = subDays(today, 365);
   const currentWeek = startOfWeek(today);
 
   if (!activities.length) {

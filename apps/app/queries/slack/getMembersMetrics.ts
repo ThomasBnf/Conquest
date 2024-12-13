@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import type { Member } from "@conquest/zod/schemas/member.schema";
-import { startOfMonth, startOfWeek, subDays, subMonths } from "date-fns";
+import { subDays } from "date-fns";
 import { getMemberLogs } from "../members/getMemberLogs";
 import { getMemberLove } from "../members/getMemberLove";
 
@@ -10,9 +10,7 @@ type Props = {
 
 export const getMembersMetrics = async ({ members }: Props) => {
   const today = new Date();
-  const last3months = startOfMonth(subMonths(today, 3));
   const last365Days = subDays(today, 365);
-  const currentWeek = startOfWeek(today);
 
   for (const member of members) {
     const activities = await prisma.activities.findMany({
@@ -40,7 +38,7 @@ export const getMembersMetrics = async ({ members }: Props) => {
       activities,
     });
 
-    const logs = await getMemberLogs({ memberId: member.id, activities });
+    const logs = await getMemberLogs({ activities });
 
     const loveLogs = logs.map(({ date, love }) => ({ date, love }));
     const presenceLogs = logs.map(({ date, presence }) => ({ date, presence }));

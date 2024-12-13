@@ -78,6 +78,7 @@ export const MemberLoveLogs = ({ member }: Props) => {
             <Area
               type="linear"
               dataKey="love"
+              name="Love"
               fill="url(#fill-love)"
               fillOpacity={0.4}
               stroke="hsl(var(--chart-1))"

@@ -86,6 +86,7 @@ export const MemberPresenceLogs = ({ member }: Props) => {
             <Area
               type="linear"
               dataKey="presence"
+              name="Presence"
               fill="url(#fill-presence)"
               fillOpacity={0.4}
               stroke="hsl(var(--chart-1))"
