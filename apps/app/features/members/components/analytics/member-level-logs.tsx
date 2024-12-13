@@ -89,7 +89,7 @@ export const MemberLevelLogs = ({ member }: Props) => {
                           <div className="grid gap-1.5 pr-4">
                             <p className="font-medium leading-none">{date}</p>
                             <div className="grid gap-1">
-                              <p className="text-muted-foreground">Level</p>
+                              <p>Level</p>
                               <p className="text-muted-foreground">
                                 {max_weight > presence
                                   ? "Max Weight"
@@ -98,10 +98,10 @@ export const MemberLevelLogs = ({ member }: Props) => {
                             </div>
                           </div>
                           <div className="grid gap-1">
-                            <p className="font-medium font-mono tabular-nums">
+                            <p className="font-medium">
                               {getLevelLabel(level)}
                             </p>
-                            <p className="font-medium font-mono tabular-nums">
+                            <p className="text-muted-foreground">
                               {max_weight > presence
                                 ? max_weight_activity
                                 : getPresenceLabel(presence)}
