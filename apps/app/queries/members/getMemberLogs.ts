@@ -55,7 +55,7 @@ export const getMemberLogs = async ({ activities }: Props) => {
       ? `${source?.slice(0, 1).toUpperCase()}${source?.slice(1).toLowerCase()} - ${name}`
       : "No activity";
 
-    const weekPresence = getMemberPresence(activitiesUntilWeek, weekStart);
+    const weekPresence = getMemberPresence(activities, weekStart);
     const weekLevel = Math.max(weekPresence, maxWeight);
 
     return {
