@@ -2,7 +2,7 @@ import { Level } from "@/components/icons/Level";
 import { getLevelLabel } from "@/helpers/getLevelLabel";
 import { getPresenceLabel } from "@/helpers/getPresenceLabel";
 import { client } from "@/lib/rpc";
-import { cn } from "@conquest/ui/src/utils/cn";
+import { cn } from "@conquest/ui/cn";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@conquest/ui/tooltip";
 import type { Member } from "@conquest/zod/schemas/member.schema";
 import { useQuery } from "@tanstack/react-query";

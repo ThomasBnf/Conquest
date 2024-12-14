@@ -5,9 +5,9 @@ import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
-export const _deleteListMembers = authAction
+export const deleteListMembers = authAction
   .metadata({
-    name: "_deleteListMembers",
+    name: "deleteListMembers",
   })
   .schema(
     z.object({

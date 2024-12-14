@@ -1,5 +1,5 @@
+import { deleteListMembers } from "@/actions/members/deleteListMembers";
 import { DeleteDialog } from "@/components/custom/delete-dialog";
-import { _deleteListMembers } from "@/features/members/actions/_deleteListMembers";
 import { Button } from "@conquest/ui/button";
 import { useQueryClient } from "@tanstack/react-query";
 import { X } from "lucide-react";
@@ -17,7 +17,7 @@ export const ActionMenu = ({ rowSelected, setRowSelected }: Props) => {
   const onDeleteMembers = async () => {
     const ids = rowSelected.map((id) => id);
 
-    const result = await _deleteListMembers({ ids });
+    const result = await deleteListMembers({ ids });
     const error = result?.serverError;
 
     if (error) return toast.error(error);

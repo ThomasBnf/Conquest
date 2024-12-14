@@ -8,7 +8,7 @@ import { InstallButton } from "@/features/slack/install-button";
 import { UninstallButton } from "@/features/slack/uninstall_button";
 import { buttonVariants } from "@conquest/ui/button";
 import { Card, CardContent, CardHeader } from "@conquest/ui/card";
-import { cn } from "@conquest/ui/src/utils/cn";
+import { cn } from "@conquest/ui/cn";
 import { ExternalLink } from "lucide-react";
 import Link from "next/link";
 

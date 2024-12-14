@@ -5,8 +5,8 @@ import { LoginSchema } from "@conquest/zod/auth.schema";
 import { safeAction } from "lib/safeAction";
 import { AuthError } from "next-auth";
 
-export const _logIn = safeAction
-  .metadata({ name: "_logIn" })
+export const logIn = safeAction
+  .metadata({ name: "logIn" })
   .schema(LoginSchema)
   .action(async ({ parsedInput: { email, password, redirectTo } }) => {
     try {

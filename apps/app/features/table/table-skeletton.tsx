@@ -1,5 +1,5 @@
+import { cn } from "@conquest/ui/cn";
 import { Skeleton } from "@conquest/ui/skeleton";
-import { cn } from "@conquest/ui/src/utils/cn";
 import cuid from "cuid";
 
 type Props = {

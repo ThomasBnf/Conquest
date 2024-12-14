@@ -1,13 +1,9 @@
 "use client";
 
 import { ACTIVITY_COLORS, WEEKDAYS } from "@/constant";
-import { ScrollArea, ScrollBar } from "@conquest/ui/src/components/scroll-area";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@conquest/ui/src/components/tooltip";
-import { cn } from "@conquest/ui/src/utils/cn";
+import { cn } from "@conquest/ui/cn";
+import { ScrollArea, ScrollBar } from "@conquest/ui/scroll-area";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@conquest/ui/tooltip";
 import type { ActivityWithType } from "@conquest/zod/schemas/activity.schema";
 import {
   addDays,

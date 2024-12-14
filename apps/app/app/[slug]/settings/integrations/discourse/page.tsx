@@ -7,7 +7,7 @@ import { InstallForm } from "@/features/discourse/install-form";
 import { IntegrationHeader } from "@/features/integrations/integration-header";
 import { Button, buttonVariants } from "@conquest/ui/button";
 import { Card, CardContent, CardHeader } from "@conquest/ui/card";
-import { cn } from "@conquest/ui/src/utils/cn";
+import { cn } from "@conquest/ui/cn";
 import { ExternalLink } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";

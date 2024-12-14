@@ -24,7 +24,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { _logIn } from "../actions/_logIn";
+import { logIn } from "../actions/logIn";
 
 export const LoginForm = () => {
   const [loading, setLoading] = useState(false);
@@ -40,7 +40,7 @@ export const LoginForm = () => {
   const onSubmit = async ({ email, password }: Login) => {
     setLoading(true);
 
-    const rSigin = await _logIn({ email, password });
+    const rSigin = await logIn({ email, password });
     const error = rSigin?.serverError || rSigin?.data?.error;
 
     if (error) {

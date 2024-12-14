@@ -1,5 +1,5 @@
 import { Badge } from "@conquest/ui/badge";
-import { cn } from "@conquest/ui/src/utils/cn";
+import { cn } from "@conquest/ui/cn";
 import flags from "react-phone-number-input/flags";
 
 type Props = {

@@ -1,6 +1,6 @@
 "use client";
 
-import { _signUp } from "@/features/auth/actions/_signUp";
+import { _signUp } from "@/features/auth/actions/signUp";
 import { Button, buttonVariants } from "@conquest/ui/button";
 import {
   Card,

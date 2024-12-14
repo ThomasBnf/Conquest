@@ -6,7 +6,7 @@ import { hash } from "bcryptjs";
 import cuid from "cuid";
 import { prisma } from "lib/prisma";
 import { safeAction } from "lib/safeAction";
-import { _logIn } from "./_logIn";
+import { logIn } from "./logIn";
 
 export const _signUp = safeAction
   .metadata({ name: "_signUp" })
@@ -35,7 +35,7 @@ export const _signUp = safeAction
       },
     });
 
-    if (user) await _logIn({ email, password, redirectTo: "/" });
+    if (user) await logIn({ email, password, redirectTo: "/" });
 
     return UserSchema.parse(user);
   });

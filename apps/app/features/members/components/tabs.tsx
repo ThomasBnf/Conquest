@@ -1,7 +1,7 @@
 "use client";
 
 import { buttonVariants } from "@conquest/ui/button";
-import { cn } from "@conquest/ui/src/utils/cn";
+import { cn } from "@conquest/ui/cn";
 import { Activity, BarChart } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";

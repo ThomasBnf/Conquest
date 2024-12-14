@@ -1,6 +1,6 @@
 import { useUser } from "@/context/userContext";
 import { buttonVariants } from "@conquest/ui/button";
-import { cn } from "@conquest/ui/src/utils/cn";
+import { cn } from "@conquest/ui/cn";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 

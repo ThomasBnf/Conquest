@@ -1,6 +1,6 @@
 import { buttonVariants } from "@conquest/ui/button";
 import { Card, CardContent, CardHeader } from "@conquest/ui/card";
-import { cn } from "@conquest/ui/src/utils/cn";
+import { cn } from "@conquest/ui/cn";
 import type { Integration } from "@conquest/zod/schemas/integration.schema";
 import { ExternalLink } from "lucide-react";
 import Link from "next/link";

@@ -7,7 +7,7 @@ import { Tabs } from "@/features/members/components/tabs";
 import { getMember } from "@/queries/members/getMember";
 import { listTags } from "@/queries/tags/listTags";
 import { getCurrentUser } from "@/queries/users/getCurrentUser";
-import { ScrollArea } from "@conquest/ui/src/components/scroll-area";
+import { ScrollArea } from "@conquest/ui/scroll-area";
 import { redirect } from "next/navigation";
 import type { PropsWithChildren } from "react";
 

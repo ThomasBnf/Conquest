@@ -6,8 +6,8 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 
-export const _deleteMember = authAction
-  .metadata({ name: "_deleteMember" })
+export const deleteMember = authAction
+  .metadata({ name: "deleteMember" })
   .schema(
     z.object({
       id: z.string(),
