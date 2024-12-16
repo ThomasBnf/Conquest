@@ -19,6 +19,9 @@ export const installSlack = schemaTask({
     integration: SlackIntegrationSchema,
     channels: z.array(z.string()),
   }),
+  retry: {
+    maxAttempts: 0,
+  },
   run: async ({ integration, channels }) => {
     const { workspace_id, details } = integration;
     const { token, slack_user_token } = details;

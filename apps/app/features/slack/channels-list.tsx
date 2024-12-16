@@ -75,7 +75,7 @@ export const ChannelsList = () => {
       <Separator />
       <p className="mt-4 font-medium text-base">Imported channels</p>
       <Button variant="link" className="px-0" onClick={onSelectAll}>
-        Select all
+        Select all channels
       </Button>
       {isLoading ? (
         <LoadingChannels />

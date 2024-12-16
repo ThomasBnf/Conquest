@@ -22,7 +22,7 @@ export const Tags = ({ tags }: Props) => {
   );
 
   return (
-    <div className="mt-6 flex flex-col gap-4">
+    <div className="flex flex-col gap-4">
       <div className="flex items-center justify-between">
         <QueryInput query={query} setQuery={setQuery} />
         <Button disabled={isVisible} onClick={() => setIsVisible(true)}>

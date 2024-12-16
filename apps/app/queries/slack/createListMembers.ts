@@ -1,6 +1,6 @@
-import { upsertMember } from "@/queries/members/upsertMember";
 import type { Member } from "@conquest/zod/schemas/member.schema";
 import type { WebClient } from "@slack/web-api";
+import { upsertMember } from "../members/upsertMember";
 
 type Props = {
   web: WebClient;
@@ -32,7 +32,7 @@ export const createListMembers = async ({ web, workspace_id }: Props) => {
 
         const localeFormatted = new Intl.DisplayNames(["en"], {
           type: "region",
-        }).of(locale ?? "");
+        }).of(locale?.split("-")?.[1] ?? "");
 
         const createdMember = await upsertMember({
           id,
