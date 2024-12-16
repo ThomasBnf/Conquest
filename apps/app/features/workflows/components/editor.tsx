@@ -2,7 +2,11 @@
 import { runWorkflow } from "@/actions/workflows/runWorkflow";
 import { updateWorkflow } from "@/actions/workflows/updateWorkflow";
 import { Button } from "@conquest/ui/button";
-import { Node, NodeDataLoopSchema, NodeDataSchema } from "@conquest/zod/schemas/node.schema";
+import {
+  type Node,
+  NodeDataLoopSchema,
+  NodeDataSchema,
+} from "@conquest/zod/schemas/node.schema";
 import type { Workflow } from "@conquest/zod/workflow.schema";
 import {
   Background,
@@ -165,7 +169,6 @@ export const Editor = ({ workflow }: Props) => {
 
   const onConnect = useCallback(
     (params: Connection) => {
-      console.log(params);
       addEdges([
         {
           id: `${params.source}-${params.target}`,

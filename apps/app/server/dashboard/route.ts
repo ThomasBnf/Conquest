@@ -287,8 +287,6 @@ export const dashboard = new Hono()
         };
       });
 
-      console.log(results);
-
       return c.json(results);
     },
   )

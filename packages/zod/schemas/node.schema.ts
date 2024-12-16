@@ -12,24 +12,6 @@ export const RepeatOnSchema = z.enum([
   "sunday",
 ]);
 
-export const NodeTypeSchema = z.enum([
-  "recurring-workflow",
-  "manual-run",
-  "list-records",
-  "add-tag",
-  "remove-tag",
-  "webhook",
-]);
-
-export const CategorySchema = z.enum([
-  "member",
-  "last_activity",
-  "first_activity",
-  "activities",
-  "activities_count",
-  "tags",
-]);
-
 // NODES
 
 export const NodeBaseSchema = z.object({
@@ -104,27 +86,18 @@ export const NodeWebhookSchema = NodeBaseDataSchema.extend({
   body: z.string().optional(),
 });
 
-const NodeChildSchemas = [
-  NodeMemberCreatedSchema,
-  NodeRecurringSchema,
-  NodeManualRunSchema,
-  NodeListMembersSchema,
-  NodeTagMemberSchema,
-  NodeSlackMessage,
-  NodeWaitSchema,
-  NodeWebhookSchema
-] as const
-
-export const NodeChildDataSchema =  z.discriminatedUnion("type", [...NodeChildSchemas]);
-
-const NodeChildSchema = NodeBaseSchema.extend({
-  data: NodeChildDataSchema,
-});
-
 export const NodeDataLoopSchema = NodeBaseDataSchema.extend({
   type: z.literal("loop"),
   category: z.literal("utilities"),
-  sub_nodes: NodeChildSchema.array(),
+  sub_nodes: z.array(
+    z.discriminatedUnion("type", [
+      NodeListMembersSchema,
+      NodeTagMemberSchema,
+      NodeSlackMessage,
+      NodeWaitSchema,
+      NodeWebhookSchema,
+    ]),
+  ),
 });
 
 export const NodeLoopSchema = NodeBaseSchema.extend({
@@ -132,21 +105,25 @@ export const NodeLoopSchema = NodeBaseSchema.extend({
 });
 
 export const NodeDataSchema = z.discriminatedUnion("type", [
-  ...NodeChildSchemas,
-  NodeDataLoopSchema
+  NodeMemberCreatedSchema,
+  NodeRecurringSchema,
+  NodeManualRunSchema,
+  NodeListMembersSchema,
+  NodeTagMemberSchema,
+  NodeSlackMessage,
+  NodeWaitSchema,
+  NodeWebhookSchema,
+  NodeDataLoopSchema,
 ]);
 
 export const NodeSchema = NodeBaseSchema.extend({
   data: NodeDataSchema,
 });
 
-
-
 export type Node = z.infer<typeof NodeSchema>;
 export type NodeData = z.infer<typeof NodeDataSchema>;
 export type Frequency = z.infer<typeof FrequencySchema>;
 export type RepeatOn = z.infer<typeof RepeatOnSchema>;
-export type Category = z.infer<typeof CategorySchema>;
 
 export type NodeMemberCreated = z.infer<typeof NodeMemberCreatedSchema>;
 export type NodeRecurring = z.infer<typeof NodeRecurringSchema>;

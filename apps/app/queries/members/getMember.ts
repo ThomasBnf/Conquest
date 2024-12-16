@@ -27,10 +27,7 @@ export const getMember = async ({ id, source, workspace_id }: Props) => {
     },
   });
 
-  if (!member) {
-    console.log("member not found", id);
-    return null;
-  }
+  if (!member) return null;
 
   return MemberWithCompanySchema.parse({
     ...member,
