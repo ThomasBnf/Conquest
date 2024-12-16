@@ -11,16 +11,17 @@
     "db:push": "prisma db push --skip-generate",
     "db:seed": "prisma db seed",
     "db:migrate": "prisma migrate dev",
-    "db:deploy": "prisma migrate deploy"
+    "db:deploy": "prisma migrate deploy",
+    "db:migrate-status": "prisma migrate status"
   },
   "prisma": {
     "seed": "bun run prisma/seed.ts"
   },
   "dependencies": {
-    "@prisma/client": "^5.22.0"
+    "@prisma/client": "^6.0.1"
   },
   "devDependencies": {
-    "prisma": "^5.22.0"
+    "prisma": "^6.0.1"
   },
   "exports": {
     ".": "./src/index.ts"

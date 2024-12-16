@@ -60,9 +60,6 @@
     },
     "db:deploy": {
       "cache": false
-    },
-    "trigger:deploy": {
-      "cache": false
     }
   }
 }
