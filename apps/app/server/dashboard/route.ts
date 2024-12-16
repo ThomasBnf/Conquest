@@ -253,10 +253,10 @@ export const dashboard = new Hono()
       });
 
       const categoryMap = {
-        Ambassador: [10, 11, 12],
-        Contributor: [7, 8, 9],
-        Active: [4, 5, 6],
         Explorer: [1, 2, 3],
+        Active: [4, 5, 6],
+        Contributor: [7, 8, 9],
+        Ambassador: [10, 11, 12],
       } as const;
 
       const memberLevels = members.map((member) => {
