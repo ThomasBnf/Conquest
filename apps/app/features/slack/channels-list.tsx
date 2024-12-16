@@ -40,6 +40,12 @@ export const ChannelsList = () => {
     }
   };
 
+  const onSelectAll = () => {
+    setSelectedChannels(
+      slackChannels?.map((channel) => channel.id ?? "") ?? [],
+    );
+  };
+
   const onStart = async () => {
     if (!slack) return;
     setLoading(true);
@@ -68,6 +74,9 @@ export const ChannelsList = () => {
     <div className="p-4">
       <Separator />
       <p className="mt-4 font-medium text-base">Imported channels</p>
+      <Button variant="link" className="px-0" onClick={onSelectAll}>
+        Select all
+      </Button>
       {isLoading ? (
         <LoadingChannels />
       ) : (

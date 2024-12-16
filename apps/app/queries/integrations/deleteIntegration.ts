@@ -47,13 +47,13 @@ export const deleteIntegration = async ({ source, integration }: Props) => {
     });
   }
 
-  // await Promise.all([
-  //   prisma.channels.deleteMany({ where: { source, workspace_id } }),
-  //   prisma.companies.deleteMany({ where: { source, workspace_id } }),
-  //   prisma.tags.deleteMany({ where: { source, workspace_id } }),
-  //   prisma.members.deleteMany({ where: { source, workspace_id } }),
-  //   prisma.activities_types.deleteMany({ where: { source, workspace_id } }),
-  // ]);
+  await Promise.all([
+    prisma.channels.deleteMany({ where: { source, workspace_id } }),
+    prisma.companies.deleteMany({ where: { source, workspace_id } }),
+    prisma.tags.deleteMany({ where: { source, workspace_id } }),
+    prisma.members.deleteMany({ where: { source, workspace_id } }),
+    prisma.activities_types.deleteMany({ where: { source, workspace_id } }),
+  ]);
 
   return { success: true };
 };
