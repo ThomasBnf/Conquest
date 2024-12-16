@@ -2,6 +2,7 @@
 
 import type {
   DiscourseIntegration,
+  LivestormIntegration,
   SlackIntegration,
 } from "@conquest/zod/integration.schema";
 import type { MembersPreferences } from "@conquest/zod/schemas/workspace.schema";
@@ -13,6 +14,7 @@ type userContext = {
   slug: string | undefined;
   slack: SlackIntegration | undefined;
   discourse: DiscourseIntegration | undefined;
+  livestorm: LivestormIntegration | undefined;
   members_preferences: MembersPreferences | undefined;
 };
 
@@ -34,6 +36,10 @@ export const UserProvider = ({ user, children }: Props) => {
     (integration) => integration.details.source === "DISCOURSE",
   ) as DiscourseIntegration | undefined;
 
+  const livestorm = user?.workspace.integrations.find(
+    (integration) => integration.details.source === "LIVESTORM",
+  ) as LivestormIntegration | undefined;
+
   const members_preferences = user?.workspace.members_preferences;
 
   return (
@@ -43,6 +49,7 @@ export const UserProvider = ({ user, children }: Props) => {
         slug,
         slack,
         discourse,
+        livestorm,
         members_preferences,
       }}
     >

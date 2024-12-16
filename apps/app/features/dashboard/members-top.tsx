@@ -35,8 +35,12 @@ export const MembersTop = ({ from, to }: Props) => {
   }));
 
   return (
-    <div className="flex-1 space-y-2 p-4">
-      <p className="pl-1.5 font-medium text-base">Top Members</p>
+    <div className="flex-1 p-4">
+      <p className="pl-2 font-medium text-base">Top Members</p>
+      <div className="mt-4 flex items-center justify-between px-2 text-muted-foreground">
+        <p>Members</p>
+        <p>Love</p>
+      </div>
       <ResponsiveContainer height={350} width="100%">
         <ChartContainer ref={ref} config={chartConfig}>
           <BarChart accessibilityLayer data={chartData} layout="vertical">

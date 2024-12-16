@@ -32,7 +32,7 @@ export const TopActivityTypes = ({ from, to }: Props) => {
   return (
     <div className="flex-1 space-y-2 p-4">
       <p className="pl-1.5 font-medium text-base">Top Activity Types</p>
-      <ResponsiveContainer height={350} width="100%">
+      <ResponsiveContainer height={380} width="100%">
         <ChartContainer ref={ref} config={chartConfig}>
           <BarChart
             accessibilityLayer

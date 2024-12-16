@@ -5,51 +5,49 @@ import { getMemberLogs } from "../members/getMemberLogs";
 import { getMemberLove } from "../members/getMemberLove";
 
 type Props = {
-  members: Member[];
+  member: Member;
 };
 
-export const getMembersMetrics = async ({ members }: Props) => {
+export const getMembersMetrics = async ({ member }: Props) => {
   const today = new Date();
   const last365Days = subDays(today, 365);
 
-  for (const member of members) {
-    const activities = await prisma.activities.findMany({
-      where: {
-        member_id: member.id,
-        created_at: {
-          gte: last365Days,
-        },
-        activity_type: {
-          weight: {
-            gt: 0,
-          },
+  const activities = await prisma.activities.findMany({
+    where: {
+      member_id: member.id,
+      created_at: {
+        gte: last365Days,
+      },
+      activity_type: {
+        weight: {
+          gt: 0,
         },
       },
-      include: {
-        activity_type: true,
-      },
-      orderBy: {
-        created_at: "asc",
-      },
-    });
+    },
+    include: {
+      activity_type: true,
+    },
+    orderBy: {
+      created_at: "asc",
+    },
+  });
 
-    const { love, presence, level } = await getMemberLove({
-      memberId: member.id,
-      activities,
-    });
+  const { love, presence, level } = await getMemberLove({
+    memberId: member.id,
+    activities,
+  });
 
-    const logs = await getMemberLogs({ activities });
+  const logs = await getMemberLogs({ activities });
 
-    await prisma.members.update({
-      where: { id: member.id },
-      data: {
-        love,
-        presence,
-        level,
-        first_activity: activities.at(0)?.created_at,
-        last_activity: activities.at(-1)?.created_at,
-        logs,
-      },
-    });
-  }
+  await prisma.members.update({
+    where: { id: member.id },
+    data: {
+      love,
+      presence,
+      level,
+      first_activity: activities.at(0)?.created_at,
+      last_activity: activities.at(-1)?.created_at,
+      logs,
+    },
+  });
 };

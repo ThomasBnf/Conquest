@@ -7,6 +7,7 @@ import { channels } from "@/server/channels/route";
 import { companies } from "@/server/companies/route";
 import { dashboard } from "@/server/dashboard/route";
 import { files } from "@/server/files/route";
+import { livestorm } from "@/server/livestorm/route";
 import { members } from "@/server/members/route";
 import { slack } from "@/server/slack/route";
 import { tags } from "@/server/tags/route";
@@ -83,6 +84,7 @@ const api = app
   .route("/companies", companies)
   .route("/dashboard", dashboard)
   .route("/files", files)
+  .route("/livestorm", livestorm)
   .route("/members", members)
   .route("/slack", slack)
   .route("/tags", tags)

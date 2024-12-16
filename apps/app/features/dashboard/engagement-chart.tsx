@@ -32,7 +32,7 @@ export const EngagementChart = ({ from, to }: Props) => {
   const { data: chartData } = useListEngagement({ from, to });
 
   return (
-    <ResponsiveContainer height={300}>
+    <ResponsiveContainer height={350}>
       <ChartContainer config={chartConfig}>
         <AreaChart
           data={chartData}

@@ -99,7 +99,7 @@ const getTimeInterval = (start: Date, end: Date): TimeInterval => ({
 });
 
 const countActivitiesInInterval = (
-  activities: Date[],
+  activities: Array<Date>,
   interval: TimeInterval,
 ): number => {
   const uniqueDays = new Set(

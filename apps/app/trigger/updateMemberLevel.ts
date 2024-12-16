@@ -28,6 +28,8 @@ export const updateMemberLevel = schedules.task({
     console.log(yesterdayStart);
     console.log(yesterdayEnd);
 
-    await getMembersMetrics({ members });
+    for (const member of members) {
+      await getMembersMetrics({ member });
+    }
   },
 });

@@ -17,12 +17,15 @@ export const env = createEnv({
     SLACK_CLIENT_SECRET: z.string(),
     SLACK_SIGNING_SECRET: z.string(),
 
+    LINKEDIN_CLIENT_SECRET: z.string(),
+
     GOOGLE_API_KEY: z.string(),
   },
   client: {
     NEXT_PUBLIC_BASE_URL: z.string(),
     NEXT_PUBLIC_SLACK_REDIRECT_URI: z.string(),
     NEXT_PUBLIC_SLACK_CLIENT_ID: z.string(),
+    NEXT_PUBLIC_LINKEDIN_CLIENT_ID: z.string(),
   },
   runtimeEnv: {
     PORT: process.env.PORT,
@@ -38,6 +41,9 @@ export const env = createEnv({
 
     NEXT_PUBLIC_SLACK_REDIRECT_URI: process.env.NEXT_PUBLIC_SLACK_REDIRECT_URI,
     NEXT_PUBLIC_SLACK_CLIENT_ID: process.env.NEXT_PUBLIC_SLACK_CLIENT_ID,
+
+    NEXT_PUBLIC_LINKEDIN_CLIENT_ID: process.env.NEXT_PUBLIC_LINKEDIN_CLIENT_ID,
+    LINKEDIN_CLIENT_SECRET: process.env.LINKEDIN_CLIENT_SECRET,
 
     GOOGLE_API_KEY: process.env.GOOGLE_API_KEY,
   },

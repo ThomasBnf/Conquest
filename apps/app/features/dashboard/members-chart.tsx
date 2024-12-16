@@ -99,7 +99,7 @@ export const MembersChart = ({ from, to }: Props) => {
           </button>
         ))}
       </div>
-      <ResponsiveContainer height={300}>
+      <ResponsiveContainer height={350}>
         <ChartContainer config={chartConfig}>
           <AreaChart
             data={chartData}

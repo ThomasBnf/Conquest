@@ -30,9 +30,23 @@ const DiscourseDetailsSchema = z.object({
   signature: z.string(),
 });
 
+const LinkedInDetailsSchema = z.object({
+  source: z.literal("LINKEDIN"),
+  access_token: z.string(),
+  expire_in: z.number(),
+  scope: z.string(),
+});
+
+const LivestormDetailsSchema = z.object({
+  source: z.literal("LIVESTORM"),
+  api_key: z.string(),
+});
+
 export const IntegrationDetailsSchema = z.discriminatedUnion("source", [
   SlackDetailsSchema,
   DiscourseDetailsSchema,
+  LinkedInDetailsSchema,
+  LivestormDetailsSchema,
 ]);
 
 export const SlackIntegrationSchema = BaseSchema.extend({
@@ -43,12 +57,24 @@ export const DiscourseIntegrationSchema = BaseSchema.extend({
   details: DiscourseDetailsSchema,
 });
 
+export const LinkedInIntegrationSchema = BaseSchema.extend({
+  details: LinkedInDetailsSchema,
+});
+
+export const LivestormIntegrationSchema = BaseSchema.extend({
+  details: LivestormDetailsSchema,
+});
+
 export const IntegrationSchema = z.union([
   SlackIntegrationSchema,
   DiscourseIntegrationSchema,
+  LinkedInIntegrationSchema,
+  LivestormIntegrationSchema,
 ]) satisfies z.ZodType<IntegrationPrisma>;
 
 export type Integration = z.infer<typeof IntegrationSchema>;
 export type IntegrationDetails = z.infer<typeof IntegrationDetailsSchema>;
 export type SlackIntegration = z.infer<typeof SlackIntegrationSchema>;
 export type DiscourseIntegration = z.infer<typeof DiscourseIntegrationSchema>;
+export type LinkedInIntegration = z.infer<typeof LinkedInIntegrationSchema>;
+export type LivestormIntegration = z.infer<typeof LivestormIntegrationSchema>;

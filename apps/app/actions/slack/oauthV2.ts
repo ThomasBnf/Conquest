@@ -1,6 +1,6 @@
 "use server";
 
-import { SCOPES, USER_SCOPES } from "@/constant";
+import { SCOPES, SLACK_ACTIVITY_TYPES, USER_SCOPES } from "@/constant";
 import { env } from "@/env.mjs";
 import { createIntegration } from "@/queries/integrations/createIntegration";
 import { authAction } from "lib/authAction";
@@ -52,7 +52,9 @@ export const oauthV2 = authAction
 
     if (!integration) return;
 
-    createActivitiesTypes();
+    createActivitiesTypes({
+      activity_types: SLACK_ACTIVITY_TYPES,
+    });
 
     return redirect(`/${slug}/settings/integrations/slack`);
   });

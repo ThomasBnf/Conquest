@@ -9,8 +9,8 @@ import { z } from "zod";
 import { idParser } from "../helpers/idParser";
 
 type Props = Omit<Partial<Member>, "emails" | "phones" | "deleted_at"> & {
-  email: string | undefined;
-  phone: string | undefined;
+  email: string;
+  phone: string | null;
   isDeleted?: boolean | undefined;
 };
 

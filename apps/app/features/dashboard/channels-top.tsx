@@ -30,8 +30,12 @@ export const ChannelsTop = ({ from, to }: Props) => {
   const { data: topChannels } = useListTopChannels({ from, to });
 
   return (
-    <div className="flex-1 space-y-2 p-4">
+    <div className="flex-1 p-4">
       <p className="pl-1.5 font-medium text-base">Top Channels</p>
+      <div className="mt-4 flex items-center justify-between px-2 text-muted-foreground">
+        <p>Channels</p>
+        <p>Activities</p>
+      </div>
       <ResponsiveContainer height={350} width="100%">
         <ChartContainer ref={ref} config={chartConfig}>
           <BarChart accessibilityLayer data={topChannels} layout="vertical">

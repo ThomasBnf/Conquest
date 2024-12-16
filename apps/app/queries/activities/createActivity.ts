@@ -8,7 +8,7 @@ type Props = {
   react_to?: string | null;
   reply_to?: string | null;
   invite_by?: string | null;
-  channel_id: string | null;
+  channel_id?: string | null;
   member_id: string;
   workspace_id: string;
   created_at?: Date;

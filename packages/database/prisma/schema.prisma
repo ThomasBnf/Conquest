@@ -130,6 +130,23 @@ model companies {
   @@index([id, workspace_id])
 }
 
+model events {
+  id          String   @id @default(cuid())
+  external_id String   @unique
+  title       String
+  started_at  DateTime
+  ended_at    DateTime
+  source      SOURCE
+
+  workspace_id String
+  workspace    workspaces @relation(fields: [workspace_id], references: [id], onDelete: Cascade)
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@index([id, workspace_id])
+}
+
 model files {
   id    String  @id @default(cuid())
   title String?
@@ -166,6 +183,7 @@ model members {
   id           String   @id @default(cuid())
   slack_id     String?  @unique
   discourse_id String?  @unique
+  livestorm_id String?  @unique
   first_name   String?
   last_name    String?
   username     String?
@@ -261,19 +279,20 @@ model workspaces {
   company_size        String?
   members_preferences Json
 
-  users        users[]
-  members      members[]
-  activities   activities[]
-  workflows    workflows[]
-  tags         tags[]
-  channels     channels[]
-  integrations integrations[]
-  companies    companies[]
-  apiKeys      apikeys[]
-
-  created_at       DateTime           @default(now())
-  updated_at       DateTime           @updatedAt
+  users            users[]
+  members          members[]
+  activities       activities[]
+  workflows        workflows[]
+  tags             tags[]
+  channels         channels[]
+  integrations     integrations[]
+  companies        companies[]
+  apiKeys          apikeys[]
   activities_types activities_types[]
+  events           events[]
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 
   @@index([id])
 }

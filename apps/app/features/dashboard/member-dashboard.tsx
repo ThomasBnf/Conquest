@@ -1,4 +1,5 @@
 import { MembersChart } from "./members-chart";
+import { MembersLevels } from "./members-levels";
 import { MembersTop } from "./members-top";
 
 type Props = {
@@ -13,7 +14,7 @@ export const MemberDashboard = ({ from, to }: Props) => {
       <MembersChart from={from} to={to} />
       <div className="flex divide-x">
         <MembersTop from={from} to={to} />
-        <div className="flex-1" />
+        <MembersLevels from={from} to={to} />
       </div>
     </div>
   );

@@ -5,6 +5,7 @@ import type { SOURCE } from "@conquest/database";
 import {
   DiscourseIntegrationSchema,
   type Integration,
+  LivestormIntegrationSchema,
   SlackIntegrationSchema,
 } from "@conquest/zod/integration.schema";
 import { WebClient } from "@slack/web-api";
@@ -39,13 +40,20 @@ export const deleteIntegration = async ({ source, integration }: Props) => {
     });
   }
 
-  await Promise.all([
-    prisma.channels.deleteMany({ where: { source, workspace_id } }),
-    prisma.companies.deleteMany({ where: { source, workspace_id } }),
-    prisma.tags.deleteMany({ where: { source, workspace_id } }),
-    prisma.members.deleteMany({ where: { source, workspace_id } }),
-    prisma.activities_types.deleteMany({ where: { source, workspace_id } }),
-  ]);
+  if (source === "LIVESTORM") {
+    const livestorm = LivestormIntegrationSchema.parse(integration);
+    await prisma.integrations.delete({
+      where: { id: livestorm.id },
+    });
+  }
+
+  // await Promise.all([
+  //   prisma.channels.deleteMany({ where: { source, workspace_id } }),
+  //   prisma.companies.deleteMany({ where: { source, workspace_id } }),
+  //   prisma.tags.deleteMany({ where: { source, workspace_id } }),
+  //   prisma.members.deleteMany({ where: { source, workspace_id } }),
+  //   prisma.activities_types.deleteMany({ where: { source, workspace_id } }),
+  // ]);
 
   return { success: true };
 };

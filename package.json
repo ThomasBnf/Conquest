@@ -3,6 +3,11 @@
   "private": true,
   "workspaces": ["packages/*", "apps/*", "tooling/*"],
   "scripts": {
+    "prepare": "husky",
+    "pre-commit": "bun format-and-lint && bun lint-repo && bun check-prisma-migrations",
+    "format-and-lint": "biome check .",
+    "lint-repo": "sherif -r unordered-dependencies -r packages-without-package-json",
+    "check-prisma-migrations": "prisma migrate status | grep -q 'Database schema is up to date' || (echo '⛔️ Error: You have pending Prisma migrations)",
     "build": "turbo build",
     "clean": "git clean -xdf node_modules",
     "clean:workspaces": "turbo clean",
@@ -22,6 +27,7 @@
   "dependencies": {
     "@t3-oss/env-nextjs": "^0.11.1",
     "discourse2": "^1.1.23",
+    "husky": "^9.1.7",
     "partysocket": "^1.0.2"
   },
   "devDependencies": {

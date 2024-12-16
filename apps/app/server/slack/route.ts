@@ -139,13 +139,15 @@ export const slack = new Hono()
             const { first_name, last_name, email, phone, image_1024, title } =
               profile;
 
+            if (!email) return c.json({ status: 200 });
+
             const member = await upsertMember({
               id: user,
               source: "SLACK",
               first_name,
               last_name,
               email,
-              phone,
+              phone: phone ?? null,
               avatar_url: image_1024,
               job_title: title,
               workspace_id,
@@ -233,13 +235,15 @@ export const slack = new Hono()
           const { first_name, last_name, email, phone, image_1024, title } =
             profile;
 
+          if (!email) return c.json({ status: 200 });
+
           const member = await upsertMember({
             id: user,
             source: "SLACK",
             first_name,
             last_name,
             email,
-            phone,
+            phone: phone ?? null,
             avatar_url: image_1024,
             job_title: title,
             workspace_id,
@@ -314,13 +318,15 @@ export const slack = new Hono()
           const { first_name, last_name, email, phone, image_1024, title } =
             profile;
 
+          if (!email) return c.json({ status: 200 });
+
           const member = await upsertMember({
             id: user,
             source: "SLACK",
             first_name,
             last_name,
             email,
-            phone,
+            phone: phone ?? null,
             locale,
             avatar_url: image_1024,
             job_title: title,
@@ -397,13 +403,15 @@ export const slack = new Hono()
           const { first_name, last_name, email, phone, image_1024, title } =
             profile;
 
+          if (!email) return c.json({ status: 200 });
+
           await upsertMember({
             id,
             source: "SLACK",
             first_name,
             last_name,
             email,
-            phone,
+            phone: phone ?? null,
             locale: userInfo?.locale,
             avatar_url: image_1024,
             job_title: title,

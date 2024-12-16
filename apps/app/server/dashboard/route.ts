@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { getAuthUser } from "@/queries/users/getAuthUser";
-import { MemberSchema } from "@conquest/zod/schemas/member.schema";
+import { LogSchema, MemberSchema } from "@conquest/zod/schemas/member.schema";
 import { zValidator } from "@hono/zod-validator";
 import { eachDayOfInterval, format } from "date-fns";
 import { Hono } from "hono";
@@ -233,6 +233,63 @@ export const dashboard = new Hono()
         .filter((member) => member.love > 0);
 
       return c.json(MemberSchema.array().parse(topMembers));
+    },
+  )
+  .get(
+    "/members-levels",
+    zValidator(
+      "query",
+      z.object({
+        from: z.coerce.date(),
+        to: z.coerce.date(),
+      }),
+    ),
+    async (c) => {
+      const { workspace_id } = c.get("user");
+      const { from, to } = c.req.valid("query");
+
+      const members = await prisma.members.findMany({
+        where: { workspace_id },
+      });
+
+      const categoryMap = {
+        Ambassador: [10, 11, 12],
+        Contributor: [7, 8, 9],
+        Active: [4, 5, 6],
+        Explorer: [1, 2, 3],
+      } as const;
+
+      const memberLevels = members.map((member) => {
+        const logs = LogSchema.array().parse(member.logs);
+        const filteredLogs = logs.filter((log) => {
+          const logDate = new Date(log.date);
+          return logDate >= from && logDate <= to;
+        });
+        return Math.max(...filteredLogs.map((log) => log.level), 0);
+      });
+
+      const results = Object.entries(categoryMap).map(([category, levels]) => {
+        const levelCounts = levels.reduce<Record<number, number>>(
+          (acc, level) => {
+            acc[level] = memberLevels.filter(
+              (memberLevel) => memberLevel === level,
+            ).length;
+            return acc;
+          },
+          {},
+        );
+
+        return {
+          category,
+          I: levelCounts[levels[0]] || 0,
+          II: levelCounts[levels[1]] || 0,
+          III: levelCounts[levels[2]] || 0,
+        };
+      });
+
+      console.log(results);
+
+      return c.json(results);
     },
   )
   .get(

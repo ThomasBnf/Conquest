@@ -52,7 +52,9 @@ export const installSlack = schemaTask({
     }
 
     if (members.length > 0) {
-      await getMembersMetrics({ members });
+      for (const member of members) {
+        await getMembersMetrics({ member });
+      }
     }
 
     return members;

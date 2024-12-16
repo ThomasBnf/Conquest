@@ -11,6 +11,8 @@ export const idParser = ({ source, id }: Props) => {
       return { slack_id: id };
     case "DISCOURSE":
       return { discourse_id: id };
+    case "LIVESTORM":
+      return { livestorm_id: id };
     default:
       return { id };
   }

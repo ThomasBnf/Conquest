@@ -108,6 +108,8 @@ export const installDiscourse = schemaTask({
           title,
         } = user;
 
+        if (!email) continue;
+
         const firstName = name?.split(" ")[0];
         const lastName = name?.split(" ")[1];
         const avatarUrl = `${community_url}${avatar_template.replace(
@@ -134,7 +136,7 @@ export const installDiscourse = schemaTask({
           last_name: lastName ?? "",
           username,
           email,
-          phone: "",
+          phone: null,
           locale: "",
           avatar_url: avatarUrl,
           job_title: title,
@@ -162,7 +164,6 @@ export const installDiscourse = schemaTask({
     //   installed_at: new Date(),
     //   status: "INSTALLED",
     // });
-    console.log("onSuccess");
     await deleteIntegration({
       source: "DISCOURSE",
       integration,

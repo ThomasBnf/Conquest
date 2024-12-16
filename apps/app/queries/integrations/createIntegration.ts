@@ -59,6 +59,8 @@ export const createIntegration = async ({
         return new CustomError("Discourse workspace already connected", 400);
       case "SLACK":
         return new CustomError("Slack workspace already connected", 400);
+      case "LIVESTORM":
+        return new CustomError("Livestorm workspace already connected", 400);
     }
   }
 

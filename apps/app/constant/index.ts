@@ -62,3 +62,44 @@ export const ACTIVITY_COLORS = {
   3: "bg-main-600",
   4: "bg-main-900",
 } as const;
+
+export const SLACK_ACTIVITY_TYPES = [
+  {
+    name: "Write a post",
+    source: "SLACK" as const,
+    key: "slack:post",
+    weight: 4,
+    deletable: false,
+  },
+  {
+    name: "Reply to post",
+    source: "SLACK" as const,
+    key: "slack:reply",
+    weight: 2,
+    deletable: false,
+  },
+  {
+    name: "Invitation",
+    source: "SLACK" as const,
+    key: "slack:invitation",
+    weight: 6,
+    deletable: false,
+  },
+  {
+    name: "Add reaction",
+    source: "SLACK" as const,
+    key: "slack:reaction",
+    weight: 0,
+    deletable: false,
+  },
+];
+
+export const LIVESTORM_ACTIVITY_TYPES = [
+  {
+    name: "Attend event",
+    source: "LIVESTORM" as const,
+    key: "livestorm:attend",
+    weight: 7,
+    deletable: false,
+  },
+];

@@ -4,6 +4,7 @@ import * as React from "react";
 import * as RechartsPrimitive from "recharts";
 import { cn } from "../utils/cn";
 
+// Format: { THEME_NAME: CSS_SELECTOR }
 const THEMES = { light: "", dark: ".dark" } as const;
 
 export type ChartConfig = {
@@ -110,8 +111,6 @@ const ChartTooltipContent = React.forwardRef<
       indicator?: "line" | "dot" | "dashed";
       nameKey?: string;
       labelKey?: string;
-      itemType?: string;
-      valueFormatter?: (value: number) => string;
     }
 >(
   (
@@ -125,12 +124,10 @@ const ChartTooltipContent = React.forwardRef<
       label,
       labelFormatter,
       labelClassName,
-      valueFormatter,
       formatter,
       color,
       nameKey,
       labelKey,
-      itemType,
     },
     ref,
   ) => {
@@ -182,7 +179,7 @@ const ChartTooltipContent = React.forwardRef<
       <div
         ref={ref}
         className={cn(
-          "grid min-w-[8rem] items-start gap-1.5 rounded-md border border-border/50 bg-background px-2.5 py-1.5 text-sm shadow-xl",
+          "grid min-w-[8rem] items-start gap-1.5 rounded-lg border border-border/50 bg-background px-2.5 py-1.5 text-sm shadow-xl",
           className,
         )}
       >
@@ -235,18 +232,17 @@ const ChartTooltipContent = React.forwardRef<
                         nestLabel ? "items-end" : "items-center",
                       )}
                     >
-                      <div className="grid gap-1.5 pr-4">
+                      <div className="grid gap-1.5">
                         {nestLabel ? tooltipLabel : null}
                         <span className="text-muted-foreground">
                           {itemConfig?.label || item.name}
                         </span>
                       </div>
-                      <span className="font-medium text-foreground">
-                        {valueFormatter
-                          ? valueFormatter(Number(item.value))
-                          : item.value?.toLocaleString()}
-                        {itemType}
-                      </span>
+                      {item.value && (
+                        <span className="font-medium text-foreground tabular-nums">
+                          {item.value.toLocaleString()}
+                        </span>
+                      )}
                     </div>
                   </>
                 )}

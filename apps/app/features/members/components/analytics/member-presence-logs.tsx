@@ -62,12 +62,38 @@ export const MemberPresenceLogs = ({ member }: Props) => {
               }}
             />
             <ChartTooltip
-              content={
-                <ChartTooltipContent
-                  indicator="line"
-                  valueFormatter={(value) => getPresenceLabel(Number(value))}
-                />
-              }
+              content={({ active, payload }) => {
+                const {
+                  date,
+                  max_weight,
+                  presence,
+                  level,
+                  max_weight_activity,
+                } = payload?.[0]?.payload ?? {};
+
+                return (
+                  <ChartTooltipContent
+                    active={active}
+                    payload={payload}
+                    label={date}
+                    indicator="line"
+                    formatter={() => (
+                      <div className="flex w-full gap-2">
+                        <div className="h-full w-1 shrink-0 rounded-[2px] bg-main-500" />
+                        <div className="flex items-end">
+                          <div className="grid gap-1.5 pr-4">
+                            <p className="font-medium leading-none">{date}</p>
+                            <p className="text-muted-foreground">Presence</p>
+                          </div>
+                          <p className="font-medium">
+                            {getPresenceLabel(presence)}
+                          </p>
+                        </div>
+                      </div>
+                    )}
+                  />
+                );
+              }}
             />
             <defs>
               <linearGradient id="fill-presence" x1="0" y1="0" x2="0" y2="1">

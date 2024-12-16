@@ -28,7 +28,11 @@ export const createListMembers = async ({ web, workspace_id }: Props) => {
         const { first_name, last_name, email, phone, image_1024, title } =
           profile;
 
-        if (first_name === "slackbot") continue;
+        if (first_name === "slackbot" || !email) continue;
+
+        const localeFormatted = new Intl.DisplayNames(["en"], {
+          type: "region",
+        }).of(locale ?? "");
 
         const createdMember = await upsertMember({
           id,
@@ -36,8 +40,8 @@ export const createListMembers = async ({ web, workspace_id }: Props) => {
           first_name,
           last_name,
           email,
-          phone,
-          locale,
+          phone: phone ?? null,
+          locale: localeFormatted,
           avatar_url: image_1024,
           job_title: title,
           workspace_id,
