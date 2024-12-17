@@ -1,90 +1,155 @@
 "use client";
 
-import { createIntegration } from "@/actions/integrations/createIntegration";
+import { deleteIntegration } from "@/actions/integrations/deleteIntegration";
+import { AlertDialog } from "@/components/custom/alert-dialog";
 import { Livestorm } from "@/components/icons/Livestorm";
 import { useUser } from "@/context/userContext";
-import { InstallForm } from "@/features/livestorm/install-form";
+import { env } from "@/env.mjs";
 import { IntegrationHeader } from "@/features/integrations/integration-header";
+import { OrganizationInfo } from "@/features/livestorm/organization-info";
 import { Button, buttonVariants } from "@conquest/ui/button";
-import { Card, CardContent, CardHeader } from "@conquest/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@conquest/ui/card";
 import { cn } from "@conquest/ui/cn";
-import { ExternalLink } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@conquest/ui/src/components/dropdown-menu";
+import { ScrollArea } from "@conquest/ui/src/components/scroll-area";
+import { format } from "date-fns";
+import { ChevronDown, CirclePlus, ExternalLink } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
-import { createActivitiesTypes } from "@/actions/slack/createActivitiesTypes";
-import { LIVESTORM_ACTIVITY_TYPES } from "@/constant";
 
 export default function Page() {
   const { livestorm } = useUser();
-  const [loading, setLoading] = useState(false);
+  const { trigger_token, trigger_token_expires_at, installed_at } =
+    livestorm ?? {};
 
-  const onInstall = async () => {
-    setLoading(true);
+  const [open, setOpen] = useState(false);
+  const router = useRouter();
+  const isExpired =
+    trigger_token_expires_at && trigger_token_expires_at < new Date();
 
-    const integration = await createIntegration({
-      details: {
-        source: "LIVESTORM",
-        api_key: "",
-      },
-      external_id: null,
+  const onEnable = async () => {
+    const params = new URLSearchParams({
+      response_type: "code",
+      client_id: env.NEXT_PUBLIC_LIVESTORM_CLIENT_ID,
+      redirect_uri: "https://app.useconquest/connect/livestorm",
+      scope: encodeURIComponent(
+        "identity:read events:read webhooks:read webhooks:write",
+      ),
     });
 
-    const error = integration?.serverError;
+    router.push(
+      `https://app.livestorm.co/oauth/authorize?${params.toString()}`,
+    );
+  };
 
-    if (error) {
-      setLoading(false);
-      toast.error(error);
-      return;
-    }
+  const onDisconnect = async () => {
+    if (!livestorm) return;
 
-    await createActivitiesTypes({
-      activity_types: LIVESTORM_ACTIVITY_TYPES,
+    const response = await deleteIntegration({
+      integration: livestorm,
+      source: "LIVESTORM",
     });
 
-    setLoading(false);
+    const error = response?.serverError;
+
+    if (error) toast.error(error);
+    return toast.success("Livestorm disconnected");
   };
 
   return (
-    <div className="mx-auto flex max-w-3xl flex-col gap-4 py-16">
-      <IntegrationHeader />
-      <div className="flex items-center gap-4">
-        <div className="rounded-md border p-3">
-          <Livestorm />
-        </div>
-        <p className="font-medium text-lg">Livestorm</p>
-      </div>
-      <Card>
-        <CardHeader className="flex h-14 flex-row items-center justify-between space-y-0">
-          <div className="flex w-full items-center justify-between">
-            <Link
-              href="https://doc.useconquest.com/livestorm"
-              target="_blank"
-              className={cn(
-                buttonVariants({ variant: "link", size: "xs" }),
-                "flex w-fit items-center gap-2 text-foreground",
-              )}
-            >
-              <ExternalLink size={15} />
-              <p>Documentation</p>
-            </Link>
-            {!livestorm?.trigger_token && (
-              <Button loading={loading} disabled={loading} onClick={onInstall}>
-                Install
-              </Button>
-            )}
+    <ScrollArea className="h-full">
+      <div className="mx-auto flex max-w-3xl flex-col gap-4 py-16">
+        <IntegrationHeader />
+        <div className="flex items-center gap-4">
+          <div className="rounded-md border p-3">
+            <Livestorm />
           </div>
-        </CardHeader>
-        <CardContent className="mb-0.5 p-0">
-          <div className="p-4">
+          <p className="font-medium text-lg">Livestorm</p>
+        </div>
+        <Card>
+          <CardHeader className="flex h-14 flex-row items-center justify-between space-y-0">
+            <div className="flex w-full items-center justify-between">
+              <Link
+                href="https://doc.useconquest.com/livestorm"
+                target="_blank"
+                className={cn(
+                  buttonVariants({ variant: "link", size: "xs" }),
+                  "flex w-fit items-center gap-2 text-foreground",
+                )}
+              >
+                <ExternalLink size={15} />
+                <p>Documentation</p>
+              </Link>
+              {(!trigger_token || isExpired) && (
+                <Button onClick={onEnable}>
+                  <CirclePlus size={16} />
+                  Enable
+                </Button>
+              )}
+            </div>
+          </CardHeader>
+          <CardContent className="mb-0.5">
             <p className="font-medium text-base">Overview</p>
             <p className="text-balance text-muted-foreground">
-              Connect your Livestorm workspace to automatically sync events.
+              Connect your Livestorm workspace to retrieve all your webinar
+              sessions and their participants.
             </p>
-          </div>
-          {livestorm?.trigger_token && <InstallForm />}
-        </CardContent>
-      </Card>
-    </div>
+            {livestorm?.status === "ENABLED" && !isExpired && (
+              <OrganizationInfo />
+            )}
+          </CardContent>
+        </Card>
+        {livestorm?.status === "CONNECTED" && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="font-medium text-base">
+                Connected workspace
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="mb-0.5">
+              <div className=" flex items-end justify-between">
+                <div>
+                  <p className="font-medium">Livestorm</p>
+                  {installed_at && (
+                    <p className="text-muted-foreground">
+                      Installed on {format(installed_at, "PP")}
+                    </p>
+                  )}
+                </div>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost">
+                      <div className="size-2.5 rounded-full bg-green-500" />
+                      <p>Connected</p>
+                      <ChevronDown size={16} />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem onClick={() => setOpen(true)}>
+                      <p>Disconnect Livestorm workspace</p>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+        <AlertDialog
+          title="Disconnect Livestorm workspace"
+          description="Livestorm integration will be removed from your workspace and all your data will be deleted."
+          onConfirm={onDisconnect}
+          open={open}
+          setOpen={setOpen}
+          buttonLabel="Disconnect"
+        />
+      </div>
+    </ScrollArea>
   );
 }

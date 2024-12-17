@@ -34,7 +34,7 @@ export const weekdays: RepeatOn[] = [
   "sunday",
 ];
 
-export const SCOPES =
+export const SLACK_SCOPES =
   "channels:history,channels:join,channels:read,files:read,groups:history,groups:read,links:read,reactions:read,team:read,users.profile:read,users:read,users:read.email";
 
 export const USER_SCOPES = "chat:write,im:write,channels:write";
@@ -103,3 +103,9 @@ export const LIVESTORM_ACTIVITY_TYPES = [
     deletable: false,
   },
 ];
+
+export const LINKEDIN_SCOPES =
+  "r_organization_followers,r_organization_social,r_organization_social_feed,r_basicprofile,rw_organization_admin";
+
+export const LIVESTORM_SCOPES =
+  "identity:read events:read webhook:read webhook:write";

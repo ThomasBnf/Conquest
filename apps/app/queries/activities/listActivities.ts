@@ -1,5 +1,3 @@
-"use server";
-
 import { prisma } from "@/lib/prisma";
 import { ActivityWithTypeAndMemberSchema } from "@conquest/zod/activity.schema";
 import { z } from "zod";

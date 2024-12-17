@@ -1,9 +1,12 @@
+import { LIVESTORM_ACTIVITY_TYPES } from "@/constant";
 import { sleep } from "@/helpers/sleep";
 import { prisma } from "@/lib/prisma";
 import { createActivity } from "@/queries/activities/createActivity";
 import { getActivityType } from "@/queries/activity-type/getActivityType";
 import { deleteIntegration } from "@/queries/integrations/deleteIntegration";
 import { updateIntegration } from "@/queries/integrations/updateIntegration";
+import { createWebhook } from "@/queries/livestorm/createWebhook";
+import { getRefreshToken } from "@/queries/livestorm/getRefreshToken";
 import { listEventSessions } from "@/queries/livestorm/listEventSessions";
 import { listEvents } from "@/queries/livestorm/listEvents";
 import { listPeopleFromSession } from "@/queries/livestorm/listPeopleFromSession";
@@ -19,28 +22,66 @@ export const installLivestorm = schemaTask({
     preset: "small-2x",
   },
   schema: z.object({
-    integration: LivestormIntegrationSchema,
-    api_key: z.string(),
+    livestorm: LivestormIntegrationSchema,
+    organization_id: z.string().optional(),
   }),
-  run: async ({ integration, api_key }) => {
-    const { workspace_id } = integration;
+  run: async ({ livestorm, organization_id }) => {
+    const { id, details, workspace_id } = livestorm;
+    const { access_token, refresh_token, expires_in, scope } = details;
+
+    const isExpired = new Date(Date.now() + expires_in * 1000) < new Date();
+
+    let accessToken = access_token;
+
+    if (isExpired) {
+      accessToken = await getRefreshToken(livestorm);
+    }
+
+    const webhookEvents = ["session.created", "session.ended"];
+
+    for (const event of webhookEvents) {
+      await createWebhook({
+        accessToken,
+        event,
+      });
+    }
 
     await prisma.integrations.update({
-      where: { id: integration.id },
+      where: {
+        id,
+      },
       data: {
         details: {
           source: "LIVESTORM",
-          api_key,
+          organization_id,
+          access_token: accessToken,
+          refresh_token,
+          expires_in,
+          scope,
         },
         status: "SYNCING",
       },
+    });
+
+    await prisma.activities_types.createMany({
+      data: LIVESTORM_ACTIVITY_TYPES.map((activity_type) => {
+        const { name, source, key, weight, deletable } = activity_type;
+        return {
+          name,
+          source,
+          key,
+          weight,
+          deletable,
+          workspace_id,
+        };
+      }),
     });
 
     const events: Event[] = [];
     let page = 0;
 
     while (true) {
-      const listOfEvents = await listEvents({ api_key, page });
+      const listOfEvents = await listEvents({ accessToken, page });
       if (!listOfEvents?.length) break;
 
       events.push(...listOfEvents);
@@ -58,7 +99,7 @@ export const installLivestorm = schemaTask({
 
       while (true) {
         const listOfSessions = await listEventSessions({
-          api_key,
+          accessToken,
           event_id: event.id,
           page: sessionPage,
         });
@@ -87,7 +128,7 @@ export const installLivestorm = schemaTask({
         });
 
         const peoples = await listPeopleFromSession({
-          api_key,
+          accessToken,
           id: session.id,
         });
 
@@ -101,12 +142,11 @@ export const installLivestorm = schemaTask({
             last_name,
             avatar_link,
             registrant_detail,
+            role,
           } = attributes;
           const { ip_country_code } = registrant_detail;
 
-          const formattedLocale = new Intl.DisplayNames(["en"], {
-            type: "region",
-          }).of(ip_country_code);
+          if (role === "team_member") continue;
 
           const createdMember = await upsertMember({
             id,
@@ -115,7 +155,7 @@ export const installLivestorm = schemaTask({
             email,
             avatar_url: avatar_link,
             source: "LIVESTORM",
-            locale: formattedLocale,
+            locale: ip_country_code,
             phone: null,
             workspace_id,
           });
@@ -128,7 +168,7 @@ export const installLivestorm = schemaTask({
           await createActivity({
             external_id: null,
             activity_type_id: activityType.id,
-            message: "Attend event",
+            message: `Attended the Livestorm event: ${title}`,
             member_id: createdMember.id,
             workspace_id,
           });
@@ -136,17 +176,17 @@ export const installLivestorm = schemaTask({
       }
     }
   },
-  onSuccess: async ({ integration: { external_id } }) => {
+  onSuccess: async ({ livestorm: { external_id } }) => {
     await updateIntegration({
       external_id,
       installed_at: new Date(),
-      status: "INSTALLED",
+      status: "CONNECTED",
     });
   },
-  onFailure: async ({ integration }) => {
+  onFailure: async ({ livestorm }) => {
     await deleteIntegration({
       source: "LIVESTORM",
-      integration,
+      integration: livestorm,
     });
   },
 });

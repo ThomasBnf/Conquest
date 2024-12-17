@@ -99,6 +99,7 @@ export const getFilters = ({ filters }: Props) => {
       const intervalStr = `'${dynamic_date}'::interval`;
 
       const activityKeys = activity_types.map((at) => at.key);
+      const operatorParsed = getOperator(operator);
 
       const condition = Prisma.sql`(
         SELECT COUNT(*)
@@ -109,11 +110,21 @@ export const getFilters = ({ filters }: Props) => {
           `ARRAY[${activityKeys.map((key) => `'${key}'`).join(",")}]`,
         )})
         AND a.created_at >= NOW() - ${Prisma.raw(intervalStr)}
-      ) ${Prisma.raw(operator)} ${count}`;
+      ) ${Prisma.raw(operatorParsed)} ${count}`;
 
       return condition;
     }
 
     return Prisma.sql`TRUE`;
   });
+};
+
+const getOperator = (operator: Filter["operator"]) => {
+  if (operator === "greater") return ">";
+  if (operator === "greater or equal") return ">=";
+  if (operator === "equal") return "=";
+  if (operator === "not equal") return "!=";
+  if (operator === "less") return "<";
+  if (operator === "less or equal") return "<=";
+  return "=";
 };

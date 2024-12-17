@@ -2,6 +2,7 @@
 
 import type {
   DiscourseIntegration,
+  LinkedInIntegration,
   LivestormIntegration,
   SlackIntegration,
 } from "@conquest/zod/integration.schema";
@@ -15,6 +16,7 @@ type userContext = {
   slack: SlackIntegration | undefined;
   discourse: DiscourseIntegration | undefined;
   livestorm: LivestormIntegration | undefined;
+  linkedin: LinkedInIntegration | undefined;
   members_preferences: MembersPreferences | undefined;
 };
 
@@ -40,6 +42,10 @@ export const UserProvider = ({ user, children }: Props) => {
     (integration) => integration.details.source === "LIVESTORM",
   ) as LivestormIntegration | undefined;
 
+  const linkedin = user?.workspace.integrations.find(
+    (integration) => integration.details.source === "LINKEDIN",
+  ) as LinkedInIntegration | undefined;
+
   const members_preferences = user?.workspace.members_preferences;
 
   return (
@@ -50,6 +56,7 @@ export const UserProvider = ({ user, children }: Props) => {
         slack,
         discourse,
         livestorm,
+        linkedin,
         members_preferences,
       }}
     >

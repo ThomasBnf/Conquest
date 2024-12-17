@@ -1,5 +1,6 @@
 "use client";
 
+import { Linkedin } from "@/components/icons/Linkedin";
 import { Livestorm } from "@/components/icons/Livestorm";
 import { Slack } from "@/components/icons/Slack";
 import { useUser } from "@/context/userContext";
@@ -28,12 +29,12 @@ export default function Page() {
       name: "Livestorm",
       description: "Synchronize your members with Livestorm",
     },
-    // {
-    //   href: `/${slug}/settings/integrations/linkedin`,
-    //   logo: <Linkedin />,
-    //   name: "Linkedin",
-    //   description: "Connect your Linkedin account to your workspace",
-    // },
+    {
+      href: `/${slug}/settings/integrations/linkedin`,
+      logo: <Linkedin />,
+      name: "Linkedin",
+      description: "Connect your Linkedin account to your workspace",
+    },
   ];
 
   return (

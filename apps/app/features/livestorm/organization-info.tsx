@@ -1,0 +1,69 @@
+import { useUser } from "@/context/userContext";
+import { useListLivestormIdentity } from "@/queries/hooks/useListLivestormIdentity";
+import type { installLivestorm } from "@/trigger/installLivestorm.trigger.js";
+import { Button } from "@conquest/ui/button";
+import { useRealtimeTaskTrigger } from "@trigger.dev/react-hooks";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
+
+export const OrganizationInfo = () => {
+  const { livestorm } = useUser();
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
+
+  const { data } = useListLivestormIdentity();
+
+  const { submit, run } = useRealtimeTaskTrigger<typeof installLivestorm>(
+    "install-livestorm",
+    {
+      accessToken: livestorm?.trigger_token,
+    },
+  );
+
+  const onStart = async () => {
+    if (!livestorm || !data) return;
+
+    setLoading(true);
+    const organization_id = data.relationships.organization.data.id;
+
+    submit({ livestorm, organization_id });
+  };
+
+  useEffect(() => {
+    if (!run?.status) return;
+
+    const isCompleted = run.status === "COMPLETED";
+    const isFailed = run.status === "FAILED";
+
+    if (isCompleted || isFailed) {
+      router.refresh();
+
+      if (isFailed) {
+        toast.error("Failed to install Slack", { duration: 5000 });
+      }
+
+      setLoading(false);
+    }
+  }, [run]);
+
+  console.log(data);
+
+  return (
+    <div>
+      <div>
+        <p>Organization Name</p>
+        <pre className="text-sm">{JSON.stringify(data, null, 2)}</pre>
+      </div>
+      <Button
+        type="submit"
+        className="mt-4"
+        onClick={onStart}
+        loading={loading}
+        disabled={loading}
+      >
+        Let's start!
+      </Button>
+    </div>
+  );
+};

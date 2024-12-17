@@ -1,0 +1,66 @@
+export type organizationalEntityAclsResponse = {
+  paging: {
+    start: number;
+    count: number;
+    links: string[];
+  };
+  elements: organizationalEntityAcls[];
+};
+
+export type organizationalEntityAcls = {
+  roleAssignee: string;
+  state: "APPROVED";
+  role: "ADMINISTRATOR";
+  organizationalTarget: string;
+};
+
+export type Orgnaization = {
+  vanityName: string;
+  website: {
+    localized: { [key: string]: string };
+    preferredLocale: { country: string; language: string };
+  };
+  localizedName: string;
+  created: {
+    actor: string;
+    time: number;
+  };
+  groups: unknown[];
+  description: {
+    localized: { [key: string]: string };
+    preferredLocale: { country: string; language: string };
+  };
+  versionTag: string;
+  defaultLocale: {
+    country: string;
+    language: string;
+  };
+  organizationType: string;
+  alternativeNames: unknown[];
+  specialties: unknown[];
+  localizedSpecialties: unknown[];
+  name: {
+    localized: { [key: string]: string };
+    preferredLocale: { country: string; language: string };
+  };
+  primaryOrganizationType: string;
+  locations: unknown[];
+  lastModified: {
+    actor: string;
+    time: number;
+  };
+  id: number;
+  localizedDescription: string;
+  autoCreated: boolean;
+  localizedWebsite: string;
+  logoV2: {
+    cropped: string;
+    original: string;
+    cropInfo: {
+      x: number;
+      width: number;
+      y: number;
+      height: number;
+    };
+  };
+};

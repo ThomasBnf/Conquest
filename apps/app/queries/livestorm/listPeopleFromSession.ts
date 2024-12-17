@@ -1,16 +1,16 @@
 import type { People } from "@conquest/zod/schemas/types/livestorm";
 
 type Props = {
-  api_key: string;
+  accessToken: string;
   id: string;
 };
 
-export const listPeopleFromSession = async ({ api_key, id }: Props) => {
+export const listPeopleFromSession = async ({ accessToken, id }: Props) => {
   const response = await fetch(
     `https://api.livestorm.co/v1/sessions/${id}/people`,
     {
       headers: {
-        Authorization: api_key,
+        Authorization: `Bearer ${accessToken}`,
       },
     },
   );

@@ -1,20 +1,21 @@
 "use client";
 
 import { useUser } from "@/context/userContext";
-
 import { useListChannels } from "@/queries/hooks/useListChannels";
 import { useListSLackChannels } from "@/queries/hooks/useListSlackChannels";
 import type { installSlack } from "@/trigger/installSlack.trigger";
 import { Button } from "@conquest/ui/button";
 import { Checkbox } from "@conquest/ui/checkbox";
 import { Separator } from "@conquest/ui/separator";
+import { cn } from "@conquest/ui/src/utils/cn";
 import { useRealtimeTaskTrigger } from "@trigger.dev/react-hooks";
+import { Info } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { LoadingChannels } from "./loading-channels";
 
-export const ChannelsList = () => {
+export const ListSlackChannels = () => {
   const { slack } = useUser();
   const [loading, setLoading] = useState(slack?.status === "SYNCING");
   const [selectedChannels, setSelectedChannels] = useState<string[]>([]);
@@ -46,6 +47,10 @@ export const ChannelsList = () => {
     );
   };
 
+  const onUnselectAll = () => {
+    setSelectedChannels([]);
+  };
+
   const onStart = async () => {
     if (!slack) return;
     setLoading(true);
@@ -59,7 +64,6 @@ export const ChannelsList = () => {
     const isFailed = run.status === "FAILED";
 
     if (isCompleted || isFailed) {
-      setLoading(false);
       refetchChannels();
       setSelectedChannels([]);
       router.refresh();
@@ -67,15 +71,28 @@ export const ChannelsList = () => {
       if (isFailed) {
         toast.error("Failed to install Slack", { duration: 5000 });
       }
+
+      setLoading(false);
     }
   }, [run]);
 
   return (
-    <div className="p-4">
-      <Separator />
-      <p className="mt-4 font-medium text-base">Imported channels</p>
-      <Button variant="link" className="px-0" onClick={onSelectAll}>
-        Select all channels
+    <>
+      <Separator className="my-4" />
+      <p className="font-medium text-base">Imported channels</p>
+      <Button
+        variant="outline"
+        size="xs"
+        className="mt-3 mb-1.5"
+        onClick={
+          selectedChannels.length === slackChannels?.length
+            ? onUnselectAll
+            : onSelectAll
+        }
+      >
+        {selectedChannels.length === slackChannels?.length
+          ? "Unselect all"
+          : "Select all"}
       </Button>
       {isLoading ? (
         <LoadingChannels />
@@ -93,26 +110,44 @@ export const ChannelsList = () => {
               return (
                 <button
                   key={slackChannel.id}
-                  className="flex items-center gap-2"
+                  className={cn(
+                    "flex items-center gap-2",
+                    (hasImported || loading) && "opacity-50",
+                  )}
                   type="button"
                   onClick={() => onSelect(slackChannel.id)}
                 >
                   <Checkbox
                     checked={isSelected || hasImported}
-                    disabled={hasImported}
+                    disabled={hasImported || loading}
                   />
                   <p>{slackChannel.name}</p>
                 </button>
               );
             })}
           </div>
-          {selectedChannels.length > 0 && (
-            <Button loading={loading} onClick={onStart} className="mt-6">
-              Let's start!
-            </Button>
+          {loading && (
+            <div className="actions-secondary mt-6 rounded-md border p-4">
+              <Info size={18} className="text-muted-foreground" />
+              <p className="mt-2 mb-1 font-medium">Collecting data</p>
+              <p className="text-muted-foreground">
+                You can leave this page while we collect your data.
+                <br />
+                This may take a few minutes. Please refresh the page to see the
+                changes.
+              </p>
+            </div>
           )}
+          <Button
+            loading={loading}
+            onClick={onStart}
+            className="mt-6"
+            disabled={selectedChannels.length === 0}
+          >
+            Let's start!
+          </Button>
         </>
       )}
-    </div>
+    </>
   );
 };

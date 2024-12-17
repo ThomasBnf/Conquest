@@ -1,4 +1,3 @@
-import { listPasEvents } from "@/queries/livestorm/listPastEvents";
 import { listWorkspaces } from "@/queries/workspaces/listWorkspaces";
 import { LivestormIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
 import { schedules } from "@trigger.dev/sdk/v3";
@@ -21,12 +20,12 @@ export const cronDaily = schedules.task({
       );
 
       if (!livestormIntegration) continue;
-      const { api_key } = livestormIntegration.details;
+      // const { api_key } = livestormIntegration.details;
 
-      await listPasEvents({
-        api_key,
-        workspace_id: workspace.id,
-      });
+      // await listPasEvents({
+      //   api_key,
+      //   workspace_id: workspace.id,
+      // });
     }
   },
 });

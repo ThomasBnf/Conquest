@@ -16,6 +16,7 @@ type Props = {
   onConfirm: () => Promise<string | number | undefined>;
   open: boolean;
   setOpen: (open: boolean) => void;
+  buttonLabel?: string;
 };
 
 export const AlertDialog = ({
@@ -24,6 +25,7 @@ export const AlertDialog = ({
   onConfirm,
   open,
   setOpen,
+  buttonLabel = "Delete",
 }: Props) => {
   const [loading, setLoading] = useState(false);
 
@@ -44,7 +46,7 @@ export const AlertDialog = ({
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
           <Button variant="destructive" loading={loading} onClick={onClick}>
-            Delete
+            {buttonLabel}
           </Button>
         </AlertDialogFooter>
       </AlertDialogContent>

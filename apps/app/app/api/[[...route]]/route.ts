@@ -7,10 +7,12 @@ import { channels } from "@/server/channels/route";
 import { companies } from "@/server/companies/route";
 import { dashboard } from "@/server/dashboard/route";
 import { files } from "@/server/files/route";
+import { linkedin } from "@/server/linkedin/route";
 import { livestorm } from "@/server/livestorm/route";
 import { members } from "@/server/members/route";
 import { slack } from "@/server/slack/route";
 import { tags } from "@/server/tags/route";
+import { webhook } from "@/server/webhook/route";
 import { workflows } from "@/server/workflows/route";
 import type { Provider } from "@auth/core/providers";
 import CredentialsProvider from "@auth/core/providers/credentials";
@@ -84,10 +86,12 @@ const api = app
   .route("/companies", companies)
   .route("/dashboard", dashboard)
   .route("/files", files)
+  .route("/linkedin", linkedin)
   .route("/livestorm", livestorm)
   .route("/members", members)
   .route("/slack", slack)
   .route("/tags", tags)
+  .route("/webhook", webhook)
   .route("/workflows", workflows);
 
 export const GET = handle(api);

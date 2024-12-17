@@ -1,5 +1,3 @@
-"use server";
-
 import { CustomError } from "@/lib/safeAction";
 import {
   type IntegrationDetails,
@@ -72,7 +70,7 @@ export const createIntegration = async ({
   const integration = await prisma.integrations.create({
     data: {
       external_id,
-      status: "CONNECTED",
+      status: "ENABLED",
       details,
       workspace_id,
       trigger_token: triggerToken,

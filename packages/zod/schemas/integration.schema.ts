@@ -34,12 +34,16 @@ const LinkedInDetailsSchema = z.object({
   source: z.literal("LINKEDIN"),
   access_token: z.string(),
   expire_in: z.number(),
-  scope: z.string(),
+  scopes: z.string(),
 });
 
 const LivestormDetailsSchema = z.object({
   source: z.literal("LIVESTORM"),
-  api_key: z.string(),
+  organization_id: z.string(),
+  access_token: z.string(),
+  refresh_token: z.string(),
+  expires_in: z.number(),
+  scope: z.string(),
 });
 
 export const IntegrationDetailsSchema = z.discriminatedUnion("source", [

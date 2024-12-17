@@ -1,0 +1,103 @@
+import { prisma } from "@/lib/prisma";
+import { createActivity } from "@/queries/activities/createActivity";
+import { getActivityType } from "@/queries/activity-type/getActivityType";
+import { getEvent } from "@/queries/livestorm/getEvent";
+import { listPeopleFromSession } from "@/queries/livestorm/listPeopleFromSession";
+import { upsertMember } from "@/queries/members/upsertMember";
+import { LivestormIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
+import type { Session } from "@conquest/zod/schemas/types/livestorm";
+import { Hono } from "hono";
+
+export const webhook = new Hono().post("/livestorm", async (c) => {
+  console.dir(await c.req.json(), { depth: 100 });
+
+  const { data } = await c.req.json();
+  const { organization_id } = data.meta.webhook;
+
+  const integration = await prisma.integrations.findFirst({
+    where: {
+      details: {
+        path: ["organization_id"],
+        equals: organization_id,
+      },
+    },
+  });
+
+  if (!integration) {
+    return c.json({});
+  }
+
+  const livestorm = LivestormIntegrationSchema.parse(integration);
+  const { workspace_id, details } = livestorm;
+  const { access_token } = details;
+
+  const session = data as Session;
+  const { attributes } = session;
+  const { name, event_id, estimated_started_at, ended_at } = attributes;
+
+  const event = await getEvent({ accessToken: access_token, id: event_id });
+  const { title } = event.attributes;
+
+  if (session.attributes.status === "past") {
+    const peoples = await listPeopleFromSession({
+      accessToken: access_token,
+      id: session.id,
+    });
+
+    for (const people of peoples) {
+      const { id, attributes } = people;
+      const {
+        email,
+        first_name,
+        last_name,
+        avatar_link,
+        registrant_detail,
+        role,
+      } = attributes;
+
+      const { ip_country_code } = registrant_detail;
+
+      if (role === "team_member") continue;
+
+      const createdMember = await upsertMember({
+        id,
+        first_name,
+        last_name,
+        email,
+        avatar_url: avatar_link,
+        source: "LIVESTORM",
+        locale: ip_country_code,
+        phone: null,
+        workspace_id,
+      });
+
+      const activityType = await getActivityType({
+        key: "livestorm:attend",
+        workspace_id,
+      });
+
+      await createActivity({
+        external_id: null,
+        activity_type_id: activityType.id,
+        message: `Attended the Livestorm event: ${title}`,
+        member_id: createdMember.id,
+        workspace_id,
+      });
+    }
+
+    return c.json({ success: true });
+  }
+
+  await prisma.events.create({
+    data: {
+      external_id: session.id,
+      source: "LIVESTORM",
+      title: name ? `${title} - ${name}` : title,
+      started_at: new Date(estimated_started_at * 1000),
+      ended_at: new Date(ended_at * 1000),
+      workspace_id,
+    },
+  });
+
+  return c.json({ success: true });
+});

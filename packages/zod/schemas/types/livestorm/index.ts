@@ -128,3 +128,31 @@ export type People = {
     replay_view_detail: unknown | null;
   };
 };
+
+export type Identity = {
+  id: string;
+  type: string;
+  attributes: {
+    role: string;
+    created_at: number;
+    updated_at: number;
+    first_name: string;
+    last_name: string;
+    email: string;
+    avatar_link: string | null;
+    locale: string;
+    pending_invite: boolean;
+    website_link: string;
+    linkedin_link: string | null;
+    facebook_link: string | null;
+    twitter_handle: string | null;
+  };
+  relationships: {
+    organization: {
+      data: {
+        type: string;
+        id: string;
+      };
+    };
+  };
+};

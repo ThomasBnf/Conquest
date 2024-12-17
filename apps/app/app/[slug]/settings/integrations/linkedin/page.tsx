@@ -1,48 +1,41 @@
 "use client";
 
-import { linkedinAPI } from "@/actions/linkedin/linkedinAPI";
-import { oauth } from "@/actions/linkedin/oauth";
 import { Linkedin } from "@/components/icons/Linkedin";
+import { LINKEDIN_SCOPES } from "@/constant";
+import { useUser } from "@/context/userContext";
 import { env } from "@/env.mjs";
 import { IntegrationHeader } from "@/features/integrations/integration-header";
+import { ListOrganizations } from "@/features/linkedin/list-organizations";
 import { Button, buttonVariants } from "@conquest/ui/button";
 import { Card, CardContent, CardHeader } from "@conquest/ui/card";
 import { cn } from "@conquest/ui/cn";
-import { ExternalLink } from "lucide-react";
+import { CirclePlus, ExternalLink } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useState } from "react";
 
-type Props = {
-  searchParams: {
-    code: string | null;
-  };
-};
+export default function Page() {
+  const { linkedin } = useUser();
+  const { trigger_token, trigger_token_expires_at } = linkedin ?? {};
 
-export default function Page({ searchParams: { code } }: Props) {
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const isExpired =
+    trigger_token_expires_at && trigger_token_expires_at < new Date();
 
-  const onInstall = async () => {
-    // await linkedinAPI();
+  const onEnable = async () => {
+    setLoading(true);
+
+    const baseUrl = "https://www.linkedin.com/oauth/v2/authorization";
+    const clientId = `client_id=${env.NEXT_PUBLIC_LINKEDIN_CLIENT_ID}`;
+    const scopes = `scope=${LINKEDIN_SCOPES}`;
+    const redirectUri =
+      "redirect_uri=https://2e17b8a57252.ngrok.app/connect/linkedin";
+
     router.push(
-      `https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=${process.env.NEXT_PUBLIC_LINKEDIN_CLIENT_ID}&redirect_uri=https://d9362cfb1ab6.ngrok.app/conquest/settings/integrations/linkedin&scope=r_dma_portability_3rd_party`,
+      `${baseUrl}?response_type=code&${clientId}&${scopes}&${redirectUri}`,
     );
   };
-
-  const onTest = async () => {
-    await linkedinAPI();
-  };
-
-  const onAuth = () => {
-    if (!code) return;
-    oauth({ code, client_id: env.NEXT_PUBLIC_LINKEDIN_CLIENT_ID });
-  };
-
-  useEffect(() => {
-    if (code) {
-      onAuth();
-    }
-  }, [code]);
 
   return (
     <div className="mx-auto flex max-w-3xl flex-col gap-4 py-16">
@@ -67,18 +60,23 @@ export default function Page({ searchParams: { code } }: Props) {
               <ExternalLink size={15} />
               <p>Documentation</p>
             </Link>
-            <Button onClick={onInstall}>Install</Button>
-            <Button onClick={onTest}>Test</Button>
+            {(!trigger_token || isExpired) && (
+              <Button onClick={onEnable} loading={loading}>
+                <CirclePlus size={16} />
+                Enable
+              </Button>
+            )}
           </div>
         </CardHeader>
-        <CardContent className="mb-0.5 p-0">
-          <div className="p-4">
-            <p className="font-medium text-base">Overview</p>
-            <p className="text-balance text-muted-foreground">
-              Connect your Linkedin account to automatically get comments on
-              your posts.
-            </p>
-          </div>
+        <CardContent className="mb-0.5">
+          <p className="font-medium text-base">Overview</p>
+          <p className="text-balance text-muted-foreground">
+            Connect your Linkedin account to automatically get comments on your
+            posts.
+          </p>
+          {linkedin?.status === "ENABLED" && !isExpired && (
+            <ListOrganizations />
+          )}
         </CardContent>
       </Card>
     </div>

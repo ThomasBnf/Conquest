@@ -1,5 +1,3 @@
-"use server";
-
 import { WorkflowSchema } from "@conquest/zod/workflow.schema";
 import { prisma } from "lib/prisma";
 
@@ -16,7 +14,7 @@ export const getWorkflow = async ({ id, workspace_id }: Props) => {
     },
   });
 
- console.dir(workflow,{depth: 100})
+  console.dir(workflow, { depth: 100 });
 
   return WorkflowSchema.parse(workflow);
 };
