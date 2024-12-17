@@ -4,7 +4,7 @@ type Props = {
 };
 
 export const deleteWebhook = async ({ accessToken, id }: Props) => {
-  const response = await fetch(`https://api.livestorm.co/v1/webhooks/${id}`, {
+  await fetch(`https://api.livestorm.co/v1/webhooks/${id}`, {
     method: "DELETE",
     headers: {
       accept: "application/json",

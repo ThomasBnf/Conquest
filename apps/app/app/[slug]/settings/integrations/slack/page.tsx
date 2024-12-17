@@ -32,21 +32,21 @@ export default function Page() {
   const { data: channels } = useListChannels();
   const { name } = slack?.details ?? {};
 
-  const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
   const router = useRouter();
   const isExpired =
     trigger_token_expires_at && trigger_token_expires_at < new Date();
 
   const onEnable = () => {
-    setLoading(true);
+    const params = new URLSearchParams({
+      response_type: "code",
+      client_id: env.NEXT_PUBLIC_SLACK_CLIENT_ID,
+      scope: SLACK_SCOPES,
+      user_scope: USER_SCOPES,
+      redirect_uri: "https://app.useconquest/connect/slack",
+    });
 
-    const baseUrl = "https://slack.com/oauth/v2/authorize";
-    const clientId = `client_id=${env.NEXT_PUBLIC_SLACK_CLIENT_ID}`;
-    const scopesParams = `scope=${SLACK_SCOPES}`;
-    const userScopeParams = `user_scope=${USER_SCOPES}`;
-
-    router.push(`${baseUrl}?${clientId}&${scopesParams}&${userScopeParams}`);
+    router.push(`https://slack.com/oauth/v2/authorize?${params.toString()}`);
   };
 
   const onDisconnect = async () => {
@@ -88,7 +88,7 @@ export default function Page() {
             </Link>
           </div>
           {(!trigger_token || isExpired) && (
-            <Button onClick={onEnable} loading={loading}>
+            <Button onClick={onEnable}>
               <CirclePlus size={16} />
               Enable
             </Button>

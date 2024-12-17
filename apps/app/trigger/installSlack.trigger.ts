@@ -17,14 +17,14 @@ export const installSlack = schemaTask({
     preset: "small-2x",
   },
   schema: z.object({
-    integration: SlackIntegrationSchema,
+    slack: SlackIntegrationSchema,
     channels: z.array(z.string()),
   }),
   retry: {
     maxAttempts: 0,
   },
-  run: async ({ integration, channels }) => {
-    const { workspace_id, details } = integration;
+  run: async ({ slack, channels }) => {
+    const { workspace_id, details } = slack;
     const { token, slack_user_token } = details;
 
     if (!token || !slack_user_token) {
@@ -32,7 +32,7 @@ export const installSlack = schemaTask({
     }
 
     await updateIntegration({
-      external_id: integration.external_id,
+      external_id: slack.external_id,
       installed_at: null,
       status: "SYNCING",
     });
@@ -72,17 +72,17 @@ export const installSlack = schemaTask({
 
     return members;
   },
-  onSuccess: async ({ integration: { external_id } }) => {
+  onSuccess: async ({ slack: { external_id } }) => {
     await updateIntegration({
       external_id,
       installed_at: new Date(),
       status: "CONNECTED",
     });
   },
-  onFailure: async ({ integration }) => {
+  onFailure: async ({ slack }) => {
     await deleteIntegration({
       source: "SLACK",
-      integration,
+      integration: slack,
     });
   },
 });

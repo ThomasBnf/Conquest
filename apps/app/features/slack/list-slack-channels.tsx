@@ -54,7 +54,7 @@ export const ListSlackChannels = () => {
   const onStart = async () => {
     if (!slack) return;
     setLoading(true);
-    submit({ integration: slack, channels: selectedChannels });
+    submit({ slack, channels: selectedChannels });
   };
 
   useEffect(() => {
@@ -64,15 +64,16 @@ export const ListSlackChannels = () => {
     const isFailed = run.status === "FAILED";
 
     if (isCompleted || isFailed) {
-      refetchChannels();
-      setSelectedChannels([]);
-      router.refresh();
+      setLoading(false);
 
       if (isFailed) {
         toast.error("Failed to install Slack", { duration: 5000 });
+        return;
       }
 
-      setLoading(false);
+      refetchChannels();
+      setSelectedChannels([]);
+      router.refresh();
     }
   }, [run]);
 

@@ -1,6 +1,5 @@
 "use client";
 
-import { createIntegration } from "@/actions/integrations/createIntegration";
 import { Discourse } from "@/components/icons/Discourse";
 import { useUser } from "@/context/userContext";
 import { InstallForm } from "@/features/discourse/install-form";
@@ -8,37 +7,20 @@ import { IntegrationHeader } from "@/features/integrations/integration-header";
 import { Button, buttonVariants } from "@conquest/ui/button";
 import { Card, CardContent, CardHeader } from "@conquest/ui/card";
 import { cn } from "@conquest/ui/cn";
-import { ExternalLink } from "lucide-react";
+import { CircleCheck, ExternalLink } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
-import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 export default function Page() {
   const { discourse } = useUser();
-  const [loading, setLoading] = useState(false);
+  const { trigger_token, trigger_token_expires_at } = discourse ?? {};
 
-  const onInstall = async () => {
-    setLoading(true);
+  const router = useRouter();
+  const isExpired =
+    trigger_token_expires_at && trigger_token_expires_at < new Date();
 
-    const integration = await createIntegration({
-      details: {
-        source: "DISCOURSE",
-        community_url: "",
-        api_key: "",
-        signature: "",
-      },
-      external_id: null,
-    });
-
-    const error = integration?.serverError;
-
-    if (error) {
-      setLoading(false);
-      toast.error(error);
-      return;
-    }
-
-    setLoading(false);
+  const onEnable = async () => {
+    router.push("/connect/discourse");
   };
 
   return (
@@ -64,9 +46,10 @@ export default function Page() {
               <ExternalLink size={15} />
               <p>Documentation</p>
             </Link>
-            {!discourse?.trigger_token && (
-              <Button loading={loading} disabled={loading} onClick={onInstall}>
-                Install
+            {(!trigger_token || isExpired) && (
+              <Button onClick={onEnable}>
+                <CircleCheck size={16} />
+                Enable
               </Button>
             )}
           </div>
@@ -80,7 +63,7 @@ export default function Page() {
               through automated workflows.
             </p>
           </div>
-          {discourse?.trigger_token && <InstallForm />}
+          {discourse?.status === "ENABLED" && !isExpired && <InstallForm />}
         </CardContent>
       </Card>
     </div>

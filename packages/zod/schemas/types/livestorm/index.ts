@@ -156,3 +156,14 @@ export type Identity = {
     };
   };
 };
+
+export type Webhook = {
+  id: string;
+  type: string;
+  attributes: {
+    created_at: number;
+    updated_at: number;
+    url: string;
+    event: string;
+  };
+};

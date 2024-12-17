@@ -7,8 +7,8 @@ import {
   SlackIntegrationSchema,
 } from "@conquest/zod/integration.schema";
 import { WebClient } from "@slack/web-api";
-import { listWebhooks } from "../livestorm/listWebhooks";
 import { deleteWebhook } from "../livestorm/deleteWebhhok";
+import { listWebhooks } from "../livestorm/listWebhooks";
 
 type Props = {
   source: SOURCE;

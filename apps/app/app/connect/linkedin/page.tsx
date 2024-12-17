@@ -32,8 +32,7 @@ export default async function Page({ searchParams: { code } }: Props) {
   );
 
   const data = await response.json();
-  console.log(data);
-  const { access_token, authed_user, team } = data;
+  const { access_token } = data;
 
   await createIntegration({
     external_id: null,

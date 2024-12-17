@@ -12,28 +12,25 @@ import { cn } from "@conquest/ui/cn";
 import { CirclePlus, ExternalLink } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
 
 export default function Page() {
   const { linkedin } = useUser();
   const { trigger_token, trigger_token_expires_at } = linkedin ?? {};
 
-  const [loading, setLoading] = useState(false);
   const router = useRouter();
   const isExpired =
     trigger_token_expires_at && trigger_token_expires_at < new Date();
 
   const onEnable = async () => {
-    setLoading(true);
-
-    const baseUrl = "https://www.linkedin.com/oauth/v2/authorization";
-    const clientId = `client_id=${env.NEXT_PUBLIC_LINKEDIN_CLIENT_ID}`;
-    const scopes = `scope=${LINKEDIN_SCOPES}`;
-    const redirectUri =
-      "redirect_uri=https://2e17b8a57252.ngrok.app/connect/linkedin";
+    const params = new URLSearchParams({
+      response_type: "code",
+      client_id: env.NEXT_PUBLIC_LINKEDIN_CLIENT_ID,
+      scope: LINKEDIN_SCOPES,
+      redirect_uri: "https://2e17b8a57252.ngrok.app/connect/linkedin",
+    });
 
     router.push(
-      `${baseUrl}?response_type=code&${clientId}&${scopes}&${redirectUri}`,
+      `https://www.linkedin.com/oauth/v2/authorization?${params.toString()}`,
     );
   };
 
@@ -61,7 +58,7 @@ export default function Page() {
               <p>Documentation</p>
             </Link>
             {(!trigger_token || isExpired) && (
-              <Button onClick={onEnable} loading={loading}>
+              <Button onClick={onEnable}>
                 <CirclePlus size={16} />
                 Enable
               </Button>

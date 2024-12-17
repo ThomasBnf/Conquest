@@ -46,24 +46,23 @@ export const InstallForm = () => {
   const onSubmit = ({ community_url, api_key }: FormDiscourse) => {
     if (!discourse) return;
     setLoading(true);
-    submit({ integration: discourse, community_url, api_key });
+    submit({ discourse, community_url, api_key });
   };
 
   useEffect(() => {
     if (!run?.status) return;
-
-    console.dir(run, { depth: Number.POSITIVE_INFINITY });
 
     const isCompleted = run.status === "COMPLETED";
     const isFailed = run.status === "FAILED";
 
     if (isCompleted || isFailed) {
       setLoading(false);
-      router.refresh();
 
       if (isFailed) {
         toast.error("Failed to install Slack", { duration: 5000 });
       }
+
+      router.refresh();
     }
   }, [run]);
 

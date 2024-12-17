@@ -37,13 +37,13 @@ export const OrganizationInfo = () => {
     const isFailed = run.status === "FAILED";
 
     if (isCompleted || isFailed) {
-      router.refresh();
+      setLoading(false);
 
       if (isFailed) {
         toast.error("Failed to install Slack", { duration: 5000 });
       }
 
-      setLoading(false);
+      router.refresh();
     }
   }, [run]);
 

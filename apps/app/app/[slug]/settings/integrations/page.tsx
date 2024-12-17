@@ -1,5 +1,6 @@
 "use client";
 
+import { Discourse } from "@/components/icons/Discourse";
 import { Linkedin } from "@/components/icons/Linkedin";
 import { Livestorm } from "@/components/icons/Livestorm";
 import { Slack } from "@/components/icons/Slack";
@@ -17,12 +18,12 @@ export default function Page() {
       name: "Slack",
       description: "Synchronize your members with Slack",
     },
-    // {
-    //   href: `/${slug}/settings/integrations/discourse`,
-    //   logo: <Discourse />,
-    //   name: "Discourse",
-    //   description: "Synchronize your members with Discourse",
-    // },
+    {
+      href: `/${slug}/settings/integrations/discourse`,
+      logo: <Discourse />,
+      name: "Discourse",
+      description: "Synchronize your members with Discourse",
+    },
     {
       href: `/${slug}/settings/integrations/livestorm`,
       logo: <Livestorm />,
