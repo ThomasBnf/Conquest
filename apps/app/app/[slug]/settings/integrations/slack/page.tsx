@@ -18,6 +18,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@conquest/ui/src/components/dropdown-menu";
+import { ScrollArea } from "@conquest/ui/src/components/scroll-area";
 import { Separator } from "@conquest/ui/src/components/separator";
 import { format } from "date-fns";
 import { ChevronDown, CirclePlus, ExternalLink } from "lucide-react";
@@ -64,98 +65,100 @@ export default function Page() {
   };
 
   return (
-    <div className="mx-auto flex max-w-3xl flex-col gap-4 py-16">
-      <IntegrationHeader />
-      <div className="flex items-center gap-4">
-        <div className="rounded-md border p-3">
-          <Slack />
-        </div>
-        <p className="font-medium text-lg">Slack</p>
-      </div>
-      <Card>
-        <CardHeader className="flex h-14 flex-row items-center justify-between space-y-0">
-          <div className="flex items-center">
-            <Link
-              href="https://doc.useconquest.com/slack"
-              target="_blank"
-              className={cn(
-                buttonVariants({ variant: "link", size: "xs" }),
-                "flex w-fit items-center gap-2 text-foreground",
-              )}
-            >
-              <ExternalLink size={15} />
-              <p>Documentation</p>
-            </Link>
+    <ScrollArea className="h-full">
+      <div className="mx-auto flex max-w-3xl flex-col gap-4 py-16">
+        <IntegrationHeader />
+        <div className="flex items-center gap-4">
+          <div className="rounded-md border p-3">
+            <Slack />
           </div>
-          {(!trigger_token || isExpired) && (
-            <Button onClick={onEnable}>
-              <CirclePlus size={16} />
-              Enable
-            </Button>
-          )}
-        </CardHeader>
-        <CardContent className="mb-0.5">
-          <p className="font-medium text-base">Overview</p>
-          <p className="text-balance text-muted-foreground">
-            Connect your Slack workspace to automatically sync messages, collect
-            member interactions, and send personalized direct messages through
-            automated workflows.
-          </p>
-          {slack?.status === "ENABLED" && !isExpired && <ListSlackChannels />}
-        </CardContent>
-      </Card>
-      {slack?.status === "CONNECTED" && (
+          <p className="font-medium text-lg">Slack</p>
+        </div>
         <Card>
-          <CardHeader>
-            <CardTitle className="font-medium text-base">
-              Connected workspace
-            </CardTitle>
+          <CardHeader className="flex h-14 flex-row items-center justify-between space-y-0">
+            <div className="flex items-center">
+              <Link
+                href="https://doc.useconquest.com/slack"
+                target="_blank"
+                className={cn(
+                  buttonVariants({ variant: "link", size: "xs" }),
+                  "flex w-fit items-center gap-2 text-foreground",
+                )}
+              >
+                <ExternalLink size={15} />
+                <p>Documentation</p>
+              </Link>
+            </div>
+            {(!trigger_token || isExpired) && (
+              <Button onClick={onEnable}>
+                <CirclePlus size={16} />
+                Enable
+              </Button>
+            )}
           </CardHeader>
           <CardContent className="mb-0.5">
-            <div className=" flex items-end justify-between">
-              <div>
-                <p className="font-medium">{name}</p>
-                {installed_at && (
-                  <p className="text-muted-foreground">
-                    Installed on {format(installed_at, "PP")}
-                  </p>
-                )}
-              </div>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost">
-                    <div className="size-2.5 rounded-full bg-green-500" />
-                    <p>Connected</p>
-                    <ChevronDown size={16} />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem onClick={() => setOpen(true)}>
-                    <p>Disconnect {name} workspace</p>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
-            <Separator className="my-4" />
-            <div>
-              <p className="mb-2 font-medium">Imported Channels</p>
-              <div className="space-y-1">
-                {channels?.map((channel) => (
-                  <p key={channel.id}># {channel.name}</p>
-                ))}
-              </div>
-            </div>
+            <p className="font-medium text-base">Overview</p>
+            <p className="text-balance text-muted-foreground">
+              Connect your Slack workspace to automatically sync messages,
+              collect member interactions, and send personalized direct messages
+              through automated workflows.
+            </p>
+            {slack?.status === "ENABLED" && !isExpired && <ListSlackChannels />}
           </CardContent>
         </Card>
-      )}
-      <AlertDialog
-        title={`Disconnect ${name} workspace`}
-        description="Slack integration will be removed from your workspace and all your data will be deleted."
-        onConfirm={onDisconnect}
-        open={open}
-        setOpen={setOpen}
-        buttonLabel="Disconnect"
-      />
-    </div>
+        {slack?.status === "CONNECTED" && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="font-medium text-base">
+                Connected workspace
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="mb-0.5">
+              <div className=" flex items-end justify-between">
+                <div>
+                  <p className="font-medium">{name}</p>
+                  {installed_at && (
+                    <p className="text-muted-foreground">
+                      Installed on {format(installed_at, "PP")}
+                    </p>
+                  )}
+                </div>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost">
+                      <div className="size-2.5 rounded-full bg-green-500" />
+                      <p>Connected</p>
+                      <ChevronDown size={16} />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem onClick={() => setOpen(true)}>
+                      <p>Disconnect {name} workspace</p>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+              <Separator className="my-4" />
+              <div>
+                <p className="mb-2 font-medium">Imported Channels</p>
+                <div className="space-y-1">
+                  {channels?.map((channel) => (
+                    <p key={channel.id}># {channel.name}</p>
+                  ))}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+        <AlertDialog
+          title={`Disconnect ${name} workspace`}
+          description="Slack integration will be removed from your workspace and all your data will be deleted."
+          onConfirm={onDisconnect}
+          open={open}
+          setOpen={setOpen}
+          buttonLabel="Disconnect"
+        />
+      </div>
+    </ScrollArea>
   );
 }

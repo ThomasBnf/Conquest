@@ -384,6 +384,7 @@ export const slack = new Hono()
             updated_at: new Date(Number.parseFloat(event_ts) * 1000),
             workspace_id,
           });
+
           break;
         }
 

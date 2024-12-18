@@ -11,7 +11,7 @@ export const livestorm = new Hono()
     c.set("user", user);
     await next();
   })
-  .get("/identity", async (c) => {
+  .get("/organization", async (c) => {
     const user = await getAuthUser(c);
     if (!user) throw new Error("Unauthorized");
 
@@ -34,7 +34,7 @@ export const livestorm = new Hono()
     }
 
     const response = await fetch(
-      "https://api.livestorm.co/v1/organization?included=name",
+      "https://api.livestorm.co/v1/organization?include=organization",
       {
         headers: {
           Authorization: `Bearer ${accessToken}`,

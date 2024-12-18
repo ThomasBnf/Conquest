@@ -129,7 +129,7 @@ export type People = {
   };
 };
 
-export type Identity = {
+export type Organization = {
   id: string;
   type: string;
   attributes: {

@@ -1,8 +1,8 @@
+import { sleep } from "@/helpers/sleep";
 import { discourseClient } from "@/lib/discourse";
 import { prisma } from "@/lib/prisma";
 import { deleteIntegration } from "@/queries/integrations/deleteIntegration";
 import { DiscourseIntegrationSchema } from "@conquest/zod/integration.schema";
-import type { Tag } from "@conquest/zod/schemas/tag.schema";
 import { schemaTask } from "@trigger.dev/sdk/v3";
 import { z } from "zod";
 
@@ -33,9 +33,46 @@ export const installDiscourse = schemaTask({
       },
     });
 
-    const tags: Tag[] = [];
+    let offset = 0;
+    let hasMore = true;
+    type UserAction = {
+      excerpt: string;
+      action_type: number;
+      created_at: string;
+      avatar_template: string;
+      acting_avatar_template: string;
+      slug: string;
+      topic_id: number;
+      target_user_id: number;
+      target_name: string | null;
+      archived: boolean;
+    };
 
-    const { badges } = await client.adminListBadges();
+    const actions: UserAction[] = [];
+
+    while (hasMore) {
+      const response = await client.listUserActions({
+        username: "eloise",
+        filter: "1,4,5",
+        offset,
+      });
+
+      actions.push(...response.user_actions);
+
+      offset += 30;
+      await sleep(5000);
+
+      if (response.user_actions.length < 30) {
+        hasMore = false;
+        break;
+      }
+    }
+
+    console.log(actions.length);
+
+    // const tags: Tag[] = [];
+
+    // const { badges } = await client.adminListBadges();
 
     // for (const badge of badges ?? []) {
     //   const createdTag = await prisma.tags.create({
@@ -51,34 +88,53 @@ export const installDiscourse = schemaTask({
     //   tags.push(createdTag);
     // }
 
-    const {
-      category_list: { categories },
-    } = await client.listCategories({
-      include_subcategories: true,
-    });
+    // const {
+    //   category_list: { categories },
+    // } = await client.listCategories({
+    //   include_subcategories: true,
+    // });
 
-    for (const category of categories ?? []) {
-      //   await prisma.channels.create({
-      //     data: {
-      //       name: category.name ?? "",
-      //       source: "DISCOURSE",
-      //       workspace_id: integration.workspace_id,
-      //       external_id: category.id.toString(),
-      //     },
-      //   });
-      //   for (const subcategory of category.subcategory_list ?? []) {
-      //     type SubCategory = { name: string; id: number };
-      //     const typedSubcategory = subcategory as SubCategory;
-      //     await prisma.channels.create({
-      //       data: {
-      //         name: `${category.name} - ${typedSubcategory.name}`,
-      //         source: "DISCOURSE",
-      //         workspace_id: integration.workspace_id,
-      //         external_id: typedSubcategory.id.toString(),
-      //       },
-      //     });
-      //   }
-    }
+    // for (const category of categories ?? []) {
+    //   if (category.id !== 28 && category.id !== 29) continue;
+
+    //   const topics = await client.listCategoryTopics({
+    //     id: category.id,
+    //     slug: category.slug,
+    //   });
+
+    //   for (const topic of topics.topic_list.topics ?? []) {
+    //     if (topic.id !== 4050) continue;
+
+    //     const posts = await client.getTopic({
+    //       id: topic.id.toString(),
+    //     });
+
+    //     for (const post of posts.post_stream.posts ?? []) {
+    //       console.log(post);
+    //     }
+    //   }
+
+    //   await prisma.channels.create({
+    //     data: {
+    //       name: category.name ?? "",
+    //       source: "DISCOURSE",
+    //       workspace_id: integration.workspace_id,
+    //       external_id: category.id.toString(),
+    //     },
+    //   });
+    //   for (const subcategory of category.subcategory_list ?? []) {
+    //     type SubCategory = { name: string; id: number };
+    //     const typedSubcategory = subcategory as SubCategory;
+    //     await prisma.channels.create({
+    //       data: {
+    //         name: `${category.name} - ${typedSubcategory.name}`,
+    //         source: "DISCOURSE",
+    //         workspace_id: integration.workspace_id,
+    //         external_id: typedSubcategory.id.toString(),
+    //       },
+    //     });
+    //   }
+    // }
 
     // let page = 1;
     // let hasMoreUsers = true;

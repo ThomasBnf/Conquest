@@ -18,7 +18,7 @@ export default async function Page({ searchParams: { code } }: Props) {
     client_id: env.NEXT_PUBLIC_LIVESTORM_CLIENT_ID,
     client_secret: env.LIVESTORM_CLIENT_SECRET,
     code,
-    redirect_uri: "https://app.useconquest/connect/livestorm",
+    redirect_uri: "https://app.useconquest.com/connect/livestorm",
   });
 
   const response = await fetch(
