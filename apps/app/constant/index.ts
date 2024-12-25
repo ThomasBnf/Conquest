@@ -94,6 +94,51 @@ export const SLACK_ACTIVITY_TYPES = [
   },
 ];
 
+export const DISCOURSE_ACTIVITY_TYPES = [
+  {
+    name: "Invite",
+    source: "DISCOURSE" as const,
+    key: "discourse:invite",
+    weight: 7,
+    deletable: false,
+  },
+  {
+    name: "Post marked as solved",
+    source: "DISCOURSE" as const,
+    key: "discourse:solved",
+    weight: 6,
+    deletable: false,
+  },
+  {
+    name: "Write a post",
+    source: "DISCOURSE" as const,
+    key: "discourse:post",
+    weight: 4,
+    deletable: false,
+  },
+  {
+    name: "Reply to post",
+    source: "DISCOURSE" as const,
+    key: "discourse:reply",
+    weight: 2,
+    deletable: false,
+  },
+  {
+    name: "Login",
+    source: "DISCOURSE" as const,
+    key: "discourse:login",
+    weight: 1,
+    deletable: false,
+  },
+  {
+    name: "Add reaction",
+    source: "DISCOURSE" as const,
+    key: "discourse:reaction",
+    weight: 0,
+    deletable: false,
+  },
+];
+
 export const LIVESTORM_ACTIVITY_TYPES = [
   {
     name: "Attend event",

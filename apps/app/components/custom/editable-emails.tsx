@@ -21,8 +21,12 @@ type Props = {
 
 export const EditableEmails = ({ member }: Props) => {
   const [open, setOpen] = useState(false);
+  const memberEmails = [
+    member.primary_email,
+    ...(member.secondary_emails ?? []),
+  ].filter((email): email is string => email !== null);
   const [emails, setEmails] = useState<{ id: string; content: string }[]>(
-    member.emails.map((email) => ({ id: cuid(), content: email })),
+    memberEmails.map((email) => ({ id: cuid(), content: email })),
   );
 
   const onAddEmail = () => {
@@ -37,7 +41,8 @@ export const EditableEmails = ({ member }: Props) => {
       setEmails(newEmails);
       updateMember({
         id: member.id,
-        emails: newEmails.map((email) => email.content),
+        primary_email: newEmails[0]?.content,
+        secondary_emails: newEmails.slice(1).map((email) => email.content),
       });
       return toast.error("Invalid email format");
     }
@@ -48,7 +53,8 @@ export const EditableEmails = ({ member }: Props) => {
     setEmails(updatedEmails);
     updateMember({
       id: member.id,
-      emails: updatedEmails.map((email) => email.content),
+      primary_email: updatedEmails[0]?.content,
+      secondary_emails: updatedEmails.slice(1).map((email) => email.content),
     });
   };
 
@@ -57,7 +63,8 @@ export const EditableEmails = ({ member }: Props) => {
     setEmails(updatedEmails);
     updateMember({
       id: member.id,
-      emails: updatedEmails.map((email) => email.content),
+      primary_email: updatedEmails[0]?.content,
+      secondary_emails: updatedEmails.slice(1).map((email) => email.content),
     });
   };
 

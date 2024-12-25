@@ -38,8 +38,10 @@ enum STATUS {
 
 model activities {
   id          String  @id @default(cuid())
-  external_id String? @unique
+  external_id String?
+  title       String?
   message     String
+  thread_id   String?
   reply_to    String?
   react_to    String?
   invite_by   String?
@@ -58,6 +60,7 @@ model activities {
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
+  @@unique([external_id, workspace_id])
   @@index([id, workspace_id])
 }
 
@@ -95,8 +98,9 @@ model apikeys {
 
 model channels {
   id           String       @id @default(cuid())
-  external_id  String?      @unique
+  external_id  String?
   name         String
+  slug         String?
   source       SOURCE
   workspace_id String
   workspace    workspaces   @relation(fields: [workspace_id], references: [id], onDelete: Cascade)
@@ -104,6 +108,7 @@ model channels {
   created_at   DateTime     @default(now())
   updated_at   DateTime     @updatedAt
 
+  @@unique([external_id, workspace_id])
   @@index([id, workspace_id])
 }
 
@@ -180,33 +185,33 @@ model integrations {
 }
 
 model members {
-  id           String   @id @default(cuid())
-  slack_id     String?  @unique
-  discourse_id String?  @unique
-  livestorm_id String?  @unique
-  first_name   String?
-  last_name    String?
-  username     String?
-  locale       String?
-  avatar_url   String?
-  bio          String?
-  job_title    String?
-  emails       String[] @default([])
-  phones       String[] @default([])
-  tags         String[] @default([])
-  level        Int      @default(0)
-  love         Int      @default(0)
-  presence     Int      @default(0)
-  gender       GENDER?
-  source       SOURCE
-  logs         Json[]   @default([])
+  id               String   @id @default(cuid())
+  slack_id         String?
+  livestorm_id     String?
+  discourse_id     String?
+  first_name       String?
+  last_name        String?
+  username         String?
+  locale           String?
+  avatar_url       String?
+  bio              String?
+  job_title        String?
+  primary_email    String
+  secondary_emails String[] @default([])
+  phones           String[] @default([])
+  tags             String[] @default([])
+  level            Int      @default(0)
+  pulse            Int      @default(0)
+  presence         Int      @default(0)
+  gender           GENDER?
+  source           SOURCE
+  logs             Json[]   @default([])
 
   company_id   String?
-  company      companies? @relation(fields: [company_id], references: [id], onDelete: SetNull)
+  company      companies?   @relation(fields: [company_id], references: [id], onDelete: SetNull)
   workspace_id String
-  workspace    workspaces @relation(fields: [workspace_id], references: [id], onDelete: Cascade)
-
-  activities activities[]
+  workspace    workspaces   @relation(fields: [workspace_id], references: [id], onDelete: Cascade)
+  activities   activities[]
 
   first_activity DateTime?
   last_activity  DateTime?
@@ -215,12 +220,16 @@ model members {
   created_at     DateTime  @default(now())
   updated_at     DateTime  @updatedAt
 
+  @@unique([primary_email, workspace_id])
+  @@unique([username, workspace_id])
+  @@unique([discourse_id, workspace_id])
+  @@unique([slack_id, workspace_id])
   @@index([id, workspace_id])
 }
 
 model tags {
   id          String  @id @default(cuid())
-  external_id String? @unique
+  external_id String?
   name        String
   description String?
   color       String
@@ -232,6 +241,7 @@ model tags {
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
+  @@unique([external_id, workspace_id])
   @@index([id, workspace_id])
 }
 

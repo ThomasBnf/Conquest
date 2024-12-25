@@ -42,17 +42,24 @@ export const listReplies = async ({
     for (const message of messages?.slice(1) ?? []) {
       const { text, ts, user, reactions, files } = message;
 
+      if (!user) continue;
+
       const member = await prisma.members.findUnique({
         where: {
-          slack_id: user,
-          workspace_id,
+          slack_id_workspace_id: {
+            slack_id: user,
+            workspace_id,
+          },
         },
       });
 
       if (member) {
-        const activity = await prisma.activities.upsert({
+        const upsertedActivity = await prisma.activities.upsert({
           where: {
-            external_id: ts,
+            external_id_workspace_id: {
+              external_id: ts ?? "",
+              workspace_id,
+            },
           },
           update: {
             message: text ?? "",
@@ -74,7 +81,7 @@ export const listReplies = async ({
 
         await createFiles({
           files: files as SlackFile[],
-          activity_id: activity.id,
+          activity_id: upsertedActivity.id,
         });
 
         if (reactions?.length) {
@@ -86,7 +93,7 @@ export const listReplies = async ({
                 user,
                 message: name ?? "",
                 channel_id: channel.id,
-                react_to: activity?.external_id,
+                react_to: upsertedActivity?.external_id,
                 ts: message.ts ?? "",
                 activity_type_id: type_reaction.id,
                 workspace_id,

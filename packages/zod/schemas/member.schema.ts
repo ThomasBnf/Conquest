@@ -5,7 +5,7 @@ import { SOURCE } from "./enum/source.enum";
 
 export const LogSchema = z.object({
   date: z.string(),
-  love: z.number(),
+  pulse: z.number(),
   presence: z.number(),
   level: z.number(),
   max_weight: z.number(),
@@ -24,11 +24,12 @@ export const MemberSchema = z.object({
   avatar_url: z.string().nullable(),
   bio: z.string().nullable(),
   job_title: z.string().nullable(),
-  emails: z.array(z.string()),
+  primary_email: z.string(),
+  secondary_emails: z.array(z.string()),
   phones: z.array(z.string()),
   tags: z.array(z.string()),
   level: z.number(),
-  love: z.number(),
+  pulse: z.number(),
   presence: z.number(),
   gender: GENDER.nullable(),
   source: SOURCE,

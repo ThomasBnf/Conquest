@@ -197,9 +197,9 @@ const filtersMember: Filter[] = [
   },
   {
     id: "1",
-    label: "Love",
+    label: "Pulse",
     type: "number",
-    field: "love",
+    field: "pulse",
     operator: "greater or equal",
     value: 1,
   },

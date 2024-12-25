@@ -6,6 +6,7 @@ import { activityTypes } from "@/server/activity-types/route";
 import { channels } from "@/server/channels/route";
 import { companies } from "@/server/companies/route";
 import { dashboard } from "@/server/dashboard/route";
+import { discourse } from "@/server/discourse/route";
 import { files } from "@/server/files/route";
 import { linkedin } from "@/server/linkedin/route";
 import { livestorm } from "@/server/livestorm/route";
@@ -85,6 +86,7 @@ const api = app
   .route("/channels", channels)
   .route("/companies", companies)
   .route("/dashboard", dashboard)
+  .route("/discourse", discourse)
   .route("/files", files)
   .route("/linkedin", linkedin)
   .route("/livestorm", livestorm)

@@ -7,7 +7,9 @@ import { MemberSchema } from "./member.schema";
 export const ActivitySchema = z.object({
   id: z.string().cuid(),
   external_id: z.string().nullable(),
+  title: z.string().nullable(),
   message: z.string(),
+  thread_id: z.string().nullable(),
   reply_to: z.string().nullable(),
   react_to: z.string().nullable(),
   invite_by: z.string().nullable(),

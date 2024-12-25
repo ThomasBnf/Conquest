@@ -2,12 +2,16 @@ import { prisma } from "lib/prisma";
 
 type Props = {
   external_id: string;
+  workspace_id: string;
 };
 
-export const deleteChannel = async ({ external_id }: Props) => {
+export const deleteChannel = async ({ external_id, workspace_id }: Props) => {
   return await prisma.channels.delete({
     where: {
-      external_id,
+      external_id_workspace_id: {
+        external_id,
+        workspace_id,
+      },
     },
   });
 };

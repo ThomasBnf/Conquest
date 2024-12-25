@@ -2,7 +2,7 @@ import { prisma } from "@/lib/prisma";
 import type { Member } from "@conquest/zod/schemas/member.schema";
 import { subDays } from "date-fns";
 import { getMemberLogs } from "../members/getMemberLogs";
-import { getMemberLove } from "../members/getMemberLove";
+import { getMemberPulse } from "../members/getMemberPulse";
 
 type Props = {
   member: Member;
@@ -32,7 +32,7 @@ export const getMembersMetrics = async ({ member }: Props) => {
     },
   });
 
-  const { love, presence, level } = await getMemberLove({
+  const { pulse, presence, level } = await getMemberPulse({
     memberId: member.id,
     activities,
   });
@@ -42,7 +42,7 @@ export const getMembersMetrics = async ({ member }: Props) => {
   await prisma.members.update({
     where: { id: member.id },
     data: {
-      love,
+      pulse,
       presence,
       level,
       first_activity: activities.at(0)?.created_at,

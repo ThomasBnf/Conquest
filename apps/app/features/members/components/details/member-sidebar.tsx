@@ -16,8 +16,9 @@ import { Separator } from "@conquest/ui/separator";
 import type { MemberWithCompany } from "@conquest/zod/schemas/member.schema";
 import type { Tag } from "@conquest/zod/tag.schema";
 import { format } from "date-fns";
+import { TagIcon } from "lucide-react";
 import { LevelTooltip } from "../level-tooltip";
-import { LoveTooltip } from "../love-tooltip";
+import { PulseTooltip } from "../pulse-tooltip";
 
 type Props = {
   member: MemberWithCompany;
@@ -44,9 +45,7 @@ export const MemberSidebar = ({ member, tags }: Props) => {
       | "first_name"
       | "last_name"
       | "company_id"
-      | "phone"
       | "job_title"
-      | "address"
       | "bio"
       | "source"
       | "tags",
@@ -75,19 +74,23 @@ export const MemberSidebar = ({ member, tags }: Props) => {
             <LevelTooltip member={member} showIcon={false} />
           </Badge>
           <Badge variant="outline">
-            <LoveTooltip member={member} showIcon={false} />
+            <PulseTooltip member={member} showIcon={false} />
           </Badge>
         </div>
       </div>
       <Separator />
       <div className="space-y-2 p-4">
-        <FieldCard icon="Tag" label="Tags">
+        <div className="flex min-h-8 items-start space-x-1.5">
+          <div className="mt-1.5 flex w-28 shrink-0 items-center gap-2 text-muted-foreground">
+            <TagIcon size={15} className="shrink-0" />
+            <p>Tags</p>
+          </div>
           <TagPicker
             record={member}
             tags={tags}
             onUpdate={(value) => onUpdateMember("tags", value)}
           />
-        </FieldCard>
+        </div>
       </div>
       <ScrollArea className="flex-1">
         <Separator />

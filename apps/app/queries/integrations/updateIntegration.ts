@@ -1,6 +1,10 @@
 import { prisma } from "@/lib/prisma";
 import { safeAction } from "@/lib/safeAction";
 import { STATUS } from "@conquest/zod/enum/status.enum";
+import {
+  IntegrationDetailsSchema,
+  IntegrationSchema,
+} from "@conquest/zod/schemas/integration.schema";
 import { z } from "zod";
 
 export const updateIntegration = safeAction
@@ -9,19 +13,23 @@ export const updateIntegration = safeAction
   })
   .schema(
     z.object({
-      external_id: z.string().nullable(),
-      installed_at: z.date().nullable(),
-      status: STATUS,
+      id: z.string(),
+      installed_at: z.date().optional(),
+      details: IntegrationDetailsSchema.optional(),
+      status: STATUS.optional(),
     }),
   )
-  .action(async ({ parsedInput: { external_id, installed_at, status } }) => {
-    return await prisma.integrations.updateMany({
+  .action(async ({ parsedInput: { id, installed_at, details, status } }) => {
+    const integration = await prisma.integrations.update({
       where: {
-        external_id,
+        id,
       },
       data: {
+        details,
         installed_at,
         status,
       },
     });
+
+    return IntegrationSchema.parse(integration);
   });

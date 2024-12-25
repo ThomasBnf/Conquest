@@ -117,13 +117,13 @@ export const slack = new Hono()
 
         case "channel_rename": {
           const { name, id } = event.channel;
-          await updateChannel({ external_id: id, name });
+          await updateChannel({ external_id: id, name, workspace_id });
           break;
         }
 
         case "channel_deleted": {
           const { channel } = event;
-          await deleteChannel({ external_id: channel });
+          await deleteChannel({ external_id: channel, workspace_id });
           break;
         }
 
@@ -133,25 +133,13 @@ export const slack = new Hono()
           const handleMessage = async (messageEvent: GenericMessageEvent) => {
             const { user, text, thread_ts, ts, files } = messageEvent;
 
-            const { profile } = await web.users.profile.get({ user });
-            if (!profile) return c.json({ status: 200 });
-
-            const { first_name, last_name, email, phone, image_1024, title } =
-              profile;
-
-            if (!email) return c.json({ status: 200 });
-
-            const member = await upsertMember({
+            const member = await getMember({
               id: user,
               source: "SLACK",
-              first_name,
-              last_name,
-              email,
-              phone: phone ?? null,
-              avatar_url: image_1024,
-              job_title: title,
               workspace_id,
             });
+
+            if (!member) return c.json({ status: 200 });
 
             const channel = await getChannel({
               external_id: channel_id,
@@ -191,6 +179,7 @@ export const slack = new Hono()
                 message: text ?? "",
                 activity_type_id: thread_ts ? type_reply.id : type_post.id,
                 reply_to: thread_ts ?? null,
+                workspace_id,
               });
 
               await createFiles({
@@ -229,25 +218,13 @@ export const slack = new Hono()
           const { user, item, reaction } = event;
           const { channel: channel_id, ts } = item;
 
-          const { profile } = await web.users.profile.get({ user });
-          if (!profile) return c.json({ status: 200 });
-
-          const { first_name, last_name, email, phone, image_1024, title } =
-            profile;
-
-          if (!email) return c.json({ status: 200 });
-
-          const member = await upsertMember({
+          const member = await getMember({
             id: user,
             source: "SLACK",
-            first_name,
-            last_name,
-            email,
-            phone: phone ?? null,
-            avatar_url: image_1024,
-            job_title: title,
             workspace_id,
           });
+
+          if (!member) return c.json({ status: 200 });
 
           const channel = await getChannel({
             external_id: channel_id,
@@ -322,15 +299,17 @@ export const slack = new Hono()
 
           const member = await upsertMember({
             id: user,
-            source: "SLACK",
-            first_name,
-            last_name,
-            email,
-            phone: phone ?? null,
-            locale,
-            avatar_url: image_1024,
-            job_title: title,
-            workspace_id,
+            data: {
+              first_name,
+              last_name,
+              primary_email: email,
+              phones: phone ? [phone] : [],
+              locale,
+              avatar_url: image_1024,
+              job_title: title,
+              source: "SLACK",
+              workspace_id,
+            },
           });
 
           const createdChannel = await getChannel({
@@ -408,16 +387,17 @@ export const slack = new Hono()
 
           await upsertMember({
             id,
-            source: "SLACK",
-            first_name,
-            last_name,
-            email,
-            phone: phone ?? null,
-            locale: userInfo?.locale,
-            avatar_url: image_1024,
-            job_title: title,
-            isDeleted: deleted,
-            workspace_id,
+            data: {
+              first_name,
+              last_name,
+              primary_email: email,
+              phones: phone ? [phone] : [],
+              locale: userInfo?.locale,
+              avatar_url: image_1024,
+              job_title: title,
+              source: "SLACK",
+              workspace_id,
+            },
           });
 
           break;

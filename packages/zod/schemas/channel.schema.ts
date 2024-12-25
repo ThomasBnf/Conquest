@@ -4,8 +4,9 @@ import { SOURCE } from "./enum/source.enum";
 
 export const ChannelSchema = z.object({
   id: z.string().cuid(),
-  external_id: z.string(),
+  external_id: z.string().nullable(),
   name: z.string(),
+  slug: z.string().nullable(),
   source: SOURCE,
   workspace_id: z.string().cuid(),
   created_at: z.coerce.date(),

@@ -22,8 +22,10 @@ export const createReaction = async ({
 }: Props) => {
   const member = await prisma.members.findUnique({
     where: {
-      slack_id: user,
-      workspace_id,
+      slack_id_workspace_id: {
+        slack_id: user,
+        workspace_id,
+      },
     },
   });
 

@@ -1,5 +1,4 @@
 import { prisma } from "@/lib/prisma";
-import { ActivityWithMemberSchema } from "@conquest/zod/schemas/activity.schema";
 
 type Props = {
   external_id: string;
@@ -9,13 +8,17 @@ type Props = {
 export const getActivity = async ({ external_id, workspace_id }: Props) => {
   const activity = await prisma.activities.findUnique({
     where: {
-      external_id,
-      workspace_id,
+      external_id_workspace_id: {
+        external_id,
+        workspace_id,
+      },
     },
     include: {
       member: true,
     },
   });
 
-  return ActivityWithMemberSchema.parse(activity);
+  console.log(activity);
+
+  return activity;
 };

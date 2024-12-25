@@ -37,16 +37,17 @@ export const InstallForm = () => {
   const form = useForm<FormDiscourse>({
     resolver: zodResolver(FormDiscourseSchema),
     defaultValues: {
-      community_url: "https://playground.lagrowthmachine.com/",
+      community_url: "https://playground.lagrowthmachine.com",
       api_key:
         "a7e80919eecc82b71fe8a23d8d0e199bf3d593216835315133254de014e9e1b3",
     },
   });
 
-  const onSubmit = ({ community_url, api_key }: FormDiscourse) => {
+  const onSubmit = async ({ community_url, api_key }: FormDiscourse) => {
     if (!discourse) return;
     setLoading(true);
-    submit({ discourse, community_url, api_key });
+    const formattedCommunityUrl = community_url.trim().replace(/\/$/, "");
+    submit({ discourse, community_url: formattedCommunityUrl, api_key });
   };
 
   useEffect(() => {

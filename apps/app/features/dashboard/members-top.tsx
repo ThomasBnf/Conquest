@@ -18,8 +18,8 @@ type Props = {
 };
 
 const chartConfig = {
-  love: {
-    label: "Love",
+  pulse: {
+    label: "Pulse",
     color: "hsl(var(--main-100))",
   },
 } satisfies ChartConfig;
@@ -39,7 +39,7 @@ export const MembersTop = ({ from, to }: Props) => {
       <p className="pl-2 font-medium text-base">Top Members</p>
       <div className="mt-4 flex items-center justify-between px-2 text-muted-foreground">
         <p>Members</p>
-        <p>Love</p>
+        <p>Pulse</p>
       </div>
       <ResponsiveContainer height={350} width="100%">
         <ChartContainer ref={ref} config={chartConfig}>
@@ -52,11 +52,11 @@ export const MembersTop = ({ from, to }: Props) => {
               axisLine={false}
               hide
             />
-            <XAxis dataKey="love" type="number" domain={[0, "dataMax"]} hide />
+            <XAxis dataKey="pulse" type="number" domain={[0, "dataMax"]} hide />
             <Bar
-              dataKey="love"
+              dataKey="pulse"
               layout="vertical"
-              fill="var(--color-love)"
+              fill="var(--color-pulse)"
               radius={4}
               alignmentBaseline="baseline"
             >
@@ -75,7 +75,7 @@ export const MembersTop = ({ from, to }: Props) => {
                 }}
               />
               <LabelList
-                dataKey="love"
+                dataKey="pulse"
                 position="right"
                 offset={10}
                 className="fill-muted-foreground text-xs"

@@ -1,14 +1,14 @@
 import { prisma } from "@/lib/prisma";
 import type { ActivityWithType } from "@conquest/zod/schemas/activity.schema";
 import { isAfter, startOfMonth, startOfWeek, subMonths } from "date-fns";
-import { getMemberPresence } from "../slack/getMemberPresence";
+import { getMemberPresence } from "../slack/getMemberPresence.js";
 
 type Props = {
   memberId: string;
   activities: ActivityWithType[];
 };
 
-export const getMemberLove = async ({ memberId, activities }: Props) => {
+export const getMemberPulse = async ({ memberId, activities }: Props) => {
   const today = new Date();
   const last3months = startOfMonth(subMonths(today, 3));
   const currentWeek = startOfWeek(today);
@@ -17,7 +17,7 @@ export const getMemberLove = async ({ memberId, activities }: Props) => {
     await prisma.members.update({
       where: { id: memberId },
       data: {
-        love: 0,
+        pulse: 0,
         presence: 0,
         level: 0,
         logs: [],
@@ -29,7 +29,7 @@ export const getMemberLove = async ({ memberId, activities }: Props) => {
     isAfter(activity.created_at, last3months),
   );
 
-  const love = last3monthsActivities.reduce(
+  const pulse = last3monthsActivities.reduce(
     (acc, activity) => acc + activity.activity_type.weight,
     0,
   );
@@ -40,10 +40,10 @@ export const getMemberLove = async ({ memberId, activities }: Props) => {
   );
 
   const presence = getMemberPresence(activities, currentWeek);
-  const level = Math.max(presence, maxWeight);
+  const level = Math.max(maxWeight, presence);
 
   return {
-    love,
+    pulse,
     presence,
     level,
   };

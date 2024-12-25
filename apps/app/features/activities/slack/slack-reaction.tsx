@@ -1,12 +1,8 @@
 import { emojiParser } from "@/features/activities/helpers/emoji-parser";
 import { SlackMarkdown } from "@/features/activities/slack/slack-markdown";
-import { client } from "@/lib/rpc";
+import { useGetActivity } from "@/queries/hooks/useGetActivity";
 import { Skeleton } from "@conquest/ui/skeleton";
-import {
-  type ActivityWithMember,
-  ActivityWithMemberSchema,
-} from "@conquest/zod/activity.schema";
-import { useQuery } from "@tanstack/react-query";
+import type { ActivityWithMember } from "@conquest/zod/activity.schema";
 import { ActivityCard } from "../activity-card";
 
 type Props = {
@@ -15,20 +11,7 @@ type Props = {
 
 export const SlackReaction = ({ activity }: Props) => {
   const { react_to } = activity;
-
-  const { data } = useQuery({
-    queryKey: ["react_to", react_to],
-    queryFn: async () => {
-      if (!react_to) return null;
-      const response = await client.api.activities[":activityId"].$get({
-        param: {
-          activityId: react_to,
-        },
-      });
-
-      return ActivityWithMemberSchema.parse(await response.json());
-    },
-  });
+  const { data } = useGetActivity({ id: react_to });
 
   if (!data)
     return (

@@ -1,6 +1,6 @@
 import { env } from "@/env.mjs";
-import { prisma } from "@/lib/prisma";
 import type { LivestormIntegration } from "@conquest/zod/schemas/integration.schema";
+import { updateIntegration } from "../integrations/updateIntegration";
 
 export const getRefreshToken = async (integration: LivestormIntegration) => {
   const { id, details } = integration;
@@ -25,18 +25,14 @@ export const getRefreshToken = async (integration: LivestormIntegration) => {
 
   const data = await response.json();
 
-  await prisma.integrations.update({
-    where: {
-      id,
-    },
-    data: {
-      details: {
-        source: "LIVESTORM",
-        access_token: data.access_token,
-        refresh_token: data.refresh_token,
-        expires_in: data.expires_in,
-        scope: data.scope,
-      },
+  await updateIntegration({
+    id,
+    details: {
+      ...details,
+      access_token: data.access_token,
+      refresh_token: data.refresh_token,
+      expires_in: data.expires_in,
+      scope: data.scope,
     },
   });
 

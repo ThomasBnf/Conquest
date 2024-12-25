@@ -24,7 +24,7 @@ export const _createMember = authAction
 
     const existingMember = await prisma.members.findFirst({
       where: {
-        emails: { has: email },
+        primary_email: email,
         workspace_id,
       },
     });
@@ -37,7 +37,7 @@ export const _createMember = authAction
       data: {
         first_name,
         last_name,
-        emails: [email],
+        primary_email: email,
         source: "MANUAL",
         workspace_id: ctx.user.workspace_id,
       },

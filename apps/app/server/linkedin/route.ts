@@ -1,6 +1,9 @@
 import { getAuthUser } from "@/queries/users/getAuthUser";
 import { LinkedInIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
-import type { Orgnaization } from "@conquest/zod/schemas/types/linkedin";
+import type {
+  Orgnaization,
+  organizationalEntityAclsResponse,
+} from "@conquest/zod/schemas/types/linkedin";
 import { Hono } from "hono";
 
 export const linkedin = new Hono()
@@ -11,15 +14,61 @@ export const linkedin = new Hono()
     c.set("user", user);
     await next();
   })
-  .get("/get-company", async (c) => {
+  .get("/organizations", async (c) => {
     const { workspace } = c.get("user");
 
-    const linkedinIntegration = workspace.integrations.find(
+    const integration = workspace.integrations.find(
       (integration) => integration.details.source === "LINKEDIN",
     );
 
-    const { access_token } =
-      LinkedInIntegrationSchema.parse(linkedinIntegration).details;
+    const { details } = LinkedInIntegrationSchema.parse(integration);
+    const { access_token } = details;
+
+    const orgsResponse = await fetch(
+      "https://api.linkedin.com/v2/organizationalEntityAcls?q=roleAssignee&role=ADMINISTRATOR&state=APPROVED",
+      {
+        headers: {
+          Authorization: `Bearer ${access_token}`,
+          "LinkedIn-Version": "202411",
+          "Content-Type": "application/json",
+        },
+      },
+    );
+
+    const dataOrgs =
+      (await orgsResponse.json()) as organizationalEntityAclsResponse;
+    const orgsIds = dataOrgs.elements
+      .map((org) => org.organizationalTarget.split(":").pop())
+      .join(",");
+
+    console.log(orgsIds);
+
+    const response = await fetch(
+      `https://api.linkedin.com/v2/organization?ids=List(${orgsIds})`,
+      {
+        headers: {
+          Authorization: `Bearer ${access_token}`,
+          "LinkedIn-Version": "202411",
+          "Content-Type": "application/json",
+        },
+      },
+    );
+
+    const data = await response.json();
+
+    console.log(data);
+
+    return c.json(data);
+  })
+  .get("/get-company", async (c) => {
+    const { workspace } = c.get("user");
+
+    const integration = workspace.integrations.find(
+      (integration) => integration.details.source === "LINKEDIN",
+    );
+
+    const { details } = LinkedInIntegrationSchema.parse(integration);
+    const { access_token } = details;
 
     const responseOrg = await fetch(
       "https://api.linkedin.com/rest/organizations/104941091",
@@ -37,5 +86,3 @@ export const linkedin = new Hono()
 
     return c.json({ id, localizedName, localizedDescription });
   });
-
-104941091;

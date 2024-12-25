@@ -4,7 +4,9 @@ import { prisma } from "lib/prisma";
 type Props = {
   external_id: string | null;
   activity_type_id: string;
+  title?: string | null;
   message: string;
+  thread_id?: string | null;
   react_to?: string | null;
   reply_to?: string | null;
   invite_by?: string | null;
@@ -18,7 +20,9 @@ type Props = {
 export const createActivity = async ({
   external_id,
   activity_type_id,
+  title,
   message,
+  thread_id,
   react_to,
   reply_to,
   invite_by,
@@ -32,7 +36,9 @@ export const createActivity = async ({
     data: {
       external_id,
       activity_type_id,
+      title,
       message,
+      thread_id,
       react_to,
       reply_to,
       invite_by,

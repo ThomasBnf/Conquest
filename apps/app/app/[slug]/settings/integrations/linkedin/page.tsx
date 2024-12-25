@@ -37,7 +37,7 @@ export default function Page() {
 
   return (
     <ScrollArea className="h-full">
-      <div className="mx-auto flex max-w-3xl flex-col gap-4 py-16">
+      <div className="mx-auto flex max-w-4xl flex-col gap-4 py-16">
         <IntegrationHeader />
         <div className="flex items-center gap-4">
           <div className="rounded-md border p-3">

@@ -61,14 +61,15 @@ export const webhook = new Hono().post("/livestorm", async (c) => {
 
       const createdMember = await upsertMember({
         id,
-        first_name,
-        last_name,
-        email,
-        avatar_url: avatar_link,
-        source: "LIVESTORM",
-        locale: ip_country_code,
-        phone: null,
-        workspace_id,
+        data: {
+          first_name,
+          last_name,
+          primary_email: email,
+          avatar_url: avatar_link,
+          locale: ip_country_code,
+          source: "LIVESTORM",
+          workspace_id,
+        },
       });
 
       const activityType = await getActivityType({

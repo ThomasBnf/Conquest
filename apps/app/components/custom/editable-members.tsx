@@ -137,7 +137,7 @@ export const EditableMembers = ({ company }: Props) => {
                     <div className="flex w-full flex-col text-xs">
                       {member.first_name} {member.last_name}
                       <span className="text-muted-foreground">
-                        {member.emails[0]}
+                        {member.primary_email}
                       </span>
                     </div>
                   </CommandItem>

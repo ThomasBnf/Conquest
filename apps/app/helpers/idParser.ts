@@ -1,11 +1,11 @@
-import type { SOURCE } from "@conquest/database/src";
+import type { Source } from "@conquest/zod/schemas/enum/source.enum";
 
 type Props = {
-  source?: SOURCE;
-  id: string | undefined;
+  id: string;
+  source: Source;
 };
 
-export const idParser = ({ source, id }: Props) => {
+export const idParser = ({ id, source }: Props) => {
   switch (source) {
     case "SLACK":
       return { slack_id: id };

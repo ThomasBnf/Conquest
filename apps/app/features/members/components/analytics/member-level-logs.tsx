@@ -35,7 +35,7 @@ export const MemberLevelLogs = ({ member }: Props) => {
 
   const formattedLogs = logs.map((log) => ({
     date: format(log.date, "MMM d, yyyy"),
-    love: log.love,
+    pulse: log.pulse,
     presence: log.presence,
     level: log.level,
     max_weight: log.max_weight,

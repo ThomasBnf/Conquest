@@ -1,12 +1,7 @@
 import { SlackMarkdown } from "@/features/activities/slack/slack-markdown";
-import { client } from "@/lib/rpc";
+import { useGetActivity } from "@/queries/hooks/useGetActivity";
 import { Skeleton } from "@conquest/ui/skeleton";
-import {
-  type ActivityWithMember,
-  ActivityWithMemberSchema,
-  ActivityWithTypeAndMemberSchema,
-} from "@conquest/zod/activity.schema";
-import { useQuery } from "@tanstack/react-query";
+import type { ActivityWithMember } from "@conquest/zod/activity.schema";
 import { ActivityCard } from "../activity-card";
 
 type Props = {
@@ -15,20 +10,7 @@ type Props = {
 
 export const SlackReply = ({ activity }: Props) => {
   const { reply_to } = activity;
-
-  const { data } = useQuery({
-    queryKey: ["reply_to", reply_to],
-    queryFn: async () => {
-      if (!reply_to) return null;
-      const response = await client.api.activities[":activityId"].$get({
-        param: {
-          activityId: reply_to,
-        },
-      });
-
-      return ActivityWithMemberSchema.parse(await response.json());
-    },
-  });
+  const { data } = useGetActivity({ id: reply_to });
 
   if (!data)
     return (

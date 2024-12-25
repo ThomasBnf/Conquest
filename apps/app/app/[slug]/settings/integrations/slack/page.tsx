@@ -44,7 +44,7 @@ export default function Page() {
       client_id: env.NEXT_PUBLIC_SLACK_CLIENT_ID,
       scope: SLACK_SCOPES,
       user_scope: USER_SCOPES,
-      redirect_uri: "https://app.useconquest/connect/slack",
+      redirect_uri: `${env.NEXT_PUBLIC_BASE_URL}/connect/slack`,
     });
 
     router.push(`https://slack.com/oauth/v2/authorize?${params.toString()}`);
@@ -66,7 +66,7 @@ export default function Page() {
 
   return (
     <ScrollArea className="h-full">
-      <div className="mx-auto flex max-w-3xl flex-col gap-4 py-16">
+      <div className="mx-auto flex max-w-4xl flex-col gap-4 py-16">
         <IntegrationHeader />
         <div className="flex items-center gap-4">
           <div className="rounded-md border p-3">
@@ -103,7 +103,8 @@ export default function Page() {
               collect member interactions, and send personalized direct messages
               through automated workflows.
             </p>
-            {slack?.status === "ENABLED" && !isExpired && <ListSlackChannels />}
+            {(slack?.status === "ENABLED" || slack?.status === "SYNCING") &&
+              !isExpired && <ListSlackChannels />}
           </CardContent>
         </Card>
         {slack?.status === "CONNECTED" && (

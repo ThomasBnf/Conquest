@@ -225,12 +225,12 @@ export const dashboard = new Hono()
       const topMembers = members
         .map((member) => ({
           ...member,
-          love: member.activities.reduce((acc, activity) => {
+          pulse: member.activities.reduce((acc, activity) => {
             return acc + activity.activity_type.weight;
           }, 0),
         }))
-        .sort((a, b) => b.love - a.love)
-        .filter((member) => member.love > 0);
+        .sort((a, b) => b.pulse - a.pulse)
+        .filter((member) => member.pulse > 0);
 
       return c.json(MemberSchema.array().parse(topMembers));
     },

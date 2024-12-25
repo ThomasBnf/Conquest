@@ -13,7 +13,7 @@ import type { Tag } from "@conquest/zod/tag.schema";
 import Link from "next/link";
 import type { Dispatch, SetStateAction } from "react";
 import { LevelTooltip } from "../level-tooltip";
-import { LoveTooltip } from "../love-tooltip";
+import { PulseTooltip } from "../pulse-tooltip";
 
 type Column = {
   id: string;
@@ -106,6 +106,22 @@ export const Columns = ({ tags }: Props): Column[] => [
     width: 250,
   },
   {
+    id: "tags",
+    header: () => <ColumnHeader id="tags" title="Tags" width={250} />,
+    cell: ({ member }) => {
+      const memberTags = tags?.filter((tag) => member.tags?.includes(tag.id));
+
+      return (
+        <div className="flex flex-wrap gap-1 p-2">
+          {memberTags?.map((tag) => (
+            <TagBadge key={tag.id} tag={tag} />
+          ))}
+        </div>
+      );
+    },
+    width: 250,
+  },
+  {
     id: "job_title",
     header: () => <ColumnHeader id="job_title" title="Job Title" width={250} />,
     cell: ({ member }) => <p className="truncate p-2">{member.job_title}</p>,
@@ -124,12 +140,12 @@ export const Columns = ({ tags }: Props): Column[] => [
     width: 185,
   },
   {
-    id: "love",
-    header: () => <ColumnHeader id="love" title="Love" width={185} />,
+    id: "pulse",
+    header: () => <ColumnHeader id="pulse" title="Pulse" width={185} />,
     cell: ({ member }) => {
       return (
         <div className="flex w-full items-center justify-end p-2">
-          <LoveTooltip member={member} />
+          <PulseTooltip member={member} />
         </div>
       );
     },
@@ -156,23 +172,9 @@ export const Columns = ({ tags }: Props): Column[] => [
   {
     id: "emails",
     header: () => <ColumnHeader id="emails" title="Email" width={250} />,
-    cell: ({ member }) => <p className="truncate p-2">{member.emails?.[0]}</p>,
-    width: 250,
-  },
-  {
-    id: "tags",
-    header: () => <ColumnHeader id="tags" title="Tags" width={250} />,
-    cell: ({ member }) => {
-      const memberTags = tags?.filter((tag) => member.tags?.includes(tag.id));
-
-      return (
-        <div className="flex flex-wrap gap-1 p-2">
-          {memberTags?.map((tag) => (
-            <TagBadge key={tag.id} tag={tag} />
-          ))}
-        </div>
-      );
-    },
+    cell: ({ member }) => (
+      <p className="truncate p-2">{member.primary_email}</p>
+    ),
     width: 250,
   },
   {

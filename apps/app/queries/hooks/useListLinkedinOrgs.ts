@@ -5,7 +5,7 @@ export const useListLinkedinOrgs = () => {
   return useQuery({
     queryKey: ["linkedinOrgs"],
     queryFn: async () => {
-      const response = await client.api.linkedin["get-company"].$get();
+      const response = await client.api.linkedin.organizations.$get();
       return await response.json();
     },
   });

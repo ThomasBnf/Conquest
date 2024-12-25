@@ -18,8 +18,8 @@ import {
 } from "recharts";
 
 const chartConfig = {
-  love: {
-    label: "Love",
+  pulse: {
+    label: "Pulse",
     color: "hsl(var(--chart-1))",
   },
 } satisfies ChartConfig;
@@ -28,17 +28,17 @@ type Props = {
   member: MemberWithCompany;
 };
 
-export const MemberLoveLogs = ({ member }: Props) => {
+export const MemberPulseLogs = ({ member }: Props) => {
   const logs = member.logs;
 
   const formattedLogs = logs.map((log) => ({
     date: format(log.date, "MMM d, yyyy"),
-    love: log.love,
+    pulse: log.pulse,
   }));
 
   return (
     <div className="relative">
-      <p className="mb-2 pl-4 font-medium text-lg">Love Logs</p>
+      <p className="mb-2 pl-4 font-medium text-lg">Pulse Logs</p>
       {formattedLogs.length === 0 && <EmptyStateChart />}
       <ResponsiveContainer height={300} className="pr-1">
         <ChartContainer config={chartConfig}>
@@ -62,7 +62,7 @@ export const MemberLoveLogs = ({ member }: Props) => {
             />
             <ChartTooltip content={<ChartTooltipContent indicator="line" />} />
             <defs>
-              <linearGradient id="fill-love" x1="0" y1="0" x2="0" y2="1">
+              <linearGradient id="fill-pulse" x1="0" y1="0" x2="0" y2="1">
                 <stop
                   offset="5%"
                   stopColor="hsl(var(--chart-1))"
@@ -77,8 +77,8 @@ export const MemberLoveLogs = ({ member }: Props) => {
             </defs>
             <Area
               type="linear"
-              dataKey="love"
-              fill="url(#fill-love)"
+              dataKey="pulse"
+              fill="url(#fill-pulse)"
               fillOpacity={0.4}
               stroke="hsl(var(--chart-1))"
               strokeWidth={1.5}

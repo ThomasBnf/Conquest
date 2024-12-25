@@ -3,22 +3,30 @@ import { ActivitySchema } from "@conquest/zod/schemas/activity.schema";
 
 type Props = {
   external_id: string;
-  message: string;
+  title?: string;
+  message?: string;
   activity_type_id: string;
-  reply_to: string | null;
+  reply_to?: string | null;
+  workspace_id: string;
 };
 
 export const updateActivity = async ({
   external_id,
+  title,
   message,
   activity_type_id,
   reply_to,
+  workspace_id,
 }: Props) => {
-  const activity = await prisma.activities.update({
+  const updatedActivity = await prisma.activities.update({
     where: {
-      external_id,
+      external_id_workspace_id: {
+        external_id,
+        workspace_id,
+      },
     },
     data: {
+      title,
       message,
       activity_type: {
         connect: {
@@ -29,5 +37,5 @@ export const updateActivity = async ({
     },
   });
 
-  return ActivitySchema.parse(activity);
+  return ActivitySchema.parse(updatedActivity);
 };

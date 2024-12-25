@@ -21,7 +21,7 @@ export const installSlack = schemaTask({
     channels: z.array(z.string()),
   }),
   retry: {
-    maxAttempts: 0,
+    maxAttempts: 1,
   },
   run: async ({ slack, channels }) => {
     const { workspace_id, details } = slack;
@@ -32,8 +32,7 @@ export const installSlack = schemaTask({
     }
 
     await updateIntegration({
-      external_id: slack.external_id,
-      installed_at: null,
+      id: slack.id,
       status: "SYNCING",
     });
 
@@ -72,10 +71,9 @@ export const installSlack = schemaTask({
 
     return members;
   },
-  onSuccess: async ({ slack: { external_id } }) => {
+  onSuccess: async ({ slack }) => {
     await updateIntegration({
-      external_id,
-      installed_at: new Date(),
+      id: slack.id,
       status: "CONNECTED",
     });
   },

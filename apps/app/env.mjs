@@ -25,7 +25,6 @@ export const env = createEnv({
   },
   client: {
     NEXT_PUBLIC_BASE_URL: z.string(),
-    NEXT_PUBLIC_SLACK_REDIRECT_URI: z.string(),
     NEXT_PUBLIC_SLACK_CLIENT_ID: z.string(),
     NEXT_PUBLIC_LINKEDIN_CLIENT_ID: z.string(),
 
@@ -42,8 +41,6 @@ export const env = createEnv({
     SLACK_APP_ID: process.env.SLACK_APP_ID,
     SLACK_CLIENT_SECRET: process.env.SLACK_CLIENT_SECRET,
     SLACK_SIGNING_SECRET: process.env.SLACK_SIGNING_SECRET,
-
-    NEXT_PUBLIC_SLACK_REDIRECT_URI: process.env.NEXT_PUBLIC_SLACK_REDIRECT_URI,
     NEXT_PUBLIC_SLACK_CLIENT_ID: process.env.NEXT_PUBLIC_SLACK_CLIENT_ID,
 
     NEXT_PUBLIC_LINKEDIN_CLIENT_ID: process.env.NEXT_PUBLIC_LINKEDIN_CLIENT_ID,

@@ -318,7 +318,7 @@ const createTextFilter = (filter: FilterText) => {
       switch (operator) {
         case "contains":
           if (field === "emails") {
-            return member.emails?.some((email) => email.includes(value));
+            return member.primary_email?.includes(value);
           }
           if (field === "phones") {
             return member.phones?.some((phone) => phone.includes(value));
@@ -326,7 +326,7 @@ const createTextFilter = (filter: FilterText) => {
           return member[field]?.includes(value);
         case "not_contains":
           if (field === "emails") {
-            return !member.emails?.some((email) => email.includes(value));
+            return !member.primary_email?.includes(value);
           }
           if (field === "phones") {
             return !member.phones?.some((phone) => phone.includes(value));
@@ -346,8 +346,8 @@ const createNumberFilter = (filter: FilterNumber) => {
     execute: ({ member }: { member: MemberWithActivities }) => {
       const field = (() => {
         switch (filter.field) {
-          case "love":
-            return member.love;
+          case "pulse":
+            return member.pulse;
         }
       })();
 

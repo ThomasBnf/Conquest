@@ -1,11 +1,11 @@
-import { listActivitiesType } from "@/actions/activity-types/listActivitiesType";
+import { listActivityTypes } from "@/actions/activity-types/listActivityTypes";
 import { ActivityType } from "@/features/activities-types/activity-type";
 import { CreateActivityType } from "@/features/activities-types/create-activity-type";
 import { ScrollArea } from "@conquest/ui/scroll-area";
 import { Separator } from "@conquest/ui/separator";
 
 export default async function Page() {
-  const rActivitiesTypes = await listActivitiesType();
+  const rActivitiesTypes = await listActivityTypes();
   const activitiesTypes = rActivitiesTypes?.data;
 
   return (

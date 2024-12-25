@@ -32,7 +32,7 @@ export const getMemberLogs = async ({ activities }: Props) => {
         isAfter(activity.created_at, weekLast3months),
     );
 
-    const weekLove = activitiesUntilWeek.reduce(
+    const weekPulse = activitiesUntilWeek.reduce(
       (acc, activity) => acc + activity.activity_type.weight,
       0,
     );
@@ -60,7 +60,7 @@ export const getMemberLogs = async ({ activities }: Props) => {
 
     return {
       date: weekStart,
-      love: weekLove,
+      pulse: weekPulse,
       presence: weekPresence,
       level: weekLevel,
       max_weight: maxWeight,

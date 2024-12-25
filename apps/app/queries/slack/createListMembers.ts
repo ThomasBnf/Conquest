@@ -32,16 +32,17 @@ export const createListMembers = async ({ web, workspace_id }: Props) => {
 
         const createdMember = await upsertMember({
           id,
-          source: "SLACK",
-          first_name,
-          last_name,
-          email,
-          phone: phone ?? null,
-          locale,
-          avatar_url: image_1024,
-          job_title: title,
-          workspace_id,
-          isDeleted,
+          data: {
+            first_name,
+            last_name,
+            primary_email: email,
+            phones: phone ? [phone] : [],
+            locale,
+            avatar_url: image_1024,
+            job_title: title,
+            source: "SLACK",
+            workspace_id,
+          },
         });
 
         if (!createdMember) continue;

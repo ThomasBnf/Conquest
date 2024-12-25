@@ -16,7 +16,8 @@ export const linkedinAPI = authAction
     const accessToken =
       LinkedInIntegrationSchema.parse(linkedinIntegration).details.access_token;
 
-    // const response = await fetch(
+    /* list organizations posts */
+    // const postsResponse = await fetch(
     //   "https://api.linkedin.com/rest/posts?author=urn:li:organization:105844665&q=author&count=100",
     //   {
     //     headers: {
@@ -27,28 +28,28 @@ export const linkedinAPI = authAction
     //   },
     // );
 
-    // const data = await response.json();
+    // const posts = await postsResponse.json();
 
     // for (const post of data.elements) {
-    //   console.log(post.id);
-    //   const response = await fetch(
-    //     `https://api.linkedin.com/v2/socialActions/${post.id}/comments`,
-    //     {
-    //       headers: {
-    //         Authorization: `Bearer ${accessToken}`,
-    //         "LinkedIn-Version": "202411",
-    //         "Content-Type": "application/json",
-    //       },
+    // list post comments
+    // const response = await fetch(
+    //   `https://api.linkedin.com/v2/socialActions/${post.id}/comments`,
+    //   {
+    //     headers: {
+    //       Authorization: `Bearer ${accessToken}`,
+    //       "LinkedIn-Version": "202411",
+    //       "Content-Type": "application/json",
     //     },
-    //   );
+    //   },
+    // );
 
-    //   const commentData = await response.json();
+    // const commentData = await response.json();
 
-    //   for (const comment of commentData.elements) {
-    //     console.log(comment.id);
+    // for (const comment of commentData.elements) {
+    // console.dir(comment, { depth: 1000 });
 
-    const response = await fetch(
-      "https://api.linkedin.com/v2/people/(id:urn:li:person:J45AnYWgZv)",
+    const likesResponse = await fetch(
+      "https://api.linkedin.com/v2/socialActions/urn:li:activity:7274814775308517377/likes",
       {
         headers: {
           Authorization: `Bearer ${accessToken}`,
@@ -58,8 +59,24 @@ export const linkedinAPI = authAction
       },
     );
 
-    const commenterData = await response.json();
-    console.dir(commenterData, { depth: 1000 });
-    //   }
+    // const likes = await likesResponse.json();
+
+    // console.dir(likes, { depth: 1000 });
+
+    // const response = await fetch(
+    //   "https://api.linkedin.com/v2/people/(id:iuHQSczloT)",
+    //   {
+    //     headers: {
+    //       Authorization: `Bearer ${accessToken}`,
+    //       "LinkedIn-Version": "202411",
+    //       "Content-Type": "application/json",
+    //       "X-RestLi-Protocol-Version": "2.0.0",
+    //     },
+    //   },
+    // );
+
+    // const commenterData = await response.json();
+    // console.dir(commenterData, { depth: 1000 });
+    // }
     // }
   });

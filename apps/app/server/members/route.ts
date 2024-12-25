@@ -57,10 +57,7 @@ export const members = new Hono()
           (
             LOWER(COALESCE(m.first_name, '')) LIKE '%' || ${searchParsed} || '%'
             OR LOWER(COALESCE(m.last_name, '')) LIKE '%' || ${searchParsed} || '%'
-            OR EXISTS (
-              SELECT 1 FROM unnest(m.emails) email 
-              WHERE LOWER(email) LIKE '%' || ${searchParsed} || '%'
-            )
+            OR LOWER(m.primary_email) LIKE '%' || ${searchParsed} || '%'
             OR EXISTS (
               SELECT 1 FROM unnest(m.phones) phone
               WHERE LOWER(phone) LIKE '%' || ${searchParsed} || '%'
@@ -158,7 +155,7 @@ export const members = new Hono()
       .sort((a, b) => b.weight - a.weight);
 
     const totalActivities = activities.length;
-    const totalLove = activityDetails.reduce(
+    const totalPulse = activityDetails.reduce(
       (sum, { activity_count, weight }) => sum + activity_count * weight,
       0,
     );
@@ -167,7 +164,7 @@ export const members = new Hono()
     return c.json({
       details: activityDetails,
       total_activities: totalActivities,
-      total_love: totalLove,
+      total_pulse: totalPulse,
       max_weight: maxWeight,
     });
   })
@@ -177,8 +174,10 @@ export const members = new Hono()
 
     const member = await prisma.members.findUnique({
       where: {
-        slack_id: slackId,
-        workspace_id,
+        slack_id_workspace_id: {
+          slack_id: slackId,
+          workspace_id,
+        },
       },
     });
 
@@ -190,8 +189,10 @@ export const members = new Hono()
 
     const member = await prisma.members.findUnique({
       where: {
-        slack_id: slackId,
-        workspace_id,
+        slack_id_workspace_id: {
+          slack_id: slackId,
+          workspace_id,
+        },
       },
     });
 

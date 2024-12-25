@@ -57,7 +57,7 @@ export const FilterTextSchema = FilterBaseSchema.extend({
 
 export const FilterNumberSchema = FilterBaseSchema.extend({
   type: z.literal("number"),
-  field: z.enum(["love"]),
+  field: z.enum(["pulse"]),
   operator: NumberOperatorSchema,
   value: z.number().min(0).default(1),
 });

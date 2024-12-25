@@ -1,28 +1,56 @@
 "use client";
 
+import { deleteIntegration } from "@/actions/integrations/deleteIntegration";
+import { AlertDialog } from "@/components/custom/alert-dialog";
 import { Discourse } from "@/components/icons/Discourse";
 import { useUser } from "@/context/userContext";
 import { InstallForm } from "@/features/discourse/install-form";
 import { IntegrationHeader } from "@/features/integrations/integration-header";
 import { Button, buttonVariants } from "@conquest/ui/button";
-import { Card, CardContent, CardHeader } from "@conquest/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@conquest/ui/card";
 import { cn } from "@conquest/ui/cn";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@conquest/ui/src/components/dropdown-menu";
 import { ScrollArea } from "@conquest/ui/src/components/scroll-area";
-import { CircleCheck, ExternalLink } from "lucide-react";
+import { format } from "date-fns";
+import { ChevronDown, CircleCheck, ExternalLink } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 export default function Page() {
   const { discourse } = useUser();
-  const { trigger_token, trigger_token_expires_at } = discourse ?? {};
+  const { trigger_token, trigger_token_expires_at, installed_at } =
+    discourse ?? {};
 
+  const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
   const isExpired =
     trigger_token_expires_at && trigger_token_expires_at < new Date();
 
   const onEnable = async () => {
+    setLoading(true);
     router.push("/connect/discourse");
+  };
+
+  const onDisconnect = async () => {
+    if (!discourse) return;
+
+    const response = await deleteIntegration({
+      integration: discourse,
+      source: "DISCOURSE",
+    });
+
+    const error = response?.serverError;
+
+    if (error) toast.error(error);
+    return toast.success("Discourse disconnected");
   };
 
   useEffect(() => {
@@ -31,7 +59,7 @@ export default function Page() {
 
   return (
     <ScrollArea className="h-full">
-      <div className="mx-auto flex max-w-3xl flex-col gap-4 py-16">
+      <div className="mx-auto flex max-w-4xl flex-col gap-4 py-16">
         <IntegrationHeader />
         <div className="flex items-center gap-4">
           <div className="rounded-md border p-3">
@@ -54,7 +82,7 @@ export default function Page() {
                 <p>Documentation</p>
               </Link>
               {(!trigger_token || isExpired) && (
-                <Button onClick={onEnable}>
+                <Button onClick={onEnable} loading={loading} disabled={loading}>
                   <CircleCheck size={16} />
                   Enable
                 </Button>
@@ -73,6 +101,49 @@ export default function Page() {
             {discourse?.status === "ENABLED" && !isExpired && <InstallForm />}
           </CardContent>
         </Card>
+        {discourse?.status === "CONNECTED" && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="font-medium text-base">
+                Connected workspace
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="mb-0.5">
+              <div className=" flex items-end justify-between">
+                <div>
+                  <p className="font-medium">Discourse</p>
+                  {installed_at && (
+                    <p className="text-muted-foreground">
+                      Installed on {format(installed_at, "PP")}
+                    </p>
+                  )}
+                </div>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost">
+                      <div className="size-2.5 rounded-full bg-green-500" />
+                      <p>Connected</p>
+                      <ChevronDown size={16} />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem onClick={() => setOpen(true)}>
+                      <p>Disconnect Discourse workspace</p>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+        <AlertDialog
+          title="Disconnect Discourse workspace"
+          description="Discourse integration will be removed from your workspace and all your data will be deleted."
+          onConfirm={onDisconnect}
+          open={open}
+          setOpen={setOpen}
+          buttonLabel="Disconnect"
+        />
       </div>
     </ScrollArea>
   );

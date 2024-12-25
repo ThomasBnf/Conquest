@@ -4,6 +4,7 @@ import { prisma } from "lib/prisma";
 
 type Props = {
   name: string;
+  slug?: string;
   source: SOURCE;
   external_id: string;
   workspace_id: string;
@@ -11,6 +12,7 @@ type Props = {
 
 export const createChannel = async ({
   name,
+  slug,
   source,
   external_id,
   workspace_id,
@@ -18,6 +20,7 @@ export const createChannel = async ({
   const channel = await prisma.channels.create({
     data: {
       name,
+      slug,
       source,
       external_id,
       workspace_id,
