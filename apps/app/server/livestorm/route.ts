@@ -33,17 +33,39 @@ export const livestorm = new Hono()
       accessToken = await getRefreshToken(parsedIntegration);
     }
 
-    const response = await fetch(
-      "https://api.livestorm.co/v1/organization?include=organization",
-      {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          accept: "application/vnd.api+json",
+    try {
+      const response = await fetch(
+        "https://api.livestorm.co/v1/organization?include=organization",
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            accept: "application/vnd.api+json",
+          },
         },
-      },
-    );
+      );
 
-    const { data } = await response.json();
+      if (!response.ok) {
+        const errorBody = await response.text();
 
-    return c.json(data);
+        console.error(
+          `Error in API call: ${response.status} ${response.statusText}`,
+
+          errorBody,
+        );
+
+        throw new Error(
+          `Failed to fetch organization: ${response.status} ${response.statusText}`,
+        );
+      }
+
+      const data = await response.json();
+
+      console.log("API Response Data:", data);
+
+      return c.json(data);
+    } catch (error) {
+      console.error("Error in /organization route:", error);
+
+      return c.json({ error }, 500);
+    }
   });

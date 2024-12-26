@@ -61,8 +61,6 @@ export const createManyActivities = async ({ client, member }: Props) => {
         title,
       } = action;
 
-      console.log(action);
-
       switch (action_type) {
         case 1: {
           const reactTo = post_number === 1 ? topic_id : post_id;
