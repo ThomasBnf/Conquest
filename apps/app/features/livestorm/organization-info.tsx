@@ -1,18 +1,20 @@
 import { useUser } from "@/context/userContext";
 import { useListLivestormOrganization } from "@/queries/hooks/useListLivestormOrganization";
 import type { installLivestorm } from "@/trigger/installLivestorm.trigger.js";
-import { Button } from "@conquest/ui/button";
+import { Button } from "@conquest/ui/src/components/button";
 import { useRealtimeTaskTrigger } from "@trigger.dev/react-hooks";
+import { Info } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 export const OrganizationInfo = () => {
   const { livestorm } = useUser();
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const router = useRouter();
 
-  const { data } = useListLivestormOrganization();
+  const { data, isLoading } = useListLivestormOrganization();
+  const { included } = data ?? {};
 
   const { submit, run } = useRealtimeTaskTrigger<typeof installLivestorm>(
     "install-livestorm",
@@ -22,12 +24,14 @@ export const OrganizationInfo = () => {
   );
 
   const onStart = async () => {
-    if (!livestorm || !data) return;
+    if (!livestorm) return;
 
     setLoading(true);
-    const organization_id = data.relationships.organization.data.id;
 
-    submit({ livestorm, organization_id });
+    const organization_id = included?.at(0)?.id ?? "";
+    const organization_name = included?.at(0)?.attributes.name ?? "";
+
+    submit({ livestorm, organization_id, organization_name });
   };
 
   useEffect(() => {
@@ -36,32 +40,34 @@ export const OrganizationInfo = () => {
     const isCompleted = run.status === "COMPLETED";
     const isFailed = run.status === "FAILED";
 
-    if (isCompleted || isFailed) {
+    if (isFailed) {
       setLoading(false);
-
-      if (isFailed) {
-        toast.error("Failed to install Slack", { duration: 5000 });
-      }
-
-      router.refresh();
+      toast.error("Failed to install Livestorm", { duration: 5000 });
     }
+
+    if (isCompleted) router.refresh();
   }, [run]);
 
-  console.log(data);
+  useEffect(() => {
+    if (!isLoading && data) onStart();
+  }, [isLoading, data]);
 
   return (
-    <div>
-      <pre className="mt-2">{JSON.stringify(data, null, 2)}</pre>
-
-      <Button
-        type="submit"
-        className="mt-4"
-        onClick={onStart}
-        loading={loading}
-        disabled={loading}
-      >
+    <>
+      <div className="actions-secondary mt-6 rounded-md border p-4">
+        <Info size={18} className="text-muted-foreground" />
+        <p className="mt-2 mb-1 font-medium">Collecting data</p>
+        <p className="text-muted-foreground">
+          This may take a few minutes.
+          <br />
+          You can leave this page while we collect your data.
+          <br />
+          Do not hesitate to refresh the page to see data changes.
+        </p>
+      </div>
+      <Button loading={loading} className="mt-6">
         Let's start!
       </Button>
-    </div>
+    </>
   );
 };

@@ -8,7 +8,6 @@ export const UserSchema = z.object({
   hashed_password: z.string(),
   first_name: z.string().nullable(),
   last_name: z.string().nullable(),
-  full_name: z.string().nullable(),
   onboarding: z.date().nullable(),
   workspace_id: z.string().cuid(),
   created_at: z.coerce.date(),

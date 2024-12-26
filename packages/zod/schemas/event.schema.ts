@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { SOURCE } from "./enum/source.enum";
 
-export const eventSchema = z.object({
+export const EventSchema = z.object({
   id: z.string().cuid(),
   external_id: z.string().nullable(),
   title: z.string(),
@@ -13,4 +13,4 @@ export const eventSchema = z.object({
   updated_at: z.coerce.date(),
 });
 
-export type Event = z.infer<typeof eventSchema>;
+export type Event = z.infer<typeof EventSchema>;

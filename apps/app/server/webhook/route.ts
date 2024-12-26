@@ -9,8 +9,6 @@ import type { Session } from "@conquest/zod/schemas/types/livestorm";
 import { Hono } from "hono";
 
 export const webhook = new Hono().post("/livestorm", async (c) => {
-  console.dir(await c.req.json(), { depth: 100 });
-
   const { data } = await c.req.json();
   const { organization_id } = data.meta.webhook;
 
@@ -23,9 +21,7 @@ export const webhook = new Hono().post("/livestorm", async (c) => {
     },
   });
 
-  if (!integration) {
-    return c.json({});
-  }
+  if (!integration) return c.json(200);
 
   const livestorm = LivestormIntegrationSchema.parse(integration);
   const { workspace_id, details } = livestorm;

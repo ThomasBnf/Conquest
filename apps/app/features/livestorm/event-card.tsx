@@ -1,0 +1,74 @@
+import { deleteEvent } from "@/actions/events/deleteEvent";
+import { AlertDialog } from "@/components/custom/alert-dialog";
+import { formatDateRange } from "@/helpers/format-date-range";
+import { Button } from "@conquest/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@conquest/ui/dropdown-menu";
+import type { Event } from "@conquest/zod/schemas/event.schema";
+import { MoreVertical, Trash2 } from "lucide-react";
+import { useState } from "react";
+import { toast } from "sonner";
+
+type Props = {
+  event: Event;
+};
+
+export const EventCard = ({ event }: Props) => {
+  const [open, setOpen] = useState(false);
+
+  const onDelete = async () => {
+    const response = await deleteEvent({ id: event.id });
+    const error = response?.serverError;
+
+    if (error) {
+      return toast.error(error);
+    }
+
+    return toast.success("Event deleted");
+  };
+
+  return (
+    <div
+      key={event.id}
+      className="-m-2 flex items-center justify-between rounded-md p-2 transition-colors hover:bg-muted-hover"
+    >
+      <div>
+        <p className="font-medium">{event.title}</p>
+        <p className="text-muted-foreground">
+          {formatDateRange(
+            event.started_at ?? new Date(),
+            event.ended_at ?? new Date(),
+            { includeTime: false },
+          )}
+        </p>
+      </div>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" size="icon">
+            <MoreVertical size={16} />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          <DropdownMenuItem
+            onClick={() => setOpen(true)}
+            className="text-destructive focus:text-destructive"
+          >
+            <Trash2 size={16} />
+            <p>Delete</p>
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+      <AlertDialog
+        title="Delete event"
+        description="Are you sure you want to delete this event?"
+        onConfirm={onDelete}
+        open={open}
+        setOpen={setOpen}
+      />
+    </div>
+  );
+};

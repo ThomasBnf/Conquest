@@ -1,3 +1,5 @@
+"use client";
+
 import { useUser } from "@/context/userContext";
 import { buttonVariants } from "@conquest/ui/button";
 import { cn } from "@conquest/ui/cn";

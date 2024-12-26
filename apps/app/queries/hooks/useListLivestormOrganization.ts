@@ -7,8 +7,9 @@ export const useListLivestormOrganization = () => {
     queryKey: ["livestorm-organization"],
     queryFn: async () => {
       const response = await client.api.livestorm.organization.$get();
+      const data = (await response.json()) as Organization;
 
-      return (await response.json()) as Organization;
+      return { ...data.data, included: data.included };
     },
   });
 };

@@ -25,8 +25,9 @@ export const installLivestorm = schemaTask({
   schema: z.object({
     livestorm: LivestormIntegrationSchema,
     organization_id: z.string(),
+    organization_name: z.string(),
   }),
-  run: async ({ livestorm, organization_id }) => {
+  run: async ({ livestorm, organization_id, organization_name }) => {
     const { id, details, workspace_id } = livestorm;
     const { access_token, expires_in } = details;
 
@@ -53,6 +54,7 @@ export const installLivestorm = schemaTask({
         ...details,
         access_token: accessToken,
         organization_id,
+        organization_name,
       },
       status: "SYNCING",
     });
@@ -165,6 +167,7 @@ export const installLivestorm = schemaTask({
   onSuccess: async ({ livestorm }) => {
     await updateIntegration({
       id: livestorm.id,
+      installed_at: new Date(),
       status: "CONNECTED",
     });
   },

@@ -40,6 +40,7 @@ const LinkedInDetailsSchema = z.object({
 const LivestormDetailsSchema = z.object({
   source: z.literal("LIVESTORM"),
   organization_id: z.string(),
+  organization_name: z.string(),
   access_token: z.string(),
   refresh_token: z.string(),
   expires_in: z.number(),

@@ -130,31 +130,41 @@ export type People = {
 };
 
 export type Organization = {
-  id: string;
-  type: string;
-  attributes: {
-    role: string;
-    created_at: number;
-    updated_at: number;
-    first_name: string;
-    last_name: string;
-    email: string;
-    avatar_link: string | null;
-    locale: string;
-    pending_invite: boolean;
-    website_link: string;
-    linkedin_link: string | null;
-    facebook_link: string | null;
-    twitter_handle: string | null;
-  };
-  relationships: {
-    organization: {
-      data: {
-        type: string;
-        id: string;
+  data: {
+    id: string;
+    type: string;
+    attributes: {
+      role: string;
+      created_at: number;
+      updated_at: number;
+      first_name: string;
+      last_name: string;
+      email: string;
+      avatar_link: string | null;
+      locale: string;
+      pending_invite: boolean;
+      website_link: string;
+      linkedin_link: string | null;
+      facebook_link: string | null;
+      twitter_handle: string | null;
+    };
+    relationships: {
+      organization: {
+        data: {
+          type: string;
+          id: string;
+        };
       };
     };
   };
+  included: {
+    id: string;
+    type: string;
+    attributes: {
+      name: string;
+      slug: string;
+    };
+  }[];
 };
 
 export type Webhook = {

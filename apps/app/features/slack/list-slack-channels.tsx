@@ -63,14 +63,12 @@ export const ListSlackChannels = () => {
     const isCompleted = run.status === "COMPLETED";
     const isFailed = run.status === "FAILED";
 
-    if (isCompleted || isFailed) {
+    if (isFailed) {
       setLoading(false);
+      toast.error("Failed to install Slack", { duration: 5000 });
+    }
 
-      if (isFailed) {
-        toast.error("Failed to install Slack", { duration: 5000 });
-        return;
-      }
-
+    if (isCompleted) {
       refetchChannels();
       setSelectedChannels([]);
       router.refresh();
@@ -85,6 +83,7 @@ export const ListSlackChannels = () => {
         variant="outline"
         size="xs"
         className="mt-3 mb-1.5"
+        disabled={loading}
         onClick={
           selectedChannels.length === slackChannels?.length
             ? onUnselectAll

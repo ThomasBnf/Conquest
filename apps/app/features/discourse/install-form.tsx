@@ -80,7 +80,10 @@ export const InstallForm = () => {
                 <Input {...field} />
               </FormControl>
               <FormDescription>
-                This is your public Discourse community URL.
+                Your Discourse community URL. For example:
+                <span className="ml-1 rounded border bg-muted px-1 py-0.5">
+                  https://conquest.discourse.group
+                </span>
               </FormDescription>
               <FormMessage />
             </FormItem>
@@ -95,6 +98,14 @@ export const InstallForm = () => {
               <FormControl>
                 <Input {...field} />
               </FormControl>
+              <FormDescription>
+                You can find your API key in the Discourse Admin panel.
+                <br />
+                <span className="rounded border bg-muted px-1 py-0.5">
+                  Adanced {">"} API Keys {">"} New API Key {">"} User Level :
+                  "All users" {">"} Scope: "Read Only"
+                </span>
+              </FormDescription>
               <FormMessage />
             </FormItem>
           )}

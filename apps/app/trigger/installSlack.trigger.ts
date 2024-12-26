@@ -74,6 +74,7 @@ export const installSlack = schemaTask({
   onSuccess: async ({ slack }) => {
     await updateIntegration({
       id: slack.id,
+      installed_at: new Date(),
       status: "CONNECTED",
     });
   },
