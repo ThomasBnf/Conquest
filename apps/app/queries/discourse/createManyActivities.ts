@@ -61,6 +61,8 @@ export const createManyActivities = async ({ client, member }: Props) => {
         title,
       } = action;
 
+      console.log(action);
+
       switch (action_type) {
         case 1: {
           const reactTo = post_number === 1 ? topic_id : post_id;
@@ -105,6 +107,9 @@ export const createManyActivities = async ({ client, member }: Props) => {
           break;
         }
         case 5: {
+          const { reply_to_post_number } = action as {
+            reply_to_post_number?: number | null;
+          };
           if (excerpt === "") break;
 
           const channel = await prisma.channels.findFirst({
@@ -129,7 +134,7 @@ export const createManyActivities = async ({ client, member }: Props) => {
               activity_type_id: reply_type.id,
               message: excerpt,
               member_id: member.id,
-              reply_to: String(),
+              reply_to: String(reply_to_post_number),
               thread_id: String(topic_id),
               channel_id: channel.id,
               created_at,
@@ -139,6 +144,9 @@ export const createManyActivities = async ({ client, member }: Props) => {
           break;
         }
         case 15: {
+          const { reply_to_post_number } = action as {
+            reply_to_post_number?: number | null;
+          };
           if (excerpt === "") break;
 
           const channel = await prisma.channels.findFirst({
@@ -165,7 +173,7 @@ export const createManyActivities = async ({ client, member }: Props) => {
               activity_type_id: solved_type.id,
               message: excerpt,
               member_id: member.id,
-              reply_to: String(),
+              reply_to: String(reply_to_post_number),
               thread_id: String(topic_id),
               channel_id: channel.id,
               created_at,
