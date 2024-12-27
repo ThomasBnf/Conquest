@@ -96,7 +96,7 @@ export const EditablePhones = ({ member }: Props) => {
           </Button>
         )}
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="start" className="w-[297px]">
+      <DropdownMenuContent align="start" className="w-[233px]">
         <div className="space-y-0.5">
           {phones.length > 0 && (
             <>

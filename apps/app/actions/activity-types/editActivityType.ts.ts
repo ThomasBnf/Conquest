@@ -2,6 +2,7 @@
 
 import { authAction } from "@/lib/authAction";
 import { prisma } from "@/lib/prisma";
+import { calculateMembersLevel } from "@/trigger/calculateMembersLevel";
 import { ActivityTypeSchema } from "@conquest/zod/activity-type.schema";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
@@ -31,6 +32,10 @@ export const editActivityType = authAction
         weight,
       },
     });
+
+    if (activityType.weight === weight) {
+      calculateMembersLevel.trigger({ workspace_id });
+    }
 
     revalidatePath(`/app/${slug}/settings/activities-types`);
     return ActivityTypeSchema.parse(activityType);

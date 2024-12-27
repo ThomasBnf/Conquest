@@ -53,11 +53,13 @@ export function EditableAddress({ address, onUpdate }: Props) {
         )}
         onClick={() => setValue(selectedAddress ?? "")}
       >
-        {selectedAddress ?? (
+        {selectedAddress ? (
+          <span className="text-balance text-start">{selectedAddress}</span>
+        ) : (
           <span className="text-muted-foreground">Set address</span>
         )}
       </PopoverTrigger>
-      <PopoverContent className="w-72 p-0" align="start">
+      <PopoverContent className="w-[233px] p-0" align="start">
         <Command className="relative">
           <CommandInput
             ref={ref}

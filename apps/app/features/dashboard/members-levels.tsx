@@ -7,14 +7,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@conquest/ui/chart";
-import { cn } from "@conquest/ui/src/utils/cn";
-import {
-  Bar,
-  BarChart,
-  CartesianGrid,
-  ResponsiveContainer,
-  XAxis,
-} from "recharts";
+import { Pie, PieChart, ResponsiveContainer } from "recharts";
 
 type Props = {
   from: Date;
@@ -22,36 +15,52 @@ type Props = {
 };
 
 const chartConfig = {
-  I: {
-    color: "hsl(var(--chart-1))",
+  count: {
+    label: "Count",
   },
-  II: {
-    color: "hsl(var(--chart-2))",
+  explorer: {
+    label: "Explorer",
+    color: "hsl(var(--main-500))",
   },
-  III: {
-    color: "hsl(var(--chart-3))",
+  active: {
+    label: "Active",
+    color: "hsl(var(--main-500))",
+  },
+  contributor: {
+    label: "Contributor",
+    color: "hsl(var(--main-600))",
+  },
+  ambassador: {
+    label: "Ambassador",
+    color: "hsl(var(--main-700))",
   },
 } satisfies ChartConfig;
 
 export const MembersLevels = ({ from, to }: Props) => {
   const { data } = useListMembersLevels({ from, to });
 
+  const colors = {
+    explorer: "hsl(var(--main-200))",
+    active: "hsl(var(--main-400))",
+    contributor: "hsl(var(--main-600))",
+    ambassador: "hsl(var(--main-800))",
+  };
+
+  const transformedData = data?.map((item) => ({
+    ...item,
+    count: item.I + item.II + item.III,
+    fill: colors[item.category.toLowerCase() as keyof typeof colors],
+  }));
+
   return (
     <div className="flex-1 space-y-2 p-4">
       <p className="pl-1.5 font-medium text-base">Members Levels</p>
       <ResponsiveContainer height={380} width="100%">
         <ChartContainer config={chartConfig}>
-          <BarChart accessibilityLayer data={data}>
-            <CartesianGrid vertical={false} />
-            <XAxis
-              dataKey="category"
-              tickMargin={10}
-              tickLine={false}
-              axisLine={false}
-            />
+          <PieChart>
             <ChartTooltip
               content={({ active, payload }) => {
-                const { category } = payload?.[0]?.payload ?? {};
+                const { I, II, III } = payload?.[0]?.payload ?? {};
 
                 return (
                   <ChartTooltipContent
@@ -60,23 +69,27 @@ export const MembersLevels = ({ from, to }: Props) => {
                     indicator="line"
                     formatter={(value, name, item) => {
                       return (
-                        <div className="flex w-full gap-2">
-                          <div
-                            className={cn(
-                              "h-full w-1 shrink-0 rounded-[2px]",
-                              item?.color === "var(--color-I)" &&
-                                "bg-[hsl(var(--chart-1))]",
-                              item?.color === "var(--color-II)" &&
-                                "bg-[hsl(var(--chart-2))]",
-                              item?.color === "var(--color-III)" &&
-                                "bg-[hsl(var(--chart-3))]",
-                            )}
-                          />
+                        <div className="grid w-full grid-rows-3 gap-2">
+                          <div className="flex items-center gap-2">
+                            <div
+                              className="h-full w-1 shrink-0 rounded-[2px]"
+                              style={{
+                                backgroundColor: item?.payload?.fill,
+                              }}
+                            />
+                            <p className="font-medium">Total {value}</p>
+                          </div>
                           <div className="flex flex-1 items-center justify-between gap-6">
-                            <p className="text-muted-foreground">
-                              {category} {name}
-                            </p>
-                            <p className="font-medium">{value}</p>
+                            <p className="text-muted-foreground">{name} III</p>
+                            <p className="font-medium">{III}</p>
+                          </div>
+                          <div className="flex flex-1 items-center justify-between gap-6">
+                            <p className="text-muted-foreground">{name} II</p>
+                            <p className="font-medium">{II}</p>
+                          </div>
+                          <div className="flex flex-1 items-center justify-between gap-6">
+                            <p className="text-muted-foreground">{name} III</p>
+                            <p className="font-medium">{III}</p>
                           </div>
                         </div>
                       );
@@ -85,20 +98,8 @@ export const MembersLevels = ({ from, to }: Props) => {
                 );
               }}
             />
-            <Bar
-              dataKey="I"
-              stackId="a"
-              fill="var(--color-I)"
-              radius={[0, 0, 4, 4]}
-            />
-            <Bar dataKey="II" stackId="a" fill="var(--color-II)" />
-            <Bar
-              dataKey="III"
-              stackId="a"
-              fill="var(--color-III)"
-              radius={[4, 4, 0, 0]}
-            />
-          </BarChart>
+            <Pie data={transformedData} dataKey="count" nameKey="category" />
+          </PieChart>
         </ChartContainer>
       </ResponsiveContainer>
     </div>

@@ -5,7 +5,6 @@ import { createManyActivityTypes } from "@/queries/activity-type/createManyActiv
 import { createManyMembers } from "@/queries/discourse/createManyMembers";
 import { createManyTags } from "@/queries/discourse/createManyTags";
 import { listCategories } from "@/queries/discourse/list-categories";
-import { deleteIntegration } from "@/queries/integrations/deleteIntegration";
 import { updateIntegration } from "@/queries/integrations/updateIntegration";
 import { DiscourseIntegrationSchema } from "@conquest/zod/integration.schema";
 import { schemaTask } from "@trigger.dev/sdk/v3";
@@ -74,9 +73,9 @@ export const installDiscourse = schemaTask({
     });
   },
   onFailure: async ({ discourse }) => {
-    await deleteIntegration({
-      source: "DISCOURSE",
-      integration: discourse,
-    });
+    // await deleteIntegration({
+    //   source: "DISCOURSE",
+    //   integration: discourse,
+    // });
   },
 });

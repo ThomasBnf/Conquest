@@ -317,7 +317,7 @@ const createTextFilter = (filter: FilterText) => {
     execute: ({ member }: { member: MemberWithActivities }) => {
       switch (operator) {
         case "contains":
-          if (field === "emails") {
+          if (field === "primary_email") {
             return member.primary_email?.includes(value);
           }
           if (field === "phones") {
@@ -325,7 +325,7 @@ const createTextFilter = (filter: FilterText) => {
           }
           return member[field]?.includes(value);
         case "not_contains":
-          if (field === "emails") {
+          if (field === "primary_email") {
             return !member.primary_email?.includes(value);
           }
           if (field === "phones") {
@@ -412,8 +412,8 @@ export const createSelectFilter = (filter: FilterSelect) => {
     execute: ({ member }: { member: MemberWithActivities }) => {
       const field = (() => {
         switch (filter.field) {
-          case "locale":
-            return member.locale;
+          case "location":
+            return member.location;
           case "tags":
             return member.tags;
           case "source":

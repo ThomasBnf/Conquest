@@ -10,6 +10,7 @@ type Props = {
 
 export const Pagination = ({ count }: Props) => {
   const [{ page, pageSize }, setParams] = useQueryStates(tableParsers);
+
   const currentCount = (page - 1) * pageSize + pageSize;
   const totalPages = Math.ceil(count / pageSize);
   const hasPreviousPage = page > 1;

@@ -42,7 +42,7 @@ export default async function Layout({
         <div className="flex h-full divide-x overflow-hidden">
           <div className="flex flex-1 flex-col divide-y overflow-hidden">
             <Tabs />
-            <ScrollArea>{children}</ScrollArea>
+            <ScrollArea className="h-full">{children}</ScrollArea>
           </div>
           <MemberSidebar member={member} tags={tags} />
         </div>

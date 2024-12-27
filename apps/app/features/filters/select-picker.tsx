@@ -1,6 +1,5 @@
-import { LocaleBadge } from "@/components/custom/locale-badge";
+import { LocationBadge } from "@/components/custom/location-badge";
 import { SourceBadge } from "@/components/custom/source-badge";
-import { useUser } from "@/context/userContext";
 import { client } from "@/lib/rpc";
 import { Button } from "@conquest/ui/button";
 import { Checkbox } from "@conquest/ui/checkbox";
@@ -14,21 +13,26 @@ import {
 } from "@conquest/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@conquest/ui/popover";
 import { Skeleton } from "@conquest/ui/skeleton";
-import { type Filter, FilterSelectSchema } from "@conquest/zod/filters.schema";
+import {
+  type Filter,
+  type FilterSelect,
+  FilterSelectSchema,
+} from "@conquest/zod/filters.schema";
 import type { Source } from "@conquest/zod/schemas/enum/source.enum";
 import { type Tag, TagSchema } from "@conquest/zod/tag.schema";
 import { useQuery } from "@tanstack/react-query";
 import { CommandLoading } from "cmdk";
 import type { Dispatch, SetStateAction } from "react";
 import { useState } from "react";
+import { TagBadge } from "../tags/tag-badge";
 import { useTab } from "./hooks/useTab";
 
 type Props = {
-  filter: Filter | undefined;
+  filter: FilterSelect | undefined;
   setFilters: Dispatch<SetStateAction<Filter[]>>;
   setOpenDropdown?: Dispatch<SetStateAction<boolean>>;
+  handleUpdate: (filters: Filter[]) => void;
   triggerButton?: boolean;
-  handleUpdate?: (filters: Filter[]) => void;
 };
 
 export const SelectPicker = ({
@@ -38,7 +42,6 @@ export const SelectPicker = ({
   triggerButton,
   handleUpdate,
 }: Props) => {
-  const { user } = useUser();
   const { setTab } = useTab();
   const [open, setOpen] = useState(false);
 
@@ -47,8 +50,8 @@ export const SelectPicker = ({
     queryFn: async () => {
       const selectFilter = FilterSelectSchema.parse(filter);
       switch (selectFilter.field) {
-        case "locale": {
-          const response = await client.api.members.locales.$get();
+        case "location": {
+          const response = await client.api.members.locations.$get();
 
           return await response.json();
         }
@@ -58,9 +61,7 @@ export const SelectPicker = ({
           return await response.json();
         }
         case "tags": {
-          const response = await client.api.tags.$get({
-            query: { workspace_id: user?.workspace_id ?? "" },
-          });
+          const response = await client.api.tags.$get();
 
           return TagSchema.array().parse(await response.json());
         }
@@ -70,26 +71,53 @@ export const SelectPicker = ({
     },
   });
 
-  if (!filter || filter.type !== "select") return null;
-
-  const filterSelect = FilterSelectSchema.parse(filter);
-
-  const handleSelect = (item: string | Tag | null) => {
-    if (!item) return;
-    const value = typeof item === "string" ? item : item.id;
+  const handleSelect = (item: string) => {
+    if (!item || !filter) return;
 
     setOpenDropdown?.(false);
     setTimeout(() => {
       setOpen(false);
       setFilters((prevFilters) => {
-        const exists = prevFilters.some((f) => f.id === filterSelect.id);
-        const updatedFilters = exists
-          ? prevFilters.map((f) =>
-              f.id === filterSelect.id ? { ...f, values: [value] } : f,
-            )
-          : [...prevFilters, { ...filterSelect, values: [value] }];
+        const exists = prevFilters.some((f) => f.id === filter.id);
+        const updatedFilter = { ...filter, values: [item] };
 
-        handleUpdate?.(updatedFilters);
+        const updatedFilters = exists
+          ? prevFilters.map((f) => (f.id === filter.id ? updatedFilter : f))
+          : [...prevFilters, updatedFilter];
+
+        handleUpdate(updatedFilters);
+        setTab(undefined);
+        return updatedFilters;
+      });
+    }, 100);
+  };
+
+  const handleTagSelect = (tag: Tag) => {
+    if (!filter) return;
+
+    setOpenDropdown?.(false);
+    setTimeout(() => {
+      setOpen(false);
+      setFilters((prevFilters) => {
+        const exists = prevFilters.some((f) => f.id === filter.id);
+        const currentFilter = prevFilters.find((f) => f.id === filter.id);
+        const parsedFilter = currentFilter
+          ? FilterSelectSchema.parse(currentFilter)
+          : undefined;
+        const hasTag = parsedFilter?.values.includes(tag.id);
+
+        const updatedFilter = {
+          ...filter,
+          values: hasTag
+            ? filter.values.filter((v) => v !== tag.id)
+            : [...filter.values, tag.id],
+        };
+
+        const updatedFilters = exists
+          ? prevFilters.map((f) => (f.id === filter.id ? updatedFilter : f))
+          : [...prevFilters, updatedFilter];
+
+        handleUpdate(updatedFilters);
         setTab(undefined);
         return updatedFilters;
       });
@@ -98,7 +126,7 @@ export const SelectPicker = ({
 
   const commandContent = (
     <Command>
-      <CommandInput placeholder="Search value..." />
+      <CommandInput autoFocus placeholder="Search value..." />
       <CommandList>
         <CommandGroup>
           {isLoading ? (
@@ -113,17 +141,17 @@ export const SelectPicker = ({
               if (!item) return null;
 
               const itemId = typeof item === "string" ? item : item.id;
-              const isSelected = filter.values.includes(itemId);
+              const isSelected = filter?.values.includes(itemId);
 
               if (typeof item === "string") {
                 return (
                   <CommandItem key={item} onSelect={() => handleSelect(item)}>
-                    {filter.field === "locale" ? (
-                      <LocaleBadge
-                        country={item}
+                    {filter?.field === "location" ? (
+                      <LocationBadge
+                        location={item}
                         className="border-none bg-transparent p-0"
                       />
-                    ) : filter.field === "source" ? (
+                    ) : filter?.field === "source" ? (
                       <SourceBadge
                         source={item as Source}
                         className="border-none bg-transparent p-0"
@@ -134,16 +162,14 @@ export const SelectPicker = ({
                   </CommandItem>
                 );
               }
-
               return (
-                <CommandItem key={item.id} onSelect={() => handleSelect(item)}>
+                <CommandItem
+                  key={item.id}
+                  onSelect={() => handleTagSelect(item)}
+                >
                   <div className="flex items-center gap-2">
                     <Checkbox checked={isSelected} />
-                    <div
-                      className="size-3 rounded-full"
-                      style={{ backgroundColor: item.color }}
-                    />
-                    {item.name}
+                    <TagBadge tag={item} isBadge={false} />
                   </div>
                 </CommandItem>
               );
@@ -153,14 +179,14 @@ export const SelectPicker = ({
     </Command>
   );
 
-  if (triggerButton) {
-    const selectedItem =
-      filter.values[0] &&
-      items?.find((i) =>
-        typeof i === "string"
-          ? i === filter.values[0]
-          : i?.id === filter.values[0],
-      );
+  if (triggerButton && filter) {
+    const selectedItems = filter.values
+      .map((value) =>
+        items?.find((i) =>
+          typeof i === "string" ? i === value : i?.id === value,
+        ),
+      )
+      .filter(Boolean);
 
     return (
       <Popover open={open} onOpenChange={setOpen}>
@@ -168,31 +194,40 @@ export const SelectPicker = ({
           <Button variant="dropdown">
             {isLoading ? (
               <Skeleton className="h-5 w-12" />
-            ) : (
-              selectedItem &&
-              (typeof selectedItem === "string" ? (
-                filter.field === "locale" ? (
-                  <LocaleBadge
-                    country={selectedItem}
-                    className="border-none bg-transparent p-0"
-                  />
-                ) : filter.field === "source" ? (
-                  <SourceBadge
-                    source={selectedItem as Source}
-                    className="border-none bg-transparent p-0"
-                  />
+            ) : selectedItems.length > 0 ? (
+              <div className="flex flex-wrap gap-1">
+                {selectedItems.length > 1 ? (
+                  <p className="lowercase">
+                    {selectedItems.length} {filter.label}
+                  </p>
                 ) : (
-                  selectedItem
-                )
-              ) : (
-                <div className="flex items-center gap-2">
-                  <div
-                    className="size-3 rounded-full"
-                    style={{ backgroundColor: selectedItem.color }}
-                  />
-                  <span>{selectedItem.name}</span>
-                </div>
-              ))
+                  selectedItems.map((item) =>
+                    typeof item === "string" ? (
+                      <div key={item}>
+                        {filter.field === "location" ? (
+                          <LocationBadge
+                            location={item}
+                            className="border-none bg-transparent p-0"
+                          />
+                        ) : filter.field === "source" ? (
+                          <SourceBadge
+                            source={item as Source}
+                            className="border-none bg-transparent p-0"
+                          />
+                        ) : (
+                          item
+                        )}
+                      </div>
+                    ) : (
+                      item && (
+                        <TagBadge key={item.id} tag={item} isBadge={false} />
+                      )
+                    ),
+                  )
+                )}
+              </div>
+            ) : (
+              <p className="text-muted-foreground">Select</p>
             )}
           </Button>
         </PopoverTrigger>

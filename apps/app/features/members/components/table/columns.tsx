@@ -1,5 +1,5 @@
 import { DateCell } from "@/components/custom/date-cell";
-import { LocaleBadge } from "@/components/custom/locale-badge";
+import { LocationBadge } from "@/components/custom/location-badge";
 import { SourceBadge } from "@/components/custom/source-badge";
 import { useUser } from "@/context/userContext";
 import { ColumnHeader } from "@/features/table/column-header";
@@ -160,11 +160,11 @@ export const Columns = ({ tags }: Props): Column[] => [
     width: 250,
   },
   {
-    id: "locale",
-    header: () => <ColumnHeader id="locale" title="Locale" width={250} />,
+    id: "location",
+    header: () => <ColumnHeader id="location" title="Location" width={250} />,
     cell: ({ member }) => (
       <div className="p-2">
-        <LocaleBadge country={member.locale} />
+        <LocationBadge location={member.location} />
       </div>
     ),
     width: 250,

@@ -78,6 +78,50 @@ export const members = new Hono()
       return c.json(MemberWithCompanySchema.array().parse(members));
     },
   )
+  .get(
+    "/count",
+    zValidator(
+      "query",
+      z.object({
+        search: z.string(),
+        filters: z
+          .string()
+          .transform((str) => JSON.parse(str))
+          .pipe(z.array(FilterSchema)),
+      }),
+    ),
+    async (c) => {
+      const { workspace_id } = c.get("user");
+      const { search, filters } = c.req.valid("query");
+
+      const searchParsed = search?.toLowerCase().trim();
+      const filterBy = getFilters({ filters });
+
+      const [{ count }] = await prisma.$queryRaw<[{ count: bigint }]>`
+          SELECT COUNT(DISTINCT m.id)::bigint as count
+          FROM members m
+          LEFT JOIN companies c ON m.company_id = c.id
+          WHERE 
+            (
+              LOWER(COALESCE(m.first_name, '')) LIKE '%' || ${searchParsed} || '%'
+              OR LOWER(COALESCE(m.last_name, '')) LIKE '%' || ${searchParsed} || '%'
+              OR LOWER(m.primary_email) LIKE '%' || ${searchParsed} || '%'
+              OR EXISTS (
+                SELECT 1 FROM unnest(m.phones) phone
+                WHERE LOWER(phone) LIKE '%' || ${searchParsed} || '%'
+              )
+            )
+            AND m.workspace_id = ${workspace_id}
+            ${
+              filterBy.length > 0
+                ? Prisma.sql`AND (${Prisma.join(filterBy, " AND ")})`
+                : Prisma.sql``
+            }
+        `;
+
+      return c.json(Number(count));
+    },
+  )
   .get("/all-members", async (c) => {
     const { workspace_id } = c.get("user");
 
@@ -87,17 +131,19 @@ export const members = new Hono()
 
     return c.json(MemberSchema.array().parse(members));
   })
-  .get("/locales", async (c) => {
+  .get("/locations", async (c) => {
     const { workspace_id } = c.get("user");
 
-    const memberLocales = await prisma.members.groupBy({
-      by: ["locale"],
+    const memberLocations = await prisma.members.groupBy({
+      by: ["location"],
       where: { workspace_id },
     });
 
-    const locales = memberLocales.map((locale) => locale.locale);
+    const locations = memberLocations
+      .map((member) => member.location)
+      .filter((location) => location !== "");
 
-    return c.json(locales);
+    return c.json(locations);
   })
   .get("/:memberId/metrics", async (c) => {
     const { workspace_id } = c.get("user");

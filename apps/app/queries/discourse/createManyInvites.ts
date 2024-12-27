@@ -45,7 +45,7 @@ export const createManyInvites = async ({ discourse, member }: Props) => {
     }
 
     for (const invite of invites) {
-      const { id, redeemed_at, user } = invite;
+      const { redeemed_at, user } = invite;
 
       const invited = await prisma.members.findFirst({
         where: {
@@ -61,8 +61,8 @@ export const createManyInvites = async ({ discourse, member }: Props) => {
           external_id: null,
           activity_type_id: invite_type.id,
           message: `Has invited ${invited.username}`,
-          member_id: invited.id,
           invite_by: member.id,
+          member_id: invited.id,
           channel_id: null,
           created_at: redeemed_at,
           workspace_id,

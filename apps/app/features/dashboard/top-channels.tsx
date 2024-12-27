@@ -24,7 +24,7 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-export const ChannelsTop = ({ from, to }: Props) => {
+export const TopChannels = ({ from, to }: Props) => {
   const ref = useRef<HTMLDivElement>(null);
 
   const { data: topChannels } = useListTopChannels({ from, to });

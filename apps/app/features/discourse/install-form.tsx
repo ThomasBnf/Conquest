@@ -13,6 +13,7 @@ import {
 import { Input } from "@conquest/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRealtimeTaskTrigger } from "@trigger.dev/react-hooks";
+import { Info } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -24,7 +25,7 @@ import {
 
 export const InstallForm = () => {
   const { discourse } = useUser();
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(discourse?.status === "SYNCING");
   const router = useRouter();
 
   const { submit, run } = useRealtimeTaskTrigger<typeof installDiscourse>(
@@ -45,6 +46,7 @@ export const InstallForm = () => {
 
   const onSubmit = async ({ community_url, api_key }: FormDiscourse) => {
     if (!discourse) return;
+
     setLoading(true);
     const formattedCommunityUrl = community_url.trim().replace(/\/$/, "");
     submit({ discourse, community_url: formattedCommunityUrl, api_key });
@@ -56,20 +58,17 @@ export const InstallForm = () => {
     const isCompleted = run.status === "COMPLETED";
     const isFailed = run.status === "FAILED";
 
-    if (isCompleted || isFailed) {
+    if (isFailed) {
       setLoading(false);
-
-      if (isFailed) {
-        toast.error("Failed to install Slack", { duration: 5000 });
-      }
-
-      router.refresh();
+      toast.error("Failed to install Discourse", { duration: 5000 });
     }
+
+    if (isCompleted) router.refresh();
   }, [run]);
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 p-4">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
         <FormField
           control={form.control}
           name="community_url"
@@ -77,7 +76,7 @@ export const InstallForm = () => {
             <FormItem>
               <FormLabel>Community URL</FormLabel>
               <FormControl>
-                <Input {...field} />
+                <Input {...field} disabled={loading} />
               </FormControl>
               <FormDescription>
                 Your Discourse community URL. For example:
@@ -96,7 +95,7 @@ export const InstallForm = () => {
             <FormItem>
               <FormLabel>API Key</FormLabel>
               <FormControl>
-                <Input {...field} />
+                <Input {...field} disabled={loading} />
               </FormControl>
               <FormDescription>
                 You can find your API key in the Discourse Admin panel.
@@ -110,6 +109,19 @@ export const InstallForm = () => {
             </FormItem>
           )}
         />
+        {loading && (
+          <div className="actions-secondary mt-6 rounded-md border p-4">
+            <Info size={18} className="text-muted-foreground" />
+            <p className="mt-2 mb-1 font-medium">Collecting data</p>
+            <p className="text-muted-foreground">
+              This may take a few minutes.
+              <br />
+              You can leave this page while we collect your data.
+              <br />
+              Do not hesitate to refresh the page to see data changes.
+            </p>
+          </div>
+        )}
         <Button type="submit" loading={loading} disabled={loading}>
           Install
         </Button>

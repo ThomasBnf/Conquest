@@ -192,7 +192,7 @@ model members {
   first_name       String?
   last_name        String?
   username         String?
-  locale           String?
+  location         String?
   avatar_url       String?
   bio              String?
   job_title        String?

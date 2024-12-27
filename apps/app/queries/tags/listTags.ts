@@ -10,6 +10,9 @@ export const listTags = async ({ workspace_id }: Props) => {
     where: {
       workspace_id,
     },
+    orderBy: {
+      name: "asc",
+    },
   });
 
   return TagSchema.array().parse(tags);

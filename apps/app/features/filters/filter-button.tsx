@@ -13,7 +13,9 @@ import { Popover, PopoverContent, PopoverTrigger } from "@conquest/ui/popover";
 import type {
   Filter,
   FilterActivity,
+  FilterLevel,
   FilterNumber,
+  FilterSelect,
   FilterText,
 } from "@conquest/zod/filters.schema";
 import cuid from "cuid";
@@ -132,14 +134,14 @@ export const FilterButton = ({ filters, setFilters, handleUpdate }: Props) => {
           <PopoverContent ref={ref} className="w-[200px] p-0" align="start">
             {tab === "select" ? (
               <SelectPicker
-                filter={filter}
+                filter={filter as FilterSelect}
                 setFilters={setFilters}
                 setOpenDropdown={setOpen}
                 handleUpdate={handleUpdate}
               />
             ) : tab === "level" ? (
               <LevelPicker
-                filter={filter}
+                filter={filter as FilterLevel}
                 setFilters={setFilters}
                 handleUpdate={handleUpdate}
                 setOpenDropdown={setOpen}
@@ -213,9 +215,9 @@ const filtersMember: Filter[] = [
   },
   {
     id: "1",
-    label: "Locale",
+    label: "Location",
     type: "select",
-    field: "locale",
+    field: "location",
     operator: "contains",
     values: [],
   },
@@ -229,9 +231,9 @@ const filtersMember: Filter[] = [
   },
   {
     id: "1",
-    label: "Emails",
+    label: "Primary email",
     type: "text",
-    field: "emails",
+    field: "primary_email",
     operator: "contains",
     value: "",
   },

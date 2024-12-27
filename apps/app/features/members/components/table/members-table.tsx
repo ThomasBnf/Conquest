@@ -13,6 +13,7 @@ import { Pagination } from "@/features/table/pagination";
 import { TableSkeleton } from "@/features/table/table-skeletton";
 import { useIsClient } from "@/hooks/useIsClient";
 import { tableParsers } from "@/lib/searchParamsTable";
+import { useCountMembers } from "@/queries/hooks/useCountMembers";
 import { useListMembers } from "@/queries/hooks/useListMembers";
 import { Button } from "@conquest/ui/button";
 import { cn } from "@conquest/ui/cn";
@@ -25,11 +26,10 @@ import { useRef, useState } from "react";
 import { Columns } from "./columns";
 
 type Props = {
-  count: number;
   tags: Tag[] | undefined;
 };
 
-export const MembersTable = ({ count, tags }: Props) => {
+export const MembersTable = ({ tags }: Props) => {
   const { members_preferences } = useUser();
   const { open } = useSidebar();
   const [{ search, id, desc, pageSize }, setParams] =
@@ -40,6 +40,7 @@ export const MembersTable = ({ count, tags }: Props) => {
   );
 
   const { data: members, isLoading } = useListMembers({ filters });
+  const { data: count } = useCountMembers({ filters });
 
   const isClient = useIsClient();
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -223,7 +224,7 @@ export const MembersTable = ({ count, tags }: Props) => {
           <ScrollBar orientation="vertical" />
         </ScrollArea>
       </div>
-      <Pagination count={count} />
+      <Pagination count={count ?? 0} />
     </>
   );
 };

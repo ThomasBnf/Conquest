@@ -74,7 +74,7 @@ export const EditableCompany = ({ member, onUpdate }: Props) => {
           </Button>
         )}
       </PopoverTrigger>
-      <PopoverContent align="start" className="w-[297px] p-0">
+      <PopoverContent align="start" className="w-[233px] p-0">
         <Command loop>
           <CommandInput placeholder="Search company..." />
           <CommandList>

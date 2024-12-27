@@ -76,7 +76,12 @@ export const FilterPicker = ({ filter, setFilters, handleUpdate }: Props) => {
       <OperatorPicker filter={filter} handleUpdate={handleUpdateOperator} />
       <Separator orientation="vertical" />
       {filter.type === "select" ? (
-        <SelectPicker filter={filter} setFilters={setFilters} triggerButton />
+        <SelectPicker
+          filter={filter}
+          setFilters={setFilters}
+          handleUpdate={handleUpdate}
+          triggerButton
+        />
       ) : filter.type === "text" ? (
         <InputDialog
           filter={filter}

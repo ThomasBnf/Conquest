@@ -1,10 +1,15 @@
 import { Button } from "@conquest/ui/button";
+import { Popover, PopoverContent, PopoverTrigger } from "@conquest/ui/popover";
+import { Checkbox } from "@conquest/ui/src/components/checkbox";
 import {
-  Popover,
-  PopoverCheckboxItem,
-  PopoverContent,
-  PopoverTrigger,
-} from "@conquest/ui/popover";
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@conquest/ui/src/components/command";
+import { cn } from "@conquest/ui/src/utils/cn";
 import type { Company } from "@conquest/zod/company.schema";
 import type { Member } from "@conquest/zod/member.schema";
 import type { Tag } from "@conquest/zod/tag.schema";
@@ -16,9 +21,10 @@ type Props = {
   record: Member | Company;
   tags: Tag[] | undefined;
   onUpdate: (tags: string[]) => void;
+  className?: string;
 };
 
-export const TagPicker = ({ record, tags, onUpdate }: Props) => {
+export const TagPicker = ({ record, tags, onUpdate, className }: Props) => {
   const [recordTags, setRecordTags] = useState(record?.tags ?? []);
 
   const handleTagToggle = async (tag: Tag) => {
@@ -34,43 +40,55 @@ export const TagPicker = ({ record, tags, onUpdate }: Props) => {
 
   return (
     <Popover>
-      <div className="flex w-full flex-wrap items-center gap-1.5">
-        {recordTags?.map((tagId) => (
-          <TagBadge key={tagId} tag={tags?.find((t) => t.id === tagId)} />
-        ))}
-        <PopoverTrigger asChild>
+      <PopoverTrigger asChild>
+        <div className="flex w-full flex-wrap items-center gap-1.5">
+          {recordTags?.map((tagId) => (
+            <TagBadge key={tagId} tag={tags?.find((t) => t.id === tagId)} />
+          ))}
           <Button
             variant="ghost"
-            className="w-full text-muted-foreground"
+            size="xs"
+            className={cn(
+              "text-muted-foreground",
+              recordTags.length > 0 ? "" : "-ml-1.5",
+              className,
+            )}
             classNameSpan="justify-start"
           >
             <Plus size={15} />
             Add tags
           </Button>
-        </PopoverTrigger>
-      </div>
+        </div>
+      </PopoverTrigger>
       <PopoverContent
-        className="w-72"
+        className="w-72 p-0"
         align="start"
         onOpenAutoFocus={(e) => e.preventDefault()}
       >
-        {tags && tags?.length > 0 ? (
-          tags?.map((tag) => (
-            <PopoverCheckboxItem
-              key={tag.id}
-              checked={recordTags?.includes(tag.id)}
-              onCheckedChange={() => handleTagToggle(tag)}
-            >
-              <div
-                className="size-3 rounded-full"
-                style={{ backgroundColor: tag.color }}
-              />
-              {tag.name}
-            </PopoverCheckboxItem>
-          ))
-        ) : (
-          <p className="text-muted-foreground">No tags found</p>
-        )}
+        <Command>
+          <CommandInput placeholder="Search tags" />
+          <CommandList>
+            <CommandEmpty>No tags found</CommandEmpty>
+            <CommandGroup>
+              {tags && tags?.length > 0 ? (
+                tags?.map((tag) => (
+                  <CommandItem
+                    key={tag.id}
+                    onSelect={() => handleTagToggle(tag)}
+                  >
+                    <Checkbox
+                      checked={recordTags?.includes(tag.id)}
+                      className="mr-2"
+                    />
+                    <TagBadge tag={tag} isBadge={false} />
+                  </CommandItem>
+                ))
+              ) : (
+                <p className="text-muted-foreground">No tags found</p>
+              )}
+            </CommandGroup>
+          </CommandList>
+        </Command>
       </PopoverContent>
     </Popover>
   );

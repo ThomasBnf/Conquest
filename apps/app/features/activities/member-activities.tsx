@@ -71,6 +71,13 @@ export const MemberActivities = ({
 
   if (!isClient) return <IsLoading />;
 
+  if (!activities?.length)
+    return (
+      <div className="flex h-full items-center justify-center">
+        <p className="text-muted-foreground">No activities found</p>
+      </div>
+    );
+
   return (
     <div className={cn("mx-auto max-w-3xl px-8 pt-6 pb-12", className)}>
       {Object.entries(groupedActivities).map(([date, activities]) => (

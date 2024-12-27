@@ -1,8 +1,8 @@
 "use client";
 
-import { cn } from "../utils/cn";
 import * as React from "react";
 import { useImperativeHandle } from "react";
+import { cn } from "../utils/cn";
 import { Textarea } from "./textarea";
 
 interface UseAutosizeTextAreaProps {
@@ -63,7 +63,7 @@ export const TextField = React.forwardRef<
   (
     {
       maxHeight = Number.MAX_SAFE_INTEGER,
-      minHeight = 52,
+      minHeight = 64,
       className,
       onChange,
       value,
@@ -95,6 +95,7 @@ export const TextField = React.forwardRef<
     return (
       <Textarea
         {...props}
+        rows={3}
         value={value}
         ref={textAreaRef}
         className={cn("resize-none", className)}

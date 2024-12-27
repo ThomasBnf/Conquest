@@ -2,8 +2,8 @@ import { sleep } from "@/helpers/sleep";
 import type { DiscourseIntegration } from "@conquest/zod/schemas/integration.schema";
 import type { Tag } from "@conquest/zod/schemas/tag.schema";
 import type DiscourseAPI from "discourse2";
+import { getMembersMetrics } from "../members/getMembersMetrics";
 import { upsertMember } from "../members/upsertMember";
-import { getMembersMetrics } from "../slack/getMembersMetrics";
 import { createManyActivities } from "./createManyActivities";
 import { createManyInvites } from "./createManyInvites";
 import { createManyReactions } from "./createManyReactions";
@@ -64,7 +64,6 @@ export const createManyMembers = async ({
           username,
           primary_email: email,
           phones: [],
-          locale: "",
           avatar_url: avatarUrl,
           job_title: title,
           tags: memberTags,
@@ -74,38 +73,34 @@ export const createManyMembers = async ({
         },
       });
 
-      console.log("reactions");
-      await sleep(400);
+      await sleep(500);
 
       await createManyReactions({
         discourse,
         member,
       });
 
-      console.log("invites");
-      await sleep(400);
+      await sleep(500);
 
       await createManyInvites({
         discourse,
         member,
       });
 
-      console.log("activities");
-      await sleep(400);
+      await sleep(500);
 
       await createManyActivities({
         client,
         member,
       });
 
-      console.log("metrics");
-      await sleep(400);
+      await sleep(500);
 
       await getMembersMetrics({
         member,
       });
 
-      await sleep(1500);
+      await sleep(2000);
     }
 
     hasMore = users.length === 100;

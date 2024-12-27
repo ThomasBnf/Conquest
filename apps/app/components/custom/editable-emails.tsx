@@ -21,10 +21,12 @@ type Props = {
 
 export const EditableEmails = ({ member }: Props) => {
   const [open, setOpen] = useState(false);
+
   const memberEmails = [
     member.primary_email,
     ...(member.secondary_emails ?? []),
   ].filter((email): email is string => email !== null);
+
   const [emails, setEmails] = useState<{ id: string; content: string }[]>(
     memberEmails.map((email) => ({ id: cuid(), content: email })),
   );
@@ -76,14 +78,12 @@ export const EditableEmails = ({ member }: Props) => {
             {emails.map((email) => {
               if (email.content === "") return;
               return (
-                <Button
+                <p
                   key={email.id}
-                  variant="outline"
-                  size="xs"
-                  className="w-fit justify-start border-blue-200 text-blue-500 hover:bg-background hover:text-blue-500"
+                  className="line-clamp-1 h-6 w-fit place-content-center rounded-md border border-blue-200 bg-background px-1.5 text-blue-500 hover:text-blue-500"
                 >
                   {email.content}
-                </Button>
+                </p>
               );
             })}
           </div>
@@ -96,7 +96,7 @@ export const EditableEmails = ({ member }: Props) => {
           </Button>
         )}
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="start" className="w-[297px]">
+      <DropdownMenuContent align="start" className="w-[233px]">
         {emails.length > 0 && (
           <>
             <div className="space-y-0.5">

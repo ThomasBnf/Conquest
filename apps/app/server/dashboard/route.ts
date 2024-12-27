@@ -321,15 +321,14 @@ export const dashboard = new Hono()
             },
           },
         },
-        orderBy: {
-          activities: {
-            _count: "desc",
-          },
-        },
         take: 10,
       });
 
-      return c.json(channels);
+      const sortedChannels = channels.sort(
+        (a, b) => b._count.activities - a._count.activities,
+      );
+
+      return c.json(sortedChannels);
     },
   )
   .get(

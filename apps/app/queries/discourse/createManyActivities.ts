@@ -63,16 +63,16 @@ export const createManyActivities = async ({ client, member }: Props) => {
 
       switch (action_type) {
         case 1: {
-          const reactTo = post_number === 1 ? topic_id : post_id;
+          const reactTo = post_number === 1 ? `t-${topic_id}` : `p-${post_id}`;
 
           await prisma.activities.create({
             data: {
               external_id: null,
               activity_type_id: reaction_type.id,
               message: "like",
+              react_to: reactTo,
+              thread_id: `t-${topic_id}`,
               member_id: member.id,
-              react_to: String(reactTo),
-              thread_id: String(topic_id),
               channel_id: null,
               created_at,
               workspace_id,
@@ -88,14 +88,17 @@ export const createManyActivities = async ({ client, member }: Props) => {
             },
           });
 
-          if (!channel) throw new CustomError("Channel not found", 404);
+          if (!channel) {
+            throw new CustomError(`2 Channel not found ${category_id}`, 404);
+          }
 
           await prisma.activities.create({
             data: {
-              external_id: String(topic_id),
+              external_id: `t-${topic_id}`,
               activity_type_id: post_type.id,
               title,
               message: excerpt,
+              thread_id: `t-${topic_id}`,
               member_id: member.id,
               channel_id: channel.id,
               created_at,
@@ -117,23 +120,25 @@ export const createManyActivities = async ({ client, member }: Props) => {
             },
           });
 
-          if (!channel) throw new CustomError("Channel not found", 404);
+          if (!channel) {
+            throw new CustomError(`3 Channel not found ${category_id}`, 404);
+          }
 
           await prisma.activities.upsert({
             where: {
               external_id_workspace_id: {
-                external_id: String(post_id),
+                external_id: `p-${post_id}`,
                 workspace_id,
               },
             },
             update: {},
             create: {
-              external_id: String(post_id),
+              external_id: `p-${post_id}`,
               activity_type_id: reply_type.id,
               message: excerpt,
               member_id: member.id,
               reply_to: String(reply_to_post_number),
-              thread_id: String(topic_id),
+              thread_id: `t-${topic_id}`,
               channel_id: channel.id,
               created_at,
               workspace_id,
@@ -154,12 +159,14 @@ export const createManyActivities = async ({ client, member }: Props) => {
             },
           });
 
-          if (!channel) throw new CustomError("Channel not found", 404);
+          if (!channel) {
+            throw new CustomError(`4 Channel not found ${category_id}`, 404);
+          }
 
           await prisma.activities.upsert({
             where: {
               external_id_workspace_id: {
-                external_id: String(post_id),
+                external_id: `p-${post_id}`,
                 workspace_id,
               },
             },
@@ -167,12 +174,12 @@ export const createManyActivities = async ({ client, member }: Props) => {
               activity_type_id: solved_type.id,
             },
             create: {
-              external_id: String(post_id),
+              external_id: `p-${post_id}`,
               activity_type_id: solved_type.id,
               message: excerpt,
               member_id: member.id,
               reply_to: String(reply_to_post_number),
-              thread_id: String(topic_id),
+              thread_id: `t-${topic_id}`,
               channel_id: channel.id,
               created_at,
               workspace_id,

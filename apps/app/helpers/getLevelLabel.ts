@@ -1,29 +1,29 @@
 export const getLevelLabel = (level: number) => {
   switch (level) {
     case 1:
-      return "Explorer III";
+      return "Explorer III • 1";
     case 2:
-      return "Explorer II";
+      return "Explorer II • 2";
     case 3:
-      return "Explorer I";
+      return "Explorer I • 3";
     case 4:
-      return "Active III";
+      return "Active III • 4";
     case 5:
-      return "Active II";
+      return "Active II • 5";
     case 6:
-      return "Active I";
+      return "Active I • 6";
     case 7:
-      return "Contributor III";
+      return "Contributor III • 7";
     case 8:
-      return "Contributor II";
+      return "Contributor II • 8";
     case 9:
-      return "Contributor I";
+      return "Contributor I • 9";
     case 10:
-      return "Ambassador III";
+      return "Ambassador III • 10";
     case 11:
-      return "Ambassador II";
+      return "Ambassador II • 11";
     case 12:
-      return "Ambassador I";
+      return "Ambassador I • 12";
     default:
       return "No activity";
   }

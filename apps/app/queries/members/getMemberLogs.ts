@@ -6,7 +6,7 @@ import {
   subDays,
   subMonths,
 } from "date-fns";
-import { getMemberPresence } from "../slack/getMemberPresence";
+import { getMemberPresence } from "./getMemberPresence";
 
 type Props = {
   activities: ActivityWithType[];

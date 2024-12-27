@@ -39,7 +39,7 @@ export const EditableDate = ({ defaultValue, onUpdate }: Props) => {
           </Button>
         )}
       </PopoverTrigger>
-      <PopoverContent align="start" className="w-auto p-0">
+      <PopoverContent align="start" className="w-[233px] p-0">
         <Calendar
           mode="single"
           selected={date}

@@ -37,7 +37,7 @@ export const createListMembers = async ({ web, workspace_id }: Props) => {
             last_name,
             primary_email: email,
             phones: phone ? [phone] : [],
-            locale,
+            location: locale?.split("-")[1],
             avatar_url: image_1024,
             job_title: title,
             source: "SLACK",

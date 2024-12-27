@@ -1,7 +1,9 @@
 "use client";
 
+import { useUser } from "@/context/userContext";
 import { useListTopMembers } from "@/queries/hooks/useListTopMembers";
 import { type ChartConfig, ChartContainer } from "@conquest/ui/chart";
+import { useRouter } from "next/navigation";
 import { useRef } from "react";
 import {
   Bar,
@@ -25,6 +27,8 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 export const MembersTop = ({ from, to }: Props) => {
+  const { slug } = useUser();
+  const router = useRouter();
   const ref = useRef<HTMLDivElement>(null);
 
   const { data: topMembers } = useListTopMembers({ from, to });
@@ -65,10 +69,16 @@ export const MembersTop = ({ from, to }: Props) => {
                 position="insideLeft"
                 offset={10}
                 className="fill-muted-foreground text-xs"
-                content={({ value, x, y, height }) => {
+                content={({ value, id, x, y, height }) => {
                   const yPos = Number(y) + Number(height) / 2 + 5;
                   return (
-                    <text x={Number(x) + 10} y={yPos} className="font-medium">
+                    // biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
+                    <text
+                      x={Number(x) + 10}
+                      y={yPos}
+                      className="cursor-pointer font-medium hover:underline"
+                      onClick={() => router.push(`/${slug}/members/${id}`)}
+                    >
                       {value}
                     </text>
                   );

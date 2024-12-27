@@ -16,8 +16,8 @@ export const getOrderBy = (id: string, desc: boolean) => {
       return `ORDER BY m.tags[0] ${direction}`;
     case "joined_at":
       return `ORDER BY m.joined_at ${direction}`;
-    case "locale":
-      return `ORDER BY m.locale ${direction}`;
+    case "location":
+      return `ORDER BY m.location ${direction}`;
     case "source":
       return `ORDER BY m.source ${direction}`;
     case "first_activity":

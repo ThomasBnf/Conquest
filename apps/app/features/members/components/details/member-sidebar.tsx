@@ -4,9 +4,9 @@ import { updateMember } from "@/actions/members/updateMember";
 import { EditableCompany } from "@/components/custom/editable-company";
 import { EditableEmails } from "@/components/custom/editable-emails";
 import { EditableInput } from "@/components/custom/editable-input";
+import { EditableLocation } from "@/components/custom/editable-location";
 import { EditablePhones } from "@/components/custom/editable-phones";
 import { FieldCard } from "@/components/custom/field-card";
-import { LocaleBadge } from "@/components/custom/locale-badge";
 import { SourceBadge } from "@/components/custom/source-badge";
 import { TagPicker } from "@/features/tags/tag-picker";
 import { Avatar, AvatarFallback, AvatarImage } from "@conquest/ui/avatar";
@@ -16,7 +16,7 @@ import { Separator } from "@conquest/ui/separator";
 import type { MemberWithCompany } from "@conquest/zod/schemas/member.schema";
 import type { Tag } from "@conquest/zod/tag.schema";
 import { format } from "date-fns";
-import { TagIcon } from "lucide-react";
+import { AlignLeft, TagIcon } from "lucide-react";
 import { LevelTooltip } from "../level-tooltip";
 import { PulseTooltip } from "../pulse-tooltip";
 
@@ -33,7 +33,7 @@ export const MemberSidebar = ({ member, tags }: Props) => {
     avatar_url,
     first_name,
     last_name,
-    locale,
+    location,
     first_activity,
     last_activity,
     joined_at,
@@ -46,6 +46,7 @@ export const MemberSidebar = ({ member, tags }: Props) => {
       | "last_name"
       | "company_id"
       | "job_title"
+      | "location"
       | "bio"
       | "source"
       | "tags",
@@ -65,9 +66,12 @@ export const MemberSidebar = ({ member, tags }: Props) => {
               {last_name?.charAt(0).toUpperCase()}
             </AvatarFallback>
           </Avatar>
-          <p className="font-medium text-base leading-tight">
-            {first_name} {last_name}
-          </p>
+          <div>
+            <p className="font-medium text-base leading-tight">
+              {first_name} {last_name}
+            </p>
+            <p className="text-muted-foreground">{id}</p>
+          </div>
         </div>
         <div className="flex items-center gap-2">
           <Badge variant="outline">
@@ -79,21 +83,19 @@ export const MemberSidebar = ({ member, tags }: Props) => {
         </div>
       </div>
       <Separator />
-      <div className="space-y-2 p-4">
-        <div className="flex min-h-8 items-start space-x-1.5">
-          <div className="mt-1.5 flex w-28 shrink-0 items-center gap-2 text-muted-foreground">
-            <TagIcon size={15} className="shrink-0" />
-            <p>Tags</p>
-          </div>
-          <TagPicker
-            record={member}
-            tags={tags}
-            onUpdate={(value) => onUpdateMember("tags", value)}
-          />
+      <div className="flex flex-col gap-2 p-4">
+        <div className="flex items-center gap-2 text-muted-foreground">
+          <TagIcon size={15} className="shrink-0" />
+          <p>Tags</p>
         </div>
+        <TagPicker
+          record={member}
+          tags={tags}
+          onUpdate={(value) => onUpdateMember("tags", value)}
+        />
       </div>
+      <Separator />
       <ScrollArea className="flex-1">
-        <Separator />
         <div className="space-y-2 p-4">
           <FieldCard icon="User" label="First name">
             <EditableInput
@@ -128,22 +130,31 @@ export const MemberSidebar = ({ member, tags }: Props) => {
           <FieldCard icon="Phone" label="Phone">
             <EditablePhones member={member} />
           </FieldCard>
-          <FieldCard icon="AlignLeft" label="Bio">
+          <div className="flex items-start gap-1.5">
+            <div className="flex h-8 w-28 shrink-0 items-center gap-2 text-muted-foreground">
+              <AlignLeft size={15} />
+              <p>Bio</p>
+            </div>
             <EditableInput
               textArea
               defaultValue={member.bio}
               placeholder="Set bio"
               onUpdate={(value) => onUpdateMember("bio", value)}
             />
-          </FieldCard>
+          </div>
         </div>
         <Separator />
         <div className="space-y-2 p-4">
           <FieldCard icon="Code" label="Source">
-            <SourceBadge source={source} />
+            <div className="px-1">
+              <SourceBadge source={source} />
+            </div>
           </FieldCard>
-          <FieldCard icon="Flag" label="Locale">
-            <LocaleBadge country={locale} />
+          <FieldCard icon="Flag" label="Location">
+            <EditableLocation
+              location={location}
+              onUpdate={(value) => onUpdateMember("location", value)}
+            />
           </FieldCard>
         </div>
         <Separator />

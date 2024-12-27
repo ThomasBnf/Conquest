@@ -54,13 +54,31 @@ export const EngagementChart = ({ from, to }: Props) => {
           />
           <YAxis hide />
           <ChartTooltip
-            content={
-              <ChartTooltipContent
-                indicator="line"
-                className="w-60"
-                itemType="%"
-              />
-            }
+            content={({ active, payload }) => {
+              const { date, percentage } = payload?.[0]?.payload ?? {};
+              return (
+                <ChartTooltipContent
+                  active={active}
+                  payload={payload}
+                  label={date}
+                  indicator="line"
+                  formatter={() => (
+                    <div className="flex w-full gap-2">
+                      <div className="h-full w-1 shrink-0 rounded-[2px] bg-main-500" />
+                      <div className="flex w-full items-end justify-between">
+                        <div className="grid gap-1.5 pr-4">
+                          <p className="font-medium leading-none">{date}</p>
+                          <p className="text-muted-foreground">
+                            Engagement Rate
+                          </p>
+                        </div>
+                        <p className="font-medium">{percentage?.toFixed(2)}%</p>
+                      </div>
+                    </div>
+                  )}
+                />
+              );
+            }}
           />
           <defs>
             <linearGradient id="fill-percentage" x1="0" y1="0" x2="0" y2="1">

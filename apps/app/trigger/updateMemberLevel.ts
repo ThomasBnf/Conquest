@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { getMembersMetrics } from "@/queries/slack/getMembersMetrics";
+import { getMembersMetrics } from "@/queries/members/getMembersMetrics";
 import { MemberSchema } from "@conquest/zod/schemas/member.schema";
 import { schedules } from "@trigger.dev/sdk/v3";
 import { endOfDay, startOfDay, subDays } from "date-fns";

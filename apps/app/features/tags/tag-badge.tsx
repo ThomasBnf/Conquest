@@ -3,9 +3,10 @@ import type { Tag } from "@conquest/zod/tag.schema";
 
 type Props = {
   tag: Tag | undefined;
+  isBadge?: boolean;
 };
 
-export const TagBadge = ({ tag }: Props) => {
+export const TagBadge = ({ tag, isBadge = true }: Props) => {
   if (!tag) return null;
 
   const colorMap = {
@@ -22,7 +23,8 @@ export const TagBadge = ({ tag }: Props) => {
   return (
     <div
       className={cn(
-        "flex h-6 w-fit items-center gap-2 rounded-md border px-1.5",
+        "flex h-6 w-fit items-center gap-2",
+        isBadge && "rounded-md border px-1.5",
       )}
     >
       <div

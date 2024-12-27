@@ -18,7 +18,7 @@ export const FieldCard = ({
   return (
     <div className={cn("flex min-h-8 items-center space-x-1.5", className)}>
       <div className="flex w-28 shrink-0 items-center gap-2 text-muted-foreground">
-        <Icon name={icon} size={15} className="shrink-0" />
+        <Icon name={icon} size={15} />
         <p>{label}</p>
       </div>
       {children}

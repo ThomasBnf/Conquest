@@ -32,16 +32,18 @@ export const getFilters = ({ filters }: Props) => {
     if (filter.type === "select") {
       const { values, operator, field } = FilterSelectSchema.parse(filter);
       const fieldCondition = Prisma.raw(field);
-      const likePattern = `%${values.join(",")}%`;
 
-      switch (operator) {
-        case "contains":
-          return Prisma.sql`m.${fieldCondition}::text ILIKE ${likePattern}`;
-        case "not_contains":
-          return Prisma.sql`m.${fieldCondition}::text NOT ILIKE ${likePattern}`;
-        default:
-          return Prisma.sql`TRUE`;
-      }
+      if (values.length === 0) return Prisma.sql`TRUE`;
+
+      const conditions = values.map((value) => {
+        const likePattern = `%${value}%`;
+        return operator === "contains"
+          ? Prisma.sql`m.${fieldCondition}::text ILIKE ${likePattern}`
+          : Prisma.sql`m.${fieldCondition}::text NOT ILIKE ${likePattern}`;
+      });
+
+      const joinOperator = operator === "contains" ? " OR " : " AND ";
+      return Prisma.sql`(${Prisma.join(conditions, joinOperator)})`;
     }
 
     if (filter.type === "level") {

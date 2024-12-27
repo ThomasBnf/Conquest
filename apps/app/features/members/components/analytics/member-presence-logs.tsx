@@ -63,13 +63,7 @@ export const MemberPresenceLogs = ({ member }: Props) => {
             />
             <ChartTooltip
               content={({ active, payload }) => {
-                const {
-                  date,
-                  max_weight,
-                  presence,
-                  level,
-                  max_weight_activity,
-                } = payload?.[0]?.payload ?? {};
+                const { date, presence } = payload?.[0]?.payload ?? {};
 
                 return (
                   <ChartTooltipContent

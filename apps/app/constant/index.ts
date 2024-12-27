@@ -99,14 +99,14 @@ export const DISCOURSE_ACTIVITY_TYPES = [
     name: "Invite",
     source: "DISCOURSE" as const,
     key: "discourse:invite",
-    weight: 7,
+    weight: 6,
     deletable: false,
   },
   {
     name: "Post marked as solved",
     source: "DISCOURSE" as const,
     key: "discourse:solved",
-    weight: 6,
+    weight: 5,
     deletable: false,
   },
   {

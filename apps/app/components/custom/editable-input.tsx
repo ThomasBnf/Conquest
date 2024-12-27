@@ -63,17 +63,16 @@ export const EditableInput = ({
       {textArea ? (
         <TextField
           autoFocus
-          rows={3}
           value={value ?? ""}
           onChange={(event) => setValue(event.target.value)}
           onBlur={(event) => onBlur(event.target.value)}
           onKeyDown={(event) => onKeyDown(event.key)}
-          className={cn("p-[5px]", className)}
+          className={cn("p-[5px] px-[7px]", className)}
         />
       ) : (
         <Input
           autoFocus
-          className="h-8 p-[5px]"
+          className="h-8 px-[7px]"
           value={value ?? ""}
           onChange={(event) => setValue(event.target.value)}
           onBlur={(event) => onBlur(event.target.value)}

@@ -141,7 +141,7 @@ export const discourse = new Hono().post("/", async (c) => {
 
     if (post_number === 1) {
       await updateActivity({
-        external_id: String(topic_id),
+        external_id: `t-${topic_id}`,
         message: post.cooked,
         activity_type_id: post_type.id,
         workspace_id,
@@ -162,7 +162,7 @@ export const discourse = new Hono().post("/", async (c) => {
 
       const activities = await prisma.activities.findMany({
         where: {
-          thread_id: String(topic_id),
+          thread_id: `t-${topic_id}`,
         },
         orderBy: {
           created_at: "asc",
@@ -183,11 +183,11 @@ export const discourse = new Hono().post("/", async (c) => {
       if (!channel) return c.json({ status: 404 });
 
       await createActivity({
-        external_id: String(id),
+        external_id: `p-${id}`,
         activity_type_id: reply_type.id,
         message: post.cooked,
         reply_to: replyTo.id,
-        thread_id: String(topic_id),
+        thread_id: `t-${topic_id}`,
         member_id: member.id,
         channel_id: channel.id,
         workspace_id,
@@ -212,7 +212,7 @@ export const discourse = new Hono().post("/", async (c) => {
 
     const activities = await prisma.activities.findMany({
       where: {
-        thread_id: String(topic_id),
+        thread_id: `t-${topic_id}`,
       },
       orderBy: {
         created_at: "desc",
@@ -222,10 +222,10 @@ export const discourse = new Hono().post("/", async (c) => {
     if (activities.length === 0) return c.json({ status: 404 });
 
     await createActivity({
-      external_id: String(id),
+      external_id: `p-${id}`,
       message: post.cooked,
       activity_type_id: reply_type.id,
-      thread_id: String(topic_id),
+      thread_id: `t-${topic_id}`,
       member_id: member.id,
       channel_id: channel.id,
       workspace_id,
@@ -237,7 +237,7 @@ export const discourse = new Hono().post("/", async (c) => {
     const { id, post_number, topic_id } = post;
 
     await updateActivity({
-      external_id: String(post_number === 1 ? topic_id : id),
+      external_id: post_number === 1 ? `t-${topic_id}` : `p-${id}`,
       activity_type_id: post_number === 1 ? post_type.id : reply_type.id,
       message: post.cooked,
       workspace_id,
@@ -249,7 +249,7 @@ export const discourse = new Hono().post("/", async (c) => {
     const { id } = post;
 
     await deleteActivity({
-      external_id: String(id),
+      external_id: `p-${id}`,
       workspace_id,
     });
   }
@@ -273,14 +273,14 @@ export const discourse = new Hono().post("/", async (c) => {
 
     if (!channel) return c.json({ status: 404 });
 
-    const reactTo = post_number === 1 ? topic_id : id;
+    const reactTo = post_number === 1 ? `t-${topic_id}` : `p-${id}`;
 
     await createActivity({
       external_id: null,
       activity_type_id: reaction_type.id,
       message: "like",
-      react_to: String(reactTo),
-      thread_id: String(topic_id),
+      react_to: reactTo,
+      thread_id: `t-${topic_id}`,
       member_id: member.id,
       channel_id: channel.id,
       workspace_id,

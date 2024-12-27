@@ -1,6 +1,6 @@
-import { ChannelsTop } from "./channels-top";
 import { EngagementChart } from "./engagement-chart";
 import { TopActivityTypes } from "./top-activity-types";
+import { TopChannels } from "./top-channels";
 
 type Props = {
   from: Date;
@@ -13,7 +13,7 @@ export const EngagementDashboard = ({ from, to }: Props) => {
       <p className="bg-muted p-4 font-medium text-lg">Engagement metrics</p>
       <EngagementChart from={from} to={to} />
       <div className="flex divide-x">
-        <ChannelsTop from={from} to={to} />
+        <TopChannels from={from} to={to} />
         <TopActivityTypes from={from} to={to} />
       </div>
     </div>
