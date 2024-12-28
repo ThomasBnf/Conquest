@@ -2,7 +2,7 @@ import { sleep } from "@/helpers/sleep";
 import type { DiscourseIntegration } from "@conquest/zod/schemas/integration.schema";
 import type { Tag } from "@conquest/zod/schemas/tag.schema";
 import type DiscourseAPI from "discourse2";
-import { getMembersMetrics } from "../members/getMembersMetrics";
+import { calculateMemberMetrics } from "../members/calculateMemberMetrics";
 import { upsertMember } from "../members/upsertMember";
 import { createManyActivities } from "./createManyActivities";
 import { createManyInvites } from "./createManyInvites";
@@ -96,9 +96,7 @@ export const createManyMembers = async ({
 
       await sleep(500);
 
-      await getMembersMetrics({
-        member,
-      });
+      await calculateMemberMetrics({ member });
 
       await sleep(2000);
     }

@@ -2,7 +2,7 @@ import { SLACK_ACTIVITY_TYPES } from "@/constant";
 import { prisma } from "@/lib/prisma";
 import { deleteIntegration } from "@/queries/integrations/deleteIntegration";
 import { updateIntegration } from "@/queries/integrations/updateIntegration";
-import { getMembersMetrics } from "@/queries/members/getMembersMetrics";
+import { calculateMemberMetrics } from "@/queries/members/calculateMemberMetrics";
 import { createListChannels } from "@/queries/slack/createListChannels";
 import { createListMembers } from "@/queries/slack/createListMembers";
 import { listMessages } from "@/queries/slack/listMessages";
@@ -66,7 +66,7 @@ export const installSlack = schemaTask({
     }
 
     for (const member of members) {
-      await getMembersMetrics({ member });
+      await calculateMemberMetrics({ member });
     }
 
     return members;

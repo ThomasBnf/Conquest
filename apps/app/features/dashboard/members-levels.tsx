@@ -20,7 +20,7 @@ const chartConfig = {
   },
   explorer: {
     label: "Explorer",
-    color: "hsl(var(--main-500))",
+    color: "hsl(var(--main-300))",
   },
   active: {
     label: "Active",
@@ -28,11 +28,11 @@ const chartConfig = {
   },
   contributor: {
     label: "Contributor",
-    color: "hsl(var(--main-600))",
+    color: "hsl(var(--main-700))",
   },
   ambassador: {
     label: "Ambassador",
-    color: "hsl(var(--main-700))",
+    color: "hsl(var(--main-900))",
   },
 } satisfies ChartConfig;
 
@@ -69,27 +69,32 @@ export const MembersLevels = ({ from, to }: Props) => {
                     indicator="line"
                     formatter={(value, name, item) => {
                       return (
-                        <div className="grid w-full grid-rows-3 gap-2">
-                          <div className="flex items-center gap-2">
-                            <div
-                              className="h-full w-1 shrink-0 rounded-[2px]"
-                              style={{
-                                backgroundColor: item?.payload?.fill,
-                              }}
-                            />
-                            <p className="font-medium">Total {value}</p>
-                          </div>
-                          <div className="flex flex-1 items-center justify-between gap-6">
-                            <p className="text-muted-foreground">{name} III</p>
-                            <p className="font-medium">{III}</p>
-                          </div>
-                          <div className="flex flex-1 items-center justify-between gap-6">
-                            <p className="text-muted-foreground">{name} II</p>
-                            <p className="font-medium">{II}</p>
-                          </div>
-                          <div className="flex flex-1 items-center justify-between gap-6">
-                            <p className="text-muted-foreground">{name} III</p>
-                            <p className="font-medium">{III}</p>
+                        <div className="flex gap-2">
+                          <div
+                            className="w-1 rounded-[2px]"
+                            style={{
+                              backgroundColor: item?.payload?.fill,
+                            }}
+                          />
+                          <div className="flex flex-col gap-2">
+                            <div className="flex justify-between gap-6">
+                              <p className="font-medium">{name}</p>
+                              <p className="font-medium">{value}</p>
+                            </div>
+                            <div className="flex justify-between gap-6">
+                              <p className="text-muted-foreground">
+                                {name} III
+                              </p>
+                              <p className="font-medium">{III}</p>
+                            </div>
+                            <div className="flex justify-between gap-6">
+                              <p className="text-muted-foreground">{name} II</p>
+                              <p className="font-medium">{II}</p>
+                            </div>
+                            <div className="flex justify-between gap-6">
+                              <p className="text-muted-foreground">{name} I</p>
+                              <p className="font-medium">{I}</p>
+                            </div>
                           </div>
                         </div>
                       );
@@ -98,7 +103,27 @@ export const MembersLevels = ({ from, to }: Props) => {
                 );
               }}
             />
-            <Pie data={transformedData} dataKey="count" nameKey="category" />
+            <Pie
+              data={transformedData}
+              dataKey="count"
+              nameKey="category"
+              paddingAngle={4}
+              cornerRadius={4}
+              innerRadius="50%"
+              labelLine={false}
+              label={({ payload, ...props }) => {
+                return (
+                  <text
+                    x={props.x - 12}
+                    y={props.y}
+                    textAnchor={props.textAnchor}
+                    dominantBaseline={props.dominantBaseline}
+                  >
+                    {payload.category} {payload.count}
+                  </text>
+                );
+              }}
+            />
           </PieChart>
         </ChartContainer>
       </ResponsiveContainer>

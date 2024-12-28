@@ -26,10 +26,14 @@ export const listMessages = async ({ web, channel, workspace_id }: Props) => {
   });
 
   do {
+    const now = Math.floor(Date.now() / 1000);
+    const oneYearAgo = now - 365 * 24 * 60 * 60;
+
     const result = await web.conversations.history({
       channel: channel.external_id ?? "",
       limit: 100,
       cursor,
+      oldest: oneYearAgo.toString(),
     });
 
     const { messages, response_metadata } = result;

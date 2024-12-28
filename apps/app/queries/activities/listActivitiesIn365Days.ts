@@ -11,9 +11,12 @@ export const listActivitiesIn365Days = async ({ member }: Props) => {
   const today = new Date();
   const last365Days = startOfDay(subDays(today, 365));
 
+  const { id, workspace_id } = member;
+
   const activities = await prisma.activities.findMany({
     where: {
-      member_id: member.id,
+      member_id: id,
+      workspace_id,
       created_at: {
         gte: last365Days,
         lte: endOfDay(today),

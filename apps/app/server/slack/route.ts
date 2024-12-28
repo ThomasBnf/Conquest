@@ -48,6 +48,8 @@ export const slack = new Hono()
         event,
       } = c.req.valid("json");
 
+      console.log(await c.req.json());
+
       if (!event || typeof event !== "object") {
         return c.json({ status: 200 });
       }

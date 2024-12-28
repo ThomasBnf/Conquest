@@ -11,6 +11,7 @@ import { getRefreshToken } from "@/queries/livestorm/getRefreshToken";
 import { listEventSessions } from "@/queries/livestorm/listEventSessions";
 import { listEvents } from "@/queries/livestorm/listEvents";
 import { listPeopleFromSession } from "@/queries/livestorm/listPeopleFromSession";
+import { calculateMemberMetrics } from "@/queries/members/calculateMemberMetrics";
 import { upsertMember } from "@/queries/members/upsertMember";
 import { LivestormIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
 import type { Event, Session } from "@conquest/zod/schemas/types/livestorm";
@@ -160,6 +161,8 @@ export const installLivestorm = schemaTask({
             member_id: createdMember.id,
             workspace_id,
           });
+
+          await calculateMemberMetrics({ member: createdMember });
         }
       }
     }
