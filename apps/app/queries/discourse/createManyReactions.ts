@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import type { DiscourseIntegration } from "@conquest/zod/schemas/integration.schema";
 import type { Member } from "@conquest/zod/schemas/member.schema";
 import type { Reaction } from "@conquest/zod/schemas/types/discourse";
+import { startOfDay, subDays } from "date-fns";
 import { getActivityType } from "../activity-type/getActivityType";
 
 type Props = {
@@ -13,6 +14,9 @@ export const createManyReactions = async ({ discourse, member }: Props) => {
   const { details, workspace_id } = discourse;
   const { community_url, api_key } = details;
   const { username } = member;
+
+  const today = startOfDay(new Date());
+  const last365Days = subDays(today, 365);
 
   const reaction_type = await getActivityType({
     workspace_id,
@@ -43,8 +47,17 @@ export const createManyReactions = async ({ discourse, member }: Props) => {
       break;
     }
 
-    for (const reactionData of dataReactions) {
-      const { id, reaction, post } = reactionData as Reaction;
+    const recentReactions = dataReactions.filter(
+      (reaction) => new Date(reaction.post.created_at) >= last365Days,
+    );
+
+    if (recentReactions.length === 0) {
+      hasMore = false;
+      break;
+    }
+
+    for (const reactionData of recentReactions) {
+      const { id, reaction, post } = reactionData;
       const { category_id, topic_id, created_at } = post;
       const { reaction_value } = reaction;
 

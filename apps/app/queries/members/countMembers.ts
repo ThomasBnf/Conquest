@@ -17,8 +17,6 @@ export const countMembers = async ({
   const searchParsed = search?.toLowerCase().trim();
   const filterBy = getFilters({ filters });
 
-  console.log(filterBy);
-
   const [{ count }] = await prisma.$queryRaw<[{ count: bigint }]>`
         SELECT COUNT(DISTINCT m.id)::bigint as count
         FROM members m

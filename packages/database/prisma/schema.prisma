@@ -44,7 +44,7 @@ model activities {
   thread_id   String?
   reply_to    String?
   react_to    String?
-  invite_by   String?
+  invite_to   String?
 
   activity_type_id String
   activity_type    activities_types @relation(fields: [activity_type_id], references: [id], onDelete: Cascade)
@@ -169,7 +169,7 @@ model files {
 model integrations {
   id                       String    @id @default(cuid())
   external_id              String?   @unique
-  installed_at             DateTime?
+  connected_at             DateTime?
   status                   STATUS
   details                  Json
   trigger_token            String
@@ -186,9 +186,10 @@ model integrations {
 
 model members {
   id               String   @id @default(cuid())
-  slack_id         String?
-  livestorm_id     String?
   discourse_id     String?
+  linkedin_id      String?
+  livestorm_id     String?
+  slack_id         String?
   first_name       String?
   last_name        String?
   username         String?
@@ -221,9 +222,11 @@ model members {
   updated_at     DateTime  @updatedAt
 
   @@unique([primary_email, workspace_id])
-  @@unique([username, workspace_id])
   @@unique([discourse_id, workspace_id])
+  @@unique([linkedin_id, workspace_id])
+  @@unique([livestorm_id, workspace_id])
   @@unique([slack_id, workspace_id])
+  @@unique([username, workspace_id])
   @@index([id, workspace_id])
 }
 

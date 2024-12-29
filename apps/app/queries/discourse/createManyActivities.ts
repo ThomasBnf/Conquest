@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
-import { CustomError } from "@/lib/safeAction";
 import type { Member } from "@conquest/zod/schemas/member.schema";
+import { startOfDay, subDays } from "date-fns";
 import type DiscourseAPI from "discourse2";
 import { getActivityType } from "../activity-type/getActivityType";
 
@@ -12,10 +12,10 @@ type Props = {
 export const createManyActivities = async ({ client, member }: Props) => {
   const { username, workspace_id } = member;
 
-  if (!username) return;
+  const today = startOfDay(new Date());
+  const last365Days = subDays(today, 365);
 
-  let offset = 0;
-  let hasMore = true;
+  if (!username) return;
 
   const reaction_type = await getActivityType({
     workspace_id,
@@ -37,6 +37,9 @@ export const createManyActivities = async ({ client, member }: Props) => {
     key: "discourse:solved",
   });
 
+  let offset = 0;
+  let hasMore = true;
+
   while (hasMore) {
     const { user_actions } = await client.listUserActions({
       username,
@@ -49,7 +52,16 @@ export const createManyActivities = async ({ client, member }: Props) => {
       break;
     }
 
-    for (const action of user_actions) {
+    const recentActions = user_actions.filter(
+      (action) => new Date(action.created_at) >= last365Days,
+    );
+
+    if (recentActions.length === 0) {
+      hasMore = false;
+      break;
+    }
+
+    for (const action of recentActions) {
       const {
         action_type,
         created_at,
@@ -60,6 +72,15 @@ export const createManyActivities = async ({ client, member }: Props) => {
         topic_id,
         title,
       } = action;
+
+      const channel = category_id
+        ? await prisma.channels.findFirst({
+            where: {
+              external_id: String(category_id),
+              workspace_id,
+            },
+          })
+        : null;
 
       switch (action_type) {
         case 1: {
@@ -73,7 +94,7 @@ export const createManyActivities = async ({ client, member }: Props) => {
               react_to: reactTo,
               thread_id: `t-${topic_id}`,
               member_id: member.id,
-              channel_id: null,
+              channel_id: channel?.id ?? null,
               created_at,
               workspace_id,
             },
@@ -81,16 +102,7 @@ export const createManyActivities = async ({ client, member }: Props) => {
           break;
         }
         case 4: {
-          const channel = await prisma.channels.findFirst({
-            where: {
-              external_id: String(category_id),
-              workspace_id,
-            },
-          });
-
-          if (!channel) {
-            throw new CustomError(`2 Channel not found ${category_id}`, 404);
-          }
+          if (!channel) continue;
 
           await prisma.activities.create({
             data: {
@@ -108,21 +120,11 @@ export const createManyActivities = async ({ client, member }: Props) => {
           break;
         }
         case 5: {
+          if (!channel || excerpt === "") continue;
+
           const { reply_to_post_number } = action as {
             reply_to_post_number?: number | null;
           };
-          if (excerpt === "") break;
-
-          const channel = await prisma.channels.findFirst({
-            where: {
-              external_id: String(category_id),
-              workspace_id,
-            },
-          });
-
-          if (!channel) {
-            throw new CustomError(`3 Channel not found ${category_id}`, 404);
-          }
 
           await prisma.activities.upsert({
             where: {
@@ -147,21 +149,11 @@ export const createManyActivities = async ({ client, member }: Props) => {
           break;
         }
         case 15: {
+          if (!channel || excerpt === "") continue;
+
           const { reply_to_post_number } = action as {
             reply_to_post_number?: number | null;
           };
-          if (excerpt === "") break;
-
-          const channel = await prisma.channels.findFirst({
-            where: {
-              external_id: String(category_id),
-              workspace_id,
-            },
-          });
-
-          if (!channel) {
-            throw new CustomError(`4 Channel not found ${category_id}`, 404);
-          }
 
           await prisma.activities.upsert({
             where: {
@@ -185,13 +177,12 @@ export const createManyActivities = async ({ client, member }: Props) => {
               workspace_id,
             },
           });
-
           break;
         }
       }
     }
 
-    offset += 30;
     hasMore = user_actions.length === 30;
+    offset += 30;
   }
 };

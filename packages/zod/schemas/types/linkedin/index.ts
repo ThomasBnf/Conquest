@@ -64,3 +64,35 @@ export type Orgnaization = {
     };
   };
 };
+
+export type People = {
+  localizedLastName: string;
+  profilePicture: {
+    displayImage: string;
+  };
+  firstName: {
+    localized: { [key: string]: string };
+    preferredLocale: {
+      country: string;
+      language: string;
+    };
+  };
+  vanityName: string;
+  lastName: {
+    localized: { [key: string]: string };
+    preferredLocale: {
+      country: string;
+      language: string;
+    };
+  };
+  localizedHeadline: string;
+  id: string;
+  headline: {
+    localized: { [key: string]: string };
+    preferredLocale: {
+      country: string;
+      language: string;
+    };
+  };
+  localizedFirstName: string;
+};

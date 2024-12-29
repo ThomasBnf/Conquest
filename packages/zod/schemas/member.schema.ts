@@ -17,6 +17,7 @@ export const MemberSchema = z.object({
   slack_id: z.string().nullable(),
   discourse_id: z.string().nullable(),
   livestorm_id: z.string().nullable(),
+  linkedin_id: z.string().nullable(),
   first_name: z.string().nullable(),
   last_name: z.string().nullable(),
   username: z.string().nullable(),

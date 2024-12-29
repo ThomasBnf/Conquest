@@ -1,8 +1,8 @@
-import { SlackMarkdown } from "@/features/activities/slack/slack-markdown";
 import { useGetActivity } from "@/queries/hooks/useGetActivity";
 import { Skeleton } from "@conquest/ui/skeleton";
 import type { ActivityWithMember } from "@conquest/zod/activity.schema";
 import { ActivityCard } from "../activity-card";
+import { Markdown } from "../markdown";
 
 type Props = {
   activity: ActivityWithMember;
@@ -22,9 +22,9 @@ export const SlackReply = ({ activity }: Props) => {
   return (
     <div className="flex flex-col gap-2">
       <ActivityCard activity={data}>
-        <SlackMarkdown activity={data} />
+        <Markdown activity={data} />
       </ActivityCard>
-      <SlackMarkdown activity={activity} />
+      <Markdown activity={activity} />
     </div>
   );
 };

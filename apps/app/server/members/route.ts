@@ -214,7 +214,7 @@ export const members = new Hono()
       max_weight: maxWeight,
     });
   })
-  .get("/:slackId", async (c) => {
+  .get("/slack/:slackId", async (c) => {
     const { workspace_id } = c.get("user");
     const { slackId } = c.req.param();
 
@@ -222,6 +222,21 @@ export const members = new Hono()
       where: {
         slack_id_workspace_id: {
           slack_id: slackId,
+          workspace_id,
+        },
+      },
+    });
+
+    return c.json(MemberSchema.parse(member));
+  })
+  .get("/discourse/:username", async (c) => {
+    const { workspace_id } = c.get("user");
+    const { username } = c.req.param();
+
+    const member = await prisma.members.findUnique({
+      where: {
+        username_workspace_id: {
+          username,
           workspace_id,
         },
       },

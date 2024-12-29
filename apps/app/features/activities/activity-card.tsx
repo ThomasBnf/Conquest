@@ -12,11 +12,13 @@ import { CreatedAt } from "./created-at";
 type Props = {
   activity: ActivityWithMember;
   badge?: ReactNode;
+  className?: string;
 };
 
 export const ActivityCard = ({
   activity,
   badge,
+  className,
   children,
 }: PropsWithChildren<Props>) => {
   const { slug } = useUser();
@@ -31,6 +33,7 @@ export const ActivityCard = ({
         badge
           ? "bg-gradient-to-br from-0% from-slack to-70% to-border"
           : "border",
+        className,
       )}
     >
       {badge}

@@ -14,19 +14,19 @@ export const updateIntegration = safeAction
   .schema(
     z.object({
       id: z.string(),
-      installed_at: z.date().optional(),
+      connected_at: z.date().optional(),
       details: IntegrationDetailsSchema.optional(),
       status: STATUS.optional(),
     }),
   )
-  .action(async ({ parsedInput: { id, installed_at, details, status } }) => {
+  .action(async ({ parsedInput: { id, connected_at, details, status } }) => {
     const integration = await prisma.integrations.update({
       where: {
         id,
       },
       data: {
         details,
-        installed_at,
+        connected_at,
         status,
       },
     });

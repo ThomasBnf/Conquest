@@ -24,7 +24,7 @@ type Props = {
 
 export const ConnectedCard = ({ channels }: Props) => {
   const { slack } = useUser();
-  const { details, installed_at } = slack ?? {};
+  const { details, connected_at } = slack ?? {};
   const { name } = details ?? {};
 
   const [open, setOpen] = useState(false);
@@ -57,9 +57,9 @@ export const ConnectedCard = ({ channels }: Props) => {
           <div className=" flex items-end justify-between">
             <div>
               <p className="font-medium">{name}</p>
-              {installed_at && (
+              {connected_at && (
                 <p className="text-muted-foreground">
-                  Installed on {format(installed_at, "PP")}
+                  Installed on {format(connected_at, "PP")}
                 </p>
               )}
             </div>

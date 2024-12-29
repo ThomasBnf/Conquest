@@ -1,4 +1,3 @@
-import { emojiParser } from "@/features/activities/helpers/emoji-parser";
 import { useGetActivity } from "@/queries/hooks/useGetActivity";
 import { Skeleton } from "@conquest/ui/skeleton";
 import type { ActivityWithMember } from "@conquest/zod/activity.schema";
@@ -9,7 +8,7 @@ type Props = {
   activity: ActivityWithMember;
 };
 
-export const SlackReaction = ({ activity }: Props) => {
+export const DiscourseReaction = ({ activity }: Props) => {
   const { react_to } = activity;
   const { data } = useGetActivity({ id: react_to });
 
@@ -26,7 +25,7 @@ export const SlackReaction = ({ activity }: Props) => {
         <Markdown activity={data} />
       </ActivityCard>
       <p className="size-7 place-content-center rounded-md border border-[#1264a3] bg-[#e3f8ff] text-center">
-        {emojiParser(activity.message)}
+        ❤️
       </p>
     </div>
   );

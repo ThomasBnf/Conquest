@@ -14,6 +14,7 @@ import Link from "next/link";
 import type { Dispatch, SetStateAction } from "react";
 import { LevelTooltip } from "../level-tooltip";
 import { PulseTooltip } from "../pulse-tooltip";
+import { TagsCell } from "@/features/table/tags-cell";
 
 type Column = {
   id: string;
@@ -111,13 +112,7 @@ export const Columns = ({ tags }: Props): Column[] => [
     cell: ({ member }) => {
       const memberTags = tags?.filter((tag) => member.tags?.includes(tag.id));
 
-      return (
-        <div className="flex flex-wrap gap-1 p-2">
-          {memberTags?.map((tag) => (
-            <TagBadge key={tag.id} tag={tag} />
-          ))}
-        </div>
-      );
+      return <TagsCell memberTags={memberTags} />;
     },
     width: 250,
   },

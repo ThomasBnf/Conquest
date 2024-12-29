@@ -170,7 +170,7 @@ export const installLivestorm = schemaTask({
   onSuccess: async ({ livestorm }) => {
     await updateIntegration({
       id: livestorm.id,
-      installed_at: new Date(),
+      connected_at: new Date(),
       status: "CONNECTED",
     });
   },

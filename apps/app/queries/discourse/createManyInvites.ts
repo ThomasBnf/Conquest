@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import type { DiscourseIntegration } from "@conquest/zod/schemas/integration.schema";
 import type { Member } from "@conquest/zod/schemas/member.schema";
 import type { Invite } from "@conquest/zod/schemas/types/discourse";
+import { startOfDay, subDays } from "date-fns";
 import { getActivityType } from "../activity-type/getActivityType";
 
 type Props = {
@@ -13,6 +14,9 @@ export const createManyInvites = async ({ discourse, member }: Props) => {
   const { details, workspace_id } = discourse;
   const { community_url, api_key } = details;
   const { username } = member;
+
+  const today = startOfDay(new Date());
+  const last365Days = subDays(today, 365);
 
   const invite_type = await getActivityType({
     workspace_id,
@@ -39,30 +43,39 @@ export const createManyInvites = async ({ discourse, member }: Props) => {
     const dataInvites = await response.json();
     const invites = dataInvites.invites as Invite[];
 
-    if (invites.length === 0) {
+    if (!response.ok) {
       hasMore = false;
       break;
     }
 
-    for (const invite of invites) {
+    const recentInvites = invites.filter(
+      (invite) => new Date(invite.redeemed_at) >= last365Days,
+    );
+
+    if (recentInvites.length === 0) {
+      hasMore = false;
+      break;
+    }
+
+    for (const invite of recentInvites) {
       const { redeemed_at, user } = invite;
 
-      const invited = await prisma.members.findFirst({
+      const inviteTo = await prisma.members.findFirst({
         where: {
           discourse_id: String(user.id),
           workspace_id,
         },
       });
 
-      if (!invited) continue;
+      if (!inviteTo) continue;
 
       await prisma.activities.create({
         data: {
           external_id: null,
           activity_type_id: invite_type.id,
-          message: `Has invited ${invited.username}`,
-          invite_by: member.id,
-          member_id: invited.id,
+          message: `Has invited ${inviteTo.username}`,
+          invite_to: inviteTo.id,
+          member_id: member.id,
           channel_id: null,
           created_at: redeemed_at,
           workspace_id,
@@ -70,6 +83,7 @@ export const createManyInvites = async ({ discourse, member }: Props) => {
       });
     }
 
+    hasMore = invites.length === 40;
     offSet += 40;
   }
 };

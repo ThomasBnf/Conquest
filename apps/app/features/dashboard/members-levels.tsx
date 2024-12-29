@@ -114,7 +114,7 @@ export const MembersLevels = ({ from, to }: Props) => {
               label={({ payload, ...props }) => {
                 return (
                   <text
-                    x={props.x - 12}
+                    x={props.x}
                     y={props.y}
                     textAnchor={props.textAnchor}
                     dominantBaseline={props.dominantBaseline}

@@ -12,7 +12,7 @@ export const ActivitySchema = z.object({
   thread_id: z.string().nullable(),
   reply_to: z.string().nullable(),
   react_to: z.string().nullable(),
-  invite_by: z.string().nullable(),
+  invite_to: z.string().nullable(),
 
   activity_type_id: z.string().cuid(),
   channel_id: z.string().cuid().nullable(),

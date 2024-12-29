@@ -1,5 +1,7 @@
-import { SlackMarkdown } from "@/features/activities/slack/slack-markdown";
 import type { ActivityWithTypeAndMember } from "@conquest/zod/activity.schema";
+import { DiscourseReaction } from "./discourse/discourse-reaction";
+import { DiscourseReply } from "./discourse/discourse-reply";
+import { Markdown } from "./markdown";
 import { SlackReaction } from "./slack/slack-reaction";
 import { SlackReply } from "./slack/slack-reply";
 
@@ -19,5 +21,13 @@ export const Message = ({ activity }: Props) => {
     return <SlackReply activity={activity} />;
   }
 
-  return <SlackMarkdown activity={activity} />;
+  if (key === "discourse:reaction") {
+    return <DiscourseReaction activity={activity} />;
+  }
+
+  if (key === "discourse:reply" || key === "discourse:solved") {
+    return <DiscourseReply activity={activity} />;
+  }
+
+  return <Markdown activity={activity} />;
 };

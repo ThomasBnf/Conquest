@@ -48,16 +48,16 @@ export const linkedinAPI = authAction
     // for (const comment of commentData.elements) {
     // console.dir(comment, { depth: 1000 });
 
-    const likesResponse = await fetch(
-      "https://api.linkedin.com/v2/socialActions/urn:li:activity:7274814775308517377/likes",
-      {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          "LinkedIn-Version": "202411",
-          "Content-Type": "application/json",
-        },
-      },
-    );
+    // const likesResponse = await fetch(
+    //   "https://api.linkedin.com/v2/socialActions/urn:li:activity:7274814775308517377/likes",
+    //   {
+    //     headers: {
+    //       Authorization: `Bearer ${accessToken}`,
+    //       "LinkedIn-Version": "202411",
+    //       "Content-Type": "application/json",
+    //     },
+    //   },
+    // );
 
     // const likes = await likesResponse.json();
 

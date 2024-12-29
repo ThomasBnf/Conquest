@@ -5,13 +5,14 @@ import type { ActivityWithMember } from "@conquest/zod/activity.schema";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
-import { SlackMention } from "./slack-mention";
+import { DiscourseMention } from "./discourse/discourse-mention";
+import { SlackMention } from "./slack/slack-mention";
 
 type Props = {
   activity: ActivityWithMember;
 };
 
-export const SlackMarkdown = ({ activity }: Props) => {
+export const Markdown = ({ activity }: Props) => {
   const [show, setShow] = useState(false);
 
   const { message } = activity;
@@ -19,12 +20,40 @@ export const SlackMarkdown = ({ activity }: Props) => {
   const convertToJsx = (
     inputText: string,
   ): JSX.Element | (string | JSX.Element)[] => {
-    let result: (string | JSX.Element)[] = [
-      inputText
-        .replace(/&amp;/g, "&")
-        .replace(/&lt;/g, "<")
-        .replace(/&gt;/g, ">"),
-    ];
+    // Reconstruire les balises <a> cassées
+    const normalizedText = inputText.replace(
+      /(<a[^>]+class="mention"[^>]+>@[^<]+?)[\r\n\s]+([^<]*?<\/a>)/gi,
+      (_, start, end) => `${start}${end}`,
+    );
+
+    let result: (string | JSX.Element)[] = [normalizedText];
+
+    // Discourse mention
+    result = result.flatMap((chunk) => {
+      if (typeof chunk !== "string") return chunk;
+      return chunk
+        .split(/(<a[^>]+class="mention"[^>]+>[^<]+<\/a>)/gi)
+        .map((part) => {
+          const mentionMatch = part.match(
+            /<a[^>]+class="mention"[^>]+>@([^<]+)<\/a>/i,
+          );
+          if (mentionMatch) {
+            const [, username] = mentionMatch;
+            if (!username) return part;
+            return <DiscourseMention key={username} username={username} />;
+          }
+          return part;
+        });
+    });
+
+    result = result.map((chunk) =>
+      typeof chunk === "string"
+        ? chunk
+            .replace(/&amp;/g, "&")
+            .replace(/&lt;/g, "<")
+            .replace(/&gt;/g, ">")
+        : chunk,
+    );
 
     // Link: <https://example.com|text>
     result = result.flatMap((chunk) => {
@@ -54,6 +83,48 @@ export const SlackMarkdown = ({ activity }: Props) => {
           }
           return part;
         });
+    });
+
+    // Link: <a href="url">text</a>
+    result = result.flatMap((chunk) => {
+      if (typeof chunk !== "string") return chunk;
+      return chunk.split(/(<a href="[^>]+>.*?<\/a>)/g).map((part) => {
+        if (!part.startsWith('<a href="')) return part;
+
+        const urlMatch = part.match(/href="([^"]+)"/);
+        const textMatch = part.match(/>(.+?)<\/a>/);
+
+        if (urlMatch?.[1] && textMatch?.[1]) {
+          return (
+            <Link
+              key={urlMatch[1]}
+              href={urlMatch[1]}
+              target="_blank"
+              className={cn(
+                buttonVariants({ variant: "link" }),
+                "h-fit text-balance p-0 text-[#1264a3]",
+              )}
+            >
+              {textMatch[1]}
+            </Link>
+          );
+        }
+
+        return part;
+      });
+    });
+
+    // Discourse emoji
+    result = result.flatMap((chunk): (string | JSX.Element)[] => {
+      if (typeof chunk !== "string") return [chunk];
+      return chunk.split(/(<img[^>]*>)/g).map((part) => {
+        const emojiMatch = part.match(/title="([^"]+)"/);
+        if (emojiMatch) {
+          const [, emoji] = emojiMatch;
+          return emoji ?? part;
+        }
+        return part;
+      });
     });
 
     // Emoji: :emoji:
@@ -164,7 +235,12 @@ export const SlackMarkdown = ({ activity }: Props) => {
 
   return (
     <div>
-      <p className={cn("whitespace-pre-wrap", show ? "" : "line-clamp-3")}>
+      <p
+        className={cn(
+          "whitespace-pre-wrap break-words",
+          show ? "" : "line-clamp-3",
+        )}
+      >
         {convertToJsx(message)}
       </p>
       {lines > 2 && (

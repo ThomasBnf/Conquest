@@ -1,5 +1,4 @@
-import { emojiParser } from "@/features/activities/helpers/emoji-parser";
-import { useGetActivity } from "@/queries/hooks/useGetActivity";
+import { useGetDiscourseReply } from "@/queries/hooks/useGetDiscourseReply";
 import { Skeleton } from "@conquest/ui/skeleton";
 import type { ActivityWithMember } from "@conquest/zod/activity.schema";
 import { ActivityCard } from "../activity-card";
@@ -9,9 +8,9 @@ type Props = {
   activity: ActivityWithMember;
 };
 
-export const SlackReaction = ({ activity }: Props) => {
-  const { react_to } = activity;
-  const { data } = useGetActivity({ id: react_to });
+export const DiscourseReply = ({ activity }: Props) => {
+  const { reply_to, thread_id } = activity;
+  const { data } = useGetDiscourseReply({ reply_to, thread_id });
 
   if (!data)
     return (
@@ -25,9 +24,7 @@ export const SlackReaction = ({ activity }: Props) => {
       <ActivityCard activity={data}>
         <Markdown activity={data} />
       </ActivityCard>
-      <p className="size-7 place-content-center rounded-md border border-[#1264a3] bg-[#e3f8ff] text-center">
-        {emojiParser(activity.message)}
-      </p>
+      <Markdown activity={activity} />
     </div>
   );
 };

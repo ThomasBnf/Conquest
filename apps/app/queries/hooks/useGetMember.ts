@@ -3,16 +3,16 @@ import { MemberSchema } from "@conquest/zod/member.schema";
 import { useQuery } from "@tanstack/react-query";
 
 type Props = {
-  id: string;
+  username: string;
 };
 
-export const useGetSlackMember = ({ id }: Props) => {
+export const useGetMember = ({ username }: Props) => {
   return useQuery({
-    queryKey: ["member", id],
+    queryKey: ["member", username],
     queryFn: async () => {
-      const response = await client.api.members.slack[":slackId"].$get({
+      const response = await client.api.members.discourse[":username"].$get({
         param: {
-          slackId: id,
+          username,
         },
       });
       return MemberSchema.parse(await response.json());

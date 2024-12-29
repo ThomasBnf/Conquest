@@ -8,7 +8,7 @@ const BaseSchema = z.object({
   status: STATUS,
   trigger_token: z.string(),
   trigger_token_expires_at: z.coerce.date(),
-  installed_at: z.coerce.date().nullable(),
+  connected_at: z.coerce.date().nullable(),
   workspace_id: z.string().cuid(),
   created_at: z.coerce.date(),
   updated_at: z.coerce.date(),
@@ -35,6 +35,7 @@ const LinkedInDetailsSchema = z.object({
   access_token: z.string(),
   expire_in: z.number(),
   scopes: z.string(),
+  organization_id: z.string(),
 });
 
 const LivestormDetailsSchema = z.object({

@@ -18,7 +18,5 @@ export const getActivity = async ({ external_id, workspace_id }: Props) => {
     },
   });
 
-  console.log(activity);
-
   return activity;
 };

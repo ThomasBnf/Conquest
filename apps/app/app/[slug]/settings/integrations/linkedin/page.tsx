@@ -27,7 +27,7 @@ export default function Page() {
       response_type: "code",
       client_id: env.NEXT_PUBLIC_LINKEDIN_CLIENT_ID,
       scope: LINKEDIN_SCOPES,
-      redirect_uri: "https://2e17b8a57252.ngrok.app/connect/linkedin",
+      redirect_uri: `${env.NEXT_PUBLIC_BASE_URL}/connect/linkedin`,
     });
 
     router.push(

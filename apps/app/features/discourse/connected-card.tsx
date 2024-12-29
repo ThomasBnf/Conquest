@@ -19,7 +19,7 @@ import { toast } from "sonner";
 
 export const ConnectedCard = () => {
   const { discourse } = useUser();
-  const { installed_at } = discourse ?? {};
+  const { connected_at } = discourse ?? {};
 
   const [open, setOpen] = useState(false);
   const router = useRouter();
@@ -56,9 +56,9 @@ export const ConnectedCard = () => {
           <div className=" flex items-end justify-between">
             <div>
               <p className="font-medium">Discourse</p>
-              {installed_at && (
+              {connected_at && (
                 <p className="text-muted-foreground">
-                  Installed on {format(installed_at, "PP")}
+                  Installed on {format(connected_at, "PP")}
                 </p>
               )}
             </div>

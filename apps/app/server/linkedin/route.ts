@@ -44,12 +44,13 @@ export const linkedin = new Hono()
     console.log(orgsIds);
 
     const response = await fetch(
-      `https://api.linkedin.com/v2/organization?ids=List(${orgsIds})`,
+      `https://api.linkedin.com/v2/organizations?ids=List(${orgsIds})`,
       {
         headers: {
           Authorization: `Bearer ${access_token}`,
           "LinkedIn-Version": "202411",
           "Content-Type": "application/json",
+          "X-Restli-Protocol-Version": "2.0.0",
         },
       },
     );

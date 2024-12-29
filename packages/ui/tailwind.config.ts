@@ -62,9 +62,6 @@ const config = {
           "900": "hsl(var(--main-900))",
           "950": "hsl(var(--main-950))",
         },
-        slack: {
-          DEFAULT: "hsl(var(--slack))",
-        },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",
@@ -72,6 +69,12 @@ const config = {
           "accent-foreground": "hsl(var(--sidebar-accent-foreground))",
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
+        },
+        slack: {
+          DEFAULT: "hsl(var(--slack))",
+        },
+        discourse: {
+          DEFAULT: "hsl(var(--discourse))",
         },
       },
       borderRadius: {

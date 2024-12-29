@@ -324,7 +324,7 @@ export const slack = new Hono()
           const activity = await prisma.activities.findFirst({
             where: {
               member_id: member.id,
-              invite_by: inviter,
+              invite_to: inviter,
               AND: [
                 {
                   created_at: {
@@ -360,7 +360,7 @@ export const slack = new Hono()
             channel_id: createdChannel.id,
             message: `<@${inviter}> invited to channel`,
             activity_type_id: type_invitation.id,
-            invite_by: inviter,
+            invite_to: inviter,
             created_at: new Date(Number.parseFloat(event_ts) * 1000),
             updated_at: new Date(Number.parseFloat(event_ts) * 1000),
             workspace_id,

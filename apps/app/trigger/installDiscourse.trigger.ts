@@ -68,7 +68,7 @@ export const installDiscourse = schemaTask({
   onSuccess: async ({ discourse }) => {
     await updateIntegration({
       id: discourse.id,
-      installed_at: new Date(),
+      connected_at: new Date(),
       status: "CONNECTED",
     });
   },

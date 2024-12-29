@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import type { Member } from "@conquest/zod/schemas/member.schema";
+import type { Log, Member } from "@conquest/zod/schemas/member.schema";
 import { eachWeekOfInterval, startOfDay, subDays } from "date-fns";
 import { getFirstActivity } from "../activities/getFirstActivity";
 import { listActivitiesIn365Days } from "../activities/listActivitiesIn365Days";
@@ -29,9 +29,13 @@ export const calculateMemberMetrics = async ({ member }: Props) => {
     { weekStartsOn: 1 },
   );
 
-  const logs = await Promise.all(
+  const logs: Log[] = await Promise.all(
     weekIntervals.map(async (weekStart) => {
-      return await getMemberMetrics({ activities, today: weekStart });
+      const metrics = await getMemberMetrics({ activities, today: weekStart });
+      return {
+        date: weekStart.toISOString(),
+        ...metrics,
+      };
     }),
   );
 

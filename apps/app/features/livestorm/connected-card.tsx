@@ -23,7 +23,7 @@ import { toast } from "sonner";
 
 export const ConnectedCard = () => {
   const { livestorm } = useUser();
-  const { details, installed_at } = livestorm ?? {};
+  const { details, connected_at } = livestorm ?? {};
   const { organization_name } = details ?? {};
 
   const [open, setOpen] = useState(false);
@@ -56,9 +56,9 @@ export const ConnectedCard = () => {
           <div className=" flex items-end justify-between">
             <div>
               <p className="font-medium">{details?.organization_name}</p>
-              {installed_at && (
+              {connected_at && (
                 <p className="text-muted-foreground">
-                  Installed on {format(installed_at, "PP")}
+                  Installed on {format(connected_at, "PP")}
                 </p>
               )}
             </div>

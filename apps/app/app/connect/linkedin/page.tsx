@@ -26,7 +26,7 @@ export default async function Page({ searchParams: { code } }: Props) {
         grant_type: "authorization_code",
         client_id: env.NEXT_PUBLIC_LINKEDIN_CLIENT_ID,
         client_secret: env.LINKEDIN_CLIENT_SECRET,
-        redirect_uri: "https://2e17b8a57252.ngrok.app/connect/linkedin",
+        redirect_uri: `${env.NEXT_PUBLIC_BASE_URL}/connect/linkedin`,
       }),
     },
   );
@@ -41,6 +41,7 @@ export default async function Page({ searchParams: { code } }: Props) {
       access_token,
       expire_in: 3600,
       scopes: LINKEDIN_SCOPES,
+      organization_id: "",
     },
     workspace_id,
   });

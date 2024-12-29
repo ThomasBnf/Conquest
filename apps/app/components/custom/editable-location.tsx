@@ -31,6 +31,7 @@ export const EditableLocation = ({ location, onUpdate }: Props) => {
   const onUpdateLocation = (location: string | null) => {
     setValue(location);
     onUpdate(location);
+    setOpen(false);
   };
 
   return (
