@@ -17,7 +17,10 @@ import { Hono } from "hono";
 
 export const discourse = new Hono().post("/", async (c) => {
   const integration = await checkSignature({ c });
-  if (!integration) return c.json({ error: "Unauthorized" }, 401);
+
+  if (!integration) {
+    return c.json({ error: "Unauthorized, no integration found" }, 401);
+  }
 
   const event = c.req.header("X-Discourse-Event");
   console.log(event);
@@ -125,6 +128,7 @@ export const discourse = new Hono().post("/", async (c) => {
 
   if (post && (event === "post_created" || event === "post_recovered")) {
     await sleep(2000);
+    console.log(post);
 
     const {
       id,
@@ -160,21 +164,6 @@ export const discourse = new Hono().post("/", async (c) => {
 
       if (!member) return c.json({ status: 404 });
 
-      const activities = await prisma.activities.findMany({
-        where: {
-          thread_id: `t-${topic_id}`,
-        },
-        orderBy: {
-          created_at: "asc",
-        },
-      });
-
-      if (activities.length === 0) return c.json({ status: 404 });
-
-      const replyTo = activities[reply_to_post_number - 1];
-
-      if (!replyTo) return c.json({ status: 404 });
-
       const channel = await getChannel({
         external_id: String(category_id),
         workspace_id,
@@ -186,7 +175,7 @@ export const discourse = new Hono().post("/", async (c) => {
         external_id: `p-${id}`,
         activity_type_id: reply_type.id,
         message: post.cooked,
-        reply_to: replyTo.id,
+        reply_to: `t-${topic_id}`,
         thread_id: `t-${topic_id}`,
         member_id: member.id,
         channel_id: channel.id,
@@ -210,21 +199,10 @@ export const discourse = new Hono().post("/", async (c) => {
 
     if (!channel) return c.json({ status: 404 });
 
-    const activities = await prisma.activities.findMany({
-      where: {
-        thread_id: `t-${topic_id}`,
-      },
-      orderBy: {
-        created_at: "desc",
-      },
-    });
-
-    if (activities.length === 0) return c.json({ status: 404 });
-
     await createActivity({
       external_id: `p-${id}`,
-      message: post.cooked,
       activity_type_id: reply_type.id,
+      message: post.cooked,
       thread_id: `t-${topic_id}`,
       member_id: member.id,
       channel_id: channel.id,

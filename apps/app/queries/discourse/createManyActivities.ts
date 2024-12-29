@@ -126,6 +126,11 @@ export const createManyActivities = async ({ client, member }: Props) => {
             reply_to_post_number?: number | null;
           };
 
+          const replyTo =
+            reply_to_post_number === null
+              ? `t-${topic_id}`
+              : String(reply_to_post_number);
+
           await prisma.activities.upsert({
             where: {
               external_id_workspace_id: {
@@ -139,7 +144,7 @@ export const createManyActivities = async ({ client, member }: Props) => {
               activity_type_id: reply_type.id,
               message: excerpt,
               member_id: member.id,
-              reply_to: String(reply_to_post_number),
+              reply_to: replyTo,
               thread_id: `t-${topic_id}`,
               channel_id: channel.id,
               created_at,
@@ -154,6 +159,11 @@ export const createManyActivities = async ({ client, member }: Props) => {
           const { reply_to_post_number } = action as {
             reply_to_post_number?: number | null;
           };
+
+          const replyTo =
+            reply_to_post_number === null
+              ? `t-${topic_id}`
+              : String(reply_to_post_number);
 
           await prisma.activities.upsert({
             where: {
@@ -170,7 +180,7 @@ export const createManyActivities = async ({ client, member }: Props) => {
               activity_type_id: solved_type.id,
               message: excerpt,
               member_id: member.id,
-              reply_to: String(reply_to_post_number),
+              reply_to: replyTo,
               thread_id: `t-${topic_id}`,
               channel_id: channel.id,
               created_at,
