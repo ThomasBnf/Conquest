@@ -5,10 +5,11 @@ import { useQueryStates } from "nuqs";
 import { PageSize } from "./page-size";
 
 type Props = {
+  isLoading: boolean;
   count: number;
 };
 
-export const Pagination = ({ count }: Props) => {
+export const Pagination = ({ isLoading, count }: Props) => {
   const [{ page, pageSize }, setParams] = useQueryStates(tableParsers);
 
   const currentCount = (page - 1) * pageSize + pageSize;
@@ -20,9 +21,9 @@ export const Pagination = ({ count }: Props) => {
     <div className="flex h-16 items-center justify-between px-4">
       <div className="flex items-center gap-2 ">
         <p className="text-muted-foreground">
-          {1 + (page - 1) * pageSize}-
-          {currentCount > count ? count : currentCount}{" "}
-          {count > currentCount && <span>of {count}</span>}
+          <span>{1 + (page - 1) * pageSize}-</span>
+          <span>{currentCount > count ? count : currentCount}</span>
+          <span> of {count}</span>
           <span> • Results per page</span>
         </p>
         <PageSize />

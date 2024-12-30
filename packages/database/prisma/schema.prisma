@@ -50,6 +50,8 @@ model activities {
   activity_type    activities_types @relation(fields: [activity_type_id], references: [id], onDelete: Cascade)
   channel_id       String?
   channel          channels?        @relation(fields: [channel_id], references: [id], onDelete: Cascade)
+  event_id         String?
+  event            events?          @relation(fields: [event_id], references: [id], onDelete: Cascade)
   member_id        String
   member           members          @relation(fields: [member_id], references: [id], onDelete: Cascade)
   workspace_id     String
@@ -146,8 +148,9 @@ model events {
   workspace_id String
   workspace    workspaces @relation(fields: [workspace_id], references: [id], onDelete: Cascade)
 
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
+  created_at DateTime     @default(now())
+  updated_at DateTime     @updatedAt
+  activities activities[]
 
   @@index([id, workspace_id])
 }
@@ -195,9 +198,8 @@ model members {
   username         String?
   location         String?
   avatar_url       String?
-  bio              String?
   job_title        String?
-  primary_email    String
+  primary_email    String?
   secondary_emails String[] @default([])
   phones           String[] @default([])
   tags             String[] @default([])
@@ -222,12 +224,11 @@ model members {
   updated_at     DateTime  @updatedAt
 
   @@unique([primary_email, workspace_id])
+  @@unique([username, workspace_id])
   @@unique([discourse_id, workspace_id])
   @@unique([linkedin_id, workspace_id])
   @@unique([livestorm_id, workspace_id])
   @@unique([slack_id, workspace_id])
-  @@unique([username, workspace_id])
-  @@index([id, workspace_id])
 }
 
 model tags {

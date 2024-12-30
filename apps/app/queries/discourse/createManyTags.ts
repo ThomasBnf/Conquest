@@ -18,11 +18,11 @@ export const createManyTags = async ({
 
     const createdTag = await prisma.tags.create({
       data: {
+        external_id: String(id),
         name,
         color: String(badge_type_id),
         source: "DISCOURSE",
         workspace_id,
-        external_id: String(id),
       },
     });
 

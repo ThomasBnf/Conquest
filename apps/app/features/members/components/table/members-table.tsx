@@ -132,7 +132,7 @@ export const MembersTable = ({ tags }: Props) => {
                   key={member.id}
                   className={cn(
                     "[&:not(:last-child)]:border-b",
-                    rowSelected.includes(member.id) && "bg-muted",
+                    rowSelected.includes(member.id) && "bg-muted-hover",
                     !hasScrollY && "border-b",
                   )}
                 >
@@ -141,7 +141,7 @@ export const MembersTable = ({ tags }: Props) => {
                       className={cn(
                         "sticky left-0 flex items-center justify-center [&:not(:first-child)]:border-r",
                         rowSelected.includes(member.id)
-                          ? "bg-muted"
+                          ? "bg-muted-hover"
                           : "bg-background",
                       )}
                       style={{ width: fixedColumn[0]?.width }}
@@ -159,7 +159,7 @@ export const MembersTable = ({ tags }: Props) => {
                       className={cn(
                         "sticky left-[40px] flex items-center border-r",
                         rowSelected.includes(member.id)
-                          ? "bg-muted"
+                          ? "bg-muted-hover"
                           : "bg-background",
                       )}
                       style={{ width: fixedColumn[1]?.width }}
@@ -224,7 +224,7 @@ export const MembersTable = ({ tags }: Props) => {
           <ScrollBar orientation="vertical" />
         </ScrollArea>
       </div>
-      <Pagination count={count ?? 0} />
+      <Pagination isLoading={isLoading} count={count ?? 0} />
     </>
   );
 };

@@ -2,12 +2,11 @@
 
 import { authAction } from "@/lib/authAction";
 import { prisma } from "@/lib/prisma";
-import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
-export const updateListMembers = authAction
+export const removeTagsMembers = authAction
   .metadata({
-    name: "updateListMembers",
+    name: "removeTagsMembers",
   })
   .schema(
     z.object({
@@ -17,31 +16,32 @@ export const updateListMembers = authAction
   )
   .action(async ({ ctx: { user }, parsedInput: { ids, tags } }) => {
     const workspace_id = user.workspace_id;
-    const slug = user.workspace.slug;
 
-    const selectedMembers = await prisma.members.findMany({
+    const members = await prisma.members.findMany({
       where: {
         id: {
           in: ids,
+        },
+        tags: {
+          hasSome: tags,
         },
         workspace_id,
       },
     });
 
-    for (const member of selectedMembers) {
+    for (const member of members) {
+      const updatedTags = member.tags.filter((tag) => !tags.includes(tag));
+
       await prisma.members.update({
         where: {
           id: member.id,
           workspace_id,
         },
         data: {
-          tags: {
-            push: tags,
-          },
+          tags: updatedTags,
         },
       });
     }
 
-    revalidatePath(`/${slug}/members`);
     return { success: true };
   });

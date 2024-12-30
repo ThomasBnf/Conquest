@@ -16,6 +16,7 @@ export const ActivitySchema = z.object({
 
   activity_type_id: z.string().cuid(),
   channel_id: z.string().cuid().nullable(),
+  event_id: z.string().cuid().nullable(),
   member_id: z.string().cuid(),
   workspace_id: z.string().cuid(),
 

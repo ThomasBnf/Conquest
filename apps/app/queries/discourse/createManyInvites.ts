@@ -4,6 +4,7 @@ import type { Member } from "@conquest/zod/schemas/member.schema";
 import type { Invite } from "@conquest/zod/schemas/types/discourse";
 import { startOfDay, subDays } from "date-fns";
 import { getActivityType } from "../activity-type/getActivityType";
+import { getMember } from "../members/getMember";
 
 type Props = {
   discourse: DiscourseIntegration;
@@ -60,11 +61,9 @@ export const createManyInvites = async ({ discourse, member }: Props) => {
     for (const invite of recentInvites) {
       const { redeemed_at, user } = invite;
 
-      const inviteTo = await prisma.members.findFirst({
-        where: {
-          discourse_id: String(user.id),
-          workspace_id,
-        },
+      const inviteTo = await getMember({
+        discourse_id: String(user.id),
+        workspace_id,
       });
 
       if (!inviteTo) continue;

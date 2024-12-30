@@ -41,8 +41,7 @@ export const listTopics = async ({
     const userId = posters.find((poster) => poster.description)?.user_id;
 
     const member = await getMember({
-      id: String(userId),
-      source: "DISCOURSE",
+      discourse_id: String(userId),
       workspace_id: channel.workspace_id,
     });
 
@@ -86,8 +85,7 @@ export const listTopics = async ({
       const userId = posters.find((poster) => poster.description)?.user_id;
 
       const member = await getMember({
-        id: String(userId),
-        source: "DISCOURSE",
+        discourse_id: String(userId),
         workspace_id: channel.workspace_id,
       });
 

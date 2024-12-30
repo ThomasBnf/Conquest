@@ -45,8 +45,7 @@ export const listMessages = async ({ web, channel, workspace_id }: Props) => {
         message;
 
       const member = await getMember({
-        id: user,
-        source: "SLACK",
+        slack_id: user,
         workspace_id,
       });
 

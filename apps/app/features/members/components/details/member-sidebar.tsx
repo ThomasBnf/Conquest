@@ -16,7 +16,7 @@ import { Separator } from "@conquest/ui/separator";
 import type { MemberWithCompany } from "@conquest/zod/schemas/member.schema";
 import type { Tag } from "@conquest/zod/tag.schema";
 import { format } from "date-fns";
-import { AlignLeft, TagIcon } from "lucide-react";
+import { TagIcon } from "lucide-react";
 import { LevelTooltip } from "../level-tooltip";
 import { PulseTooltip } from "../pulse-tooltip";
 
@@ -47,7 +47,6 @@ export const MemberSidebar = ({ member, tags }: Props) => {
       | "company_id"
       | "job_title"
       | "location"
-      | "bio"
       | "source"
       | "tags",
     value: string | null | string[],
@@ -130,18 +129,6 @@ export const MemberSidebar = ({ member, tags }: Props) => {
           <FieldCard icon="Phone" label="Phone">
             <EditablePhones member={member} />
           </FieldCard>
-          <div className="flex items-start gap-1.5">
-            <div className="flex h-8 w-28 shrink-0 items-center gap-2 text-muted-foreground">
-              <AlignLeft size={15} />
-              <p>Bio</p>
-            </div>
-            <EditableInput
-              textArea
-              defaultValue={member.bio}
-              placeholder="Set bio"
-              onUpdate={(value) => onUpdateMember("bio", value)}
-            />
-          </div>
         </div>
         <Separator />
         <div className="space-y-2 p-4">

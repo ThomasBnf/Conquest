@@ -1,5 +1,5 @@
 import { createActivity } from "@/queries/activities/createActivity";
-import { prisma } from "lib/prisma";
+import { getMember } from "../members/getMember";
 
 type Props = {
   user: string;
@@ -20,13 +20,9 @@ export const createReaction = async ({
   activity_type_id,
   workspace_id,
 }: Props) => {
-  const member = await prisma.members.findUnique({
-    where: {
-      slack_id_workspace_id: {
-        slack_id: user,
-        workspace_id,
-      },
-    },
+  const member = await getMember({
+    slack_id: user,
+    workspace_id,
   });
 
   if (!member) return;

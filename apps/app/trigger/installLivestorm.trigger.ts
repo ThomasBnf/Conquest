@@ -81,8 +81,8 @@ export const installLivestorm = schemaTask({
     for (const event of events) {
       const { attributes } = event;
       const { title } = attributes;
-      let sessionPage = 0;
 
+      let sessionPage = 0;
       const allSessions: Session[] = [];
 
       while (true) {
@@ -104,7 +104,7 @@ export const installLivestorm = schemaTask({
         const { attributes } = session;
         const { name, estimated_started_at, ended_at } = attributes;
 
-        await prisma.events.create({
+        const createdEvent = await prisma.events.create({
           data: {
             external_id: session.id,
             source: "LIVESTORM",
@@ -158,6 +158,7 @@ export const installLivestorm = schemaTask({
             external_id: null,
             activity_type_id: activityType.id,
             message: `Attended the Livestorm event: ${title}`,
+            event_id: createdEvent.id,
             member_id: createdMember.id,
             workspace_id,
           });

@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { getFilters } from "@/queries/helpers/getFilters";
 import { getOrderBy } from "@/queries/helpers/getOrderBy";
+import { getMember } from "@/queries/members/getMember";
 import { getAuthUser } from "@/queries/users/getAuthUser";
 import { FilterSchema } from "@conquest/zod/schemas/filters.schema";
 import {
@@ -218,13 +219,9 @@ export const members = new Hono()
     const { workspace_id } = c.get("user");
     const { slackId } = c.req.param();
 
-    const member = await prisma.members.findUnique({
-      where: {
-        slack_id_workspace_id: {
-          slack_id: slackId,
-          workspace_id,
-        },
-      },
+    const member = await getMember({
+      slack_id: slackId,
+      workspace_id,
     });
 
     return c.json(MemberSchema.parse(member));
@@ -233,13 +230,9 @@ export const members = new Hono()
     const { workspace_id } = c.get("user");
     const { username } = c.req.param();
 
-    const member = await prisma.members.findUnique({
-      where: {
-        username_workspace_id: {
-          username,
-          workspace_id,
-        },
-      },
+    const member = await getMember({
+      username,
+      workspace_id,
     });
 
     return c.json(MemberSchema.parse(member));
@@ -248,13 +241,9 @@ export const members = new Hono()
     const { workspace_id } = c.get("user");
     const { slackId } = c.req.param();
 
-    const member = await prisma.members.findUnique({
-      where: {
-        slack_id_workspace_id: {
-          slack_id: slackId,
-          workspace_id,
-        },
-      },
+    const member = await getMember({
+      slack_id: slackId,
+      workspace_id,
     });
 
     return c.json(MemberSchema.parse(member));

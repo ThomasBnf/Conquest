@@ -1,4 +1,4 @@
-import { addTagsMembers } from "@/actions/members/addTagsMembers";
+import { removeTagsMembers } from "@/actions/members/removeTagsMembers";
 import { useListTags } from "@/queries/hooks/useListTags";
 import { Button } from "@conquest/ui/button";
 import { Checkbox } from "@conquest/ui/checkbox";
@@ -28,7 +28,7 @@ type Props = {
   setRowSelected: (ids: string[]) => void;
 };
 
-export const AddTagDialog = ({ rowSelected, setRowSelected }: Props) => {
+export const RemoveTagDialog = ({ rowSelected, setRowSelected }: Props) => {
   const { data: tags } = useListTags();
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
@@ -45,7 +45,7 @@ export const AddTagDialog = ({ rowSelected, setRowSelected }: Props) => {
 
   const onConfirm = async () => {
     setLoading(true);
-    const response = await addTagsMembers({
+    const response = await removeTagsMembers({
       ids: rowSelected,
       tags: selectedTags,
     });
@@ -54,7 +54,7 @@ export const AddTagDialog = ({ rowSelected, setRowSelected }: Props) => {
 
     if (error) toast.error(error);
     else {
-      toast.success("Tags added");
+      toast.success("Tags removed");
       queryClient.invalidateQueries({ queryKey: ["members"] });
     }
 
@@ -65,11 +65,11 @@ export const AddTagDialog = ({ rowSelected, setRowSelected }: Props) => {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="dark">Add tag</Button>
+        <Button variant="dark">Remove tag</Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Add tag</DialogTitle>
+          <DialogTitle>Remove tag</DialogTitle>
         </DialogHeader>
         <DialogBody className="p-0">
           <Command>
@@ -101,7 +101,7 @@ export const AddTagDialog = ({ rowSelected, setRowSelected }: Props) => {
             <Button variant="outline">Cancel</Button>
           </DialogTrigger>
           <Button onClick={onConfirm} loading={loading} disabled={loading}>
-            Add tag{selectedTags.length > 1 ? "s" : ""}
+            Remove tag{selectedTags.length > 1 ? "s" : ""}
           </Button>
         </DialogFooter>
       </DialogContent>

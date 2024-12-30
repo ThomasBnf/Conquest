@@ -5,6 +5,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { X } from "lucide-react";
 import { toast } from "sonner";
 import { AddTagDialog } from "./add-tag-dialog";
+import { RemoveTagDialog } from "./remove-tag-dialog";
 
 type Props = {
   rowSelected: string[];
@@ -40,6 +41,10 @@ export const ActionMenu = ({ rowSelected, setRowSelected }: Props) => {
         </p>
         <div className="ml-2 flex items-center gap-1.5">
           <AddTagDialog
+            rowSelected={rowSelected}
+            setRowSelected={setRowSelected}
+          />
+          <RemoveTagDialog
             rowSelected={rowSelected}
             setRowSelected={setRowSelected}
           />

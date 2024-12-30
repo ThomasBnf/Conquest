@@ -1,6 +1,6 @@
 "use client";
 
-import { _createMember } from "@/actions/members/createMember";
+import { createMember } from "@/actions/members/createMember";
 import { useUser } from "@/context/userContext";
 import { Button } from "@conquest/ui/button";
 import {
@@ -22,6 +22,7 @@ import {
 } from "@conquest/ui/form";
 import { Input } from "@conquest/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useQueryClient } from "@tanstack/react-query";
 import { Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -37,6 +38,7 @@ export const CreateMemberDialog = () => {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const queryClient = useQueryClient();
 
   const form = useForm<CreateMember>({
     resolver: zodResolver(CreateMemberSchema),
@@ -51,12 +53,16 @@ export const CreateMemberDialog = () => {
 
   const onSubmit = async ({ first_name, last_name, email }: CreateMember) => {
     setLoading(true);
-    const rMember = await _createMember({ first_name, last_name, email });
+
+    const rMember = await createMember({ first_name, last_name, email });
     const error = rMember?.serverError;
     const member = rMember?.data;
 
     if (error) toast.error(error);
-    if (member) router.push(`/${slug}/members/${member.id}`);
+    if (member) {
+      queryClient.invalidateQueries({ queryKey: ["members"] });
+      router.push(`/${slug}/members/${member.id}`);
+    }
 
     setLoading(false);
     setOpen(false);

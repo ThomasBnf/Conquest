@@ -360,7 +360,8 @@ export const dashboard = new Hono()
       const result = activities.reduce<
         Record<string, { type: string; count: number }>
       >((acc, activity) => {
-        const type = `${activity.activity_type?.source} - ${activity.activity_type?.name}`;
+        const source = activity.activity_type?.source;
+        const type = `${source?.slice(0, 1).toUpperCase()}${source?.slice(1).toLowerCase()} - ${activity.activity_type?.name}`;
         if (!type) return acc;
 
         if (!acc[type]) {

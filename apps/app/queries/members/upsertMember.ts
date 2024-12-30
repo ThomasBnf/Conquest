@@ -7,7 +7,7 @@ import { type Member, MemberSchema } from "@conquest/zod/member.schema";
 type Props = {
   id: string;
   data: Omit<Partial<Member>, "id" | "emails" | "phones" | "deleted_at"> & {
-    primary_email: string;
+    primary_email?: string;
     phones?: string[];
   };
 };
@@ -54,13 +54,33 @@ export const upsertMember = async (props: Props) => {
 
   const parsedId = idParser({ id, source });
 
+  const whereClause = () => {
+    if (id && source === "LINKEDIN") {
+      return {
+        linkedin_id_workspace_id: {
+          linkedin_id: id,
+          workspace_id,
+        },
+      };
+    }
+
+    if (formattedEmail) {
+      return {
+        primary_email_workspace_id: {
+          primary_email: formattedEmail,
+          workspace_id,
+        },
+      };
+    }
+
+    return {
+      id,
+      workspace_id,
+    };
+  };
+
   const newMember = await prisma.members.upsert({
-    where: {
-      primary_email_workspace_id: {
-        primary_email: formattedEmail,
-        workspace_id,
-      },
-    },
+    where: whereClause(),
     update: {
       ...data,
       ...parsedId,

@@ -136,8 +136,7 @@ export const slack = new Hono()
             const { user, text, thread_ts, ts, files } = messageEvent;
 
             const member = await getMember({
-              id: user,
-              source: "SLACK",
+              slack_id: user,
               workspace_id,
             });
 
@@ -221,8 +220,7 @@ export const slack = new Hono()
           const { channel: channel_id, ts } = item;
 
           const member = await getMember({
-            id: user,
-            source: "SLACK",
+            slack_id: user,
             workspace_id,
           });
 
@@ -252,8 +250,7 @@ export const slack = new Hono()
           const { ts, channel: channel_id } = item;
 
           const member = await getMember({
-            id: user,
-            source: "SLACK",
+            slack_id: user,
             workspace_id,
           });
 

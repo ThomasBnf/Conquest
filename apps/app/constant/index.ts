@@ -144,7 +144,24 @@ export const LIVESTORM_ACTIVITY_TYPES = [
     name: "Attend event",
     source: "LIVESTORM" as const,
     key: "livestorm:attend",
-    weight: 7,
+    weight: 6,
+    deletable: false,
+  },
+];
+
+export const LINKEDIN_ACTIVITY_TYPES = [
+  {
+    name: "Comment",
+    source: "LINKEDIN" as const,
+    key: "linkedin:comment",
+    weight: 1,
+    deletable: false,
+  },
+  {
+    name: "Reaction",
+    source: "LINKEDIN" as const,
+    key: "linkedin:reaction",
+    weight: 0,
     deletable: false,
   },
 ];

@@ -42,6 +42,7 @@ export default async function Page({ searchParams: { code } }: Props) {
       expire_in: 3600,
       scopes: LINKEDIN_SCOPES,
       organization_id: "",
+      organization_name: "",
     },
     workspace_id,
   });

@@ -36,6 +36,7 @@ const LinkedInDetailsSchema = z.object({
   expire_in: z.number(),
   scopes: z.string(),
   organization_id: z.string(),
+  organization_name: z.string(),
 });
 
 const LivestormDetailsSchema = z.object({

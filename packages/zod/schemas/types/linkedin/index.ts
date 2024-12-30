@@ -65,7 +65,61 @@ export type Orgnaization = {
   };
 };
 
-export type People = {
+export type PostsResponse = {
+  paging?: {
+    start: number;
+    count: number;
+    links: unknown[];
+    total: number;
+  };
+  elements: {
+    isReshareDisabledByAuthor: boolean;
+    lifecycleState: string;
+    createdAt: number;
+    lastModifiedAt: number;
+    visibility: string;
+    publishedAt: number;
+    author: string;
+    id: string;
+    distribution: {
+      feedDistribution: string;
+      thirdPartyDistributionChannels: string[];
+    };
+    commentary: string;
+    lifecycleStateInfo: {
+      isEditedByAuthor: boolean;
+    };
+  }[];
+};
+
+export type SocialActionsResponse = {
+  paging?: {
+    start: number;
+    count: number;
+    links: unknown[];
+    total: number;
+  };
+  elements: {
+    actor: string;
+    created: {
+      actor: string;
+      time: number;
+    };
+    lastModified: {
+      actor: string;
+      time: number;
+    };
+    id: string;
+    $URN: string;
+    message: {
+      attributes: unknown[];
+      text: string;
+    };
+    object: string;
+  }[];
+};
+
+export type PeopleResponse = {
   localizedLastName: string;
   profilePicture: {
     displayImage: string;

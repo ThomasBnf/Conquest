@@ -10,7 +10,7 @@ import { prisma } from "lib/prisma";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
-export const _createMember = authAction
+export const createMember = authAction
   .metadata({ name: "createMember" })
   .schema(
     z.object({

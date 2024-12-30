@@ -6,6 +6,6 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["src", "../../apps/app/components/custom/phone-input.tsx"],
+  "include": ["src"],
   "exclude": ["node_modules"]
 }

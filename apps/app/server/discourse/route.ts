@@ -1,4 +1,5 @@
 import { sleep } from "@/helpers/sleep";
+import { discourseClient } from "@/lib/discourse";
 import { prisma } from "@/lib/prisma";
 import { createActivity } from "@/queries/activities/createActivity";
 import { deleteActivity } from "@/queries/activities/deleteActivity";
@@ -26,7 +27,7 @@ export const discourse = new Hono().post("/", async (c) => {
   console.log(event);
 
   const body = await c.req.json();
-  const { category, topic, post, user, like, user_badge } =
+  const { category, topic, post, user, like, user_badge, solved } =
     body as DiscourseWebhook;
   const { workspace_id } = integration;
 
@@ -43,6 +44,11 @@ export const discourse = new Hono().post("/", async (c) => {
   const reply_type = await getActivityType({
     workspace_id,
     key: "discourse:reply",
+  });
+
+  const solved_type = await getActivityType({
+    workspace_id,
+    key: "discourse:solved",
   });
 
   const invite_type = await getActivityType({
@@ -66,14 +72,14 @@ export const discourse = new Hono().post("/", async (c) => {
       workspace_id,
     });
 
-    if (!member) return c.json({ status: 404 });
+    if (!member) return c.json({ error: "Member not found" }, 404);
 
     const channel = await getChannel({
       external_id: String(category_id),
       workspace_id,
     });
 
-    if (!channel) return c.json({ status: 404 });
+    if (!channel) return c.json({ error: "Channel not found" }, 404);
 
     await prisma.activities.upsert({
       where: {
@@ -128,7 +134,6 @@ export const discourse = new Hono().post("/", async (c) => {
 
   if (post && (event === "post_created" || event === "post_recovered")) {
     await sleep(2000);
-    console.log(post);
 
     const {
       id,
@@ -162,14 +167,14 @@ export const discourse = new Hono().post("/", async (c) => {
         workspace_id,
       });
 
-      if (!member) return c.json({ status: 404 });
+      if (!member) return c.json({ error: "Member not found" }, 404);
 
       const channel = await getChannel({
         external_id: String(category_id),
         workspace_id,
       });
 
-      if (!channel) return c.json({ status: 404 });
+      if (!channel) return c.json({ error: "Channel not found" }, 404);
 
       await createActivity({
         external_id: `p-${id}`,
@@ -190,14 +195,14 @@ export const discourse = new Hono().post("/", async (c) => {
       workspace_id,
     });
 
-    if (!member) return c.json({ status: 404 });
+    if (!member) return c.json({ error: "Member not found" }, 404);
 
     const channel = await getChannel({
       external_id: String(category_id),
       workspace_id,
     });
 
-    if (!channel) return c.json({ status: 404 });
+    if (!channel) return c.json({ error: "Channel not found" }, 404);
 
     await createActivity({
       external_id: `p-${id}`,
@@ -242,14 +247,14 @@ export const discourse = new Hono().post("/", async (c) => {
       workspace_id,
     });
 
-    if (!member) return c.json({ status: 404 });
+    if (!member) return c.json({ error: "Member not found" }, 404);
 
     const channel = await getChannel({
       external_id: String(category_id),
       workspace_id,
     });
 
-    if (!channel) return c.json({ status: 404 });
+    if (!channel) return c.json({ error: "Channel not found" }, 404);
 
     const reactTo = post_number === 1 ? `t-${topic_id}` : `p-${id}`;
 
@@ -326,7 +331,6 @@ export const discourse = new Hono().post("/", async (c) => {
         secondary_emails,
         avatar_url,
         job_title: title,
-        bio: bio_excerpt,
         source: "DISCOURSE",
         workspace_id,
       },
@@ -353,7 +357,7 @@ export const discourse = new Hono().post("/", async (c) => {
       workspace_id,
     });
 
-    if (!member) return c.json({ status: 404 });
+    if (!member) return c.json({ error: "Member not found" }, 404);
 
     await createActivity({
       external_id: null,
@@ -418,19 +422,76 @@ export const discourse = new Hono().post("/", async (c) => {
     });
   }
 
-  if (user_badge && event === "user_badge_revoked") {
-    const { id, user_id } = user_badge;
+  if (user_badge && event === "user_badge_granted") {
+    const { badge_id, user_id } = user_badge;
 
     const member = await getMember({
-      id: String(user_id),
-      source: "DISCOURSE",
+      discourse_id: String(user_id),
       workspace_id,
     });
 
-    if (!member) return c.json({ status: 404 });
+    if (!member) return c.json({ error: "Member not found" }, 404);
 
     const tags = await listTags({ workspace_id });
-    const currentTag = tags.find((tag) => tag.external_id === String(id));
+    const existingTag = tags.find(
+      (tag) => tag.external_id === String(badge_id),
+    );
+
+    if (existingTag) {
+      await prisma.members.update({
+        where: { id: member.id },
+        data: {
+          tags: {
+            push: existingTag.id,
+          },
+        },
+      });
+
+      return c.json({ status: 200 });
+    }
+
+    const { community_url, api_key } = integration.details;
+    const client = discourseClient({ community_url, api_key });
+
+    const { badges } = await client.adminListBadges();
+    const badge = badges.find((badge) => badge.id === badge_id);
+
+    if (!badge) return c.json({ error: "Badge not found" }, 404);
+
+    const { id: badgeId, name, badge_type_id } = badge;
+
+    const newTag = await prisma.tags.create({
+      data: {
+        external_id: String(badgeId),
+        name,
+        color: String(badge_type_id),
+        source: "DISCOURSE",
+        workspace_id,
+      },
+    });
+
+    await prisma.members.update({
+      where: { id: member.id },
+      data: {
+        tags: {
+          push: newTag.id,
+        },
+      },
+    });
+  }
+
+  if (user_badge && event === "user_badge_revoked") {
+    const { badge_id, user_id } = user_badge;
+
+    const member = await getMember({
+      discourse_id: String(user_id),
+      workspace_id,
+    });
+
+    if (!member) return c.json({ error: "Member not found" }, 404);
+
+    const tags = await listTags({ workspace_id });
+    const currentTag = tags.find((tag) => tag.external_id === String(badge_id));
     const userTags = member.tags.filter((tag) => tag !== currentTag?.id);
 
     await prisma.members.update({
@@ -441,27 +502,34 @@ export const discourse = new Hono().post("/", async (c) => {
     });
   }
 
-  if (user_badge && event === "user_badge_granted") {
-    const { id, user_id } = user_badge;
+  if (
+    solved &&
+    (event === "accepted_solution" || event === "unaccepted_solution")
+  ) {
+    const { id, username, category_id } = solved;
 
-    const member = await getMember({
-      id: String(user_id),
-      source: "DISCOURSE",
+    const member = await getMember({ username, workspace_id });
+
+    if (!member) return c.json({ error: "Member not found" }, 404);
+
+    const channel = await getChannel({
+      external_id: String(category_id),
       workspace_id,
     });
 
-    if (!member) return c.json({ status: 404 });
+    if (!channel) return c.json({ error: "Channel not found" }, 404);
 
-    const tags = await listTags({ workspace_id });
-    const currentTag = tags.find((tag) => tag.external_id === String(id));
+    const activity_type_id =
+      event === "accepted_solution" ? solved_type.id : reply_type.id;
 
-    await prisma.members.update({
-      where: { id: member.id },
-      data: {
-        tags: {
-          push: currentTag?.id,
+    await prisma.activities.update({
+      where: {
+        external_id_workspace_id: {
+          external_id: `p-${id}`,
+          workspace_id,
         },
       },
+      data: { activity_type_id },
     });
   }
 

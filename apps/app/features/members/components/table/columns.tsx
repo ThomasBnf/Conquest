@@ -3,7 +3,7 @@ import { LocationBadge } from "@/components/custom/location-badge";
 import { SourceBadge } from "@/components/custom/source-badge";
 import { useUser } from "@/context/userContext";
 import { ColumnHeader } from "@/features/table/column-header";
-import { TagBadge } from "@/features/tags/tag-badge";
+import { TagsCell } from "@/features/table/tags-cell";
 import { Avatar, AvatarFallback, AvatarImage } from "@conquest/ui/avatar";
 import { buttonVariants } from "@conquest/ui/button";
 import { Checkbox } from "@conquest/ui/checkbox";
@@ -14,7 +14,6 @@ import Link from "next/link";
 import type { Dispatch, SetStateAction } from "react";
 import { LevelTooltip } from "../level-tooltip";
 import { PulseTooltip } from "../pulse-tooltip";
-import { TagsCell } from "@/features/table/tags-cell";
 
 type Column = {
   id: string;
@@ -112,7 +111,7 @@ export const Columns = ({ tags }: Props): Column[] => [
     cell: ({ member }) => {
       const memberTags = tags?.filter((tag) => member.tags?.includes(tag.id));
 
-      return <TagsCell memberTags={memberTags} />;
+      return <TagsCell memberId={member.id} memberTags={memberTags ?? []} />;
     },
     width: 250,
   },

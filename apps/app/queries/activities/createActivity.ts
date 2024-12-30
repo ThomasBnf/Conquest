@@ -10,6 +10,7 @@ type Props = {
   react_to?: string | null;
   reply_to?: string | null;
   invite_to?: string | null;
+  event_id?: string | null;
   channel_id?: string | null;
   member_id: string;
   workspace_id: string;
@@ -27,6 +28,7 @@ export const createActivity = async ({
   reply_to,
   invite_to,
   channel_id,
+  event_id,
   member_id,
   workspace_id,
   created_at,
@@ -43,6 +45,7 @@ export const createActivity = async ({
       reply_to,
       invite_to,
       channel_id,
+      event_id,
       member_id,
       workspace_id,
       created_at,
