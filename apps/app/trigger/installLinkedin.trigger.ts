@@ -10,6 +10,7 @@ import { listPosts } from "@/queries/linkedin/listPosts";
 import { LinkedInIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
 import { schemaTask } from "@trigger.dev/sdk/v3";
 import { z } from "zod";
+import { calculateMembersLevel } from "./calculateMembersLevel";
 
 export const installLinkedin = schemaTask({
   id: "install-linkedin",
@@ -44,21 +45,25 @@ export const installLinkedin = schemaTask({
       workspace_id,
     });
 
-    const posts = await listPosts({ linkedin });
+    const posts = await listPosts({ linkedin: parsedLinkedin });
 
     for (const post of posts) {
       const comments = await listComments({
         linkedin: parsedLinkedin,
         post_id: post.id,
       });
+      console.log("@comments", comments);
       await createManyComments({ linkedin: parsedLinkedin, comments });
 
       const likes = await listLikes({
         linkedin: parsedLinkedin,
         post_id: post.id,
       });
+      console.log("@likes", likes);
       await createManyLikes({ linkedin: parsedLinkedin, likes });
     }
+
+    await calculateMembersLevel.trigger({ workspace_id });
   },
   onSuccess: async ({ linkedin }) => {
     await updateIntegration({

@@ -1,11 +1,9 @@
 import type { LinkedInIntegration } from "@conquest/zod/schemas/integration.schema";
-import type {
-  PeopleResponse,
-  SocialActionsResponse,
-} from "@conquest/zod/schemas/types/linkedin";
-import { createActivity } from "../activities/createActivity.js";
-import { getActivityType } from "../activity-type/getActivityType.js";
-import { upsertMember } from "../members/upsertMember.js";
+import type { SocialActionsResponse } from "@conquest/zod/schemas/types/linkedin";
+import { createActivity } from "../activities/createActivity";
+import { getActivityType } from "../activity-type/getActivityType";
+import { upsertMember } from "../members/upsertMember";
+import { getPeople } from "./getPeople";
 
 type Props = {
   linkedin: LinkedInIntegration;
@@ -13,8 +11,7 @@ type Props = {
 };
 
 export const createManyLikes = async ({ linkedin, likes }: Props) => {
-  const { details, workspace_id } = linkedin;
-  const { access_token } = details;
+  const { workspace_id } = linkedin;
 
   const like_type = await getActivityType({
     workspace_id,
@@ -24,19 +21,9 @@ export const createManyLikes = async ({ linkedin, likes }: Props) => {
   for (const like of likes) {
     const actorId = like.created.actor.split(":").pop();
 
-    const peoplesResponse = await fetch(
-      `https://api.linkedin.com/v2/people/(id:${actorId})`,
-      {
-        headers: {
-          Authorization: `Bearer ${access_token}`,
-          "LinkedIn-Version": "202411",
-          "Content-Type": "application/json",
-          "X-RestLi-Protocol-Version": "2.0.0",
-        },
-      },
-    );
-    const peopleData = (await peoplesResponse.json()) as PeopleResponse;
-    console.log("@peopleData", peopleData);
+    if (!actorId) continue;
+
+    const people = await getPeople({ linkedin, people_id: actorId });
 
     const {
       id,
@@ -46,9 +33,12 @@ export const createManyLikes = async ({ linkedin, likes }: Props) => {
       localizedFirstName,
       localizedLastName,
       localizedHeadline,
-    } = peopleData;
+    } = people;
 
     const location = Object.values(headline.localized)[0]?.split(" ").pop();
+    const avatar_url = profilePicture["displayImage~"]?.elements?.find(
+      (element) => element?.artifact?.includes("800_800"),
+    )?.identifiers?.[0]?.identifier;
 
     const member = await upsertMember({
       id,
@@ -58,7 +48,7 @@ export const createManyLikes = async ({ linkedin, likes }: Props) => {
         first_name: localizedFirstName,
         last_name: localizedLastName,
         location,
-        avatar_url: profilePicture.displayImage,
+        avatar_url,
         job_title: localizedHeadline,
         source: "LINKEDIN",
         // joined_at: joinedAt,
@@ -69,7 +59,7 @@ export const createManyLikes = async ({ linkedin, likes }: Props) => {
     await createActivity({
       external_id: like.id,
       activity_type_id: like_type.id,
-      message: like.message.text,
+      message: "like",
       member_id: member.id,
       workspace_id,
     });

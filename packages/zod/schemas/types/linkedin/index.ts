@@ -123,6 +123,56 @@ export type PeopleResponse = {
   localizedLastName: string;
   profilePicture: {
     displayImage: string;
+    "displayImage~": {
+      paging: {
+        count: number;
+        start: number;
+        links: unknown[];
+      };
+      elements: Array<{
+        artifact: string;
+        authorizationMethod: string;
+        data: {
+          "com.linkedin.digitalmedia.mediaartifact.StillImage": {
+            orientation: string;
+            storageAspectRatio: {
+              widthAspect: number;
+              heightAspect: number;
+              formatted: string;
+            };
+            storageSize: {
+              width: number;
+              height: number;
+            };
+            rawMetadataTags: unknown[];
+            scale: string;
+            mediaType: string;
+            rawCodecSpec: {
+              name: string;
+              type: string;
+            };
+            displaySize: {
+              width: number;
+              uom: string;
+              height: number;
+            };
+            displayAspectRatio: {
+              widthAspect: number;
+              heightAspect: number;
+              formatted: string;
+            };
+          };
+        };
+        identifiers: Array<{
+          identifier: string;
+          index: number;
+          mediaType: string;
+          file: string;
+          identifierType: string;
+          identifierExpiresInSeconds: number;
+        }>;
+      }>;
+    };
   };
   firstName: {
     localized: { [key: string]: string };

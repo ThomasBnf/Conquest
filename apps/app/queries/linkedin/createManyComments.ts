@@ -11,8 +11,7 @@ type Props = {
 };
 
 export const createManyComments = async ({ linkedin, comments }: Props) => {
-  const { details, workspace_id } = linkedin;
-  const { access_token } = details;
+  const { workspace_id } = linkedin;
 
   const comment_type = await getActivityType({
     workspace_id,
@@ -37,6 +36,9 @@ export const createManyComments = async ({ linkedin, comments }: Props) => {
     } = people;
 
     const location = Object.values(headline.localized)[0]?.split(" ").pop();
+    const avatar_url = profilePicture["displayImage~"]?.elements?.find(
+      (element) => element?.artifact?.includes("800_800"),
+    )?.identifiers?.[0]?.identifier;
 
     const member = await upsertMember({
       id,
@@ -46,7 +48,7 @@ export const createManyComments = async ({ linkedin, comments }: Props) => {
         first_name: localizedFirstName,
         last_name: localizedLastName,
         location,
-        avatar_url: profilePicture.displayImage,
+        avatar_url,
         job_title: localizedHeadline,
         source: "LINKEDIN",
         // joined_at: joinedAt,

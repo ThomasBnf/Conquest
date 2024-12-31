@@ -8,6 +8,8 @@ type Props = {
 export const listPosts = async ({ linkedin }: Props) => {
   const { access_token, organization_id } = linkedin.details;
 
+  console.log("@linkedin", linkedin);
+
   const allPosts: PostsResponse["elements"] = [];
 
   let start = 0;

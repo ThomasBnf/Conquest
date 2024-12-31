@@ -158,16 +158,16 @@ export const LIVESTORM_ACTIVITY_TYPES = [
 
 export const LINKEDIN_ACTIVITY_TYPES = [
   {
-    name: "Comment",
+    name: "Comment a post",
     source: "LINKEDIN" as const,
     key: "linkedin:comment",
     weight: 1,
     deletable: false,
   },
   {
-    name: "Reaction",
+    name: "Like a post",
     source: "LINKEDIN" as const,
-    key: "linkedin:reaction",
+    key: "linkedin:like",
     weight: 0,
     deletable: false,
   },

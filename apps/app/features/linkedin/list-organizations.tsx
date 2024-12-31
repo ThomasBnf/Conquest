@@ -288,6 +288,8 @@ export const ListOrganizations = () => {
     }
   }, [run]);
 
+  console.log(selectedOrg);
+
   return (
     <>
       <Separator className="my-4" />

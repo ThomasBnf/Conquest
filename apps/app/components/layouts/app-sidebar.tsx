@@ -29,12 +29,14 @@ import {
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Discourse } from "../icons/Discourse";
+import { Linkedin } from "../icons/Linkedin";
+import { Livestorm } from "../icons/Livestorm";
 import { Settings } from "../icons/Settings";
 import { Slack } from "../icons/Slack";
 import { SidebarSettings } from "./sidebar-settings";
 
 export const AppSidebar = () => {
-  const { slug, slack, discourse } = useUser();
+  const { slug, discourse, linkedin, livestorm, slack } = useUser();
   const { open } = useSidebar();
   const pathname = usePathname();
 
@@ -125,19 +127,23 @@ export const AppSidebar = () => {
           </SidebarMenu>
           <SidebarRail />
         </SidebarFooter>
-        {slack?.status === "SYNCING" && (
-          <div className="flex h-10 items-center gap-2 border-t bg-background px-4 text-sm">
-            <Slack size={16} />
-            <p>Collecting data</p>
-            <Loader className="ml-auto size-4" />
-          </div>
-        )}
-        {discourse?.status === "SYNCING" && (
-          <div className="flex h-10 items-center gap-2 border-t bg-background px-4 text-sm">
-            <Discourse size={16} />
-            <p>Collecting data</p>
-            <Loader className="ml-auto size-4" />
-          </div>
+        {[
+          { integration: discourse, Icon: Discourse },
+          { integration: linkedin, Icon: Linkedin },
+          { integration: livestorm, Icon: Livestorm },
+          { integration: slack, Icon: Slack },
+        ].map(
+          ({ integration, Icon }) =>
+            integration?.status === "SYNCING" && (
+              <div
+                key={integration.id}
+                className="flex h-10 items-center gap-2 border-t bg-background px-4 text-sm"
+              >
+                <Icon size={16} />
+                <p>Collecting data</p>
+                <Loader className="ml-auto size-4" />
+              </div>
+            ),
         )}
       </Sidebar>
     </TooltipProvider>
