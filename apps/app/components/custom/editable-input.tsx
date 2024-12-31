@@ -22,21 +22,12 @@ export const EditableInput = ({
   const [isFocus, setIsFocus] = useState(false);
 
   const onBlur = (value: string) => {
-    if (!value) {
-      setIsFocus(false);
-      return;
-    }
-
     onUpdate(value);
     setIsFocus(false);
   };
 
   const onKeyDown = (key: string) => {
     if (key === "Enter") {
-      if (!value) {
-        setIsFocus(false);
-        return;
-      }
       onUpdate(value ?? "");
       setIsFocus(false);
     }

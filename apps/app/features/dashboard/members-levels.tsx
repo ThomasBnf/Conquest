@@ -109,12 +109,14 @@ export const MembersLevels = ({ from, to }: Props) => {
               nameKey="category"
               paddingAngle={4}
               cornerRadius={4}
-              innerRadius="50%"
+              innerRadius="40%"
+              outerRadius="75%"
               labelLine={false}
               label={({ payload, ...props }) => {
+                if (payload.count === 0) return;
                 return (
                   <text
-                    x={props.x}
+                    x={props.x - 8}
                     y={props.y}
                     textAnchor={props.textAnchor}
                     dominantBaseline={props.dominantBaseline}

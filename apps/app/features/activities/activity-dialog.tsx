@@ -23,11 +23,14 @@ import {
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
+  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@conquest/ui/select";
 import { TextField } from "@conquest/ui/text-field";
+import type { ActivityType } from "@conquest/zod/schemas/activity-type.schema";
 import type { MemberWithCompany } from "@conquest/zod/schemas/member.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
@@ -40,18 +43,36 @@ type Props = {
   member: MemberWithCompany;
 };
 
-export const AddActivityDialog = ({ member }: Props) => {
+export const ActivityDialog = ({ member }: Props) => {
   const [open, setOpen] = useState(false);
   const { data: activity_types } = useListActivityTypes();
   const queryClient = useQueryClient();
 
   const form = useForm<AddActivityForm>({
     resolver: zodResolver(addActivitySchema),
-    defaultValues: {
-      message: "",
-      activity_type_id: "",
-    },
   });
+
+  const groupedActivityTypes = activity_types?.reduce<
+    Array<{
+      source: string;
+      activity_types: ActivityType[];
+    }>
+  >((acc, activity_type) => {
+    const existingGroup = acc.find(
+      (group) => group.source === activity_type.source,
+    );
+
+    if (existingGroup) {
+      existingGroup.activity_types.push(activity_type);
+      return acc;
+    }
+
+    acc.push({
+      source: activity_type.source,
+      activity_types: [activity_type],
+    });
+    return acc;
+  }, []);
 
   const onSubmit = async ({ activity_type_id, message }: AddActivityForm) => {
     const activity = await createActivity({
@@ -95,16 +116,24 @@ export const AddActivityDialog = ({ member }: Props) => {
                         value={field.value}
                       >
                         <SelectTrigger>
-                          <SelectValue />
+                          <SelectValue placeholder="Select activity type" />
                         </SelectTrigger>
                         <SelectContent>
-                          {activity_types?.map((activity_type) => (
-                            <SelectItem
-                              key={activity_type.id}
-                              value={activity_type.id}
-                            >
-                              {activity_type.name}
-                            </SelectItem>
+                          {groupedActivityTypes?.map((group) => (
+                            <SelectGroup key={group.source}>
+                              <SelectLabel>
+                                {group.source.charAt(0).toUpperCase() +
+                                  group.source.slice(1).toLowerCase()}
+                              </SelectLabel>
+                              {group.activity_types.map((activity_type) => (
+                                <SelectItem
+                                  key={activity_type.id}
+                                  value={activity_type.id}
+                                >
+                                  {activity_type.name}
+                                </SelectItem>
+                              ))}
+                            </SelectGroup>
                           ))}
                         </SelectContent>
                       </Select>
@@ -120,7 +149,7 @@ export const AddActivityDialog = ({ member }: Props) => {
                   <FormItem>
                     <FormLabel>Message</FormLabel>
                     <FormControl>
-                      <TextField {...field} />
+                      <TextField {...field} placeholder="Add a message" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

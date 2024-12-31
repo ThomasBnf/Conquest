@@ -56,8 +56,8 @@ export const members = new Hono()
         LEFT JOIN companies c ON m.company_id = c.id
         WHERE 
           (
-            LOWER(COALESCE(m.first_name, '')) LIKE '%' || ${searchParsed} || '%'
-            OR LOWER(COALESCE(m.last_name, '')) LIKE '%' || ${searchParsed} || '%'
+            LOWER(COALESCE(m.first_name, '') || ' ' || COALESCE(m.last_name, '')) LIKE '%' || ${searchParsed} || '%'
+            OR LOWER(COALESCE(m.last_name, '') || ' ' || COALESCE(m.first_name, '')) LIKE '%' || ${searchParsed} || '%'
             OR LOWER(m.primary_email) LIKE '%' || ${searchParsed} || '%'
             OR EXISTS (
               SELECT 1 FROM unnest(m.phones) phone
@@ -104,8 +104,8 @@ export const members = new Hono()
           LEFT JOIN companies c ON m.company_id = c.id
           WHERE 
             (
-              LOWER(COALESCE(m.first_name, '')) LIKE '%' || ${searchParsed} || '%'
-              OR LOWER(COALESCE(m.last_name, '')) LIKE '%' || ${searchParsed} || '%'
+              LOWER(COALESCE(m.first_name, '') || ' ' || COALESCE(m.last_name, '')) LIKE '%' || ${searchParsed} || '%'
+              OR LOWER(COALESCE(m.last_name, '') || ' ' || COALESCE(m.first_name, '')) LIKE '%' || ${searchParsed} || '%'
               OR LOWER(m.primary_email) LIKE '%' || ${searchParsed} || '%'
               OR EXISTS (
                 SELECT 1 FROM unnest(m.phones) phone
@@ -123,15 +123,60 @@ export const members = new Hono()
       return c.json(Number(count));
     },
   )
-  .get("/all-members", async (c) => {
-    const { workspace_id } = c.get("user");
+  .get(
+    "/all-members",
+    zValidator(
+      "query",
+      z.object({
+        search: z.string(),
+        page: z.coerce.number(),
+      }),
+    ),
+    async (c) => {
+      const { workspace_id } = c.get("user");
+      const { search, page } = c.req.valid("query");
 
-    const members = await prisma.members.findMany({
-      where: { workspace_id },
-    });
+      const searchParsed = search.toLowerCase().trim();
 
-    return c.json(MemberSchema.array().parse(members));
-  })
+      const members = await prisma.$queryRaw`
+        WITH search_terms AS (
+          SELECT 
+            unnest(string_to_array(${searchParsed}, ' ')) as term
+        )
+        SELECT DISTINCT
+          m.*,
+          c.id as company_id,
+          c.name as company_name,
+          CASE 
+            WHEN LOWER(COALESCE(m.first_name, '') || ' ' || COALESCE(m.last_name, '')) = LOWER(${searchParsed}) THEN 1
+            WHEN LOWER(COALESCE(m.last_name, '') || ' ' || COALESCE(m.first_name, '')) = LOWER(${searchParsed}) THEN 1
+            WHEN LOWER(COALESCE(m.first_name, '') || ' ' || COALESCE(m.last_name, '')) ILIKE LOWER(${searchParsed}) || '%' THEN 2
+            ELSE 3
+          END as sort_priority
+        FROM members m
+        LEFT JOIN companies c ON m.company_id = c.id
+        WHERE m.workspace_id = ${workspace_id}
+        AND (
+          EXISTS (
+            SELECT 1 FROM search_terms
+            WHERE 
+              LOWER(COALESCE(m.first_name, '')) ILIKE '%' || LOWER(term) || '%'
+              OR LOWER(COALESCE(m.last_name, '')) ILIKE '%' || LOWER(term) || '%'
+              OR LOWER(COALESCE(m.primary_email, '')) ILIKE '%' || LOWER(term) || '%'
+              OR LOWER(COALESCE(m.username, '')) ILIKE '%' || LOWER(term) || '%'
+          )
+        )
+        ORDER BY 
+          sort_priority,
+          m.first_name,
+          m.last_name
+        LIMIT 50
+        OFFSET ${(page - 1) * 50}
+      `;
+
+      return c.json(MemberWithCompanySchema.array().parse(members));
+    },
+  )
   .get("/locations", async (c) => {
     const { workspace_id } = c.get("user");
 

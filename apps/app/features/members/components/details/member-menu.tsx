@@ -2,6 +2,7 @@
 
 import { deleteMember } from "@/actions/members/deleteMember";
 import { AlertDialog } from "@/components/custom/alert-dialog";
+import { MergeDialog } from "@/features/merge/merge-dialog";
 import { Button } from "@conquest/ui/button";
 import {
   DropdownMenu,
@@ -11,7 +12,7 @@ import {
   DropdownMenuTrigger,
 } from "@conquest/ui/dropdown-menu";
 import type { MemberWithCompany } from "@conquest/zod/schemas/member.schema";
-import { Copy, MoreHorizontal, Trash2 } from "lucide-react";
+import { Copy, Merge, MoreHorizontal, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -21,6 +22,7 @@ type Props = {
 
 export const MemberMenu = ({ member }: Props) => {
   const [open, setOpen] = useState(false);
+  const [mergeOpen, setMergeOpen] = useState(false);
 
   const onCopy = () => {
     navigator.clipboard.writeText(member.id);
@@ -44,24 +46,29 @@ export const MemberMenu = ({ member }: Props) => {
         open={open}
         setOpen={setOpen}
       />
+      <MergeDialog open={mergeOpen} setOpen={setMergeOpen} member={member} />
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" size="icon">
-            <MoreHorizontal size={16} className="text-muted-foreground" />
+            <MoreHorizontal size={15} className="text-muted-foreground" />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
+          <DropdownMenuItem onClick={() => setMergeOpen(true)}>
+            <Merge size={15} />
+            Merge
+          </DropdownMenuItem>
           <DropdownMenuItem onClick={onCopy}>
-            <Copy size={16} />
-            Copy member ID
+            <Copy size={15} />
+            Copy ID
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem
             onClick={() => setOpen(true)}
             className="text-destructive focus:text-destructive"
           >
-            <Trash2 size={16} />
-            Delete member
+            <Trash2 size={15} />
+            Delete
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

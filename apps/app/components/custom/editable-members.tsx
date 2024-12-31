@@ -17,6 +17,7 @@ import type { Member } from "@conquest/zod/schemas/member.schema";
 import { X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { useInView } from "react-intersection-observer";
 import { toast } from "sonner";
 
 type Props = {
@@ -25,10 +26,17 @@ type Props = {
 
 export const EditableMembers = ({ company }: Props) => {
   const { slug } = useUser();
+  const { ref, inView } = useInView();
   const [open, setOpen] = useState(false);
+  const [search, setSearch] = useState("");
   const router = useRouter();
 
-  const { data: members, isLoading } = useListAllMembers();
+  const { data, hasNextPage, fetchNextPage, isLoading } = useListAllMembers({
+    search,
+  });
+
+  const members = data?.pages.flat();
+
   const [companyMembers, setCompanyMembers] = useState<Member[]>([]);
 
   const onUpdate = async (memberId: string) => {
@@ -63,6 +71,12 @@ export const EditableMembers = ({ company }: Props) => {
       members?.filter((member) => member.company_id === company.id) ?? [],
     );
   }, [members, company.id]);
+
+  useEffect(() => {
+    if (inView && hasNextPage) {
+      fetchNextPage();
+    }
+  }, [inView]);
 
   if (isLoading) return <Skeleton className="h-5 w-24" />;
 
@@ -113,7 +127,11 @@ export const EditableMembers = ({ company }: Props) => {
       </PopoverTrigger>
       <PopoverContent align="start" className="w-[233px] p-0">
         <Command loop>
-          <CommandInput placeholder="Search company..." />
+          <CommandInput
+            placeholder="Search company..."
+            value={search}
+            onValueChange={setSearch}
+          />
           <CommandList>
             <CommandGroup>
               {members
@@ -142,6 +160,7 @@ export const EditableMembers = ({ company }: Props) => {
                     </div>
                   </CommandItem>
                 ))}
+              <div ref={ref} />
             </CommandGroup>
           </CommandList>
         </Command>

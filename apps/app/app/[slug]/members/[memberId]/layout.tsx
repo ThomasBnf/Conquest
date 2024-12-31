@@ -1,6 +1,6 @@
 import { HeaderSubPage } from "@/components/layouts/header-subpage";
 import { PageLayout } from "@/components/layouts/page-layout";
-import { AddActivityDialog } from "@/features/activities/add-activity-dialog";
+import { ActivityDialog } from "@/features/activities/activity-dialog";
 import { MemberMenu } from "@/features/members/components/details/member-menu";
 import { MemberSidebar } from "@/features/members/components/details/member-sidebar";
 import { Tabs } from "@/features/members/components/tabs";
@@ -35,7 +35,7 @@ export default async function Layout({
       <PageLayout className="flex h-full rounded-lg border shadow-lg">
         <HeaderSubPage>
           <div className="flex items-center gap-2">
-            <AddActivityDialog member={member} />
+            <ActivityDialog member={member} />
             <MemberMenu member={member} />
           </div>
         </HeaderSubPage>
