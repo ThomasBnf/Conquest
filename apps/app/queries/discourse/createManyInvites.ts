@@ -72,7 +72,7 @@ export const createManyInvites = async ({ discourse, member }: Props) => {
         data: {
           external_id: null,
           activity_type_id: invite_type.id,
-          message: `Has invited ${inviteTo.username}`,
+          message: `${inviteTo.username} accepted your invitation`,
           invite_to: inviteTo.id,
           member_id: member.id,
           channel_id: null,

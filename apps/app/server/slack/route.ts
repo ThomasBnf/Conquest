@@ -76,22 +76,26 @@ export const slack = new Hono()
         key: "slack:post",
         workspace_id,
       });
+
       const type_reply = await getActivityType({
         key: "slack:reply",
         workspace_id,
       });
+
       const type_invitation = await getActivityType({
         key: "slack:invitation",
         workspace_id,
       });
+
       const type_reaction = await getActivityType({
         key: "slack:reaction",
         workspace_id,
       });
 
-      if (!type_post || !type_reply || !type_invitation || !type_reaction) {
-        return c.json({ status: 200 });
-      }
+      const type_join = await getActivityType({
+        key: "slack:join",
+        workspace_id,
+      });
 
       switch (type) {
         case "app_uninstalled": {
@@ -149,10 +153,10 @@ export const slack = new Hono()
 
             const activity = await createActivity({
               external_id: ts,
+              activity_type_id: thread_ts ? type_reply.id : type_post.id,
               member_id: member.id,
               channel_id: channel.id,
               message: text ?? "",
-              activity_type_id: thread_ts ? type_reply.id : type_post.id,
               reply_to: thread_ts ?? null,
               workspace_id,
             });
@@ -177,8 +181,8 @@ export const slack = new Hono()
 
               const activity = await updateActivity({
                 external_id: ts,
-                message: text ?? "",
                 activity_type_id: thread_ts ? type_reply.id : type_post.id,
+                message: text ?? "",
                 reply_to: thread_ts ?? null,
                 workspace_id,
               });
@@ -235,9 +239,9 @@ export const slack = new Hono()
 
           await createActivity({
             external_id: null,
+            activity_type_id: type_reaction.id,
             member_id: member.id,
             channel_id: channel.id,
-            activity_type_id: type_reaction.id,
             message: reaction,
             react_to: ts,
             workspace_id,
@@ -280,7 +284,7 @@ export const slack = new Hono()
         }
 
         case "member_joined_channel": {
-          const { user, inviter, event_ts, channel } = event;
+          const { user, inviter, event_ts } = event;
 
           if (!inviter) break;
 
@@ -311,55 +315,29 @@ export const slack = new Hono()
             },
           });
 
-          const createdChannel = await getChannel({
-            external_id: channel,
+          const inviterMember = await getMember({
+            slack_id: inviter,
             workspace_id,
           });
 
-          const currentTimestamp = Math.floor(Number.parseFloat(event_ts));
-
-          const activity = await prisma.activities.findFirst({
-            where: {
-              member_id: member.id,
-              invite_to: inviter,
-              AND: [
-                {
-                  created_at: {
-                    gt: new Date((currentTimestamp - 5) * 1000),
-                  },
-                },
-                {
-                  created_at: {
-                    lt: new Date((currentTimestamp + 5) * 1000),
-                  },
-                },
-              ],
-            },
-            orderBy: {
-              created_at: "desc",
-            },
-          });
-
-          if (activity) return c.json({ status: 200 });
-
-          const type = await prisma.activities_types.findFirst({
-            where: {
-              workspace_id,
-              key: "slack:invitation",
-            },
-          });
-
-          if (!type) return c.json({ status: 200 });
+          if (!inviterMember) return c.json({ status: 200 });
 
           await createActivity({
             external_id: null,
-            member_id: member.id,
-            channel_id: createdChannel.id,
-            message: `<@${inviter}> invited to channel`,
             activity_type_id: type_invitation.id,
-            invite_to: inviter,
+            member_id: inviterMember.id,
+            message: `<@${member.id}> accepted your invitation`,
+            invite_to: member.id,
             created_at: new Date(Number.parseFloat(event_ts) * 1000),
             updated_at: new Date(Number.parseFloat(event_ts) * 1000),
+            workspace_id,
+          });
+
+          await createActivity({
+            external_id: null,
+            activity_type_id: type_join.id,
+            message: "Joined Slack community",
+            member_id: member.id,
             workspace_id,
           });
 
@@ -368,6 +346,25 @@ export const slack = new Hono()
 
         case "user_change": {
           const { id, deleted } = event.user;
+
+          if (deleted) {
+            const member = await getMember({
+              slack_id: id,
+              workspace_id,
+            });
+
+            if (!member) return c.json({ status: 200 });
+
+            await prisma.members.delete({
+              where: {
+                id: member.id,
+                slack_id: id,
+                workspace_id,
+              },
+            });
+
+            return c.json({ status: 200 });
+          }
 
           const userProfile = await web.users.profile
             .get({ user: id })

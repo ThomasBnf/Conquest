@@ -65,6 +65,13 @@ export const ACTIVITY_COLORS = {
 
 export const SLACK_ACTIVITY_TYPES = [
   {
+    name: "Invitation",
+    source: "SLACK" as const,
+    key: "slack:invitation",
+    weight: 6,
+    deletable: false,
+  },
+  {
     name: "Write a post",
     source: "SLACK" as const,
     key: "slack:post",
@@ -79,10 +86,10 @@ export const SLACK_ACTIVITY_TYPES = [
     deletable: false,
   },
   {
-    name: "Invitation",
+    name: "Join Slack community",
     source: "SLACK" as const,
-    key: "slack:invitation",
-    weight: 6,
+    key: "slack:join",
+    weight: 1,
     deletable: false,
   },
   {
