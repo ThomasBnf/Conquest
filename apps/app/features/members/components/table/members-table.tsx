@@ -224,7 +224,7 @@ export const MembersTable = ({ tags }: Props) => {
           <ScrollBar orientation="vertical" />
         </ScrollArea>
       </div>
-      <Pagination isLoading={isLoading} count={count ?? 0} />
+      <Pagination count={count ?? 0} />
     </>
   );
 };

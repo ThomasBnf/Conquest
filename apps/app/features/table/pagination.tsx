@@ -5,11 +5,10 @@ import { useQueryStates } from "nuqs";
 import { PageSize } from "./page-size";
 
 type Props = {
-  isLoading: boolean;
   count: number;
 };
 
-export const Pagination = ({ isLoading, count }: Props) => {
+export const Pagination = ({ count }: Props) => {
   const [{ page, pageSize }, setParams] = useQueryStates(tableParsers);
 
   const currentCount = (page - 1) * pageSize + pageSize;

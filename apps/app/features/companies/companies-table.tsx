@@ -196,7 +196,7 @@ export const CompaniesTable = ({ companies, count }: Props) => {
           <ScrollBar orientation="vertical" />
         </ScrollArea>
       </div>
-      <Pagination isLoading={false} count={count} />
+      <Pagination count={count} />
     </>
   );
 };
