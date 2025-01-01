@@ -1,8 +1,10 @@
+import { createCompany } from "@/actions/companies/createCompany";
 import { useUser } from "@/context/userContext";
 import { useListCompanies } from "@/queries/hooks/useListCompanies";
 import { Button } from "@conquest/ui/button";
 import {
   Command,
+  CommandEmpty,
   CommandGroup,
   CommandInput,
   CommandItem,
@@ -13,9 +15,10 @@ import { Skeleton } from "@conquest/ui/skeleton";
 import type { Company } from "@conquest/zod/schemas/company.schema";
 import type { MemberWithCompany } from "@conquest/zod/schemas/member.schema";
 import { CommandLoading } from "cmdk";
-import { X } from "lucide-react";
+import { Plus, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { toast } from "sonner";
 
 type Props = {
   member: MemberWithCompany;
@@ -25,6 +28,7 @@ type Props = {
 export const EditableCompany = ({ member, onUpdate }: Props) => {
   const { slug } = useUser();
   const [memberCompany, setMemberCompany] = useState(member.company_name);
+  const [search, setSearch] = useState("");
   const [open, setOpen] = useState(false);
   const router = useRouter();
 
@@ -34,6 +38,22 @@ export const EditableCompany = ({ member, onUpdate }: Props) => {
     if (company === memberCompany) return;
     setMemberCompany(company?.name ?? null);
     onUpdate(company?.id ?? null);
+  };
+
+  const onCreateCompany = async () => {
+    const response = await createCompany({ name: search });
+
+    const error = response?.serverError;
+    if (error) {
+      return toast.error(error);
+    }
+
+    const newCompany = response?.data;
+    if (newCompany) {
+      setOpen(false);
+      setSearch("");
+      onUpdateMemberCompany(newCompany);
+    }
   };
 
   return (
@@ -76,8 +96,27 @@ export const EditableCompany = ({ member, onUpdate }: Props) => {
       </PopoverTrigger>
       <PopoverContent align="start" className="w-[233px] p-0">
         <Command loop>
-          <CommandInput placeholder="Search company..." />
+          <CommandInput
+            placeholder="Search company..."
+            value={search}
+            onValueChange={(value) => setSearch(value)}
+          />
           <CommandList>
+            <CommandEmpty className="w-full p-1">
+              <Button
+                variant="ghost"
+                className="w-full"
+                onClick={onCreateCompany}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && open) {
+                    onCreateCompany();
+                  }
+                }}
+              >
+                <Plus size={15} className="shrink-0" />
+                Create "{search}"
+              </Button>
+            </CommandEmpty>
             <CommandGroup>
               {isLoading ? (
                 <CommandLoading>

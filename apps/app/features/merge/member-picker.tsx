@@ -37,6 +37,8 @@ export const MemberPicker = ({ currentMember, onSelect }: Props) => {
     }
   }, [inView]);
 
+  console.log(search);
+
   return (
     <Popover open={open} onOpenChange={setOpen} modal>
       <PopoverTrigger asChild>
@@ -49,36 +51,38 @@ export const MemberPicker = ({ currentMember, onSelect }: Props) => {
           <CommandInput
             placeholder="Search member..."
             value={search}
-            onValueChange={setSearch}
+            onValueChange={(value) => setSearch(value ?? "")}
           />
           <CommandList>
             <CommandGroup>
-              {members?.map((member) => (
-                <CommandItem
-                  key={member.id}
-                  onSelect={() => {
-                    setOpen(false);
-                    onSelect(member);
-                  }}
-                  className="flex items-center gap-2"
-                >
-                  <Avatar className="size-7">
-                    <AvatarImage src={member.avatar_url ?? ""} />
-                    <AvatarFallback className="text-sm">
-                      {member.first_name?.charAt(0).toUpperCase()}
-                      {member.last_name?.charAt(0).toUpperCase()}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="flex w-full flex-col">
-                    <p>
-                      {member.first_name} {member.last_name}
-                    </p>
-                    <span className="text-muted-foreground text-xs">
-                      {member.primary_email}
-                    </span>
-                  </div>
-                </CommandItem>
-              ))}
+              {members
+                ?.filter((member) => member.id !== currentMember?.id)
+                ?.map((member) => (
+                  <CommandItem
+                    key={member.id}
+                    onSelect={() => {
+                      setOpen(false);
+                      onSelect(member);
+                    }}
+                    className="flex items-center gap-2"
+                  >
+                    <Avatar className="size-7">
+                      <AvatarImage src={member.avatar_url ?? ""} />
+                      <AvatarFallback className="text-sm">
+                        {member.first_name?.charAt(0).toUpperCase()}
+                        {member.last_name?.charAt(0).toUpperCase()}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="flex w-full flex-col">
+                      <p>
+                        {member.first_name} {member.last_name}
+                      </p>
+                      <span className="text-muted-foreground text-xs">
+                        {member.primary_email}
+                      </span>
+                    </div>
+                  </CommandItem>
+                ))}
               <div ref={ref} />
             </CommandGroup>
           </CommandList>

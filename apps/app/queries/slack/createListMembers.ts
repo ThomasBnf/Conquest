@@ -39,7 +39,7 @@ export const createListMembers = async ({ web, workspace_id }: Props) => {
             phones: phone ? [phone] : [],
             location: locale?.split("-")[1],
             avatar_url: image_1024,
-            job_title: title,
+            job_title: title === "" ? null : title,
             source: "SLACK",
             workspace_id,
           },

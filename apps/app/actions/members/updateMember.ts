@@ -14,22 +14,38 @@ export const updateMember = safeAction
   .schema(
     z.object({
       id: z.string(),
-      company_id: z.string().optional(),
-      primary_email: z.string().optional(),
+      company_id: z.string().optional().nullable(),
+      primary_email: z.string().optional().nullable(),
       secondary_emails: z.array(z.string()).optional(),
       phones: z.array(z.string()).optional(),
-      first_name: z.string().optional(),
-      last_name: z.string().optional(),
-      job_title: z.string().optional(),
-      location: z.string().optional(),
+      first_name: z.string().optional().nullable(),
+      last_name: z.string().optional().nullable(),
+      job_title: z.string().optional().nullable(),
+      location: z.string().optional().nullable(),
       source: SOURCE.optional(),
       tags: z.array(z.string()).optional(),
     }),
   )
-  .action(
-    async ({
-      parsedInput: {
+  .action(async ({ parsedInput }) => {
+    const {
+      id,
+      company_id,
+      primary_email,
+      secondary_emails,
+      phones,
+      first_name,
+      last_name,
+      job_title,
+      location,
+      source,
+      tags,
+    } = parsedInput;
+    console.log("@parsedInput", parsedInput);
+    const member = await prisma.members.update({
+      where: {
         id,
+      },
+      data: {
         company_id,
         primary_email,
         secondary_emails,
@@ -41,26 +57,8 @@ export const updateMember = safeAction
         source,
         tags,
       },
-    }) => {
-      const member = await prisma.members.update({
-        where: {
-          id,
-        },
-        data: {
-          company_id,
-          primary_email,
-          secondary_emails,
-          phones,
-          first_name,
-          last_name,
-          job_title,
-          location,
-          source,
-          tags,
-        },
-      });
+    });
 
-      revalidatePath(`/members/${member.id}`);
-      return MemberSchema.parse(member);
-    },
-  );
+    revalidatePath(`/members/${member.id}`);
+    return MemberSchema.parse(member);
+  });

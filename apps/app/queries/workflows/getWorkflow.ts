@@ -14,7 +14,5 @@ export const getWorkflow = async ({ id, workspace_id }: Props) => {
     },
   });
 
-  console.dir(workflow, { depth: 100 });
-
   return WorkflowSchema.parse(workflow);
 };

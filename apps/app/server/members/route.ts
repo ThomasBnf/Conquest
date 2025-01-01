@@ -139,10 +139,6 @@ export const members = new Hono()
       const searchParsed = search.toLowerCase().trim();
 
       const members = await prisma.$queryRaw`
-        WITH search_terms AS (
-          SELECT 
-            unnest(string_to_array(${searchParsed}, ' ')) as term
-        )
         SELECT DISTINCT
           m.*,
           c.id as company_id,
@@ -157,14 +153,10 @@ export const members = new Hono()
         LEFT JOIN companies c ON m.company_id = c.id
         WHERE m.workspace_id = ${workspace_id}
         AND (
-          EXISTS (
-            SELECT 1 FROM search_terms
-            WHERE 
-              LOWER(COALESCE(m.first_name, '')) ILIKE '%' || LOWER(term) || '%'
-              OR LOWER(COALESCE(m.last_name, '')) ILIKE '%' || LOWER(term) || '%'
-              OR LOWER(COALESCE(m.primary_email, '')) ILIKE '%' || LOWER(term) || '%'
-              OR LOWER(COALESCE(m.username, '')) ILIKE '%' || LOWER(term) || '%'
-          )
+          LOWER(COALESCE(m.first_name, '')) ILIKE '%' || LOWER(${searchParsed}) || '%'
+          OR LOWER(COALESCE(m.last_name, '')) ILIKE '%' || LOWER(${searchParsed}) || '%'
+          OR LOWER(COALESCE(m.primary_email, '')) ILIKE '%' || LOWER(${searchParsed}) || '%'
+          OR LOWER(COALESCE(m.username, '')) ILIKE '%' || LOWER(${searchParsed}) || '%'
         )
         ORDER BY 
           sort_priority,

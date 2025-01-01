@@ -38,7 +38,7 @@ export const MemberCard = ({ member, leftMember, className }: Props) => {
           return [key, isLeftOlder ? value : rightValue];
         }
 
-        if (key === "created_at") {
+        if (key === "first_activity") {
           return [key, isLeftOlder ? value : rightValue];
         }
 

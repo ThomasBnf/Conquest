@@ -16,7 +16,7 @@ export const FilteredEntries = ({ member }: Props) => {
     ["company_name", member.company_name],
     ["location", member.location],
     ["source", member.source],
-    ["created_at", member.created_at],
+    ["first_activity", member.first_activity],
   ];
 
   return entries.map(([key, value]) => {
@@ -41,13 +41,17 @@ export const FilteredEntries = ({ member }: Props) => {
           </div>
         );
       }
-      case "created_at": {
+      case "first_activity": {
         return (
           <div className="space-y-1">
             <p className="text-muted-foreground text-xs capitalize">
-              Created at
+              First activity
             </p>
-            <p>{format(value as Date, "PP, HH'h'mm")}</p>
+            {value ? (
+              <p>{format(value as Date, "PP, HH'h'mm")}</p>
+            ) : (
+              <p className="text-muted-foreground">N/A</p>
+            )}
           </div>
         );
       }
