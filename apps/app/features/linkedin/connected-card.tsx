@@ -3,13 +3,8 @@
 import { deleteIntegration } from "@/actions/integrations/deleteIntegration";
 import { AlertDialog } from "@/components/custom/alert-dialog";
 import { useUser } from "@/context/userContext";
-import { Button } from "@conquest/ui/src/components/button";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@conquest/ui/src/components/card";
+import { Button } from "@conquest/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@conquest/ui/card";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -22,27 +17,27 @@ import { useState } from "react";
 import { toast } from "sonner";
 
 export const ConnectedCard = () => {
-  const { livestorm } = useUser();
-  const { details, connected_at } = livestorm ?? {};
+  const { linkedin } = useUser();
+  const { details, connected_at } = linkedin ?? {};
   const { organization_name } = details ?? {};
 
   const [open, setOpen] = useState(false);
 
   const onDisconnect = async () => {
-    if (!livestorm) return;
+    if (!linkedin) return;
 
     const response = await deleteIntegration({
-      integration: livestorm,
-      source: "LIVESTORM",
+      integration: linkedin,
+      source: "LINKEDIN",
     });
 
     const error = response?.serverError;
 
     if (error) toast.error(error);
-    return toast.success("Livestorm disconnected");
+    return toast.success("Linkedin disconnected");
   };
 
-  if (livestorm?.status !== "CONNECTED") return;
+  if (linkedin?.status !== "CONNECTED") return null;
 
   return (
     <>
@@ -55,7 +50,7 @@ export const ConnectedCard = () => {
         <CardContent className="mb-0.5">
           <div className=" flex items-end justify-between">
             <div>
-              <p className="font-medium">{details?.organization_name}</p>
+              <p className="font-medium">{organization_name}</p>
               {connected_at && (
                 <p className="text-muted-foreground">
                   Connected on {format(connected_at, "PP")}
@@ -81,8 +76,8 @@ export const ConnectedCard = () => {
         </CardContent>
       </Card>
       <AlertDialog
-        title="Disconnect Livestorm workspace"
-        description="Livestorm integration will be removed from your workspace and all your data will be deleted."
+        title={`Disconnect ${organization_name} workspace`}
+        description="Linkedin integration will be removed from your workspace and all your data will be deleted."
         onConfirm={onDisconnect}
         open={open}
         setOpen={setOpen}

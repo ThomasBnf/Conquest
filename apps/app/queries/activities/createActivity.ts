@@ -53,5 +53,15 @@ export const createActivity = async ({
     },
   });
 
+  await prisma.members.update({
+    where: {
+      id: member_id,
+      workspace_id,
+    },
+    data: {
+      last_activity: activity.created_at,
+    },
+  });
+
   return ActivitySchema.parse(activity);
 };

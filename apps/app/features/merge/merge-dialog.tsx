@@ -61,7 +61,7 @@ export const MergeDialog = ({ open, setOpen, member }: Props) => {
       return toast.error(error);
     }
 
-    router.push(`${slug}/members/${rightMember.id}/analytics`);
+    router.refresh();
   };
 
   return (

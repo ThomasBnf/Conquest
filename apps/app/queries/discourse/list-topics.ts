@@ -1,7 +1,7 @@
 import { sleep } from "@/helpers/sleep";
-import { prisma } from "@/lib/prisma";
 import type { Channel } from "@conquest/zod/schemas/channel.schema";
 import type { ReponseListTopics } from "@conquest/zod/schemas/types/discourse/index";
+import { createActivity } from "../activities/createActivity";
 import { getMember } from "../members/getMember";
 
 type Props = {
@@ -47,17 +47,15 @@ export const listTopics = async ({
 
     if (!member) continue;
 
-    await prisma.activities.create({
-      data: {
-        external_id: String(id),
-        activity_type_id: type_post,
-        message: title,
-        channel_id: channel.id,
-        member_id: member.id,
-        created_at: new Date(created_at),
-        updated_at: new Date(created_at),
-        workspace_id: member.workspace_id,
-      },
+    await createActivity({
+      external_id: String(id),
+      activity_type_id: type_post,
+      message: title,
+      channel_id: channel.id,
+      member_id: member.id,
+      created_at: new Date(created_at),
+      updated_at: new Date(created_at),
+      workspace_id: member.workspace_id,
     });
   }
 
@@ -91,17 +89,15 @@ export const listTopics = async ({
 
       if (!member) continue;
 
-      await prisma.activities.create({
-        data: {
-          external_id: String(id),
-          activity_type_id: type_post,
-          message: title,
-          channel_id: channel.id,
-          member_id: member.id,
-          created_at: new Date(created_at),
-          updated_at: new Date(created_at),
-          workspace_id: member.workspace_id,
-        },
+      await createActivity({
+        external_id: String(id),
+        activity_type_id: type_post,
+        message: title,
+        channel_id: channel.id,
+        member_id: member.id,
+        created_at: new Date(created_at),
+        updated_at: new Date(created_at),
+        workspace_id: member.workspace_id,
       });
 
       await sleep(200);

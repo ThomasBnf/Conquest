@@ -1,8 +1,8 @@
-import { prisma } from "@/lib/prisma";
 import type { DiscourseIntegration } from "@conquest/zod/schemas/integration.schema";
 import type { Member } from "@conquest/zod/schemas/member.schema";
 import type { Invite } from "@conquest/zod/schemas/types/discourse";
 import { startOfDay, subDays } from "date-fns";
+import { createActivity } from "../activities/createActivity";
 import { getActivityType } from "../activity-type/getActivityType";
 import { getMember } from "../members/getMember";
 
@@ -68,17 +68,16 @@ export const createManyInvites = async ({ discourse, member }: Props) => {
 
       if (!inviteTo) continue;
 
-      await prisma.activities.create({
-        data: {
-          external_id: null,
-          activity_type_id: invite_type.id,
-          message: `${inviteTo.username} accepted your invitation`,
-          invite_to: inviteTo.id,
-          member_id: member.id,
-          channel_id: null,
-          created_at: redeemed_at,
-          workspace_id,
-        },
+      await createActivity({
+        external_id: null,
+        activity_type_id: invite_type.id,
+        message: `${inviteTo.username} accepted your invitation`,
+        invite_to: inviteTo.id,
+        member_id: member.id,
+        channel_id: null,
+        created_at: new Date(redeemed_at),
+        updated_at: new Date(redeemed_at),
+        workspace_id,
       });
     }
 

@@ -41,8 +41,6 @@ export const linkedin = new Hono()
       .map((org) => org.organizationalTarget.split(":").pop())
       .join(",");
 
-    console.log(orgsIds);
-
     const response = await fetch(
       `https://api.linkedin.com/v2/organizations?ids=List(${orgsIds})`,
       {
@@ -56,8 +54,6 @@ export const linkedin = new Hono()
     );
 
     const data = await response.json();
-
-    console.log(data);
 
     return c.json(data);
   })

@@ -82,8 +82,6 @@ export const activities = new Hono()
         },
       });
 
-      // console.log(activities);
-
       const activity = activities.at(Number(postNumber) - 1);
 
       return c.json(ActivityWithMemberSchema.parse(activity));

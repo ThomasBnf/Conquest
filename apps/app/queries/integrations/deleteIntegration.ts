@@ -3,6 +3,7 @@ import type { SOURCE } from "@conquest/database";
 import {
   DiscourseIntegrationSchema,
   type Integration,
+  LinkedInIntegrationSchema,
   LivestormIntegrationSchema,
   SlackIntegrationSchema,
 } from "@conquest/zod/integration.schema";
@@ -55,6 +56,13 @@ export const deleteIntegration = async ({ source, integration }: Props) => {
     for (const webhook of webhooks) {
       await deleteWebhook({ accessToken: access_token, id: webhook.id });
     }
+  }
+
+  if (source === "LINKEDIN") {
+    const linkedin = LinkedInIntegrationSchema.parse(integration);
+    await prisma.integrations.delete({
+      where: { id: linkedin.id },
+    });
   }
 
   await Promise.all([

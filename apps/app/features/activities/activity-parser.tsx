@@ -20,5 +20,7 @@ export const ActivityParser = ({ activity }: Props) => {
       return <SlackActivity activity={activity} />;
     case "LIVESTORM":
       return <LivestormActivity activity={activity} />;
+    case "LINKEDIN":
+      return <p>Linkedin</p>;
   }
 };

@@ -248,7 +248,6 @@ export const ListOrganizations = () => {
   const onClick = async () => {
     const response = await client.api.linkedin.organizations.$get();
     const data = await response.json();
-    console.log(data);
   };
 
   const { submit, run } = useRealtimeTaskTrigger<typeof installLinkedin>(
@@ -280,6 +279,7 @@ export const ListOrganizations = () => {
     }
 
     if (isCompleted) {
+      setLoading(false);
       setSelectedOrg({
         organization_id: "",
         organization_name: "",
@@ -287,8 +287,6 @@ export const ListOrganizations = () => {
       router.refresh();
     }
   }, [run]);
-
-  console.log(selectedOrg);
 
   return (
     <>

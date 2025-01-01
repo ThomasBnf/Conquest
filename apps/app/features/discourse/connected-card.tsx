@@ -58,7 +58,7 @@ export const ConnectedCard = () => {
               <p className="font-medium">Discourse</p>
               {connected_at && (
                 <p className="text-muted-foreground">
-                  Installed on {format(connected_at, "PP")}
+                  Connected on {format(connected_at, "PP")}
                 </p>
               )}
             </div>

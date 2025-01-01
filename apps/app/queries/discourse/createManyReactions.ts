@@ -3,6 +3,7 @@ import type { DiscourseIntegration } from "@conquest/zod/schemas/integration.sch
 import type { Member } from "@conquest/zod/schemas/member.schema";
 import type { Reaction } from "@conquest/zod/schemas/types/discourse";
 import { startOfDay, subDays } from "date-fns";
+import { createActivity } from "../activities/createActivity";
 import { getActivityType } from "../activity-type/getActivityType";
 
 type Props = {
@@ -70,18 +71,17 @@ export const createManyReactions = async ({ discourse, member }: Props) => {
 
       if (!channel) continue;
 
-      await prisma.activities.create({
-        data: {
-          external_id: String(id),
-          activity_type_id: reaction_type.id,
-          message: reaction_value,
-          react_to: `p-${post.id}`,
-          thread_id: `t-${topic_id}`,
-          member_id: member.id,
-          channel_id: channel.id,
-          created_at,
-          workspace_id,
-        },
+      await createActivity({
+        external_id: String(id),
+        activity_type_id: reaction_type.id,
+        message: reaction_value,
+        react_to: `p-${post.id}`,
+        thread_id: `t-${topic_id}`,
+        member_id: member.id,
+        channel_id: channel.id,
+        created_at: new Date(created_at),
+        updated_at: new Date(created_at),
+        workspace_id,
       });
     }
 

@@ -52,14 +52,12 @@ export const installLinkedin = schemaTask({
         linkedin: parsedLinkedin,
         post_id: post.id,
       });
-      console.log("@comments", comments);
       await createManyComments({ linkedin: parsedLinkedin, comments });
 
       const likes = await listLikes({
         linkedin: parsedLinkedin,
         post_id: post.id,
       });
-      console.log("@likes", likes);
       await createManyLikes({ linkedin: parsedLinkedin, likes });
     }
 

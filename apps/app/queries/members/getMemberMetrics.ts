@@ -1,5 +1,11 @@
 import type { ActivityWithType } from "@conquest/zod/schemas/activity.schema";
-import { isAfter, startOfMonth, startOfWeek, subMonths } from "date-fns";
+import {
+  endOfWeek,
+  isAfter,
+  isBefore,
+  startOfMonth,
+  subMonths,
+} from "date-fns";
 import { getMemberPresence } from "./getMemberPresence";
 
 type Props = {
@@ -9,9 +15,12 @@ type Props = {
 
 export const getMemberMetrics = async ({ activities, today }: Props) => {
   const last3months = startOfMonth(subMonths(today, 3));
+  const currentWeekEnd = endOfWeek(today, { weekStartsOn: 1 });
 
-  const last3monthsActivities = activities.filter((activity) =>
-    isAfter(activity.created_at, last3months),
+  const last3monthsActivities = activities.filter(
+    (activity) =>
+      isBefore(activity.created_at, currentWeekEnd) &&
+      isAfter(activity.created_at, last3months),
   );
 
   const pulse = last3monthsActivities.reduce(
@@ -40,9 +49,7 @@ export const getMemberMetrics = async ({ activities, today }: Props) => {
     ? `${source?.slice(0, 1).toUpperCase()}${source?.slice(1).toLowerCase()} - ${name}`
     : "No activity";
 
-  const currentWeek = startOfWeek(today, { weekStartsOn: 1 });
-
-  const presence = getMemberPresence(activities, currentWeek);
+  const presence = getMemberPresence(activities, today);
   const level = Math.max(maxWeight, presence);
 
   return {

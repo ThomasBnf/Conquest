@@ -39,8 +39,5 @@ export const getPeople = async ({ linkedin, people_id }: Props) => {
 
   const peopleData = (await peopleResponse.json()) as PeopleResponse;
 
-  console.log("@peopleData");
-  console.dir(peopleData, { depth: 100 });
-
   return peopleData;
 };

@@ -1,6 +1,8 @@
+"use server";
+
 import { prisma } from "@/lib/prisma";
 import type { Log, Member } from "@conquest/zod/schemas/member.schema";
-import { eachWeekOfInterval, startOfDay, subDays } from "date-fns";
+import { eachWeekOfInterval, endOfDay, subDays } from "date-fns";
 import { getFirstActivity } from "../activities/getFirstActivity";
 import { listActivitiesIn365Days } from "../activities/listActivitiesIn365Days";
 import { getMemberMetrics } from "./getMemberMetrics";
@@ -12,7 +14,7 @@ type Props = {
 export const calculateMemberMetrics = async ({ member }: Props) => {
   const { id, workspace_id } = member;
 
-  const today = startOfDay(new Date());
+  const today = new Date();
   const last365Days = subDays(today, 365);
 
   const firstActivity = await getFirstActivity({ member });
@@ -24,7 +26,7 @@ export const calculateMemberMetrics = async ({ member }: Props) => {
   const weekIntervals = eachWeekOfInterval(
     {
       start: last365Days,
-      end: today,
+      end: endOfDay(today),
     },
     { weekStartsOn: 1 },
   );

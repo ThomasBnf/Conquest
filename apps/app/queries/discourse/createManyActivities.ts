@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import type { Member } from "@conquest/zod/schemas/member.schema";
 import { startOfDay, subDays } from "date-fns";
 import type DiscourseAPI from "discourse2";
+import { createActivity } from "../activities/createActivity";
 import { getActivityType } from "../activity-type/getActivityType";
 
 type Props = {
@@ -86,37 +87,37 @@ export const createManyActivities = async ({ client, member }: Props) => {
         case 1: {
           const reactTo = post_number === 1 ? `t-${topic_id}` : `p-${post_id}`;
 
-          await prisma.activities.create({
-            data: {
-              external_id: null,
-              activity_type_id: reaction_type.id,
-              message: "like",
-              react_to: reactTo,
-              thread_id: `t-${topic_id}`,
-              member_id: member.id,
-              channel_id: channel?.id ?? null,
-              created_at,
-              workspace_id,
-            },
+          await createActivity({
+            external_id: null,
+            activity_type_id: reaction_type.id,
+            message: "like",
+            react_to: reactTo,
+            thread_id: `t-${topic_id}`,
+            member_id: member.id,
+            channel_id: channel?.id ?? null,
+            created_at: new Date(created_at),
+            updated_at: new Date(created_at),
+            workspace_id,
           });
+
           break;
         }
         case 4: {
           if (!channel) continue;
 
-          await prisma.activities.create({
-            data: {
-              external_id: `t-${topic_id}`,
-              activity_type_id: post_type.id,
-              title,
-              message: excerpt,
-              thread_id: `t-${topic_id}`,
-              member_id: member.id,
-              channel_id: channel.id,
-              created_at,
-              workspace_id,
-            },
+          await createActivity({
+            external_id: `t-${topic_id}`,
+            activity_type_id: post_type.id,
+            title,
+            message: excerpt,
+            thread_id: `t-${topic_id}`,
+            member_id: member.id,
+            channel_id: channel.id,
+            created_at: new Date(created_at),
+            updated_at: new Date(created_at),
+            workspace_id,
           });
+
           break;
         }
         case 5: {

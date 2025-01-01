@@ -35,7 +35,7 @@ export const createManyComments = async ({ linkedin, comments }: Props) => {
       localizedHeadline,
     } = people;
 
-    const location = Object.values(headline.localized)[0]?.split(" ").pop();
+    const location = headline.preferredLocale.country;
     const avatar_url = profilePicture["displayImage~"]?.elements?.find(
       (element) => element?.artifact?.includes("800_800"),
     )?.identifiers?.[0]?.identifier;

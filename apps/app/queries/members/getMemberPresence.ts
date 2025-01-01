@@ -18,6 +18,58 @@ type TimeInterval = {
   end: Date;
 };
 
+export const getMemberPresence = (
+  activities: Activity[],
+  currentDate: Date,
+): number => {
+  const activitiesDates = activities.map((activity) =>
+    startOfDay(new Date(activity.created_at)),
+  );
+
+  const intervals = calculateIntervals(currentDate);
+
+  const counts: PresenceCounts = {
+    daysInPreviousWeek: countActivitiesInInterval(
+      activitiesDates,
+      intervals.week,
+    ),
+    daysInPrevious2Weeks: countActivitiesInInterval(
+      activitiesDates,
+      intervals.week2,
+    ),
+    daysInPrevious3Weeks: countActivitiesInInterval(
+      activitiesDates,
+      intervals.week3,
+    ),
+    daysInPreviousMonth: countActivitiesInInterval(
+      activitiesDates,
+      intervals.month,
+    ),
+    daysInPrevious2Months: countActivitiesInInterval(
+      activitiesDates,
+      intervals.month2,
+    ),
+    daysInPrevious3Months: countActivitiesInInterval(
+      activitiesDates,
+      intervals.month3,
+    ),
+    daysInPreviousQuarter: countActivitiesInInterval(
+      activitiesDates,
+      intervals.quarter,
+    ),
+    daysInPrevious2Quarters: countActivitiesInInterval(
+      activitiesDates,
+      intervals.quarter2,
+    ),
+    daysInPrevious3Quarters: countActivitiesInInterval(
+      activitiesDates,
+      intervals.quarter3,
+    ),
+  };
+
+  return getMemberLevel(counts);
+};
+
 type PresenceCounts = {
   daysInPreviousWeek: number;
   daysInPrevious2Weeks: number;
@@ -174,56 +226,4 @@ const calculateIntervals = (currentDate: Date) => {
 const getMemberLevel = (counts: PresenceCounts): number => {
   const matchingCondition = LEVEL_CONDITIONS.find(({ check }) => check(counts));
   return matchingCondition?.level ?? 0;
-};
-
-export const getMemberPresence = (
-  activities: Activity[],
-  currentDate: Date,
-): number => {
-  const activitiesDates = activities.map((activity) =>
-    startOfDay(new Date(activity.created_at)),
-  );
-
-  const intervals = calculateIntervals(currentDate);
-
-  const counts: PresenceCounts = {
-    daysInPreviousWeek: countActivitiesInInterval(
-      activitiesDates,
-      intervals.week,
-    ),
-    daysInPrevious2Weeks: countActivitiesInInterval(
-      activitiesDates,
-      intervals.week2,
-    ),
-    daysInPrevious3Weeks: countActivitiesInInterval(
-      activitiesDates,
-      intervals.week3,
-    ),
-    daysInPreviousMonth: countActivitiesInInterval(
-      activitiesDates,
-      intervals.month,
-    ),
-    daysInPrevious2Months: countActivitiesInInterval(
-      activitiesDates,
-      intervals.month2,
-    ),
-    daysInPrevious3Months: countActivitiesInInterval(
-      activitiesDates,
-      intervals.month3,
-    ),
-    daysInPreviousQuarter: countActivitiesInInterval(
-      activitiesDates,
-      intervals.quarter,
-    ),
-    daysInPrevious2Quarters: countActivitiesInInterval(
-      activitiesDates,
-      intervals.quarter2,
-    ),
-    daysInPrevious3Quarters: countActivitiesInInterval(
-      activitiesDates,
-      intervals.quarter3,
-    ),
-  };
-
-  return getMemberLevel(counts);
 };
