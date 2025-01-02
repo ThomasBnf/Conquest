@@ -14,9 +14,10 @@ declare module "hono" {
 
 const app = new Hono().basePath("/v1").use(async (c, next) => {
   const authorization = c.req.header("Authorization");
+  const hasBearer = authorization?.startsWith("Bearer");
   const token = authorization?.replace("Bearer ", "");
 
-  if (!authorization?.startsWith("Bearer")) {
+  if (!hasBearer) {
     return c.json({ message: "Bearer token is required" }, { status: 401 });
   }
 
@@ -24,22 +25,19 @@ const app = new Hono().basePath("/v1").use(async (c, next) => {
     return c.json({ message: "Missing Access Token" }, { status: 401 });
   }
 
-  try {
-    const apiKey = await prisma.apikeys.findUnique({
-      where: {
-        token,
-      },
-    });
+  const apiKey = await prisma.apikeys.findUnique({
+    where: {
+      token,
+    },
+  });
 
-    if (!apiKey) {
-      return c.json({ message: "Invalid Access Token" }, { status: 401 });
-    }
-
-    c.set("workspace_id", apiKey.workspace_id);
-    await next();
-  } catch (error) {
-    return c.json({ message: "Invalid Access Token", error }, { status: 401 });
+  if (!apiKey) {
+    return c.json({ message: "Invalid Access Token" }, { status: 401 });
   }
+
+  c.set("workspace_id", apiKey.workspace_id);
+
+  await next();
 });
 
 const api = app.route("/members", members).route("/activities", activities);
