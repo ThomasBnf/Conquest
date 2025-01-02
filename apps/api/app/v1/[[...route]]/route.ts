@@ -32,6 +32,8 @@ const app = new Hono().basePath("/v1").use(async (c, next) => {
     },
   });
 
+  console.log(apiKey);
+
   if (!apiKey) {
     return c.json({ message: "Invalid Access Token" }, { status: 401 });
   }
