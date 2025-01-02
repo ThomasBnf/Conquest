@@ -1,5 +1,3 @@
-"use server";
-
 import { prisma } from "@/lib/prisma";
 import type { Log, Member } from "@conquest/zod/schemas/member.schema";
 import { eachWeekOfInterval, endOfDay, subDays } from "date-fns";
