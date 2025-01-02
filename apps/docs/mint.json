@@ -48,6 +48,16 @@
       "pages": ["introduction"]
     },
     {
+      "group": "Activities",
+      "pages": [
+        "api-reference/activities/list",
+        "api-reference/activities/post",
+        "api-reference/activities/get",
+        "api-reference/activities/patch",
+        "api-reference/activities/delete"
+      ]
+    },
+    {
       "group": "Members",
       "pages": [
         "api-reference/members/list",

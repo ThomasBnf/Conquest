@@ -13,7 +13,7 @@
   "paths": {
     "/v1/members": {
       "get": {
-        "description": "Returns all members from your workspace",
+        "description": "List all members from your workspace",
         "security": [{ "bearerAuth": [] }],
         "parameters": [
           {
@@ -39,7 +39,6 @@
         ],
         "responses": {
           "200": {
-            "description": "Member response",
             "content": {
               "application/json": {
                 "schema": {
@@ -49,7 +48,6 @@
             }
           },
           "400": {
-            "description": "Failed to fetch members",
             "content": {
               "application/json": {
                 "schema": {
@@ -59,7 +57,6 @@
             }
           },
           "401": {
-            "description": "Unauthorized",
             "content": {
               "application/json": {
                 "schema": { "$ref": "#/components/schemas/error.UNAUTHORIZED" }
@@ -67,7 +64,6 @@
             }
           },
           "404": {
-            "description": "Not found",
             "content": {
               "application/json": {
                 "schema": { "$ref": "#/components/schemas/error.NOT_FOUND" }
@@ -81,7 +77,6 @@
         "security": [{ "bearerAuth": [] }],
         "responses": {
           "200": {
-            "description": "Member response",
             "content": {
               "application/json": {
                 "schema": {
@@ -91,7 +86,6 @@
             }
           },
           "400": {
-            "description": "Failed to fetch members",
             "content": {
               "application/json": {
                 "schema": {
@@ -101,7 +95,6 @@
             }
           },
           "401": {
-            "description": "Unauthorized",
             "content": {
               "application/json": {
                 "schema": { "$ref": "#/components/schemas/error.UNAUTHORIZED" }
@@ -109,7 +102,6 @@
             }
           },
           "404": {
-            "description": "Not found",
             "content": {
               "application/json": {
                 "schema": { "$ref": "#/components/schemas/error.NOT_FOUND" }
@@ -121,7 +113,7 @@
     },
     "/v1/members/{id}": {
       "get": {
-        "description": "Returns a member from your workspace",
+        "description": "Get a member from your workspace",
         "security": [{ "bearerAuth": [] }],
         "parameters": [
           {
@@ -135,17 +127,13 @@
         ],
         "responses": {
           "200": {
-            "description": "Member response",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Member"
-                }
+                "schema": { "$ref": "#/components/schemas/Member" }
               }
             }
           },
           "400": {
-            "description": "Failed to fetch members",
             "content": {
               "application/json": {
                 "schema": {
@@ -155,7 +143,6 @@
             }
           },
           "401": {
-            "description": "Unauthorized",
             "content": {
               "application/json": {
                 "schema": { "$ref": "#/components/schemas/error.UNAUTHORIZED" }
@@ -163,7 +150,6 @@
             }
           },
           "404": {
-            "description": "Not found",
             "content": {
               "application/json": {
                 "schema": { "$ref": "#/components/schemas/error.NOT_FOUND" }
@@ -187,7 +173,6 @@
         ],
         "responses": {
           "200": {
-            "description": "Member response",
             "content": {
               "application/json": {
                 "schema": {
@@ -197,7 +182,6 @@
             }
           },
           "400": {
-            "description": "Failed to fetch members",
             "content": {
               "application/json": {
                 "schema": {
@@ -207,7 +191,6 @@
             }
           },
           "401": {
-            "description": "Unauthorized",
             "content": {
               "application/json": {
                 "schema": { "$ref": "#/components/schemas/error.UNAUTHORIZED" }
@@ -215,7 +198,6 @@
             }
           },
           "404": {
-            "description": "Not found",
             "content": {
               "application/json": {
                 "schema": { "$ref": "#/components/schemas/error.NOT_FOUND" }
@@ -239,7 +221,6 @@
         ],
         "responses": {
           "200": {
-            "description": "Member response",
             "content": {
               "application/json": {
                 "schema": {
@@ -255,7 +236,6 @@
             }
           },
           "400": {
-            "description": "Failed to fetch members",
             "content": {
               "application/json": {
                 "schema": {
@@ -265,7 +245,6 @@
             }
           },
           "401": {
-            "description": "Unauthorized",
             "content": {
               "application/json": {
                 "schema": { "$ref": "#/components/schemas/error.UNAUTHORIZED" }
@@ -273,7 +252,244 @@
             }
           },
           "404": {
-            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/error.NOT_FOUND" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/activities": {
+      "get": {
+        "description": "List all activities from your workspace",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "The page number to return",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 1
+            }
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "description": "The number of results to return per page",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 10
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Activities" }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/error.BAD_REQUEST" }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/error.UNAUTHORIZED" }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/error.NOT_FOUND" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/activities/{memberId}": {
+      "post": {
+        "description": "Create a new activity attached to a member",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "memberId",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Activity" }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/error.BAD_REQUEST" }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/error.UNAUTHORIZED" }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/error.NOT_FOUND" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/activities/{id}": {
+      "get": {
+        "description": "Get an activity from your workspace",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Activity" }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/error.BAD_REQUEST" }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/error.UNAUTHORIZED" }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/error.NOT_FOUND" }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "description": "Update an activity from your workspace",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Activity" }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/error.BAD_REQUEST" }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/error.UNAUTHORIZED" }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/error.NOT_FOUND" }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "description": "Delete an activity from your workspace",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Activity" }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/error.BAD_REQUEST" }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/error.UNAUTHORIZED" }
+              }
+            }
+          },
+          "404": {
             "content": {
               "application/json": {
                 "schema": { "$ref": "#/components/schemas/error.NOT_FOUND" }
@@ -292,6 +508,184 @@
       }
     },
     "schemas": {
+      "Activities": {
+        "type": "object",
+        "properties": {
+          "page": { "type": "number", "example": 1 },
+          "page_size": { "type": "number", "example": 10 },
+          "total_activities": { "type": "number", "example": 1235 },
+          "activities": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "format": "cuid",
+                  "example": "cm5fkwwup0006dntb34yzw7dd"
+                },
+                "external_id": {
+                  "type": "string",
+                  "nullable": true,
+                  "example": "ext_123"
+                },
+                "title": {
+                  "type": "string",
+                  "nullable": true,
+                  "example": "Activity Title"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "This is an activity message"
+                },
+                "thread_id": {
+                  "type": "string",
+                  "nullable": true,
+                  "example": "thread_123"
+                },
+                "reply_to": {
+                  "type": "string",
+                  "nullable": true,
+                  "example": "cm5fkwwup0006dntb34yzw7dd"
+                },
+                "react_to": {
+                  "type": "string",
+                  "nullable": true,
+                  "example": "cm5fkwwup0006dntb34yzw7dd"
+                },
+                "invite_to": {
+                  "type": "string",
+                  "nullable": true,
+                  "example": "cm5fkwwup0006dntb34yzw7dd"
+                },
+                "activity_type_id": {
+                  "type": "string",
+                  "format": "cuid",
+                  "example": "cm5fkwwup0006dntb34yzw7dd"
+                },
+                "channel_id": {
+                  "type": "string",
+                  "format": "cuid",
+                  "nullable": true,
+                  "example": "cm5fkwwup0006dntb34yzw7dd"
+                },
+                "event_id": {
+                  "type": "string",
+                  "format": "cuid",
+                  "nullable": true,
+                  "example": "cm5fkwwup0006dntb34yzw7dd"
+                },
+                "member_id": {
+                  "type": "string",
+                  "format": "cuid",
+                  "example": "cm5fkwwup0006dntb34yzw7dd"
+                },
+                "workspace_id": {
+                  "type": "string",
+                  "format": "cuid",
+                  "example": "cm5fkwwup0006dntb34yzw7dd"
+                },
+                "created_at": {
+                  "type": "string",
+                  "format": "date-time",
+                  "example": "2025-01-01T00:00:00Z"
+                },
+                "updated_at": {
+                  "type": "string",
+                  "format": "date-time",
+                  "example": "2025-01-01T00:00:00Z"
+                }
+              }
+            }
+          }
+        }
+      },
+      "Activity": {
+        "type": "object",
+        "properties": {
+          "activity": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "cuid",
+                "example": "cm5fkwwup0006dntb34yzw7dd"
+              },
+              "external_id": {
+                "type": "string",
+                "nullable": true,
+                "example": "ext_123"
+              },
+              "title": {
+                "type": "string",
+                "nullable": true,
+                "example": "Activity Title"
+              },
+              "message": {
+                "type": "string",
+                "example": "This is an activity message"
+              },
+              "thread_id": {
+                "type": "string",
+                "nullable": true,
+                "example": "thread_123"
+              },
+              "reply_to": {
+                "type": "string",
+                "nullable": true,
+                "example": "cm5fkwwup0006dntb34yzw7dd"
+              },
+              "react_to": {
+                "type": "string",
+                "nullable": true,
+                "example": "cm5fkwwup0006dntb34yzw7dd"
+              },
+              "invite_to": {
+                "type": "string",
+                "nullable": true,
+                "example": "cm5fkwwup0006dntb34yzw7dd"
+              },
+              "activity_type_id": {
+                "type": "string",
+                "format": "cuid",
+                "example": "cm5fkwwup0006dntb34yzw7dd"
+              },
+              "channel_id": {
+                "type": "string",
+                "format": "cuid",
+                "nullable": true,
+                "example": "cm5fkwwup0006dntb34yzw7dd"
+              },
+              "event_id": {
+                "type": "string",
+                "format": "cuid",
+                "nullable": true,
+                "example": "cm5fkwwup0006dntb34yzw7dd"
+              },
+              "member_id": {
+                "type": "string",
+                "format": "cuid",
+                "example": "cm5fkwwup0006dntb34yzw7dd"
+              },
+              "workspace_id": {
+                "type": "string",
+                "format": "cuid",
+                "example": "cm5fkwwup0006dntb34yzw7dd"
+              },
+              "created_at": {
+                "type": "string",
+                "format": "date-time",
+                "example": "2025-01-01T00:00:00Z"
+              },
+              "updated_at": {
+                "type": "string",
+                "format": "date-time",
+                "example": "2025-01-01T00:00:00Z"
+              }
+            }
+          }
+        }
+      },
       "Members": {
         "type": "object",
         "properties": {
