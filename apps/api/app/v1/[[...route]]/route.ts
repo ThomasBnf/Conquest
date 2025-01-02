@@ -40,7 +40,25 @@ const app = new Hono().basePath("/v1").use(async (c, next) => {
   await next();
 });
 
-const api = app.route("/members", members).route("/activities", activities);
+const api = app
+  .get("/keys", async (c) => {
+    const authorization = c.req.header("Authorization");
+    const token = authorization?.replace("Bearer ", "");
+
+    // Rechercher toutes les API keys
+    const allApiKeys = await prisma.apikeys.findMany();
+    console.log("All API keys:", allApiKeys);
+
+    // Rechercher l'API key spécifique
+    const apiKey = await prisma.apikeys.findUnique({
+      where: { token },
+    });
+    console.log("Specific API key:", apiKey);
+
+    return c.json({ allApiKeys, specificApiKey: apiKey });
+  })
+  .route("/members", members)
+  .route("/activities", activities);
 
 export const GET = handle(api);
 export const POST = handle(api);
