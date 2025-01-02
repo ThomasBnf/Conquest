@@ -1,4 +1,4 @@
-import { GENDER } from "@conquest/zod/schemas/enum/gender.enum";
+import { GENDER } from "@conquest/zod/enum/gender.enum";
 import { z } from "zod";
 
 export const V1CreateMemberSchema = z.object({

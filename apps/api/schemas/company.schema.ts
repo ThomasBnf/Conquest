@@ -1,4 +1,4 @@
-import { SOURCE } from "@conquest/zod/schemas/enum/source.enum";
+import { SOURCE } from "@conquest/zod/enum/source.enum";
 import { z } from "zod";
 
 export const V1CreateCompanySchema = z.object({
