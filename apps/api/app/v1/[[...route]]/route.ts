@@ -20,26 +20,26 @@ const app = new Hono().basePath("/v1").use(async (c, next) => {
     return c.json({ message: "Bearer token is required" }, { status: 401 });
   }
 
-  // console.log(token);
+  if (!token) {
+    return c.json({ message: "Missing Access Token" }, { status: 401 });
+  }
 
-  // if (!token) {
-  //   return c.json({ message: "Missing Access Token" }, { status: 401 });
-  // }
+  try {
+    const apiKey = await prisma.apikeys.findUnique({
+      where: {
+        token,
+      },
+    });
 
-  const apiKey = await prisma.apikeys.findUnique({
-    where: {
-      token,
-    },
-  });
+    if (!apiKey) {
+      return c.json({ message: "Invalid Access Token" }, { status: 401 });
+    }
 
-  console.log(apiKey);
-
-  // if (!apiKey) {
-  //   return c.json({ message: "Invalid Access Token" }, { status: 401 });
-  // }
-
-  c.set("workspace_id", "123");
-  await next();
+    c.set("workspace_id", apiKey.workspace_id);
+    await next();
+  } catch (error) {
+    return c.json({ message: "Invalid Access Token", error }, { status: 401 });
+  }
 });
 
 const api = app.route("/members", members).route("/activities", activities);
