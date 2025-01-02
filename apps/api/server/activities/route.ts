@@ -1,8 +1,8 @@
+import { prisma } from "@/lib/prisma";
 import {
   V1CreateActivitySchema,
   V1UpdateActivitySchema,
-} from "@/app/schemas/activity.schema";
-import { prisma } from "@/lib/prisma";
+} from "@/schemas/activity.schema";
 import { ActivitySchema } from "@conquest/zod/schemas/activity.schema";
 import { zValidator } from "@hono/zod-validator";
 import { Prisma } from "@prisma/client";

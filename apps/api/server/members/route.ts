@@ -1,8 +1,8 @@
+import { prisma } from "@/lib/prisma";
 import {
   V1CreateMemberSchema,
   V1UpdateMemberSchema,
-} from "@/app/schemas/member.schema";
-import { prisma } from "@/lib/prisma";
+} from "@/schemas/member.schema";
 import { MemberSchema } from "@conquest/zod/schemas/member.schema";
 import { zValidator } from "@hono/zod-validator";
 import { Prisma } from "@prisma/client";
