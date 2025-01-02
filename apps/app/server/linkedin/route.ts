@@ -1,9 +1,6 @@
 import { getAuthUser } from "@/queries/users/getAuthUser";
 import { LinkedInIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
-import type {
-  Orgnaization,
-  organizationalEntityAclsResponse,
-} from "@conquest/zod/schemas/types/linkedin";
+import type { organizationalEntityAclsResponse } from "@conquest/zod/schemas/types/linkedin";
 import { Hono } from "hono";
 
 export const linkedin = new Hono()
@@ -56,30 +53,4 @@ export const linkedin = new Hono()
     const data = await response.json();
 
     return c.json(data);
-  })
-  .get("/get-company", async (c) => {
-    const { workspace } = c.get("user");
-
-    const integration = workspace.integrations.find(
-      (integration) => integration.details.source === "LINKEDIN",
-    );
-
-    const { details } = LinkedInIntegrationSchema.parse(integration);
-    const { access_token } = details;
-
-    const responseOrg = await fetch(
-      "https://api.linkedin.com/rest/organizations/104941091",
-      {
-        headers: {
-          Authorization: `Bearer ${access_token}`,
-          "LinkedIn-Version": "202411",
-          "Content-Type": "application/json",
-        },
-      },
-    );
-
-    const dataOrg = (await responseOrg.json()) as Orgnaization;
-    const { id, localizedName, localizedDescription } = dataOrg;
-
-    return c.json({ id, localizedName, localizedDescription });
   });

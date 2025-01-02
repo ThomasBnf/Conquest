@@ -14,46 +14,42 @@ export type organizationalEntityAcls = {
   organizationalTarget: string;
 };
 
-export type Orgnaization = {
-  vanityName: string;
-  website: {
-    localized: { [key: string]: string };
-    preferredLocale: { country: string; language: string };
+export type organizationsResponse = {
+  results: {
+    [key: string]: Organization;
   };
+  statuses: {
+    [key: string]: number;
+  };
+  errors: {
+    [key: string]: unknown;
+  };
+};
+
+export type Organization = {
+  vanityName: string;
   localizedName: string;
-  created: {
-    actor: string;
-    time: number;
+  website?: {
+    localized: {
+      [key: string]: string;
+    };
+    preferredLocale: {
+      country: string;
+      language: string;
+    };
   };
   groups: unknown[];
-  description: {
-    localized: { [key: string]: string };
-    preferredLocale: { country: string; language: string };
+  description?: {
+    localized: {
+      [key: string]: string;
+    };
+    preferredLocale: {
+      country: string;
+      language: string;
+    };
   };
   versionTag: string;
-  defaultLocale: {
-    country: string;
-    language: string;
-  };
-  organizationType: string;
-  alternativeNames: unknown[];
-  specialties: unknown[];
-  localizedSpecialties: unknown[];
-  name: {
-    localized: { [key: string]: string };
-    preferredLocale: { country: string; language: string };
-  };
-  primaryOrganizationType: string;
-  locations: unknown[];
-  lastModified: {
-    actor: string;
-    time: number;
-  };
-  id: number;
-  localizedDescription: string;
-  autoCreated: boolean;
-  localizedWebsite: string;
-  logoV2: {
+  coverPhotoV2?: {
     cropped: string;
     original: string;
     cropInfo: {
@@ -62,6 +58,48 @@ export type Orgnaization = {
       y: number;
       height: number;
     };
+  };
+  defaultLocale: {
+    country: string;
+    language: string;
+  };
+  organizationType: string;
+  alternativeNames: unknown[];
+  specialties: Array<{
+    locale: {
+      country: string;
+      language: string;
+    };
+    tags: string[];
+  }>;
+  localizedSpecialties: string[];
+  industries: string[];
+  name: {
+    localized: {
+      [key: string]: string;
+    };
+    preferredLocale: {
+      country: string;
+      language: string;
+    };
+  };
+  primaryOrganizationType: string;
+  locations: unknown[];
+  id: number;
+  localizedDescription?: string;
+  localizedWebsite?: string;
+  logoV2?: {
+    cropped: string;
+    original: string;
+    cropInfo: {
+      x: number;
+      width: number;
+      y: number;
+      height: number;
+    };
+  };
+  foundedOn?: {
+    year: number;
   };
 };
 
