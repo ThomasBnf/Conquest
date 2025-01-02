@@ -12,33 +12,34 @@ declare module "hono" {
   interface ContextVariableMap extends Variables {}
 }
 
-const app = new Hono().basePath("/v1").use(async (c, next) => {
-  const authorization = c.req.header("Authorization");
-  const hasBearer = authorization?.startsWith("Bearer");
-  const token = authorization?.replace("Bearer ", "");
+const app = new Hono().basePath("/v1");
+// .use(async (c, next) => {
+//   const authorization = c.req.header("Authorization");
+//   const hasBearer = authorization?.startsWith("Bearer");
+//   const token = authorization?.replace("Bearer ", "");
 
-  if (!hasBearer) {
-    return c.json({ message: "Bearer token is required" }, { status: 401 });
-  }
+//   if (!hasBearer) {
+//     return c.json({ message: "Bearer token is required" }, { status: 401 });
+//   }
 
-  if (!token) {
-    return c.json({ message: "Missing Access Token" }, { status: 401 });
-  }
+//   if (!token) {
+//     return c.json({ message: "Missing Access Token" }, { status: 401 });
+//   }
 
-  const apiKey = await prisma.apikeys.findUnique({
-    where: {
-      token,
-    },
-  });
+//   const apiKey = await prisma.apikeys.findUnique({
+//     where: {
+//       token,
+//     },
+//   });
 
-  if (!apiKey) {
-    return c.json({ message: "Invalid Access Token" }, { status: 401 });
-  }
+//   if (!apiKey) {
+//     return c.json({ message: "Invalid Access Token" }, { status: 401 });
+//   }
 
-  c.set("workspace_id", apiKey.workspace_id);
+//   c.set("workspace_id", apiKey.workspace_id);
 
-  await next();
-});
+//   await next();
+// });
 
 const api = app
   .get("/keys", async (c) => {
