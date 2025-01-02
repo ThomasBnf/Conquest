@@ -1,8 +1,8 @@
 {
   "openapi": "3.0.1",
   "info": {
-    "title": "Conquest API",
-    "description": "A sample API that uses a plant store as an example to demonstrate features in the OpenAPI specification",
+    "title": "Conquest Documentation",
+    "description": "Conquest API Reference - Members",
     "version": "1.0.0"
   },
   "servers": [
@@ -13,12 +13,8 @@
   "paths": {
     "/v1/members": {
       "get": {
-        "description": "Returns all members from the workspace",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
+        "description": "Returns all members from your workspace",
+        "security": [{ "bearerAuth": [] }],
         "parameters": [
           {
             "name": "page",
@@ -47,6 +43,48 @@
             "content": {
               "application/json": {
                 "schema": {
+                  "$ref": "#/components/schemas/Members"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Failed to fetch members",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error.BAD_REQUEST"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/error.UNAUTHORIZED" }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/error.NOT_FOUND" }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "description": "Create a new member in your workspace",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "Member response",
+            "content": {
+              "application/json": {
+                "schema": {
                   "$ref": "#/components/schemas/Member"
                 }
               }
@@ -57,8 +95,132 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "$ref": "#/components/schemas/error.BAD_REQUEST"
                 }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/error.UNAUTHORIZED" }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/error.NOT_FOUND" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/members/{id}": {
+      "get": {
+        "description": "Returns a member from your workspace",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The id of the member to return",
+            "schema": {
+              "type": "string",
+              "format": "cuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Member response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Members"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Failed to fetch members",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error.BAD_REQUEST"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/error.UNAUTHORIZED" }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/error.NOT_FOUND" }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "description": "Update a member in your workspace",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The id of the member to update",
+            "schema": {
+              "type": "string",
+              "format": "cuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Member response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Members"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Failed to fetch members",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error.BAD_REQUEST"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/error.UNAUTHORIZED" }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/error.NOT_FOUND" }
               }
             }
           }
@@ -67,129 +229,369 @@
     }
   },
   "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    },
     "schemas": {
-      "Member": {
+      "Members": {
         "type": "object",
         "properties": {
-          "page": { "type": "number" },
-          "page_size": { "type": "number" },
-          "total_members": { "type": "number" },
+          "page": { "type": "number", "example": 1 },
+          "page_size": { "type": "number", "example": 10 },
+          "total_members": { "type": "number", "example": 1235 },
           "members": {
             "type": "array",
             "items": {
               "type": "object",
               "properties": {
-                "id": { "type": "string", "format": "cuid" },
+                "id": {
+                  "type": "string",
+                  "format": "cuid",
+                  "example": "cm5fkwwup0006dntb34yzw7dd"
+                },
                 "discourse_id": {
                   "type": "string",
-                  "nullable": true
+                  "nullable": true,
+                  "example": "23"
                 },
                 "livestorm_id": {
                   "type": "string",
-                  "nullable": true
+                  "nullable": true,
+                  "example": "02a51b3b-3d6b-448c-91bb-48f0d12702c1"
                 },
-                "linkedin_id": { "type": "string", "nullable": true },
-                "slack_id": { "type": "string", "nullable": true },
-                "first_name": { "type": "string", "nullable": true },
-                "last_name": { "type": "string", "nullable": true },
-                "username": { "type": "string", "nullable": true },
-                "location": { "type": "string", "nullable": true },
-                "avatar_url": { "type": "string", "nullable": true },
-                "job_title": { "type": "string", "nullable": true },
+                "linkedin_id": {
+                  "type": "string",
+                  "nullable": true,
+                  "example": "iuHQSczlaT"
+                },
+                "slack_id": {
+                  "type": "string",
+                  "nullable": true,
+                  "example": "U0512345678"
+                },
+                "first_name": {
+                  "type": "string",
+                  "nullable": true,
+                  "example": "Thomas"
+                },
+                "last_name": {
+                  "type": "string",
+                  "nullable": true,
+                  "example": "Bonfils"
+                },
+                "username": {
+                  "type": "string",
+                  "nullable": true,
+                  "example": "thomasbonfils"
+                },
+                "location": {
+                  "type": "string",
+                  "nullable": true,
+                  "example": "FR"
+                },
+                "avatar_url": {
+                  "type": "string",
+                  "nullable": true,
+                  "example": "https://example.com/avatar.jpg"
+                },
+                "job_title": {
+                  "type": "string",
+                  "nullable": true,
+                  "example": "Software Engineer"
+                },
                 "primary_email": {
                   "type": "string",
-                  "nullable": true
+                  "nullable": true,
+                  "example": "thomas@useconquest.com"
                 },
                 "secondary_emails": {
                   "type": "array",
-                  "items": { "type": "string" }
+                  "items": {
+                    "type": "string",
+                    "example": "support@useconquest.com"
+                  }
                 },
                 "phones": {
                   "type": "array",
-                  "items": { "type": "string" }
+                  "items": {
+                    "type": "string",
+                    "example": "+33 6 12 34 56 78"
+                  }
                 },
                 "tags": {
                   "type": "array",
-                  "items": { "type": "string" }
+                  "items": {
+                    "type": "string",
+                    "example": "cm5fkwwup0006dntb34yzw7dd"
+                  }
                 },
-                "level": { "type": "number" },
-                "pulse": { "type": "number" },
-                "presence": { "type": "number" },
-                "gender": { "type": "string", "nullable": true },
-                "source": { "type": "string" },
+                "level": { "type": "number", "example": 6 },
+                "pulse": { "type": "number", "example": 203 },
+                "presence": { "type": "number", "example": 6 },
+                "gender": {
+                  "type": "string",
+                  "nullable": true,
+                  "example": "MALE"
+                },
+                "source": { "type": "string", "example": "SLACK" },
                 "logs": {
                   "type": "array",
                   "items": {
                     "type": "object",
                     "properties": {
-                      "date": { "type": "string" },
-                      "pulse": { "type": "number" },
-                      "presence": { "type": "number" },
-                      "level": { "type": "number" },
-                      "max_weight": { "type": "number" },
-                      "max_weight_activity": { "type": "string" }
+                      "date": {
+                        "type": "string",
+                        "example": "2025-01-01T00:00:00Z"
+                      },
+                      "pulse": { "type": "number", "example": 203 },
+                      "presence": { "type": "number", "example": 6 },
+                      "level": { "type": "number", "example": 6 },
+                      "max_weight": { "type": "number", "example": 4 },
+                      "max_weight_activity": {
+                        "type": "string",
+                        "example": "Slack - Write a post"
+                      }
                     }
                   }
                 },
                 "company_id": {
                   "type": "string",
                   "format": "cuid",
-                  "nullable": true
+                  "nullable": true,
+                  "example": "cm5fkwwup0006dntb34yzw7dd"
                 },
                 "workspace_id": {
                   "type": "string",
-                  "format": "cuid"
+                  "format": "cuid",
+                  "example": "cm5fkwwup0006dntb34yzw7dd"
                 },
                 "first_activity": {
                   "type": "string",
                   "format": "date-time",
-                  "nullable": true
+                  "nullable": true,
+                  "example": "2025-01-01T00:00:00Z"
                 },
                 "last_activity": {
                   "type": "string",
                   "format": "date-time",
-                  "nullable": true
+                  "nullable": true,
+                  "example": "2025-01-01T00:00:00Z"
                 },
                 "joined_at": {
                   "type": "string",
                   "format": "date-time",
-                  "nullable": true
+                  "nullable": true,
+                  "example": "2025-01-01T00:00:00Z"
                 },
                 "deleted_at": {
                   "type": "string",
                   "format": "date-time",
-                  "nullable": true
+                  "nullable": true,
+                  "example": "2025-01-01T00:00:00Z"
                 },
                 "created_at": {
                   "type": "string",
-                  "format": "date-time"
+                  "format": "date-time",
+                  "example": "2025-01-01T00:00:00Z"
                 },
                 "updated_at": {
                   "type": "string",
-                  "format": "date-time"
+                  "format": "date-time",
+                  "example": "2025-01-01T00:00:00Z"
                 }
               }
             }
           }
         }
       },
-      "Error": {
+      "Member": {
         "type": "object",
         "properties": {
-          "error": {
-            "type": "string"
-          },
-          "status": {
-            "type": "integer",
-            "format": "int32"
+          "member": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "cuid",
+                "example": "cm5fkwwup0006dntb34yzw7dd"
+              },
+              "discourse_id": {
+                "type": "string",
+                "nullable": true,
+                "example": "23"
+              },
+              "livestorm_id": {
+                "type": "string",
+                "nullable": true,
+                "example": "02a51b3b-3d6b-448c-91bb-48f0d12702c1"
+              },
+              "linkedin_id": {
+                "type": "string",
+                "nullable": true,
+                "example": "iuHQSczlaT"
+              },
+              "slack_id": {
+                "type": "string",
+                "nullable": true,
+                "example": "U0512345678"
+              },
+              "first_name": {
+                "type": "string",
+                "nullable": true,
+                "example": "Thomas"
+              },
+              "last_name": {
+                "type": "string",
+                "nullable": true,
+                "example": "Bonfils"
+              },
+              "username": {
+                "type": "string",
+                "nullable": true,
+                "example": "thomasbonfils"
+              },
+              "location": {
+                "type": "string",
+                "nullable": true,
+                "example": "FR"
+              },
+              "avatar_url": {
+                "type": "string",
+                "nullable": true,
+                "example": "https://example.com/avatar.jpg"
+              },
+              "job_title": {
+                "type": "string",
+                "nullable": true,
+                "example": "Software Engineer"
+              },
+              "primary_email": {
+                "type": "string",
+                "nullable": true,
+                "example": "thomas@useconquest.com"
+              },
+              "secondary_emails": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "example": "support@useconquest.com"
+                }
+              },
+              "phones": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "example": "+33 6 12 34 56 78"
+                }
+              },
+              "tags": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "example": "cm5fkwwup0006dntb34yzw7dd"
+                }
+              },
+              "level": { "type": "number", "example": 6 },
+              "pulse": { "type": "number", "example": 203 },
+              "presence": { "type": "number", "example": 6 },
+              "gender": {
+                "type": "string",
+                "nullable": true,
+                "example": "MALE"
+              },
+              "source": { "type": "string", "example": "SLACK" },
+              "logs": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "date": {
+                      "type": "string",
+                      "example": "2025-01-01T00:00:00Z"
+                    },
+                    "pulse": { "type": "number", "example": 203 },
+                    "presence": { "type": "number", "example": 6 },
+                    "level": { "type": "number", "example": 6 },
+                    "max_weight": { "type": "number", "example": 4 },
+                    "max_weight_activity": {
+                      "type": "string",
+                      "example": "Slack - Write a post"
+                    }
+                  }
+                }
+              },
+              "company_id": {
+                "type": "string",
+                "format": "cuid",
+                "nullable": true,
+                "example": "cm5fkwwup0006dntb34yzw7dd"
+              },
+              "workspace_id": {
+                "type": "string",
+                "format": "cuid",
+                "example": "cm5fkwwup0006dntb34yzw7dd"
+              },
+              "first_activity": {
+                "type": "string",
+                "format": "date-time",
+                "nullable": true,
+                "example": "2025-01-01T00:00:00Z"
+              },
+              "last_activity": {
+                "type": "string",
+                "format": "date-time",
+                "nullable": true,
+                "example": "2025-01-01T00:00:00Z"
+              },
+              "joined_at": {
+                "type": "string",
+                "format": "date-time",
+                "nullable": true,
+                "example": "2025-01-01T00:00:00Z"
+              },
+              "deleted_at": {
+                "type": "string",
+                "format": "date-time",
+                "nullable": true,
+                "example": "2025-01-01T00:00:00Z"
+              },
+              "created_at": {
+                "type": "string",
+                "format": "date-time",
+                "example": "2025-01-01T00:00:00Z"
+              },
+              "updated_at": {
+                "type": "string",
+                "format": "date-time",
+                "example": "2025-01-01T00:00:00Z"
+              }
+            }
           }
         }
-      }
-    },
-    "securitySchemes": {
-      "bearerAuth": {
-        "type": "http",
-        "scheme": "bearer"
+      },
+      "error.BAD_REQUEST": {
+        "type": "object",
+        "example": {
+          "code": "BAD_REQUEST",
+          "error": "Invalid request"
+        }
+      },
+      "error.UNAUTHORIZED": {
+        "type": "object",
+        "example": {
+          "code": "UNAUTHORIZED",
+          "error": "Authentication failed"
+        }
+      },
+      "error.NOT_FOUND": {
+        "type": "object",
+        "example": {
+          "code": "NOT_FOUND",
+          "error": "Resource not found"
+        }
       }
     }
   }

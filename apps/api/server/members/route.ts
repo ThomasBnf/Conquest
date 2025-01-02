@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { badRequest, notFound } from "@/lib/utils";
 import {
   V1CreateMemberSchema,
   V1UpdateMemberSchema,
@@ -48,7 +49,7 @@ export const members = new Hono()
           members: MemberSchema.array().parse(members),
         });
       } catch (error) {
-        return c.json({ error: "Failed to fetch members" }, { status: 400 });
+        return badRequest(c, "Failed to fetch members");
       }
     },
   )
@@ -69,19 +70,42 @@ export const members = new Hono()
         },
       });
 
-      return c.json(MemberSchema.parse(createdMember));
+      return c.json({ member: MemberSchema.parse(createdMember) });
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
         if (error.code === "P2002") {
-          return c.json(
-            { error: "Member already exists with this email" },
-            { status: 400 },
-          );
+          return badRequest(c, "Member already exists with this email");
         }
       }
-      return c.json({ error: "Failed to create member" }, { status: 400 });
+      return badRequest(c, "Failed to create member");
     }
   })
+  .get(
+    "/:id",
+    zValidator("param", z.object({ id: z.string().cuid() })),
+    async (c) => {
+      const id = c.req.param("id");
+      const workspace_id = c.get("workspace_id");
+
+      try {
+        const member = await prisma.members.findUnique({
+          where: {
+            id,
+            workspace_id,
+          },
+        });
+
+        return c.json({ member: MemberSchema.parse(member) });
+      } catch (error) {
+        if (error instanceof Prisma.PrismaClientKnownRequestError) {
+          if (error.code === "P2025") {
+            return notFound(c, "Member not found");
+          }
+        }
+        return badRequest(c, "Failed to fetch member");
+      }
+    },
+  )
   .patch("/:id", zValidator("json", V1UpdateMemberSchema), async (c) => {
     const id = c.req.param("id");
     const workspace_id = c.get("workspace_id");
@@ -98,14 +122,14 @@ export const members = new Hono()
         },
       });
 
-      return c.json(MemberSchema.parse(updatedMember));
+      return c.json({ member: MemberSchema.parse(updatedMember) });
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
         if (error.code === "P2025") {
-          return c.json({ error: "Member not found" }, { status: 404 });
+          return notFound(c, "Member not found");
         }
       }
-      return c.json({ error: "Failed to update member" }, { status: 400 });
+      return badRequest(c, "Failed to update member");
     }
   })
   .delete(
@@ -123,17 +147,14 @@ export const members = new Hono()
           },
         });
 
-        return c.json(
-          { success: true, message: "Member deleted successfully" },
-          { status: 200 },
-        );
+        return c.json({ message: "Member deleted successfully" });
       } catch (error) {
         if (error instanceof Prisma.PrismaClientKnownRequestError) {
           if (error.code === "P2025") {
-            return c.json({ error: "Member not found" }, { status: 404 });
+            return notFound(c, "Member not found");
           }
         }
-        return c.json({ error: "Failed to delete member" }, { status: 400 });
+        return badRequest(c, "Failed to delete member");
       }
     },
   );

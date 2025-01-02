@@ -19,11 +19,17 @@ const app = new Hono().basePath("/v1").use(async (c, next) => {
   const token = authorization?.replace("Bearer ", "");
 
   if (!hasBearer) {
-    return c.json({ message: "Bearer token is required" }, { status: 401 });
+    return c.json(
+      { code: "UNAUTHORIZED", message: "Bearer token is required" },
+      { status: 401 },
+    );
   }
 
   if (!token) {
-    return c.json({ message: "Missing Access Token" }, { status: 401 });
+    return c.json(
+      { code: "UNAUTHORIZED", message: "Missing Access Token" },
+      { status: 401 },
+    );
   }
 
   const apiKey = await prisma.apikeys.findUnique({
@@ -33,7 +39,10 @@ const app = new Hono().basePath("/v1").use(async (c, next) => {
   });
 
   if (!apiKey) {
-    return c.json({ message: "Invalid Access Token" }, { status: 401 });
+    return c.json(
+      { code: "UNAUTHORIZED", message: "Invalid Access Token" },
+      { status: 401 },
+    );
   }
 
   c.set("workspace_id", apiKey.workspace_id);

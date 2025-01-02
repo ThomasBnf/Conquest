@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { badRequest, notFound } from "@/lib/utils";
 import {
   V1CreateActivitySchema,
   V1UpdateActivitySchema,
@@ -48,7 +49,7 @@ export const activities = new Hono()
           activities: ActivitySchema.array().parse(activities),
         });
       } catch (error) {
-        return c.json({ error: "Failed to fetch activities" }, { status: 400 });
+        return badRequest(c, "Failed to fetch activities");
       }
     },
   )
@@ -69,7 +70,7 @@ export const activities = new Hono()
     });
 
     if (!activity_type) {
-      return c.json({ error: "Activity type not found" }, { status: 404 });
+      return notFound(c, "Activity type not found");
     }
 
     try {
@@ -86,13 +87,13 @@ export const activities = new Hono()
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
         if (error.code === "P2002") {
-          return c.json({ error: "Activity already exists" }, { status: 400 });
+          return badRequest(c, "Activity already exists");
         }
         if (error.code === "P2003") {
-          return c.json({ error: "Member not found" }, { status: 404 });
+          return notFound(c, "Member not found");
         }
       }
-      return c.json({ error: "Failed to create activity" }, { status: 400 });
+      return badRequest(c, "Failed to create activity");
     }
   })
   .patch("/:id", zValidator("json", V1UpdateActivitySchema), async (c) => {
@@ -113,7 +114,7 @@ export const activities = new Hono()
       });
 
       if (!activity_type) {
-        return c.json({ error: "Activity type not found" }, { status: 404 });
+        return notFound(c, "Activity type not found");
       }
     }
 
@@ -132,10 +133,10 @@ export const activities = new Hono()
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
         if (error.code === "P2025") {
-          return c.json({ error: "Activity not found" }, { status: 404 });
+          return notFound(c, "Activity not found");
         }
       }
-      return c.json({ error: "Failed to update activity" }, { status: 400 });
+      return badRequest(c, "Failed to update activity");
     }
   })
   .delete(
@@ -153,17 +154,14 @@ export const activities = new Hono()
           },
         });
 
-        return c.json(
-          { success: true, message: "Activity deleted successfully" },
-          { status: 200 },
-        );
+        return c.json({ message: "Activity deleted successfully" });
       } catch (error) {
         if (error instanceof Prisma.PrismaClientKnownRequestError) {
           if (error.code === "P2025") {
-            return c.json({ error: "Activity not found" }, { status: 404 });
+            return notFound(c, "Activity not found");
           }
         }
-        return c.json({ error: "Failed to delete activity" }, { status: 400 });
+        return badRequest(c, "Failed to delete activity");
       }
     },
   );

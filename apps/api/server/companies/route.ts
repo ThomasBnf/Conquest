@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { badRequest, notFound } from "@/lib/utils";
 import {
   V1CreateCompanySchema,
   V1UpdateCompanySchema,
@@ -48,7 +49,7 @@ export const companies = new Hono()
           companies: CompanySchema.array().parse(companies),
         });
       } catch (error) {
-        return c.json({ error: "Failed to fetch companies" }, { status: 400 });
+        return badRequest(c, "Failed to fetch companies");
       }
     },
   )
@@ -68,13 +69,10 @@ export const companies = new Hono()
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
         if (error.code === "P2002") {
-          return c.json(
-            { error: "Company already exists with this name" },
-            { status: 400 },
-          );
+          return badRequest(c, "Company already exists with this name");
         }
       }
-      return c.json({ error: "Failed to create company" }, { status: 400 });
+      return badRequest(c, "Failed to create company");
     }
   })
   .patch("/:id", zValidator("json", V1UpdateCompanySchema), async (c) => {
@@ -97,10 +95,10 @@ export const companies = new Hono()
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
         if (error.code === "P2025") {
-          return c.json({ error: "Company not found" }, { status: 404 });
+          return notFound(c, "Company not found");
         }
       }
-      return c.json({ error: "Failed to update company" }, { status: 400 });
+      return badRequest(c, "Failed to update company");
     }
   })
   .delete(
@@ -118,17 +116,14 @@ export const companies = new Hono()
           },
         });
 
-        return c.json(
-          { success: true, message: "Company deleted successfully" },
-          { status: 200 },
-        );
+        return c.json({ message: "Company deleted successfully" });
       } catch (error) {
         if (error instanceof Prisma.PrismaClientKnownRequestError) {
           if (error.code === "P2025") {
-            return c.json({ error: "Company not found" }, { status: 404 });
+            return notFound(c, "Company not found");
           }
         }
-        return c.json({ error: "Failed to delete company" }, { status: 400 });
+        return badRequest(c, "Failed to delete company");
       }
     },
   );

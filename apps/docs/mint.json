@@ -48,7 +48,13 @@
     },
     {
       "group": "Members",
-      "pages": ["api-reference/endpoint/list"]
+      "pages": [
+        "api-reference/members/list",
+        "api-reference/members/post",
+        "api-reference/members/get",
+        "api-reference/members/patch",
+        "api-reference/members/delete"
+      ]
     }
   ],
   "api": {
