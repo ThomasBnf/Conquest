@@ -23,14 +23,13 @@
         "NODE_ENV"
       ],
       "inputs": ["$TURBO_DEFAULT$", ".env"],
-      "dependsOn": ["^db:generate", "^db:deploy", "^build"],
+      "dependsOn": ["^db:generate", "^db:deploy", "^build --output public"],
       "outputs": [
         ".next/**",
         "!.next/cache/**",
         "next-env.d.ts",
         ".expo/**",
-        "dist/**",
-        "public/**"
+        "dist/**"
       ]
     },
     "start": {
