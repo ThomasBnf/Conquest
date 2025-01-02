@@ -7,14 +7,15 @@
   },
   "favicon": "/favicon.svg",
   "colors": {
-    "primary": "#0D9373",
-    "light": "#07C983",
-    "dark": "#0D9373",
+    "primary": "#5319E6",
+    "dark": "#5319E6",
+    "light": "#CCBCF3",
     "anchors": {
       "from": "#0D9373",
       "to": "#07C983"
     },
     "background": {
+      "dark": "#0c0c0e",
       "light": "#F9F5FF"
     }
   },
@@ -58,7 +59,7 @@
     }
   ],
   "api": {
-    "baseUrl": "https://api.conquest.com",
+    "baseUrl": "https://api.useconquest.com",
     "auth": {
       "method": "bearer"
     }

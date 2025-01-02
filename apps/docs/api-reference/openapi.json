@@ -125,13 +125,12 @@
         "security": [{ "bearerAuth": [] }],
         "parameters": [
           {
-            "name": "id",
             "in": "path",
-            "description": "The id of the member to return",
+            "name": "id",
             "schema": {
-              "type": "string",
-              "format": "cuid"
-            }
+              "type": "string"
+            },
+            "required": true
           }
         ],
         "responses": {
@@ -140,7 +139,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Members"
+                  "$ref": "#/components/schemas/Member"
                 }
               }
             }
@@ -178,13 +177,12 @@
         "security": [{ "bearerAuth": [] }],
         "parameters": [
           {
-            "name": "id",
             "in": "path",
-            "description": "The id of the member to update",
+            "name": "id",
             "schema": {
-              "type": "string",
-              "format": "cuid"
-            }
+              "type": "string"
+            },
+            "required": true
           }
         ],
         "responses": {
@@ -193,7 +191,65 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Members"
+                  "$ref": "#/components/schemas/Member"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Failed to fetch members",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error.BAD_REQUEST"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/error.UNAUTHORIZED" }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/error.NOT_FOUND" }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "description": "Delete a member in your workspace",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Member response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Member deleted successfully"
+                    }
+                  }
                 }
               }
             }
