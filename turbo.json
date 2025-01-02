@@ -32,11 +32,6 @@
         "dist/**"
       ]
     },
-    "docs#build": {
-      "dependsOn": ["^build"],
-      "outputs": ["build/**"],
-      "outputLogs": "new-only"
-    },
     "start": {
       "cache": false
     },
