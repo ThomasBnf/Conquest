@@ -3,7 +3,6 @@
 import { Activities } from "@/components/icons/Activities";
 import { Companies } from "@/components/icons/Companies";
 import { Dashboard } from "@/components/icons/Dashboard";
-import { Integration } from "@/components/icons/Integration";
 import { Members } from "@/components/icons/Members";
 import { useUser } from "@/context/userContext";
 import { WorkspaceMenu } from "@/features/workspaces/workspace-menu";
@@ -20,6 +19,7 @@ import {
   SidebarRail,
   useSidebar,
 } from "@conquest/ui/sidebar";
+import { Separator } from "@conquest/ui/src/components/separator";
 import {
   Tooltip,
   TooltipContent,
@@ -29,10 +29,13 @@ import {
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Discourse } from "../icons/Discourse";
+import { Documentation } from "../icons/Documentation";
+import { Integration } from "../icons/Integration";
 import { Linkedin } from "../icons/Linkedin";
 import { Livestorm } from "../icons/Livestorm";
 import { Settings } from "../icons/Settings";
 import { Slack } from "../icons/Slack";
+import { SlackCommunity } from "../icons/Slack-Community";
 import { SidebarSettings } from "./sidebar-settings";
 
 export const AppSidebar = () => {
@@ -67,12 +70,38 @@ export const AppSidebar = () => {
       href: `/${slug}/activities`,
       isActive: pathname.startsWith(`/${slug}/activities`),
     },
+    {
+      label: "Integrations",
+      icon: <Integration className="size-[18px]" />,
+      href: `/${slug}/settings/integrations`,
+    },
     // {
     //   label: "Workflows",
     //   icon: <Workflows className="size-[18px]" />,
     //   href: `/${slug}/workflows`,
     //   isActive: pathname.startsWith(`/${slug}/workflows`),
     // },
+  ];
+
+  const footer = [
+    {
+      label: "Settings",
+      icon: <Settings className="size-[18px]" />,
+      href: `/${slug}/settings`,
+    },
+  ];
+
+  const links = [
+    {
+      label: "Documentation",
+      icon: <Documentation className="size-[18px]" />,
+      href: "https://docs.useconquest.com",
+    },
+    {
+      label: "Community",
+      icon: <SlackCommunity className="size-[18px]" />,
+      href: "https://join.slack.com/t/useconquest/shared_invite/zt-2x4fg4fut-7k0G3_D649TkfPc5WIPdgA",
+    },
   ];
 
   return (
@@ -108,22 +137,29 @@ export const AppSidebar = () => {
         </SidebarContent>
         <SidebarFooter>
           <SidebarMenu>
-            <SidebarMenuItem>
-              <SidebarMenuButton asChild>
-                <Link href={`/${slug}/settings`}>
-                  <Settings className="size-[18px]" />
-                  <span>Settings</span>
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-            <SidebarMenuItem>
-              <SidebarMenuButton asChild>
-                <Link href={`/${slug}/settings/integrations`}>
-                  <Integration className="size-[18px]" />
-                  <span>Integrations</span>
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
+            {footer.map((route) => (
+              <SidebarMenuItem key={route.label}>
+                <SidebarMenuButton asChild>
+                  <Link href={route.href}>
+                    {route.icon}
+                    <span>{route.label}</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            ))}
+          </SidebarMenu>
+          <Separator />
+          <SidebarMenu>
+            {links.map((route) => (
+              <SidebarMenuItem key={route.label}>
+                <SidebarMenuButton asChild>
+                  <Link href={route.href}>
+                    {route.icon}
+                    <span>{route.label}</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            ))}
           </SidebarMenu>
           <SidebarRail />
         </SidebarFooter>
