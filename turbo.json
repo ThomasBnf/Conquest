@@ -29,7 +29,8 @@
         "!.next/cache/**",
         "next-env.d.ts",
         ".expo/**",
-        "dist/**"
+        "dist/**",
+        "public/**"
       ]
     },
     "start": {
