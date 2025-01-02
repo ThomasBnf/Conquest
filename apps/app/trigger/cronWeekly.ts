@@ -38,20 +38,13 @@ export const cronWeekly = schedules.task({
 
       if (!member) continue;
 
-      const filteredLogs = member.logs.filter(
-        (log) => new Date(log.date) >= last52Weeks,
-      );
-
       const activities = await listActivitiesIn365Days({ member });
       const metrics = await getMemberMetrics({ activities, today });
 
-      const newLogs: Log[] = [
-        ...filteredLogs,
-        {
-          date: today.toISOString(),
-          ...metrics,
-        },
-      ];
+      const newLog: Log = {
+        date: today.toISOString(),
+        ...metrics,
+      };
 
       const { pulse, presence, level } = metrics;
 
@@ -64,7 +57,9 @@ export const cronWeekly = schedules.task({
           pulse,
           presence,
           level,
-          logs: newLogs,
+          logs: {
+            push: newLog,
+          },
         },
       });
     }

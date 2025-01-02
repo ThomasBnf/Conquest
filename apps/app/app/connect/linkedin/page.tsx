@@ -38,7 +38,7 @@ export default async function Page({ searchParams: { code } }: Props) {
     external_id: null,
     details: {
       source: "LINKEDIN",
-      access_token,
+      access_token: access_token ?? "",
       expire_in: 3600,
       scopes: LINKEDIN_SCOPES,
       organization_id: "",
