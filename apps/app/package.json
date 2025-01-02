@@ -14,9 +14,6 @@
     "trigger:dev": "npx trigger.dev dev",
     "trigger:deploy": "npx trigger.dev@latest deploy"
   },
-  "exports": {
-    "./prisma": "./lib/prisma.ts"
-  },
   "dependencies": {
     "@ai-sdk/openai": "^1.0.11",
     "@auth/core": "^0.37.4",
@@ -48,7 +45,6 @@
     "next-auth": "^5.0.0-beta.22",
     "next-safe-action": "^7.9.4",
     "next-themes": "^0.3.0",
-    "next-zod-route": "^0.0.11",
     "nuqs": "^1.20.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",

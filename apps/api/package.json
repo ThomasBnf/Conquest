@@ -13,7 +13,6 @@
   },
   "dependencies": {
     "@conquest/database": "workspace:*",
-    "@conquest/ui": "workspace:*",
     "@conquest/zod": "workspace:*",
     "@hono/zod-validator": "^0.4.1",
     "hono": "^4.6.12",
