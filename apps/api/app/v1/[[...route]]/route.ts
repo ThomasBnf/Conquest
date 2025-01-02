@@ -20,6 +20,8 @@ const app = new Hono().basePath("/v1").use(async (c, next) => {
     return c.json({ message: "Bearer token is required" }, { status: 401 });
   }
 
+  console.log(token);
+
   if (!token) {
     return c.json({ message: "Missing Access Token" }, { status: 401 });
   }
