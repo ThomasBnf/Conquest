@@ -14,7 +14,11 @@ export const SlackActivity = ({ activity }: Props) => {
   const { data: files } = useListFiles({ activityId: activity.id });
 
   return (
-    <ActivityCard activity={activity} badge={<SlackBadge label={name} />}>
+    <ActivityCard
+      activity={activity}
+      badge={<SlackBadge label={name} />}
+      className="from-slack"
+    >
       <Message activity={activity} />
       {files && files.length > 0 && (
         <div className="mt-2 grid grid-cols-2 gap-2">

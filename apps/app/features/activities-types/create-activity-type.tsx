@@ -122,7 +122,7 @@ export const CreateActivityType = () => {
                         onBlur={() => {
                           form.setValue(
                             "key",
-                            `${form.getValues("source").toLowerCase()}:${field.value.toLowerCase().replace(" ", "_")}`,
+                            `${form.getValues("source").toLowerCase()}:${field.value.toLowerCase().replaceAll(" ", "_")}`,
                           );
                         }}
                       />

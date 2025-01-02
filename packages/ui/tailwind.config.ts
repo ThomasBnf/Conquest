@@ -76,6 +76,9 @@ const config = {
         discourse: {
           DEFAULT: "hsl(var(--discourse))",
         },
+        linkedin: {
+          DEFAULT: "hsl(var(--linkedin))",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",

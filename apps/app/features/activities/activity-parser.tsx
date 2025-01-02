@@ -1,6 +1,7 @@
 import type { ActivityWithTypeAndMember } from "@conquest/zod/activity.schema";
 import { APIActivity } from "./api-activity";
 import { DiscourseActivity } from "./discourse/discourse-activity";
+import { LinkedinActivity } from "./linkedin/linkedin-activity";
 import { LivestormActivity } from "./livestorm/livestorm-activity";
 import { SlackActivity } from "./slack/slack-activity";
 
@@ -21,6 +22,6 @@ export const ActivityParser = ({ activity }: Props) => {
     case "LIVESTORM":
       return <LivestormActivity activity={activity} />;
     case "LINKEDIN":
-      return <p>Linkedin</p>;
+      return <LinkedinActivity activity={activity} />;
   }
 };

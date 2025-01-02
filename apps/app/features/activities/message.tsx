@@ -29,5 +29,9 @@ export const Message = ({ activity }: Props) => {
     return <DiscourseReply activity={activity} />;
   }
 
+  if (key === "linkedin:like") {
+    return <p>👍</p>;
+  }
+
   return <Markdown activity={activity} />;
 };

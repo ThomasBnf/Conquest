@@ -30,9 +30,7 @@ export const ActivityCard = ({
     <div
       className={cn(
         "relative rounded-[7px] p-px shadow-sm",
-        badge
-          ? "bg-gradient-to-br from-0% from-slack to-70% to-border"
-          : "border",
+        badge ? "bg-gradient-to-br from-0% to-70% to-border" : "border",
         className,
       )}
     >
