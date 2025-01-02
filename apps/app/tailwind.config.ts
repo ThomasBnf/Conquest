@@ -6,6 +6,7 @@ export default {
     "./app/**/*.{ts,tsx}",
     "./components/**/*.{ts,tsx}",
     "./features/**/*.{ts,tsx}",
+    "./constant/**/*.{ts,tsx}",
     "./lib/**/*.{ts,tsx}",
     "../../packages/ui/**/*.{ts,tsx}",
   ],

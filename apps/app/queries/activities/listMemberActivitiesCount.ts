@@ -1,5 +1,11 @@
 import { prisma } from "@/lib/prisma";
-import { eachDayOfInterval, endOfToday, isSameDay, subDays } from "date-fns";
+import {
+  eachDayOfInterval,
+  endOfToday,
+  isSameDay,
+  startOfDay,
+  subDays,
+} from "date-fns";
 
 type Props = {
   member_id: string;
@@ -11,7 +17,7 @@ export const listMemberActivitiesCount = async ({
   workspace_id,
 }: Props) => {
   const today = new Date();
-  const from = subDays(today, 365);
+  const from = startOfDay(subDays(today, 365));
   const to = endOfToday();
 
   const intervalDay = eachDayOfInterval({
