@@ -7,7 +7,7 @@
   },
   "servers": [
     {
-      "url": "https://api.conquest.com"
+      "url": "https://api.useconquest.com"
     }
   ],
   "paths": {
