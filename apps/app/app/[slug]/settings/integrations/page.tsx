@@ -5,8 +5,8 @@ import { Linkedin } from "@/components/icons/Linkedin";
 import { Livestorm } from "@/components/icons/Livestorm";
 import { Slack } from "@/components/icons/Slack";
 import { useUser } from "@/context/userContext";
+import { Badge } from "@conquest/ui/badge";
 import { ScrollArea } from "@conquest/ui/scroll-area";
-import { Badge } from "@conquest/ui/src/components/badge";
 import { Loader2 } from "lucide-react";
 import Link from "next/link";
 

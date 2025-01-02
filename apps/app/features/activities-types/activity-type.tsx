@@ -1,5 +1,5 @@
 import { SourceBadge } from "@/components/custom/source-badge";
-import type { ActivityType as _ActivityType } from "@conquest/zod/activity-type.schema";
+import type { ActivityType as _ActivityType } from "@conquest/zod/schemas/activity-type.schema";
 import { ActivityTypeMenu } from "./activity-type-menu";
 
 type Props = {

@@ -2,7 +2,7 @@
 
 import { authAction } from "@/lib/authAction";
 import { prisma } from "@conquest/database";
-import { ActivityTypeSchema } from "@conquest/zod/activity-type.schema";
+import { ActivityTypeSchema } from "@conquest/zod/schemas/activity-type.schema";
 
 export const listActivityTypes = authAction
   .metadata({

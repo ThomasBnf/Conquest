@@ -1,4 +1,4 @@
-import type { ActivityWithTypeAndMember } from "@conquest/zod/activity.schema";
+import type { ActivityWithTypeAndMember } from "@conquest/zod/schemas/activity.schema";
 import { DiscourseReaction } from "./discourse/discourse-reaction";
 import { DiscourseReply } from "./discourse/discourse-reply";
 import { Markdown } from "./markdown";

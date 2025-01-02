@@ -17,7 +17,7 @@ import type {
   FilterNumber,
   FilterSelect,
   FilterText,
-} from "@conquest/zod/filters.schema";
+} from "@conquest/zod/schemas/filters.schema";
 import cuid from "cuid";
 import { ListFilter } from "lucide-react";
 import { type Dispatch, type SetStateAction, useRef, useState } from "react";

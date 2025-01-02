@@ -8,7 +8,7 @@ import {
 } from "@conquest/ui/form";
 import { Input } from "@conquest/ui/input";
 import { TextField } from "@conquest/ui/text-field";
-import { NodeWebhookSchema } from "@conquest/zod/node.schema";
+import { NodeWebhookSchema } from "@conquest/zod/schemas/node.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useReactFlow } from "@xyflow/react";
 import { useEffect } from "react";

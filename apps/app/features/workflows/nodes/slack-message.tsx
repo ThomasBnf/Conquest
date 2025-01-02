@@ -8,7 +8,7 @@ import {
   FormMessage,
 } from "@conquest/ui/form";
 import { TextField } from "@conquest/ui/text-field";
-import { NodeSlackMessage } from "@conquest/zod/node.schema";
+import { NodeSlackMessage } from "@conquest/zod/schemas/node.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useReactFlow } from "@xyflow/react";
 import { useEffect } from "react";

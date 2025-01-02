@@ -1,4 +1,4 @@
-import type { Session } from "@conquest/zod/schemas/types/livestorm";
+import type { Session } from "@conquest/zod/types/livestorm";
 import { startOfDay, subDays } from "date-fns";
 
 type Props = {

@@ -1,6 +1,6 @@
 "use server";
 
-import { UserSchema } from "@conquest/zod/user.schema";
+import { UserSchema } from "@conquest/zod/schemas/user.schema";
 import { authAction } from "lib/authAction";
 import { prisma } from "lib/prisma";
 import { revalidatePath } from "next/cache";

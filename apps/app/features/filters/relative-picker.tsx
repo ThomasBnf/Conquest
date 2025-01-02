@@ -7,7 +7,10 @@ import {
   CommandList,
 } from "@conquest/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@conquest/ui/popover";
-import type { DynamicDate, FilterActivity } from "@conquest/zod/filters.schema";
+import type {
+  DynamicDate,
+  FilterActivity,
+} from "@conquest/zod/schemas/filters.schema";
 import { useState } from "react";
 
 type Props = {

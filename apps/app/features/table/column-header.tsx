@@ -7,7 +7,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@conquest/ui/dropdown-menu";
-import type { MemberWithActivities } from "@conquest/zod/activity.schema";
+import type { MemberWithActivities } from "@conquest/zod/schemas/activity.schema";
 import { CaretSortIcon } from "@radix-ui/react-icons";
 import { ArrowDownIcon, ArrowUpIcon } from "lucide-react";
 import { useQueryStates } from "nuqs";

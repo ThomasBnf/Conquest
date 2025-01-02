@@ -1,5 +1,5 @@
 import { client } from "@/lib/rpc";
-import { MemberSchema } from "@conquest/zod/member.schema";
+import { MemberSchema } from "@conquest/zod/schemas/member.schema";
 import { useQuery } from "@tanstack/react-query";
 
 type Props = {

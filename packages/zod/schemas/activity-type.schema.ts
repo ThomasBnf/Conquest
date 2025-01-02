@@ -1,6 +1,6 @@
-import { SOURCE } from "@conquest/zod/enum/source.enum";
 import type { activities_types } from "@prisma/client";
 import { z } from "zod";
+import { SOURCE } from "../enum/source.enum";
 
 export const KEYSchema = z.union([
   z.literal("slack:post"),

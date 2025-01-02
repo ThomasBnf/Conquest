@@ -8,7 +8,7 @@ import { Separator } from "@conquest/ui/separator";
 import {
   type ActivityWithTypeAndMember,
   ActivityWithTypeAndMemberSchema,
-} from "@conquest/zod/activity.schema";
+} from "@conquest/zod/schemas/activity.schema";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { format, isYesterday } from "date-fns";
 import { useEffect, useMemo } from "react";

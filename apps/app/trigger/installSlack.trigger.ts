@@ -6,7 +6,7 @@ import { calculateMemberMetrics } from "@/queries/members/calculateMemberMetrics
 import { createListChannels } from "@/queries/slack/createListChannels";
 import { createListMembers } from "@/queries/slack/createListMembers";
 import { listMessages } from "@/queries/slack/listMessages";
-import { SlackIntegrationSchema } from "@conquest/zod/integration.schema";
+import { SlackIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
 import { WebClient } from "@slack/web-api";
 import { schemaTask } from "@trigger.dev/sdk/v3";
 import { z } from "zod";

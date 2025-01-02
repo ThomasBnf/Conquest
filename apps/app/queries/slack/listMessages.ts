@@ -1,7 +1,7 @@
 import { type SlackFile, createFiles } from "@/features/slack/helpers/getFiles";
 import { createActivity } from "@/queries/activities/createActivity";
 import { getActivityType } from "@/queries/activity-type/getActivityType";
-import type { Channel } from "@conquest/zod/channel.schema";
+import type { Channel } from "@conquest/zod/schemas/channel.schema";
 import type { WebClient } from "@slack/web-api";
 import { getMember } from "../members/getMember";
 import { createReaction } from "./createReaction";

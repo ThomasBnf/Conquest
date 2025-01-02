@@ -3,7 +3,7 @@
 import { authAction } from "@/lib/authAction";
 import { prisma } from "@/lib/prisma";
 import { CustomError } from "@/lib/safeAction";
-import { ActivityTypeSchema } from "@conquest/zod/activity-type.schema";
+import { ActivityTypeSchema } from "@conquest/zod/schemas/activity-type.schema";
 import { SOURCE } from "@conquest/zod/enum/source.enum";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";

@@ -1,7 +1,7 @@
 "use server";
 
 import { SOURCE } from "@conquest/zod/enum/source.enum";
-import { TagSchema } from "@conquest/zod/tag.schema";
+import { TagSchema } from "@conquest/zod/schemas/tag.schema";
 import { authAction } from "lib/authAction";
 import { prisma } from "lib/prisma";
 import { revalidatePath } from "next/cache";

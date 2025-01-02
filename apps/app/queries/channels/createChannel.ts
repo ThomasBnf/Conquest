@@ -1,11 +1,11 @@
-import type { SOURCE } from "@conquest/database/src";
-import { ChannelSchema } from "@conquest/zod/channel.schema";
+import type { Source } from "@conquest/zod/enum/source.enum";
+import { ChannelSchema } from "@conquest/zod/schemas/channel.schema";
 import { prisma } from "lib/prisma";
 
 type Props = {
   name: string;
   slug?: string;
-  source: SOURCE;
+  source: Source;
   external_id: string;
   workspace_id: string;
 };

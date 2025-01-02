@@ -5,9 +5,9 @@ import type {
   LinkedInIntegration,
   LivestormIntegration,
   SlackIntegration,
-} from "@conquest/zod/integration.schema";
+} from "@conquest/zod/schemas/integration.schema";
+import type { UserWithWorkspace } from "@conquest/zod/schemas/user.schema";
 import type { MembersPreferences } from "@conquest/zod/schemas/workspace.schema";
-import type { UserWithWorkspace } from "@conquest/zod/user.schema";
 import { createContext, useContext } from "react";
 
 type userContext = {

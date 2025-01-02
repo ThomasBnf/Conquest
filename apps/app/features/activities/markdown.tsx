@@ -1,7 +1,7 @@
 import { emojiParser } from "@/features/activities/helpers/emoji-parser";
 import { Button, buttonVariants } from "@conquest/ui/button";
 import { cn } from "@conquest/ui/cn";
-import type { ActivityWithMember } from "@conquest/zod/activity.schema";
+import type { ActivityWithMember } from "@conquest/zod/schemas/activity.schema";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";

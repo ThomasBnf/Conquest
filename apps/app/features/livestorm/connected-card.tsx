@@ -3,19 +3,14 @@
 import { deleteIntegration } from "@/actions/integrations/deleteIntegration";
 import { AlertDialog } from "@/components/custom/alert-dialog";
 import { useUser } from "@/context/userContext";
-import { Button } from "@conquest/ui/src/components/button";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@conquest/ui/src/components/card";
+import { Button } from "@conquest/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@conquest/ui/card";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@conquest/ui/src/components/dropdown-menu";
+} from "@conquest/ui/dropdown-menu";
 import { format } from "date-fns";
 import { ChevronDown } from "lucide-react";
 import { useState } from "react";

@@ -1,4 +1,4 @@
-import type { MemberWithActivities } from "@conquest/zod/activity.schema";
+import type { MemberWithActivities } from "@conquest/zod/schemas/activity.schema";
 
 export const sortByCreatedAt = (
   a: MemberWithActivities,

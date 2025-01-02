@@ -1,6 +1,6 @@
 "use server";
 
-import { APIKeySchema } from "@conquest/zod/apikey.schema";
+import { APIKeySchema } from "@conquest/zod/schemas/apikey.schema";
 import { authAction } from "lib/authAction";
 import { prisma } from "lib/prisma";
 import { revalidatePath } from "next/cache";

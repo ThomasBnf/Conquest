@@ -7,7 +7,7 @@ import { createManyTags } from "@/queries/discourse/createManyTags";
 import { listCategories } from "@/queries/discourse/list-categories";
 import { deleteIntegration } from "@/queries/integrations/deleteIntegration";
 import { updateIntegration } from "@/queries/integrations/updateIntegration";
-import { DiscourseIntegrationSchema } from "@conquest/zod/integration.schema";
+import { DiscourseIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
 import { schemaTask } from "@trigger.dev/sdk/v3";
 import { z } from "zod";
 

@@ -2,7 +2,7 @@ import { Discourse } from "@/components/icons/Discourse";
 import { ConnectedCard } from "@/features/discourse/connected-card";
 import { EnabledCard } from "@/features/discourse/enabled-card";
 import { IntegrationHeader } from "@/features/integrations/integration-header";
-import { ScrollArea } from "@conquest/ui/src/components/scroll-area";
+import { ScrollArea } from "@conquest/ui/scroll-area";
 
 export default function Page() {
   return (

@@ -2,8 +2,8 @@ import { FilterButton } from "@/features/filters/filter-button";
 import { FiltersList } from "@/features/filters/filters-list";
 import { useSelected } from "@/features/workflows/hooks/useSelected";
 import { Label } from "@conquest/ui/label";
-import type { Filter } from "@conquest/zod/filters.schema";
-import { NodeListMembersSchema } from "@conquest/zod/node.schema";
+import type { Filter } from "@conquest/zod/schemas/filters.schema";
+import { NodeListMembersSchema } from "@conquest/zod/schemas/node.schema";
 import { useReactFlow } from "@xyflow/react";
 import { useState } from "react";
 

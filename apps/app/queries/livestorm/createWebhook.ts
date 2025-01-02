@@ -1,4 +1,4 @@
-import type { Webhook } from "@conquest/zod/schemas/types/livestorm";
+import type { Webhook } from "@conquest/zod/types/livestorm";
 
 type Props = {
   accessToken: string;

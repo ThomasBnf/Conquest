@@ -5,7 +5,7 @@ import { getEvent } from "@/queries/livestorm/getEvent";
 import { listPeopleFromSession } from "@/queries/livestorm/listPeopleFromSession";
 import { upsertMember } from "@/queries/members/upsertMember";
 import { LivestormIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
-import type { Session } from "@conquest/zod/schemas/types/livestorm";
+import type { Session } from "@conquest/zod/types/livestorm";
 import { Hono } from "hono";
 
 export const webhook = new Hono().post("/livestorm", async (c) => {

@@ -5,7 +5,7 @@ import { Button } from "@conquest/ui/button";
 import { Label } from "@conquest/ui/label";
 import { RadioGroup, RadioGroupItem } from "@conquest/ui/radio-group";
 import { Separator } from "@conquest/ui/separator";
-import type { organizationsResponse } from "@conquest/zod/schemas/types/linkedin";
+import type { organizationsResponse } from "@conquest/zod/types/linkedin";
 import { useRealtimeTaskTrigger } from "@trigger.dev/react-hooks";
 import { Info } from "lucide-react";
 import { useRouter } from "next/navigation";

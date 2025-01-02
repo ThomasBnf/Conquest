@@ -3,7 +3,7 @@
 import { deleteApiKey } from "@/actions/api-keys/actions/deleteApiKey";
 import { DeleteDialog } from "@/components/custom/delete-dialog";
 import { Button } from "@conquest/ui/button";
-import type { APIKey } from "@conquest/zod/apikey.schema";
+import type { APIKey } from "@conquest/zod/schemas/apikey.schema";
 import { Check, Copy, Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";

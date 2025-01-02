@@ -1,6 +1,6 @@
 import type { integrations as IntegrationPrisma } from "@prisma/client";
 import { z } from "zod";
-import { STATUS } from "./enum/status.enum";
+import { STATUS } from "../enum/status.enum";
 
 const BaseSchema = z.object({
   id: z.string().cuid(),

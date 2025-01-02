@@ -4,7 +4,7 @@ import {
   type Filter,
   FilterSchema,
   type Operator,
-} from "@conquest/zod/filters.schema";
+} from "@conquest/zod/schemas/filters.schema";
 import { X } from "lucide-react";
 import type { Dispatch, SetStateAction } from "react";
 import { InputDialog } from "./input-dialog";

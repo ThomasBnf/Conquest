@@ -1,6 +1,6 @@
 import { Button } from "@conquest/ui/button";
-import { Popover, PopoverContent, PopoverTrigger } from "@conquest/ui/popover";
-import { Checkbox } from "@conquest/ui/src/components/checkbox";
+import { Checkbox } from "@conquest/ui/checkbox";
+import { cn } from "@conquest/ui/cn";
 import {
   Command,
   CommandEmpty,
@@ -8,11 +8,11 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from "@conquest/ui/src/components/command";
-import { cn } from "@conquest/ui/src/utils/cn";
-import type { Company } from "@conquest/zod/company.schema";
-import type { Member } from "@conquest/zod/member.schema";
-import type { Tag } from "@conquest/zod/tag.schema";
+} from "@conquest/ui/command";
+import { Popover, PopoverContent, PopoverTrigger } from "@conquest/ui/popover";
+import type { Company } from "@conquest/zod/schemas/company.schema";
+import type { Member } from "@conquest/zod/schemas/member.schema";
+import type { Tag } from "@conquest/zod/schemas/tag.schema";
 import { Plus } from "lucide-react";
 import { useState } from "react";
 import { TagBadge } from "./tag-badge";

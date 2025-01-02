@@ -1,4 +1,4 @@
-import type { Source } from "@conquest/zod/schemas/enum/source.enum";
+import type { Source } from "@conquest/zod/enum/source.enum";
 
 type Props = {
   id: string;

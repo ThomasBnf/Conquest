@@ -5,7 +5,7 @@ import { ColumnHeader } from "@/features/table/column-header";
 import { buttonVariants } from "@conquest/ui/button";
 import { Checkbox } from "@conquest/ui/checkbox";
 import { cn } from "@conquest/ui/cn";
-import type { Company } from "@conquest/zod/company.schema";
+import type { Company } from "@conquest/zod/schemas/company.schema";
 import Link from "next/link";
 import type { Dispatch, SetStateAction } from "react";
 

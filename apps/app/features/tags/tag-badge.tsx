@@ -1,5 +1,5 @@
 import { cn } from "@conquest/ui/cn";
-import type { Tag } from "@conquest/zod/tag.schema";
+import type { Tag } from "@conquest/zod/schemas/tag.schema";
 
 type Props = {
   tag: Tag | undefined;

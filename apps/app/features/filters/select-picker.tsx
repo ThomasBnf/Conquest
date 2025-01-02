@@ -13,13 +13,13 @@ import {
 } from "@conquest/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@conquest/ui/popover";
 import { Skeleton } from "@conquest/ui/skeleton";
+import type { Source } from "@conquest/zod/enum/source.enum";
 import {
   type Filter,
   type FilterSelect,
   FilterSelectSchema,
-} from "@conquest/zod/filters.schema";
-import type { Source } from "@conquest/zod/schemas/enum/source.enum";
-import { type Tag, TagSchema } from "@conquest/zod/tag.schema";
+} from "@conquest/zod/schemas/filters.schema";
+import { type Tag, TagSchema } from "@conquest/zod/schemas/tag.schema";
 import { useQuery } from "@tanstack/react-query";
 import { CommandLoading } from "cmdk";
 import type { Dispatch, SetStateAction } from "react";

@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { ChannelSchema } from "@conquest/zod/schemas/channel.schema";
-import type { Source } from "@conquest/zod/schemas/enum/source.enum";
+import type { Source } from "@conquest/zod/enum/source.enum";
 
 type Props = {
   source: Source;

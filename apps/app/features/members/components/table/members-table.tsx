@@ -20,7 +20,7 @@ import { cn } from "@conquest/ui/cn";
 import { ScrollArea, ScrollBar } from "@conquest/ui/scroll-area";
 import { useSidebar } from "@conquest/ui/sidebar";
 import type { Filter } from "@conquest/zod/schemas/filters.schema";
-import type { Tag } from "@conquest/zod/tag.schema";
+import type { Tag } from "@conquest/zod/schemas/tag.schema";
 import { useQueryStates } from "nuqs";
 import { useRef, useState } from "react";
 import { Columns } from "./columns";

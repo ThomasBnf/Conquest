@@ -3,7 +3,12 @@
   "version": "1.0.0",
   "private": true,
   "exports": {
-    "./*": "./schemas/*.ts"
+    "./schemas/*": "./schemas/*.ts",
+    "./enum/*": "./enum/*.ts",
+    "./types/livestorm": "./types/livestorm/index.ts",
+    "./types/linkedin": "./types/linkedin/index.ts",
+    "./types/discourse": "./types/discourse/index.ts",
+    "./types/slack": "./types/slack/index.ts"
   },
   "dependencies": {
     "zod": "^3.23.8"

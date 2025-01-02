@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { safeAction } from "@/lib/safeAction";
-import { IntegrationSchema } from "@conquest/zod/integration.schema";
+import { IntegrationSchema } from "@conquest/zod/schemas/integration.schema";
 import { z } from "zod";
 
 export const getIntegration = safeAction

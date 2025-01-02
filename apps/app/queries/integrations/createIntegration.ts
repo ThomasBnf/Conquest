@@ -2,7 +2,7 @@ import { CustomError } from "@/lib/safeAction";
 import {
   type IntegrationDetails,
   IntegrationSchema,
-} from "@conquest/zod/integration.schema";
+} from "@conquest/zod/schemas/integration.schema";
 import { auth } from "@trigger.dev/sdk/v3";
 import { prisma } from "lib/prisma";
 

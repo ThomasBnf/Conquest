@@ -2,7 +2,7 @@ import { Linkedin } from "@/components/icons/Linkedin";
 import { IntegrationHeader } from "@/features/integrations/integration-header";
 import { ConnectedCard } from "@/features/linkedin/connected-card";
 import { EnableCard } from "@/features/linkedin/enable-card";
-import { ScrollArea } from "@conquest/ui/src/components/scroll-area";
+import { ScrollArea } from "@conquest/ui/scroll-area";
 
 export default function Page() {
   return (

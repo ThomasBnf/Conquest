@@ -6,7 +6,7 @@ import { ColorPicker } from "@conquest/ui/color-picker";
 import { Form, FormControl, FormField, FormItem } from "@conquest/ui/form";
 import { Input } from "@conquest/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@conquest/ui/popover";
-import type { Tag } from "@conquest/zod/tag.schema";
+import type { Tag } from "@conquest/zod/schemas/tag.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Check } from "lucide-react";
 import { useForm } from "react-hook-form";

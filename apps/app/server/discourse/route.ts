@@ -13,7 +13,7 @@ import { checkSignature } from "@/queries/discourse/checkSignature";
 import { getMember } from "@/queries/members/getMember";
 import { upsertMember } from "@/queries/members/upsertMember";
 import { listTags } from "@/queries/tags/listTags";
-import type { DiscourseWebhook } from "@conquest/zod/schemas/types/discourse";
+import type { DiscourseWebhook } from "@conquest/zod/types/discourse";
 import { Hono } from "hono";
 
 export const discourse = new Hono().post("/", async (c) => {

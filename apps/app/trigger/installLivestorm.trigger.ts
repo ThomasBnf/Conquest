@@ -14,7 +14,7 @@ import { listPeopleFromSession } from "@/queries/livestorm/listPeopleFromSession
 import { calculateMemberMetrics } from "@/queries/members/calculateMemberMetrics";
 import { upsertMember } from "@/queries/members/upsertMember";
 import { LivestormIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
-import type { Event, Session } from "@conquest/zod/schemas/types/livestorm";
+import type { Event, Session } from "@conquest/zod/types/livestorm";
 import { schemaTask } from "@trigger.dev/sdk/v3";
 import { z } from "zod";
 

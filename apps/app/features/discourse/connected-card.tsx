@@ -10,7 +10,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@conquest/ui/src/components/dropdown-menu";
+} from "@conquest/ui/dropdown-menu";
 import { format } from "date-fns";
 import { ChevronDown } from "lucide-react";
 import { useRouter } from "next/navigation";

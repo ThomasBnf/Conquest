@@ -12,7 +12,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@conquest/ui/avatar";
 import { ScrollArea } from "@conquest/ui/scroll-area";
 import { Separator } from "@conquest/ui/separator";
 import type { Company } from "@conquest/zod/schemas/company.schema";
-import type { Tag } from "@conquest/zod/tag.schema";
+import type { Tag } from "@conquest/zod/schemas/tag.schema";
 import { format } from "date-fns";
 
 type Props = {

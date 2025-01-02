@@ -1,4 +1,4 @@
-import type { ActivityWithTypeAndMember } from "@conquest/zod/activity.schema";
+import type { ActivityWithTypeAndMember } from "@conquest/zod/schemas/activity.schema";
 import { ActivityCard } from "../activity-card";
 import { Message } from "../message";
 import { DiscourseBadge } from "./discourse-badge";

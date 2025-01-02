@@ -1,5 +1,5 @@
 import { type SlackFile, createFiles } from "@/features/slack/helpers/getFiles";
-import type { Channel } from "@conquest/zod/channel.schema";
+import type { Channel } from "@conquest/zod/schemas/channel.schema";
 import type { WebClient } from "@slack/web-api";
 import { prisma } from "lib/prisma";
 import { getActivityType } from "../activity-type/getActivityType";

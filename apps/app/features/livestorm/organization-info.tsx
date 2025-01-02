@@ -1,7 +1,7 @@
 import { useUser } from "@/context/userContext";
 import { useListLivestormOrganization } from "@/queries/hooks/useListLivestormOrganization";
 import type { installLivestorm } from "@/trigger/installLivestorm.trigger";
-import { Button } from "@conquest/ui/src/components/button";
+import { Button } from "@conquest/ui/button";
 import { useRealtimeTaskTrigger } from "@trigger.dev/react-hooks";
 import { Info } from "lucide-react";
 import { useRouter } from "next/navigation";

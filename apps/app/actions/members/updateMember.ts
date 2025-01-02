@@ -2,8 +2,8 @@
 
 import { prisma } from "@/lib/prisma";
 import { safeAction } from "@/lib/safeAction";
-import { MemberSchema } from "@conquest/zod/member.schema";
-import { SOURCE } from "@conquest/zod/schemas/enum/source.enum";
+import { SOURCE } from "@conquest/zod/enum/source.enum";
+import { MemberSchema } from "@conquest/zod/schemas/member.schema";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 

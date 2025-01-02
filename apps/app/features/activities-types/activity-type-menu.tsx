@@ -9,7 +9,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@conquest/ui/dropdown-menu";
-import type { ActivityType } from "@conquest/zod/activity-type.schema";
+import type { ActivityType } from "@conquest/zod/schemas/activity-type.schema";
 import { Edit2, MoreHorizontal, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";

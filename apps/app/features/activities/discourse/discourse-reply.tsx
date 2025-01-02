@@ -1,6 +1,6 @@
 import { useGetDiscourseReply } from "@/queries/hooks/useGetDiscourseReply";
 import { Skeleton } from "@conquest/ui/skeleton";
-import type { ActivityWithMember } from "@conquest/zod/activity.schema";
+import type { ActivityWithMember } from "@conquest/zod/schemas/activity.schema";
 import { ActivityCard } from "../activity-card";
 import { Markdown } from "../markdown";
 

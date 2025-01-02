@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import type { DiscourseIntegration } from "@conquest/zod/schemas/integration.schema";
 import type { Member } from "@conquest/zod/schemas/member.schema";
-import type { Reaction } from "@conquest/zod/schemas/types/discourse";
+import type { Reaction } from "@conquest/zod/types/discourse";
 import { startOfDay, subDays } from "date-fns";
 import { createActivity } from "../activities/createActivity";
 import { getActivityType } from "../activity-type/getActivityType";

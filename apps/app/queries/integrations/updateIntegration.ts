@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import type { Status } from "@conquest/zod/schemas/enum/status.enum";
+import type { Status } from "@conquest/zod/enum/status.enum";
 import {
   type IntegrationDetails,
   IntegrationSchema,

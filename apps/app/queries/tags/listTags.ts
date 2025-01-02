@@ -1,5 +1,5 @@
 import { prisma } from "@conquest/database";
-import { TagSchema } from "@conquest/zod/tag.schema";
+import { TagSchema } from "@conquest/zod/schemas/tag.schema";
 
 type Props = {
   workspace_id: string;

@@ -9,8 +9,8 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@conquest/ui/dropdown-menu";
-import { MemberSchema } from "@conquest/zod/member.schema";
-import { NodeSchema } from "@conquest/zod/node.schema";
+import { MemberSchema } from "@conquest/zod/schemas/member.schema";
+import { NodeSchema } from "@conquest/zod/schemas/node.schema";
 import { useReactFlow } from "@xyflow/react";
 import { Braces } from "lucide-react";
 

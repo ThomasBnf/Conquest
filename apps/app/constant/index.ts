@@ -9,7 +9,7 @@ export const colors = [
   "#EB5756",
 ];
 
-import type { Operator } from "@conquest/zod/filters.schema";
+import type { Operator } from "@conquest/zod/schemas/filters.schema";
 
 export const OPERATORS: Operator[] = [
   "contains",
@@ -22,7 +22,7 @@ export const OPERATORS: Operator[] = [
   "less",
 ];
 
-import type { RepeatOn } from "@conquest/zod/node.schema";
+import type { RepeatOn } from "@conquest/zod/schemas/node.schema";
 
 export const weekdays: RepeatOn[] = [
   "monday",

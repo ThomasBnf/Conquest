@@ -3,7 +3,7 @@
 import { authAction } from "@/lib/authAction";
 import { prisma } from "@/lib/prisma";
 import { calculateMembersLevel } from "@/trigger/calculateMembersLevel";
-import { ActivityTypeSchema } from "@conquest/zod/activity-type.schema";
+import { ActivityTypeSchema } from "@conquest/zod/schemas/activity-type.schema";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 

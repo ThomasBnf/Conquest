@@ -1,4 +1,4 @@
-import type { ActivityWithTypeAndMember } from "@conquest/zod/activity.schema";
+import type { ActivityWithTypeAndMember } from "@conquest/zod/schemas/activity.schema";
 import { APIActivity } from "./api-activity";
 import { DiscourseActivity } from "./discourse/discourse-activity";
 import { LinkedinActivity } from "./linkedin/linkedin-activity";

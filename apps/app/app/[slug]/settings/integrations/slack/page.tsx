@@ -4,7 +4,7 @@ import { ConnectedCard } from "@/features/slack/connected-card";
 import { EnableCard } from "@/features/slack/enable-card";
 import { listChannels } from "@/queries/channels/listChannels";
 import { getCurrentUser } from "@/queries/users/getCurrentUser";
-import { ScrollArea } from "@conquest/ui/src/components/scroll-area";
+import { ScrollArea } from "@conquest/ui/scroll-area";
 
 export default async function Page() {
   const user = await getCurrentUser();

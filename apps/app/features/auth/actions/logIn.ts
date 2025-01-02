@@ -1,7 +1,7 @@
 "use server";
 
 import { signIn } from "@/auth";
-import { LoginSchema } from "@conquest/zod/auth.schema";
+import { LoginSchema } from "@conquest/zod/schemas/auth.schema";
 import { safeAction } from "lib/safeAction";
 import { AuthError } from "next-auth";
 

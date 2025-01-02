@@ -1,6 +1,6 @@
 import { sleep } from "@/helpers/sleep";
 import type { Channel } from "@conquest/zod/schemas/channel.schema";
-import type { ReponseListTopics } from "@conquest/zod/schemas/types/discourse/index";
+import type { ReponseListTopics } from "@conquest/zod/types/discourse";
 import { createActivity } from "../activities/createActivity";
 import { getMember } from "../members/getMember";
 

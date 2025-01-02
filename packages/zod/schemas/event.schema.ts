@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { SOURCE } from "./enum/source.enum";
+import { SOURCE } from "../enum/source.enum";
 
 export const EventSchema = z.object({
   id: z.string().cuid(),

@@ -1,6 +1,6 @@
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
-import { UserWithWorkspaceSchema } from "@conquest/zod/user.schema";
+import { UserWithWorkspaceSchema } from "@conquest/zod/schemas/user.schema";
 import { redirect } from "next/navigation";
 
 export const getCurrentUser = async () => {

@@ -1,9 +1,5 @@
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@conquest/ui/src/components/avatar";
-import { cn } from "@conquest/ui/src/utils/cn";
+import { Avatar, AvatarFallback, AvatarImage } from "@conquest/ui/avatar";
+import { cn } from "@conquest/ui/cn";
 import type { MemberWithCompany } from "@conquest/zod/schemas/member.schema";
 import { useMemo } from "react";
 import { FilteredEntries } from "./filtered-entries";

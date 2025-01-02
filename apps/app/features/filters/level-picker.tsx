@@ -8,7 +8,7 @@ import {
   CommandList,
 } from "@conquest/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@conquest/ui/popover";
-import type { Filter, FilterLevel } from "@conquest/zod/filters.schema";
+import type { Filter, FilterLevel } from "@conquest/zod/schemas/filters.schema";
 import type { Dispatch, SetStateAction } from "react";
 import { useState } from "react";
 import { useTab } from "./hooks/useTab";

@@ -7,7 +7,7 @@ import {
   NumberOperatorSchema,
   type Operator,
   type FilterActivity as _FilterActivity,
-} from "@conquest/zod/filters.schema";
+} from "@conquest/zod/schemas/filters.schema";
 import { X } from "lucide-react";
 import type { Dispatch, SetStateAction } from "react";
 import { ActivityTypePicker } from "./activity-type-picker";

@@ -1,7 +1,7 @@
 "use server";
 
-import { SignupSchema } from "@conquest/zod/auth.schema";
-import { UserSchema } from "@conquest/zod/user.schema";
+import { SignupSchema } from "@conquest/zod/schemas/auth.schema";
+import { UserSchema } from "@conquest/zod/schemas/user.schema";
 import { hash } from "bcryptjs";
 import cuid from "cuid";
 import { prisma } from "lib/prisma";

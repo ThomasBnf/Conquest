@@ -6,7 +6,7 @@ import {
   LinkedInIntegrationSchema,
   LivestormIntegrationSchema,
   SlackIntegrationSchema,
-} from "@conquest/zod/integration.schema";
+} from "@conquest/zod/schemas/integration.schema";
 import { WebClient } from "@slack/web-api";
 import { deleteWebhook } from "../livestorm/deleteWebhhok";
 import { listWebhooks } from "../livestorm/listWebhooks";

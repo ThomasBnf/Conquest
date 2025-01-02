@@ -1,7 +1,7 @@
 import type { members } from "@prisma/client";
 import { z } from "zod";
-import { GENDER } from "./enum/gender.enum";
-import { SOURCE } from "./enum/source.enum";
+import { GENDER } from "../enum/gender.enum";
+import { SOURCE } from "../enum/source.enum";
 
 export const LogSchema = z.object({
   date: z.string(),

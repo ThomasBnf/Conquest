@@ -1,5 +1,5 @@
 import type { LinkedInIntegration } from "@conquest/zod/schemas/integration.schema";
-import type { PeopleResponse } from "@conquest/zod/schemas/types/linkedin";
+import type { PeopleResponse } from "@conquest/zod/types/linkedin";
 
 type Props = {
   linkedin: LinkedInIntegration;

@@ -1,6 +1,6 @@
 import type { companies as CompanyPrisma } from "@prisma/client";
 import { z } from "zod";
-import { SOURCE } from "./enum/source.enum";
+import { SOURCE } from "../enum/source.enum";
 
 export const CompanySchema = z.object({
   id: z.string(),

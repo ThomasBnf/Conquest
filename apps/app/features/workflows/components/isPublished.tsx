@@ -2,7 +2,7 @@
 
 import { updateWorkflow } from "@/actions/workflows/updateWorkflow";
 import { Switch } from "@conquest/ui/switch";
-import type { Workflow } from "@conquest/zod/workflow.schema";
+import type { Workflow } from "@conquest/zod/schemas/workflow.schema";
 import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 

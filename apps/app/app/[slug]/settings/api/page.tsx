@@ -2,7 +2,7 @@ import { ApiKeyCard } from "@/features/api-keys/api-key-card";
 import { FormAPIKey } from "@/features/api-keys/form-api-key";
 import { listAPIKeys } from "@/queries/api-keys/listAPIKeys";
 import { ScrollArea } from "@conquest/ui/scroll-area";
-import { Separator } from "@conquest/ui/src/components/separator";
+import { Separator } from "@conquest/ui/separator";
 
 export default async function Page() {
   const rApiKeys = await listAPIKeys();

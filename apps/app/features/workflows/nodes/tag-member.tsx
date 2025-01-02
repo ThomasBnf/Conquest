@@ -11,8 +11,8 @@ import {
   PopoverTrigger,
 } from "@conquest/ui/popover";
 import { Skeleton } from "@conquest/ui/skeleton";
-import { NodeTagMemberSchema } from "@conquest/zod/node.schema";
-import type { Tag } from "@conquest/zod/tag.schema";
+import { NodeTagMemberSchema } from "@conquest/zod/schemas/node.schema";
+import type { Tag } from "@conquest/zod/schemas/tag.schema";
 import { useReactFlow } from "@xyflow/react";
 import { Plus, TagIcon } from "lucide-react";
 import { useEffect, useState } from "react";

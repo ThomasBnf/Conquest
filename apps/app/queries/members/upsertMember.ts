@@ -1,8 +1,11 @@
 import { filteredDomain } from "@/features/members/helpers/filteredDomain";
 import { idParser } from "@/helpers/idParser";
 import { prisma } from "@/lib/prisma";
-import { type Company, CompanySchema } from "@conquest/zod/company.schema";
-import { type Member, MemberSchema } from "@conquest/zod/member.schema";
+import {
+  type Company,
+  CompanySchema,
+} from "@conquest/zod/schemas/company.schema";
+import { type Member, MemberSchema } from "@conquest/zod/schemas/member.schema";
 
 type Props = {
   id: string;

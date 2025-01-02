@@ -3,7 +3,7 @@
 import {
   MembersPreferencesSchema,
   WorkspaceSchema,
-} from "@conquest/zod/workspace.schema";
+} from "@conquest/zod/schemas/workspace.schema";
 import { authAction } from "lib/authAction";
 import { prisma } from "lib/prisma";
 import { revalidatePath } from "next/cache";

@@ -14,7 +14,7 @@ import { Skeleton } from "@conquest/ui/skeleton";
 import {
   type FilterActivity,
   FilterActivitySchema,
-} from "@conquest/zod/filters.schema";
+} from "@conquest/zod/schemas/filters.schema";
 import { CommandLoading } from "cmdk";
 import { useState } from "react";
 

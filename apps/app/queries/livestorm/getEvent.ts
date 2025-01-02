@@ -1,4 +1,4 @@
-import type { Event } from "@conquest/zod/schemas/types/livestorm";
+import type { Event } from "@conquest/zod/types/livestorm";
 
 type Props = {
   accessToken: string;

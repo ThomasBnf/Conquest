@@ -7,7 +7,7 @@ import {
   DropdownMenuTrigger,
 } from "@conquest/ui/dropdown-menu";
 import { Popover, PopoverContent, PopoverTrigger } from "@conquest/ui/popover";
-import type { Filter } from "@conquest/zod/filters.schema";
+import type { Filter } from "@conquest/zod/schemas/filters.schema";
 import { MoreVertical, Trash2 } from "lucide-react";
 import type { Dispatch, SetStateAction } from "react";
 import { FilterActivity } from "./filter-activity";

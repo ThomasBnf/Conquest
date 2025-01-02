@@ -1,6 +1,6 @@
 import type { tags as TagPrisma } from "@prisma/client";
 import { z } from "zod";
-import { SOURCE } from "./enum/source.enum";
+import { SOURCE } from "../enum/source.enum";
 
 export const TagSchema = z.object({
   id: z.string().cuid(),

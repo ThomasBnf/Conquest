@@ -13,7 +13,7 @@ import {
   type Filter,
   NumberOperatorSchema,
   type Operator,
-} from "@conquest/zod/filters.schema";
+} from "@conquest/zod/schemas/filters.schema";
 import { useState } from "react";
 
 type Props = {

@@ -9,7 +9,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@conquest/ui/dropdown-menu";
-import type { Workflow } from "@conquest/zod/workflow.schema";
+import type { Workflow } from "@conquest/zod/schemas/workflow.schema";
 import { MoreHorizontal, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";

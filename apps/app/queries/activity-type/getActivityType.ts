@@ -2,7 +2,7 @@ import { prisma } from "@/lib/prisma";
 import {
   ActivityTypeSchema,
   type KEY,
-} from "@conquest/zod/activity-type.schema";
+} from "@conquest/zod/schemas/activity-type.schema";
 
 type Props = {
   key: KEY;

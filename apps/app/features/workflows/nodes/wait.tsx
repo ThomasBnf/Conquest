@@ -9,7 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@conquest/ui/select";
-import { NodeWaitSchema } from "@conquest/zod/node.schema";
+import { NodeWaitSchema } from "@conquest/zod/schemas/node.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useReactFlow } from "@xyflow/react";
 import { useEffect } from "react";

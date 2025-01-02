@@ -1,5 +1,5 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@conquest/ui/avatar";
-import type { ActivityWithTypeAndMember } from "@conquest/zod/activity.schema";
+import type { ActivityWithTypeAndMember } from "@conquest/zod/schemas/activity.schema";
 import { ActivityBadge } from "./activity-badge";
 import { Menu } from "./activity-menu";
 import { CreatedAt } from "./created-at";

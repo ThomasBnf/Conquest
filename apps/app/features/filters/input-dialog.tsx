@@ -24,7 +24,7 @@ import {
   FilterNumberSchema,
   type FilterText,
   FilterTextSchema,
-} from "@conquest/zod/filters.schema";
+} from "@conquest/zod/schemas/filters.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { useForm } from "react-hook-form";

@@ -4,7 +4,7 @@ import { ConnectedCard } from "@/features/livestorm/connected-card";
 import { EnableCard } from "@/features/livestorm/enable-card";
 import { EventsList } from "@/features/livestorm/events-list";
 import { listEvents } from "@/queries/events/listEvents";
-import { ScrollArea } from "@conquest/ui/src/components/scroll-area";
+import { ScrollArea } from "@conquest/ui/scroll-area";
 
 export default async function Page() {
   const events = await listEvents({ source: "LIVESTORM" });

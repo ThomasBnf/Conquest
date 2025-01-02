@@ -16,7 +16,10 @@ import {
   SelectValue,
 } from "@conquest/ui/select";
 import { ToggleGroup, ToggleGroupItem } from "@conquest/ui/toggle-group";
-import { NodeRecurringSchema, type RepeatOn } from "@conquest/zod/node.schema";
+import {
+  NodeRecurringSchema,
+  type RepeatOn,
+} from "@conquest/zod/schemas/node.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useReactFlow } from "@xyflow/react";
 import { weekdays } from "constant";

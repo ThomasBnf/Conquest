@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { MemberWithCompanySchema } from "@conquest/zod/member.schema";
+import { MemberWithCompanySchema } from "@conquest/zod/schemas/member.schema";
 import { Prisma } from "@prisma/client";
 import { getOrderBy } from "../helpers/getOrderBy";
 

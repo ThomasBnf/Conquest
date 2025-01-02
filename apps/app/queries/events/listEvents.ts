@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import type { Source } from "@conquest/zod/schemas/enum/source.enum";
+import type { Source } from "@conquest/zod/enum/source.enum";
 import { EventSchema } from "@conquest/zod/schemas/event.schema";
 
 type Props = {

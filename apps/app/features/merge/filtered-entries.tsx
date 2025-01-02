@@ -1,7 +1,7 @@
 import { LocationBadge } from "@/components/custom/location-badge";
 import { SourceBadge } from "@/components/custom/source-badge";
-import { cn } from "@conquest/ui/src/utils/cn";
-import type { Source } from "@conquest/zod/schemas/enum/source.enum";
+import { cn } from "@conquest/ui/cn";
+import type { Source } from "@conquest/zod/enum/source.enum";
 import type { MemberWithCompany } from "@conquest/zod/schemas/member.schema";
 import { format } from "date-fns";
 

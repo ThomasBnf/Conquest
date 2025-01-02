@@ -17,7 +17,7 @@ import { getAuthUser } from "@/queries/users/getAuthUser";
 import {
   type SlackIntegration,
   SlackIntegrationSchema,
-} from "@conquest/zod/integration.schema";
+} from "@conquest/zod/schemas/integration.schema";
 import { zValidator } from "@hono/zod-validator";
 import {
   type GenericMessageEvent,

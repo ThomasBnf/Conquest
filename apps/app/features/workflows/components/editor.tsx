@@ -8,7 +8,7 @@ import {
   NodeDataLoopSchema,
   NodeDataSchema,
 } from "@conquest/zod/schemas/node.schema";
-import type { Workflow } from "@conquest/zod/workflow.schema";
+import type { Workflow } from "@conquest/zod/schemas/workflow.schema";
 import {
   Background,
   type Connection,

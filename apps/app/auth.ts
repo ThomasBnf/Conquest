@@ -1,6 +1,6 @@
 import { PrismaAdapter } from "@auth/prisma-adapter";
-import { LoginSchema } from "@conquest/zod/auth.schema";
-import { UserWithWorkspaceSchema } from "@conquest/zod/user.schema";
+import { LoginSchema } from "@conquest/zod/schemas/auth.schema";
+import { UserWithWorkspaceSchema } from "@conquest/zod/schemas/user.schema";
 import { compare } from "bcryptjs";
 import { prisma } from "lib/prisma";
 import NextAuth from "next-auth";

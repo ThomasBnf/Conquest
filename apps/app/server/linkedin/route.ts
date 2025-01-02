@@ -1,6 +1,6 @@
 import { getAuthUser } from "@/queries/users/getAuthUser";
 import { LinkedInIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
-import type { organizationalEntityAclsResponse } from "@conquest/zod/schemas/types/linkedin";
+import type { organizationalEntityAclsResponse } from "@conquest/zod/types/linkedin";
 import { Hono } from "hono";
 
 export const linkedin = new Hono()

@@ -2,7 +2,7 @@
 
 import { authAction } from "@/lib/authAction";
 import { prisma } from "@/lib/prisma";
-import { CompanySchema } from "@conquest/zod/company.schema";
+import { CompanySchema } from "@conquest/zod/schemas/company.schema";
 
 export const updateCompany = authAction
   .metadata({

@@ -1,5 +1,5 @@
 import { client } from "@/lib/rpc";
-import type { Organization } from "@conquest/zod/schemas/types/livestorm";
+import type { Organization } from "@conquest/zod/types/livestorm";
 import { useQuery } from "@tanstack/react-query";
 
 export const useListLivestormOrganization = () => {

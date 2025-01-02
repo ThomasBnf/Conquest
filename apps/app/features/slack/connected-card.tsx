@@ -10,8 +10,8 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@conquest/ui/src/components/dropdown-menu";
-import { Separator } from "@conquest/ui/src/components/separator";
+} from "@conquest/ui/dropdown-menu";
+import { Separator } from "@conquest/ui/separator";
 import type { Channel } from "@conquest/zod/schemas/channel.schema";
 import { format } from "date-fns";
 import { ChevronDown } from "lucide-react";

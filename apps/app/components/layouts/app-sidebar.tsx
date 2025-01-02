@@ -7,6 +7,7 @@ import { Members } from "@/components/icons/Members";
 import { useUser } from "@/context/userContext";
 import { WorkspaceMenu } from "@/features/workspaces/workspace-menu";
 import { Loader } from "@conquest/ui/loader";
+import { Separator } from "@conquest/ui/separator";
 import {
   Sidebar,
   SidebarContent,
@@ -19,7 +20,6 @@ import {
   SidebarRail,
   useSidebar,
 } from "@conquest/ui/sidebar";
-import { Separator } from "@conquest/ui/src/components/separator";
 import {
   Tooltip,
   TooltipContent,

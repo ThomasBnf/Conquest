@@ -4,7 +4,7 @@ import {
   type ActivityWithType,
   type MemberWithActivities,
   MemberWithActivitiesSchema,
-} from "@conquest/zod/activity.schema";
+} from "@conquest/zod/schemas/activity.schema";
 import type {
   Filter,
   FilterActivity,
@@ -13,16 +13,16 @@ import type {
   FilterNumber,
   FilterSelect,
   FilterText,
-} from "@conquest/zod/filters.schema";
-import { SlackIntegrationSchema } from "@conquest/zod/integration.schema";
-import { MemberSchema } from "@conquest/zod/member.schema";
+} from "@conquest/zod/schemas/filters.schema";
+import { SlackIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
+import { MemberSchema } from "@conquest/zod/schemas/member.schema";
 import {
   NodeSchema,
   type NodeSlackMessage,
   type NodeTagMember,
   type NodeWebhook,
-} from "@conquest/zod/node.schema";
-import { WorkflowSchema } from "@conquest/zod/workflow.schema";
+} from "@conquest/zod/schemas/node.schema";
+import { WorkflowSchema } from "@conquest/zod/schemas/workflow.schema";
 import { WebClient } from "@slack/web-api";
 import { task, wait } from "@trigger.dev/sdk/v3";
 import { compareDesc, startOfDay, subDays } from "date-fns";

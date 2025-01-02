@@ -1,5 +1,5 @@
 import type { LinkedInIntegration } from "@conquest/zod/schemas/integration.schema";
-import type { SocialActionsResponse } from "@conquest/zod/schemas/types/linkedin";
+import type { SocialActionsResponse } from "@conquest/zod/types/linkedin";
 import { createActivity } from "../activities/createActivity";
 import { getActivityType } from "../activity-type/getActivityType";
 import { upsertMember } from "../members/upsertMember";

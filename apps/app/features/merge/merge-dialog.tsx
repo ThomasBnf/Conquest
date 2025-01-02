@@ -1,6 +1,6 @@
 import { mergeMember } from "@/actions/members/mergeMember";
 import { useUser } from "@/context/userContext";
-import { Button } from "@conquest/ui/src/components/button";
+import { Button } from "@conquest/ui/button";
 import {
   Dialog,
   DialogBody,
@@ -8,8 +8,8 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@conquest/ui/src/components/dialog";
-import { Separator } from "@conquest/ui/src/components/separator";
+} from "@conquest/ui/dialog";
+import { Separator } from "@conquest/ui/separator";
 import type { MemberWithCompany } from "@conquest/zod/schemas/member.schema";
 import { AlertTriangle, ArrowLeftRight, Equal } from "lucide-react";
 import { useRouter } from "next/navigation";

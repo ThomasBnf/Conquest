@@ -1,4 +1,4 @@
-import type { People } from "@conquest/zod/schemas/types/livestorm";
+import type { People } from "@conquest/zod/types/livestorm";
 
 type Props = {
   accessToken: string;

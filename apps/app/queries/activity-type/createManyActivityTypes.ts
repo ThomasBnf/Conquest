@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import type { SOURCE } from "@conquest/database/src";
+import type { Source } from "@conquest/zod/enum/source.enum";
 
 type Props = {
   activity_types: {
@@ -21,7 +21,7 @@ export const createManyActivityTypes = async ({
       const { name, source, key, weight, deletable } = activity_type;
       return {
         name,
-        source: source as SOURCE,
+        source: source as Source,
         key,
         weight,
         deletable,

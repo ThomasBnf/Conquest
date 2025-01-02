@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@conquest/ui/button";
-import type { Tag } from "@conquest/zod/tag.schema";
+import type { Tag } from "@conquest/zod/schemas/tag.schema";
 import { QueryInput } from "components/custom/query-input";
 import { Plus } from "lucide-react";
 import { useState } from "react";

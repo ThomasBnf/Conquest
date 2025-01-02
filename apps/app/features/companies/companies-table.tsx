@@ -13,7 +13,7 @@ import { Button } from "@conquest/ui/button";
 import { cn } from "@conquest/ui/cn";
 import { ScrollArea, ScrollBar } from "@conquest/ui/scroll-area";
 import { useSidebar } from "@conquest/ui/sidebar";
-import type { Company } from "@conquest/zod/company.schema";
+import type { Company } from "@conquest/zod/schemas/company.schema";
 import { useQueryStates } from "nuqs";
 import { useRef, useState } from "react";
 import { Columns } from "./columns";

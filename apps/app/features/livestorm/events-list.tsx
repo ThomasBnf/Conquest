@@ -1,11 +1,6 @@
 "use client";
 
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@conquest/ui/src/components/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@conquest/ui/card";
 import type { Event } from "@conquest/zod/schemas/event.schema";
 import { EventCard } from "./event-card";
 

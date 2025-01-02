@@ -1,7 +1,7 @@
 import { emojiParser } from "@/features/activities/helpers/emoji-parser";
 import { useGetActivity } from "@/queries/hooks/useGetActivity";
 import { Skeleton } from "@conquest/ui/skeleton";
-import type { ActivityWithMember } from "@conquest/zod/activity.schema";
+import type { ActivityWithMember } from "@conquest/zod/schemas/activity.schema";
 import { ActivityCard } from "../activity-card";
 import { Markdown } from "../markdown";
 

@@ -17,7 +17,7 @@ import {
   FormMessage,
 } from "@conquest/ui/form";
 import { Input } from "@conquest/ui/input";
-import { type Login, LoginSchema } from "@conquest/zod/auth.schema";
+import { type Login, LoginSchema } from "@conquest/zod/schemas/auth.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowRightIcon } from "lucide-react";
 import Link from "next/link";
