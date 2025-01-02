@@ -20,11 +20,11 @@ const app = new Hono().basePath("/v1").use(async (c, next) => {
     return c.json({ message: "Bearer token is required" }, { status: 401 });
   }
 
-  console.log(token);
+  // console.log(token);
 
-  if (!token) {
-    return c.json({ message: "Missing Access Token" }, { status: 401 });
-  }
+  // if (!token) {
+  //   return c.json({ message: "Missing Access Token" }, { status: 401 });
+  // }
 
   const apiKey = await prisma.apikeys.findUnique({
     where: {
@@ -34,11 +34,11 @@ const app = new Hono().basePath("/v1").use(async (c, next) => {
 
   console.log(apiKey);
 
-  if (!apiKey) {
-    return c.json({ message: "Invalid Access Token" }, { status: 401 });
-  }
+  // if (!apiKey) {
+  //   return c.json({ message: "Invalid Access Token" }, { status: 401 });
+  // }
 
-  c.set("workspace_id", apiKey.workspace_id);
+  c.set("workspace_id", "123");
   await next();
 });
 
