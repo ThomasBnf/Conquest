@@ -21,7 +21,7 @@ export const ListSlackChannels = () => {
   const [selectedChannels, setSelectedChannels] = useState<string[]>([]);
   const router = useRouter();
 
-  const { submit, run } = useRealtimeTaskTrigger<typeof installSlack>(
+  const { submit, run, error } = useRealtimeTaskTrigger<typeof installSlack>(
     "install-slack",
     {
       accessToken: slack?.trigger_token,
@@ -63,8 +63,9 @@ export const ListSlackChannels = () => {
     const isCompleted = run.status === "COMPLETED";
     const isFailed = run.status === "FAILED";
 
-    if (isFailed) {
+    if (isFailed || error) {
       setLoading(false);
+      console.log(error);
       toast.error("Failed to install Slack", { duration: 5000 });
     }
 
@@ -74,6 +75,8 @@ export const ListSlackChannels = () => {
       router.refresh();
     }
   }, [run]);
+
+  console.log(run);
 
   return (
     <>

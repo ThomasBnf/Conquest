@@ -1,7 +1,6 @@
 {
   "extends": "@conquest/typescript/nextjs.json",
   "compilerOptions": {
-    "moduleResolution": "bundler",
     "baseUrl": ".",
     "paths": {
       "@/*": ["./*"],
@@ -9,13 +8,6 @@
     },
     "strict": true
   },
-  "include": [
-    "next-env.d.ts",
-    "next.config.js",
-    "**/*.ts",
-    "**/*.tsx",
-    ".next/types/**/*.ts",
-    "tailwind.config.ts"
-  ],
+  "include": ["next-env.d.ts", ".next/types/**/*.ts", "**/*.ts", "**/*.tsx"],
   "exclude": ["node_modules"]
 }

@@ -13,13 +13,11 @@ export const ActivitySchema = z.object({
   reply_to: z.string().nullable(),
   react_to: z.string().nullable(),
   invite_to: z.string().nullable(),
-
   activity_type_id: z.string().cuid(),
   channel_id: z.string().cuid().nullable(),
   event_id: z.string().cuid().nullable(),
   member_id: z.string().cuid(),
   workspace_id: z.string().cuid(),
-
   created_at: z.coerce.date(),
   updated_at: z.coerce.date(),
 }) satisfies z.ZodType<ActivityPrisma>;

@@ -82,6 +82,7 @@ model activities_types {
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
+  @@unique([key, workspace_id])
   @@index([id, workspace_id])
 }
 

@@ -12,6 +12,8 @@
     "clean:workspaces": "turbo clean",
     "dev": "turbo dev --parallel",
     "dev:app": "turbo dev --filter=app",
+    "dev:api": "turbo dev --filter=api",
+    "dev:docs": "turbo dev --filter=docs",
     "dev:web": "turbo dev --filter=web",
     "dev:bots": "turbo dev --filter=bots",
     "start:app": "turbo start --filter=app",
@@ -27,7 +29,7 @@
     "@t3-oss/env-nextjs": "^0.11.1",
     "discourse2": "^1.1.23",
     "husky": "^9.1.7",
-    "partysocket": "^1.0.2"
+    "mintlify": "^4.0.307"
   },
   "devDependencies": {
     "@biomejs/biome": "1.9.3",
