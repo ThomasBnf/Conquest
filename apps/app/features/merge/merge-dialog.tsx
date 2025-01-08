@@ -10,7 +10,7 @@ import {
 } from "@conquest/ui/dialog";
 import { Separator } from "@conquest/ui/separator";
 import type { MemberWithCompany } from "@conquest/zod/schemas/member.schema";
-import { AlertTriangle, ArrowLeftRight, Equal } from "lucide-react";
+import { ArrowLeftRight, Equal } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -55,10 +55,11 @@ export const MergeDialog = ({ open, setOpen, member }: Props) => {
     const error = response?.serverError;
 
     if (error) {
-      setLoading(false);
-      return toast.error(error);
+      toast.error(error);
     }
 
+    setOpen(false);
+    setLoading(false);
     router.refresh();
   };
 
@@ -112,20 +113,20 @@ export const MergeDialog = ({ open, setOpen, member }: Props) => {
           <div className="flex flex-col gap-1 rounded-md border bg-muted p-4">
             <p className="font-medium text-base">Merge Rules</p>
             <p>
-              1. Most attributes will use values from the newer record{" "}
-              {"(e.g: first name, job title, etc...)"}
+              1. We use the right profile attributes as reference{" "}
+              {"(e.g: name, email, job title, etc...)"}
             </p>
             <p>
-              2. Source and created date will be preserved from the older record
+              2. We use the date of the first activity as the reference for the
+              source and creation date attributes.
             </p>
             <p>
-              3. The following will be combined:{" "}
+              3. The following attributes will be combined:{" "}
               {"(e.g: tags, emails, phone numbers, activities)"}
             </p>
-            <div className="mt-2 flex items-center gap-2">
-              <AlertTriangle size={18} className="text-orange-500" />
-              <p className="font-medium">This action cannot be undone.</p>
-            </div>
+            <p className="actions-primary mt-2 w-fit rounded bg-foreground px-2 py-1 font-medium text-white">
+              ⚠️ This action cannot be undone.
+            </p>
           </div>
         </DialogBody>
         <DialogFooter>

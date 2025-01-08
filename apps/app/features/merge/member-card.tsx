@@ -17,7 +17,10 @@ export const MemberCard = ({ member, leftMember, className }: Props) => {
 
   const getMergeValue = useMemo(() => {
     return (member: MemberWithCompany, leftMember: MemberWithCompany) => {
-      const isLeftOlder = leftMember.created_at < member.created_at;
+      const isLeftOlder =
+        leftMember.first_activity &&
+        member.first_activity &&
+        leftMember.first_activity < member.first_activity;
 
       const mergedEntries = Object.entries(leftMember).map(([key, value]) => {
         const rightValue = member[key as keyof MemberWithCompany];

@@ -218,20 +218,20 @@ export const members = new Hono()
     const activities = member?.activities ?? [];
 
     const activityCounts = activities.reduce<
-      Record<string, { count: number; weight: number }>
+      Record<string, { count: number; weight: number; source: string }>
     >((acc, activity) => {
-      const { name } = activity.activity_type;
-      const { weight } = activity.activity_type;
+      const { source, name, weight } = activity.activity_type;
 
       if (!acc[name]) {
-        acc[name] = { count: 0, weight };
+        acc[name] = { count: 0, weight, source };
       }
       acc[name].count++;
       return acc;
     }, {});
 
     const activityDetails = Object.entries(activityCounts)
-      .map(([name, { count, weight }]) => ({
+      .map(([name, { count, weight, source }]) => ({
+        source,
         activity_name: name,
         activity_count: count,
         weight,
@@ -239,6 +239,7 @@ export const members = new Hono()
       .sort((a, b) => b.weight - a.weight);
 
     const totalActivities = activities.length;
+
     const totalPulse = activityDetails.reduce(
       (sum, { activity_count, weight }) => sum + activity_count * weight,
       0,

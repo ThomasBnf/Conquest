@@ -21,7 +21,10 @@ export const mergeMember = authAction
   )
   .action(
     async ({ ctx: { user }, parsedInput: { leftMember, rightMember } }) => {
-      const isLeftOlder = leftMember.created_at < rightMember.created_at;
+      const isLeftOlder =
+        leftMember.first_activity &&
+        rightMember.first_activity &&
+        leftMember.first_activity < rightMember.first_activity;
 
       const mergedEntries = Object.entries(leftMember).map(([key, value]) => {
         const rightValue = rightMember[key as keyof typeof rightMember];
@@ -57,10 +60,6 @@ export const mergeMember = authAction
           const rightPhones = rightValue as string[];
 
           return [key, [...leftPhones, ...rightPhones]];
-        }
-
-        if (key === "logs") {
-          return [key, []];
         }
 
         if (key === "created_at") {

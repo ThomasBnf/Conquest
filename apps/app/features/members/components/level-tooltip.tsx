@@ -48,7 +48,7 @@ export const LevelTooltip = ({ member, showIcon = true }: Props) => {
             <p className="w-52">Max Weight Activity</p>
             <p>{data?.max_weight || 0}</p>
           </div>
-          <p className="opacity-70">
+          <p className="opacity-60">
             {
               data?.details.find((detail) => detail.weight === data?.max_weight)
                 ?.activity_name
