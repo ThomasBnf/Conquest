@@ -30,11 +30,6 @@ type Props = {
 };
 
 export const UserProvider = ({ user, children }: Props) => {
-  if (!user) {
-    console.log("Loading userContext...");
-    return <div>Loading userContext...</div>;
-  }
-
   const slug = user?.workspace.slug;
 
   const slack = user?.workspace.integrations.find(
