@@ -51,6 +51,7 @@
       "group": "Activities",
       "pages": [
         "api-reference/activities/list",
+        "api-reference/activities/list-member-activities",
         "api-reference/activities/post",
         "api-reference/activities/get",
         "api-reference/activities/patch",
@@ -65,6 +66,26 @@
         "api-reference/members/get",
         "api-reference/members/patch",
         "api-reference/members/delete"
+      ]
+    },
+    {
+      "group": "Channels",
+      "pages": [
+        "api-reference/channels/list",
+        "api-reference/channels/post",
+        "api-reference/channels/get",
+        "api-reference/channels/patch",
+        "api-reference/channels/delete"
+      ]
+    },
+    {
+      "group": "Companies",
+      "pages": [
+        "api-reference/companies/list",
+        "api-reference/companies/post",
+        "api-reference/companies/get",
+        "api-reference/companies/patch",
+        "api-reference/companies/delete"
       ]
     }
   ],

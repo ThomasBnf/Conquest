@@ -17,11 +17,11 @@ export const activities = new Hono()
       "query",
       z.object({
         page: z.coerce.number().min(1).default(1),
-        pageSize: z.coerce.number().min(10).max(100).default(10),
+        page_size: z.coerce.number().min(10).max(100).default(10),
       }),
     ),
     async (c) => {
-      const { page, pageSize } = c.req.valid("query");
+      const { page, page_size } = c.req.valid("query");
       const workspace_id = c.get("workspace_id");
 
       try {
@@ -38,13 +38,58 @@ export const activities = new Hono()
           orderBy: {
             created_at: "desc",
           },
-          skip: (page - 1) * pageSize,
-          take: pageSize,
+          skip: (page - 1) * page_size,
+          take: page_size,
         });
 
         return c.json({
           page,
-          page_size: pageSize,
+          page_size: page_size,
+          total_activities: totalActivities,
+          activities: ActivitySchema.array().parse(activities),
+        });
+      } catch (error) {
+        return badRequest(c, "Failed to fetch activities");
+      }
+    },
+  )
+  .get(
+    "/:member_id",
+    zValidator(
+      "query",
+      z.object({
+        page: z.coerce.number().min(1).default(1),
+        page_size: z.coerce.number().min(10).max(100).default(10),
+      }),
+    ),
+    async (c) => {
+      const { page, page_size } = c.req.valid("query");
+      const member_id = c.req.param("member_id");
+      const workspace_id = c.get("workspace_id");
+
+      try {
+        const totalActivities = await prisma.activities.count({
+          where: {
+            member_id,
+            workspace_id,
+          },
+        });
+
+        const activities = await prisma.activities.findMany({
+          where: {
+            member_id,
+            workspace_id,
+          },
+          orderBy: {
+            created_at: "desc",
+          },
+          skip: (page - 1) * page_size,
+          take: page_size,
+        });
+
+        return c.json({
+          page,
+          page_size: page_size,
           total_activities: totalActivities,
           activities: ActivitySchema.array().parse(activities),
         });

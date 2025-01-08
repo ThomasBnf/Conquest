@@ -1,16 +1,16 @@
 import { prisma } from "@/lib/prisma";
 import { badRequest, notFound } from "@/lib/utils";
 import {
-  V1CreateCompanySchema,
-  V1UpdateCompanySchema,
-} from "@/schemas/company.schema";
-import { CompanySchema } from "@conquest/zod/schemas/company.schema";
+  V1CreateChannelSchema,
+  V1UpdateChannelSchema,
+} from "@/schemas/channel.schema";
+import { ChannelSchema } from "@conquest/zod/schemas/channel.schema";
 import { zValidator } from "@hono/zod-validator";
 import { Prisma } from "@prisma/client";
 import { Hono } from "hono";
 import { z } from "zod";
 
-export const companies = new Hono()
+export const channels = new Hono()
   .get(
     "/",
     zValidator(
@@ -25,13 +25,13 @@ export const companies = new Hono()
       const workspace_id = c.get("workspace_id");
 
       try {
-        const totalCompanies = await prisma.companies.count({
+        const totalChannels = await prisma.channels.count({
           where: {
             workspace_id,
           },
         });
 
-        const companies = await prisma.companies.findMany({
+        const channels = await prisma.channels.findMany({
           where: {
             workspace_id,
           },
@@ -45,60 +45,60 @@ export const companies = new Hono()
         return c.json({
           page,
           page_size: page_size,
-          total_companies: totalCompanies,
-          companies: CompanySchema.array().parse(companies),
+          total_channels: totalChannels,
+          channels: ChannelSchema.array().parse(channels),
         });
       } catch (error) {
-        return badRequest(c, "Failed to fetch companies");
+        return badRequest(c, "Failed to fetch channels");
       }
     },
   )
-  .post("/", zValidator("json", V1CreateCompanySchema), async (c) => {
+  .post("/", zValidator("json", V1CreateChannelSchema), async (c) => {
     const workspace_id = c.get("workspace_id");
-    const company = c.req.valid("json");
+    const channel = c.req.valid("json");
 
     try {
-      const createdCompany = await prisma.companies.create({
+      const createdChannel = await prisma.channels.create({
         data: {
-          ...company,
+          ...channel,
           workspace_id,
         },
       });
 
-      return c.json(CompanySchema.parse(createdCompany));
+      return c.json(ChannelSchema.parse(createdChannel));
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
         if (error.code === "P2002") {
-          return badRequest(c, "Company already exists with this name");
+          return badRequest(c, "Channel already exists");
         }
       }
-      return badRequest(c, "Failed to create company");
+      return badRequest(c, "Failed to create channel");
     }
   })
-  .patch("/:id", zValidator("json", V1UpdateCompanySchema), async (c) => {
+  .patch("/:id", zValidator("json", V1UpdateChannelSchema), async (c) => {
     const id = c.req.param("id");
     const workspace_id = c.get("workspace_id");
-    const companyData = c.req.valid("json");
+    const channelData = c.req.valid("json");
 
     try {
-      const updatedCompany = await prisma.companies.update({
+      const updatedChannel = await prisma.channels.update({
         where: {
           id,
           workspace_id,
         },
         data: {
-          ...companyData,
+          ...channelData,
         },
       });
 
-      return c.json(CompanySchema.parse(updatedCompany));
+      return c.json(ChannelSchema.parse(updatedChannel));
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
         if (error.code === "P2025") {
-          return notFound(c, "Company not found");
+          return notFound(c, "Channel not found");
         }
       }
-      return badRequest(c, "Failed to update company");
+      return badRequest(c, "Failed to update channel");
     }
   })
   .delete(
@@ -109,21 +109,21 @@ export const companies = new Hono()
       const workspace_id = c.get("workspace_id");
 
       try {
-        await prisma.companies.delete({
+        await prisma.channels.delete({
           where: {
             id,
             workspace_id,
           },
         });
 
-        return c.json({ message: "Company deleted successfully" });
+        return c.json({ message: "Channel deleted successfully" });
       } catch (error) {
         if (error instanceof Prisma.PrismaClientKnownRequestError) {
           if (error.code === "P2025") {
-            return notFound(c, "Company not found");
+            return notFound(c, "Channel not found");
           }
         }
-        return badRequest(c, "Failed to delete company");
+        return badRequest(c, "Failed to delete channel");
       }
     },
   );
