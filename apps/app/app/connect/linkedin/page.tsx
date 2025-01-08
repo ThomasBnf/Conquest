@@ -2,6 +2,7 @@ import { LINKEDIN_SCOPES } from "@/constant";
 import { env } from "@/env.mjs";
 import { createIntegration } from "@/queries/integrations/createIntegration";
 import { getCurrentUser } from "@/queries/users/getCurrentUser";
+import { prisma } from "@conquest/database";
 import { redirect } from "next/navigation";
 
 type Props = {
@@ -40,17 +41,29 @@ export default async function Page({ searchParams: { code } }: Props) {
   const data = await response.json();
   const { access_token } = data;
 
-  await createIntegration({
-    external_id: null,
-    details: {
-      source: "LINKEDIN",
-      name: "",
-      access_token: access_token ?? "",
-      expire_in: 3600,
-      scopes: LINKEDIN_SCOPES,
+  const integrations = await prisma.integrations.findMany({
+    where: {
+      details: {
+        path: ["source"],
+        equals: "LINKEDIN",
+      },
+      workspace_id,
     },
-    workspace_id,
   });
+
+  if (integrations.length === 0) {
+    await createIntegration({
+      external_id: null,
+      details: {
+        source: "LINKEDIN",
+        name: "",
+        access_token: access_token ?? "",
+        expire_in: 3600,
+        scopes: LINKEDIN_SCOPES,
+      },
+      workspace_id,
+    });
+  }
 
   redirect(`/${slug}/settings/integrations/linkedin`);
 }
