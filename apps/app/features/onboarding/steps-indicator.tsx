@@ -4,7 +4,7 @@ type Props = {
   step: number;
 };
 
-export const Steps = ({ step }: Props) => {
+export const StepsIndicator = ({ step }: Props) => {
   return (
     <div className="mb-4 flex items-center gap-4">
       <p className="text-muted-foreground">Step {step} of 2</p>

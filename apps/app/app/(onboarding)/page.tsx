@@ -2,7 +2,7 @@
 
 import { updateUser } from "@/actions/users/updateUser";
 import { useUser } from "@/context/userContext";
-import { Steps } from "@/features/onboarding/steps";
+import { StepsIndicator } from "@/features/onboarding/steps-indicator";
 import { Button, buttonVariants } from "@conquest/ui/button";
 import {
   Card,
@@ -50,7 +50,7 @@ export default function Page() {
   return (
     <Card className="mx-auto w-full max-w-xl">
       <CardHeader>
-        <Steps step={step} />
+        <StepsIndicator step={step} />
         <CardTitle>Welcome to Conquest</CardTitle>
         <CardDescription>
           Tell us a bit about yourself so we can personalize your experience
