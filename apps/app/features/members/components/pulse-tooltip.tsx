@@ -30,7 +30,7 @@ export const PulseTooltip = ({ member, showIcon = true }: Props) => {
   const groupedActivities = data?.details.reduce<
     Array<{
       source: string;
-      activities: Array<{ name: string; count: number }>;
+      activities: Array<{ name: string; count: number; weight: number }>;
     }>
   >((acc, activity) => {
     const sourceGroup = acc.find((group) => group.source === activity.source);
@@ -42,6 +42,7 @@ export const PulseTooltip = ({ member, showIcon = true }: Props) => {
           {
             name: activity.activity_name,
             count: activity.activity_count,
+            weight: activity.weight,
           },
         ],
       });
@@ -58,6 +59,7 @@ export const PulseTooltip = ({ member, showIcon = true }: Props) => {
       sourceGroup.activities.push({
         name: activity.activity_name,
         count: activity.activity_count,
+        weight: activity.weight,
       });
     }
 
@@ -89,6 +91,10 @@ export const PulseTooltip = ({ member, showIcon = true }: Props) => {
           <p className="w-36">Total Activities</p>
           <p>{data?.total_activities ?? 0}</p>
         </div>
+        <div className="mb-2 flex items-center justify-between opacity-60">
+          <p className="text-xs">Source</p>
+          <p className="text-xs">Activities x Weight</p>
+        </div>
         <div className="flex w-full flex-col gap-1 text-start">
           {groupedActivities?.map((group) => (
             <div key={group.source} className="mb-2">
@@ -99,7 +105,9 @@ export const PulseTooltip = ({ member, showIcon = true }: Props) => {
                   className="flex items-center justify-between text-sm"
                 >
                   <p className="w-36">{activity.name}</p>
-                  <p>{activity.count}</p>
+                  <p className="flex items-baseline gap-1">
+                    {activity.count} <span>x</span> {activity.weight}
+                  </p>
                 </div>
               ))}
             </div>
