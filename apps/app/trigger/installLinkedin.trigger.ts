@@ -30,10 +30,10 @@ export const installLinkedin = schemaTask({
 
     const integration = await updateIntegration({
       id: linkedin.id,
+      external_id: organization_id,
       details: {
         ...linkedin.details,
-        organization_id,
-        organization_name,
+        name: organization_name,
       },
       status: "SYNCING",
     });

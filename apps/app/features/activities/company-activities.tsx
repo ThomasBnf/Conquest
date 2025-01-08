@@ -1,15 +1,13 @@
 "use client";
 
+import { listCompanyActivities } from "@/client/activities/listCompanyActivities";
+import { Activities as ActivitiesIcon } from "@/components/icons/Activities";
+import { EmptyState } from "@/components/states/empty-state";
 import { IsLoading } from "@/components/states/is-loading";
 import { useIsClient } from "@/hooks/useIsClient";
-import { client } from "@/lib/rpc";
 import { cn } from "@conquest/ui/cn";
 import { Separator } from "@conquest/ui/separator";
-import {
-  type ActivityWithTypeAndMember,
-  ActivityWithTypeAndMemberSchema,
-} from "@conquest/zod/schemas/activity.schema";
-import { useInfiniteQuery } from "@tanstack/react-query";
+import type { ActivityWithTypeAndMember } from "@conquest/zod/schemas/activity.schema";
 import { format, isYesterday } from "date-fns";
 import { useEffect, useMemo } from "react";
 import { useInView } from "react-intersection-observer";
@@ -30,29 +28,11 @@ export const CompanyActivities = ({
   const { ref, inView } = useInView();
   const isClient = useIsClient();
 
-  const { data, isLoading, fetchNextPage, hasNextPage } = useInfiniteQuery({
-    queryKey: ["activities", company_id],
-    queryFn: async ({ pageParam }) => {
-      const response = await client.api.activities.company[":companyId"].$get({
-        param: { companyId: company_id },
-        query: {
-          page: pageParam.toString(),
-        },
-      });
-      return ActivityWithTypeAndMemberSchema.array().parse(
-        await response.json(),
-      );
-    },
-    getNextPageParam: (_, allPages) => allPages.length + 1,
-    initialData: { pages: [initialActivities], pageParams: [1] },
-    initialPageParam: 1,
-  });
-
-  const activities = useMemo(() => {
-    const pages = data?.pages;
-    if (!pages?.length) return [];
-    return pages.flatMap((page) => page ?? []);
-  }, [data?.pages]);
+  const { activities, isLoading, fetchNextPage, hasNextPage } =
+    listCompanyActivities({
+      initialActivities,
+      company_id,
+    });
 
   const groupedActivities = useMemo(() => {
     if (!activities?.length) return {};
@@ -73,9 +53,11 @@ export const CompanyActivities = ({
 
   if (!activities?.length)
     return (
-      <div className="flex h-full items-center justify-center">
-        <p className="text-muted-foreground">No activities found</p>
-      </div>
+      <EmptyState
+        icon={<ActivitiesIcon size={36} />}
+        title="No activities found"
+        description="This company has no activities"
+      />
     );
 
   return (

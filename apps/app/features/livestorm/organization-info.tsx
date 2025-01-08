@@ -1,5 +1,5 @@
 import { useUser } from "@/context/userContext";
-import { useListLivestormOrganization } from "@/queries/hooks/useListLivestormOrganization";
+import { listLivestormOrganization } from "@/client/livestorm/listLivestormOrganization";
 import type { installLivestorm } from "@/trigger/installLivestorm.trigger";
 import { Button } from "@conquest/ui/button";
 import { useRealtimeTaskTrigger } from "@trigger.dev/react-hooks";
@@ -13,7 +13,7 @@ export const OrganizationInfo = () => {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
-  const { data, isLoading } = useListLivestormOrganization();
+  const { data, isLoading } = listLivestormOrganization();
   const { included } = data ?? {};
 
   const { submit, run } = useRealtimeTaskTrigger<typeof installLivestorm>(

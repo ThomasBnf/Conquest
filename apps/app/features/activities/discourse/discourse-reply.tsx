@@ -1,4 +1,4 @@
-import { useGetDiscourseReply } from "@/queries/hooks/useGetDiscourseReply";
+import { getDiscourseReply } from "@/client/discourse/getDiscourseReply";
 import { Skeleton } from "@conquest/ui/skeleton";
 import type { ActivityWithMember } from "@conquest/zod/schemas/activity.schema";
 import { ActivityCard } from "../activity-card";
@@ -10,7 +10,7 @@ type Props = {
 
 export const DiscourseReply = ({ activity }: Props) => {
   const { reply_to, thread_id } = activity;
-  const { data } = useGetDiscourseReply({ reply_to, thread_id });
+  const { data } = getDiscourseReply({ reply_to, thread_id });
 
   if (!data)
     return (

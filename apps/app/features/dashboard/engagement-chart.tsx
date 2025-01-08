@@ -1,6 +1,6 @@
 "use client";
 
-import { useListEngagement } from "@/queries/hooks/useListEngagement";
+import { listEngagement } from "@/client/dashboard/listEngagement";
 import {
   type ChartConfig,
   ChartContainer,
@@ -29,7 +29,7 @@ type Props = {
 };
 
 export const EngagementChart = ({ from, to }: Props) => {
-  const { data: chartData } = useListEngagement({ from, to });
+  const { data: chartData } = listEngagement({ from, to });
 
   return (
     <ResponsiveContainer height={350}>

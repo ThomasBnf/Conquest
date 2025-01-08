@@ -1,7 +1,6 @@
 import type { LinkedInIntegration } from "@conquest/zod/schemas/integration.schema";
 import type { SocialActionsResponse } from "@conquest/zod/types/linkedin";
 import { createActivity } from "../activities/createActivity";
-import { getActivityType } from "../activity-type/getActivityType";
 import { upsertMember } from "../members/upsertMember";
 import { getPeople } from "./getPeople";
 
@@ -12,11 +11,6 @@ type Props = {
 
 export const createManyLikes = async ({ linkedin, likes }: Props) => {
   const { workspace_id } = linkedin;
-
-  const like_type = await getActivityType({
-    workspace_id,
-    key: "linkedin:like",
-  });
 
   for (const like of likes) {
     const actorId = like.created.actor.split(":").pop();
@@ -51,14 +45,13 @@ export const createManyLikes = async ({ linkedin, likes }: Props) => {
         avatar_url,
         job_title: localizedHeadline,
         source: "LINKEDIN",
-        // joined_at: joinedAt,
         workspace_id,
       },
     });
 
     await createActivity({
       external_id: like.id,
-      activity_type_id: like_type.id,
+      activity_type_key: "linkedin:like",
       message: "like",
       member_id: member.id,
       workspace_id,

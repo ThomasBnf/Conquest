@@ -1,6 +1,6 @@
 "use client";
 
-import { useListTopChannels } from "@/queries/hooks/useListTopChannels";
+import { useListTopChannels } from "@/client/dashboard/listTopChannels";
 import { type ChartConfig, ChartContainer } from "@conquest/ui/chart";
 import { useRef } from "react";
 import {

@@ -14,6 +14,7 @@ export const LogSchema = z.object({
 
 export const MemberSchema = z.object({
   id: z.string().cuid(),
+  discord_id: z.string().nullable(),
   discourse_id: z.string().nullable(),
   livestorm_id: z.string().nullable(),
   linkedin_id: z.string().nullable(),

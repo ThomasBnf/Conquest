@@ -4,7 +4,6 @@ import { prisma } from "@/lib/prisma";
 import { createActivity } from "@/queries/activities/createActivity";
 import { deleteActivity } from "@/queries/activities/deleteActivity";
 import { updateActivity } from "@/queries/activities/updateActivity";
-import { getActivityType } from "@/queries/activity-type/getActivityType";
 import { createChannel } from "@/queries/channels/createChannel";
 import { deleteChannel } from "@/queries/channels/deleteChannel";
 import { getChannel } from "@/queries/channels/getChannel";
@@ -14,10 +13,7 @@ import { getMember } from "@/queries/members/getMember";
 import { upsertMember } from "@/queries/members/upsertMember";
 import { deleteListReactions } from "@/queries/slack/deleteListReactions";
 import { getAuthUser } from "@/queries/users/getAuthUser";
-import {
-  type SlackIntegration,
-  SlackIntegrationSchema,
-} from "@conquest/zod/schemas/integration.schema";
+import { SlackIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
 import { zValidator } from "@hono/zod-validator";
 import {
   type GenericMessageEvent,
@@ -58,42 +54,18 @@ export const slack = new Hono()
 
       const { type } = event;
 
-      const rIntegration = await getIntegration({ external_id: team_id });
-      const integration = rIntegration?.data as SlackIntegration;
+      const integration = await getIntegration({ external_id: team_id });
 
       if (!integration) return NextResponse.json({ status: 200 });
 
-      const { workspace_id } = integration;
-      const { token } = integration.details;
+      const slackIntegration = SlackIntegrationSchema.parse(integration);
+
+      const { workspace_id } = slackIntegration;
+      const { token } = slackIntegration.details;
 
       if (!workspace_id || !token) return NextResponse.json({ status: 200 });
 
       const web = new WebClient(token);
-
-      const type_post = await getActivityType({
-        key: "slack:post",
-        workspace_id,
-      });
-
-      const type_reply = await getActivityType({
-        key: "slack:reply",
-        workspace_id,
-      });
-
-      const type_invitation = await getActivityType({
-        key: "slack:invitation",
-        workspace_id,
-      });
-
-      const type_reaction = await getActivityType({
-        key: "slack:reaction",
-        workspace_id,
-      });
-
-      const type_join = await getActivityType({
-        key: "slack:join",
-        workspace_id,
-      });
 
       switch (type) {
         case "app_uninstalled": {
@@ -151,7 +123,7 @@ export const slack = new Hono()
 
             const activity = await createActivity({
               external_id: ts,
-              activity_type_id: thread_ts ? type_reply.id : type_post.id,
+              activity_type_key: thread_ts ? "slack:reply" : "slack:post",
               member_id: member.id,
               channel_id: channel.id,
               message: text ?? "",
@@ -161,7 +133,7 @@ export const slack = new Hono()
 
             await createFiles({
               files: files as SlackFile[],
-              activity_id: activity.id,
+              activity_id: activity?.id,
             });
           };
 
@@ -179,7 +151,7 @@ export const slack = new Hono()
 
               const activity = await updateActivity({
                 external_id: ts,
-                activity_type_id: thread_ts ? type_reply.id : type_post.id,
+                activity_type_key: thread_ts ? "slack:reply" : "slack:post",
                 message: text ?? "",
                 reply_to: thread_ts ?? null,
                 workspace_id,
@@ -187,7 +159,7 @@ export const slack = new Hono()
 
               await createFiles({
                 files: files as SlackFile[],
-                activity_id: activity.id,
+                activity_id: activity?.id,
               });
 
               break;
@@ -237,7 +209,7 @@ export const slack = new Hono()
 
           await createActivity({
             external_id: null,
-            activity_type_id: type_reaction.id,
+            activity_type_key: "slack:reaction",
             member_id: member.id,
             channel_id: channel.id,
             message: reaction,
@@ -322,10 +294,10 @@ export const slack = new Hono()
 
           await createActivity({
             external_id: null,
-            activity_type_id: type_invitation.id,
-            member_id: inviterMember.id,
-            message: `<@${member.id}> accepted your invitation`,
+            activity_type_key: "slack:invitation",
+            message: `<@${member.id}> has joined the community through your invitation`,
             invite_to: member.id,
+            member_id: inviterMember.id,
             created_at: new Date(Number.parseFloat(event_ts) * 1000),
             updated_at: new Date(Number.parseFloat(event_ts) * 1000),
             workspace_id,
@@ -333,8 +305,8 @@ export const slack = new Hono()
 
           await createActivity({
             external_id: null,
-            activity_type_id: type_join.id,
-            message: "Joined Slack community",
+            activity_type_key: "slack:join",
+            message: `${first_name} has joined the community`,
             member_id: member.id,
             workspace_id,
           });

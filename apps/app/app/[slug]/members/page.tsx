@@ -1,6 +1,6 @@
 import { Header } from "@/components/layouts/header";
 import { PageLayout } from "@/components/layouts/page-layout";
-import { CreateMemberDialog } from "@/features/members/components/create-member-dialog";
+import { MemberDialog } from "@/features/members/components/member-dialog";
 import { MembersTable } from "@/features/members/components/table/members-table";
 import { searchParamsTable } from "@/lib/searchParamsTable";
 import { listTags } from "@/queries/tags/listTags";
@@ -21,7 +21,7 @@ export default async function Page({ searchParams }: Props) {
   return (
     <PageLayout>
       <Header title="Members">
-        <CreateMemberDialog />
+        <MemberDialog />
       </Header>
       <MembersTable tags={tags} />
     </PageLayout>

@@ -37,22 +37,25 @@ export const weekdays: RepeatOn[] = [
 export const SLACK_SCOPES =
   "channels:history,channels:join,channels:read,files:read,groups:history,groups:read,links:read,reactions:read,team:read,users.profile:read,users:read,users:read.email";
 
+export const DISCORD_PERMISSIONS = "1108370064384";
+export const DISCORD_SCOPES = "bot";
+
 export const USER_SCOPES = "chat:write,im:write,channels:write";
 
 export const WEEKDAYS = ["Mon", "Wed", "Fri", "Sun"] as const;
 export const MONTHS = [
-  "Jan",
-  "Feb",
-  "Mar",
-  "Apr",
+  "January",
+  "February",
+  "March",
+  "April",
   "May",
-  "Jun",
-  "Jul",
-  "Aug",
-  "Sep",
-  "Oct",
-  "Nov",
-  "Dec",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
 ] as const;
 
 export const ACTIVITY_COLORS = {
@@ -101,6 +104,44 @@ export const SLACK_ACTIVITY_TYPES = [
   },
 ];
 
+export const DISCORD_ACTIVITY_TYPES = [
+  {
+    name: "Invite",
+    source: "DISCORD" as const,
+    key: "discord:invite",
+    weight: 6,
+    deletable: false,
+  },
+  {
+    name: "Write a post",
+    source: "DISCORD" as const,
+    key: "discord:post",
+    weight: 4,
+    deletable: false,
+  },
+  {
+    name: "Reply to post",
+    source: "DISCORD" as const,
+    key: "discord:reply",
+    weight: 2,
+    deletable: false,
+  },
+  {
+    name: "Join Discord community",
+    source: "DISCORD" as const,
+    key: "discord:join",
+    weight: 1,
+    deletable: false,
+  },
+  {
+    name: "Add reaction",
+    source: "DISCORD" as const,
+    key: "discord:reaction",
+    weight: 0,
+    deletable: false,
+  },
+];
+
 export const DISCOURSE_ACTIVITY_TYPES = [
   {
     name: "Invite",
@@ -131,10 +172,17 @@ export const DISCOURSE_ACTIVITY_TYPES = [
     deletable: false,
   },
   {
+    name: "Join Discourse community",
+    source: "DISCOURSE" as const,
+    key: "discourse:join",
+    weight: 1,
+    deletable: false,
+  },
+  {
     name: "Login",
     source: "DISCOURSE" as const,
     key: "discourse:login",
-    weight: 1,
+    weight: 0,
     deletable: false,
   },
   {
@@ -174,7 +222,7 @@ export const LINKEDIN_ACTIVITY_TYPES = [
 ];
 
 export const LINKEDIN_SCOPES =
-  "r_organization_followers,r_organization_social,r_organization_social_feed,r_basicprofile,rw_organization_admin";
+  "r_organization_social,r_organization_social_feed,rw_organization_admin";
 
 export const LIVESTORM_SCOPES =
   "identity:read events:read webhook:read webhook:write";

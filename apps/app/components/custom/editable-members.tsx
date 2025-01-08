@@ -1,10 +1,11 @@
 import { updateMemberCompany } from "@/actions/members/updateMemberCompany";
+import { listAllMembers } from "@/client/members/listAllMembers";
 import { useUser } from "@/context/userContext";
-import { useListAllMembers } from "@/queries/hooks/useListAllMembers";
 import { Avatar, AvatarFallback, AvatarImage } from "@conquest/ui/avatar";
 import { Button } from "@conquest/ui/button";
 import {
   Command,
+  CommandEmpty,
   CommandGroup,
   CommandInput,
   CommandItem,
@@ -12,8 +13,9 @@ import {
 } from "@conquest/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@conquest/ui/popover";
 import { Skeleton } from "@conquest/ui/skeleton";
-import type { Company } from "@conquest/zod/schemas/company.schema";
+import type { CompanyWithMembers } from "@conquest/zod/schemas/company.schema";
 import type { Member } from "@conquest/zod/schemas/member.schema";
+import { useQueryClient } from "@tanstack/react-query";
 import { X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -21,7 +23,7 @@ import { useInView } from "react-intersection-observer";
 import { toast } from "sonner";
 
 type Props = {
-  company: Company;
+  company: CompanyWithMembers;
 };
 
 export const EditableMembers = ({ company }: Props) => {
@@ -30,14 +32,15 @@ export const EditableMembers = ({ company }: Props) => {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
   const router = useRouter();
+  const queryClient = useQueryClient();
 
-  const { data, hasNextPage, fetchNextPage, isLoading } = useListAllMembers({
+  const [companyMembers, setCompanyMembers] = useState<Member[]>(
+    company.members ?? [],
+  );
+
+  const { members, hasNextPage, fetchNextPage, isLoading } = listAllMembers({
     search,
   });
-
-  const members = data?.pages.flat();
-
-  const [companyMembers, setCompanyMembers] = useState<Member[]>([]);
 
   const onUpdate = async (memberId: string) => {
     const isMemberInCompany = companyMembers?.some(
@@ -50,15 +53,18 @@ export const EditableMembers = ({ company }: Props) => {
     });
 
     if (response?.serverError) {
-      toast.error(response.serverError);
-      return;
+      return toast.error(response.serverError);
     }
 
+    setSearch("");
     setCompanyMembers((prev) =>
       isMemberInCompany
         ? prev.filter((member) => member.id !== memberId)
         : [...prev, members?.find((member) => member.id === memberId)!],
     );
+    queryClient.invalidateQueries({
+      queryKey: ["activities", company.id],
+    });
     toast.success(
       isMemberInCompany
         ? "Member removed from company"
@@ -67,18 +73,10 @@ export const EditableMembers = ({ company }: Props) => {
   };
 
   useEffect(() => {
-    setCompanyMembers(
-      members?.filter((member) => member.company_id === company.id) ?? [],
-    );
-  }, [members, company.id]);
-
-  useEffect(() => {
     if (inView && hasNextPage) {
       fetchNextPage();
     }
   }, [inView]);
-
-  if (isLoading) return <Skeleton className="h-5 w-24" />;
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -91,13 +89,15 @@ export const EditableMembers = ({ company }: Props) => {
                   key={member.id}
                   variant="outline"
                   size="xs"
-                  className="w-fit justify-start border-blue-200 text-blue-500 hover:bg-background hover:text-blue-500"
+                  className="w-fit max-w-[225px] justify-start border-blue-200 text-blue-500 hover:bg-background hover:text-blue-500"
                   onClick={(e) => {
                     e.stopPropagation();
                     router.push(`/${slug}/members/${member.id}`);
                   }}
                 >
-                  {member.first_name} {member.last_name}
+                  <span className="truncate">
+                    {member.first_name} {member.last_name}
+                  </span>
                   {open && (
                     // biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
                     <div
@@ -126,7 +126,7 @@ export const EditableMembers = ({ company }: Props) => {
         )}
       </PopoverTrigger>
       <PopoverContent align="start" className="w-[233px] p-0">
-        <Command loop>
+        <Command loop shouldFilter={false}>
           <CommandInput
             placeholder="Search company..."
             value={search}
@@ -134,6 +134,8 @@ export const EditableMembers = ({ company }: Props) => {
           />
           <CommandList>
             <CommandGroup>
+              {isLoading && <Skeleton className="h-8 w-full" />}
+              {!isLoading && <CommandEmpty>No members found</CommandEmpty>}
               {members
                 ?.filter((member) => member.company_id !== company.id)
                 .map((member) => (

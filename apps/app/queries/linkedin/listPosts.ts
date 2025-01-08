@@ -6,7 +6,8 @@ type Props = {
 };
 
 export const listPosts = async ({ linkedin }: Props) => {
-  const { access_token, organization_id } = linkedin.details;
+  const { external_id, details } = linkedin;
+  const { access_token } = details;
 
   const allPosts: PostsResponse["elements"] = [];
 
@@ -15,7 +16,7 @@ export const listPosts = async ({ linkedin }: Props) => {
 
   while (hasMore) {
     const params = new URLSearchParams({
-      author: `urn:li:organization:${organization_id}`,
+      author: `urn:li:organization:${external_id}`,
       q: "author",
       start: start.toString(),
       count: "100",

@@ -1,8 +1,11 @@
 "use client";
 
 import { updateWorkspace } from "@/actions/workspaces/updateWorkspace";
+import { countMembers } from "@/client/members/countMembers";
+import { listMembers } from "@/client/members/listMembers";
 import { QueryInput } from "@/components/custom/query-input";
 import { Members } from "@/components/icons/Members";
+import { EmptyState } from "@/components/states/empty-state";
 import { useUser } from "@/context/userContext";
 import { FilterButton } from "@/features/filters/filter-button";
 import { FiltersList } from "@/features/filters/filters-list";
@@ -13,8 +16,6 @@ import { Pagination } from "@/features/table/pagination";
 import { TableSkeleton } from "@/features/table/table-skeletton";
 import { useIsClient } from "@/hooks/useIsClient";
 import { tableParsers } from "@/lib/searchParamsTable";
-import { useCountMembers } from "@/queries/hooks/useCountMembers";
-import { useListMembers } from "@/queries/hooks/useListMembers";
 import { Button } from "@conquest/ui/button";
 import { cn } from "@conquest/ui/cn";
 import { ScrollArea, ScrollBar } from "@conquest/ui/scroll-area";
@@ -30,17 +31,16 @@ type Props = {
 };
 
 export const MembersTable = ({ tags }: Props) => {
-  const { members_preferences } = useUser();
+  const { slug, members_preferences } = useUser();
   const { open } = useSidebar();
-  const [{ search, id, desc, pageSize }, setParams] =
-    useQueryStates(tableParsers);
+
   const [rowSelected, setRowSelected] = useState<string[]>([]);
   const [filters, setFilters] = useState<Filter[]>(
     members_preferences?.filters || [],
   );
 
-  const { data: members, isLoading } = useListMembers({ filters });
-  const { data: count } = useCountMembers({ filters });
+  const { members, isLoading } = listMembers({ filters });
+  const { count } = countMembers({ filters });
 
   const isClient = useIsClient();
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -51,11 +51,14 @@ export const MembersTable = ({ tags }: Props) => {
   const fixedColumn = columns.slice(0, 2);
   const scrollableColumns = columns.slice(2);
 
+  const [{ search, idMember, descMember, pageSize }, setParams] =
+    useQueryStates(tableParsers);
+
   const handleUpdate = async (filters: Filter[]) => {
     await updateWorkspace({
       members_preferences: {
-        id,
-        desc,
+        id: idMember,
+        desc: descMember,
         pageSize,
         filters,
       },
@@ -165,6 +168,7 @@ export const MembersTable = ({ tags }: Props) => {
                       style={{ width: fixedColumn[1]?.width }}
                     >
                       {fixedColumn[1]?.cell({
+                        slug,
                         member,
                         rowSelected,
                         setRowSelected,
@@ -190,34 +194,28 @@ export const MembersTable = ({ tags }: Props) => {
             )}
           </div>
           {!isLoading && members?.length === 0 && (
-            <div
-              className={cn(
-                "absolute top-36 mx-auto flex w-full flex-col items-center justify-center",
-                open ? "max-w-[calc(100vw-14rem)]" : "max-w-[100vw]",
-              )}
-            >
-              <div className="flex items-center justify-center">
-                <Members />
-              </div>
-              <p className="text-center font-medium text-lg">
-                No members found
-              </p>
-              <p className="mb-4 text-center text-muted-foreground">
-                {search
+            <EmptyState
+              icon={<Members size={36} />}
+              title="No members found"
+              description={
+                search
                   ? "None of your members match the current filters"
-                  : "No members found in your workspace"}
-              </p>
+                  : "No members found in your workspace"
+              }
+              className={open ? "max-w-[calc(100vw-14rem)]" : "max-w-[100vw]"}
+            >
               {search && (
                 <Button onClick={() => setParams({ search: "" })}>
                   Clear filters
                 </Button>
               )}
-            </div>
+            </EmptyState>
           )}
           {rowSelected.length > 0 && (
             <ActionMenu
               rowSelected={rowSelected}
               setRowSelected={setRowSelected}
+              table="members"
             />
           )}
           <ScrollBar orientation="horizontal" />

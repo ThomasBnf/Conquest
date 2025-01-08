@@ -1,12 +1,12 @@
-import { cn } from "@conquest/ui/cn";
+import { Badge } from "@conquest/ui/badge";
 import type { Tag } from "@conquest/zod/schemas/tag.schema";
 
 type Props = {
   tag: Tag | undefined;
-  isBadge?: boolean;
+  transparent?: boolean;
 };
 
-export const TagBadge = ({ tag, isBadge = true }: Props) => {
+export const TagBadge = ({ tag, transparent = false }: Props) => {
   if (!tag) return null;
 
   const colorMap = {
@@ -21,17 +21,12 @@ export const TagBadge = ({ tag, isBadge = true }: Props) => {
       : tag.color;
 
   return (
-    <div
-      className={cn(
-        "flex h-6 w-fit items-center gap-2",
-        isBadge && "rounded-md border px-1.5",
-      )}
-    >
+    <Badge variant={transparent ? "transparent" : "outline"}>
       <div
         className="size-2.5 rounded-full"
         style={{ backgroundColor: tagColor }}
       />
       <p className="leading-none">{tag.name}</p>
-    </div>
+    </Badge>
   );
 };

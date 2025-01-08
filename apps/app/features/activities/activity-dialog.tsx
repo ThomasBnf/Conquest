@@ -1,7 +1,7 @@
 "use client";
 
 import { createActivity } from "@/actions/activities/createActivity";
-import { useListActivityTypes } from "@/queries/hooks/useListActivityTypes";
+import { listActivityTypes } from "@/client/activity-types/listActivityTypes";
 import { Button } from "@conquest/ui/button";
 import {
   Dialog,
@@ -45,7 +45,7 @@ type Props = {
 
 export const ActivityDialog = ({ member }: Props) => {
   const [open, setOpen] = useState(false);
-  const { data: activity_types } = useListActivityTypes();
+  const { data: activity_types } = listActivityTypes();
   const queryClient = useQueryClient();
 
   const form = useForm<AddActivityForm>({
@@ -74,10 +74,10 @@ export const ActivityDialog = ({ member }: Props) => {
     return acc;
   }, []);
 
-  const onSubmit = async ({ activity_type_id, message }: AddActivityForm) => {
+  const onSubmit = async ({ activity_type_key, message }: AddActivityForm) => {
     const activity = await createActivity({
       member_id: member.id,
-      activity_type_id,
+      activity_type_key,
       message,
     });
 
@@ -106,7 +106,7 @@ export const ActivityDialog = ({ member }: Props) => {
             <DialogBody>
               <FormField
                 control={form.control}
-                name="activity_type_id"
+                name="activity_type_key"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Activity type</FormLabel>
@@ -127,8 +127,8 @@ export const ActivityDialog = ({ member }: Props) => {
                               </SelectLabel>
                               {group.activity_types.map((activity_type) => (
                                 <SelectItem
-                                  key={activity_type.id}
-                                  value={activity_type.id}
+                                  key={activity_type.key}
+                                  value={activity_type.key}
                                 >
                                   {activity_type.name}
                                 </SelectItem>

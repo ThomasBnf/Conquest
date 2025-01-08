@@ -1,4 +1,4 @@
-import { useGetActivity } from "@/queries/hooks/useGetActivity";
+import { getActivity } from "@/client/activities/getActivity";
 import { Skeleton } from "@conquest/ui/skeleton";
 import type { ActivityWithMember } from "@conquest/zod/schemas/activity.schema";
 import { ActivityCard } from "../activity-card";
@@ -10,7 +10,7 @@ type Props = {
 
 export const SlackReply = ({ activity }: Props) => {
   const { reply_to } = activity;
-  const { data } = useGetActivity({ id: reply_to });
+  const { data } = getActivity({ id: reply_to });
 
   if (!data)
     return (

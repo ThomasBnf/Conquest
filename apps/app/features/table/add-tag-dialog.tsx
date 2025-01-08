@@ -1,5 +1,6 @@
+import { addTagsCompanies } from "@/actions/members/addTagsCompanies";
 import { addTagsMembers } from "@/actions/members/addTagsMembers";
-import { useListTags } from "@/queries/hooks/useListTags";
+import { listTags } from "@/client/tags/listTags";
 import { Button } from "@conquest/ui/button";
 import { Checkbox } from "@conquest/ui/checkbox";
 import {
@@ -26,10 +27,11 @@ import { toast } from "sonner";
 type Props = {
   rowSelected: string[];
   setRowSelected: (ids: string[]) => void;
+  table: "members" | "companies";
 };
 
-export const AddTagDialog = ({ rowSelected, setRowSelected }: Props) => {
-  const { data: tags } = useListTags();
+export const AddTagDialog = ({ rowSelected, setRowSelected, table }: Props) => {
+  const { data: tags } = listTags();
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const queryClient = useQueryClient();
@@ -45,18 +47,27 @@ export const AddTagDialog = ({ rowSelected, setRowSelected }: Props) => {
 
   const onConfirm = async () => {
     setLoading(true);
-    const response = await addTagsMembers({
-      ids: rowSelected,
-      tags: selectedTags,
-    });
 
-    const error = response?.serverError;
+    if (table === "members") {
+      const response = await addTagsMembers({
+        ids: rowSelected,
+        tags: selectedTags,
+      });
+      const error = response?.serverError;
 
-    if (error) toast.error(error);
-    else {
-      toast.success("Tags added");
-      queryClient.invalidateQueries({ queryKey: ["members"] });
+      if (error) toast.error(error);
+    } else {
+      const response = await addTagsCompanies({
+        ids: rowSelected,
+        tags: selectedTags,
+      });
+      const error = response?.serverError;
+
+      if (error) toast.error(error);
     }
+
+    toast.success("Tags added");
+    queryClient.invalidateQueries({ queryKey: [table], exact: false });
 
     setRowSelected([]);
     setLoading(false);

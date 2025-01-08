@@ -3,7 +3,7 @@ import { prisma } from "lib/prisma";
 
 type Props = {
   external_id: string | null;
-  activity_type_id: string;
+  activity_type_key: string;
   title?: string | null;
   message: string;
   thread_id?: string | null;
@@ -20,7 +20,7 @@ type Props = {
 
 export const createActivity = async ({
   external_id,
-  activity_type_id,
+  activity_type_key,
   title,
   message,
   thread_id,
@@ -34,10 +34,21 @@ export const createActivity = async ({
   created_at,
   updated_at,
 }: Props) => {
+  const activity_type = await prisma.activities_types.findUnique({
+    where: {
+      key_workspace_id: {
+        key: activity_type_key,
+        workspace_id,
+      },
+    },
+  });
+
+  if (!activity_type) return;
+
   const activity = await prisma.activities.create({
     data: {
       external_id,
-      activity_type_id,
+      activity_type_id: activity_type.id,
       title,
       message,
       thread_id,

@@ -1,5 +1,6 @@
 "use server";
 
+import { MemberFormSchema } from "@/features/members/schema/member-form.schema";
 import { CustomError } from "@/lib/safeAction";
 import { runWorkflowTrigger } from "@/trigger/runWorkflow.trigger";
 import { MemberWithActivitiesSchema } from "@conquest/zod/schemas/activity.schema";
@@ -12,13 +13,7 @@ import { z } from "zod";
 
 export const createMember = authAction
   .metadata({ name: "createMember" })
-  .schema(
-    z.object({
-      first_name: z.string(),
-      last_name: z.string(),
-      email: z.string(),
-    }),
-  )
+  .schema(MemberFormSchema)
   .action(async ({ ctx, parsedInput: { first_name, last_name, email } }) => {
     const workspace_id = ctx.user.workspace_id;
 

@@ -2,7 +2,7 @@
 
 import { updateWorkflow } from "@/actions/workflows/updateWorkflow";
 import { useUser } from "@/context/userContext";
-import { useGetWorkflow } from "@/queries/hooks/useGetWorkflow";
+import { getWorkflow } from "@/client/workflows/getWorkflow";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -33,7 +33,7 @@ export const Header = ({ workflow_id }: Props) => {
   const { slug } = useUser();
   const queryClient = useQueryClient();
 
-  const { data: workflow } = useGetWorkflow({ workflow_id });
+  const { data: workflow } = getWorkflow({ workflow_id });
 
   const { mutate } = useMutation({
     mutationFn: updateWorkflow,

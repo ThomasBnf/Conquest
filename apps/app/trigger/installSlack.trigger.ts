@@ -1,8 +1,8 @@
+import { calculateMemberMetrics } from "@/client/dashboard/calculateMemberMetrics";
 import { SLACK_ACTIVITY_TYPES } from "@/constant";
-import { prisma } from "@/lib/prisma";
+import { createManyActivityTypes } from "@/queries/activity-type/createManyActivityTypes";
 import { deleteIntegration } from "@/queries/integrations/deleteIntegration";
 import { updateIntegration } from "@/queries/integrations/updateIntegration";
-import { calculateMemberMetrics } from "@/queries/members/calculateMemberMetrics";
 import { createListChannels } from "@/queries/slack/createListChannels";
 import { createListMembers } from "@/queries/slack/createListMembers";
 import { listMessages } from "@/queries/slack/listMessages";
@@ -36,18 +36,9 @@ export const installSlack = schemaTask({
       status: "SYNCING",
     });
 
-    await prisma.activities_types.createMany({
-      data: SLACK_ACTIVITY_TYPES.map((activity_type) => {
-        const { name, source, key, weight, deletable } = activity_type;
-        return {
-          name,
-          source,
-          key,
-          weight,
-          deletable,
-          workspace_id,
-        };
-      }),
+    await createManyActivityTypes({
+      activity_types: SLACK_ACTIVITY_TYPES,
+      workspace_id,
     });
 
     const web = new WebClient(token);

@@ -17,9 +17,14 @@ export const env = createEnv({
     SLACK_CLIENT_SECRET: z.string(),
     SLACK_SIGNING_SECRET: z.string(),
 
+    DISCORD_CLIENT_SECRET: z.string(),
+    DISCORD_BOT_TOKEN: z.string(),
+
     LINKEDIN_CLIENT_SECRET: z.string(),
 
     LIVESTORM_CLIENT_SECRET: z.string(),
+
+    STRIPE_SECRET_KEY: z.string(),
 
     GOOGLE_API_KEY: z.string(),
   },
@@ -27,8 +32,9 @@ export const env = createEnv({
     NEXT_PUBLIC_BASE_URL: z.string(),
     NEXT_PUBLIC_SLACK_CLIENT_ID: z.string(),
     NEXT_PUBLIC_LINKEDIN_CLIENT_ID: z.string(),
-
+    NEXT_PUBLIC_DISCORD_CLIENT_ID: z.string(),
     NEXT_PUBLIC_LIVESTORM_CLIENT_ID: z.string(),
+    NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: z.string(),
   },
   runtimeEnv: {
     PORT: process.env.PORT,
@@ -43,12 +49,20 @@ export const env = createEnv({
     SLACK_SIGNING_SECRET: process.env.SLACK_SIGNING_SECRET,
     NEXT_PUBLIC_SLACK_CLIENT_ID: process.env.NEXT_PUBLIC_SLACK_CLIENT_ID,
 
+    NEXT_PUBLIC_DISCORD_CLIENT_ID: process.env.NEXT_PUBLIC_DISCORD_CLIENT_ID,
+    DISCORD_CLIENT_SECRET: process.env.DISCORD_CLIENT_SECRET,
+    DISCORD_BOT_TOKEN: process.env.DISCORD_BOT_TOKEN,
+
     NEXT_PUBLIC_LINKEDIN_CLIENT_ID: process.env.NEXT_PUBLIC_LINKEDIN_CLIENT_ID,
     LINKEDIN_CLIENT_SECRET: process.env.LINKEDIN_CLIENT_SECRET,
 
     NEXT_PUBLIC_LIVESTORM_CLIENT_ID:
       process.env.NEXT_PUBLIC_LIVESTORM_CLIENT_ID,
     LIVESTORM_CLIENT_SECRET: process.env.LIVESTORM_CLIENT_SECRET,
+
+    NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY:
+      process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,
+    STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY,
 
     GOOGLE_API_KEY: process.env.GOOGLE_API_KEY,
   },

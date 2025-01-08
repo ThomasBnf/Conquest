@@ -14,11 +14,9 @@ export default async function Page({ searchParams: { code } }: Props) {
   const { slug, id: workspace_id } = user.workspace;
 
   const params = new URLSearchParams({
-    grant_type: "authorization_code",
     client_id: env.NEXT_PUBLIC_LIVESTORM_CLIENT_ID,
     client_secret: env.LIVESTORM_CLIENT_SECRET,
     code,
-    redirect_uri: "https://app.useconquest.com/connect/livestorm",
   });
 
   const response = await fetch(
@@ -28,6 +26,12 @@ export default async function Page({ searchParams: { code } }: Props) {
     },
   );
 
+  if (!response.ok) {
+    return redirect(
+      `/${slug}/settings/integrations/livestorm?error=invalid_code`,
+    );
+  }
+
   const data = await response.json();
   const { access_token, expires_in, refresh_token, scope } = data;
 
@@ -35,8 +39,7 @@ export default async function Page({ searchParams: { code } }: Props) {
     external_id: null,
     details: {
       source: "LIVESTORM",
-      organization_id: "",
-      organization_name: "",
+      name: "",
       access_token,
       refresh_token,
       expires_in,

@@ -1,6 +1,8 @@
+import { addTagsCompanies } from "@/actions/members/addTagsCompanies";
 import { addTagsMembers } from "@/actions/members/addTagsMembers";
+import { removeTagsCompanies } from "@/actions/members/removeTagsCompanies";
 import { removeTagsMembers } from "@/actions/members/removeTagsMembers";
-import { useListTags } from "@/queries/hooks/useListTags";
+import { listTags } from "@/client/tags/listTags";
 import { Checkbox } from "@conquest/ui/checkbox";
 import {
   Command,
@@ -14,69 +16,83 @@ import { Popover, PopoverContent, PopoverTrigger } from "@conquest/ui/popover";
 import { Separator } from "@conquest/ui/separator";
 import type { Tag } from "@conquest/zod/schemas/tag.schema";
 import { useQueryClient } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
+import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import { TagBadge } from "../tags/tag-badge";
 
 type Props = {
-  memberId: string;
-  memberTags: Tag[];
+  id: string;
+  initialTags: Tag[];
+  table: "members" | "companies";
 };
 
-export const TagsCell = ({
-  memberId,
-  memberTags: initialMemberTags,
-}: Props) => {
+export const TagsCell = ({ id, initialTags, table }: Props) => {
+  const { tags: allTags } = listTags();
   const [open, setOpen] = useState(false);
-  const [memberTags, setMemberTags] = useState(initialMemberTags);
+  const tags = useMemo(() => initialTags, [initialTags]);
   const queryClient = useQueryClient();
 
-  const { data: tags } = useListTags();
-
-  const memberSliceTags = memberTags?.slice(0, 1);
-  const remainingCount = memberTags?.length > 1 ? memberTags?.slice(1) : [];
+  const memberSliceTags = tags?.slice(0, 1);
+  const remainingCount = tags?.length > 1 ? tags?.slice(1) : [];
+  const filteredTags = allTags?.filter(
+    (tag) => !tags?.some((t) => t.id === tag.id),
+  );
 
   const onSelect = async (tagId: string) => {
-    const hasTag = memberTags?.some((tag) => tag.id === tagId);
-    const selectedTag = tags?.find((tag) => tag.id === tagId);
+    const hasTag = tags?.some((tag) => tag.id === tagId);
+    const selectedTag = allTags?.find((tag) => tag.id === tagId);
 
     if (!selectedTag) return;
 
     if (hasTag) {
-      setMemberTags((prev) => prev.filter((tag) => tag.id !== tagId));
+      if (table === "members") {
+        const response = await removeTagsMembers({
+          ids: [id],
+          tags: [tagId],
+        });
 
-      const response = await removeTagsMembers({
-        ids: [memberId],
-        tags: [tagId],
-      });
+        if (response?.serverError) {
+          toast.error(response.serverError);
+          return;
+        }
+      } else if (table === "companies") {
+        const response = await removeTagsCompanies({
+          ids: [id],
+          tags: [tagId],
+        });
 
-      if (response?.serverError) {
-        setMemberTags((prev) => [...prev, selectedTag]);
-        toast.error(response.serverError);
-        return;
+        if (response?.serverError) {
+          toast.error(response.serverError);
+          return;
+        }
       }
     } else {
-      setMemberTags((prev) => [...prev, selectedTag]);
+      if (table === "members") {
+        const response = await addTagsMembers({
+          ids: [id],
+          tags: [tagId],
+        });
 
-      const response = await addTagsMembers({
-        ids: [memberId],
-        tags: [tagId],
-      });
+        if (response?.serverError) {
+          toast.error(response.serverError);
+          return;
+        }
+      } else if (table === "companies") {
+        const response = await addTagsCompanies({
+          ids: [id],
+          tags: [tagId],
+        });
 
-      if (response?.serverError) {
-        setMemberTags((prev) => prev.filter((tag) => tag.id !== tagId));
-        toast.error(response.serverError);
-        return;
+        if (response?.serverError) {
+          toast.error(response.serverError);
+          return;
+        }
       }
     }
 
-    queryClient.invalidateQueries({ queryKey: ["members"] });
+    queryClient.invalidateQueries({ queryKey: [table], exact: false });
     toast.success(hasTag ? "Tag removed" : "Tag added");
   };
-
-  useEffect(() => {
-    setMemberTags(initialMemberTags);
-  }, [initialMemberTags]);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -102,29 +118,26 @@ export const TagsCell = ({
           <CommandInput placeholder="Search tags..." />
           <CommandList>
             <CommandEmpty>No tags found.</CommandEmpty>
-            {memberTags?.length > 0 && (
+            {tags?.length > 0 && (
               <>
                 <CommandGroup>
-                  {tags
-                    ?.filter((tag) => memberTags?.some((t) => t.id === tag.id))
-                    .map((tag) => (
-                      <CommandItem
-                        key={tag.id}
-                        value={tag.name}
-                        onSelect={() => onSelect(tag.id)}
-                      >
-                        <Checkbox checked={true} className="mr-2" />
-                        <TagBadge tag={tag} />
-                      </CommandItem>
-                    ))}
+                  {tags?.map((tag) => (
+                    <CommandItem
+                      key={tag.id}
+                      value={tag.name}
+                      onSelect={() => onSelect(tag.id)}
+                    >
+                      <Checkbox checked={true} className="mr-2" />
+                      <TagBadge tag={tag} />
+                    </CommandItem>
+                  ))}
                 </CommandGroup>
                 <Separator />
               </>
             )}
-            <CommandGroup>
-              {tags
-                ?.filter((tag) => !memberTags?.some((t) => t.id === tag.id))
-                .map((tag) => (
+            {filteredTags && filteredTags?.length > 0 && (
+              <CommandGroup>
+                {filteredTags?.map((tag) => (
                   <CommandItem
                     key={tag.id}
                     value={tag.name}
@@ -134,7 +147,8 @@ export const TagsCell = ({
                     <TagBadge tag={tag} />
                   </CommandItem>
                 ))}
-            </CommandGroup>
+              </CommandGroup>
+            )}
           </CommandList>
         </Command>
       </PopoverContent>

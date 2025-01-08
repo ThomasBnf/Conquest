@@ -1,6 +1,5 @@
 import { prisma } from "@/lib/prisma";
 import { createActivity } from "@/queries/activities/createActivity";
-import { getActivityType } from "@/queries/activity-type/getActivityType";
 import { getEvent } from "@/queries/livestorm/getEvent";
 import { listPeopleFromSession } from "@/queries/livestorm/listPeopleFromSession";
 import { upsertMember } from "@/queries/members/upsertMember";
@@ -68,14 +67,9 @@ export const webhook = new Hono().post("/livestorm", async (c) => {
         },
       });
 
-      const activityType = await getActivityType({
-        key: "livestorm:attend",
-        workspace_id,
-      });
-
       await createActivity({
         external_id: null,
-        activity_type_id: activityType.id,
+        activity_type_key: "livestorm:attend",
         message: `Attended the Livestorm event: ${title}`,
         member_id: createdMember.id,
         workspace_id,

@@ -7,6 +7,7 @@ import {
 
 type Props = {
   id: string;
+  external_id?: string;
   connected_at?: Date;
   details?: IntegrationDetails;
   status?: Status;
@@ -14,6 +15,7 @@ type Props = {
 
 export const updateIntegration = async ({
   id,
+  external_id,
   connected_at,
   details,
   status,
@@ -23,6 +25,7 @@ export const updateIntegration = async ({
       id,
     },
     data: {
+      external_id,
       details,
       connected_at,
       status,

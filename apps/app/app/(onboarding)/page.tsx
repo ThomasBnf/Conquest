@@ -1,52 +1,63 @@
 "use client";
 
-import { LogOut } from "@/components/icons/LogOut";
+import { updateUser } from "@/actions/users/updateUser";
 import { useUser } from "@/context/userContext";
-import { Button } from "@conquest/ui/button";
+import { Steps } from "@/features/onboarding/steps";
+import { Button, buttonVariants } from "@conquest/ui/button";
 import {
   Card,
   CardDescription,
   CardHeader,
   CardTitle,
 } from "@conquest/ui/card";
-import { Steps } from "features/onboarding/Steps";
+import { cn } from "@conquest/ui/cn";
 import { QuestionsStep } from "features/onboarding/questions/questions-step";
 import { WorkspaceStep } from "features/onboarding/workspace/workspace-step";
-import { signOut } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export default function Page() {
-  const { user } = useUser();
+  const { slug } = useUser();
   const [step, setStep] = useState(1);
+  const router = useRouter();
 
-  const onClick = async () => {
-    signOut({ callbackUrl: "/auth/login", redirect: true });
+  const onComplete = async () => {
+    await updateUser({ onboarding: new Date() });
+    router.push(`/${slug}/settings/integrations`);
   };
 
-  return (
-    <div className="flex h-full flex-col justify-between bg-muted/30 p-4 lg:px-8">
-      <div className="flex items-center justify-between">
-        <Button onClick={onClick} variant="outline" className="self-start">
-          <LogOut className="size-[18px]" />
-          Log out
+  if (step === 3) {
+    return (
+      <div className="flex h-screen flex-col items-center justify-center">
+        <img src="/logo.svg" alt="Conquest" className="mb-8 size-20" />
+        <h1 className="mb-4 font-bold text-5xl text-foreground">
+          Welcome to Conquest
+        </h1>
+        <p className="mb-8 max-w-xl text-balance text-center text-muted-foreground">
+          Conquest is the CRM you need to track, understand, engage and scale
+          your community.
+        </p>
+        <Button
+          onClick={onComplete}
+          className={cn(buttonVariants({ size: "lg" }), "min-w-64")}
+        >
+          Get Started
         </Button>
-        <div>
-          <p className="text-muted-foreground text-xs">Logged in as:</p>
-          <p className="text-sm">{user?.email}</p>
-        </div>
       </div>
-      <Card className="mx-auto w-full max-w-xl">
-        <CardHeader>
-          <Steps step={step} />
-          <CardTitle>Welcome to Conquest</CardTitle>
-          <CardDescription>
-            Tell us a bit about yourself so we can personalize your experience
-          </CardDescription>
-        </CardHeader>
-        {step === 1 && <WorkspaceStep setStep={setStep} />}
-        {step === 2 && <QuestionsStep />}
-      </Card>
-      <div />
-    </div>
+    );
+  }
+
+  return (
+    <Card className="mx-auto w-full max-w-xl">
+      <CardHeader>
+        <Steps step={step} />
+        <CardTitle>Welcome to Conquest</CardTitle>
+        <CardDescription>
+          Tell us a bit about yourself so we can personalize your experience
+        </CardDescription>
+      </CardHeader>
+      {step === 1 && <WorkspaceStep setStep={setStep} />}
+      {step === 2 && <QuestionsStep setStep={setStep} />}
+    </Card>
   );
 }

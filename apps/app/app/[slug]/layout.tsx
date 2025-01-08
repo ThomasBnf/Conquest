@@ -1,4 +1,5 @@
 import { AppSidebar } from "@/components/layouts/app-sidebar";
+import { IsLoading } from "@/components/states/is-loading";
 import { UserProvider } from "@/context/userContext";
 import { getCurrentUser } from "@/queries/users/getCurrentUser";
 import { SidebarProvider } from "@conquest/ui/sidebar";
@@ -23,6 +24,8 @@ export default async function Layout({
   const cookieStore = cookies();
   const sidebarState = cookieStore.get("sidebar:state");
   const defaultOpen = sidebarState ? sidebarState.value === "true" : true;
+
+  if (!user) return <IsLoading />;
 
   return (
     <SidebarProvider defaultOpen={defaultOpen}>

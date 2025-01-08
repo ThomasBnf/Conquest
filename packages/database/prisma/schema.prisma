@@ -12,6 +12,7 @@ enum SOURCE {
   API
   BREVO
   DISCOURSE
+  DISCORD
   GITHUB
   HUBSPOT
   LINKEDIN
@@ -190,6 +191,7 @@ model integrations {
 
 model members {
   id               String   @id @default(cuid())
+  discord_id       String?
   discourse_id     String?
   linkedin_id      String?
   livestorm_id     String?
@@ -226,6 +228,7 @@ model members {
 
   @@unique([primary_email, workspace_id])
   @@unique([username, workspace_id])
+  @@unique([discord_id, workspace_id])
   @@unique([discourse_id, workspace_id])
   @@unique([linkedin_id, workspace_id])
   @@unique([livestorm_id, workspace_id])
@@ -236,7 +239,6 @@ model tags {
   id          String  @id @default(cuid())
   external_id String?
   name        String
-  description String?
   color       String
   source      SOURCE
 

@@ -1,13 +1,14 @@
 import { DateCell } from "@/components/custom/date-cell";
 import { SourceBadge } from "@/components/custom/source-badge";
-import { useUser } from "@/context/userContext";
 import { ColumnHeader } from "@/features/table/column-header";
 import { buttonVariants } from "@conquest/ui/button";
 import { Checkbox } from "@conquest/ui/checkbox";
 import { cn } from "@conquest/ui/cn";
 import type { Company } from "@conquest/zod/schemas/company.schema";
+import type { Tag } from "@conquest/zod/schemas/tag.schema";
 import Link from "next/link";
 import type { Dispatch, SetStateAction } from "react";
+import { TagsCell } from "../table/tags-cell";
 
 type Column = {
   id: string;
@@ -17,6 +18,7 @@ type Column = {
     setRowSelected?: Dispatch<SetStateAction<string[]>>;
   }) => React.ReactNode;
   cell: (args: {
+    slug?: string;
     company: Company;
     rowSelected?: string[];
     setRowSelected?: Dispatch<SetStateAction<string[]>>;
@@ -24,7 +26,11 @@ type Column = {
   width: number;
 };
 
-export const Columns = (): Column[] => [
+type Props = {
+  tags: Tag[] | undefined;
+};
+
+export const Columns = ({ tags }: Props): Column[] => [
   {
     id: "select",
     header: ({ companies, rowSelected, setRowSelected }) => (
@@ -67,8 +73,7 @@ export const Columns = (): Column[] => [
   {
     id: "name",
     header: () => <ColumnHeader id="name" title="Name" width={285} />,
-    cell: ({ company }) => {
-      const { slug } = useUser();
+    cell: ({ slug, company }) => {
       return (
         <Link
           href={`/${slug}/companies/${company.id}`}
@@ -84,10 +89,26 @@ export const Columns = (): Column[] => [
     width: 285,
   },
   {
+    id: "tags",
+    header: () => <ColumnHeader id="tags" title="Tags" width={250} />,
+    cell: ({ company }) => {
+      const companyTags = tags?.filter((tag) => company.tags?.includes(tag.id));
+
+      return (
+        <TagsCell
+          id={company.id}
+          initialTags={companyTags ?? []}
+          table="companies"
+        />
+      );
+    },
+    width: 250,
+  },
+  {
     id: "domain",
     header: () => <ColumnHeader id="domain" title="Website" width={250} />,
     cell: ({ company }) => (
-      <p className="truncate px-2 font-medium">https://{company.domain}</p>
+      <p className="truncate px-2 font-medium">{company.domain}</p>
     ),
     width: 250,
   },

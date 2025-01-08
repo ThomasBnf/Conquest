@@ -6,7 +6,13 @@ import { listChannels } from "@/queries/channels/listChannels";
 import { getCurrentUser } from "@/queries/users/getCurrentUser";
 import { ScrollArea } from "@conquest/ui/scroll-area";
 
-export default async function Page() {
+type Props = {
+  searchParams: {
+    error: string;
+  };
+};
+
+export default async function Page({ searchParams: { error } }: Props) {
   const user = await getCurrentUser();
 
   const channels = await listChannels({
@@ -24,7 +30,7 @@ export default async function Page() {
           </div>
           <p className="font-medium text-lg">Slack</p>
         </div>
-        <EnableCard />
+        <EnableCard error={error} />
         <ConnectedCard channels={channels} />
       </div>
     </ScrollArea>

@@ -1,5 +1,5 @@
 import { useUser } from "@/context/userContext";
-import { useGetSlackMember } from "@/queries/hooks/useGetSlackMember";
+import { getSlackMember } from "@/client/slack/getSlackMember";
 import Link from "next/link";
 
 type Props = {
@@ -8,7 +8,7 @@ type Props = {
 
 export const SlackMention = ({ slack_id }: Props) => {
   const { slug } = useUser();
-  const { data: member } = useGetSlackMember({ id: slack_id });
+  const { data: member } = getSlackMember({ id: slack_id });
   const { id, first_name, last_name } = member ?? {};
 
   return (

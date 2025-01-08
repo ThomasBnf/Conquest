@@ -1,5 +1,5 @@
 import { emojiParser } from "@/features/activities/helpers/emoji-parser";
-import { useGetActivity } from "@/queries/hooks/useGetActivity";
+import { getActivity } from "@/client/activities/getActivity";
 import { Skeleton } from "@conquest/ui/skeleton";
 import type { ActivityWithMember } from "@conquest/zod/schemas/activity.schema";
 import { ActivityCard } from "../activity-card";
@@ -11,7 +11,7 @@ type Props = {
 
 export const SlackReaction = ({ activity }: Props) => {
   const { react_to } = activity;
-  const { data } = useGetActivity({ id: react_to });
+  const { data } = getActivity({ id: react_to });
 
   if (!data)
     return (

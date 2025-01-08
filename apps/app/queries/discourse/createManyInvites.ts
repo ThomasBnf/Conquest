@@ -3,7 +3,6 @@ import type { Member } from "@conquest/zod/schemas/member.schema";
 import type { Invite } from "@conquest/zod/types/discourse";
 import { startOfDay, subDays } from "date-fns";
 import { createActivity } from "../activities/createActivity";
-import { getActivityType } from "../activity-type/getActivityType";
 import { getMember } from "../members/getMember";
 
 type Props = {
@@ -18,11 +17,6 @@ export const createManyInvites = async ({ discourse, member }: Props) => {
 
   const today = startOfDay(new Date());
   const last365Days = subDays(today, 365);
-
-  const invite_type = await getActivityType({
-    workspace_id,
-    key: "discourse:invite",
-  });
 
   let offSet = 0;
   let hasMore = true;
@@ -70,7 +64,7 @@ export const createManyInvites = async ({ discourse, member }: Props) => {
 
       await createActivity({
         external_id: null,
-        activity_type_id: invite_type.id,
+        activity_type_key: "discourse:invite",
         message: `${inviteTo.username} accepted your invitation`,
         invite_to: inviteTo.id,
         member_id: member.id,

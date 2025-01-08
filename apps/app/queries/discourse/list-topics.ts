@@ -8,14 +8,12 @@ type Props = {
   community_url: string;
   api_key: string;
   channel: Channel;
-  type_post: string;
 };
 
 export const listTopics = async ({
   community_url,
   api_key,
   channel,
-  type_post,
 }: Props) => {
   const { external_id, slug } = channel;
 
@@ -49,7 +47,7 @@ export const listTopics = async ({
 
     await createActivity({
       external_id: String(id),
-      activity_type_id: type_post,
+      activity_type_key: "discourse:post",
       message: title,
       channel_id: channel.id,
       member_id: member.id,
@@ -91,7 +89,7 @@ export const listTopics = async ({
 
       await createActivity({
         external_id: String(id),
-        activity_type_id: type_post,
+        activity_type_key: "discourse:post",
         message: title,
         channel_id: channel.id,
         member_id: member.id,

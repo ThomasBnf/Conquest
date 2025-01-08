@@ -9,6 +9,8 @@ export const idParser = ({ id, source }: Props) => {
   switch (source) {
     case "SLACK":
       return { slack_id: id };
+    case "DISCORD":
+      return { discord_id: id };
     case "DISCOURSE":
       return { discourse_id: id };
     case "LINKEDIN":

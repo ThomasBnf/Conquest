@@ -42,6 +42,4 @@ export const removeTagsMembers = authAction
         },
       });
     }
-
-    return { success: true };
   });

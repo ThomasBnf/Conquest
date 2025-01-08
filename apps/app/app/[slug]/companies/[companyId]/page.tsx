@@ -3,7 +3,7 @@ import { PageLayout } from "@/components/layouts/page-layout";
 import { CompanyActivities } from "@/features/activities/company-activities";
 import { CompanySidebar } from "@/features/companies/company-sidebar";
 import { listCompanyActivities } from "@/queries/activities/listCompanyActivities";
-import { getCompany } from "@/queries/companies/getCompany";
+import { getCompanyWithMembers } from "@/queries/companies/getCompany";
 import { listTags } from "@/queries/tags/listTags";
 import { getCurrentUser } from "@/queries/users/getCurrentUser";
 import { ScrollArea } from "@conquest/ui/scroll-area";
@@ -20,7 +20,10 @@ export default async function Page({ params: { companyId, slug } }: Props) {
   const user = await getCurrentUser();
   const workspace_id = user.workspace_id;
 
-  const company = await getCompany({ company_id: companyId, workspace_id });
+  const company = await getCompanyWithMembers({
+    company_id: companyId,
+    workspace_id,
+  });
 
   if (!company) redirect(`/${slug}/companies`);
 

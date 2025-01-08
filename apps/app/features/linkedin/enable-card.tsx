@@ -1,5 +1,6 @@
 "use client";
 
+import { deleteIntegration } from "@/actions/integrations/deleteIntegration";
 import { LINKEDIN_SCOPES } from "@/constant";
 import { useUser } from "@/context/userContext";
 import { env } from "@/env.mjs";
@@ -10,10 +11,18 @@ import { cn } from "@conquest/ui/cn";
 import { CirclePlus, ExternalLink } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+import { toast } from "sonner";
 
-export const EnableCard = () => {
-  const { linkedin } = useUser();
+type Props = {
+  error: string;
+};
+
+export const EnableCard = ({ error }: Props) => {
+  const { slug, linkedin } = useUser();
   const { trigger_token, trigger_token_expires_at } = linkedin ?? {};
+  const isEnabled = linkedin?.status === "ENABLED";
+  const isConnected = linkedin?.status === "CONNECTED";
 
   const router = useRouter();
   const isExpired =
@@ -32,7 +41,42 @@ export const EnableCard = () => {
     );
   };
 
-  if (linkedin?.status === "CONNECTED") return;
+  const onDisconnect = async () => {
+    if (!linkedin) return;
+
+    const response = await deleteIntegration({
+      integration: linkedin,
+      source: "LINKEDIN",
+    });
+
+    const error = response?.serverError;
+
+    if (error) toast.error(error);
+  };
+
+  useEffect(() => {
+    if (trigger_token_expires_at && trigger_token_expires_at < new Date()) {
+      onDisconnect();
+    }
+    if (error) {
+      switch (error) {
+        case "invalid_code":
+          toast.error("Error: Invalid code");
+          break;
+        case "already_connected":
+          toast.error(
+            "This Linkedin page is already connected to another account",
+            {
+              duration: 10000,
+            },
+          );
+          break;
+      }
+      router.push(`/${slug}/settings/integrations/linkedin`);
+    }
+  }, [trigger_token_expires_at, error]);
+
+  if (isConnected) return;
 
   return (
     <Card>
@@ -55,6 +99,11 @@ export const EnableCard = () => {
               Enable
             </Button>
           )}
+          {isEnabled && (
+            <Button variant="destructive" onClick={onDisconnect}>
+              Disconnect
+            </Button>
+          )}
         </div>
       </CardHeader>
       <CardContent className="mb-0.5">
@@ -63,7 +112,7 @@ export const EnableCard = () => {
           Connect your Linkedin account to automatically get comments on your
           posts.
         </p>
-        {linkedin?.status === "ENABLED" && !isExpired && <ListOrganizations />}
+        {isEnabled && !isExpired && <ListOrganizations />}
       </CardContent>
     </Card>
   );

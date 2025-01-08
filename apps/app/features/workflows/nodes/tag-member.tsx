@@ -1,6 +1,6 @@
+import { listTags } from "@/client/tags/listTags";
 import { TagBadge } from "@/features/tags/tag-badge";
 import { useSelected } from "@/features/workflows/hooks/useSelected";
-import { useListTags } from "@/queries/hooks/useListTags";
 import { Button } from "@conquest/ui/button";
 import { Checkbox } from "@conquest/ui/checkbox";
 import { Label } from "@conquest/ui/label";
@@ -22,7 +22,7 @@ export const TagMember = () => {
   const { updateNodeData } = useReactFlow();
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
-  const { data: tags, isLoading } = useListTags();
+  const { data: tags, isLoading } = listTags();
 
   const parsedData = NodeTagMemberSchema.parse(selected?.data);
 

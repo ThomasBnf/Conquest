@@ -16,16 +16,16 @@ import {
   useSidebar,
 } from "@conquest/ui/sidebar";
 import { ChevronsUpDown } from "lucide-react";
-import { signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { logOut } from "../auth/actions/sign-out";
 
 export const WorkspaceMenu = () => {
   const { user } = useUser();
   const { open } = useSidebar();
   const router = useRouter();
 
-  const onLogout = () => {
-    signOut({ callbackUrl: "/auth/login", redirect: true });
+  const onLogout = async () => {
+    await logOut();
   };
 
   return (

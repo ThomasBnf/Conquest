@@ -58,7 +58,7 @@ export const ActivityCard = ({
           <div className="flex items-baseline gap-2">
             <Link
               href={`/${slug}/members/${activity.member?.id}`}
-              className="font-medium text-sm leading-none hover:underline"
+              className="truncate font-medium text-sm leading-none hover:underline"
             >
               {first_name} {last_name}
             </Link>

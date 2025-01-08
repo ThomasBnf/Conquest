@@ -1,5 +1,4 @@
 import { mergeMember } from "@/actions/members/mergeMember";
-import { useUser } from "@/context/userContext";
 import { Button } from "@conquest/ui/button";
 import {
   Dialog,
@@ -24,7 +23,6 @@ type Props = {
 };
 
 export const MergeDialog = ({ open, setOpen, member }: Props) => {
-  const { slug } = useUser();
   const { first_name, last_name } = member;
   const [leftMember, setLeftMember] = useState<MemberWithCompany | null>(null);
   const [rightMember, setRightMember] = useState<MemberWithCompany>(member);

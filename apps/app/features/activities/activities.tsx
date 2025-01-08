@@ -1,57 +1,34 @@
 "use client";
 
+import { listActivities } from "@/client/activities/listActivities";
+import { Activities as ActivitiesIcon } from "@/components/icons/Activities";
+import { EmptyState } from "@/components/states/empty-state";
 import { IsLoading } from "@/components/states/is-loading";
 import { useIsClient } from "@/hooks/useIsClient";
-import { client } from "@/lib/rpc";
+import { buttonVariants } from "@conquest/ui/button";
 import { cn } from "@conquest/ui/cn";
 import { Separator } from "@conquest/ui/separator";
-import {
-  type ActivityWithTypeAndMember,
-  ActivityWithTypeAndMemberSchema,
-} from "@conquest/zod/schemas/activity.schema";
-import { useInfiniteQuery } from "@tanstack/react-query";
+import type { ActivityWithTypeAndMember } from "@conquest/zod/schemas/activity.schema";
 import { format, isYesterday } from "date-fns";
+import Link from "next/link";
 import { useEffect, useMemo } from "react";
 import { useInView } from "react-intersection-observer";
 import { ActivityParser } from "./activity-parser";
 
 type Activities = Record<string, ActivityWithTypeAndMember[]>;
 
-type Props = React.HTMLAttributes<HTMLDivElement> & {
-  member_id?: string;
+type Props = {
   initialActivities: ActivityWithTypeAndMember[];
+  className?: string;
 };
 
-export const Activities = ({
-  member_id,
-  initialActivities,
-  className,
-}: Props) => {
+export const Activities = ({ initialActivities, className }: Props) => {
   const { ref, inView } = useInView();
   const isClient = useIsClient();
 
-  const { data, isLoading, fetchNextPage, hasNextPage } = useInfiniteQuery({
-    queryKey: ["activities"],
-    queryFn: async ({ pageParam }) => {
-      const response = await client.api.activities.$get({
-        query: {
-          page: pageParam.toString(),
-        },
-      });
-      return ActivityWithTypeAndMemberSchema.array().parse(
-        await response.json(),
-      );
-    },
-    getNextPageParam: (_, allPages) => allPages.length + 1,
-    initialData: { pages: [initialActivities], pageParams: [1] },
-    initialPageParam: 1,
+  const { activities, isLoading, fetchNextPage, hasNextPage } = listActivities({
+    initialActivities,
   });
-
-  const activities = useMemo(() => {
-    const pages = data?.pages;
-    if (!pages?.length) return [];
-    return pages.flatMap((page) => page ?? []);
-  }, [data?.pages]);
 
   const groupedActivities = useMemo(() => {
     if (!activities?.length) return {};
@@ -69,6 +46,19 @@ export const Activities = ({
   }, [inView]);
 
   if (!isClient) return <IsLoading />;
+
+  if (!activities?.length)
+    return (
+      <EmptyState
+        icon={<ActivitiesIcon size={36} />}
+        title="No activities found"
+        description="Connect your integrations to start collecting activities"
+      >
+        <Link href="/settings/integrations" className={cn(buttonVariants())}>
+          Connect integrations
+        </Link>
+      </EmptyState>
+    );
 
   return (
     <div className={cn("mx-auto max-w-3xl pt-6 pb-12", className)}>

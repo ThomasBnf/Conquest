@@ -1,5 +1,5 @@
 import { updateWorkflow } from "@/actions/workflows/updateWorkflow";
-import { useGetWorkflow } from "@/queries/hooks/useGetWorkflow";
+import { getWorkflow } from "@/client/workflows/getWorkflow";
 import {
   Form,
   FormControl,
@@ -25,7 +25,7 @@ export const WorkflowPanel = () => {
   const id = pathname.split("/").at(-1) as string;
   const queryClient = useQueryClient();
 
-  const { data: workflow } = useGetWorkflow({ workflow_id: id });
+  const { data: workflow } = getWorkflow({ workflow_id: id });
 
   const form = useForm<FormWorkflow>({
     resolver: zodResolver(FormWorkflowSchema),

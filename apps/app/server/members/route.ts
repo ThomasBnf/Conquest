@@ -44,7 +44,7 @@ export const members = new Hono()
         c.req.valid("query");
 
       const searchParsed = search.toLowerCase().trim();
-      const orderBy = getOrderBy(id, desc);
+      const orderBy = getOrderBy({ id, desc });
       const filterBy = getFilters({ filters });
 
       const members = await prisma.$queryRaw`

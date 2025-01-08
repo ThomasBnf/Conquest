@@ -38,15 +38,15 @@ export const upsertMember = async (props: Props) => {
       company = CompanySchema.parse(
         await prisma.companies.upsert({
           where: {
-            domain,
+            domain: `https://${domain}`,
           },
           update: {
             name: formattedCompanyName,
-            domain,
+            domain: `https://${domain}`,
           },
           create: {
             name: formattedCompanyName,
-            domain,
+            domain: `https://${domain}`,
             source,
             workspace_id,
           },
@@ -58,6 +58,15 @@ export const upsertMember = async (props: Props) => {
   const parsedId = idParser({ id, source });
 
   const whereClause = () => {
+    if (id && source === "DISCORD") {
+      return {
+        discord_id_workspace_id: {
+          discord_id: id,
+          workspace_id,
+        },
+      };
+    }
+
     if (id && source === "LINKEDIN") {
       return {
         linkedin_id_workspace_id: {

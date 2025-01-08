@@ -93,7 +93,6 @@ export const listReplies = async ({
               channel_id: channel.id,
               react_to: upsertedActivity?.external_id,
               ts: message.ts ?? "",
-              activity_type_id: type_reaction.id,
               workspace_id,
             });
           }

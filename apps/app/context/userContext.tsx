@@ -1,6 +1,7 @@
 "use client";
 
 import type {
+  DiscordIntegration,
   DiscourseIntegration,
   LinkedInIntegration,
   LivestormIntegration,
@@ -15,6 +16,7 @@ type userContext = {
   slug: string | undefined;
   slack: SlackIntegration | undefined;
   discourse: DiscourseIntegration | undefined;
+  discord: DiscordIntegration | undefined;
   livestorm: LivestormIntegration | undefined;
   linkedin: LinkedInIntegration | undefined;
   members_preferences: MembersPreferences | undefined;
@@ -28,6 +30,11 @@ type Props = {
 };
 
 export const UserProvider = ({ user, children }: Props) => {
+  if (!user) {
+    console.log("Loading userContext...");
+    return <div>Loading userContext...</div>;
+  }
+
   const slug = user?.workspace.slug;
 
   const slack = user?.workspace.integrations.find(
@@ -37,6 +44,10 @@ export const UserProvider = ({ user, children }: Props) => {
   const discourse = user?.workspace.integrations.find(
     (integration) => integration.details.source === "DISCOURSE",
   ) as DiscourseIntegration | undefined;
+
+  const discord = user?.workspace.integrations.find(
+    (integration) => integration.details.source === "DISCORD",
+  ) as DiscordIntegration | undefined;
 
   const livestorm = user?.workspace.integrations.find(
     (integration) => integration.details.source === "LIVESTORM",
@@ -55,6 +66,7 @@ export const UserProvider = ({ user, children }: Props) => {
         slug,
         slack,
         discourse,
+        discord,
         livestorm,
         linkedin,
         members_preferences,

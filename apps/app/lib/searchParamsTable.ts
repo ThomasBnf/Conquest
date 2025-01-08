@@ -12,11 +12,19 @@ export const tableParsers = {
     shallow: false,
     clearOnDefault: true,
   }),
-  id: parseAsString.withDefault("level").withOptions({
+  idMember: parseAsString.withDefault("level").withOptions({
     shallow: false,
     clearOnDefault: true,
   }),
-  desc: parseAsBoolean.withDefault(true).withOptions({
+  idCompany: parseAsString.withDefault("name").withOptions({
+    shallow: false,
+    clearOnDefault: true,
+  }),
+  descMember: parseAsBoolean.withDefault(true).withOptions({
+    shallow: false,
+    clearOnDefault: true,
+  }),
+  descCompany: parseAsBoolean.withDefault(false).withOptions({
     shallow: false,
     clearOnDefault: true,
   }),

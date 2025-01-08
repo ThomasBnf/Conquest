@@ -35,6 +35,4 @@ export const addTagsMembers = authAction
         },
       },
     });
-
-    return { success: true };
   });

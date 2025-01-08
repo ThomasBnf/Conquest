@@ -21,7 +21,6 @@ import {
 } from "@conquest/zod/schemas/filters.schema";
 import { type Tag, TagSchema } from "@conquest/zod/schemas/tag.schema";
 import { useQuery } from "@tanstack/react-query";
-import { CommandLoading } from "cmdk";
 import type { Dispatch, SetStateAction } from "react";
 import { useState } from "react";
 import { TagBadge } from "../tags/tag-badge";
@@ -60,7 +59,7 @@ export const SelectPicker = ({
 
           return await response.json();
         }
-        case "tags": {
+        case "tag": {
           const response = await client.api.tags.$get();
 
           return TagSchema.array().parse(await response.json());
@@ -128,14 +127,11 @@ export const SelectPicker = ({
     <Command>
       <CommandInput autoFocus placeholder="Search value..." />
       <CommandList>
+        {!isLoading && (
+          <CommandEmpty>No {filter?.label.toLowerCase()}s found</CommandEmpty>
+        )}
         <CommandGroup>
-          {isLoading ? (
-            <CommandLoading>
-              <Skeleton className="h-8 w-full" />
-            </CommandLoading>
-          ) : (
-            <CommandEmpty>No values available</CommandEmpty>
-          )}
+          {isLoading && <Skeleton className="h-8 w-full" />}
           {!isLoading &&
             items?.map((item) => {
               if (!item) return null;
@@ -169,7 +165,7 @@ export const SelectPicker = ({
                 >
                   <div className="flex items-center gap-2">
                     <Checkbox checked={isSelected} />
-                    <TagBadge tag={item} isBadge={false} />
+                    <TagBadge tag={item} />
                   </div>
                 </CommandItem>
               );
@@ -219,9 +215,7 @@ export const SelectPicker = ({
                         )}
                       </div>
                     ) : (
-                      item && (
-                        <TagBadge key={item.id} tag={item} isBadge={false} />
-                      )
+                      item && <TagBadge key={item.id} tag={item} transparent />
                     ),
                   )
                 )}

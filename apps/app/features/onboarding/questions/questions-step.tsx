@@ -1,4 +1,3 @@
-import { updateUser } from "@/actions/users/updateUser";
 import { updateWorkspace } from "@/actions/workspaces/updateWorkspace";
 import { useUser } from "@/context/userContext";
 import { Button } from "@conquest/ui/button";
@@ -17,8 +16,13 @@ import {
 import { CompanySize } from "./company-size";
 import { Source } from "./source";
 
-export const QuestionsStep = () => {
+type Props = {
+  setStep: (step: number) => void;
+};
+
+export const QuestionsStep = ({ setStep }: Props) => {
   const { slug } = useUser();
+
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
@@ -35,14 +39,6 @@ export const QuestionsStep = () => {
   const onSubmit = async ({ company_size, source }: Questions) => {
     setLoading(true);
 
-    const rUser = await updateUser({ onboarding: new Date() });
-    const error = rUser?.serverError;
-
-    if (error) {
-      setLoading(false);
-      return toast.error(error);
-    }
-
     const rWorkspace = await updateWorkspace({
       company_size,
       source,
@@ -51,10 +47,10 @@ export const QuestionsStep = () => {
 
     if (errorWorkspace) {
       setLoading(false);
-      return toast.error(error);
+      return toast.error(errorWorkspace);
     }
 
-    router.push(`/${slug}`);
+    setStep(3);
   };
 
   return (
@@ -72,7 +68,7 @@ export const QuestionsStep = () => {
             disabled={isDisabled}
             className="w-full"
           >
-            Get Started
+            Continue
             <ArrowRightIcon size={16} />
           </Button>
         </CardFooter>

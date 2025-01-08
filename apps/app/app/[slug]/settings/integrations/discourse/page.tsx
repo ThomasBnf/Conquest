@@ -4,7 +4,13 @@ import { EnabledCard } from "@/features/discourse/enabled-card";
 import { IntegrationHeader } from "@/features/integrations/integration-header";
 import { ScrollArea } from "@conquest/ui/scroll-area";
 
-export default function Page() {
+type Props = {
+  searchParams: {
+    error: string;
+  };
+};
+
+export default function Page({ searchParams: { error } }: Props) {
   return (
     <ScrollArea className="h-full">
       <div className="mx-auto flex max-w-4xl flex-col gap-4 px-4 py-12 lg:py-24">
@@ -15,7 +21,7 @@ export default function Page() {
           </div>
           <p className="font-medium text-lg">Discourse</p>
         </div>
-        <EnabledCard />
+        <EnabledCard error={error} />
         <ConnectedCard />
       </div>
     </ScrollArea>

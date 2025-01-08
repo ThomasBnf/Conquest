@@ -18,26 +18,6 @@ export const createManyActivities = async ({ client, member }: Props) => {
 
   if (!username) return;
 
-  const reaction_type = await getActivityType({
-    workspace_id,
-    key: "discourse:reaction",
-  });
-
-  const post_type = await getActivityType({
-    workspace_id,
-    key: "discourse:post",
-  });
-
-  const reply_type = await getActivityType({
-    workspace_id,
-    key: "discourse:reply",
-  });
-
-  const solved_type = await getActivityType({
-    workspace_id,
-    key: "discourse:solved",
-  });
-
   let offset = 0;
   let hasMore = true;
 
@@ -89,7 +69,7 @@ export const createManyActivities = async ({ client, member }: Props) => {
 
           await createActivity({
             external_id: null,
-            activity_type_id: reaction_type.id,
+            activity_type_key: "discourse:reaction",
             message: "like",
             react_to: reactTo,
             thread_id: `t-${topic_id}`,
@@ -107,7 +87,7 @@ export const createManyActivities = async ({ client, member }: Props) => {
 
           await createActivity({
             external_id: `t-${topic_id}`,
-            activity_type_id: post_type.id,
+            activity_type_key: "discourse:post",
             title,
             message: excerpt,
             thread_id: `t-${topic_id}`,
@@ -132,6 +112,13 @@ export const createManyActivities = async ({ client, member }: Props) => {
               ? `t-${topic_id}`
               : String(reply_to_post_number);
 
+          const type_reply = await getActivityType({
+            workspace_id,
+            key: "discourse:reply",
+          });
+
+          if (!type_reply) return;
+
           await prisma.activities.upsert({
             where: {
               external_id_workspace_id: {
@@ -142,7 +129,7 @@ export const createManyActivities = async ({ client, member }: Props) => {
             update: {},
             create: {
               external_id: `p-${post_id}`,
-              activity_type_id: reply_type.id,
+              activity_type_id: type_reply.id,
               message: excerpt,
               member_id: member.id,
               reply_to: replyTo,
@@ -156,6 +143,13 @@ export const createManyActivities = async ({ client, member }: Props) => {
         }
         case 15: {
           if (!channel || excerpt === "") continue;
+
+          const type_solved = await getActivityType({
+            workspace_id,
+            key: "discourse:solved",
+          });
+
+          if (!type_solved) return;
 
           const { reply_to_post_number } = action as {
             reply_to_post_number?: number | null;
@@ -174,11 +168,11 @@ export const createManyActivities = async ({ client, member }: Props) => {
               },
             },
             update: {
-              activity_type_id: solved_type.id,
+              activity_type_id: type_solved.id,
             },
             create: {
               external_id: `p-${post_id}`,
-              activity_type_id: solved_type.id,
+              activity_type_id: type_solved.id,
               message: excerpt,
               member_id: member.id,
               reply_to: replyTo,

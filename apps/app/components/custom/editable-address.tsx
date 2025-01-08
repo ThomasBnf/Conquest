@@ -48,8 +48,8 @@ export function EditableAddress({ address, onUpdate }: Props) {
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger
         className={cn(
-          buttonVariants({ variant: "ghost", size: "xs" }),
-          "-ml-1.5",
+          buttonVariants({ variant: "ghost" }),
+          "w-full justify-start",
         )}
         onClick={() => setValue(selectedAddress ?? "")}
       >
@@ -71,7 +71,7 @@ export function EditableAddress({ address, onUpdate }: Props) {
                 clearSuggestions();
               }
             }}
-            className="h-9"
+            className="h-9 w-[calc(100%-44px)]"
           />
           {value && (
             <Button

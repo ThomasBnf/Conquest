@@ -1,14 +1,16 @@
-import { useListAllMembers } from "@/queries/hooks/useListAllMembers";
+import { listAllMembers } from "@/client/members/listAllMembers";
 import { Avatar, AvatarFallback, AvatarImage } from "@conquest/ui/avatar";
 import { Button } from "@conquest/ui/button";
 import {
   Command,
+  CommandEmpty,
   CommandGroup,
   CommandInput,
   CommandItem,
   CommandList,
 } from "@conquest/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@conquest/ui/popover";
+import { Skeleton } from "@conquest/ui/skeleton";
 import type { MemberWithCompany } from "@conquest/zod/schemas/member.schema";
 import { Plus } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -25,7 +27,7 @@ export const MemberPicker = ({ currentMember, onSelect }: Props) => {
   const [search, setSearch] = useState(`${first_name}`);
   const { ref, inView } = useInView();
 
-  const { data, hasNextPage, fetchNextPage } = useListAllMembers({
+  const { data, hasNextPage, fetchNextPage, isLoading } = listAllMembers({
     search,
   });
 
@@ -36,8 +38,6 @@ export const MemberPicker = ({ currentMember, onSelect }: Props) => {
       fetchNextPage();
     }
   }, [inView]);
-
-  console.log(search);
 
   return (
     <Popover open={open} onOpenChange={setOpen} modal>
@@ -55,6 +55,8 @@ export const MemberPicker = ({ currentMember, onSelect }: Props) => {
           />
           <CommandList>
             <CommandGroup>
+              {isLoading && <Skeleton className="h-8 w-full" />}
+              {!isLoading && <CommandEmpty>No members found</CommandEmpty>}
               {members
                 ?.filter((member) => member.id !== currentMember?.id)
                 ?.map((member) => (

@@ -6,7 +6,6 @@ export const TagSchema = z.object({
   id: z.string().cuid(),
   external_id: z.string().nullable(),
   name: z.string(),
-  description: z.string().nullable(),
   color: z.string(),
   source: SOURCE,
   workspace_id: z.string().cuid(),

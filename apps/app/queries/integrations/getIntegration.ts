@@ -1,23 +1,18 @@
 import { prisma } from "@/lib/prisma";
-import { safeAction } from "@/lib/safeAction";
 import { IntegrationSchema } from "@conquest/zod/schemas/integration.schema";
-import { z } from "zod";
 
-export const getIntegration = safeAction
-  .metadata({ name: "getIntegration" })
-  .schema(
-    z.object({
-      external_id: z.string().optional(),
-    }),
-  )
-  .action(async ({ parsedInput: { external_id } }) => {
-    const integration = await prisma.integrations.findUnique({
-      where: {
-        external_id,
-      },
-    });
+type Props = {
+  external_id: string;
+};
 
-    if (!integration) return null;
-
-    return IntegrationSchema.parse(integration);
+export const getIntegration = async ({ external_id }: Props) => {
+  const integration = await prisma.integrations.findUnique({
+    where: {
+      external_id,
+    },
   });
+
+  if (!integration) return null;
+
+  return IntegrationSchema.parse(integration);
+};

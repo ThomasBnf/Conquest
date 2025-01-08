@@ -11,12 +11,13 @@ import { TagPicker } from "@/features/tags/tag-picker";
 import { Avatar, AvatarFallback, AvatarImage } from "@conquest/ui/avatar";
 import { ScrollArea } from "@conquest/ui/scroll-area";
 import { Separator } from "@conquest/ui/separator";
-import type { Company } from "@conquest/zod/schemas/company.schema";
+import type { CompanyWithMembers } from "@conquest/zod/schemas/company.schema";
 import type { Tag } from "@conquest/zod/schemas/tag.schema";
 import { format } from "date-fns";
+import { TagIcon } from "lucide-react";
 
 type Props = {
-  company: Company;
+  company: CompanyWithMembers;
   tags: Tag[] | undefined;
 };
 
@@ -49,7 +50,7 @@ export const CompanySidebar = ({ company, tags }: Props) => {
   };
 
   return (
-    <div className="flex h-full max-w-md flex-1 flex-col">
+    <div className="flex h-full max-w-sm flex-1 flex-col">
       <div className="flex items-center gap-2 p-4">
         <Avatar className="size-12">
           <AvatarImage src={logo_url ?? ""} />
@@ -63,17 +64,16 @@ export const CompanySidebar = ({ company, tags }: Props) => {
         </div>
       </div>
       <Separator />
-      <div className="space-y-2 p-4">
-        <FieldCard icon="Code" label="Source">
-          <SourceBadge source={source} />
-        </FieldCard>
-        <FieldCard icon="Tag" label="Tags">
-          <TagPicker
-            record={company}
-            tags={tags}
-            onUpdate={(value) => onUpdateCompany("tags", value)}
-          />
-        </FieldCard>
+      <div className="flex flex-col gap-2 p-4">
+        <div className="flex items-center gap-2 text-muted-foreground">
+          <TagIcon size={15} className="shrink-0" />
+          <p>Tags</p>
+        </div>
+        <TagPicker
+          record={company}
+          tags={tags}
+          onUpdate={(value) => onUpdateCompany("tags", value)}
+        />
       </div>
       <Separator />
       <ScrollArea className="flex-1">
@@ -115,6 +115,14 @@ export const CompanySidebar = ({ company, tags }: Props) => {
               address={address}
               onUpdate={(value) => onUpdateCompany("address", value)}
             />
+          </FieldCard>
+        </div>
+        <Separator />
+        <div className="space-y-2 p-4">
+          <FieldCard icon="Code" label="Source">
+            <div className="px-1">
+              <SourceBadge source={source} />
+            </div>
           </FieldCard>
         </div>
         <Separator />

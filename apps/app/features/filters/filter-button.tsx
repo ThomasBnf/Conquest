@@ -183,9 +183,9 @@ export const FilterButton = ({ filters, setFilters, handleUpdate }: Props) => {
 const filtersMember: Filter[] = [
   {
     id: "1",
-    label: "Tags",
+    label: "Tag",
     type: "select",
-    field: "tags",
+    field: "tag",
     operator: "contains",
     values: [],
   },

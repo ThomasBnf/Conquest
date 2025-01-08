@@ -1,4 +1,4 @@
-import { useListFiles } from "@/queries/hooks/useListFiles";
+import { listFiles } from "@/client/files/listFiles";
 import type { ActivityWithTypeAndMember } from "@conquest/zod/schemas/activity.schema";
 import { ActivityCard } from "../activity-card";
 import { Message } from "../message";
@@ -11,7 +11,7 @@ type Props = {
 
 export const SlackActivity = ({ activity }: Props) => {
   const { name } = activity.activity_type;
-  const { data: files } = useListFiles({ activityId: activity.id });
+  const { data: files } = listFiles({ activityId: activity.id });
 
   return (
     <ActivityCard

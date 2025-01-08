@@ -40,6 +40,8 @@ import { SidebarSettings } from "./sidebar-settings";
 
 export const AppSidebar = () => {
   const { slug, discourse, linkedin, livestorm, slack } = useUser();
+  if (!slug) return null;
+
   const { open } = useSidebar();
   const pathname = usePathname();
 

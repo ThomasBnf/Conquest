@@ -1,7 +1,7 @@
 "use client";
 
 import { useUser } from "@/context/userContext";
-import { useListTopMembers } from "@/queries/hooks/useListTopMembers";
+import { useListTopMembers } from "@/client/dashboard/listTopMembers";
 import { type ChartConfig, ChartContainer } from "@conquest/ui/chart";
 import { useRouter } from "next/navigation";
 import { useRef } from "react";

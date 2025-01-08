@@ -6,7 +6,13 @@ import { EventsList } from "@/features/livestorm/events-list";
 import { listEvents } from "@/queries/events/listEvents";
 import { ScrollArea } from "@conquest/ui/scroll-area";
 
-export default async function Page() {
+type Props = {
+  searchParams: {
+    error: string;
+  };
+};
+
+export default async function Page({ searchParams: { error } }: Props) {
   const events = await listEvents({ source: "LIVESTORM" });
 
   return (
@@ -19,7 +25,7 @@ export default async function Page() {
           </div>
           <p className="font-medium text-lg">Livestorm</p>
         </div>
-        <EnableCard />
+        <EnableCard error={error} />
         <ConnectedCard />
         <EventsList events={events} />
       </div>

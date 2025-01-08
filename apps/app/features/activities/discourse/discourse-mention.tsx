@@ -1,5 +1,5 @@
 import { useUser } from "@/context/userContext";
-import { useGetMember } from "@/queries/hooks/useGetMember";
+import { getMemberByUsername } from "@/client/members/getMemberByUsername";
 import Link from "next/link";
 
 type Props = {
@@ -8,7 +8,7 @@ type Props = {
 
 export const DiscourseMention = ({ username }: Props) => {
   const { slug } = useUser();
-  const { data: member } = useGetMember({ username });
+  const { data: member } = getMemberByUsername({ username });
   const { id, first_name, last_name } = member ?? {};
 
   return (

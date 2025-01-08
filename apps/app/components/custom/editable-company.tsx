@@ -1,6 +1,6 @@
 import { createCompany } from "@/actions/companies/createCompany";
+import { listCompanies } from "@/client/companies/listCompanies";
 import { useUser } from "@/context/userContext";
-import { useListCompanies } from "@/queries/hooks/useListCompanies";
 import { Button } from "@conquest/ui/button";
 import {
   Command,
@@ -32,7 +32,7 @@ export const EditableCompany = ({ member, onUpdate }: Props) => {
   const [open, setOpen] = useState(false);
   const router = useRouter();
 
-  const { data: companies, isLoading } = useListCompanies();
+  const { data: companies, isLoading } = listCompanies();
 
   const onUpdateMemberCompany = (company: Company | null) => {
     if (company === memberCompany) return;

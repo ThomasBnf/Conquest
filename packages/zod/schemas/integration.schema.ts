@@ -30,19 +30,27 @@ const DiscourseDetailsSchema = z.object({
   signature: z.string(),
 });
 
+const DiscordDetailsSchema = z.object({
+  source: z.literal("DISCORD"),
+  name: z.string(),
+  access_token: z.string(),
+  expires_in: z.number(),
+  refresh_token: z.string(),
+  scopes: z.string(),
+  permissions: z.string(),
+});
+
 const LinkedInDetailsSchema = z.object({
   source: z.literal("LINKEDIN"),
+  name: z.string(),
   access_token: z.string(),
   expire_in: z.number(),
   scopes: z.string(),
-  organization_id: z.string(),
-  organization_name: z.string(),
 });
 
 const LivestormDetailsSchema = z.object({
   source: z.literal("LIVESTORM"),
-  organization_id: z.string(),
-  organization_name: z.string(),
+  name: z.string(),
   access_token: z.string(),
   refresh_token: z.string(),
   expires_in: z.number(),
@@ -52,6 +60,7 @@ const LivestormDetailsSchema = z.object({
 export const IntegrationDetailsSchema = z.discriminatedUnion("source", [
   SlackDetailsSchema,
   DiscourseDetailsSchema,
+  DiscordDetailsSchema,
   LinkedInDetailsSchema,
   LivestormDetailsSchema,
 ]);
@@ -62,6 +71,10 @@ export const SlackIntegrationSchema = BaseSchema.extend({
 
 export const DiscourseIntegrationSchema = BaseSchema.extend({
   details: DiscourseDetailsSchema,
+});
+
+export const DiscordIntegrationSchema = BaseSchema.extend({
+  details: DiscordDetailsSchema,
 });
 
 export const LinkedInIntegrationSchema = BaseSchema.extend({
@@ -75,6 +88,7 @@ export const LivestormIntegrationSchema = BaseSchema.extend({
 export const IntegrationSchema = z.union([
   SlackIntegrationSchema,
   DiscourseIntegrationSchema,
+  DiscordIntegrationSchema,
   LinkedInIntegrationSchema,
   LivestormIntegrationSchema,
 ]) satisfies z.ZodType<IntegrationPrisma>;
@@ -83,5 +97,6 @@ export type Integration = z.infer<typeof IntegrationSchema>;
 export type IntegrationDetails = z.infer<typeof IntegrationDetailsSchema>;
 export type SlackIntegration = z.infer<typeof SlackIntegrationSchema>;
 export type DiscourseIntegration = z.infer<typeof DiscourseIntegrationSchema>;
+export type DiscordIntegration = z.infer<typeof DiscordIntegrationSchema>;
 export type LinkedInIntegration = z.infer<typeof LinkedInIntegrationSchema>;
 export type LivestormIntegration = z.infer<typeof LivestormIntegrationSchema>;

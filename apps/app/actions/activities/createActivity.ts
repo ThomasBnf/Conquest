@@ -13,19 +13,19 @@ export const createActivity = authAction
     z.object({
       member_id: z.string(),
       message: z.string(),
-      activity_type_id: z.string(),
+      activity_type_key: z.string(),
     }),
   )
   .action(
     async ({
       ctx: { user },
-      parsedInput: { member_id, message, activity_type_id },
+      parsedInput: { member_id, message, activity_type_key },
     }) => {
       const workspace_id = user.workspace_id;
 
       const activity = await _createActivity({
         external_id: null,
-        activity_type_id,
+        activity_type_key,
         message,
         member_id,
         workspace_id,

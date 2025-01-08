@@ -19,11 +19,6 @@ export const createManyReactions = async ({ discourse, member }: Props) => {
   const today = startOfDay(new Date());
   const last365Days = subDays(today, 365);
 
-  const reaction_type = await getActivityType({
-    workspace_id,
-    key: "discourse:reaction",
-  });
-
   let before = 0;
   let hasMore = true;
 
@@ -73,7 +68,7 @@ export const createManyReactions = async ({ discourse, member }: Props) => {
 
       await createActivity({
         external_id: String(id),
-        activity_type_id: reaction_type.id,
+        activity_type_key: "discourse:reaction",
         message: reaction_value,
         react_to: `p-${post.id}`,
         thread_id: `t-${topic_id}`,

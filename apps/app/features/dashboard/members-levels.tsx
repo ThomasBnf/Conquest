@@ -1,6 +1,6 @@
 "use client";
 
-import { useListMembersLevels } from "@/queries/hooks/useListMembersLevels";
+import { listMembersLevels } from "@/client/dashboard/listMembersLevels";
 import {
   type ChartConfig,
   ChartContainer,
@@ -37,7 +37,7 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 export const MembersLevels = ({ from, to }: Props) => {
-  const { data } = useListMembersLevels({ from, to });
+  const { data } = listMembersLevels({ from, to });
 
   const colors = {
     explorer: "hsl(var(--main-200))",
@@ -121,7 +121,7 @@ export const MembersLevels = ({ from, to }: Props) => {
                     textAnchor={props.textAnchor}
                     dominantBaseline={props.dominantBaseline}
                   >
-                    {payload.category} {payload.count}
+                    {payload.category}
                   </text>
                 );
               }}

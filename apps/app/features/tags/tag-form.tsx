@@ -45,7 +45,6 @@ export const TagForm = ({
       await createTag({
         external_id: null,
         name,
-        description: null,
         color,
         source: "MANUAL",
       });

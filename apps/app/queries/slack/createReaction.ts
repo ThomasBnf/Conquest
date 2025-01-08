@@ -7,7 +7,6 @@ type Props = {
   channel_id: string;
   react_to?: string | null;
   ts: string;
-  activity_type_id: string;
   workspace_id: string;
 };
 
@@ -17,7 +16,6 @@ export const createReaction = async ({
   channel_id,
   react_to,
   ts,
-  activity_type_id,
   workspace_id,
 }: Props) => {
   const member = await getMember({
@@ -29,7 +27,7 @@ export const createReaction = async ({
 
   await createActivity({
     external_id: null,
-    activity_type_id,
+    activity_type_key: "slack:reaction",
     message,
     react_to,
     channel_id,

@@ -1,8 +1,8 @@
 "use client";
 
+import { listChannels } from "@/client/channels/listChannels";
+import { listSLackChannels } from "@/client/slack/listSlackChannels";
 import { useUser } from "@/context/userContext";
-import { useListChannels } from "@/queries/hooks/useListChannels";
-import { useListSLackChannels } from "@/queries/hooks/useListSlackChannels";
 import type { installSlack } from "@/trigger/installSlack.trigger";
 import { Button } from "@conquest/ui/button";
 import { Checkbox } from "@conquest/ui/checkbox";
@@ -28,8 +28,8 @@ export const ListSlackChannels = () => {
     },
   );
 
-  const { data: channels, refetch: refetchChannels } = useListChannels();
-  const { data: slackChannels, isLoading } = useListSLackChannels();
+  const { data: channels, refetch: refetchChannels } = listChannels();
+  const { data: slackChannels, isLoading } = listSLackChannels();
 
   const onSelect = (channel: string | undefined) => {
     if (!channel) return;
@@ -75,8 +75,6 @@ export const ListSlackChannels = () => {
       router.refresh();
     }
   }, [run]);
-
-  console.log(run);
 
   return (
     <>

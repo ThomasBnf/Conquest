@@ -10,6 +10,7 @@ import {
 import type { MemberWithActivities } from "@conquest/zod/schemas/activity.schema";
 import { CaretSortIcon } from "@radix-ui/react-icons";
 import { ArrowDownIcon, ArrowUpIcon } from "lucide-react";
+import { usePathname } from "next/navigation";
 import { useQueryStates } from "nuqs";
 import type { Dispatch, SetStateAction } from "react";
 
@@ -45,13 +46,12 @@ export const ColumnHeader = ({
   isSorted,
   isLeaderboard,
 }: Props) => {
+  const pathname = usePathname();
   const [_, setParams] = useQueryStates(tableParsers);
+  const isMemberPage = pathname.includes("members");
 
   const onSort = (desc: boolean) => {
-    setParams({
-      id,
-      desc,
-    });
+    setParams(isMemberPage ? { descMember: desc } : { descCompany: desc });
   };
 
   if (isLeaderboard) {

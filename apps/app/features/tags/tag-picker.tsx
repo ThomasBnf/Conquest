@@ -47,7 +47,6 @@ export const TagPicker = ({ record, tags, onUpdate, className }: Props) => {
           ))}
           <Button
             variant="ghost"
-            size="xs"
             className={cn(
               "text-muted-foreground",
               recordTags.length > 0 ? "" : "-ml-1.5",
@@ -61,7 +60,7 @@ export const TagPicker = ({ record, tags, onUpdate, className }: Props) => {
         </div>
       </PopoverTrigger>
       <PopoverContent
-        className="w-72 p-0"
+        className="w-[233px] p-0"
         align="start"
         onOpenAutoFocus={(e) => e.preventDefault()}
       >
@@ -70,22 +69,15 @@ export const TagPicker = ({ record, tags, onUpdate, className }: Props) => {
           <CommandList>
             <CommandEmpty>No tags found</CommandEmpty>
             <CommandGroup>
-              {tags && tags?.length > 0 ? (
-                tags?.map((tag) => (
-                  <CommandItem
-                    key={tag.id}
-                    onSelect={() => handleTagToggle(tag)}
-                  >
-                    <Checkbox
-                      checked={recordTags?.includes(tag.id)}
-                      className="mr-2"
-                    />
-                    <TagBadge tag={tag} isBadge={false} />
-                  </CommandItem>
-                ))
-              ) : (
-                <p className="text-muted-foreground">No tags found</p>
-              )}
+              {tags?.map((tag) => (
+                <CommandItem key={tag.id} onSelect={() => handleTagToggle(tag)}>
+                  <Checkbox
+                    checked={recordTags?.includes(tag.id)}
+                    className="mr-2"
+                  />
+                  <TagBadge tag={tag} />
+                </CommandItem>
+              ))}
             </CommandGroup>
           </CommandList>
         </Command>

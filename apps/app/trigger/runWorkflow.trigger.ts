@@ -414,7 +414,7 @@ export const createSelectFilter = (filter: FilterSelect) => {
         switch (filter.field) {
           case "location":
             return member.location;
-          case "tags":
+          case "tag":
             return member.tags;
           case "source":
             return member.source;

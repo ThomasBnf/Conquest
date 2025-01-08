@@ -1,8 +1,8 @@
 "use client";
 
-import { useListActiveMembers } from "@/queries/hooks/useListActiveMembers";
-import { useListNewMembers } from "@/queries/hooks/useListNewMembers";
-import { useListTotalMembers } from "@/queries/hooks/useListTotalMembers";
+import { listActiveMembers } from "@/client/dashboard/listActiveMembers";
+import { listNewMembers } from "@/client/dashboard/listNewMembers";
+import { listTotalMembers } from "@/client/dashboard/listTotalMembers";
 import {
   type ChartConfig,
   ChartContainer,
@@ -43,7 +43,7 @@ export const MembersChart = ({ from, to }: Props) => {
   const [activeChart, setActiveChart] =
     useState<keyof typeof chartConfig>("total_members");
 
-  const { totalMembers, totalMembersData, isLoading } = useListTotalMembers({
+  const { totalMembers, totalMembersData, isLoading } = listTotalMembers({
     from,
     to,
   });
@@ -51,12 +51,12 @@ export const MembersChart = ({ from, to }: Props) => {
     newMembers,
     newMembersData,
     isLoading: _isLoading,
-  } = useListNewMembers({ from, to });
+  } = listNewMembers({ from, to });
   const {
     activeMembers,
     activeMembersData,
     isLoading: __isLoading,
-  } = useListActiveMembers({
+  } = listActiveMembers({
     from,
     to,
   });

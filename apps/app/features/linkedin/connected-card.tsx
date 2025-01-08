@@ -19,7 +19,7 @@ import { toast } from "sonner";
 export const ConnectedCard = () => {
   const { linkedin } = useUser();
   const { details, connected_at } = linkedin ?? {};
-  const { organization_name } = details ?? {};
+  const { name } = details ?? {};
 
   const [open, setOpen] = useState(false);
 
@@ -50,7 +50,7 @@ export const ConnectedCard = () => {
         <CardContent className="mb-0.5">
           <div className=" flex items-end justify-between">
             <div>
-              <p className="font-medium">{organization_name}</p>
+              <p className="font-medium">{name}</p>
               {connected_at && (
                 <p className="text-muted-foreground">
                   Connected on {format(connected_at, "PP")}
@@ -68,7 +68,7 @@ export const ConnectedCard = () => {
               <DropdownMenuContent align="end">
                 <DropdownMenuItem onClick={() => setOpen(true)}>
                   <div className="size-2.5 rounded-full bg-red-500" />
-                  <p>Disconnect {organization_name}</p>
+                  <p>Disconnect {name}</p>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -76,7 +76,7 @@ export const ConnectedCard = () => {
         </CardContent>
       </Card>
       <AlertDialog
-        title={`Disconnect ${organization_name} workspace`}
+        title={`Disconnect ${name} workspace`}
         description="Linkedin integration will be removed from your workspace and all your data will be deleted."
         onConfirm={onDisconnect}
         open={open}

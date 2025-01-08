@@ -12,6 +12,7 @@ import { updateChannel } from "@/queries/channels/updateChannel";
 import { checkSignature } from "@/queries/discourse/checkSignature";
 import { getMember } from "@/queries/members/getMember";
 import { upsertMember } from "@/queries/members/upsertMember";
+import { createTag } from "@/queries/tags/createTag";
 import { listTags } from "@/queries/tags/listTags";
 import type { DiscourseWebhook } from "@conquest/zod/types/discourse";
 import { Hono } from "hono";
@@ -34,31 +35,6 @@ export const discourse = new Hono().post("/", async (c) => {
   const post_type = await getActivityType({
     workspace_id,
     key: "discourse:post",
-  });
-
-  const reaction_type = await getActivityType({
-    workspace_id,
-    key: "discourse:reaction",
-  });
-
-  const reply_type = await getActivityType({
-    workspace_id,
-    key: "discourse:reply",
-  });
-
-  const solved_type = await getActivityType({
-    workspace_id,
-    key: "discourse:solved",
-  });
-
-  const invite_type = await getActivityType({
-    workspace_id,
-    key: "discourse:invite",
-  });
-
-  const login_type = await getActivityType({
-    workspace_id,
-    key: "discourse:login",
   });
 
   if (topic && (event === "topic_created" || event === "topic_recovered")) {
@@ -110,7 +86,7 @@ export const discourse = new Hono().post("/", async (c) => {
 
     await updateActivity({
       external_id: String(id),
-      activity_type_id: post_type.id,
+      activity_type_key: "discourse:post",
       title,
       workspace_id,
     });
@@ -152,7 +128,7 @@ export const discourse = new Hono().post("/", async (c) => {
       await updateActivity({
         external_id: `t-${topic_id}`,
         message: post.cooked,
-        activity_type_id: post_type.id,
+        activity_type_key: "discourse:post",
         workspace_id,
       });
 
@@ -178,7 +154,7 @@ export const discourse = new Hono().post("/", async (c) => {
 
       await createActivity({
         external_id: `p-${id}`,
-        activity_type_id: reply_type.id,
+        activity_type_key: "discourse:reply",
         message: post.cooked,
         reply_to: `t-${topic_id}`,
         thread_id: `t-${topic_id}`,
@@ -206,7 +182,7 @@ export const discourse = new Hono().post("/", async (c) => {
 
     await createActivity({
       external_id: `p-${id}`,
-      activity_type_id: reply_type.id,
+      activity_type_key: "discourse:reply",
       message: post.cooked,
       thread_id: `t-${topic_id}`,
       member_id: member.id,
@@ -221,7 +197,8 @@ export const discourse = new Hono().post("/", async (c) => {
 
     await updateActivity({
       external_id: post_number === 1 ? `t-${topic_id}` : `p-${id}`,
-      activity_type_id: post_number === 1 ? post_type.id : reply_type.id,
+      activity_type_key:
+        post_number === 1 ? "discourse:post" : "discourse:reply",
       message: post.cooked,
       workspace_id,
     });
@@ -260,7 +237,7 @@ export const discourse = new Hono().post("/", async (c) => {
 
     await createActivity({
       external_id: null,
-      activity_type_id: reaction_type.id,
+      activity_type_key: "discourse:reaction",
       message: "like",
       react_to: reactTo,
       thread_id: `t-${topic_id}`,
@@ -276,7 +253,7 @@ export const discourse = new Hono().post("/", async (c) => {
     const [first_name, last_name] = name.split(" ");
     const avatar_url = avatar_template.replace("{size}", "500");
 
-    await upsertMember({
+    const createdMember = await upsertMember({
       id: String(id),
       data: {
         username,
@@ -299,9 +276,17 @@ export const discourse = new Hono().post("/", async (c) => {
 
     await createActivity({
       external_id: String(id),
-      activity_type_id: invite_type.id,
+      activity_type_key: "discourse:invite",
       message: `${username} has joined the community through your invitation`,
       member_id: inviter.id,
+      workspace_id,
+    });
+
+    await createActivity({
+      external_id: null,
+      activity_type_key: "discourse:join",
+      message: `${username} has joined the community`,
+      member_id: createdMember.id,
       workspace_id,
     });
   }
@@ -314,7 +299,6 @@ export const discourse = new Hono().post("/", async (c) => {
       email,
       secondary_emails,
       avatar_template,
-      bio_excerpt,
       title,
     } = user;
 
@@ -361,7 +345,7 @@ export const discourse = new Hono().post("/", async (c) => {
 
     await createActivity({
       external_id: null,
-      activity_type_id: login_type.id,
+      activity_type_key: "discourse:login",
       message: `${member.first_name} has logged in`,
       member_id: member.id,
       workspace_id,
@@ -460,14 +444,12 @@ export const discourse = new Hono().post("/", async (c) => {
 
     const { id: badgeId, name, badge_type_id } = badge;
 
-    const newTag = await prisma.tags.create({
-      data: {
-        external_id: String(badgeId),
-        name,
-        color: String(badge_type_id),
-        source: "DISCOURSE",
-        workspace_id,
-      },
+    const newTag = await createTag({
+      external_id: String(badgeId),
+      name,
+      color: String(badge_type_id),
+      source: "DISCOURSE",
+      workspace_id,
     });
 
     await prisma.members.update({
@@ -519,17 +501,11 @@ export const discourse = new Hono().post("/", async (c) => {
 
     if (!channel) return c.json({ error: "Channel not found" }, 404);
 
-    const activity_type_id =
-      event === "accepted_solution" ? solved_type.id : reply_type.id;
-
-    await prisma.activities.update({
-      where: {
-        external_id_workspace_id: {
-          external_id: `p-${id}`,
-          workspace_id,
-        },
-      },
-      data: { activity_type_id },
+    await updateActivity({
+      external_id: `p-${id}`,
+      activity_type_key:
+        event === "accepted_solution" ? "discourse:solved" : "discourse:reply",
+      workspace_id,
     });
   }
 

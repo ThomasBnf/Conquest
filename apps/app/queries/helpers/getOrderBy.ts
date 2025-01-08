@@ -1,4 +1,9 @@
-export const getOrderBy = (id: string, desc: boolean) => {
+type Props = {
+  id?: string;
+  desc: boolean;
+};
+
+export const getOrderBy = ({ id, desc }: Props) => {
   const direction = desc ? "DESC" : "ASC";
 
   switch (id) {
@@ -24,7 +29,9 @@ export const getOrderBy = (id: string, desc: boolean) => {
       return `ORDER BY m.first_activity ${direction}`;
     case "last_activity":
       return `ORDER BY m.last_activity ${direction}`;
-    default:
-      return `ORDER BY m.id ${direction}`;
+    case "name":
+      return `ORDER BY c.name ${direction}`;
   }
+
+  return "";
 };

@@ -1,7 +1,6 @@
 import { DateCell } from "@/components/custom/date-cell";
 import { LocationBadge } from "@/components/custom/location-badge";
 import { SourceBadge } from "@/components/custom/source-badge";
-import { useUser } from "@/context/userContext";
 import { ColumnHeader } from "@/features/table/column-header";
 import { TagsCell } from "@/features/table/tags-cell";
 import { Avatar, AvatarFallback, AvatarImage } from "@conquest/ui/avatar";
@@ -23,6 +22,7 @@ type Column = {
     setRowSelected?: Dispatch<SetStateAction<string[]>>;
   }) => React.ReactNode;
   cell: (args: {
+    slug?: string;
     member: MemberWithCompany;
     rowSelected?: string[];
     setRowSelected?: Dispatch<SetStateAction<string[]>>;
@@ -75,8 +75,7 @@ export const Columns = ({ tags }: Props): Column[] => [
   {
     id: "full_name",
     header: () => <ColumnHeader id="full_name" title="Full Name" width={285} />,
-    cell: ({ member }) => {
-      const { slug } = useUser();
+    cell: ({ slug, member }) => {
       return (
         <Link
           href={`/${slug}/members/${member.id}/analytics`}
@@ -111,7 +110,13 @@ export const Columns = ({ tags }: Props): Column[] => [
     cell: ({ member }) => {
       const memberTags = tags?.filter((tag) => member.tags?.includes(tag.id));
 
-      return <TagsCell memberId={member.id} memberTags={memberTags ?? []} />;
+      return (
+        <TagsCell
+          id={member.id}
+          initialTags={memberTags ?? []}
+          table="members"
+        />
+      );
     },
     width: 250,
   },

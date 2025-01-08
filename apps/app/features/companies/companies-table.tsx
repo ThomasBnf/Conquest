@@ -1,48 +1,57 @@
 "use client";
 
+import { countCompanies } from "@/client/companies/countMembers";
+import { listCompanies } from "@/client/companies/listCompanies";
 import { QueryInput } from "@/components/custom/query-input";
 import { Companies } from "@/components/icons/Companies";
-import { ActionMenu } from "@/features/table/action-menu";
-import { useScrollX } from "@/features/table/hooks/useScrollX";
-import { useHasScrollY } from "@/features/table/hooks/usehasScrollY";
+import { EmptyState } from "@/components/states/empty-state";
+import { useUser } from "@/context/userContext";
 import { Pagination } from "@/features/table/pagination";
-import { TableSkeleton } from "@/features/table/table-skeletton";
 import { useIsClient } from "@/hooks/useIsClient";
 import { tableParsers } from "@/lib/searchParamsTable";
 import { Button } from "@conquest/ui/button";
 import { cn } from "@conquest/ui/cn";
 import { ScrollArea, ScrollBar } from "@conquest/ui/scroll-area";
 import { useSidebar } from "@conquest/ui/sidebar";
-import type { Company } from "@conquest/zod/schemas/company.schema";
+import type { Tag } from "@conquest/zod/schemas/tag.schema";
 import { useQueryStates } from "nuqs";
 import { useRef, useState } from "react";
+import { ActionMenu } from "../table/action-menu";
+import { useScrollX } from "../table/hooks/useScrollX";
+import { useHasScrollY } from "../table/hooks/usehasScrollY";
+import { TableSkeleton } from "../table/table-skeletton";
 import { Columns } from "./columns";
 
 type Props = {
-  companies: Company[] | undefined;
-  count: number;
+  tags: Tag[] | undefined;
 };
 
-export const CompaniesTable = ({ companies, count }: Props) => {
+export const CompaniesTable = ({ tags }: Props) => {
+  const { slug } = useUser();
   const { open } = useSidebar();
-  const [{ search }, setParams] = useQueryStates(tableParsers);
   const [rowSelected, setRowSelected] = useState<string[]>([]);
 
-  const isClient = useIsClient();
+  const { companies, isLoading } = listCompanies();
+  const { count } = countCompanies();
+
   const scrollRef = useRef<HTMLDivElement>(null);
+
+  const isClient = useIsClient();
   const scrollX = useScrollX({ isClient });
   const hasScrollY = useHasScrollY({ dependencies: [isClient, companies] });
 
-  const columns = Columns();
+  const columns = Columns({ tags });
   const fixedColumn = columns.slice(0, 2);
   const scrollableColumns = columns.slice(2);
 
+  const [{ search }, setParams] = useQueryStates(tableParsers);
+
   return (
     <>
-      <div className="flex min-h-12 items-center border-b px-4">
+      <div className="flex items-center gap-2 px-4 py-2">
         <QueryInput
           query={search}
-          setQuery={(value) => setParams({ search: value })}
+          setQuery={(value) => setParams({ search: value, page: 1 })}
           placeholder="Search in companies..."
         />
       </div>
@@ -92,7 +101,9 @@ export const CompaniesTable = ({ companies, count }: Props) => {
             </div>
           </div>
           <div className="relative">
-            {isClient ? (
+            {isLoading ? (
+              <TableSkeleton />
+            ) : (
               companies?.map((company) => (
                 <div
                   key={company.id}
@@ -133,7 +144,8 @@ export const CompaniesTable = ({ companies, count }: Props) => {
                       style={{ width: fixedColumn[1]?.width }}
                     >
                       <div className="flex h-12 items-center">
-                        {fixedColumn[1]?.cell({
+                        {fixedColumn.at(1)?.cell({
+                          slug,
                           company,
                           rowSelected,
                           setRowSelected,
@@ -157,46 +169,38 @@ export const CompaniesTable = ({ companies, count }: Props) => {
                   </div>
                 </div>
               ))
-            ) : (
-              <TableSkeleton />
             )}
           </div>
-          {isClient && companies?.length === 0 && (
-            <div
-              className={cn(
-                "absolute top-36 mx-auto flex w-full flex-col items-center justify-center",
-                open ? "max-w-[calc(100vw-14rem)]" : "max-w-[100vw]",
-              )}
-            >
-              <div className="flex items-center justify-center">
-                <Companies />
-              </div>
-              <p className="text-center font-medium text-lg">
-                No companies found
-              </p>
-              <p className="mb-4 text-center text-muted-foreground">
-                {search
+          {!isLoading && companies?.length === 0 && (
+            <EmptyState
+              icon={<Companies size={36} />}
+              title="No companies found"
+              description={
+                search
                   ? "None of your companies match the current filters"
-                  : "No companies found in your workspace"}
-              </p>
+                  : "No companies found in your workspace"
+              }
+              className={open ? "max-w-[calc(100vw-14rem)]" : "max-w-[100vw]"}
+            >
               {search && (
                 <Button onClick={() => setParams({ search: "" })}>
                   Clear filters
                 </Button>
               )}
-            </div>
+            </EmptyState>
           )}
           {rowSelected.length > 0 && (
             <ActionMenu
               rowSelected={rowSelected}
               setRowSelected={setRowSelected}
+              table="companies"
             />
           )}
           <ScrollBar orientation="horizontal" />
           <ScrollBar orientation="vertical" />
         </ScrollArea>
       </div>
-      <Pagination count={count} />
+      <Pagination count={count ?? 0} />
     </>
   );
 };

@@ -1,6 +1,6 @@
 "use client";
 
-import { _signUp } from "@/features/auth/actions/signUp";
+import { signUp } from "@/features/auth/actions/signUp";
 import { Button, buttonVariants } from "@conquest/ui/button";
 import {
   Card,
@@ -40,7 +40,7 @@ export const SignupForm = () => {
   const onSubmit = async ({ email, password }: SignupSchema) => {
     setLoading(true);
 
-    const rUser = await _signUp({ email, password });
+    const rUser = await signUp({ email, password });
     const error = rUser?.serverError;
 
     if (error) {

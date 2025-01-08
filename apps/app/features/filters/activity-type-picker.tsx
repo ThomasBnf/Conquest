@@ -1,4 +1,4 @@
-import { useListActivityTypes } from "@/queries/hooks/useListActivityTypes";
+import { listActivityTypes } from "@/client/activity-types/listActivityTypes";
 import { Button } from "@conquest/ui/button";
 import { Checkbox } from "@conquest/ui/checkbox";
 import {
@@ -33,7 +33,7 @@ export const ActivityTypePicker = ({
   filter,
   handleUpdateActivityTypes,
 }: Props) => {
-  const { data, isLoading } = useListActivityTypes();
+  const { data, isLoading } = listActivityTypes();
   const [open, setOpen] = useState(filter.activity_types.length === 0);
 
   const filterActivity = FilterActivitySchema.parse(filter);

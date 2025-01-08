@@ -1,6 +1,6 @@
 "use client";
 
-import { useListTopActivityTypes } from "@/queries/hooks/useListTopActivityTypes";
+import { useListTopActivityTypes } from "@/client/dashboard/listTopActivityTypes";
 import { type ChartConfig, ChartContainer } from "@conquest/ui/chart";
 import { useRef } from "react";
 import {

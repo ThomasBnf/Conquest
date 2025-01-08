@@ -1,5 +1,6 @@
 "use client";
 
+import { deleteIntegration } from "@/actions/integrations/deleteIntegration";
 import { SLACK_SCOPES, USER_SCOPES } from "@/constant";
 import { useUser } from "@/context/userContext";
 import { env } from "@/env.mjs";
@@ -9,13 +10,22 @@ import { cn } from "@conquest/ui/cn";
 import { CirclePlus, ExternalLink } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+import { toast } from "sonner";
 import { ListSlackChannels } from "./list-slack-channels";
 
-export const EnableCard = () => {
-  const { slack } = useUser();
-  const { trigger_token, trigger_token_expires_at } = slack ?? {};
+type Props = {
+  error: string;
+};
 
+export const EnableCard = ({ error }: Props) => {
+  const { slug, slack } = useUser();
+  const { trigger_token, trigger_token_expires_at } = slack ?? {};
+  const isEnabled = slack?.status === "ENABLED";
+  const isConnected = slack?.status === "CONNECTED";
+  const isSyncing = slack?.status === "SYNCING";
   const router = useRouter();
+
   const isExpired =
     trigger_token_expires_at && trigger_token_expires_at < new Date();
 
@@ -31,7 +41,42 @@ export const EnableCard = () => {
     router.push(`https://slack.com/oauth/v2/authorize?${params.toString()}`);
   };
 
-  if (slack?.status === "CONNECTED") return;
+  const onDisconnect = async () => {
+    if (!slack) return;
+
+    const response = await deleteIntegration({
+      integration: slack,
+      source: "SLACK",
+    });
+
+    const error = response?.serverError;
+
+    if (error) toast.error(error);
+  };
+
+  useEffect(() => {
+    if (trigger_token_expires_at && trigger_token_expires_at < new Date()) {
+      onDisconnect();
+    }
+    if (error) {
+      switch (error) {
+        case "invalid_code":
+          toast.error("Error: Invalid code");
+          break;
+        case "already_connected":
+          toast.error(
+            "This Slack workspace is already connected to another account",
+            {
+              duration: 10000,
+            },
+          );
+          break;
+      }
+      router.push(`/${slug}/settings/integrations/slack`);
+    }
+  }, [trigger_token_expires_at, error]);
+
+  if (isConnected) return;
 
   return (
     <Card>
@@ -55,6 +100,11 @@ export const EnableCard = () => {
             Enable
           </Button>
         )}
+        {isEnabled && (
+          <Button variant="destructive" onClick={onDisconnect}>
+            Disconnect
+          </Button>
+        )}
       </CardHeader>
       <CardContent className="mb-0.5">
         <p className="font-medium text-base">Overview</p>
@@ -63,8 +113,7 @@ export const EnableCard = () => {
           member interactions, and send personalized direct messages through
           automated workflows.
         </p>
-        {(slack?.status === "ENABLED" || slack?.status === "SYNCING") &&
-          !isExpired && <ListSlackChannels />}
+        {(isEnabled || isSyncing) && !isExpired && <ListSlackChannels />}
       </CardContent>
     </Card>
   );

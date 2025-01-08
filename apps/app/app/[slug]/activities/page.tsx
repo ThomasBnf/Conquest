@@ -17,7 +17,7 @@ export default async function Page() {
   return (
     <PageLayout>
       <Header title="Activities" />
-      <ScrollArea>
+      <ScrollArea className="h-full">
         <Activities initialActivities={activities} />
       </ScrollArea>
     </PageLayout>

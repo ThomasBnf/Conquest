@@ -31,6 +31,12 @@ export default async function Page({ searchParams: { code } }: Props) {
     },
   );
 
+  if (!response.ok) {
+    return redirect(
+      `/${slug}/settings/integrations/linkedin?error=invalid_code`,
+    );
+  }
+
   const data = await response.json();
   const { access_token } = data;
 
@@ -38,11 +44,10 @@ export default async function Page({ searchParams: { code } }: Props) {
     external_id: null,
     details: {
       source: "LINKEDIN",
+      name: "",
       access_token: access_token ?? "",
       expire_in: 3600,
       scopes: LINKEDIN_SCOPES,
-      organization_id: "",
-      organization_name: "",
     },
     workspace_id,
   });

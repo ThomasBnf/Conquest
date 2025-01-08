@@ -3,6 +3,7 @@ import { MemberWithCompanySchema } from "@conquest/zod/schemas/member.schema";
 
 type Props = (
   | { id: string }
+  | { discord_id: string }
   | { discourse_id: string }
   | { linkedin_id: string }
   | { livestorm_id: string }
@@ -17,6 +18,7 @@ export const getMember = async (props: Props) => {
   const { workspace_id } = props;
 
   const id = "id" in props ? props.id : undefined;
+  const discord_id = "discord_id" in props ? props.discord_id : undefined;
   const discourse_id = "discourse_id" in props ? props.discourse_id : undefined;
   const linkedin_id = "linkedin_id" in props ? props.linkedin_id : undefined;
   const livestorm_id = "livestorm_id" in props ? props.livestorm_id : undefined;
@@ -29,6 +31,15 @@ export const getMember = async (props: Props) => {
       return {
         primary_email_workspace_id: {
           primary_email: email,
+          workspace_id,
+        },
+      };
+    }
+
+    if (discord_id) {
+      return {
+        discord_id_workspace_id: {
+          discord_id,
           workspace_id,
         },
       };

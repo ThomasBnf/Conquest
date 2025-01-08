@@ -1,6 +1,5 @@
 import { type SlackFile, createFiles } from "@/features/slack/helpers/getFiles";
 import { createActivity } from "@/queries/activities/createActivity";
-import { getActivityType } from "@/queries/activity-type/getActivityType";
 import type { Channel } from "@conquest/zod/schemas/channel.schema";
 import type { WebClient } from "@slack/web-api";
 import { getMember } from "../members/getMember";
@@ -15,15 +14,6 @@ type Props = {
 
 export const listMessages = async ({ web, channel, workspace_id }: Props) => {
   let cursor: string | undefined;
-
-  const type_post = await getActivityType({
-    key: "slack:post",
-    workspace_id,
-  });
-  const type_reaction = await getActivityType({
-    key: "slack:reaction",
-    workspace_id,
-  });
 
   do {
     const now = Math.floor(Date.now() / 1000);
@@ -56,7 +46,7 @@ export const listMessages = async ({ web, channel, workspace_id }: Props) => {
       if (member) {
         const activity = await createActivity({
           external_id: ts ?? null,
-          activity_type_id: type_post.id,
+          activity_type_key: "slack:post",
           message: text ?? "",
           channel_id: channel.id,
           member_id: member.id,
@@ -81,7 +71,6 @@ export const listMessages = async ({ web, channel, workspace_id }: Props) => {
                 channel_id: channel.id,
                 react_to: activity?.external_id,
                 ts: (Number(ts) + 1).toString(),
-                activity_type_id: type_reaction.id,
                 workspace_id,
               });
             }

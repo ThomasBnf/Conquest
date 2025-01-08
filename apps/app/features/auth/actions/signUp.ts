@@ -8,8 +8,8 @@ import { prisma } from "lib/prisma";
 import { safeAction } from "lib/safeAction";
 import { logIn } from "./logIn";
 
-export const _signUp = safeAction
-  .metadata({ name: "_signUp" })
+export const signUp = safeAction
+  .metadata({ name: "signUp" })
   .schema(SignupSchema)
   .action(async ({ parsedInput: { email, password } }) => {
     const hashed_password = await hash(password, 10);

@@ -1,6 +1,7 @@
 import { SLACK_SCOPES, USER_SCOPES } from "@/constant";
 import { env } from "@/env.mjs";
 import { createIntegration } from "@/queries/integrations/createIntegration";
+import { getIntegration } from "@/queries/integrations/getIntegration";
 import { getCurrentUser } from "@/queries/users/getCurrentUser";
 import { redirect } from "next/navigation";
 
@@ -26,8 +27,22 @@ export default async function Page({ searchParams: { code } }: Props) {
     }),
   });
 
+  if (!response.ok) {
+    return redirect(`/${slug}/settings/integrations/slack?error=invalid_code`);
+  }
+
   const data = await response.json();
   const { access_token, authed_user, team } = data;
+
+  const integration = await getIntegration({
+    external_id: team.id,
+  });
+
+  if (integration) {
+    return redirect(
+      `/${slug}/settings/integrations/slack?error=already_connected`,
+    );
+  }
 
   await createIntegration({
     external_id: team.id,

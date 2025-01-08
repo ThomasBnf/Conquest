@@ -9,9 +9,14 @@ import { CircleCheck, ExternalLink } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
-export const EnabledCard = () => {
-  const { discourse } = useUser();
+type Props = {
+  error: string;
+};
+
+export const EnabledCard = ({ error }: Props) => {
+  const { slug, discourse } = useUser();
   const { trigger_token, trigger_token_expires_at } = discourse ?? {};
 
   const [loading, setLoading] = useState(false);
@@ -26,7 +31,23 @@ export const EnabledCard = () => {
 
   useEffect(() => {
     router.refresh();
-  }, []);
+    if (error) {
+      switch (error) {
+        case "invalid_code":
+          toast.error("Error: Invalid code");
+          break;
+        case "already_connected":
+          toast.error(
+            "This Discourse workspace is already connected to another account",
+            {
+              duration: 10000,
+            },
+          );
+          break;
+      }
+      router.push(`/${slug}/settings/integrations/discourse`);
+    }
+  }, [error]);
 
   if (discourse?.status === "CONNECTED") return;
 

@@ -1,9 +1,9 @@
+import { calculateMemberMetrics } from "@/client/dashboard/calculateMemberMetrics";
 import { LIVESTORM_ACTIVITY_TYPES } from "@/constant";
 import { sleep } from "@/helpers/sleep";
 import { prisma } from "@/lib/prisma";
 import { createActivity } from "@/queries/activities/createActivity";
 import { createManyActivityTypes } from "@/queries/activity-type/createManyActivityTypes";
-import { getActivityType } from "@/queries/activity-type/getActivityType";
 import { deleteIntegration } from "@/queries/integrations/deleteIntegration";
 import { updateIntegration } from "@/queries/integrations/updateIntegration";
 import { createWebhook } from "@/queries/livestorm/createWebhook";
@@ -11,7 +11,6 @@ import { getRefreshToken } from "@/queries/livestorm/getRefreshToken";
 import { listEventSessions } from "@/queries/livestorm/listEventSessions";
 import { listEvents } from "@/queries/livestorm/listEvents";
 import { listPeopleFromSession } from "@/queries/livestorm/listPeopleFromSession";
-import { calculateMemberMetrics } from "@/queries/members/calculateMemberMetrics";
 import { upsertMember } from "@/queries/members/upsertMember";
 import { LivestormIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
 import type { Event, Session } from "@conquest/zod/types/livestorm";
@@ -51,11 +50,11 @@ export const installLivestorm = schemaTask({
 
     await updateIntegration({
       id,
+      external_id: organization_id,
       details: {
         ...details,
+        name: organization_name,
         access_token: accessToken,
-        organization_id,
-        organization_name,
       },
       status: "SYNCING",
     });
@@ -149,14 +148,9 @@ export const installLivestorm = schemaTask({
             },
           });
 
-          const activityType = await getActivityType({
-            key: "livestorm:attend",
-            workspace_id,
-          });
-
           await createActivity({
             external_id: null,
-            activity_type_id: activityType.id,
+            activity_type_key: "livestorm:attend",
             message: `Attended the Livestorm event: ${title}`,
             event_id: createdEvent.id,
             member_id: createdMember.id,
