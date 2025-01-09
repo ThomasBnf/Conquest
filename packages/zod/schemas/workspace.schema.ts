@@ -1,5 +1,6 @@
 import type { workspaces as WorkspacePrisma } from "@prisma/client";
 import { z } from "zod";
+import { PLAN } from "../enum/plan.enum";
 import { FilterSchema } from "./filters.schema";
 import { IntegrationSchema } from "./integration.schema";
 
@@ -17,6 +18,7 @@ export const WorkspaceSchema = z.object({
   source: z.string().nullable(),
   company_size: z.string().nullable(),
   members_preferences: MembersPreferencesSchema,
+  plan: PLAN,
   integrations: z.array(IntegrationSchema).default([]),
   created_at: z.coerce.date(),
   updated_at: z.coerce.date(),
