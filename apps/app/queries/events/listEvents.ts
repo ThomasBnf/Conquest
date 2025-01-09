@@ -4,12 +4,14 @@ import { EventSchema } from "@conquest/zod/schemas/event.schema";
 
 type Props = {
   source: Source;
+  workspace_id: string;
 };
 
-export const listEvents = async ({ source }: Props) => {
+export const listEvents = async ({ source, workspace_id }: Props) => {
   const events = await prisma.events.findMany({
     where: {
       source,
+      workspace_id,
     },
   });
 

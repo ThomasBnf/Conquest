@@ -159,7 +159,7 @@ export const MemberHeatmap = ({ activities }: Props) => {
   const calendar = generateCalendarGrid();
 
   return (
-    <div className="p-4">
+    <div>
       <p className="mb-2 font-medium text-lg">Member Heatmap</p>
       <ScrollArea className="pb-4">
         <div className="flex flex-col">

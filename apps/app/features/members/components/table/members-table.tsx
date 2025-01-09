@@ -88,7 +88,7 @@ export const MembersTable = ({ tags }: Props) => {
           />
         )}
       </div>
-      <div className="relative h-full overflow-hidden">
+      <div className="relative flex-1 overflow-hidden">
         <ScrollArea className="h-full overflow-hidden" ref={scrollRef}>
           <div className="sticky top-0 z-30 flex">
             <div
@@ -126,7 +126,7 @@ export const MembersTable = ({ tags }: Props) => {
               ))}
             </div>
           </div>
-          <div className="relative flex-grow">
+          <div className="relative">
             {isLoading ? (
               <TableSkeleton isMembers />
             ) : (

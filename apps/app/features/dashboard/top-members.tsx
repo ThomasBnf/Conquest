@@ -26,7 +26,7 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-export const MembersTop = ({ from, to }: Props) => {
+export const TopMembers = ({ from, to }: Props) => {
   const { slug } = useUser();
   const router = useRouter();
   const ref = useRef<HTMLDivElement>(null);

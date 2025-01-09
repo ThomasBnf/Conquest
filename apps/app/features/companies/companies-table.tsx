@@ -55,7 +55,7 @@ export const CompaniesTable = ({ tags }: Props) => {
           placeholder="Search in companies..."
         />
       </div>
-      <div className="relative h-full overflow-hidden">
+      <div className="relative flex-1 overflow-hidden">
         <ScrollArea className="h-full overflow-hidden" ref={scrollRef}>
           <div className="sticky top-0 z-30 flex">
             <div
@@ -64,26 +64,19 @@ export const CompaniesTable = ({ tags }: Props) => {
               )}
               style={{ width: fixedColumn[0]?.width }}
             >
-              <div className="flex h-12 items-center">
+              <div className="flex items-center">
                 {fixedColumn[0]?.header({
                   companies,
                   rowSelected,
                   setRowSelected,
                 })}
               </div>
-              {scrollX > 0 && (
-                <div className="-mr-12 absolute top-0 right-0 h-full w-12 bg-gradient-to-r from-black to-transparent opacity-[0.075]" />
-              )}
             </div>
             <div
-              className={cn(
-                "sticky left-[40px] z-10 shrink-0 border-r border-b",
-              )}
+              className={cn("sticky left-[40px] z-10 flex border-r border-b")}
               style={{ width: fixedColumn[1]?.width }}
             >
-              <div className="flex h-12 items-center">
-                {fixedColumn[1]?.header({})}
-              </div>
+              {fixedColumn[1]?.header({})}
               {scrollX > 0 && (
                 <div className="-mr-12 absolute top-0 right-0 h-full w-12 bg-gradient-to-r from-black to-transparent opacity-[0.075]" />
               )}
@@ -92,7 +85,7 @@ export const CompaniesTable = ({ tags }: Props) => {
               {scrollableColumns.map((column) => (
                 <div
                   key={column.id}
-                  className="flex h-12 items-center"
+                  className="flex items-center"
                   style={{ width: column.width }}
                 >
                   {column.header({})}
@@ -116,41 +109,37 @@ export const CompaniesTable = ({ tags }: Props) => {
                   <div className="flex">
                     <div
                       className={cn(
-                        "sticky left-0 [&:not(:first-child)]:border-r",
+                        "sticky left-0 flex items-center justify-center [&:not(:first-child)]:border-r",
                         rowSelected.includes(company.id)
-                          ? "bg-muted"
+                          ? "bg-muted-hover"
                           : "bg-background",
                       )}
                       style={{ width: fixedColumn[0]?.width }}
                     >
-                      <div className="flex h-12 items-center">
-                        {fixedColumn[0]?.cell({
-                          company,
-                          rowSelected,
-                          setRowSelected,
-                        })}
-                      </div>
+                      {fixedColumn[0]?.cell({
+                        company,
+                        rowSelected,
+                        setRowSelected,
+                      })}
                       {scrollX > 0 && (
                         <div className="-mr-12 absolute top-0 right-0 h-full w-12 bg-gradient-to-r from-black to-transparent opacity-[0.075]" />
                       )}
                     </div>
                     <div
                       className={cn(
-                        "sticky left-[40px] border-r",
+                        "sticky left-[40px] flex items-center border-r",
                         rowSelected.includes(company.id)
-                          ? "bg-muted"
+                          ? "bg-muted-hover"
                           : "bg-background",
                       )}
                       style={{ width: fixedColumn[1]?.width }}
                     >
-                      <div className="flex h-12 items-center">
-                        {fixedColumn.at(1)?.cell({
-                          slug,
-                          company,
-                          rowSelected,
-                          setRowSelected,
-                        })}
-                      </div>
+                      {fixedColumn[1]?.cell({
+                        slug,
+                        company,
+                        rowSelected,
+                        setRowSelected,
+                      })}
                       {scrollX > 0 && (
                         <div className="-mr-12 absolute top-0 right-0 h-full w-12 bg-gradient-to-r from-black to-transparent opacity-[0.075]" />
                       )}
@@ -159,8 +148,8 @@ export const CompaniesTable = ({ tags }: Props) => {
                       {scrollableColumns.map((column) => (
                         <div
                           key={column.id}
-                          className="flex h-12 items-center"
                           style={{ width: column.width }}
+                          className="flex items-center"
                         >
                           {column.cell({ company })}
                         </div>

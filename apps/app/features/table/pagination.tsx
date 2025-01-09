@@ -17,8 +17,8 @@ export const Pagination = ({ count }: Props) => {
   const hasNextPage = page < totalPages;
 
   return (
-    <div className="flex h-16 items-center justify-between px-4">
-      <div className="flex items-center gap-2 ">
+    <div className="flex h-14 items-center justify-between px-4">
+      <div className="flex items-center gap-2">
         <p className="text-muted-foreground">
           <span>{1 + (page - 1) * pageSize}-</span>
           <span>{currentCount > count ? count : currentCount}</span>

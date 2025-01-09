@@ -44,14 +44,11 @@ export const MemberLevelLogs = ({ member }: Props) => {
 
   return (
     <div className="relative">
-      <p className="mb-2 pl-4 font-medium text-lg">Level Logs</p>
+      <p className="mb-2 font-medium text-lg">Level Logs</p>
       {formattedLogs.length === 0 && <EmptyStateChart />}
       <ResponsiveContainer height={300} className="pr-1">
         <ChartContainer config={chartConfig}>
-          <AreaChart
-            data={formattedLogs}
-            margin={{ top: 24, left: 24, right: 24, bottom: 5 }}
-          >
+          <AreaChart data={formattedLogs}>
             <CartesianGrid vertical={false} />
             <XAxis
               dataKey="date"

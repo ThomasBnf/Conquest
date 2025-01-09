@@ -249,7 +249,17 @@ export const dashboard = new Hono()
       const { from, to } = c.req.valid("query");
 
       const members = await prisma.members.findMany({
-        where: { workspace_id },
+        where: {
+          workspace_id,
+          activities: {
+            some: {
+              created_at: {
+                gte: from,
+                lte: to,
+              },
+            },
+          },
+        },
       });
 
       const categoryMap = {
@@ -261,11 +271,8 @@ export const dashboard = new Hono()
 
       const memberLevels = members.map((member) => {
         const logs = LogSchema.array().parse(member.logs);
-        const filteredLogs = logs.filter((log) => {
-          const logDate = new Date(log.date);
-          return logDate >= from && logDate <= to;
-        });
-        return Math.max(...filteredLogs.map((log) => log.level), 0);
+
+        return Math.max(...logs.map((log) => log.level), 0);
       });
 
       const results = Object.entries(categoryMap).map(([category, levels]) => {

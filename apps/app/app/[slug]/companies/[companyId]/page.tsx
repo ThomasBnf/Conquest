@@ -42,7 +42,6 @@ export default async function Page({ params: { companyId, slug } }: Props) {
           <CompanyActivities
             company_id={companyId}
             initialActivities={activities}
-            className="px-8"
           />
         </ScrollArea>
         <CompanySidebar company={company} tags={tags} />

@@ -37,6 +37,13 @@ enum STATUS {
   DISCONNECTED
 }
 
+enum PLAN {
+  BASIC
+  PREMIUM
+  BUSINESS
+  ENTERPRISE
+}
+
 model activities {
   id          String  @id @default(cuid())
   external_id String?
@@ -64,7 +71,8 @@ model activities {
   updated_at DateTime @updatedAt
 
   @@unique([external_id, workspace_id])
-  @@index([id, workspace_id])
+  @@index([external_id, workspace_id])
+  @@index([workspace_id])
 }
 
 model activities_types {
@@ -84,7 +92,8 @@ model activities_types {
   updated_at DateTime @updatedAt
 
   @@unique([key, workspace_id])
-  @@index([id, workspace_id])
+  @@index([key, workspace_id])
+  @@index([workspace_id])
 }
 
 model apikeys {
@@ -97,7 +106,8 @@ model apikeys {
 
   created_at DateTime @default(now())
 
-  @@index([id, token])
+  @@index([id])
+  @@index([workspace_id])
 }
 
 model channels {
@@ -113,7 +123,8 @@ model channels {
   updated_at   DateTime     @updatedAt
 
   @@unique([external_id, workspace_id])
-  @@index([id, workspace_id])
+  @@index([external_id, workspace_id])
+  @@index([workspace_id])
 }
 
 model companies {
@@ -137,6 +148,7 @@ model companies {
   updated_at DateTime @updatedAt
 
   @@index([id, workspace_id])
+  @@index([workspace_id])
 }
 
 model events {
@@ -155,6 +167,7 @@ model events {
   activities activities[]
 
   @@index([id, workspace_id])
+  @@index([source, workspace_id])
 }
 
 model files {
@@ -187,6 +200,7 @@ model integrations {
   updated_at DateTime @updatedAt
 
   @@index([id, workspace_id])
+  @@index([external_id])
 }
 
 model members {
@@ -233,6 +247,14 @@ model members {
   @@unique([linkedin_id, workspace_id])
   @@unique([livestorm_id, workspace_id])
   @@unique([slack_id, workspace_id])
+  @@index([id, workspace_id])
+  @@index([primary_email, workspace_id])
+  @@index([username, workspace_id])
+  @@index([discord_id, workspace_id])
+  @@index([discourse_id, workspace_id])
+  @@index([linkedin_id, workspace_id])
+  @@index([livestorm_id, workspace_id])
+  @@index([slack_id, workspace_id])
 }
 
 model tags {
@@ -294,6 +316,7 @@ model workspaces {
   source              String?
   company_size        String?
   members_preferences Json
+  plan                PLAN    @default(BASIC)
 
   users            users[]
   members          members[]

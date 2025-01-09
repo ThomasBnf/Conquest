@@ -1,7 +1,7 @@
 import { MemberHeatmap } from "@/features/members/components/analytics/member-heatmap";
 import { MemberLevelLogs } from "@/features/members/components/analytics/member-level-logs";
-import { MemberPulseLogs } from "@/features/members/components/analytics/member-pulse-logs";
 import { MemberPresenceLogs } from "@/features/members/components/analytics/member-presence-logs";
+import { MemberPulseLogs } from "@/features/members/components/analytics/member-pulse-logs";
 import { listMemberActivitiesCount } from "@/queries/activities/listMemberActivitiesCount";
 import { getMember } from "@/queries/members/getMember";
 import { getCurrentUser } from "@/queries/users/getCurrentUser";
@@ -30,7 +30,7 @@ export default async function Page({ params: { memberId } }: Props) {
   if (!member) redirect("/members");
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="mx-auto flex max-w-6xl flex-col gap-6 p-4 py-8">
       <MemberHeatmap activities={activities} />
       <MemberLevelLogs member={member} />
       <MemberPulseLogs member={member} />

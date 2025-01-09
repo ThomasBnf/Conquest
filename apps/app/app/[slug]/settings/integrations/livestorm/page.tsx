@@ -4,6 +4,7 @@ import { ConnectedCard } from "@/features/livestorm/connected-card";
 import { EnableCard } from "@/features/livestorm/enable-card";
 import { EventsList } from "@/features/livestorm/events-list";
 import { listEvents } from "@/queries/events/listEvents";
+import { getCurrentUser } from "@/queries/users/getCurrentUser";
 import { ScrollArea } from "@conquest/ui/scroll-area";
 
 type Props = {
@@ -13,7 +14,10 @@ type Props = {
 };
 
 export default async function Page({ searchParams: { error } }: Props) {
-  const events = await listEvents({ source: "LIVESTORM" });
+  const user = await getCurrentUser();
+  const { workspace_id } = user;
+
+  const events = await listEvents({ source: "LIVESTORM", workspace_id });
 
   return (
     <ScrollArea className="h-full">

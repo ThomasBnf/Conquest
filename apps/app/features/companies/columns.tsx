@@ -55,18 +55,16 @@ export const Columns = ({ tags }: Props): Column[] => [
       </div>
     ),
     cell: ({ company, rowSelected, setRowSelected }) => (
-      <div className="flex size-12 items-center justify-center">
-        <Checkbox
-          checked={rowSelected?.includes(company.id)}
-          onCheckedChange={(checked) =>
-            setRowSelected?.(
-              checked
-                ? [...(rowSelected ?? []), company.id]
-                : (rowSelected ?? []).filter((id) => id !== company.id),
-            )
-          }
-        />
-      </div>
+      <Checkbox
+        checked={rowSelected?.includes(company.id)}
+        onCheckedChange={(checked) =>
+          setRowSelected?.(
+            checked
+              ? [...(rowSelected ?? []), company.id]
+              : (rowSelected ?? []).filter((id) => id !== company.id),
+          )
+        }
+      />
     ),
     width: 40,
   },
@@ -108,7 +106,7 @@ export const Columns = ({ tags }: Props): Column[] => [
     id: "domain",
     header: () => <ColumnHeader id="domain" title="Website" width={250} />,
     cell: ({ company }) => (
-      <p className="truncate px-2 font-medium">{company.domain}</p>
+      <p className="truncate p-2 font-medium">{company.domain}</p>
     ),
     width: 250,
   },
@@ -116,7 +114,7 @@ export const Columns = ({ tags }: Props): Column[] => [
     id: "industry",
     header: () => <ColumnHeader id="industry" title="Industry" width={250} />,
     cell: ({ company }) => (
-      <p className="truncate px-2 font-medium">{company.industry}</p>
+      <p className="truncate p-2 font-medium">{company.industry}</p>
     ),
     width: 250,
   },
@@ -126,7 +124,7 @@ export const Columns = ({ tags }: Props): Column[] => [
       <ColumnHeader id="employees" title="# Employees" width={250} />
     ),
     cell: ({ company }) => (
-      <p className="truncate px-2 font-medium">{company.employees}</p>
+      <p className="truncate p-2 font-medium">{company.employees}</p>
     ),
     width: 250,
   },
@@ -150,7 +148,7 @@ export const Columns = ({ tags }: Props): Column[] => [
     id: "source",
     header: () => <ColumnHeader id="source" title="Source" width={250} />,
     cell: ({ company }) => (
-      <div className="px-2">
+      <div className="p-2">
         <SourceBadge source={company.source} />
       </div>
     ),
