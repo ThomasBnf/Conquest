@@ -30,7 +30,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Discourse } from "../icons/Discourse";
 import { Documentation } from "../icons/Documentation";
-import { Integration } from "../icons/Integration";
 import { Linkedin } from "../icons/Linkedin";
 import { Livestorm } from "../icons/Livestorm";
 import { Settings } from "../icons/Settings";
@@ -71,11 +70,6 @@ export const AppSidebar = () => {
       icon: <Activities className="size-[18px]" />,
       href: `/${slug}/activities`,
       isActive: pathname.startsWith(`/${slug}/activities`),
-    },
-    {
-      label: "Integrations",
-      icon: <Integration className="size-[18px]" />,
-      href: `/${slug}/settings/integrations`,
     },
     // {
     //   label: "Workflows",
