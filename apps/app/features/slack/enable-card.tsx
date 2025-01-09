@@ -72,7 +72,7 @@ export const EnableCard = ({ error }: Props) => {
           );
           break;
       }
-      router.push(`/${slug}/settings/integrations/slack`);
+      router.replace(`/${slug}/settings/integrations/slack`);
     }
   }, [trigger_token_expires_at, error]);
 

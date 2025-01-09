@@ -3,6 +3,7 @@
 import { authAction } from "@/lib/authAction";
 import { prisma } from "@/lib/prisma";
 import { CompanySchema } from "@conquest/zod/schemas/company.schema";
+import { revalidatePath } from "next/cache";
 
 export const updateCompany = authAction
   .metadata({
@@ -17,5 +18,6 @@ export const updateCompany = authAction
       data,
     });
 
+    revalidatePath(`/companies/${company.id}`);
     return CompanySchema.parse(company);
   });

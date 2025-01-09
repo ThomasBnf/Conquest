@@ -71,7 +71,7 @@ export const EnableCard = ({ error }: Props) => {
           );
           break;
       }
-      router.push(`/${slug}/settings/integrations/discord`);
+      router.replace(`/${slug}/settings/integrations/discord`);
     }
   }, [trigger_token_expires_at, error]);
 

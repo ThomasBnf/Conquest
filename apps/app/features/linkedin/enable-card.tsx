@@ -72,7 +72,7 @@ export const EnableCard = ({ error }: Props) => {
           );
           break;
       }
-      router.push(`/${slug}/settings/integrations/linkedin`);
+      router.replace(`/${slug}/settings/integrations/linkedin`);
     }
   }, [trigger_token_expires_at, error]);
 

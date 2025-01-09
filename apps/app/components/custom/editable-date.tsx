@@ -30,7 +30,9 @@ export const EditableDate = ({ defaultValue, onUpdate }: Props) => {
     (_, i) => today.getFullYear() - yearsRange + i,
   );
 
-  const onUpdateDate = (newDate: Date) => {
+  const onUpdateDate = (newDate: Date | undefined) => {
+    if (!newDate) return;
+
     setOpen(false);
     setDate(newDate);
     onUpdate(newDate);
@@ -70,7 +72,7 @@ export const EditableDate = ({ defaultValue, onUpdate }: Props) => {
                     date.getDate(),
                   )
                 : new Date();
-              onUpdateDate(newDate);
+              setDate(newDate);
             }}
           >
             <SelectTrigger>
@@ -90,7 +92,7 @@ export const EditableDate = ({ defaultValue, onUpdate }: Props) => {
               const newDate = date
                 ? new Date(Number(value), date.getMonth(), date.getDate())
                 : new Date();
-              onUpdateDate(newDate);
+              setDate(newDate);
             }}
           >
             <SelectTrigger>
@@ -108,17 +110,12 @@ export const EditableDate = ({ defaultValue, onUpdate }: Props) => {
         <Calendar
           mode="single"
           selected={date}
-          defaultMonth={date}
-          onSelect={(newDate) => {
-            if (newDate) {
-              onUpdateDate(newDate);
-            }
-          }}
+          month={date}
+          onSelect={(newDate) => onUpdateDate(newDate)}
           initialFocus
           ISOWeek
-          captionLayout="buttons"
-          fromYear={1900}
-          toYear={2100}
+          fromYear={years[0]}
+          toYear={years[years.length - 1]}
         />
       </PopoverContent>
     </Popover>

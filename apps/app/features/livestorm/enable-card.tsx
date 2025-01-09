@@ -73,7 +73,7 @@ export const EnableCard = ({ error }: Props) => {
           );
           break;
       }
-      router.push(`/${slug}/settings/integrations/livestorm`);
+      router.replace(`/${slug}/settings/integrations/livestorm`);
     }
   }, [trigger_token_expires_at, error]);
 

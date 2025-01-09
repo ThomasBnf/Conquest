@@ -45,7 +45,7 @@ export const EnabledCard = ({ error }: Props) => {
           );
           break;
       }
-      router.push(`/${slug}/settings/integrations/discourse`);
+      router.replace(`/${slug}/settings/integrations/discourse`);
     }
   }, [error]);
 
