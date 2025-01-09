@@ -11,11 +11,16 @@ export const Hero = () => {
           Conquest is the CRM you need to track, understand, engage and scale
           your community.
         </p>
-        <div className="mt-2 flex justify-center gap-2">
-          <Button size="md">Get started</Button>
-          <Button variant="outline" size="md">
-            Get a demo
-          </Button>
+        <div>
+          <div className="mt-2 flex justify-center gap-2">
+            <Button size="md">Get started</Button>
+            <Button variant="outline" size="md">
+              Get a demo
+            </Button>
+          </div>
+          <p className="mt-2 text-sm opacity-70">
+            14 days free trial. No credit card required.
+          </p>
         </div>
       </div>
     </div>

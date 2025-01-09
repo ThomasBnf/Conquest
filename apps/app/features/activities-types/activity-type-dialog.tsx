@@ -32,7 +32,7 @@ type Props = {
   activityType: ActivityType;
 };
 
-export const EditActivityType = ({ open, setOpen, activityType }: Props) => {
+export const ActivityTypeDialog = ({ open, setOpen, activityType }: Props) => {
   const [loading, setLoading] = useState(false);
 
   const form = useForm<FormEdit>({

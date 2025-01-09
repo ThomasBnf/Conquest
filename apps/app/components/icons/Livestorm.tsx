@@ -12,6 +12,7 @@ export const Livestorm = ({ size = 24, className }: Props) => {
       height={size}
       viewBox="0 0 140 140"
       fill="none"
+      className={className}
     >
       <g clipPath="url(#clip0)">
         <path

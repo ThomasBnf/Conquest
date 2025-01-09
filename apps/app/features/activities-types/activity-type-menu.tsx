@@ -13,7 +13,7 @@ import type { ActivityType } from "@conquest/zod/schemas/activity-type.schema";
 import { Edit2, MoreHorizontal, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
-import { EditActivityType } from "./edit-activity.type";
+import { ActivityTypeDialog } from "./activity-type-dialog";
 
 type Props = {
   activityType: ActivityType;
@@ -37,7 +37,7 @@ export const ActivityTypeMenu = ({ activityType }: Props) => {
 
   return (
     <>
-      <EditActivityType
+      <ActivityTypeDialog
         open={openEdit}
         setOpen={setOpenEdit}
         activityType={activityType}

@@ -1,9 +1,7 @@
 import { cn } from "@conquest/ui/cn";
 import "@conquest/ui/globals.css";
+import { GeistSans } from "geist/font/sans";
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
-
-const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Conquest App",
@@ -17,7 +15,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={cn("h-dvh overflow-hidden", inter.className)}>
+      <body className={cn("h-dvh overflow-hidden", GeistSans.className)}>
         {children}
       </body>
     </html>
