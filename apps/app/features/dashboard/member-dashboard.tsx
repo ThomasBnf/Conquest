@@ -1,6 +1,7 @@
 import { AtRiskMembers } from "./at-risk-members";
 import { MembersChart } from "./members-chart";
 import { MembersLevels } from "./members-levels";
+import { PotentialAmbassadors } from "./potential-ambassadors";
 import { TopMembers } from "./top-members";
 
 type Props = {
@@ -13,10 +14,9 @@ export const MemberDashboard = ({ from, to }: Props) => {
     <div className="divide-y border-b">
       <p className="bg-muted p-4 font-medium text-lg">Members metrics</p>
       <MembersChart from={from} to={to} />
-      <div className="flex flex-1 items-center gap-2 p-2">
-        <AtRiskMembers />
-        <AtRiskMembers />
-        <AtRiskMembers />
+      <div className="flex flex-1 items-center gap-2 p-4">
+        <AtRiskMembers from={from} to={to} />
+        <PotentialAmbassadors from={from} to={to} />
       </div>
       <div className="flex divide-x">
         <TopMembers from={from} to={to} />

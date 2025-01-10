@@ -1,7 +1,9 @@
 import { prisma } from "@/lib/prisma";
+import { listActivitiesIn365Days } from "@/queries/activities/listActivitiesIn365Days";
 import { getFilters } from "@/queries/helpers/getFilters";
 import { getOrderBy } from "@/queries/helpers/getOrderBy";
 import { getMember } from "@/queries/members/getMember";
+import { getMemberMetrics } from "@/queries/members/getMemberMetrics";
 import { getAuthUser } from "@/queries/users/getAuthUser";
 import { FilterSchema } from "@conquest/zod/schemas/filters.schema";
 import {
@@ -10,7 +12,14 @@ import {
 } from "@conquest/zod/schemas/member.schema";
 import { zValidator } from "@hono/zod-validator";
 import { Prisma } from "@prisma/client";
-import { startOfMonth, subMonths } from "date-fns";
+import {
+  endOfWeek,
+  isAfter,
+  isBefore,
+  startOfDay,
+  subMonths,
+  subWeeks,
+} from "date-fns";
 import { Hono } from "hono";
 import { z } from "zod";
 
@@ -50,8 +59,10 @@ export const members = new Hono()
       const members = await prisma.$queryRaw`
         SELECT 
           m.*,
-          c.id as company_id,
-          c.name as company_name
+          CASE 
+            WHEN c.id IS NOT NULL THEN to_jsonb(c.*)
+            ELSE NULL
+          END as company
         FROM members m
         LEFT JOIN companies c ON m.company_id = c.id
         WHERE 
@@ -139,10 +150,12 @@ export const members = new Hono()
       const searchParsed = search.toLowerCase().trim();
 
       const members = await prisma.$queryRaw`
-        SELECT DISTINCT
+        SELECT 
           m.*,
-          c.id as company_id,
-          c.name as company_name,
+          CASE 
+            WHEN c.id IS NOT NULL THEN to_jsonb(c.*)
+            ELSE NULL
+          END as company,
           CASE 
             WHEN LOWER(COALESCE(m.first_name, '') || ' ' || COALESCE(m.last_name, '')) = LOWER(${searchParsed}) THEN 1
             WHEN LOWER(COALESCE(m.last_name, '') || ' ' || COALESCE(m.first_name, '')) = LOWER(${searchParsed}) THEN 1
@@ -187,70 +200,34 @@ export const members = new Hono()
     const { workspace_id } = c.get("user");
     const { memberId } = c.req.param();
 
-    const last3months = startOfMonth(subMonths(new Date(), 3));
+    const today = new Date();
+    const last3months = startOfDay(subMonths(today, 3));
+    const previousWeekEnd = endOfWeek(subWeeks(today, 1), { weekStartsOn: 1 });
 
-    const member = await prisma.members.findUnique({
-      where: {
+    const member = MemberSchema.parse(
+      await getMember({
         id: memberId,
-        activities: {
-          some: {
-            created_at: {
-              gte: last3months,
-            },
-          },
-        },
         workspace_id,
-      },
-      include: {
-        activities: {
-          where: {
-            created_at: {
-              gte: last3months,
-            },
-          },
-          include: {
-            activity_type: true,
-          },
-        },
-      },
+      }),
+    );
+
+    const activities = await listActivitiesIn365Days({ member });
+
+    const last3monthsActivities = activities.filter(
+      (activity) =>
+        isBefore(activity.created_at, previousWeekEnd) &&
+        isAfter(activity.created_at, last3months),
+    );
+
+    const { pulse, max_weight } = await getMemberMetrics({
+      activities: last3monthsActivities,
+      today,
     });
 
-    const activities = member?.activities ?? [];
-
-    const activityCounts = activities.reduce<
-      Record<string, { count: number; weight: number; source: string }>
-    >((acc, activity) => {
-      const { source, name, weight } = activity.activity_type;
-
-      if (!acc[name]) {
-        acc[name] = { count: 0, weight, source };
-      }
-      acc[name].count++;
-      return acc;
-    }, {});
-
-    const activityDetails = Object.entries(activityCounts)
-      .map(([name, { count, weight, source }]) => ({
-        source,
-        activity_name: name,
-        activity_count: count,
-        weight,
-      }))
-      .sort((a, b) => b.weight - a.weight);
-
-    const totalActivities = activities.length;
-
-    const totalPulse = activityDetails.reduce(
-      (sum, { activity_count, weight }) => sum + activity_count * weight,
-      0,
-    );
-    const maxWeight = Math.max(...activityDetails.map(({ weight }) => weight));
-
     return c.json({
-      details: activityDetails,
-      total_activities: totalActivities,
-      total_pulse: totalPulse,
-      max_weight: maxWeight,
+      activities: last3monthsActivities,
+      pulse,
+      max_weight,
     });
   })
   .get("/slack/:slackId", async (c) => {

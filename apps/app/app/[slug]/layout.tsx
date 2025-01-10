@@ -6,6 +6,7 @@ import { SidebarProvider } from "@conquest/ui/sidebar";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import type { PropsWithChildren } from "react";
+import { Suspense } from "react";
 
 type Props = {
   children: React.ReactNode;
@@ -25,14 +26,14 @@ export default async function Layout({
   const sidebarState = cookieStore.get("sidebar:state");
   const defaultOpen = sidebarState ? sidebarState.value === "true" : true;
 
-  if (!user) return <IsLoading />;
-
   return (
-    <SidebarProvider defaultOpen={defaultOpen}>
+    <Suspense fallback={<IsLoading />}>
       <UserProvider user={user}>
-        <AppSidebar />
-        <main className="h-dvh flex-1 overflow-hidden">{children}</main>
+        <SidebarProvider defaultOpen={defaultOpen}>
+          <AppSidebar />
+          <main className="h-dvh flex-1 overflow-hidden">{children}</main>
+        </SidebarProvider>
       </UserProvider>
-    </SidebarProvider>
+    </Suspense>
   );
 }

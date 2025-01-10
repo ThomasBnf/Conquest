@@ -2,6 +2,7 @@ import type { members } from "@prisma/client";
 import { z } from "zod";
 import { GENDER } from "../enum/gender.enum";
 import { SOURCE } from "../enum/source.enum";
+import { CompanySchema } from "./company.schema";
 
 export const LogSchema = z.object({
   date: z.string(),
@@ -46,10 +47,14 @@ export const MemberSchema = z.object({
 }) satisfies z.ZodType<members>;
 
 export const MemberWithCompanySchema = MemberSchema.extend({
-  company_id: z.string().cuid().nullable(),
-  company_name: z.string().nullable(),
+  company: CompanySchema.nullable(),
+});
+
+export const CompanyWithMembersSchema = CompanySchema.extend({
+  members: MemberSchema.array(),
 });
 
 export type Member = z.infer<typeof MemberSchema>;
 export type MemberWithCompany = z.infer<typeof MemberWithCompanySchema>;
+export type CompanyWithMembers = z.infer<typeof CompanyWithMembersSchema>;
 export type Log = z.infer<typeof LogSchema>;

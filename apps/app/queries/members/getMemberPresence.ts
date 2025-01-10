@@ -164,10 +164,11 @@ const countActivitiesInInterval = (
 
 const calculateIntervals = (currentDate: Date) => {
   const weekOptions = { weekStartsOn: 1 as const };
+  const previousWeekStart = subWeeks(currentDate, 1);
 
   const week = {
-    start: startOfWeek(currentDate, weekOptions),
-    end: endOfWeek(currentDate, weekOptions),
+    start: startOfWeek(previousWeekStart, weekOptions),
+    end: endOfWeek(previousWeekStart, weekOptions),
   };
 
   const week2 = {

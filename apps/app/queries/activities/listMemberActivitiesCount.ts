@@ -33,11 +33,6 @@ export const listMemberActivitiesCount = async ({
         gte: from,
         lte: to,
       },
-      activity_type: {
-        weight: {
-          gt: 0,
-        },
-      },
     },
     include: {
       activity_type: true,

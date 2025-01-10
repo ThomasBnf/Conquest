@@ -8,8 +8,8 @@ import {
   ChartTooltipContent,
 } from "@conquest/ui/chart";
 import {
-  Area,
-  AreaChart,
+  Bar,
+  BarChart,
   CartesianGrid,
   ResponsiveContainer,
   XAxis,
@@ -34,7 +34,7 @@ export const EngagementChart = ({ from, to }: Props) => {
   return (
     <ResponsiveContainer height={350}>
       <ChartContainer config={chartConfig}>
-        <AreaChart
+        <BarChart
           data={chartData}
           margin={{ top: 24, left: 24, right: 24, bottom: 5 }}
         >
@@ -80,29 +80,12 @@ export const EngagementChart = ({ from, to }: Props) => {
               );
             }}
           />
-          <defs>
-            <linearGradient id="fill-percentage" x1="0" y1="0" x2="0" y2="1">
-              <stop
-                offset="5%"
-                stopColor="var(--color-percentage)"
-                stopOpacity={0.5}
-              />
-              <stop
-                offset="95%"
-                stopColor="var(--color-percentage)"
-                stopOpacity={0.05}
-              />
-            </linearGradient>
-          </defs>
-          <Area
-            type="linear"
+          <Bar
             dataKey="percentage"
-            fill="url(#fill-percentage)"
-            fillOpacity={0.4}
-            stroke="var(--color-percentage)"
-            strokeWidth={1.5}
+            fill="var(--color-percentage)"
+            radius={[3, 3, 0, 0]}
           />
-        </AreaChart>
+        </BarChart>
       </ChartContainer>
     </ResponsiveContainer>
   );

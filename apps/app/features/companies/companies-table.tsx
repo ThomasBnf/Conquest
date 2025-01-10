@@ -37,8 +37,8 @@ export const CompaniesTable = ({ tags }: Props) => {
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const isClient = useIsClient();
-  const scrollX = useScrollX({ isClient });
-  const hasScrollY = useHasScrollY({ dependencies: [isClient, companies] });
+  const scrollX = useScrollX({ isClient, id: "companies-table" });
+  const hasScrollY = useHasScrollY({ isClient, id: "companies-table" });
 
   const columns = Columns({ tags });
   const fixedColumn = columns.slice(0, 2);
@@ -56,7 +56,11 @@ export const CompaniesTable = ({ tags }: Props) => {
         />
       </div>
       <div className="relative flex-1 overflow-hidden">
-        <ScrollArea className="h-full overflow-hidden" ref={scrollRef}>
+        <ScrollArea
+          id="companies-table"
+          className="h-full overflow-hidden"
+          ref={scrollRef}
+        >
           <div className="sticky top-0 z-30 flex">
             <div
               className={cn(

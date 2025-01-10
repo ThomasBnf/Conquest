@@ -1,7 +1,7 @@
 "use client";
 
-import { useUser } from "@/context/userContext";
 import { useListTopMembers } from "@/client/dashboard/listTopMembers";
+import { useUser } from "@/context/userContext";
 import { type ChartConfig, ChartContainer } from "@conquest/ui/chart";
 import { useRouter } from "next/navigation";
 import { useRef } from "react";
@@ -35,7 +35,7 @@ export const TopMembers = ({ from, to }: Props) => {
 
   const chartData = topMembers?.map((member) => ({
     ...member,
-    full_name: `${member.first_name} ${member.last_name}`,
+    full_name: `${member.first_name ?? ""} ${member.last_name ?? ""}`.trim(),
   }));
 
   return (
@@ -77,7 +77,9 @@ export const TopMembers = ({ from, to }: Props) => {
                       x={Number(x) + 10}
                       y={yPos}
                       className="cursor-pointer font-medium hover:underline"
-                      onClick={() => router.push(`/${slug}/members/${id}`)}
+                      onClick={() =>
+                        router.push(`/${slug}/members/${id}/analytics`)
+                      }
                     >
                       {value}
                     </text>

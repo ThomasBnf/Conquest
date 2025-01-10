@@ -37,9 +37,9 @@ export const SidebarSettings = () => {
     },
     {
       icon: <ActivitiesTypes className="size-[16px]" />,
-      label: "Activities types",
-      href: `/${slug}/settings/activities-types`,
-      isActive: pathname.startsWith(`/${slug}/settings/activities-types`),
+      label: "Activity types",
+      href: `/${slug}/settings/activity-types`,
+      isActive: pathname.startsWith(`/${slug}/settings/activity-types`),
     },
     {
       icon: <Integration className="size-[18px]" />,

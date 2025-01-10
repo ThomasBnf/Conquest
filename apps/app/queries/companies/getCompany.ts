@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { CompanyWithMembersSchema } from "@conquest/zod/schemas/company.schema";
+import { CompanyWithMembersSchema } from "@conquest/zod/schemas/member.schema";
 
 type Props = {
   company_id: string;

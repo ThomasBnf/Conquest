@@ -27,7 +27,9 @@ type Props = {
 
 export const EditableCompany = ({ member, onUpdate }: Props) => {
   const { slug } = useUser();
-  const [memberCompany, setMemberCompany] = useState(member.company_name);
+  const [memberCompany, setMemberCompany] = useState<string | null>(
+    member.company?.name ?? null,
+  );
   const [search, setSearch] = useState("");
   const [open, setOpen] = useState(false);
   const router = useRouter();
@@ -35,7 +37,7 @@ export const EditableCompany = ({ member, onUpdate }: Props) => {
   const { data: companies, isLoading } = listCompanies();
 
   const onUpdateMemberCompany = (company: Company | null) => {
-    if (company === memberCompany) return;
+    if (company?.name === memberCompany) return;
     setMemberCompany(company?.name ?? null);
     onUpdate(company?.id ?? null);
   };
@@ -49,6 +51,7 @@ export const EditableCompany = ({ member, onUpdate }: Props) => {
     }
 
     const newCompany = response?.data;
+
     if (newCompany) {
       setOpen(false);
       setSearch("");
@@ -101,7 +104,9 @@ export const EditableCompany = ({ member, onUpdate }: Props) => {
             value={search}
             onValueChange={(value) => setSearch(value)}
           />
-          <CommandList>
+
+          {!search && <CommandEmpty>No companies found.</CommandEmpty>}
+          {search && (
             <CommandEmpty className="w-full p-1">
               <Button
                 variant="ghost"
@@ -117,6 +122,9 @@ export const EditableCompany = ({ member, onUpdate }: Props) => {
                 Create "{search}"
               </Button>
             </CommandEmpty>
+          )}
+
+          <CommandList>
             <CommandGroup>
               {isLoading ? (
                 <CommandLoading>

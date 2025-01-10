@@ -2,26 +2,43 @@ import { useEffect, useState } from "react";
 
 type Props = {
   isClient: boolean;
+  id: string;
 };
 
-export const useScrollX = ({ isClient }: Props) => {
+export const useScrollX = ({ isClient, id }: Props) => {
   const [scrollX, setScrollX] = useState(0);
 
   useEffect(() => {
-    const element = document.querySelector("[data-radix-scroll-area-viewport]");
-    if (!element) return;
+    let rafId: number;
+    let element: HTMLElement | null = null;
 
     const handleScroll = () => {
+      if (!element) return;
       setScrollX(element.scrollLeft);
     };
 
-    element.addEventListener("scroll", handleScroll);
-    element.scrollLeft = 0;
+    const findElement = () => {
+      element = document.getElementById(id);
+      if (!element) {
+        rafId = requestAnimationFrame(findElement);
+        return;
+      }
+
+      element.addEventListener("scroll", handleScroll);
+      element.scrollLeft = 0;
+    };
+
+    findElement();
 
     return () => {
-      element.removeEventListener("scroll", handleScroll);
+      if (rafId) {
+        cancelAnimationFrame(rafId);
+      }
+      if (element) {
+        element.removeEventListener("scroll", handleScroll);
+      }
     };
-  }, [isClient]);
+  }, [id, isClient]);
 
   return scrollX;
 };

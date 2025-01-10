@@ -30,7 +30,7 @@ type Props = {
   filter: FilterSelect | undefined;
   setFilters: Dispatch<SetStateAction<Filter[]>>;
   setOpenDropdown?: Dispatch<SetStateAction<boolean>>;
-  handleUpdate: (filters: Filter[]) => void;
+  handleUpdate?: (filters: Filter[]) => void;
   triggerButton?: boolean;
 };
 
@@ -59,7 +59,7 @@ export const SelectPicker = ({
 
           return await response.json();
         }
-        case "tag": {
+        case "tags": {
           const response = await client.api.tags.$get();
 
           return TagSchema.array().parse(await response.json());
@@ -84,7 +84,7 @@ export const SelectPicker = ({
           ? prevFilters.map((f) => (f.id === filter.id ? updatedFilter : f))
           : [...prevFilters, updatedFilter];
 
-        handleUpdate(updatedFilters);
+        handleUpdate?.(updatedFilters);
         setTab(undefined);
         return updatedFilters;
       });
@@ -116,7 +116,7 @@ export const SelectPicker = ({
           ? prevFilters.map((f) => (f.id === filter.id ? updatedFilter : f))
           : [...prevFilters, updatedFilter];
 
-        handleUpdate(updatedFilters);
+        handleUpdate?.(updatedFilters);
         setTab(undefined);
         return updatedFilters;
       });

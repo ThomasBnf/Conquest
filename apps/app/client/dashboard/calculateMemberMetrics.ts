@@ -1,9 +1,9 @@
 import { prisma } from "@/lib/prisma";
+import { getFirstActivity } from "@/queries/activities/getFirstActivity";
+import { listActivitiesIn365Days } from "@/queries/activities/listActivitiesIn365Days";
+import { getMemberMetrics } from "@/queries/members/getMemberMetrics";
 import type { Log, Member } from "@conquest/zod/schemas/member.schema";
 import { eachWeekOfInterval, endOfDay, subDays } from "date-fns";
-import { getFirstActivity } from "../../queries/activities/getFirstActivity";
-import { listActivitiesIn365Days } from "../../queries/activities/listActivitiesIn365Days";
-import { getMemberMetrics } from "../../queries/members/getMemberMetrics";
 
 type Props = {
   member: Member;

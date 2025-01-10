@@ -1,0 +1,53 @@
+import { discordClient } from "@/lib/discord";
+import type { DiscordIntegration } from "@conquest/zod/schemas/integration.schema";
+import { MemberSchema } from "@conquest/zod/schemas/member.schema";
+import { DiscordAPIError } from "@discordjs/rest";
+import { type APIUser, Routes } from "discord-api-types/v10";
+import { upsertMember } from "../members/upsertMember";
+
+type Props = {
+  discord: DiscordIntegration;
+  member_id: string;
+};
+
+export const createMember = async ({ discord, member_id }: Props) => {
+  const { workspace_id } = discord;
+
+  try {
+    const owner = (await discordClient.get(Routes.user(member_id))) as APIUser;
+
+    if (!owner) return null;
+
+    const { id, username, avatar, global_name } = owner;
+
+    const parsedGlobalName = global_name?.replace("deleted_user", "");
+    const firstName = parsedGlobalName?.split(" ")[0] ?? null;
+    const lastName = parsedGlobalName?.split(" ")[1] ?? null;
+
+    const avatarUrl = avatar
+      ? `https://cdn.discordapp.com/avatars/${id}/${avatar}.webp`
+      : null;
+
+    const member = await upsertMember({
+      id,
+      data: {
+        first_name: firstName,
+        last_name: lastName,
+        username,
+        avatar_url: avatarUrl,
+        source: "DISCORD",
+        joined_at: new Date(),
+        created_at: new Date(),
+        deleted_at: new Date(),
+        workspace_id,
+      },
+    });
+
+    return MemberSchema.parse(member);
+  } catch (error) {
+    if (error instanceof DiscordAPIError) {
+      console.error("Error creating Discord member:", error.rawError);
+    }
+    return null;
+  }
+};

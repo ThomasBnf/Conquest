@@ -16,7 +16,7 @@ import { useTab } from "./hooks/useTab";
 type Props = {
   filter: FilterLevel | undefined;
   setFilters: Dispatch<SetStateAction<Filter[]>>;
-  handleUpdate: (filters: Filter[]) => void;
+  handleUpdate?: (filters: Filter[]) => void;
   setOpenDropdown?: Dispatch<SetStateAction<boolean>>;
   triggerButton?: boolean;
 };
@@ -44,7 +44,7 @@ export const LevelPicker = ({
               f.id === filter.id ? { ...filter, value: level } : f,
             )
           : [...prevFilters, { ...filter, value: level }];
-        handleUpdate(updatedFilters);
+        handleUpdate?.(updatedFilters);
         setTab(undefined);
         return updatedFilters;
       });

@@ -21,9 +21,10 @@ export const signUp = safeAction
         members_preferences: {
           id: "full_name",
           desc: true,
-          pageSize: 25,
+          pageSize: 50,
           filters: [],
         },
+        plan: "BASIC",
       },
     });
 

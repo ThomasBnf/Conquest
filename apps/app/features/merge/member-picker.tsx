@@ -1,5 +1,4 @@
 import { listAllMembers } from "@/client/members/listAllMembers";
-import { Avatar, AvatarFallback, AvatarImage } from "@conquest/ui/avatar";
 import { Button } from "@conquest/ui/button";
 import {
   Command,
@@ -15,6 +14,7 @@ import type { MemberWithCompany } from "@conquest/zod/schemas/member.schema";
 import { Plus } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useInView } from "react-intersection-observer";
+import { MemberDetails } from "../members/components/member-details";
 
 type Props = {
   currentMember?: MemberWithCompany;
@@ -68,21 +68,7 @@ export const MemberPicker = ({ currentMember, onSelect }: Props) => {
                     }}
                     className="flex items-center gap-2"
                   >
-                    <Avatar className="size-7">
-                      <AvatarImage src={member.avatar_url ?? ""} />
-                      <AvatarFallback className="text-sm">
-                        {member.first_name?.charAt(0).toUpperCase()}
-                        {member.last_name?.charAt(0).toUpperCase()}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className="flex w-full flex-col">
-                      <p>
-                        {member.first_name} {member.last_name}
-                      </p>
-                      <span className="text-muted-foreground text-xs">
-                        {member.primary_email}
-                      </span>
-                    </div>
+                    <MemberDetails member={member} />
                   </CommandItem>
                 ))}
               <div ref={ref} />

@@ -13,7 +13,7 @@ export const FilteredEntries = ({ member }: Props) => {
   const entries = [
     ["primary_email", member.primary_email],
     ["job_title", member.job_title],
-    ["company_name", member.company_name],
+    ["company", member.company?.name],
     ["location", member.location],
     ["source", member.source],
     ["first_activity", member.first_activity],

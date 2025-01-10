@@ -21,5 +21,7 @@ export const deleteIntegration = authAction
   .action(async ({ parsedInput: { source, integration } }) => {
     await _deleteIntegration({ source, integration });
 
-    return revalidatePath(`/${slug}/settings/integrations`);
+    return revalidatePath(
+      `/${slug}/settings/integrations/${source.toLowerCase()}`,
+    );
   });

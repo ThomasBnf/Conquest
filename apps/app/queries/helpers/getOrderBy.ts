@@ -12,7 +12,7 @@ export const getOrderBy = ({ id, desc }: Props) => {
     case "level":
       return `ORDER BY m.level ${direction}, m.pulse ${direction}`;
     case "full_name":
-      return `ORDER BY m.first_name || ' ' || m.last_name ${direction}`;
+      return `ORDER BY m.first_name ${direction}, m.last_name ${direction}`;
     case "job_title":
       return `ORDER BY m.job_title ${direction}`;
     case "emails":

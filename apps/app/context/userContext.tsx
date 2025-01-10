@@ -22,7 +22,7 @@ type userContext = {
   members_preferences: MembersPreferences | undefined;
 };
 
-const userContext = createContext<userContext>({} as userContext);
+const UserContext = createContext<userContext>({} as userContext);
 
 type Props = {
   user: UserWithWorkspace | undefined;
@@ -55,7 +55,7 @@ export const UserProvider = ({ user, children }: Props) => {
   const members_preferences = user?.workspace.members_preferences;
 
   return (
-    <userContext.Provider
+    <UserContext.Provider
       value={{
         user,
         slug,
@@ -68,8 +68,8 @@ export const UserProvider = ({ user, children }: Props) => {
       }}
     >
       {children}
-    </userContext.Provider>
+    </UserContext.Provider>
   );
 };
 
-export const useUser = () => useContext(userContext);
+export const useUser = () => useContext(UserContext);

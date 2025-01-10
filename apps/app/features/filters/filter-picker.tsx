@@ -15,7 +15,7 @@ import { SelectPicker } from "./select-picker";
 type Props = {
   filter: Filter;
   setFilters: Dispatch<SetStateAction<Filter[]>>;
-  handleUpdate: (filters: Filter[]) => void;
+  handleUpdate?: (filters: Filter[]) => void;
 };
 
 export const FilterPicker = ({ filter, setFilters, handleUpdate }: Props) => {
@@ -25,7 +25,7 @@ export const FilterPicker = ({ filter, setFilters, handleUpdate }: Props) => {
     setFilters((prevFilters) => {
       const newFilters = prevFilters.filter((f) => f.id !== filter.id);
 
-      handleUpdate(newFilters);
+      handleUpdate?.(newFilters);
       return newFilters;
     });
   };
@@ -38,7 +38,7 @@ export const FilterPicker = ({ filter, setFilters, handleUpdate }: Props) => {
         ),
       );
 
-      handleUpdate(newFilters);
+      handleUpdate?.(newFilters);
       return newFilters;
     });
   };
@@ -50,7 +50,7 @@ export const FilterPicker = ({ filter, setFilters, handleUpdate }: Props) => {
           f.id === filter.id ? { ...filter, value: query.toString() } : f,
         );
 
-        handleUpdate(newFilters);
+        handleUpdate?.(newFilters);
         return newFilters;
       });
     }
@@ -61,7 +61,7 @@ export const FilterPicker = ({ filter, setFilters, handleUpdate }: Props) => {
           f.id === filter.id ? { ...filter, value: Number(query) } : f,
         );
 
-        handleUpdate(newFilters);
+        handleUpdate?.(newFilters);
         return newFilters;
       });
     }

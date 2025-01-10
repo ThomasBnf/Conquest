@@ -50,8 +50,10 @@ export const LevelTooltip = ({ member, showIcon = true }: Props) => {
           </div>
           <p className="opacity-60">
             {
-              data?.details.find((detail) => detail.weight === data?.max_weight)
-                ?.activity_name
+              data?.activities.find(
+                (activity) =>
+                  activity.activity_type.weight === data?.max_weight,
+              )?.activity_type.name
             }
           </p>
         </div>

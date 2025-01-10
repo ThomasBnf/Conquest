@@ -1,13 +1,7 @@
-import { discordClient } from "@/lib/discord";
+import type { Channel } from "@conquest/zod/schemas/channel.schema";
 import type { DiscordIntegration } from "@conquest/zod/schemas/integration.schema";
-import {
-  type APIGuildCategoryChannel,
-  type APIThreadList,
-  Routes,
-} from "discord-api-types/v10";
+import type { APIGuildCategoryChannel } from "discord-api-types/v10";
 import { createChannel } from "../channels/createChannel";
-import { listChannelMessages } from "./listChannelMessages";
-import { createManyArchivedThreads } from "./createManyArchivedThreads";
 
 type Props = {
   discord: DiscordIntegration;
@@ -19,6 +13,8 @@ export const createManyChannels = async ({ discord, channels }: Props) => {
 
   if (!external_id) return;
 
+  let createdChannels: Channel[] = [];
+
   for (const channel of channels) {
     const { id, name } = channel;
 
@@ -29,21 +25,8 @@ export const createManyChannels = async ({ discord, channels }: Props) => {
       workspace_id,
     });
 
-    let after: string | undefined = undefined;
-
-    while (true) {
-      const messages = await listChannelMessages({
-        channel_id: id,
-        channel: createdChannel,
-        workspace_id,
-        after,
-      });
-
-      after = messages.at(-1)?.id;
-
-      if (messages.length < 100) break;
-    }
-
-    await createManyArchivedThreads({ discord, channel: createdChannel });
+    createdChannels = [...createdChannels, createdChannel];
   }
+
+  return createdChannels;
 };

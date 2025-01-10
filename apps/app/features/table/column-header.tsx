@@ -35,7 +35,6 @@ type Props = {
   width: number;
   className?: string;
   isSorted?: "asc" | "desc" | false;
-  isLeaderboard?: boolean;
 };
 
 export const ColumnHeader = ({
@@ -44,19 +43,14 @@ export const ColumnHeader = ({
   width,
   className,
   isSorted,
-  isLeaderboard,
 }: Props) => {
   const pathname = usePathname();
   const [_, setParams] = useQueryStates(tableParsers);
-  const isMemberPage = pathname.includes("members");
+  const isCompany = pathname.includes("companies");
 
   const onSort = (desc: boolean) => {
-    setParams(isMemberPage ? { descMember: desc } : { descCompany: desc });
+    setParams(isCompany ? { descCompany: desc } : { descMember: desc });
   };
-
-  if (isLeaderboard) {
-    return <p className="text-muted-foreground">{title}</p>;
-  }
 
   return (
     <DropdownMenu>

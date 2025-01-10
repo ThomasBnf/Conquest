@@ -1,7 +1,6 @@
 import type { companies as CompanyPrisma } from "@prisma/client";
 import { z } from "zod";
 import { SOURCE } from "../enum/source.enum";
-import { MemberSchema } from "./member.schema";
 
 export const CompanySchema = z.object({
   id: z.string(),
@@ -19,9 +18,4 @@ export const CompanySchema = z.object({
   updated_at: z.coerce.date(),
 }) satisfies z.ZodType<CompanyPrisma>;
 
-export const CompanyWithMembersSchema = CompanySchema.extend({
-  members: z.array(MemberSchema),
-});
-
 export type Company = z.infer<typeof CompanySchema>;
-export type CompanyWithMembers = z.infer<typeof CompanyWithMembersSchema>;

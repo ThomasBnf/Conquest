@@ -17,7 +17,7 @@ import { FilterPicker } from "./filter-picker";
 type Props = {
   filters: Filter[];
   setFilters: Dispatch<SetStateAction<Filter[]>>;
-  handleUpdate: (filters: Filter[]) => void;
+  handleUpdate?: (filters: Filter[]) => void;
   align?: "start" | "end";
 };
 
@@ -31,7 +31,7 @@ export const FiltersList = ({
 
   const onClearFilters = async () => {
     setFilters([]);
-    handleUpdate([]);
+    handleUpdate?.([]);
     return 0;
   };
 

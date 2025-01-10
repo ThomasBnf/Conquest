@@ -12,7 +12,6 @@ export const cronWeekly = schedules.task({
   run: async () => {
     const today = startOfDay(new Date());
     const lastWeek = startOfDay(subDays(today, 7));
-    const last52Weeks = subDays(today, 52 * 7);
 
     const weeklyActivities = await prisma.activities.findMany({
       where: {

@@ -1,6 +1,6 @@
 "use client";
 
-import { listAtRiskMembers } from "@/client/dashboard/listAtRiskMembers";
+import { listPotentialAmbassadors } from "@/client/dashboard/listPotentialAmbassadors";
 import { listTags } from "@/client/tags/listTags";
 import { QueryInput } from "@/components/custom/query-input";
 import { Members } from "@/components/icons/Members";
@@ -23,7 +23,7 @@ import {
 import { Skeleton } from "@conquest/ui/skeleton";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@conquest/ui/tooltip";
 import type { Filter } from "@conquest/zod/schemas/filters.schema";
-import { AlertTriangle } from "lucide-react";
+import { InfoCircledIcon } from "@radix-ui/react-icons";
 import { useQueryStates } from "nuqs";
 import { useRef, useState } from "react";
 import { FilterButton } from "../filters/filter-button";
@@ -39,14 +39,14 @@ type Props = {
   to: Date;
 };
 
-export const AtRiskMembers = ({ from, to }: Props) => {
+export const PotentialAmbassadors = ({ from, to }: Props) => {
   const { slug } = useUser();
   const { tags } = listTags();
   const [open, setOpen] = useState(false);
 
   const [filters, setFilters] = useState<Filter[]>([]);
 
-  const { members, count, isLoading } = listAtRiskMembers({
+  const { members, count, isLoading } = listPotentialAmbassadors({
     from,
     to,
     filters,
@@ -73,10 +73,12 @@ export const AtRiskMembers = ({ from, to }: Props) => {
               className="flex flex-1 flex-col items-start rounded-md border p-6 transition-colors hover:bg-muted"
               onClick={() => setOpen(true)}
             >
-              <div className=" rounded-md border border-red-200 bg-red-100 p-2">
-                <AlertTriangle className="size-4 text-red-500" />
+              <div className=" rounded-md border border-green-200 bg-green-100 p-2">
+                <InfoCircledIcon className="size-4 text-green-500" />
               </div>
-              <p className="mt-4 text-muted-foreground">At Risk Members</p>
+              <p className="mt-4 text-muted-foreground">
+                Potential Ambassadors
+              </p>
               <div className="mt-1">
                 {isLoading ? (
                   <Skeleton className="h-[30px] w-12" />
@@ -87,15 +89,16 @@ export const AtRiskMembers = ({ from, to }: Props) => {
             </button>
           </TooltipTrigger>
           <TooltipContent>
-            <p>Click to view at-risk members</p>
+            <p>Click to view potential ambassadors</p>
           </TooltipContent>
         </Tooltip>
       </SheetTrigger>
       <SheetContent className="flex h-full w-[90vw] flex-col overflow-hidden sm:max-w-[90vw]">
         <SheetHeader>
-          <SheetTitle>At Risk Members</SheetTitle>
+          <SheetTitle>Potential Ambassadors</SheetTitle>
           <SheetDescription>
-            Active members showing declining engagement in the selected period
+            Contributors members showing strong engagement in the selected
+            period
           </SheetDescription>
         </SheetHeader>
         <div className="flex flex-1 flex-col overflow-hidden rounded border">

@@ -3,8 +3,9 @@ import {
   endOfWeek,
   isAfter,
   isBefore,
-  startOfMonth,
+  startOfDay,
   subMonths,
+  subWeeks,
 } from "date-fns";
 import { getMemberPresence } from "./getMemberPresence";
 
@@ -14,12 +15,12 @@ type Props = {
 };
 
 export const getMemberMetrics = async ({ activities, today }: Props) => {
-  const last3months = startOfMonth(subMonths(today, 3));
-  const currentWeekEnd = endOfWeek(today, { weekStartsOn: 1 });
+  const last3months = startOfDay(subMonths(today, 3));
+  const previousWeekEnd = endOfWeek(subWeeks(today, 1), { weekStartsOn: 1 });
 
   const last3monthsActivities = activities.filter(
     (activity) =>
-      isBefore(activity.created_at, currentWeekEnd) &&
+      isBefore(activity.created_at, previousWeekEnd) &&
       isAfter(activity.created_at, last3months),
   );
 

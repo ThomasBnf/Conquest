@@ -29,7 +29,7 @@ import { SelectPicker } from "./select-picker";
 type Props = {
   filters: Filter[];
   setFilters: Dispatch<SetStateAction<Filter[]>>;
-  handleUpdate: (filters: Filter[]) => void;
+  handleUpdate?: (filters: Filter[]) => void;
 };
 
 export const FilterButton = ({ filters, setFilters, handleUpdate }: Props) => {
@@ -102,7 +102,7 @@ export const FilterButton = ({ filters, setFilters, handleUpdate }: Props) => {
         ? prev.map((f) => (f.id === filter.id ? updatedFilter : f))
         : [...prev, updatedFilter];
 
-      handleUpdate(newFilters);
+      handleUpdate?.(newFilters);
 
       return newFilters;
     });
@@ -185,7 +185,7 @@ const filtersMember: Filter[] = [
     id: "1",
     label: "Tag",
     type: "select",
-    field: "tag",
+    field: "tags",
     operator: "contains",
     values: [],
   },

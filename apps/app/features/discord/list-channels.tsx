@@ -1,6 +1,5 @@
 "use client";
 
-import { action } from "@/actions/discord/action";
 import { listDiscordChannels } from "@/client/discord/listChannels";
 import { useUser } from "@/context/userContext";
 import type { installDiscord } from "@/trigger/installDiscord.trigger";
@@ -33,11 +32,15 @@ export const ListDiscordChannels = () => {
   const router = useRouter();
 
   const allFilteredChannels =
-    discordChannels?.filter(
-      (channel) =>
-        channel.parent_id !== null &&
-        !EXCLUDED_CHANNEL_TYPES.includes(channel.type),
-    ) ?? [];
+    discordChannels
+      ?.sort((a, b) => a.position - b.position)
+      .filter(
+        (channel) =>
+          channel.parent_id !== null &&
+          !EXCLUDED_CHANNEL_TYPES.includes(channel.type),
+      ) ?? [];
+
+  console.log(allFilteredChannels);
 
   const isAllSelected =
     selectedChannels.length === allFilteredChannels.length && !isLoading;
@@ -75,8 +78,9 @@ export const ListDiscordChannels = () => {
 
   const onStart = async () => {
     if (!discord) return;
-    // setLoading(true);
-    await action({ discord, channels: selectedChannels });
+
+    setLoading(true);
+    submit({ discord, channels: selectedChannels });
   };
 
   useEffect(() => {

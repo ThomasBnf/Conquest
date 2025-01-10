@@ -1,10 +1,7 @@
 "use server";
 
-import { DISCORD_ACTIVITY_TYPES } from "@/constant";
 import { authAction } from "@/lib/authAction";
-import { createManyActivityTypes } from "@/queries/activity-type/createManyActivityTypes";
 import { createManyChannels } from "@/queries/discord/createManyChannels";
-import { createManyMembers } from "@/queries/discord/createManyMembers";
 import { createManyTags } from "@/queries/discord/createManyTags";
 import { createManyThreads } from "@/queries/discord/createManyThreads";
 import { DiscordIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
@@ -28,14 +25,37 @@ export const action = authAction
 
     if (!external_id) return;
 
-    await createManyActivityTypes({
-      activity_types: DISCORD_ACTIVITY_TYPES,
-      workspace_id,
-    });
+    // await createManyActivityTypes({
+    //   activity_types: DISCORD_ACTIVITY_TYPES,
+    //   workspace_id,
+    // });
+
+    console.log("@ start installing discord @");
 
     const tags = await createManyTags({ discord });
 
-    await createManyMembers({ discord, tags });
-    await createManyChannels({ discord, channels });
+    // await createManyMembers({ discord, tags });
+    const createdChannels = await createManyChannels({ discord, channels });
     await createManyThreads({ discord });
+
+    // for (const channel of createdChannels ?? []) {
+    //   await createManyArchivedThreads({ discord, channel });
+
+    // if (!channel.external_id) continue;
+
+    // let after: string | undefined;
+
+    // while (true) {
+    //   const messages = await listChannelMessages({
+    //     channel_id: channel.external_id,
+    //     channel,
+    //     workspace_id,
+    //     after,
+    //   });
+
+    //   after = messages.at(-1)?.id;
+
+    //   if (messages.length < 100) break;
+    // }
+    // }
   });

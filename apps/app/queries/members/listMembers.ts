@@ -26,11 +26,10 @@ export const listMembers = async ({
   const members = await prisma.$queryRaw`
     SELECT 
       m.*,
-      c.id as company_id,
-      c.name as company_name
+      c.*
     FROM members m
     LEFT JOIN companies c ON m.company_id = c.id
-    WHERE 
+    WHERE (
       LOWER(COALESCE(m.first_name, '')) LIKE '%' || ${searchParsed} || '%'
       OR LOWER(COALESCE(m.last_name, '')) LIKE '%' || ${searchParsed} || '%'
       OR EXISTS (
@@ -41,7 +40,7 @@ export const listMembers = async ({
         SELECT 1 FROM unnest(m.phones) phone
         WHERE LOWER(phone) LIKE '%' || ${searchParsed} || '%'
       )
-      AND m.workspace_id = ${workspace_id}
+    ) AND m.workspace_id = ${workspace_id}
     GROUP BY m.id, c.id
     ${Prisma.sql([orderBy])}
     LIMIT ${pageSize}

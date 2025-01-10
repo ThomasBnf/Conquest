@@ -21,7 +21,7 @@ import {
 import { Input } from "@conquest/ui/input";
 import type { ActivityType } from "@conquest/zod/schemas/activity-type.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { type FormEdit, FormEditSchema } from "./schema/form-edit.schema";
@@ -43,6 +43,8 @@ export const ActivityTypeDialog = ({ open, setOpen, activityType }: Props) => {
     },
   });
 
+  form.setFocus("weight");
+
   const onSubmit = form.handleSubmit(async ({ name, weight }: FormEdit) => {
     setLoading(true);
 
@@ -57,12 +59,24 @@ export const ActivityTypeDialog = ({ open, setOpen, activityType }: Props) => {
       toast.error(error);
     }
 
-    setOpen(false);
-    setLoading(false);
+    onCancel();
   });
 
+  const onCancel = () => {
+    form.reset();
+    setOpen(false);
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    form.reset({
+      name: activityType.name,
+      weight: activityType.weight,
+    });
+  }, [activityType, form]);
+
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={onCancel}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Edit Activity Type</DialogTitle>

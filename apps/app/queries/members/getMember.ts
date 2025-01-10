@@ -98,20 +98,11 @@ export const getMember = async (props: Props) => {
   const member = await prisma.members.findUnique({
     where,
     include: {
-      company: {
-        select: {
-          name: true,
-          id: true,
-        },
-      },
+      company: true,
     },
   });
 
   if (!member) return null;
 
-  return MemberWithCompanySchema.parse({
-    ...member,
-    company_id: member.company?.id ?? null,
-    company_name: member.company?.name ?? null,
-  });
+  return MemberWithCompanySchema.parse(member);
 };

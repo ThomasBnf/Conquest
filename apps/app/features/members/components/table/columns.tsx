@@ -91,7 +91,12 @@ export const Columns = ({ tags }: Props): Column[] => [
             </AvatarFallback>
           </Avatar>
           <p className="truncate font-medium">
-            {member.first_name} {member.last_name}
+            {[
+              member.first_name !== null ? member.first_name : null,
+              member.last_name !== null ? member.last_name : null,
+            ]
+              .filter(Boolean)
+              .join(" ")}
           </p>
         </Link>
       );
@@ -101,7 +106,9 @@ export const Columns = ({ tags }: Props): Column[] => [
   {
     id: "company",
     header: () => <ColumnHeader id="company" title="Company" width={250} />,
-    cell: ({ member }) => <p className="truncate p-2">{member.company_name}</p>,
+    cell: ({ member }) => (
+      <p className="truncate p-2">{member.company?.name}</p>
+    ),
     width: 250,
   },
   {
@@ -128,7 +135,7 @@ export const Columns = ({ tags }: Props): Column[] => [
   },
   {
     id: "level",
-    header: () => <ColumnHeader id="level" title="Level" width={185} />,
+    header: () => <ColumnHeader id="level" title="Level" width={200} />,
     cell: ({ member }) => {
       return (
         <div className="flex w-full items-center justify-end p-2">
@@ -136,11 +143,11 @@ export const Columns = ({ tags }: Props): Column[] => [
         </div>
       );
     },
-    width: 185,
+    width: 200,
   },
   {
     id: "pulse",
-    header: () => <ColumnHeader id="pulse" title="Pulse" width={185} />,
+    header: () => <ColumnHeader id="pulse" title="Pulse" width={200} />,
     cell: ({ member }) => {
       return (
         <div className="flex w-full items-center justify-end p-2">
@@ -148,7 +155,7 @@ export const Columns = ({ tags }: Props): Column[] => [
         </div>
       );
     },
-    width: 185,
+    width: 200,
   },
   {
     id: "last_activity",

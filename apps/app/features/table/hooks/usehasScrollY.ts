@@ -1,17 +1,19 @@
 import { useEffect, useState } from "react";
 
 type Props = {
-  dependencies: unknown[];
+  isClient: boolean;
+  id: string;
 };
 
-export const useHasScrollY = ({ dependencies }: Props) => {
+export const useHasScrollY = ({ isClient, id }: Props) => {
   const [hasScrollY, setHasScrollY] = useState(false);
 
   useEffect(() => {
-    const element = document.querySelector("[data-radix-scroll-area-viewport]");
-    if (!element) return;
+    let rafId: number;
+    let element: HTMLElement | null = null;
 
     const checkScroll = () => {
+      if (!element) return;
       setHasScrollY(element.scrollHeight > element.clientHeight);
     };
 
@@ -19,13 +21,26 @@ export const useHasScrollY = ({ dependencies }: Props) => {
       checkScroll();
     };
 
-    checkScroll();
-    window.addEventListener("resize", handleResize);
+    const findElement = () => {
+      element = document.getElementById(id);
+      if (!element) {
+        rafId = requestAnimationFrame(findElement);
+        return;
+      }
+
+      checkScroll();
+      window.addEventListener("resize", handleResize);
+    };
+
+    findElement();
 
     return () => {
+      if (rafId) {
+        cancelAnimationFrame(rafId);
+      }
       window.removeEventListener("resize", handleResize);
     };
-  }, dependencies);
+  }, [id, isClient]);
 
   return hasScrollY;
 };

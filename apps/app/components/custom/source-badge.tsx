@@ -2,6 +2,7 @@ import { Badge } from "@conquest/ui/badge";
 import { cn } from "@conquest/ui/cn";
 import type { Source } from "@conquest/zod/enum/source.enum";
 import { Brevo } from "../icons/Brevo";
+import { Discord } from "../icons/Discord";
 import { Discourse } from "../icons/Discourse";
 import { Github } from "../icons/Github";
 import { Hubspot } from "../icons/Hubspot";
@@ -56,6 +57,13 @@ export const SourceBadge = ({ source, className }: Props) => {
         <Badge variant="outline" className={cn("gap-2", className)}>
           <Discourse className="size-3.5" />
           <span className="font-medium text-sm">Discourse</span>
+        </Badge>
+      );
+    case "DISCORD":
+      return (
+        <Badge variant="outline" className={cn("gap-2", className)}>
+          <Discord className="size-3.5" />
+          <span className="font-medium text-sm">Discord</span>
         </Badge>
       );
     case "GITHUB":

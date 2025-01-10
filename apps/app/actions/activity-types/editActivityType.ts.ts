@@ -2,7 +2,6 @@
 
 import { authAction } from "@/lib/authAction";
 import { prisma } from "@/lib/prisma";
-import { calculateMembersLevel } from "@/trigger/calculateMembersLevel";
 import { ActivityTypeSchema } from "@conquest/zod/schemas/activity-type.schema";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
@@ -33,10 +32,10 @@ export const editActivityType = authAction
       },
     });
 
-    if (activityType.weight === weight) {
-      calculateMembersLevel.trigger({ workspace_id });
-    }
+    // if (activityType.weight === weight) {
+    //   calculateMembersLevel.trigger({ workspace_id });
+    // }
 
-    revalidatePath(`/app/${slug}/settings/activities-types`);
+    revalidatePath(`/app/${slug}/settings/activity-types`);
     return ActivityTypeSchema.parse(activityType);
   });

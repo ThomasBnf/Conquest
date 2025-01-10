@@ -1,7 +1,15 @@
 import { prisma } from "@/lib/prisma";
+import { getFilters } from "@/queries/helpers/getFilters";
+import { getOrderBy } from "@/queries/helpers/getOrderBy";
 import { getAuthUser } from "@/queries/users/getAuthUser";
-import { LogSchema, MemberSchema } from "@conquest/zod/schemas/member.schema";
+import { FilterSchema } from "@conquest/zod/schemas/filters.schema";
+import {
+  LogSchema,
+  MemberSchema,
+  MemberWithCompanySchema,
+} from "@conquest/zod/schemas/member.schema";
 import { zValidator } from "@hono/zod-validator";
+import { Prisma } from "@prisma/client";
 import { eachDayOfInterval, format } from "date-fns";
 import { Hono } from "hono";
 import { z } from "zod";
@@ -27,8 +35,21 @@ export const dashboard = new Hono()
       const { workspace_id } = c.get("user");
       const { from, to } = c.req.valid("query");
 
+      const countMembers = await prisma.members.count({
+        where: {
+          created_at: {
+            lt: from,
+          },
+          workspace_id,
+        },
+      });
+
       const members = await prisma.members.findMany({
         where: {
+          created_at: {
+            gte: from,
+            lte: to,
+          },
           workspace_id,
         },
         orderBy: {
@@ -40,25 +61,23 @@ export const dashboard = new Hono()
         format(date, "PP"),
       );
 
-      const membersData = members.reduce<Record<string, number>>(
-        (acc, member) => {
-          const date = format(member.created_at, "PP");
-          const previousDates = Object.keys(acc);
-          const lastDate = previousDates[previousDates.length - 1];
-          const previousTotal = lastDate ? acc[lastDate] : 0;
+      const membersData = allDates.reduce<Record<string, number>>(
+        (acc, date) => {
+          const membersOnDate = members.filter(
+            (member) => format(member.created_at, "PP") === date,
+          ).length;
 
-          acc[date] = (acc[date] ?? previousTotal ?? 0) + 1;
+          const previousDate = allDates[allDates.indexOf(date) - 1];
+          const previousTotal = previousDate ? acc[previousDate] : countMembers;
+
+          acc[date] = (previousTotal ?? 0) + membersOnDate;
           return acc;
         },
-        Object.fromEntries(
-          allDates.map((date) => {
-            return [date, 0];
-          }),
-        ),
+        {},
       );
 
       return c.json({
-        total_members: members.length,
+        total_members: countMembers + members.length,
         membersData,
       });
     },
@@ -251,50 +270,44 @@ export const dashboard = new Hono()
       const members = await prisma.members.findMany({
         where: {
           workspace_id,
-          activities: {
-            some: {
-              created_at: {
-                gte: from,
-                lte: to,
-              },
-            },
-          },
+        },
+        include: {
+          company: true,
         },
       });
 
-      const categoryMap = {
-        Explorer: [1, 2, 3],
-        Active: [4, 5, 6],
-        Contributor: [7, 8, 9],
-        Ambassador: [10, 11, 12],
-      } as const;
+      const max: Record<string, number> = {};
+      const current: Record<string, number> = {};
 
-      const memberLevels = members.map((member) => {
+      for (const member of members) {
         const logs = LogSchema.array().parse(member.logs);
 
-        return Math.max(...logs.map((log) => log.level), 0);
-      });
-
-      const results = Object.entries(categoryMap).map(([category, levels]) => {
-        const levelCounts = levels.reduce<Record<number, number>>(
-          (acc, level) => {
-            acc[level] = memberLevels.filter(
-              (memberLevel) => memberLevel === level,
-            ).length;
-            return acc;
-          },
-          {},
+        // Pour max: on ne prend que le niveau maximum atteint dans la période
+        const filteredLogs = logs.filter(
+          (log) =>
+            new Date(log.date) >= from &&
+            new Date(log.date) <= to &&
+            log.level > 0,
         );
 
-        return {
-          category,
-          I: levelCounts[levels[0]] || 0,
-          II: levelCounts[levels[1]] || 0,
-          III: levelCounts[levels[2]] || 0,
-        };
-      });
+        if (filteredLogs.length > 0) {
+          const maxLevel = Math.max(...filteredLogs.map((log) => log.level));
+          max[maxLevel] = (max[maxLevel] ?? 0) + 1;
+        }
 
-      return c.json(results);
+        // Pour current: on ne prend que le niveau actuel une seule fois
+        if (member.level > 0) {
+          current[member.level] = (current[member.level] ?? 0) + 1;
+        }
+      }
+
+      console.dir(max, { depth: 10 });
+      console.dir(current, { depth: 10 });
+
+      return c.json({
+        max,
+        current,
+      });
     },
   )
   .get(
@@ -403,29 +416,28 @@ export const dashboard = new Hono()
         },
       });
 
-      const activeMembersByDate = await prisma.activities.groupBy({
-        by: ["created_at"],
-        where: {
-          workspace_id,
-          created_at: {
-            gte: from,
-            lte: to,
-          },
-        },
-        _count: {
-          member_id: true,
-        },
-      });
+      const activeMembersByDate = await prisma.$queryRaw<
+        Array<{ date: Date; unique_members: bigint }>
+      >`
+        SELECT 
+          DATE(created_at) as date,
+          COUNT(DISTINCT member_id) as unique_members
+        FROM activities
+        WHERE workspace_id = ${workspace_id}
+          AND created_at >= ${from}
+          AND created_at <= ${to}
+        GROUP BY DATE(created_at)
+      `;
 
       const allDates = eachDayOfInterval({ start: from, end: to });
 
       const dailyEngagement = allDates.map((date) => {
         const formattedDate = format(date, "PP");
         const dayActivities = activeMembersByDate.find(
-          (activity) => format(activity.created_at, "PP") === formattedDate,
+          (activity) => format(activity.date, "PP") === formattedDate,
         );
 
-        const activeMembers = dayActivities?._count.member_id ?? 0;
+        const activeMembers = Number(dayActivities?.unique_members ?? 0);
         const percentage =
           totalMembers > 0 ? (activeMembers / totalMembers) * 100 : 0;
 
@@ -436,5 +448,211 @@ export const dashboard = new Hono()
       });
 
       return c.json(dailyEngagement);
+    },
+  )
+  .get(
+    "/at-risk-members",
+    zValidator(
+      "query",
+      z.object({
+        search: z.string(),
+        id: z.string(),
+        desc: z.string().transform((val) => val === "true"),
+        page: z.coerce.number(),
+        pageSize: z.coerce.number(),
+        filters: z
+          .string()
+          .transform((str) => JSON.parse(str))
+          .pipe(z.array(FilterSchema)),
+        from: z.coerce.date(),
+        to: z.coerce.date(),
+      }),
+    ),
+    async (c) => {
+      const { workspace_id } = c.get("user");
+      const { search, id, desc, page, pageSize, filters, from, to } =
+        c.req.valid("query");
+
+      const searchParsed = search.toLowerCase().trim();
+      const orderBy = getOrderBy({ id, desc });
+      const filterBy = getFilters({ filters });
+
+      const count = await prisma.$queryRaw<[{ count: bigint }]>`
+        SELECT COUNT(DISTINCT m.id) as count
+        FROM members m
+        LEFT JOIN companies c ON m.company_id = c.id
+        WHERE 
+          (
+            LOWER(COALESCE(m.first_name, '') || ' ' || COALESCE(m.last_name, '')) LIKE '%' || ${searchParsed} || '%'
+            OR LOWER(COALESCE(m.last_name, '') || ' ' || COALESCE(m.first_name, '')) LIKE '%' || ${searchParsed} || '%'
+            OR LOWER(m.primary_email) LIKE '%' || ${searchParsed} || '%'
+            OR EXISTS (
+              SELECT 1 FROM unnest(m.phones) phone
+              WHERE LOWER(phone) LIKE '%' || ${searchParsed} || '%'
+            )
+          )
+          AND m.workspace_id = ${workspace_id}
+          AND m.level >= 3
+          AND NOT EXISTS (
+            SELECT 1 
+            FROM activities a 
+            WHERE a.member_id = m.id
+              AND a.created_at >= ${from}
+              AND a.created_at <= ${to}
+          )
+          ${
+            filterBy.length > 0
+              ? Prisma.sql`AND (${Prisma.join(filterBy, " AND ")})`
+              : Prisma.sql``
+          }
+      `;
+
+      const members = await prisma.$queryRaw`
+        SELECT 
+          m.*,
+          CASE 
+            WHEN c.id IS NOT NULL THEN to_jsonb(c.*)
+            ELSE NULL
+          END as company
+        FROM members m
+        LEFT JOIN companies c ON m.company_id = c.id
+        WHERE 
+          (
+            LOWER(COALESCE(m.first_name, '') || ' ' || COALESCE(m.last_name, '')) LIKE '%' || ${searchParsed} || '%'
+            OR LOWER(COALESCE(m.last_name, '') || ' ' || COALESCE(m.first_name, '')) LIKE '%' || ${searchParsed} || '%'
+            OR LOWER(m.primary_email) LIKE '%' || ${searchParsed} || '%'
+            OR EXISTS (
+              SELECT 1 FROM unnest(m.phones) phone
+              WHERE LOWER(phone) LIKE '%' || ${searchParsed} || '%'
+            )
+          )
+          AND m.workspace_id = ${workspace_id}
+          AND m.level >= 3
+          AND NOT EXISTS (
+            SELECT 1 
+            FROM activities a 
+            WHERE a.member_id = m.id
+              AND a.created_at >= ${from}
+              AND a.created_at <= ${to}
+          )
+          ${
+            filterBy.length > 0
+              ? Prisma.sql`AND (${Prisma.join(filterBy, " AND ")})`
+              : Prisma.sql``
+          }
+        GROUP BY m.id, c.id
+        ${Prisma.sql([orderBy])}
+        LIMIT ${pageSize}
+        OFFSET ${(page - 1) * pageSize}
+      `;
+
+      return c.json({
+        members: MemberWithCompanySchema.array().parse(members),
+        count: Number(count[0].count),
+      });
+    },
+  )
+  .get(
+    "/potential-ambassadors",
+    zValidator(
+      "query",
+      z.object({
+        search: z.string(),
+        id: z.string(),
+        desc: z.string().transform((val) => val === "true"),
+        page: z.coerce.number(),
+        pageSize: z.coerce.number(),
+        filters: z
+          .string()
+          .transform((str) => JSON.parse(str))
+          .pipe(z.array(FilterSchema)),
+        from: z.coerce.date(),
+        to: z.coerce.date(),
+      }),
+    ),
+    async (c) => {
+      const { workspace_id } = c.get("user");
+      const { search, id, desc, page, pageSize, filters, from, to } =
+        c.req.valid("query");
+
+      const searchParsed = search.toLowerCase().trim();
+      const orderBy = getOrderBy({ id, desc });
+      const filterBy = getFilters({ filters });
+
+      const count = await prisma.$queryRaw<[{ count: bigint }]>`
+        SELECT COUNT(DISTINCT m.id) as count
+        FROM members m
+        LEFT JOIN companies c ON m.company_id = c.id
+        WHERE 
+          (
+            LOWER(COALESCE(m.first_name, '') || ' ' || COALESCE(m.last_name, '')) LIKE '%' || ${searchParsed} || '%'
+            OR LOWER(COALESCE(m.last_name, '') || ' ' || COALESCE(m.first_name, '')) LIKE '%' || ${searchParsed} || '%'
+            OR LOWER(m.primary_email) LIKE '%' || ${searchParsed} || '%'
+            OR EXISTS (
+              SELECT 1 FROM unnest(m.phones) phone
+              WHERE LOWER(phone) LIKE '%' || ${searchParsed} || '%'
+            )
+          )
+          AND m.workspace_id = ${workspace_id}
+          AND m.level >= 7
+          AND m.level < 10
+          AND EXISTS (
+            SELECT 1 
+            FROM activities a 
+            WHERE a.member_id = m.id
+              AND a.created_at >= ${from}
+              AND a.created_at <= ${to}
+          )
+          ${
+            filterBy.length > 0
+              ? Prisma.sql`AND (${Prisma.join(filterBy, " AND ")})`
+              : Prisma.sql``
+          }
+      `;
+
+      const members = await prisma.$queryRaw`
+        SELECT 
+          m.*,
+          CASE 
+            WHEN c.id IS NOT NULL THEN to_jsonb(c.*)
+            ELSE NULL
+          END as company
+        FROM members m
+        LEFT JOIN companies c ON m.company_id = c.id
+        WHERE 
+          (
+            LOWER(COALESCE(m.first_name, '') || ' ' || COALESCE(m.last_name, '')) LIKE '%' || ${searchParsed} || '%'
+            OR LOWER(COALESCE(m.last_name, '') || ' ' || COALESCE(m.first_name, '')) LIKE '%' || ${searchParsed} || '%'
+            OR LOWER(m.primary_email) LIKE '%' || ${searchParsed} || '%'
+            OR EXISTS (
+              SELECT 1 FROM unnest(m.phones) phone
+              WHERE LOWER(phone) LIKE '%' || ${searchParsed} || '%'
+            )
+          )
+          AND m.workspace_id = ${workspace_id}
+          AND m.level >= 7
+          AND m.level < 10
+          AND EXISTS (
+            SELECT 1 
+            FROM activities a 
+            WHERE a.member_id = m.id
+              AND a.created_at >= ${from}
+              AND a.created_at <= ${to}
+          )
+          ${
+            filterBy.length > 0
+              ? Prisma.sql`AND (${Prisma.join(filterBy, " AND ")})`
+              : Prisma.sql``
+          }
+        GROUP BY m.id, c.id
+        ${Prisma.sql([orderBy])}
+        LIMIT ${pageSize}
+        OFFSET ${(page - 1) * pageSize}
+      `;
+
+      return c.json({
+        members: MemberWithCompanySchema.array().parse(members),
+        count: Number(count[0].count),
+      });
     },
   );

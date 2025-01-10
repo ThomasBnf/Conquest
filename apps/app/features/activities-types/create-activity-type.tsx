@@ -44,8 +44,8 @@ export const CreateActivityType = () => {
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      source: "SLACK",
-      key: "slack:",
+      source: "API",
+      key: "api:",
       weight: 1,
     },
   });
@@ -141,7 +141,7 @@ export const CreateActivityType = () => {
                       <Input {...field} />
                     </FormControl>
                     <FormDescription>
-                      source:type_of_activity (ex: slack:send_message)
+                      source:type_of_activity (ex: api:post_message)
                     </FormDescription>
                     <FormMessage />
                   </FormItem>

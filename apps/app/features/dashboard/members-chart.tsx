@@ -12,8 +12,8 @@ import {
 import { Skeleton } from "@conquest/ui/skeleton";
 import { useMemo, useState } from "react";
 import {
-  Area,
-  AreaChart,
+  Bar,
+  BarChart,
   CartesianGrid,
   ResponsiveContainer,
   XAxis,
@@ -88,9 +88,9 @@ export const MembersChart = ({ from, to }: Props) => {
               {config.label}
             </span>
             {loading ? (
-              <Skeleton className="h-9 w-12" />
+              <Skeleton className="h-[30px] w-12" />
             ) : (
-              <span className="font-bold text-lg leading-none sm:text-3xl">
+              <span className="font-bold text-3xl leading-none">
                 {key === "total_members" && totalMembers}
                 {key === "new_members" && newMembers}
                 {key === "active_members" && activeMembers}
@@ -101,7 +101,7 @@ export const MembersChart = ({ from, to }: Props) => {
       </div>
       <ResponsiveContainer height={350}>
         <ChartContainer config={chartConfig}>
-          <AreaChart
+          <BarChart
             data={chartData}
             margin={{ top: 24, left: 24, right: 24, bottom: 5 }}
           >
@@ -124,35 +124,12 @@ export const MembersChart = ({ from, to }: Props) => {
                 <ChartTooltipContent indicator="line" className="w-60" />
               }
             />
-            <defs>
-              <linearGradient
-                id={`fill${activeChart}`}
-                x1="0"
-                y1="0"
-                x2="0"
-                y2="1"
-              >
-                <stop
-                  offset="5%"
-                  stopColor={`var(--color-${activeChart})`}
-                  stopOpacity={0.5}
-                />
-                <stop
-                  offset="95%"
-                  stopColor={`var(--color-${activeChart})`}
-                  stopOpacity={0.05}
-                />
-              </linearGradient>
-            </defs>
-            <Area
-              type="linear"
+            <Bar
               dataKey={activeChart}
-              fill={`url(#fill${activeChart})`}
-              fillOpacity={0.4}
-              stroke={`var(--color-${activeChart})`}
-              strokeWidth={1.5}
+              fill={`var(--color-${activeChart})`}
+              radius={[3, 3, 0, 0]}
             />
-          </AreaChart>
+          </BarChart>
         </ChartContainer>
       </ResponsiveContainer>
     </div>

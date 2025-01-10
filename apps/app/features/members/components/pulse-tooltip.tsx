@@ -1,7 +1,7 @@
 import { Pulse } from "@/components/icons/Pulse";
 import { client } from "@/lib/rpc";
-import { cn } from "@conquest/ui/cn";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@conquest/ui/tooltip";
+import type { ActivityWithType } from "@conquest/zod/schemas/activity.schema";
 import type { Member } from "@conquest/zod/schemas/member.schema";
 import { useQuery } from "@tanstack/react-query";
 import { InfoIcon } from "lucide-react";
@@ -10,6 +10,15 @@ import { useState } from "react";
 type Props = {
   member: Member;
   showIcon?: boolean;
+};
+
+type GroupedActivities = Record<string, Record<string, ActivityWithType[]>>;
+
+type ActivityMetrics = {
+  source: string;
+  name: string;
+  count: number;
+  weight: number;
 };
 
 export const PulseTooltip = ({ member, showIcon = true }: Props) => {
@@ -27,44 +36,48 @@ export const PulseTooltip = ({ member, showIcon = true }: Props) => {
     enabled: !!member.id && hover,
   });
 
-  const groupedActivities = data?.details.reduce<
-    Array<{
-      source: string;
-      activities: Array<{ name: string; count: number; weight: number }>;
-    }>
-  >((acc, activity) => {
-    const sourceGroup = acc.find((group) => group.source === activity.source);
+  const groupedActivities = data?.activities?.reduce<GroupedActivities>(
+    (acc, activity) => {
+      const { source, name } = activity.activity_type;
 
-    if (!sourceGroup) {
-      acc.push({
-        source: activity.source,
-        activities: [
-          {
-            name: activity.activity_name,
-            count: activity.activity_count,
-            weight: activity.weight,
-          },
-        ],
-      });
+      const transformedActivity = {
+        ...activity,
+        created_at: new Date(activity.created_at),
+        updated_at: new Date(activity.updated_at),
+        activity_type: {
+          ...activity.activity_type,
+          created_at: new Date(activity.activity_type.created_at),
+          updated_at: new Date(activity.activity_type.updated_at),
+        },
+      };
+
+      acc[source] ??= {};
+      acc[source][name] ??= [];
+      acc[source][name].push(transformedActivity);
       return acc;
-    }
+    },
+    {},
+  );
 
-    const existingActivity = sourceGroup.activities.find(
-      (a) => a.name === activity.activity_name,
-    );
+  const activityMetrics = Object.entries(groupedActivities || {})
+    .flatMap(([source, activities]) => {
+      return Object.entries(activities).map(([name, items]) => ({
+        source,
+        name,
+        count: items.length,
+        weight: items[0]?.activity_type.weight ?? 0,
+      }));
+    })
+    .flat();
 
-    if (existingActivity) {
-      existingActivity.count += activity.activity_count;
-    } else {
-      sourceGroup.activities.push({
-        name: activity.activity_name,
-        count: activity.activity_count,
-        weight: activity.weight,
-      });
-    }
-
-    return acc;
-  }, []);
+  const totalActivities = activityMetrics.reduce(
+    (sum, metric) => sum + metric.count,
+    0,
+  );
+  const totalPulse = activityMetrics.reduce(
+    (sum, metric) => sum + metric.count * metric.weight,
+    0,
+  );
 
   return (
     <Tooltip>
@@ -78,40 +91,38 @@ export const PulseTooltip = ({ member, showIcon = true }: Props) => {
         {showIcon && <InfoIcon size={13} className="text-muted-foreground" />}
       </TooltipTrigger>
       <TooltipContent align="end">
-        <div
-          className={cn(
-            "flex items-center justify-between text-sm",
-            data?.details.length && "mb-1",
-          )}
-        >
+        <div className="flex items-center justify-between text-sm">
           <p className="w-36">Pulse</p>
-          <p>{data?.total_pulse ?? 0}</p>
+          <p>{totalPulse}</p>
         </div>
         <div className="mb-4 flex items-center justify-between text-sm">
           <p className="w-36">Total Activities</p>
-          <p>{data?.total_activities ?? 0}</p>
+          <p>{totalActivities}</p>
         </div>
         <div className="mb-2 flex items-center justify-between opacity-60">
           <p className="text-xs">Source</p>
           <p className="text-xs">Activities x Weight</p>
         </div>
         <div className="flex w-full flex-col gap-1 text-start">
-          {groupedActivities?.map((group) => (
-            <div key={group.source} className="mb-2">
-              <p className="mb-1 text-xs opacity-60">{group.source}</p>
-              {group.activities.map((activity) => (
-                <div
-                  key={activity.name}
-                  className="flex items-center justify-between text-sm"
-                >
-                  <p className="w-36">{activity.name}</p>
-                  <p className="flex items-baseline gap-1">
-                    {activity.count} <span>x</span> {activity.weight}
-                  </p>
-                </div>
-              ))}
-            </div>
-          ))}
+          {Object.entries(groupedActivities || {}).map(
+            ([source, activities]) => (
+              <div key={source} className="mb-2">
+                <p className="mb-1 text-xs opacity-60">{source}</p>
+                {Object.entries(activities).map(([name, items]) => (
+                  <div
+                    key={name}
+                    className="flex items-center justify-between text-sm"
+                  >
+                    <p className="w-36">{name}</p>
+                    <p className="flex items-baseline gap-1">
+                      {items.length} <span>x</span>{" "}
+                      {items[0]?.activity_type.weight}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            ),
+          )}
         </div>
       </TooltipContent>
     </Tooltip>

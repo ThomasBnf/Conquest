@@ -9,7 +9,7 @@ import { type Member, MemberSchema } from "@conquest/zod/schemas/member.schema";
 
 type Props = {
   id: string;
-  data: Omit<Partial<Member>, "id" | "emails" | "phones" | "deleted_at"> & {
+  data: Omit<Partial<Member>, "id" | "emails" | "phones"> & {
     primary_email?: string;
     phones?: string[];
   };

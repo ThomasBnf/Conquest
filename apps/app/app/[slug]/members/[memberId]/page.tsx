@@ -11,5 +11,5 @@ export default async function Page({ params: { memberId } }: Props) {
   const user = await getCurrentUser();
   const slug = user.workspace.slug;
 
-  return redirect(`/${slug}/members/${memberId}/activities`);
+  return redirect(`/${slug}/members/${memberId}/analytics`);
 }

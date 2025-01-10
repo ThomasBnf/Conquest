@@ -13,7 +13,7 @@ import {
 } from "@conquest/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@conquest/ui/popover";
 import { Skeleton } from "@conquest/ui/skeleton";
-import type { CompanyWithMembers } from "@conquest/zod/schemas/company.schema";
+import type { Company } from "@conquest/zod/schemas/company.schema";
 import type { Member } from "@conquest/zod/schemas/member.schema";
 import { useQueryClient } from "@tanstack/react-query";
 import { X } from "lucide-react";
@@ -23,7 +23,7 @@ import { useInView } from "react-intersection-observer";
 import { toast } from "sonner";
 
 type Props = {
-  company: CompanyWithMembers;
+  company: Company;
 };
 
 export const EditableMembers = ({ company }: Props) => {
@@ -34,9 +34,7 @@ export const EditableMembers = ({ company }: Props) => {
   const router = useRouter();
   const queryClient = useQueryClient();
 
-  const [companyMembers, setCompanyMembers] = useState<Member[]>(
-    company.members ?? [],
-  );
+  const [companyMembers, setCompanyMembers] = useState<Member[]>([]);
 
   const { members, hasNextPage, fetchNextPage, isLoading } = listAllMembers({
     search,
