@@ -36,7 +36,6 @@ export const createMember = async ({ discord, member_id }: Props) => {
         username,
         avatar_url: avatarUrl,
         source: "DISCORD",
-        joined_at: new Date(),
         created_at: new Date(),
         deleted_at: new Date(),
         workspace_id,

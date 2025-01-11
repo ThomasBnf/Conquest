@@ -67,7 +67,7 @@ export const createManyMembers = async ({
           avatar_url: avatarUrl,
           job_title: title,
           tags: memberTags,
-          joined_at: new Date(created_at),
+          created_at: new Date(created_at),
           source: "DISCOURSE",
           workspace_id,
         },

@@ -36,7 +36,6 @@ export const MemberSidebar = ({ member, tags }: Props) => {
     location,
     first_activity,
     last_activity,
-    joined_at,
     created_at,
   } = member;
 
@@ -154,11 +153,6 @@ export const MemberSidebar = ({ member, tags }: Props) => {
           {last_activity && (
             <FieldCard icon="CalendarSearch" label="Last activity">
               <p className="pl-1.5">{format(last_activity, "PP, HH'h'mm")}</p>
-            </FieldCard>
-          )}
-          {joined_at && (
-            <FieldCard icon="CalendarCheck" label="Joined at">
-              <p className="pl-1.5">{format(joined_at, "PP, HH'h'mm")}</p>
             </FieldCard>
           )}
           <FieldCard icon="CalendarPlus" label="Created at">

@@ -98,13 +98,13 @@ export const dashboard = new Hono()
       const members = await prisma.members.findMany({
         where: {
           workspace_id,
-          joined_at: {
+          created_at: {
             gte: from,
             lte: to,
           },
         },
         orderBy: {
-          joined_at: "asc",
+          created_at: "asc",
         },
       });
 
@@ -114,7 +114,7 @@ export const dashboard = new Hono()
 
       const membersData = members.reduce<Record<string, number>>(
         (acc, member) => {
-          const date = format(member.joined_at ?? "", "PP");
+          const date = format(member.created_at, "PP");
           const previousDates = Object.keys(acc);
           const lastDate = previousDates[previousDates.length - 1];
           const previousTotal = lastDate ? acc[lastDate] : 0;

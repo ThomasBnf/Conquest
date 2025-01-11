@@ -18,7 +18,6 @@ export const V1CreateMemberSchema = z.object({
   tags: z.array(z.string()).optional(),
   gender: GENDER.nullable().optional(),
   company_id: z.string().cuid().nullable().optional(),
-  joined_at: z.coerce.date().nullable().optional(),
   deleted_at: z.coerce.date().nullable().optional(),
   created_at: z.coerce.date().optional(),
   updated_at: z.coerce.date().optional(),
@@ -41,6 +40,5 @@ export const V1UpdateMemberSchema = z.object({
   tags: z.array(z.string()).optional(),
   gender: GENDER.nullable().optional(),
   company_id: z.string().cuid().nullable().optional(),
-  joined_at: z.coerce.date().nullable().optional(),
   deleted_at: z.coerce.date().nullable().optional(),
 });

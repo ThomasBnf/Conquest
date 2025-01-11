@@ -235,7 +235,6 @@ model members {
 
   first_activity DateTime?
   last_activity  DateTime?
-  joined_at      DateTime?
   deleted_at     DateTime?
   created_at     DateTime  @default(now())
   updated_at     DateTime  @updatedAt

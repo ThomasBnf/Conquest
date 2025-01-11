@@ -1,11 +1,14 @@
 -- CreateEnum
-CREATE TYPE "SOURCE" AS ENUM ('API', 'BREVO', 'DISCOURSE', 'GITHUB', 'HUBSPOT', 'LINKEDIN', 'LIVESTORM', 'MANUAL', 'SLACK', 'X', 'YOUTUBE', 'ZENDESK');
+CREATE TYPE "SOURCE" AS ENUM ('API', 'BREVO', 'DISCOURSE', 'DISCORD', 'GITHUB', 'HUBSPOT', 'LINKEDIN', 'LIVESTORM', 'MANUAL', 'SLACK', 'X', 'YOUTUBE', 'ZENDESK');
 
 -- CreateEnum
 CREATE TYPE "GENDER" AS ENUM ('MALE', 'FEMALE', 'OTHER');
 
 -- CreateEnum
 CREATE TYPE "STATUS" AS ENUM ('ENABLED', 'CONNECTED', 'SYNCING', 'DISCONNECTED');
+
+-- CreateEnum
+CREATE TYPE "PLAN" AS ENUM ('BASIC', 'PREMIUM', 'BUSINESS', 'ENTERPRISE');
 
 -- CreateTable
 CREATE TABLE "activities" (
@@ -16,9 +19,10 @@ CREATE TABLE "activities" (
     "thread_id" TEXT,
     "reply_to" TEXT,
     "react_to" TEXT,
-    "invite_by" TEXT,
+    "invite_to" TEXT,
     "activity_type_id" TEXT NOT NULL,
     "channel_id" TEXT,
+    "event_id" TEXT,
     "member_id" TEXT NOT NULL,
     "workspace_id" TEXT NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -117,7 +121,7 @@ CREATE TABLE "files" (
 CREATE TABLE "integrations" (
     "id" TEXT NOT NULL,
     "external_id" TEXT,
-    "installed_at" TIMESTAMP(3),
+    "connected_at" TIMESTAMP(3),
     "status" "STATUS" NOT NULL,
     "details" JSONB NOT NULL,
     "trigger_token" TEXT NOT NULL,
@@ -132,17 +136,18 @@ CREATE TABLE "integrations" (
 -- CreateTable
 CREATE TABLE "members" (
     "id" TEXT NOT NULL,
-    "slack_id" TEXT,
-    "livestorm_id" TEXT,
+    "discord_id" TEXT,
     "discourse_id" TEXT,
+    "linkedin_id" TEXT,
+    "livestorm_id" TEXT,
+    "slack_id" TEXT,
     "first_name" TEXT,
     "last_name" TEXT,
     "username" TEXT,
-    "locale" TEXT,
+    "location" TEXT,
     "avatar_url" TEXT,
-    "bio" TEXT,
     "job_title" TEXT,
-    "primary_email" TEXT NOT NULL,
+    "primary_email" TEXT,
     "secondary_emails" TEXT[] DEFAULT ARRAY[]::TEXT[],
     "phones" TEXT[] DEFAULT ARRAY[]::TEXT[],
     "tags" TEXT[] DEFAULT ARRAY[]::TEXT[],
@@ -156,7 +161,6 @@ CREATE TABLE "members" (
     "workspace_id" TEXT NOT NULL,
     "first_activity" TIMESTAMP(3),
     "last_activity" TIMESTAMP(3),
-    "joined_at" TIMESTAMP(3),
     "deleted_at" TIMESTAMP(3),
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
@@ -169,7 +173,6 @@ CREATE TABLE "tags" (
     "id" TEXT NOT NULL,
     "external_id" TEXT,
     "name" TEXT NOT NULL,
-    "description" TEXT,
     "color" TEXT NOT NULL,
     "source" "SOURCE" NOT NULL,
     "workspace_id" TEXT NOT NULL,
@@ -186,7 +189,6 @@ CREATE TABLE "users" (
     "hashed_password" TEXT NOT NULL,
     "first_name" TEXT,
     "last_name" TEXT,
-    "full_name" TEXT,
     "onboarding" TIMESTAMP(3),
     "workspace_id" TEXT NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -219,6 +221,7 @@ CREATE TABLE "workspaces" (
     "source" TEXT,
     "company_size" TEXT,
     "members_preferences" JSONB NOT NULL,
+    "plan" "PLAN" NOT NULL DEFAULT 'BASIC',
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
 
@@ -226,22 +229,37 @@ CREATE TABLE "workspaces" (
 );
 
 -- CreateIndex
-CREATE INDEX "activities_id_workspace_id_idx" ON "activities"("id", "workspace_id");
+CREATE INDEX "activities_external_id_workspace_id_idx" ON "activities"("external_id", "workspace_id");
+
+-- CreateIndex
+CREATE INDEX "activities_workspace_id_idx" ON "activities"("workspace_id");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "activities_external_id_workspace_id_key" ON "activities"("external_id", "workspace_id");
 
 -- CreateIndex
-CREATE INDEX "activities_types_id_workspace_id_idx" ON "activities_types"("id", "workspace_id");
+CREATE INDEX "activities_types_key_workspace_id_idx" ON "activities_types"("key", "workspace_id");
+
+-- CreateIndex
+CREATE INDEX "activities_types_workspace_id_idx" ON "activities_types"("workspace_id");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "activities_types_key_workspace_id_key" ON "activities_types"("key", "workspace_id");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "apikeys_token_key" ON "apikeys"("token");
 
 -- CreateIndex
-CREATE INDEX "apikeys_id_token_idx" ON "apikeys"("id", "token");
+CREATE INDEX "apikeys_id_idx" ON "apikeys"("id");
 
 -- CreateIndex
-CREATE INDEX "channels_id_workspace_id_idx" ON "channels"("id", "workspace_id");
+CREATE INDEX "apikeys_workspace_id_idx" ON "apikeys"("workspace_id");
+
+-- CreateIndex
+CREATE INDEX "channels_external_id_workspace_id_idx" ON "channels"("external_id", "workspace_id");
+
+-- CreateIndex
+CREATE INDEX "channels_workspace_id_idx" ON "channels"("workspace_id");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "channels_external_id_workspace_id_key" ON "channels"("external_id", "workspace_id");
@@ -253,10 +271,16 @@ CREATE UNIQUE INDEX "companies_domain_key" ON "companies"("domain");
 CREATE INDEX "companies_id_workspace_id_idx" ON "companies"("id", "workspace_id");
 
 -- CreateIndex
+CREATE INDEX "companies_workspace_id_idx" ON "companies"("workspace_id");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "events_external_id_key" ON "events"("external_id");
 
 -- CreateIndex
 CREATE INDEX "events_id_workspace_id_idx" ON "events"("id", "workspace_id");
+
+-- CreateIndex
+CREATE INDEX "events_source_workspace_id_idx" ON "events"("source", "workspace_id");
 
 -- CreateIndex
 CREATE INDEX "files_activity_id_idx" ON "files"("activity_id");
@@ -268,7 +292,31 @@ CREATE UNIQUE INDEX "integrations_external_id_key" ON "integrations"("external_i
 CREATE INDEX "integrations_id_workspace_id_idx" ON "integrations"("id", "workspace_id");
 
 -- CreateIndex
+CREATE INDEX "integrations_external_id_idx" ON "integrations"("external_id");
+
+-- CreateIndex
 CREATE INDEX "members_id_workspace_id_idx" ON "members"("id", "workspace_id");
+
+-- CreateIndex
+CREATE INDEX "members_primary_email_workspace_id_idx" ON "members"("primary_email", "workspace_id");
+
+-- CreateIndex
+CREATE INDEX "members_username_workspace_id_idx" ON "members"("username", "workspace_id");
+
+-- CreateIndex
+CREATE INDEX "members_discord_id_workspace_id_idx" ON "members"("discord_id", "workspace_id");
+
+-- CreateIndex
+CREATE INDEX "members_discourse_id_workspace_id_idx" ON "members"("discourse_id", "workspace_id");
+
+-- CreateIndex
+CREATE INDEX "members_linkedin_id_workspace_id_idx" ON "members"("linkedin_id", "workspace_id");
+
+-- CreateIndex
+CREATE INDEX "members_livestorm_id_workspace_id_idx" ON "members"("livestorm_id", "workspace_id");
+
+-- CreateIndex
+CREATE INDEX "members_slack_id_workspace_id_idx" ON "members"("slack_id", "workspace_id");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "members_primary_email_workspace_id_key" ON "members"("primary_email", "workspace_id");
@@ -277,7 +325,16 @@ CREATE UNIQUE INDEX "members_primary_email_workspace_id_key" ON "members"("prima
 CREATE UNIQUE INDEX "members_username_workspace_id_key" ON "members"("username", "workspace_id");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "members_discord_id_workspace_id_key" ON "members"("discord_id", "workspace_id");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "members_discourse_id_workspace_id_key" ON "members"("discourse_id", "workspace_id");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "members_linkedin_id_workspace_id_key" ON "members"("linkedin_id", "workspace_id");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "members_livestorm_id_workspace_id_key" ON "members"("livestorm_id", "workspace_id");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "members_slack_id_workspace_id_key" ON "members"("slack_id", "workspace_id");
@@ -308,6 +365,9 @@ ALTER TABLE "activities" ADD CONSTRAINT "activities_activity_type_id_fkey" FOREI
 
 -- AddForeignKey
 ALTER TABLE "activities" ADD CONSTRAINT "activities_channel_id_fkey" FOREIGN KEY ("channel_id") REFERENCES "channels"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "activities" ADD CONSTRAINT "activities_event_id_fkey" FOREIGN KEY ("event_id") REFERENCES "events"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "activities" ADD CONSTRAINT "activities_member_id_fkey" FOREIGN KEY ("member_id") REFERENCES "members"("id") ON DELETE CASCADE ON UPDATE CASCADE;

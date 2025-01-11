@@ -192,12 +192,13 @@ export const Columns = ({ tags }: Props): Column[] => [
     width: 250,
   },
   {
-    id: "joined_at",
-    header: () => <ColumnHeader id="joined_at" title="Joined at" width={250} />,
-    cell: ({ member }) => <DateCell date={member.joined_at} />,
+    id: "created_at",
+    header: () => (
+      <ColumnHeader id="created_at" title="Created at" width={250} />
+    ),
+    cell: ({ member }) => <DateCell date={member.created_at} />,
     width: 250,
   },
-
   {
     id: "source",
     header: () => <ColumnHeader id="source" title="Source" width={250} />,

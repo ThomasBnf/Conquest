@@ -261,8 +261,8 @@ export const discourse = new Hono().post("/", async (c) => {
         last_name,
         primary_email: email,
         avatar_url,
-        joined_at: new Date(),
         source: "DISCOURSE",
+        created_at: new Date(),
         workspace_id,
       },
     });

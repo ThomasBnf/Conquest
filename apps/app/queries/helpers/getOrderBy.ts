@@ -19,8 +19,8 @@ export const getOrderBy = ({ id, desc }: Props) => {
       return `ORDER BY m.primary_email ${direction}`;
     case "tags":
       return `ORDER BY m.tags[0] ${direction}`;
-    case "joined_at":
-      return `ORDER BY m.joined_at ${direction}`;
+    case "created_at":
+      return `ORDER BY m.created_at ${direction}`;
     case "location":
       return `ORDER BY m.location ${direction}`;
     case "source":

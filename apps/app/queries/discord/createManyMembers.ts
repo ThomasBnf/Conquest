@@ -52,7 +52,6 @@ export const createManyMembers = async ({ discord, tags }: Props) => {
               avatar_url: avatarUrl,
               tags: memberTags,
               source: "DISCORD",
-              joined_at: new Date(joined_at),
               created_at: new Date(joined_at),
               workspace_id,
             },

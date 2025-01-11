@@ -1492,12 +1492,6 @@
                   "nullable": true,
                   "example": "2025-01-01T00:00:00Z"
                 },
-                "joined_at": {
-                  "type": "string",
-                  "format": "date-time",
-                  "nullable": true,
-                  "example": "2025-01-01T00:00:00Z"
-                },
                 "deleted_at": {
                   "type": "string",
                   "format": "date-time",
@@ -1653,12 +1647,6 @@
                 "example": "2025-01-01T00:00:00Z"
               },
               "last_activity": {
-                "type": "string",
-                "format": "date-time",
-                "nullable": true,
-                "example": "2025-01-01T00:00:00Z"
-              },
-              "joined_at": {
                 "type": "string",
                 "format": "date-time",
                 "nullable": true,
