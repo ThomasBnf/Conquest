@@ -2,7 +2,6 @@ import { discordClient } from "@/lib/discord";
 import type { Channel } from "@conquest/zod/schemas/channel.schema";
 import type { DiscordIntegration } from "@conquest/zod/schemas/integration.schema";
 import type { Member } from "@conquest/zod/schemas/member.schema";
-import { DiscordAPIError } from "@discordjs/rest";
 import {
   type APIMessage,
   type APIMessageReference,
@@ -14,22 +13,26 @@ import { createMember } from "./createMember";
 
 type Props = {
   discord: DiscordIntegration;
-  channel_id: string;
   channel: Channel;
   workspace_id: string;
 };
 
 export const listChannelMessages = async ({
   discord,
-  channel_id,
   channel,
   workspace_id,
 }: Props) => {
+  const { external_id } = channel;
+
+  if (!external_id) return;
+
+  console.log("Listing channel messages", external_id);
+
   let before: string | undefined;
 
   while (true) {
     const messages = (await discordClient.get(
-      `${Routes.channelMessages(channel_id)}?limit=100${before ? `&before=${before}` : ""}`,
+      `${Routes.channelMessages(external_id)}?limit=100${before ? `&before=${before}` : ""}`,
     )) as APIMessage[];
 
     for (const message of messages) {
@@ -45,12 +48,6 @@ export const listChannelMessages = async ({
           sticker_items,
         } = message;
         const { author } = message;
-
-        console.log({
-          id,
-          type,
-          content,
-        });
 
         let member: Member | null = null;
 
@@ -107,11 +104,7 @@ export const listChannelMessages = async ({
           }
         }
       } catch (error) {
-        if (error instanceof DiscordAPIError) {
-          console.error("Failed to process message:", error.rawError);
-        } else {
-          console.error("@Failed to process message:", error, message);
-        }
+        console.error("Failed creating channel message", error);
       }
     }
 

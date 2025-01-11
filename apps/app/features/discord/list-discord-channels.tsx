@@ -1,21 +1,23 @@
 "use client";
 
+import { listChannels } from "@/client/channels/listChannels";
 import { listDiscordChannels } from "@/client/discord/listChannels";
 import { useUser } from "@/context/userContext";
 import type { installDiscord } from "@/trigger/installDiscord.trigger";
 import { Button } from "@conquest/ui/button";
 import { Checkbox } from "@conquest/ui/checkbox";
+import { cn } from "@conquest/ui/cn";
 import { Separator } from "@conquest/ui/separator";
 import { useRealtimeTaskTrigger } from "@trigger.dev/react-hooks";
 import {
   type APIGuildCategoryChannel,
   ChannelType,
 } from "discord-api-types/v10";
-import { Info } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { LoadingChannels } from "../slack/loading-channels";
+import { LoadingChannels } from "../integrations/loading-channels";
+import { LoadingMessage } from "../integrations/loading-message";
 
 const EXCLUDED_CHANNEL_TYPES = [
   ChannelType.GuildStageVoice,
@@ -28,6 +30,8 @@ export const ListDiscordChannels = () => {
   const [selectedChannels, setSelectedChannels] = useState<
     APIGuildCategoryChannel[]
   >([]);
+
+  const { channels, refetch } = listChannels();
   const { discordChannels, isLoading } = listDiscordChannels();
   const router = useRouter();
 
@@ -39,8 +43,6 @@ export const ListDiscordChannels = () => {
           channel.parent_id !== null &&
           !EXCLUDED_CHANNEL_TYPES.includes(channel.type),
       ) ?? [];
-
-  console.log(allFilteredChannels);
 
   const isAllSelected =
     selectedChannels.length === allFilteredChannels.length && !isLoading;
@@ -56,15 +58,13 @@ export const ListDiscordChannels = () => {
   };
 
   const onSelectAll = () => {
-    if (!discordChannels) return;
-
-    const allSubChannels = discordChannels.filter(
+    const allSubChannels = discordChannels?.filter(
       (channel) =>
         channel.parent_id !== null &&
         !EXCLUDED_CHANNEL_TYPES.includes(channel.type),
     );
 
-    setSelectedChannels(allSubChannels);
+    setSelectedChannels(allSubChannels ?? []);
   };
 
   const onUnselectAll = () => setSelectedChannels([]);
@@ -91,15 +91,15 @@ export const ListDiscordChannels = () => {
 
     if (isFailed || error) {
       setLoading(false);
-      console.log(error);
       toast.error("Failed to install Discord", { duration: 5000 });
     }
 
     if (isCompleted) {
+      refetch();
       setSelectedChannels([]);
       router.refresh();
     }
-  }, [run, error, router]);
+  }, [run]);
 
   return (
     <>
@@ -138,13 +138,40 @@ export const ListDiscordChannels = () => {
               if (!subChannels?.length) return null;
 
               return (
-                <ChannelGroup
-                  key={channel.id}
-                  channel={channel}
-                  subChannels={subChannels}
-                  onSelect={onSelect}
-                  selectedChannels={selectedChannels}
-                />
+                <div key={channel.id}>
+                  <p className="font-medium text-muted-foreground text-xs uppercase">
+                    {channel.name}
+                  </p>
+                  <div className="mt-2 flex flex-col gap-1">
+                    {subChannels.map((subChannel) => {
+                      const isSelected = selectedChannels.some(
+                        (channel) => channel === subChannel,
+                      );
+
+                      const hasImported = channels?.some(
+                        (channel) => channel.external_id === subChannel.id,
+                      );
+
+                      return (
+                        <button
+                          type="button"
+                          key={subChannel.id}
+                          className={cn(
+                            "flex items-center gap-2",
+                            (hasImported || loading) && "opacity-50",
+                          )}
+                          onClick={() => onSelect(subChannel)}
+                        >
+                          <Checkbox
+                            checked={isSelected || hasImported}
+                            disabled={hasImported || loading}
+                          />
+                          <p>{subChannel.name}</p>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
               );
             })}
           </div>
@@ -162,50 +189,3 @@ export const ListDiscordChannels = () => {
     </>
   );
 };
-
-type Props = {
-  channel: APIGuildCategoryChannel;
-  subChannels: APIGuildCategoryChannel[];
-  onSelect: (channel: APIGuildCategoryChannel) => void;
-  selectedChannels: APIGuildCategoryChannel[];
-};
-
-const ChannelGroup = ({
-  channel,
-  subChannels,
-  onSelect,
-  selectedChannels,
-}: Props) => (
-  <div key={channel.id}>
-    <p className="font-medium text-muted-foreground text-xs uppercase">
-      {channel.name}
-    </p>
-    <div className="mt-2 flex flex-col gap-1">
-      {subChannels.map((subChannel) => (
-        <button
-          type="button"
-          key={subChannel.id}
-          className="flex items-center gap-2"
-          onClick={() => onSelect(subChannel)}
-        >
-          <Checkbox checked={selectedChannels.includes(subChannel)} />
-          <p>{subChannel.name}</p>
-        </button>
-      ))}
-    </div>
-  </div>
-);
-
-const LoadingMessage = () => (
-  <div className="actions-secondary mt-6 rounded-md border p-4">
-    <Info size={18} className="text-muted-foreground" />
-    <p className="mt-2 mb-1 font-medium">Collecting data</p>
-    <p className="text-muted-foreground">
-      This may take a few minutes.
-      <br />
-      You can leave this page while we collect your data.
-      <br />
-      Do not hesitate to refresh the page to see data changes.
-    </p>
-  </div>
-);

@@ -1,4 +1,3 @@
-import type { Member } from "@conquest/zod/schemas/member.schema";
 import type { WebClient } from "@slack/web-api";
 import { upsertMember } from "../members/upsertMember";
 
@@ -9,7 +8,6 @@ type Props = {
 
 export const createListMembers = async ({ web, workspace_id }: Props) => {
   let cursor: string | undefined;
-  const listOfMembers: Member[] = [];
 
   do {
     const { members, response_metadata } = await web.users.list({
@@ -46,13 +44,9 @@ export const createListMembers = async ({ web, workspace_id }: Props) => {
         });
 
         if (!createdMember) continue;
-
-        listOfMembers.push(createdMember);
       }
     }
 
     cursor = response_metadata?.next_cursor;
   } while (cursor);
-
-  return listOfMembers;
 };

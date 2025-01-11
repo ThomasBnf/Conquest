@@ -2,7 +2,6 @@ import { discordClient } from "@/lib/discord";
 import { createTag } from "@/queries/tags/createTag";
 import type { DiscordIntegration } from "@conquest/zod/schemas/integration.schema";
 import type { Tag } from "@conquest/zod/schemas/tag.schema";
-import { DiscordAPIError } from "@discordjs/rest";
 import { type APIRole, Routes } from "discord-api-types/v10";
 
 type Props = {
@@ -14,48 +13,32 @@ export const createManyTags = async ({ discord }: Props) => {
 
   if (!external_id) return;
 
-  try {
-    const roles = (await discordClient.get(
-      Routes.guildRoles(external_id),
-    )) as APIRole[];
+  console.log("Creating many tags");
 
-    const tags: Tag[] = [];
+  const roles = (await discordClient.get(
+    Routes.guildRoles(external_id),
+  )) as APIRole[];
 
-    for (const role of roles) {
-      try {
-        const { id, name, color } = role;
+  const tags: Tag[] = [];
 
-        const decimalToHex = (decimal: number) =>
-          `#${decimal.toString(16).padStart(6, "0")}`;
+  for (const role of roles) {
+    const { id, name, color } = role;
 
-        const parsedColor = decimalToHex(color);
+    const decimalToHex = (decimal: number) =>
+      `#${decimal.toString(16).padStart(6, "0")}`;
 
-        const tag = await createTag({
-          external_id: id,
-          name,
-          color: parsedColor,
-          source: "DISCORD",
-          workspace_id: workspace_id,
-        });
+    const parsedColor = decimalToHex(color);
 
-        tags.push(tag);
-      } catch (error) {
-        if (error instanceof DiscordAPIError) {
-          console.error(
-            `Failed to create tag for role ${role.id}:`,
-            error.rawError,
-          );
-        } else {
-          console.error("@Error creating tag:", error);
-        }
-      }
-    }
+    const tag = await createTag({
+      external_id: id,
+      name,
+      color: parsedColor,
+      source: "DISCORD",
+      workspace_id: workspace_id,
+    });
 
-    return tags;
-  } catch (error) {
-    if (error instanceof DiscordAPIError) {
-      console.error("Failed to fetch Discord roles:", error.rawError);
-    }
-    return [];
+    tags.push(tag);
   }
+
+  return tags;
 };

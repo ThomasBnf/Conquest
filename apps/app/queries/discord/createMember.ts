@@ -1,7 +1,6 @@
 import { discordClient } from "@/lib/discord";
 import type { DiscordIntegration } from "@conquest/zod/schemas/integration.schema";
 import { MemberSchema } from "@conquest/zod/schemas/member.schema";
-import { DiscordAPIError } from "@discordjs/rest";
 import { type APIUser, Routes } from "discord-api-types/v10";
 import { upsertMember } from "../members/upsertMember";
 
@@ -44,9 +43,7 @@ export const createMember = async ({ discord, member_id }: Props) => {
 
     return MemberSchema.parse(member);
   } catch (error) {
-    if (error instanceof DiscordAPIError) {
-      console.error("Error creating Discord member:", error.rawError);
-    }
+    console.error("Error creating member", error);
     return null;
   }
 };

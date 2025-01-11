@@ -9,11 +9,11 @@ import { Checkbox } from "@conquest/ui/checkbox";
 import { cn } from "@conquest/ui/cn";
 import { Separator } from "@conquest/ui/separator";
 import { useRealtimeTaskTrigger } from "@trigger.dev/react-hooks";
-import { Info } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { LoadingChannels } from "./loading-channels";
+import { LoadingChannels } from "../integrations/loading-channels";
+import { LoadingMessage } from "../integrations/loading-message";
 
 export const ListSlackChannels = () => {
   const { slack } = useUser();
@@ -28,8 +28,8 @@ export const ListSlackChannels = () => {
     },
   );
 
-  const { data: channels, refetch: refetchChannels } = listChannels();
-  const { data: slackChannels, isLoading } = listSLackChannels();
+  const { channels, refetch } = listChannels();
+  const { slackChannels, isLoading } = listSLackChannels();
 
   const onSelect = (channel: string | undefined) => {
     if (!channel) return;
@@ -47,9 +47,7 @@ export const ListSlackChannels = () => {
     );
   };
 
-  const onUnselectAll = () => {
-    setSelectedChannels([]);
-  };
+  const onUnselectAll = () => setSelectedChannels([]);
 
   const onStart = async () => {
     if (!slack) return;
@@ -65,12 +63,11 @@ export const ListSlackChannels = () => {
 
     if (isFailed || error) {
       setLoading(false);
-      console.log(error);
       toast.error("Failed to install Slack", { duration: 5000 });
     }
 
     if (isCompleted) {
-      refetchChannels();
+      refetch();
       setSelectedChannels([]);
       router.refresh();
     }
@@ -127,19 +124,7 @@ export const ListSlackChannels = () => {
               );
             })}
           </div>
-          {loading && (
-            <div className="actions-secondary mt-6 rounded-md border p-4">
-              <Info size={18} className="text-muted-foreground" />
-              <p className="mt-2 mb-1 font-medium">Collecting data</p>
-              <p className="text-muted-foreground">
-                This may take a few minutes.
-                <br />
-                You can leave this page while we collect your data.
-                <br />
-                Do not hesitate to refresh the page to see data changes.
-              </p>
-            </div>
-          )}
+          {loading && <LoadingMessage />}
           <Button
             loading={loading}
             onClick={onStart}

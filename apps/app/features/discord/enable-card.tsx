@@ -12,7 +12,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { toast } from "sonner";
-import { ListDiscordChannels } from "./list-channels";
+import { ListDiscordChannels } from "./list-discord-channels";
 
 type Props = {
   error?: string;

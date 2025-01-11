@@ -3,11 +3,16 @@ import type { Channel as SlackChannel } from "@slack/web-api/dist/types/response
 import { useQuery } from "@tanstack/react-query";
 
 export const listSLackChannels = () => {
-  return useQuery({
+  const query = useQuery({
     queryKey: ["slack", "channels"],
     queryFn: async () => {
       const response = await client.api.slack.channels.$get();
       return (await response.json()) as SlackChannel[];
     },
   });
+
+  return {
+    ...query,
+    slackChannels: query.data,
+  };
 };

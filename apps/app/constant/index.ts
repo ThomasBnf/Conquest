@@ -133,6 +133,13 @@ export const DISCORD_ACTIVITY_TYPES = [
     weight: 4,
     deletable: false,
   },
+  {
+    name: "Add reaction",
+    source: "DISCORD" as const,
+    key: "discord:reaction",
+    weight: 4,
+    deletable: false,
+  },
 ];
 
 export const DISCOURSE_ACTIVITY_TYPES = [

@@ -1,4 +1,3 @@
-import { calculateMemberMetrics } from "@/client/dashboard/calculateMemberMetrics";
 import { SLACK_ACTIVITY_TYPES } from "@/constant";
 import { createManyActivityTypes } from "@/queries/activity-type/createManyActivityTypes";
 import { deleteIntegration } from "@/queries/integrations/deleteIntegration";
@@ -10,6 +9,7 @@ import { SlackIntegrationSchema } from "@conquest/zod/schemas/integration.schema
 import { WebClient } from "@slack/web-api";
 import { schemaTask } from "@trigger.dev/sdk/v3";
 import { z } from "zod";
+import { calculateMembersLevel } from "./calculateMembersLevel";
 
 export const installSlack = schemaTask({
   id: "install-slack",
@@ -50,19 +50,17 @@ export const installSlack = schemaTask({
       channels,
     });
 
-    const members = await createListMembers({ web, workspace_id });
+    await createListMembers({ web, workspace_id });
 
     for (const channel of createdChannels) {
       await listMessages({ web, channel, workspace_id });
     }
-
-    for (const member of members) {
-      await calculateMemberMetrics({ member });
-    }
-
-    return members;
   },
   onSuccess: async ({ slack }) => {
+    const { workspace_id } = slack;
+
+    calculateMembersLevel.trigger({ workspace_id });
+
     await updateIntegration({
       id: slack.id,
       connected_at: new Date(),

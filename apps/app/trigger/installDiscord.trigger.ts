@@ -27,7 +27,7 @@ export const installDiscord = schemaTask({
     maxAttempts: 1,
   },
   run: async ({ discord, channels }) => {
-    const { workspace_id, external_id, details } = discord;
+    const { workspace_id, external_id } = discord;
 
     if (!external_id) return;
 
@@ -41,12 +41,10 @@ export const installDiscord = schemaTask({
       workspace_id,
     });
 
-    console.log("@ start installing discord @");
-
+    const createdChannels = await createManyChannels({ discord, channels });
     const tags = await createManyTags({ discord });
 
     await createManyMembers({ discord, tags });
-    const createdChannels = await createManyChannels({ discord, channels });
     await createManyThreads({ discord });
 
     for (const channel of createdChannels ?? []) {
@@ -56,15 +54,16 @@ export const installDiscord = schemaTask({
 
       await listChannelMessages({
         discord,
-        channel_id: channel.external_id,
         channel,
         workspace_id,
       });
     }
-
-    calculateMembersLevel.trigger({ workspace_id });
   },
   onSuccess: async ({ discord }) => {
+    const { workspace_id } = discord;
+
+    calculateMembersLevel.trigger({ workspace_id });
+
     await updateIntegration({
       id: discord.id,
       connected_at: new Date(),
