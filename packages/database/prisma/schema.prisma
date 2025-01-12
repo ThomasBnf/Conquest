@@ -76,12 +76,13 @@ model activities {
 }
 
 model activities_types {
-  id        String  @id @default(cuid())
+  id        String   @id @default(cuid())
   name      String
   source    SOURCE
   key       String
-  weight    Int     @default(1)
-  deletable Boolean @default(true)
+  weight    Int      @default(1)
+  channels  String[] @default([])
+  deletable Boolean  @default(true)
 
   workspace_id String
   workspace    workspaces @relation(fields: [workspace_id], references: [id], onDelete: Cascade)

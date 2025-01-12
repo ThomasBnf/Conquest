@@ -4,19 +4,20 @@ import { updateCompany } from "@/actions/companies/updateCompany";
 import { EditableAddress } from "@/components/custom/editable-address";
 import { EditableDate } from "@/components/custom/editable-date";
 import { EditableInput } from "@/components/custom/editable-input";
+import { EditableMembers } from "@/components/custom/editable-members";
 import { FieldCard } from "@/components/custom/field-card";
 import { SourceBadge } from "@/components/custom/source-badge";
 import { TagPicker } from "@/features/tags/tag-picker";
 import { Avatar, AvatarFallback, AvatarImage } from "@conquest/ui/avatar";
 import { ScrollArea } from "@conquest/ui/scroll-area";
 import { Separator } from "@conquest/ui/separator";
-import type { Company } from "@conquest/zod/schemas/company.schema";
+import type { CompanyWithMembers } from "@conquest/zod/schemas/member.schema";
 import type { Tag } from "@conquest/zod/schemas/tag.schema";
 import { format } from "date-fns";
 import { TagIcon } from "lucide-react";
 
 type Props = {
-  company: Company;
+  company: CompanyWithMembers;
   tags: Tag[] | undefined;
 };
 
@@ -85,9 +86,9 @@ export const CompanySidebar = ({ company, tags }: Props) => {
               onUpdate={(value) => onUpdateCompany("name", value)}
             />
           </FieldCard>
-          {/* <FieldCard icon="Users" label="Members">
+          <FieldCard icon="Users" label="Members">
             <EditableMembers company={company} />
-          </FieldCard> */}
+          </FieldCard>
           <FieldCard icon="Globe" label="Domain">
             <EditableInput
               defaultValue={domain}

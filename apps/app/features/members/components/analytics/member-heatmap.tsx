@@ -111,7 +111,7 @@ const DayCell = ({
           )}
         />
       </TooltipTrigger>
-      <TooltipContent>
+      <TooltipContent align="start" side="right">
         <p>{format(day, "MMM d, yyyy")}</p>
         <p className="mt-1">
           {activities?.length ?? 0}{" "}

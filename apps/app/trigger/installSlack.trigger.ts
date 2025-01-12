@@ -36,11 +36,6 @@ export const installSlack = schemaTask({
       status: "SYNCING",
     });
 
-    await createManyActivityTypes({
-      activity_types: SLACK_ACTIVITY_TYPES,
-      workspace_id,
-    });
-
     const web = new WebClient(token);
 
     const createdChannels = await createListChannels({
@@ -48,6 +43,12 @@ export const installSlack = schemaTask({
       token,
       workspace_id,
       channels,
+    });
+
+    await createManyActivityTypes({
+      activity_types: SLACK_ACTIVITY_TYPES,
+      channels: createdChannels,
+      workspace_id,
     });
 
     await createListMembers({ web, workspace_id });

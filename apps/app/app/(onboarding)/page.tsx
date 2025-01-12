@@ -19,9 +19,11 @@ import { useState } from "react";
 export default function Page() {
   const { slug } = useUser();
   const [step, setStep] = useState(1);
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   const onComplete = async () => {
+    setLoading(true);
     await updateUser({ onboarding: new Date() });
     router.push(`/${slug}/settings/integrations`);
   };
@@ -39,6 +41,8 @@ export default function Page() {
         </p>
         <Button
           onClick={onComplete}
+          loading={loading}
+          disabled={loading}
           className={cn(buttonVariants({ size: "lg" }), "min-w-64")}
         >
           Get Started

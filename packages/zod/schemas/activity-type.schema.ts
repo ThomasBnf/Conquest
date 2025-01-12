@@ -16,6 +16,7 @@ export const ActivityTypeSchema = z.object({
   source: SOURCE,
   key: KEYSchema,
   weight: z.number().int().min(0).max(12),
+  channels: z.array(z.string()),
   deletable: z.boolean(),
   workspace_id: z.string(),
   created_at: z.coerce.date(),

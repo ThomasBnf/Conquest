@@ -61,6 +61,7 @@ export const installLivestorm = schemaTask({
 
     await createManyActivityTypes({
       activity_types: LIVESTORM_ACTIVITY_TYPES,
+      channels: [],
       workspace_id,
     });
 

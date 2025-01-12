@@ -36,12 +36,14 @@ export const installDiscord = schemaTask({
       status: "SYNCING",
     });
 
+    const createdChannels = await createManyChannels({ discord, channels });
+
     await createManyActivityTypes({
       activity_types: DISCORD_ACTIVITY_TYPES,
+      channels: createdChannels ?? [],
       workspace_id,
     });
 
-    const createdChannels = await createManyChannels({ discord, channels });
     const tags = await createManyTags({ discord });
 
     await createManyMembers({ discord, tags });

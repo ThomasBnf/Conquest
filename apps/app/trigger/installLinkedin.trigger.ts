@@ -42,6 +42,7 @@ export const installLinkedin = schemaTask({
 
     await createManyActivityTypes({
       activity_types: LINKEDIN_ACTIVITY_TYPES,
+      channels: [],
       workspace_id,
     });
 

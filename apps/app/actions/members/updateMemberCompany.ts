@@ -2,6 +2,7 @@
 
 import { authAction } from "@/lib/authAction";
 import { prisma } from "@/lib/prisma";
+import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
 export const updateMemberCompany = authAction
@@ -16,6 +17,7 @@ export const updateMemberCompany = authAction
   )
   .action(async ({ ctx: { user }, parsedInput: { id, company_id } }) => {
     const workspace_id = user.workspace_id;
+    const { slug } = user.workspace;
 
     await prisma.members.update({
       where: {
@@ -26,4 +28,6 @@ export const updateMemberCompany = authAction
         company_id,
       },
     });
+
+    revalidatePath(`/${slug}/companies/${company_id}`);
   });

@@ -16,6 +16,7 @@ export const getActivity = ({ id }: Props) => {
           activityId: id,
         },
       });
+
       return ActivityWithMemberSchema.parse(await response.json());
     },
   });

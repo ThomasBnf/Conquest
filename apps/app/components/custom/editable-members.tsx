@@ -13,17 +13,16 @@ import {
 } from "@conquest/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@conquest/ui/popover";
 import { Skeleton } from "@conquest/ui/skeleton";
-import type { Company } from "@conquest/zod/schemas/company.schema";
-import type { Member } from "@conquest/zod/schemas/member.schema";
+import type { CompanyWithMembers } from "@conquest/zod/schemas/member.schema";
 import { useQueryClient } from "@tanstack/react-query";
 import { X } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useInView } from "react-intersection-observer";
 import { toast } from "sonner";
 
 type Props = {
-  company: Company;
+  company: CompanyWithMembers;
 };
 
 export const EditableMembers = ({ company }: Props) => {
@@ -34,7 +33,7 @@ export const EditableMembers = ({ company }: Props) => {
   const router = useRouter();
   const queryClient = useQueryClient();
 
-  const [companyMembers, setCompanyMembers] = useState<Member[]>([]);
+  const companyMembers = useMemo(() => company.members, [company]);
 
   const { members, hasNextPage, fetchNextPage, isLoading } = listAllMembers({
     search,
@@ -55,11 +54,6 @@ export const EditableMembers = ({ company }: Props) => {
     }
 
     setSearch("");
-    setCompanyMembers((prev) =>
-      isMemberInCompany
-        ? prev.filter((member) => member.id !== memberId)
-        : [...prev, members?.find((member) => member.id === memberId)!],
-    );
     queryClient.invalidateQueries({
       queryKey: ["activities", company.id],
     });

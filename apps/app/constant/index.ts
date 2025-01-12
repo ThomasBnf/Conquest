@@ -148,6 +148,7 @@ export const DISCOURSE_ACTIVITY_TYPES = [
     source: "DISCOURSE" as const,
     key: "discourse:invite",
     weight: 7,
+    channels: [],
     deletable: false,
   },
   {

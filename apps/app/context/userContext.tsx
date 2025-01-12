@@ -9,7 +9,7 @@ import type {
 } from "@conquest/zod/schemas/integration.schema";
 import type { UserWithWorkspace } from "@conquest/zod/schemas/user.schema";
 import type { MembersPreferences } from "@conquest/zod/schemas/workspace.schema";
-import { createContext, useContext } from "react";
+import * as React from "react";
 
 type userContext = {
   user: UserWithWorkspace | undefined;
@@ -22,7 +22,7 @@ type userContext = {
   members_preferences: MembersPreferences | undefined;
 };
 
-const UserContext = createContext<userContext>({} as userContext);
+const UserContext = React.createContext<userContext>({} as userContext);
 
 type Props = {
   user: UserWithWorkspace | undefined;
@@ -72,4 +72,4 @@ export const UserProvider = ({ user, children }: Props) => {
   );
 };
 
-export const useUser = () => useContext(UserContext);
+export const useUser = () => React.useContext(UserContext);

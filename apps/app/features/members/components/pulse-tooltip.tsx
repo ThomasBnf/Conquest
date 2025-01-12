@@ -90,7 +90,7 @@ export const PulseTooltip = ({ member, showIcon = true }: Props) => {
         <p>{member.pulse}</p>
         {showIcon && <InfoIcon size={13} className="text-muted-foreground" />}
       </TooltipTrigger>
-      <TooltipContent align="end">
+      <TooltipContent align="start" side="right">
         <div className="flex items-center justify-between text-sm">
           <p className="w-36">Pulse</p>
           <p>{totalPulse}</p>

@@ -276,13 +276,30 @@ export const dashboard = new Hono()
         },
       });
 
-      const max: Record<string, number> = {};
-      const current: Record<string, number> = {};
+      const max: Record<string, number> = {
+        explorer: 0,
+        active: 0,
+        contributor: 0,
+        ambassador: 0,
+      };
+      const current: Record<string, number> = {
+        explorer: 0,
+        active: 0,
+        contributor: 0,
+        ambassador: 0,
+      };
+
+      const getLevelCategory = (level: number) => {
+        if (level >= 1 && level <= 3) return "explorer";
+        if (level >= 4 && level <= 6) return "active";
+        if (level >= 7 && level <= 9) return "contributor";
+        if (level >= 10 && level <= 12) return "ambassador";
+        return null;
+      };
 
       for (const member of members) {
         const logs = LogSchema.array().parse(member.logs);
 
-        // Pour max: on ne prend que le niveau maximum atteint dans la période
         const filteredLogs = logs.filter(
           (log) =>
             new Date(log.date) >= from &&
@@ -292,17 +309,19 @@ export const dashboard = new Hono()
 
         if (filteredLogs.length > 0) {
           const maxLevel = Math.max(...filteredLogs.map((log) => log.level));
-          max[maxLevel] = (max[maxLevel] ?? 0) + 1;
+          const maxCategory = getLevelCategory(maxLevel);
+          if (maxCategory) {
+            max[maxCategory] = (max[maxCategory] ?? 0) + 1;
+          }
         }
 
-        // Pour current: on ne prend que le niveau actuel une seule fois
         if (member.level > 0) {
-          current[member.level] = (current[member.level] ?? 0) + 1;
+          const currentCategory = getLevelCategory(member.level);
+          if (currentCategory) {
+            current[currentCategory] = (current[currentCategory] ?? 0) + 1;
+          }
         }
       }
-
-      console.dir(max, { depth: 10 });
-      console.dir(current, { depth: 10 });
 
       return c.json({
         max,

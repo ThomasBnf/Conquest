@@ -45,17 +45,18 @@ export const installDiscourse = schemaTask({
       }),
     );
 
-    await createManyActivityTypes({
-      activity_types: DISCOURSE_ACTIVITY_TYPES,
-      workspace_id,
-    });
-
-    const tags = await createManyTags({
+    const channels = await listCategories({
       client,
       workspace_id,
     });
 
-    await listCategories({
+    await createManyActivityTypes({
+      activity_types: DISCOURSE_ACTIVITY_TYPES,
+      channels,
+      workspace_id,
+    });
+
+    const tags = await createManyTags({
       client,
       workspace_id,
     });

@@ -42,7 +42,11 @@ export const LevelTooltip = ({ member, showIcon = true }: Props) => {
         </p>
         {showIcon && <InfoIcon size={13} className="text-muted-foreground" />}
       </TooltipTrigger>
-      <TooltipContent className="space-y-2 text-start" align="end">
+      <TooltipContent
+        className="space-y-2 text-start"
+        align="start"
+        side="right"
+      >
         <div>
           <div className="flex items-center justify-between">
             <p className="w-52">Max Weight Activity</p>

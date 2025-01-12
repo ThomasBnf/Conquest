@@ -191,11 +191,13 @@ export const PotentialAmbassadors = ({ from, to }: Props) => {
               {!isLoading && members?.length === 0 && (
                 <EmptyState
                   icon={<Members size={36} />}
-                  title={search ? "No members found" : "No at-risk members"}
+                  title={
+                    search ? "No members found" : "No potential ambassadors"
+                  }
                   description={
                     search
                       ? "None of your members match the current filters"
-                      : "At-risk members will be shown here"
+                      : "Potential ambassadors will be shown here"
                   }
                   className={
                     open ? "max-w-[calc(100vw-14rem)]" : "max-w-[100vw]"
