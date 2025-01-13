@@ -1,5 +1,4 @@
 import { DISCOURSE_ACTIVITY_TYPES } from "@/constant";
-import { sleep } from "@/helpers/sleep";
 import { discourseClient } from "@/lib/discourse";
 import { prisma } from "@/lib/prisma";
 import { createManyActivityTypes } from "@/queries/activity-type/createManyActivityTypes";
@@ -47,8 +46,6 @@ export const installDiscourse = schemaTask({
       client,
       workspace_id,
     });
-
-    await sleep(1000);
 
     await createManyActivityTypes({
       activity_types: DISCOURSE_ACTIVITY_TYPES,

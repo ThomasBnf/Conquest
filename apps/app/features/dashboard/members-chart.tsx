@@ -47,11 +47,13 @@ export const MembersChart = ({ from, to }: Props) => {
     from,
     to,
   });
+
   const {
     newMembers,
     newMembersData,
     isLoading: _isLoading,
   } = listNewMembers({ from, to });
+
   const {
     activeMembers,
     activeMembersData,
