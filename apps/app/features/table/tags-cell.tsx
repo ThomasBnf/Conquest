@@ -32,8 +32,8 @@ export const TagsCell = ({ id, initialTags, table }: Props) => {
   const tags = useMemo(() => initialTags, [initialTags]);
   const queryClient = useQueryClient();
 
-  const memberSliceTags = tags?.slice(0, 2);
-  const remainingCount = tags?.length > 2 ? tags?.slice(2) : [];
+  const memberSliceTags = tags?.slice(0, 1);
+  const remainingCount = tags?.length > 1 ? tags?.slice(1) : [];
   const filteredTags = allTags?.filter(
     (tag) => !tags?.some((t) => t.id === tag.id),
   );
