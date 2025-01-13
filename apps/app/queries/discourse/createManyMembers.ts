@@ -98,7 +98,7 @@ export const createManyMembers = async ({
 
       await calculateMemberMetrics({ member });
 
-      await sleep(2000);
+      await sleep(2500);
     }
 
     hasMore = users.length === 100;

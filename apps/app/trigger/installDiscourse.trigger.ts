@@ -5,7 +5,6 @@ import { createManyActivityTypes } from "@/queries/activity-type/createManyActiv
 import { createManyMembers } from "@/queries/discourse/createManyMembers";
 import { createManyTags } from "@/queries/discourse/createManyTags";
 import { listCategories } from "@/queries/discourse/list-categories";
-import { deleteIntegration } from "@/queries/integrations/deleteIntegration";
 import { updateIntegration } from "@/queries/integrations/updateIntegration";
 import { DiscourseIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
 import { schemaTask } from "@trigger.dev/sdk/v3";
@@ -21,9 +20,6 @@ export const installDiscourse = schemaTask({
     community_url: z.string(),
     api_key: z.string(),
   }),
-  retry: {
-    maxAttempts: 1,
-  },
   run: async ({ discourse, community_url, api_key }) => {
     const client = discourseClient({ community_url, api_key });
     const { workspace_id } = discourse;
@@ -75,9 +71,9 @@ export const installDiscourse = schemaTask({
     });
   },
   onFailure: async ({ discourse }) => {
-    await deleteIntegration({
-      source: "DISCOURSE",
-      integration: discourse,
-    });
+    // await deleteIntegration({
+    //   source: "DISCOURSE",
+    //   integration: discourse,
+    // });
   },
 });
