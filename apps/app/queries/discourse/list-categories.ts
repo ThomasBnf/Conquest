@@ -37,7 +37,7 @@ export const listCategories = async ({ client, workspace_id }: Props) => {
     if (!parent) continue;
 
     if (!parent.parent_category_id) {
-      const channel = await prisma.channels.create({
+      await prisma.channels.create({
         data: {
           external_id: String(id),
           name: `${parent.name} - ${name}`,
@@ -47,7 +47,6 @@ export const listCategories = async ({ client, workspace_id }: Props) => {
         },
       });
 
-      channels.push(channel);
       continue;
     }
 
@@ -57,7 +56,7 @@ export const listCategories = async ({ client, workspace_id }: Props) => {
 
     if (!grandParent) continue;
 
-    const channel = await prisma.channels.create({
+    await prisma.channels.create({
       data: {
         external_id: String(id),
         name: `${grandParent.name} - ${parent.name} - ${name}`,
@@ -66,8 +65,6 @@ export const listCategories = async ({ client, workspace_id }: Props) => {
         workspace_id,
       },
     });
-
-    channels.push(channel);
   }
 
   return channels;
