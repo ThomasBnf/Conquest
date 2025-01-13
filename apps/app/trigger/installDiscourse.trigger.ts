@@ -1,10 +1,12 @@
 import { DISCOURSE_ACTIVITY_TYPES } from "@/constant";
+import { sleep } from "@/helpers/sleep";
 import { discourseClient } from "@/lib/discourse";
 import { prisma } from "@/lib/prisma";
 import { createManyActivityTypes } from "@/queries/activity-type/createManyActivityTypes";
 import { createManyMembers } from "@/queries/discourse/createManyMembers";
 import { createManyTags } from "@/queries/discourse/createManyTags";
 import { listCategories } from "@/queries/discourse/list-categories";
+import { deleteIntegration } from "@/queries/integrations/deleteIntegration";
 import { updateIntegration } from "@/queries/integrations/updateIntegration";
 import { DiscourseIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
 import { schemaTask } from "@trigger.dev/sdk/v3";
@@ -46,6 +48,8 @@ export const installDiscourse = schemaTask({
       workspace_id,
     });
 
+    await sleep(1000);
+
     await createManyActivityTypes({
       activity_types: DISCOURSE_ACTIVITY_TYPES,
       channels,
@@ -71,9 +75,9 @@ export const installDiscourse = schemaTask({
     });
   },
   onFailure: async ({ discourse }) => {
-    // await deleteIntegration({
-    //   source: "DISCOURSE",
-    //   integration: discourse,
-    // });
+    await deleteIntegration({
+      source: "DISCOURSE",
+      integration: discourse,
+    });
   },
 });
