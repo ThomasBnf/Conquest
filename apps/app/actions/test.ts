@@ -38,7 +38,6 @@ export const test = authAction
         minMatchCharLength: 2,
       });
 
-      // Only search with non-null values
       const searchString = [
         member.first_name,
         member.last_name,
