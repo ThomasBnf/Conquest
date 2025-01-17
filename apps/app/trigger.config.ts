@@ -18,4 +18,5 @@ export default defineConfig({
     },
   },
   machine: "small-2x",
+  maxDuration: 1000 * 60 * 60 * 24,
 });
