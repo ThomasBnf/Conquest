@@ -124,7 +124,7 @@ export const FilterButton = ({ filters, setFilters, handleUpdate }: Props) => {
           filters.length > 0 && "gap-1",
         )}
       >
-        <Popover open={open} onOpenChange={setOpen}>
+        <Popover open={open} onOpenChange={setOpen} modal>
           <PopoverTrigger asChild>
             <Button ref={refButton} variant="outline">
               <ListFilter size={16} />
@@ -215,9 +215,9 @@ const filtersMember: Filter[] = [
   },
   {
     id: "1",
-    label: "Location",
+    label: "Locale",
     type: "select",
-    field: "location",
+    field: "locale",
     operator: "contains",
     values: [],
   },
@@ -252,6 +252,7 @@ const filtersActivity: Filter[] = [
     id: "1",
     label: "Activity type",
     type: "activity",
+    field: "activity_type",
     activity_types: [],
     operator: "greater or equal",
     value: 1,

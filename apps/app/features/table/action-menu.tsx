@@ -36,7 +36,7 @@ export const ActionMenu = ({ rowSelected, setRowSelected, table }: Props) => {
     if (error) return toast.error(error);
 
     toast.success("Members deleted");
-    queryClient.invalidateQueries({ queryKey: ["members"] });
+    queryClient.invalidateQueries({ queryKey: ["members"], exact: false });
     setRowSelected([]);
   };
 
@@ -50,12 +50,10 @@ export const ActionMenu = ({ rowSelected, setRowSelected, table }: Props) => {
     const result = await deleteManyCompanies({ ids });
     const error = result?.serverError;
 
-    console.log(result);
-
     if (error) return toast.error(error);
 
     toast.success("Companies deleted");
-    queryClient.invalidateQueries({ queryKey: ["companies"] });
+    queryClient.invalidateQueries({ queryKey: ["companies"], exact: false });
     setRowSelected([]);
   };
 

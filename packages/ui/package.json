@@ -46,6 +46,7 @@
     "./sidebar": "./src/components/sidebar.tsx",
     "./skeleton": "./src/components/skeleton.tsx",
     "./switch": "./src/components/switch.tsx",
+    "./table": "./src/components/table.tsx",
     "./text-field": "./src/components/text-field.tsx",
     "./textarea": "./src/components/textarea.tsx",
     "./toggle-group": "./src/components/toggle-group.tsx",

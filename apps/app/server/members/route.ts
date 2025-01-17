@@ -53,7 +53,7 @@ export const members = new Hono()
         c.req.valid("query");
 
       const searchParsed = search.toLowerCase().trim();
-      const orderBy = getOrderBy({ id, desc });
+      const orderBy = getOrderBy({ id, desc, type: "members" });
       const filterBy = getFilters({ filters });
 
       const members = await prisma.$queryRaw`
@@ -182,19 +182,17 @@ export const members = new Hono()
       return c.json(MemberWithCompanySchema.array().parse(members));
     },
   )
-  .get("/locations", async (c) => {
+  .get("/locales", async (c) => {
     const { workspace_id } = c.get("user");
 
-    const memberLocations = await prisma.members.groupBy({
-      by: ["location"],
+    const memberLocales = await prisma.members.groupBy({
+      by: ["locale"],
       where: { workspace_id },
     });
 
-    const locations = memberLocations
-      .map((member) => member.location)
-      .filter((location) => location !== "");
+    const locales = memberLocales.map((locale) => locale.locale);
 
-    return c.json(locations);
+    return c.json(locales);
   })
   .get("/:memberId/metrics", async (c) => {
     const { workspace_id } = c.get("user");

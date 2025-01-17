@@ -1,10 +1,9 @@
-import { prisma } from "@/lib/prisma";
 import type { DiscourseIntegration } from "@conquest/zod/schemas/integration.schema";
 import type { Member } from "@conquest/zod/schemas/member.schema";
 import type { Reaction } from "@conquest/zod/types/discourse";
 import { startOfDay, subDays } from "date-fns";
 import { createActivity } from "../activities/createActivity";
-import { getActivityType } from "../activity-type/getActivityType";
+import { getChannel } from "../channels/getChannel";
 
 type Props = {
   discourse: DiscourseIntegration;
@@ -57,11 +56,11 @@ export const createManyReactions = async ({ discourse, member }: Props) => {
       const { category_id, topic_id, created_at } = post;
       const { reaction_value } = reaction;
 
-      const channel = await prisma.channels.findFirst({
-        where: {
-          external_id: String(category_id),
-          workspace_id,
-        },
+      if (!category_id) continue;
+
+      const channel = await getChannel({
+        external_id: String(category_id),
+        workspace_id,
       });
 
       if (!channel) continue;

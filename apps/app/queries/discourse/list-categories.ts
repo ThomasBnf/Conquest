@@ -1,5 +1,4 @@
 import { prisma } from "@/lib/prisma";
-import type { Channel } from "@conquest/zod/schemas/channel.schema";
 import type DiscourseAPI from "discourse2";
 
 type Props = {
@@ -8,15 +7,13 @@ type Props = {
 };
 
 export const listCategories = async ({ client, workspace_id }: Props) => {
-  const channels: Channel[] = [];
-
   const { categories } = await client.getSite();
 
   for (const category of categories) {
     const { id, name, slug } = category;
 
     if (!category.parent_category_id) {
-      const channel = await prisma.channels.create({
+      await prisma.channels.create({
         data: {
           external_id: String(id),
           name: name ?? "",
@@ -26,7 +23,6 @@ export const listCategories = async ({ client, workspace_id }: Props) => {
         },
       });
 
-      channels.push(channel);
       continue;
     }
 
@@ -66,6 +62,4 @@ export const listCategories = async ({ client, workspace_id }: Props) => {
       },
     });
   }
-
-  return channels;
 };

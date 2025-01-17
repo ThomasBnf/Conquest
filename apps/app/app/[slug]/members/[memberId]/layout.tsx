@@ -1,9 +1,9 @@
 import { HeaderSubPage } from "@/components/layouts/header-subpage";
 import { PageLayout } from "@/components/layouts/page-layout";
 import { ActivityDialog } from "@/features/activities/activity-dialog";
-import { MemberMenu } from "@/features/members/components/details/member-menu";
-import { MemberSidebar } from "@/features/members/components/details/member-sidebar";
-import { Tabs } from "@/features/members/components/tabs";
+import { MemberMenu } from "@/features/members/member-menu";
+import { MemberSidebar } from "@/features/members/member-sidebar";
+import { Tabs } from "@/features/members/tabs";
 import { getMember } from "@/queries/members/getMember";
 import { listTags } from "@/queries/tags/listTags";
 import { getCurrentUser } from "@/queries/users/getCurrentUser";

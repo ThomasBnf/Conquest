@@ -493,7 +493,7 @@ export const dashboard = new Hono()
         c.req.valid("query");
 
       const searchParsed = search.toLowerCase().trim();
-      const orderBy = getOrderBy({ id, desc });
+      const orderBy = getOrderBy({ id, desc, type: "members" });
       const filterBy = getFilters({ filters });
 
       const count = await prisma.$queryRaw<[{ count: bigint }]>`
@@ -595,7 +595,7 @@ export const dashboard = new Hono()
         c.req.valid("query");
 
       const searchParsed = search.toLowerCase().trim();
-      const orderBy = getOrderBy({ id, desc });
+      const orderBy = getOrderBy({ id, desc, type: "members" });
       const filterBy = getFilters({ filters });
 
       const count = await prisma.$queryRaw<[{ count: bigint }]>`

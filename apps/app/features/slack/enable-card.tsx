@@ -10,7 +10,7 @@ import { cn } from "@conquest/ui/cn";
 import { CirclePlus, ExternalLink } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { ListSlackChannels } from "./list-slack-channels";
 
@@ -21,11 +21,12 @@ type Props = {
 export const EnableCard = ({ error }: Props) => {
   const { slug, slack } = useUser();
   const { trigger_token, trigger_token_expires_at } = slack ?? {};
-  const isEnabled = slack?.status === "ENABLED";
-  const isConnected = slack?.status === "CONNECTED";
-  const isSyncing = slack?.status === "SYNCING";
+  const [isConnecting, setIsConnecting] = useState(false);
   const router = useRouter();
 
+  const isEnabled = slack?.status === "ENABLED";
+  const isSyncing = slack?.status === "SYNCING";
+  const isConnected = slack?.status === "CONNECTED";
   const isExpired =
     trigger_token_expires_at && trigger_token_expires_at < new Date();
 
@@ -50,7 +51,6 @@ export const EnableCard = ({ error }: Props) => {
     });
 
     const error = response?.serverError;
-
     if (error) toast.error(error);
   };
 
@@ -58,6 +58,7 @@ export const EnableCard = ({ error }: Props) => {
     if (trigger_token_expires_at && trigger_token_expires_at < new Date()) {
       onDisconnect();
     }
+
     if (error) {
       switch (error) {
         case "invalid_code":
@@ -83,7 +84,7 @@ export const EnableCard = ({ error }: Props) => {
       <CardHeader className="flex h-14 flex-row items-center justify-between space-y-0">
         <div className="flex items-center">
           <Link
-            href="https://doc.useconquest.com/slack"
+            href="https://docs.useconquest.com/slack"
             target="_blank"
             className={cn(
               buttonVariants({ variant: "link", size: "xs" }),
@@ -100,7 +101,7 @@ export const EnableCard = ({ error }: Props) => {
             Enable
           </Button>
         )}
-        {isEnabled && (
+        {isEnabled && !isConnecting && !isExpired && (
           <Button variant="destructive" onClick={onDisconnect}>
             Disconnect
           </Button>
@@ -109,11 +110,12 @@ export const EnableCard = ({ error }: Props) => {
       <CardContent className="mb-0.5">
         <p className="font-medium text-base">Overview</p>
         <p className="text-balance text-muted-foreground">
-          Connect your Slack workspace to automatically sync messages, collect
-          member interactions, and send personalized direct messages through
-          automated workflows.
+          Connect your Slack community to get a complete overview of your
+          members and community activity.
         </p>
-        {(isEnabled || isSyncing) && !isExpired && <ListSlackChannels />}
+        {(isEnabled || isSyncing) && !isExpired && (
+          <ListSlackChannels setIsConnecting={setIsConnecting} />
+        )}
       </CardContent>
     </Card>
   );

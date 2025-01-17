@@ -1,5 +1,5 @@
 import { DateCell } from "@/components/custom/date-cell";
-import { LocationBadge } from "@/components/custom/location-badge";
+import { LocaleBadge } from "@/components/custom/locale-badge";
 import { SourceBadge } from "@/components/custom/source-badge";
 import { ColumnHeader } from "@/features/table/column-header";
 import { TagsCell } from "@/features/table/tags-cell";
@@ -11,8 +11,8 @@ import type { MemberWithCompany } from "@conquest/zod/schemas/member.schema";
 import type { Tag } from "@conquest/zod/schemas/tag.schema";
 import Link from "next/link";
 import type { Dispatch, SetStateAction } from "react";
-import { LevelTooltip } from "../level-tooltip";
-import { PulseTooltip } from "../pulse-tooltip";
+import { LevelTooltip } from "../members/level-tooltip";
+import { PulseTooltip } from "../members/pulse-tooltip";
 
 type Column = {
   id: string;
@@ -34,7 +34,7 @@ type Props = {
   tags: Tag[] | undefined;
 };
 
-export const Columns = ({ tags }: Props): Column[] => [
+export const MembersColumns = ({ tags }: Props): Column[] => [
   {
     id: "select",
     header: ({ members, rowSelected, setRowSelected }) => (
@@ -75,32 +75,25 @@ export const Columns = ({ tags }: Props): Column[] => [
   {
     id: "full_name",
     header: () => <ColumnHeader id="full_name" title="Full Name" width={285} />,
-    cell: ({ slug, member }) => {
-      return (
-        <Link
-          href={`/${slug}/members/${member.id}/analytics`}
-          className={cn(
-            buttonVariants({ variant: "ghost" }),
-            "flex items-center gap-2 truncate px-1.5",
-          )}
-        >
-          <Avatar className="size-6">
-            <AvatarImage src={member.avatar_url ?? ""} />
-            <AvatarFallback className="text-sm">
-              {member.first_name?.charAt(0).toUpperCase()}
-            </AvatarFallback>
-          </Avatar>
-          <p className="truncate font-medium">
-            {[
-              member.first_name !== null ? member.first_name : null,
-              member.last_name !== null ? member.last_name : null,
-            ]
-              .filter(Boolean)
-              .join(" ")}
-          </p>
-        </Link>
-      );
-    },
+    cell: ({ slug, member }) => (
+      <Link
+        href={`/${slug}/members/${member.id}/analytics`}
+        className={cn(
+          buttonVariants({ variant: "ghost" }),
+          "flex items-center gap-2 truncate px-1.5",
+        )}
+      >
+        <Avatar className="size-6">
+          <AvatarImage src={member.avatar_url ?? ""} />
+          <AvatarFallback className="text-sm">
+            {member.first_name?.charAt(0).toUpperCase()}
+          </AvatarFallback>
+        </Avatar>
+        <p className="truncate font-medium">
+          {member.first_name} {member.last_name}
+        </p>
+      </Link>
+    ),
     width: 285,
   },
   {
@@ -135,7 +128,7 @@ export const Columns = ({ tags }: Props): Column[] => [
   },
   {
     id: "level",
-    header: () => <ColumnHeader id="level" title="Level" width={200} />,
+    header: () => <ColumnHeader id="level" title="Level" width={185} />,
     cell: ({ member }) => {
       return (
         <div className="flex w-full items-center justify-end p-2">
@@ -143,11 +136,11 @@ export const Columns = ({ tags }: Props): Column[] => [
         </div>
       );
     },
-    width: 200,
+    width: 185,
   },
   {
     id: "pulse",
-    header: () => <ColumnHeader id="pulse" title="Pulse" width={200} />,
+    header: () => <ColumnHeader id="pulse" title="Pulse" width={185} />,
     cell: ({ member }) => {
       return (
         <div className="flex w-full items-center justify-end p-2">
@@ -155,7 +148,7 @@ export const Columns = ({ tags }: Props): Column[] => [
         </div>
       );
     },
-    width: 200,
+    width: 185,
   },
   {
     id: "last_activity",
@@ -170,7 +163,7 @@ export const Columns = ({ tags }: Props): Column[] => [
     header: () => <ColumnHeader id="location" title="Location" width={250} />,
     cell: ({ member }) => (
       <div className="p-2">
-        <LocationBadge location={member.location} />
+        <LocaleBadge locale={member.locale} />
       </div>
     ),
     width: 250,
@@ -199,6 +192,7 @@ export const Columns = ({ tags }: Props): Column[] => [
     cell: ({ member }) => <DateCell date={member.created_at} />,
     width: 250,
   },
+
   {
     id: "source",
     header: () => <ColumnHeader id="source" title="Source" width={250} />,

@@ -1,4 +1,4 @@
-import { mergeMember } from "@/actions/members/mergeMember";
+import { mergeMembers } from "@/actions/members/mergeMembers";
 import { Button } from "@conquest/ui/button";
 import {
   Dialog,
@@ -51,7 +51,7 @@ export const MergeDialog = ({ open, setOpen, member }: Props) => {
 
     setLoading(true);
 
-    const response = await mergeMember({ leftMember, rightMember });
+    const response = await mergeMembers({ leftMember, rightMember });
     const error = response?.serverError;
 
     if (error) {

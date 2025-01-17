@@ -21,7 +21,7 @@ export const listMembers = async ({
   workspace_id,
 }: Props) => {
   const searchParsed = search.toLowerCase().trim();
-  const orderBy = getOrderBy({ id: id, desc });
+  const orderBy = getOrderBy({ id: id, desc, type: "members" });
 
   const members = await prisma.$queryRaw`
     SELECT 

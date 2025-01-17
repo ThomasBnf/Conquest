@@ -10,12 +10,14 @@ type Props = {
   external_id: string | null;
   workspace_id: string;
   details: IntegrationDetails;
+  created_by: string;
 };
 
 export const createIntegration = async ({
   external_id,
   workspace_id,
   details,
+  created_by,
 }: Props) => {
   const integrationExist = await prisma.integrations.findFirst({
     where: {
@@ -72,9 +74,10 @@ export const createIntegration = async ({
       external_id,
       status: "ENABLED",
       details,
-      workspace_id,
       trigger_token: triggerToken,
       trigger_token_expires_at: expiresAt,
+      created_by,
+      workspace_id,
     },
   });
 

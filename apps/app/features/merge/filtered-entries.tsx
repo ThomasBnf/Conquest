@@ -1,4 +1,4 @@
-import { LocationBadge } from "@/components/custom/location-badge";
+import { LocaleBadge } from "@/components/custom/locale-badge";
 import { SourceBadge } from "@/components/custom/source-badge";
 import { cn } from "@conquest/ui/cn";
 import type { Source } from "@conquest/zod/enum/source.enum";
@@ -14,26 +14,26 @@ export const FilteredEntries = ({ member }: Props) => {
     ["primary_email", member.primary_email],
     ["job_title", member.job_title],
     ["company", member.company?.name],
-    ["location", member.location],
+    ["locale", member.locale],
     ["source", member.source],
     ["first_activity", member.first_activity],
   ];
 
   return entries.map(([key, value]) => {
     switch (key) {
-      case "location": {
+      case "locale": {
         return (
           <div className="space-y-1">
-            <p className="text-muted-foreground text-xs capitalize">Location</p>
+            <p className="text-muted-foreground text-xs capitalize">Locale</p>
             {value ? (
-              <LocationBadge location={value as string} />
+              <LocaleBadge locale={value as string} />
             ) : (
               <p className="text-muted-foreground">N/A</p>
             )}
           </div>
         );
       }
-      case "source": {
+      case "sources": {
         return (
           <div className="space-y-1">
             <p className="text-muted-foreground text-xs capitalize">Source</p>

@@ -12,8 +12,9 @@ export default async function Page() {
       source: "DISCOURSE",
       community_url: "",
       api_key: "",
-      signature: "",
+      user_fields: [],
     },
+    created_by: user.id,
     workspace_id,
   });
 

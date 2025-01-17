@@ -15,12 +15,16 @@ import { upsertMember } from "@/queries/members/upsertMember";
 import { LivestormIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
 import type { Event, Session } from "@conquest/zod/types/livestorm";
 import { schemaTask } from "@trigger.dev/sdk/v3";
+import { getLocaleByAlpha2 } from "country-locale-map";
 import { z } from "zod";
 
 export const installLivestorm = schemaTask({
   id: "install-livestorm",
   machine: {
     preset: "small-2x",
+  },
+  retry: {
+    maxAttempts: 1,
   },
   schema: z.object({
     livestorm: LivestormIntegrationSchema,
@@ -61,7 +65,6 @@ export const installLivestorm = schemaTask({
 
     await createManyActivityTypes({
       activity_types: LIVESTORM_ACTIVITY_TYPES,
-      channels: [],
       workspace_id,
     });
 
@@ -131,10 +134,14 @@ export const installLivestorm = schemaTask({
             avatar_link,
             registrant_detail,
             role,
+            created_at,
           } = attributes;
-          const { ip_country_code } = registrant_detail;
+          const { ip_country_code, attended, is_guest_speaker } =
+            registrant_detail;
 
           if (role === "team_member") continue;
+
+          const locale = getLocaleByAlpha2(ip_country_code) ?? null;
 
           const createdMember = await upsertMember({
             id,
@@ -143,20 +150,45 @@ export const installLivestorm = schemaTask({
               last_name,
               primary_email: email,
               avatar_url: avatar_link,
-              location: ip_country_code,
+              locale,
               source: "LIVESTORM",
               workspace_id,
             },
           });
 
-          await createActivity({
-            external_id: null,
-            activity_type_key: "livestorm:attend",
-            message: `Attended the Livestorm event: ${title}`,
-            event_id: createdEvent.id,
-            member_id: createdMember.id,
-            workspace_id,
-          });
+          if (is_guest_speaker) {
+            await createActivity({
+              external_id: null,
+              activity_type_key: "livestorm:co-host",
+              message: `Co-hosted the Livestorm event: ${title}`,
+              member_id: createdMember.id,
+              event_id: createdEvent.id,
+              created_at: new Date(created_at * 1000),
+              workspace_id,
+            });
+          } else {
+            await createActivity({
+              external_id: null,
+              activity_type_key: "livestorm:register",
+              message: `Registered for the Livestorm event: ${title}`,
+              member_id: createdMember.id,
+              event_id: createdEvent.id,
+              created_at: new Date(ended_at * 1000),
+              workspace_id,
+            });
+
+            if (attended) {
+              await createActivity({
+                external_id: null,
+                activity_type_key: "livestorm:attend",
+                message: `Attended the Livestorm event: ${title}`,
+                member_id: createdMember.id,
+                event_id: createdEvent.id,
+                created_at: new Date(ended_at * 1000),
+                workspace_id,
+              });
+            }
+          }
 
           await calculateMemberMetrics({ member: createdMember });
         }

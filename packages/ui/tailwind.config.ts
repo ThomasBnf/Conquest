@@ -79,6 +79,9 @@ const config = {
         linkedin: {
           DEFAULT: "hsl(var(--linkedin))",
         },
+        livestorm: {
+          DEFAULT: "hsl(var(--livestorm))",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",

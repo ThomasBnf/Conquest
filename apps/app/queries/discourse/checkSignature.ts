@@ -1,3 +1,4 @@
+import { env } from "@/env.mjs";
 import { prisma } from "@/lib/prisma";
 import { DiscourseIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
 import type { Context } from "hono";
@@ -14,8 +15,7 @@ export const checkSignature = async ({ c }: Props) => {
 
   if (!signature) return false;
 
-  const secret =
-    "a7e80919eecc82b71fe8a23d8d0e199bf3d593216835315133254de014e9e1b3";
+  const secret = env.DISCOURSE_SECRET_KEY;
 
   const expectedSignature = createHmac("sha256", secret)
     .update(rawBody)

@@ -1,7 +1,7 @@
-import { MemberHeatmap } from "@/features/members/components/analytics/member-heatmap";
-import { MemberLevelLogs } from "@/features/members/components/analytics/member-level-logs";
-import { MemberPresenceLogs } from "@/features/members/components/analytics/member-presence-logs";
-import { MemberPulseLogs } from "@/features/members/components/analytics/member-pulse-logs";
+import { MemberHeatmap } from "@/features/members/member-heatmap";
+import { MemberLevelLogs } from "@/features/members/member-level-logs";
+import { MemberPresenceLogs } from "@/features/members/member-presence-logs";
+import { MemberPulseLogs } from "@/features/members/member-pulse-logs";
 import { listMemberActivitiesCount } from "@/queries/activities/listMemberActivitiesCount";
 import { getMember } from "@/queries/members/getMember";
 import { getCurrentUser } from "@/queries/users/getCurrentUser";

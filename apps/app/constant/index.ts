@@ -20,6 +20,8 @@ export const OPERATORS: Operator[] = [
   "not equal",
   "less or equal",
   "less",
+  "empty",
+  "not_empty",
 ];
 
 import type { RepeatOn } from "@conquest/zod/schemas/node.schema";
@@ -197,10 +199,24 @@ export const DISCOURSE_ACTIVITY_TYPES = [
 
 export const LIVESTORM_ACTIVITY_TYPES = [
   {
-    name: "Attend event",
+    name: "Co-host a webinar",
+    source: "LIVESTORM" as const,
+    key: "livestorm:co-host",
+    weight: 10,
+    deletable: false,
+  },
+  {
+    name: "Attend a webinar",
     source: "LIVESTORM" as const,
     key: "livestorm:attend",
     weight: 8,
+    deletable: false,
+  },
+  {
+    name: "Register for a webinar",
+    source: "LIVESTORM" as const,
+    key: "livestorm:register",
+    weight: 5,
     deletable: false,
   },
 ];

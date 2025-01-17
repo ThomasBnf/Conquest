@@ -74,13 +74,13 @@ export const EditableEmails = ({ member }: Props) => {
     <DropdownMenu open={open} onOpenChange={setOpen}>
       <DropdownMenuTrigger asChild className="w-full cursor-pointer">
         {emails.filter((email) => email.content !== "").length > 0 ? (
-          <div className="flex w-full flex-col gap-1 rounded-md p-1 hover:bg-muted">
+          <div className="flex w-full flex-col gap-1 truncate rounded-md p-1 hover:bg-muted">
             {emails.map((email) => {
               if (email.content === "") return;
               return (
                 <p
                   key={email.id}
-                  className="line-clamp-1 h-6 w-fit place-content-center rounded-md border border-blue-200 bg-background px-1.5 text-blue-500 hover:text-blue-500"
+                  className="h-6 w-fit max-w-[225px] place-content-center truncate rounded-md border border-blue-200 bg-background px-1.5 text-blue-500 hover:text-blue-500"
                 >
                   {email.content}
                 </p>

@@ -30,8 +30,6 @@ export const action = authAction
     //   workspace_id,
     // });
 
-    console.log("@ start installing discord @");
-
     const tags = await createManyTags({ discord });
 
     // await createManyMembers({ discord, tags });

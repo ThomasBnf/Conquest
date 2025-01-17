@@ -25,7 +25,6 @@ export const discourse = new Hono().post("/", async (c) => {
   }
 
   const event = c.req.header("X-Discourse-Event");
-  console.log(event);
 
   const body = await c.req.json();
   const { category, topic, post, user, like, user_badge, solved } =

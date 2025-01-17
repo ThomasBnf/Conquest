@@ -20,10 +20,11 @@ type Props = {
 export const EnableCard = ({ error }: Props) => {
   const { slug, livestorm } = useUser();
   const { trigger_token, trigger_token_expires_at } = livestorm ?? {};
-  const isEnabled = livestorm?.status === "ENABLED";
-  const isConnected = livestorm?.status === "CONNECTED";
-
   const router = useRouter();
+
+  const isEnabled = livestorm?.status === "ENABLED";
+  const isSyncing = livestorm?.status === "SYNCING";
+  const isConnected = livestorm?.status === "CONNECTED";
   const isExpired =
     trigger_token_expires_at && trigger_token_expires_at < new Date();
 
@@ -113,7 +114,7 @@ export const EnableCard = ({ error }: Props) => {
           Connect your Livestorm workspace to retrieve all your webinar sessions
           and their participants.
         </p>
-        {isEnabled && !isExpired && <OrganizationInfo />}
+        {(isEnabled || isSyncing) && !isExpired && <OrganizationInfo />}
       </CardContent>
     </Card>
   );

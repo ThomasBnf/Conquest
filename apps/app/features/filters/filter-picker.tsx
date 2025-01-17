@@ -32,14 +32,20 @@ export const FilterPicker = ({ filter, setFilters, handleUpdate }: Props) => {
 
   const handleUpdateOperator = (operator: Operator) => {
     setFilters((prevFilters) => {
-      const newFilters = FilterSchema.array().parse(
-        prevFilters.map((f) =>
-          f.id === filter.id ? { ...filter, operator: operator } : f,
-        ),
-      );
+      const newFilters = prevFilters.map((f) => {
+        if (f.id !== filter.id) return f;
 
-      handleUpdate?.(newFilters);
-      return newFilters;
+        const parsedFilter = FilterSchema.parse(f);
+
+        return {
+          ...parsedFilter,
+          operator,
+        };
+      });
+
+      const validatedFilters = FilterSchema.array().parse(newFilters);
+      handleUpdate?.(validatedFilters);
+      return validatedFilters;
     });
   };
 
@@ -75,38 +81,42 @@ export const FilterPicker = ({ filter, setFilters, handleUpdate }: Props) => {
       <Separator orientation="vertical" />
       <OperatorPicker filter={filter} handleUpdate={handleUpdateOperator} />
       <Separator orientation="vertical" />
-      {filter.type === "select" ? (
-        <SelectPicker
-          filter={filter}
-          setFilters={setFilters}
-          handleUpdate={handleUpdate}
-          triggerButton
-        />
-      ) : filter.type === "text" ? (
-        <InputDialog
-          filter={filter}
-          handleApply={handleApply}
-          type="text"
-          triggerButton
-        />
-      ) : filter.type === "number" ? (
-        <InputDialog
-          filter={filter}
-          handleApply={handleApply}
-          type="number"
-          triggerButton
-        />
-      ) : filter.type === "date" ? (
-        <p className="px-1">{filter.days}</p>
-      ) : filter.type === "level" ? (
-        <LevelPicker
-          filter={filter}
-          setFilters={setFilters}
-          handleUpdate={handleUpdate}
-          triggerButton
-        />
-      ) : null}
-      <Separator orientation="vertical" />
+      {filter.operator !== "not_empty" && filter.operator !== "empty" && (
+        <>
+          {filter.type === "select" ? (
+            <SelectPicker
+              filter={filter}
+              setFilters={setFilters}
+              handleUpdate={handleUpdate}
+              triggerButton
+            />
+          ) : filter.type === "text" ? (
+            <InputDialog
+              filter={filter}
+              handleApply={handleApply}
+              type="text"
+              triggerButton
+            />
+          ) : filter.type === "number" ? (
+            <InputDialog
+              filter={filter}
+              handleApply={handleApply}
+              type="number"
+              triggerButton
+            />
+          ) : filter.type === "date" ? (
+            <p className="px-1">{filter.days}</p>
+          ) : filter.type === "level" ? (
+            <LevelPicker
+              filter={filter}
+              setFilters={setFilters}
+              handleUpdate={handleUpdate}
+              triggerButton
+            />
+          ) : null}
+          <Separator orientation="vertical" />
+        </>
+      )}
       <Button
         variant="ghost"
         onClick={handleDeleteFilter}

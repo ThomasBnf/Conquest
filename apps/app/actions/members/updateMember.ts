@@ -20,8 +20,9 @@ export const updateMember = safeAction
       phones: z.array(z.string()).optional(),
       first_name: z.string().optional().nullable(),
       last_name: z.string().optional().nullable(),
+      username: z.string().optional().nullable(),
       job_title: z.string().optional().nullable(),
-      location: z.string().optional().nullable(),
+      locale: z.string().optional().nullable(),
       source: SOURCE.optional(),
       tags: z.array(z.string()).optional(),
     }),
@@ -35,12 +36,13 @@ export const updateMember = safeAction
       phones,
       first_name,
       last_name,
+      username,
       job_title,
-      location,
+      locale,
       source,
       tags,
     } = parsedInput;
-    console.log("@parsedInput", parsedInput);
+
     const member = await prisma.members.update({
       where: {
         id,
@@ -52,8 +54,9 @@ export const updateMember = safeAction
         phones,
         first_name,
         last_name,
+        username,
         job_title,
-        location,
+        locale,
         source,
         tags,
       },

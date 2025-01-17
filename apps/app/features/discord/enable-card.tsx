@@ -21,11 +21,11 @@ type Props = {
 export const EnableCard = ({ error }: Props) => {
   const { slug, discord } = useUser();
   const { trigger_token, trigger_token_expires_at } = discord ?? {};
-  const isEnabled = discord?.status === "ENABLED";
-  const isConnected = discord?.status === "CONNECTED";
-  const isSyncing = discord?.status === "SYNCING";
   const router = useRouter();
 
+  const isEnabled = discord?.status === "ENABLED";
+  const isSyncing = discord?.status === "SYNCING";
+  const isConnected = discord?.status === "CONNECTED";
   const isExpired =
     trigger_token_expires_at && trigger_token_expires_at < new Date();
 

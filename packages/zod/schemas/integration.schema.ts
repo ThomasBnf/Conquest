@@ -9,6 +9,7 @@ const BaseSchema = z.object({
   trigger_token: z.string(),
   trigger_token_expires_at: z.coerce.date(),
   connected_at: z.coerce.date().nullable(),
+  created_by: z.string().cuid(),
   workspace_id: z.string().cuid(),
   created_at: z.coerce.date(),
   updated_at: z.coerce.date(),
@@ -27,7 +28,9 @@ const DiscourseDetailsSchema = z.object({
   source: z.literal("DISCOURSE"),
   community_url: z.string(),
   api_key: z.string(),
-  signature: z.string(),
+  user_fields: z
+    .array(z.object({ id: z.string(), name: z.string() }))
+    .optional(),
 });
 
 const DiscordDetailsSchema = z.object({

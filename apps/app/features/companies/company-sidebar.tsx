@@ -6,7 +6,6 @@ import { EditableDate } from "@/components/custom/editable-date";
 import { EditableInput } from "@/components/custom/editable-input";
 import { EditableMembers } from "@/components/custom/editable-members";
 import { FieldCard } from "@/components/custom/field-card";
-import { SourceBadge } from "@/components/custom/source-badge";
 import { TagPicker } from "@/features/tags/tag-picker";
 import { Avatar, AvatarFallback, AvatarImage } from "@conquest/ui/avatar";
 import { ScrollArea } from "@conquest/ui/scroll-area";
@@ -30,7 +29,6 @@ export const CompanySidebar = ({ company, tags }: Props) => {
     employees,
     address,
     founded_at,
-    source,
     logo_url,
     created_at,
   } = company;
@@ -44,7 +42,7 @@ export const CompanySidebar = ({ company, tags }: Props) => {
       | "employees"
       | "address"
       | "founded_at",
-    value: string | Date | string[],
+    value: string | Date | string[] | null,
   ) => {
     await updateCompany({ id, [field]: value });
   };
@@ -58,8 +56,8 @@ export const CompanySidebar = ({ company, tags }: Props) => {
             {name?.charAt(0).toUpperCase()}
           </AvatarFallback>
         </Avatar>
-        <div>
-          <p className="font-medium text-base leading-tight">{name}</p>
+        <div className="overflow-hidden">
+          <p className="truncate font-medium text-base leading-tight">{name}</p>
           <p className="text-muted-foreground text-xs">{id}</p>
         </div>
       </div>
@@ -115,14 +113,6 @@ export const CompanySidebar = ({ company, tags }: Props) => {
               address={address}
               onUpdate={(value) => onUpdateCompany("address", value)}
             />
-          </FieldCard>
-        </div>
-        <Separator />
-        <div className="space-y-2 p-4">
-          <FieldCard icon="Code" label="Source">
-            <div className="px-1">
-              <SourceBadge source={source} />
-            </div>
           </FieldCard>
         </div>
         <Separator />

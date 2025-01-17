@@ -54,6 +54,7 @@ export default async function Page({ searchParams: { code } }: Props) {
       scopes: SLACK_SCOPES,
       user_scopes: USER_SCOPES,
     },
+    created_by: user.id,
     workspace_id,
   });
 

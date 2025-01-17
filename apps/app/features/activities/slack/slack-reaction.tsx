@@ -1,5 +1,5 @@
-import { emojiParser } from "@/features/activities/helpers/emoji-parser";
 import { getActivity } from "@/client/activities/getActivity";
+import { emojiParser } from "@/features/activities/helpers/emoji-parser";
 import { Skeleton } from "@conquest/ui/skeleton";
 import type { ActivityWithMember } from "@conquest/zod/schemas/activity.schema";
 import { ActivityCard } from "../activity-card";
@@ -11,14 +11,16 @@ type Props = {
 
 export const SlackReaction = ({ activity }: Props) => {
   const { react_to } = activity;
-  const { data } = getActivity({ id: react_to });
+  const { data, isLoading } = getActivity({ id: react_to });
 
-  if (!data)
+  if (isLoading)
     return (
       <div className="h-16 w-full rounded-md border p-3">
         <Skeleton className="h-full" />
       </div>
     );
+
+  if (!data) return <p>Post not available</p>;
 
   return (
     <div className="flex flex-col gap-2">

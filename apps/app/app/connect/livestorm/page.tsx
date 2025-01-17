@@ -45,6 +45,7 @@ export default async function Page({ searchParams: { code } }: Props) {
       expires_in,
       scope,
     },
+    created_by: user.id,
     workspace_id,
   });
 

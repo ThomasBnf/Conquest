@@ -1,5 +1,3 @@
-"use client";
-
 import { listChannels } from "@/client/channels/listChannels";
 import { listSLackChannels } from "@/client/slack/listSlackChannels";
 import { useUser } from "@/context/userContext";
@@ -10,12 +8,16 @@ import { cn } from "@conquest/ui/cn";
 import { Separator } from "@conquest/ui/separator";
 import { useRealtimeTaskTrigger } from "@trigger.dev/react-hooks";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { type Dispatch, type SetStateAction, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { LoadingChannels } from "../integrations/loading-channels";
 import { LoadingMessage } from "../integrations/loading-message";
 
-export const ListSlackChannels = () => {
+type Props = {
+  setIsConnecting: Dispatch<SetStateAction<boolean>>;
+};
+
+export const ListSlackChannels = ({ setIsConnecting }: Props) => {
   const { slack } = useUser();
   const [loading, setLoading] = useState(slack?.status === "SYNCING");
   const [selectedChannels, setSelectedChannels] = useState<string[]>([]);
@@ -23,22 +25,20 @@ export const ListSlackChannels = () => {
 
   const { submit, run, error } = useRealtimeTaskTrigger<typeof installSlack>(
     "install-slack",
-    {
-      accessToken: slack?.trigger_token,
-    },
+    { accessToken: slack?.trigger_token },
   );
 
-  const { channels, refetch } = listChannels();
+  const { channels } = listChannels();
   const { slackChannels, isLoading } = listSLackChannels();
 
   const onSelect = (channel: string | undefined) => {
     if (!channel) return;
 
-    if (selectedChannels.includes(channel)) {
-      setSelectedChannels((prev) => prev.filter((id) => id !== channel));
-    } else {
-      setSelectedChannels((prev) => [...prev, channel]);
-    }
+    setSelectedChannels((prev) =>
+      prev.includes(channel)
+        ? prev.filter((id) => id !== channel)
+        : [...prev, channel],
+    );
   };
 
   const onSelectAll = () => {
@@ -51,7 +51,10 @@ export const ListSlackChannels = () => {
 
   const onStart = async () => {
     if (!slack) return;
+
     setLoading(true);
+    setIsConnecting(true);
+
     submit({ slack, channels: selectedChannels });
   };
 
@@ -62,15 +65,11 @@ export const ListSlackChannels = () => {
     const isFailed = run.status === "FAILED";
 
     if (isFailed || error) {
-      setLoading(false);
+      router.refresh();
       toast.error("Failed to install Slack", { duration: 5000 });
     }
 
-    if (isCompleted) {
-      refetch();
-      setSelectedChannels([]);
-      router.refresh();
-    }
+    if (isCompleted) router.refresh();
   }, [run]);
 
   return (
@@ -95,7 +94,7 @@ export const ListSlackChannels = () => {
       {isLoading ? (
         <LoadingChannels />
       ) : (
-        <>
+        <div className="flex flex-col gap-2">
           <div className="mt-2 flex flex-col gap-1">
             {slackChannels?.map((slackChannel) => {
               const isSelected = selectedChannels.some(
@@ -127,13 +126,13 @@ export const ListSlackChannels = () => {
           {loading && <LoadingMessage />}
           <Button
             loading={loading}
-            onClick={onStart}
-            className="mt-6"
             disabled={selectedChannels.length === 0}
+            className="mt-2 w-fit"
+            onClick={onStart}
           >
             Let's start!
           </Button>
-        </>
+        </div>
       )}
     </>
   );

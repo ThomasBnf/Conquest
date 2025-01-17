@@ -14,7 +14,7 @@ import type { MemberWithCompany } from "@conquest/zod/schemas/member.schema";
 import { Plus } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useInView } from "react-intersection-observer";
-import { MemberDetails } from "../members/components/member-details";
+import { MemberDetails } from "../members/member-details";
 
 type Props = {
   currentMember?: MemberWithCompany;

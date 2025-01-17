@@ -56,6 +56,6 @@ export const listPotentialAmbassadors = ({ from, to, filters }: Props) => {
   return {
     ...query,
     members: query.data?.members,
-    count: query.data?.count,
+    count: query.data?.count ?? 0,
   };
 };

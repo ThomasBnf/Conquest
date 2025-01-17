@@ -4,6 +4,7 @@ import { startOfDay, subDays } from "date-fns";
 import type DiscourseAPI from "discourse2";
 import { createActivity } from "../activities/createActivity";
 import { getActivityType } from "../activity-type/getActivityType";
+import { getChannel } from "../channels/getChannel";
 
 type Props = {
   client: DiscourseAPI;
@@ -55,11 +56,9 @@ export const createManyActivities = async ({ client, member }: Props) => {
       } = action;
 
       const channel = category_id
-        ? await prisma.channels.findFirst({
-            where: {
-              external_id: String(category_id),
-              workspace_id,
-            },
+        ? await getChannel({
+            external_id: String(category_id),
+            workspace_id,
           })
         : null;
 
@@ -108,9 +107,7 @@ export const createManyActivities = async ({ client, member }: Props) => {
           };
 
           const replyTo =
-            reply_to_post_number === null
-              ? `t-${topic_id}`
-              : String(reply_to_post_number);
+            reply_to_post_number === null ? null : String(reply_to_post_number);
 
           const type_reply = await getActivityType({
             workspace_id,

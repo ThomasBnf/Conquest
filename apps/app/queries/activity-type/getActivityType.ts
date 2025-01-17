@@ -1,11 +1,8 @@
 import { prisma } from "@/lib/prisma";
-import {
-  ActivityTypeSchema,
-  type KEY,
-} from "@conquest/zod/schemas/activity-type.schema";
+import { ActivityTypeSchema } from "@conquest/zod/schemas/activity-type.schema";
 
 type Props = {
-  key: KEY;
+  key: string;
   workspace_id: string;
 };
 

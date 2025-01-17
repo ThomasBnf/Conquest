@@ -2,11 +2,11 @@ import { useQuery } from "@tanstack/react-query";
 
 import { client } from "@/lib/rpc";
 
-export const listLocations = () => {
+export const listLocales = () => {
   return useQuery({
-    queryKey: ["locations"],
+    queryKey: ["locales"],
     queryFn: async () => {
-      const response = await client.api.members.locations.$get();
+      const response = await client.api.members.locales.$get();
       return await response.json();
     },
   });

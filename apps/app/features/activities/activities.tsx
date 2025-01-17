@@ -4,6 +4,7 @@ import { listActivities } from "@/client/activities/listActivities";
 import { Activities as ActivitiesIcon } from "@/components/icons/Activities";
 import { EmptyState } from "@/components/states/empty-state";
 import { IsLoading } from "@/components/states/is-loading";
+import { useUser } from "@/context/userContext";
 import { useIsClient } from "@/hooks/useIsClient";
 import { buttonVariants } from "@conquest/ui/button";
 import { cn } from "@conquest/ui/cn";
@@ -23,6 +24,7 @@ type Props = {
 };
 
 export const Activities = ({ initialActivities, className }: Props) => {
+  const { slug } = useUser();
   const { ref, inView } = useInView();
   const isClient = useIsClient();
 
@@ -54,7 +56,10 @@ export const Activities = ({ initialActivities, className }: Props) => {
         title="No activities found"
         description="Connect your integrations to start collecting activities"
       >
-        <Link href="/settings/integrations" className={cn(buttonVariants())}>
+        <Link
+          href={`/${slug}/settings/integrations`}
+          className={cn(buttonVariants())}
+        >
           Connect integrations
         </Link>
       </EmptyState>

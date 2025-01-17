@@ -27,6 +27,7 @@ export const createIntegration = authAction
       external_id,
       details,
       workspace_id,
+      created_by: user.id,
     });
 
     revalidatePath(`/${slug}/settings/integrations`);

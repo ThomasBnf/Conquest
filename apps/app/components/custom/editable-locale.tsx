@@ -11,26 +11,26 @@ import { Popover, PopoverContent, PopoverTrigger } from "@conquest/ui/popover";
 import { useState } from "react";
 import { type Country, getCountries } from "react-phone-number-input";
 import en from "react-phone-number-input/locale/en.json";
-import { LocationBadge } from "./location-badge";
+import { LocaleBadge } from "./locale-badge";
 import { FlagComponent } from "./phone-input";
 
 type Props = {
-  location: string | null;
+  locale: string | null;
   onUpdate: (value: string | null) => void;
 };
 
-export const EditableLocation = ({ location, onUpdate }: Props) => {
+export const EditableLocale = ({ locale, onUpdate }: Props) => {
   const [open, setOpen] = useState(false);
-  const [value, setValue] = useState(location);
+  const [value, setValue] = useState(locale);
 
   const countries = getCountries().map((country: Country) => ({
     label: en[country],
     value: country,
   }));
 
-  const onUpdateLocation = (location: string | null) => {
-    setValue(location);
-    onUpdate(location);
+  const onUpdateLocale = (locale: string | null) => {
+    setValue(locale);
+    onUpdate(locale);
     setOpen(false);
   };
 
@@ -42,20 +42,20 @@ export const EditableLocation = ({ location, onUpdate }: Props) => {
           className="w-full justify-start p-1"
           classNameSpan="text-muted-foreground justify-start "
         >
-          {value ? <LocationBadge location={value} /> : "Select location"}
+          {value ? <LocaleBadge locale={value} /> : "Select locale"}
         </Button>
       </PopoverTrigger>
       <PopoverContent align="start" className="w-[233px] p-0">
         <Command>
-          <CommandInput placeholder="Search location..." />
+          <CommandInput placeholder="Search locale..." />
           <CommandList>
-            <CommandEmpty>No location found.</CommandEmpty>
+            <CommandEmpty>No locale found.</CommandEmpty>
             <CommandGroup>
               {countries?.map((country) => (
                 <CommandItem
                   key={country.label}
                   value={country.label}
-                  onSelect={() => onUpdateLocation(country.value)}
+                  onSelect={() => onUpdateLocale(country.value)}
                 >
                   <FlagComponent
                     country={country.value}

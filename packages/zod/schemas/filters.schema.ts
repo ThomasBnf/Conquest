@@ -1,6 +1,11 @@
 import { z } from "zod";
 
-export const BaseOperatorSchema = z.enum(["contains", "not_contains"]);
+export const BaseOperatorSchema = z.enum([
+  "contains",
+  "not_contains",
+  "empty",
+  "not_empty",
+]);
 export const DateOperatorSchema = z.enum(["is", "is_not"]);
 export const NumberOperatorSchema = z.enum([
   "greater",
@@ -26,8 +31,6 @@ export const DynamicDateSchema = z.enum([
   "365 days",
 ]);
 
-// SCHEMAS
-
 export const FilterBaseSchema = z.object({
   id: z.string().cuid(),
   label: z.string(),
@@ -35,7 +38,7 @@ export const FilterBaseSchema = z.object({
 
 export const FilterSelectSchema = FilterBaseSchema.extend({
   type: z.literal("select"),
-  field: z.enum(["source", "location", "tags"]),
+  field: z.enum(["source", "locale", "tags"]),
   operator: BaseOperatorSchema,
   values: z.array(z.string()).default([]),
 });
@@ -71,6 +74,7 @@ export const FilterLevelSchema = FilterBaseSchema.extend({
 
 export const FilterActivitySchema = FilterBaseSchema.extend({
   type: z.literal("activity"),
+  field: z.enum(["activity_type"]),
   activity_types: z
     .object({
       key: z.string(),
@@ -95,8 +99,6 @@ export const FilterSchema = z.discriminatedUnion("type", [
   FilterLevelSchema,
   FilterActivitySchema,
 ]);
-
-// TYPES
 
 export type Filter = z.infer<typeof FilterSchema>;
 export type FilterSelect = z.infer<typeof FilterSelectSchema>;

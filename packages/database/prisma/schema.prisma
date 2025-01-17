@@ -193,6 +193,7 @@ model integrations {
   details                  Json
   trigger_token            String
   trigger_token_expires_at DateTime
+  created_by               String
 
   workspace_id String
   workspace    workspaces @relation(fields: [workspace_id], references: [id], onDelete: Cascade)
@@ -204,8 +205,23 @@ model integrations {
   @@index([external_id])
 }
 
+model lists {
+  id           String     @id @default(cuid())
+  emoji        String
+  name         String
+  filters      Json[]
+  workspace_id String
+  workspace    workspaces @relation(fields: [workspace_id], references: [id], onDelete: Cascade)
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@index([id, workspace_id])
+}
+
 model members {
   id               String   @id @default(cuid())
+  external_id      String?
   discord_id       String?
   discourse_id     String?
   linkedin_id      String?
@@ -214,7 +230,7 @@ model members {
   first_name       String?
   last_name        String?
   username         String?
-  location         String?
+  locale           String?
   avatar_url       String?
   job_title        String?
   primary_email    String?
@@ -227,6 +243,7 @@ model members {
   gender           GENDER?
   source           SOURCE
   logs             Json[]   @default([])
+  custom_fields    Json[]   @default([])
 
   company_id   String?
   company      companies?   @relation(fields: [company_id], references: [id], onDelete: SetNull)
@@ -291,6 +308,15 @@ model users {
   @@index([id])
 }
 
+model webhooks {
+  id           String     @id @default(cuid())
+  trigger      String
+  url          String
+  secret       String
+  workspace_id String
+  workspace    workspaces @relation(fields: [workspace_id], references: [id], onDelete: Cascade)
+}
+
 model workflows {
   id          String    @id @default(cuid())
   name        String
@@ -318,17 +344,19 @@ model workspaces {
   members_preferences Json
   plan                PLAN    @default(BASIC)
 
-  users            users[]
-  members          members[]
   activities       activities[]
-  workflows        workflows[]
-  tags             tags[]
-  channels         channels[]
-  integrations     integrations[]
-  companies        companies[]
-  apiKeys          apikeys[]
   activities_types activities_types[]
+  apiKeys          apikeys[]
+  channels         channels[]
+  companies        companies[]
   events           events[]
+  integrations     integrations[]
+  lists            lists[]
+  members          members[]
+  tags             tags[]
+  users            users[]
+  webhooks         webhooks[]
+  workflows        workflows[]
 
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt

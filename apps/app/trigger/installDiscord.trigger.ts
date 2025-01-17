@@ -19,13 +19,13 @@ export const installDiscord = schemaTask({
   machine: {
     preset: "small-2x",
   },
+  retry: {
+    maxAttempts: 1,
+  },
   schema: z.object({
     discord: DiscordIntegrationSchema,
     channels: z.array(z.custom<APIGuildCategoryChannel>()),
   }),
-  retry: {
-    maxAttempts: 1,
-  },
   run: async ({ discord, channels }) => {
     const { workspace_id, external_id } = discord;
 
@@ -40,7 +40,6 @@ export const installDiscord = schemaTask({
 
     await createManyActivityTypes({
       activity_types: DISCORD_ACTIVITY_TYPES,
-      channels: createdChannels ?? [],
       workspace_id,
     });
 

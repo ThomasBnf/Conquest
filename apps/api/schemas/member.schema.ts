@@ -2,6 +2,7 @@ import { GENDER } from "@conquest/zod/enum/gender.enum";
 import { z } from "zod";
 
 export const V1CreateMemberSchema = z.object({
+  external_id: z.string().nullable(),
   first_name: z.string().nullable(),
   last_name: z.string().nullable(),
   primary_email: z.string().nullable(),
@@ -10,7 +11,7 @@ export const V1CreateMemberSchema = z.object({
   linkedin_id: z.string().nullable().optional(),
   slack_id: z.string().nullable().optional(),
   username: z.string().nullable().optional(),
-  location: z.string().nullable().optional(),
+  locale: z.string().nullable().optional(),
   avatar_url: z.string().nullable().optional(),
   job_title: z.string().nullable().optional(),
   secondary_emails: z.array(z.string()).optional(),
@@ -24,6 +25,7 @@ export const V1CreateMemberSchema = z.object({
 });
 
 export const V1UpdateMemberSchema = z.object({
+  external_id: z.string().nullable().optional(),
   first_name: z.string().nullable().optional(),
   last_name: z.string().nullable().optional(),
   primary_email: z.string().nullable().optional(),
@@ -32,7 +34,7 @@ export const V1UpdateMemberSchema = z.object({
   linkedin_id: z.string().nullable().optional(),
   slack_id: z.string().nullable().optional(),
   username: z.string().nullable().optional(),
-  location: z.string().nullable().optional(),
+  locale: z.string().nullable().optional(),
   avatar_url: z.string().nullable().optional(),
   job_title: z.string().nullable().optional(),
   secondary_emails: z.array(z.string()).optional(),

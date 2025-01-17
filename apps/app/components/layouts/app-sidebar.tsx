@@ -6,42 +6,34 @@ import { Dashboard } from "@/components/icons/Dashboard";
 import { Members } from "@/components/icons/Members";
 import { useUser } from "@/context/userContext";
 import { WorkspaceMenu } from "@/features/workspaces/workspace-menu";
-import { Loader } from "@conquest/ui/loader";
 import { Separator } from "@conquest/ui/separator";
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
   SidebarGroup,
+  SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarRail,
-  useSidebar,
 } from "@conquest/ui/sidebar";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@conquest/ui/tooltip";
+import type { List } from "@conquest/zod/schemas/list.schema";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Discourse } from "../icons/Discourse";
 import { Documentation } from "../icons/Documentation";
-import { Linkedin } from "../icons/Linkedin";
-import { Livestorm } from "../icons/Livestorm";
 import { Settings } from "../icons/Settings";
-import { Slack } from "../icons/Slack";
 import { SlackCommunity } from "../icons/Slack-Community";
+import { LoadingIntegrations } from "../states/loading-integrations";
 import { SidebarSettings } from "./sidebar-settings";
 
-export const AppSidebar = () => {
-  const { slug, discourse, linkedin, livestorm, slack } = useUser();
-  if (!slug) return null;
+type Props = {
+  lists: List[];
+};
 
-  const { open } = useSidebar();
+export const AppSidebar = ({ lists }: Props) => {
+  const { slug } = useUser();
   const pathname = usePathname();
 
   if (pathname.startsWith(`/${slug}/settings`)) return <SidebarSettings />;
@@ -71,12 +63,6 @@ export const AppSidebar = () => {
       href: `/${slug}/activities`,
       isActive: pathname.startsWith(`/${slug}/activities`),
     },
-    // {
-    //   label: "Workflows",
-    //   icon: <Workflows className="size-[18px]" />,
-    //   href: `/${slug}/workflows`,
-    //   isActive: pathname.startsWith(`/${slug}/workflows`),
-    // },
   ];
 
   const footer = [
@@ -101,83 +87,77 @@ export const AppSidebar = () => {
   ];
 
   return (
-    <TooltipProvider>
-      <Sidebar collapsible="offcanvas">
-        <SidebarHeader>
-          <WorkspaceMenu />
-        </SidebarHeader>
-        <SidebarContent>
+    <Sidebar collapsible="offcanvas">
+      <SidebarHeader>
+        <WorkspaceMenu />
+      </SidebarHeader>
+      <SidebarContent>
+        <SidebarGroup>
+          <SidebarMenu>
+            {routes.map((route) => (
+              <SidebarMenuItem key={route.label}>
+                <SidebarMenuButton asChild isActive={route.isActive}>
+                  <Link href={route.href}>
+                    {route.icon}
+                    <span>{route.label}</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            ))}
+          </SidebarMenu>
+        </SidebarGroup>
+        {lists && lists.length > 0 && (
           <SidebarGroup>
+            <SidebarGroupLabel>Lists</SidebarGroupLabel>
             <SidebarMenu>
-              {routes.map((route) => (
-                <SidebarMenuItem key={route.label}>
-                  <Tooltip>
-                    <TooltipTrigger className="w-full">
-                      <SidebarMenuButton asChild isActive={route.isActive}>
-                        <Link href={route.href}>
-                          {route.icon}
-                          <span>{route.label}</span>
-                        </Link>
-                      </SidebarMenuButton>
-                    </TooltipTrigger>
-                    {!open && (
-                      <TooltipContent align="center" side="right">
-                        {route.label}
-                      </TooltipContent>
-                    )}
-                  </Tooltip>
+              {lists?.map((list) => (
+                <SidebarMenuItem key={list.id}>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={pathname.includes(list.id)}
+                  >
+                    <Link href={`/${slug}/lists/${list.id}`}>
+                      <div className="flex items-center gap-2">
+                        <p className="text-base">{list.emoji}</p>
+                        <p>{list.name}</p>
+                      </div>
+                    </Link>
+                  </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
             </SidebarMenu>
           </SidebarGroup>
-        </SidebarContent>
-        <SidebarFooter>
-          <SidebarMenu>
-            {footer.map((route) => (
-              <SidebarMenuItem key={route.label}>
-                <SidebarMenuButton asChild>
-                  <Link href={route.href}>
-                    {route.icon}
-                    <span>{route.label}</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            ))}
-          </SidebarMenu>
-          <Separator />
-          <SidebarMenu>
-            {links.map((route) => (
-              <SidebarMenuItem key={route.label}>
-                <SidebarMenuButton asChild>
-                  <Link href={route.href}>
-                    {route.icon}
-                    <span>{route.label}</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            ))}
-          </SidebarMenu>
-          <SidebarRail />
-        </SidebarFooter>
-        {[
-          { integration: discourse, Icon: Discourse },
-          { integration: linkedin, Icon: Linkedin },
-          { integration: livestorm, Icon: Livestorm },
-          { integration: slack, Icon: Slack },
-        ].map(
-          ({ integration, Icon }) =>
-            integration?.status === "SYNCING" && (
-              <div
-                key={integration.id}
-                className="flex h-10 items-center gap-2 border-t bg-background px-4 text-sm"
-              >
-                <Icon size={16} />
-                <p>Collecting data</p>
-                <Loader className="ml-auto size-4" />
-              </div>
-            ),
         )}
-      </Sidebar>
-    </TooltipProvider>
+      </SidebarContent>
+      <SidebarFooter>
+        <SidebarMenu>
+          {footer.map((route) => (
+            <SidebarMenuItem key={route.label}>
+              <SidebarMenuButton asChild>
+                <Link href={route.href}>
+                  {route.icon}
+                  <span>{route.label}</span>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          ))}
+        </SidebarMenu>
+        <Separator />
+        <SidebarMenu>
+          {links.map((route) => (
+            <SidebarMenuItem key={route.label}>
+              <SidebarMenuButton asChild>
+                <Link href={route.href}>
+                  {route.icon}
+                  <span>{route.label}</span>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          ))}
+        </SidebarMenu>
+      </SidebarFooter>
+      <LoadingIntegrations />
+      <SidebarRail />
+    </Sidebar>
   );
 };

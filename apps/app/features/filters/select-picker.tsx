@@ -1,4 +1,4 @@
-import { LocationBadge } from "@/components/custom/location-badge";
+import { LocaleBadge } from "@/components/custom/locale-badge";
 import { SourceBadge } from "@/components/custom/source-badge";
 import { client } from "@/lib/rpc";
 import { Button } from "@conquest/ui/button";
@@ -49,8 +49,8 @@ export const SelectPicker = ({
     queryFn: async () => {
       const selectFilter = FilterSelectSchema.parse(filter);
       switch (selectFilter.field) {
-        case "location": {
-          const response = await client.api.members.locations.$get();
+        case "locale": {
+          const response = await client.api.members.locales.$get();
 
           return await response.json();
         }
@@ -78,7 +78,18 @@ export const SelectPicker = ({
       setOpen(false);
       setFilters((prevFilters) => {
         const exists = prevFilters.some((f) => f.id === filter.id);
-        const updatedFilter = { ...filter, values: [item] };
+        const currentFilter = prevFilters.find((f) => f.id === filter.id);
+        const parsedFilter = currentFilter
+          ? FilterSelectSchema.parse(currentFilter)
+          : undefined;
+        const hasValue = parsedFilter?.values.includes(item);
+
+        const updatedFilter = {
+          ...filter,
+          values: hasValue
+            ? filter.values.filter((v) => v !== item)
+            : [...filter.values, item],
+        };
 
         const updatedFilters = exists
           ? prevFilters.map((f) => (f.id === filter.id ? updatedFilter : f))
@@ -131,45 +142,44 @@ export const SelectPicker = ({
           <CommandEmpty>No {filter?.label.toLowerCase()}s found</CommandEmpty>
         )}
         <CommandGroup>
-          {isLoading && <Skeleton className="h-8 w-full" />}
-          {!isLoading &&
+          {isLoading ? (
+            <Skeleton className="h-8 w-full" />
+          ) : (
             items?.map((item) => {
               if (!item) return null;
 
-              const itemId = typeof item === "string" ? item : item.id;
-              const isSelected = filter?.values.includes(itemId);
+              const parseItem = typeof item === "string" ? item : item.id;
+              const isSelected = filter?.values.includes(parseItem);
 
-              if (typeof item === "string") {
-                return (
-                  <CommandItem key={item} onSelect={() => handleSelect(item)}>
-                    {filter?.field === "location" ? (
-                      <LocationBadge
-                        location={item}
+              return (
+                <CommandItem
+                  key={parseItem}
+                  onSelect={() =>
+                    filter?.field === "tags"
+                      ? handleTagSelect(item as Tag)
+                      : handleSelect(parseItem)
+                  }
+                >
+                  <div className="flex items-center gap-2">
+                    <Checkbox checked={isSelected} />
+                    {filter?.field === "locale" ? (
+                      <LocaleBadge
+                        locale={parseItem}
                         className="border-none bg-transparent p-0"
                       />
                     ) : filter?.field === "source" ? (
                       <SourceBadge
-                        source={item as Source}
+                        source={parseItem as Source}
                         className="border-none bg-transparent p-0"
                       />
                     ) : (
-                      item
+                      <TagBadge tag={item as Tag} />
                     )}
-                  </CommandItem>
-                );
-              }
-              return (
-                <CommandItem
-                  key={item.id}
-                  onSelect={() => handleTagSelect(item)}
-                >
-                  <div className="flex items-center gap-2">
-                    <Checkbox checked={isSelected} />
-                    <TagBadge tag={item} />
                   </div>
                 </CommandItem>
               );
-            })}
+            })
+          )}
         </CommandGroup>
       </CommandList>
     </Command>
@@ -194,15 +204,15 @@ export const SelectPicker = ({
               <div className="flex flex-wrap gap-1">
                 {selectedItems.length > 1 ? (
                   <p className="lowercase">
-                    {selectedItems.length} {filter.label}
+                    {selectedItems.length} {filter.label}s
                   </p>
                 ) : (
                   selectedItems.map((item) =>
                     typeof item === "string" ? (
                       <div key={item}>
-                        {filter.field === "location" ? (
-                          <LocationBadge
-                            location={item}
+                        {filter.field === "locale" ? (
+                          <LocaleBadge
+                            locale={item}
                             className="border-none bg-transparent p-0"
                           />
                         ) : filter.field === "source" ? (

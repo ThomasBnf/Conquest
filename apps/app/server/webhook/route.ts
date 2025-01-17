@@ -61,7 +61,7 @@ export const webhook = new Hono().post("/livestorm", async (c) => {
           last_name,
           primary_email: email,
           avatar_url: avatar_link,
-          location: ip_country_code,
+          locale: ip_country_code,
           source: "LIVESTORM",
           workspace_id,
         },

@@ -13,10 +13,12 @@ import {
 import { APIKey } from "components/icons/APIKey";
 import { Tags } from "components/icons/Tags";
 import { User } from "components/icons/User";
+import { Webhook } from "components/icons/Webhook";
 import { ArrowLeft } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { ActivitiesTypes } from "../icons/ActivitiesTypes";
 import { Integration } from "../icons/Integration";
+import { LoadingIntegrations } from "../states/loading-integrations";
 
 export const SidebarSettings = () => {
   const { slug } = useUser();
@@ -53,6 +55,12 @@ export const SidebarSettings = () => {
       href: `/${slug}/settings/api`,
       isActive: pathname.startsWith(`/${slug}/settings/api`),
     },
+    {
+      icon: <Webhook className="size-[18px]" />,
+      label: "Webhooks",
+      href: `/${slug}/settings/webhooks`,
+      isActive: pathname.startsWith(`/${slug}/settings/webhooks`),
+    },
   ];
 
   return (
@@ -85,6 +93,7 @@ export const SidebarSettings = () => {
           </SidebarMenu>
         </SidebarGroup>
       </SidebarContent>
+      <LoadingIntegrations />
     </Sidebar>
   );
 };

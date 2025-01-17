@@ -1,5 +1,4 @@
 import { DateCell } from "@/components/custom/date-cell";
-import { SourceBadge } from "@/components/custom/source-badge";
 import { ColumnHeader } from "@/features/table/column-header";
 import { buttonVariants } from "@conquest/ui/button";
 import { Checkbox } from "@conquest/ui/checkbox";
@@ -10,7 +9,7 @@ import Link from "next/link";
 import type { Dispatch, SetStateAction } from "react";
 import { TagsCell } from "../table/tags-cell";
 
-type Column = {
+export type CompaniesColumn = {
   id: string;
   header: (args: {
     companies?: Company[];
@@ -30,7 +29,7 @@ type Props = {
   tags: Tag[] | undefined;
 };
 
-export const Columns = ({ tags }: Props): Column[] => [
+export const Columns = ({ tags }: Props): CompaniesColumn[] => [
   {
     id: "select",
     header: ({ companies, rowSelected, setRowSelected }) => (
@@ -142,16 +141,6 @@ export const Columns = ({ tags }: Props): Column[] => [
       <ColumnHeader id="created_at" title="Created at" width={250} />
     ),
     cell: ({ company }) => <DateCell date={company.created_at} />,
-    width: 250,
-  },
-  {
-    id: "source",
-    header: () => <ColumnHeader id="source" title="Source" width={250} />,
-    cell: ({ company }) => (
-      <div className="p-2">
-        <SourceBadge source={company.source} />
-      </div>
-    ),
     width: 250,
   },
 ];

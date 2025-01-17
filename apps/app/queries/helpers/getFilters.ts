@@ -3,6 +3,7 @@ import {
   FilterActivitySchema,
   FilterLevelSchema,
   FilterNumberSchema,
+  FilterSchema,
   FilterSelectSchema,
   FilterTextSchema,
 } from "@conquest/zod/schemas/filters.schema";
@@ -14,6 +15,31 @@ type Props = {
 
 export const getFilters = ({ filters }: Props) => {
   return filters.map((filter) => {
+    const parsedFilter = FilterSchema.parse(filter);
+    const { field } = parsedFilter;
+
+    if (field === "tags") {
+      const { values, operator } = FilterSelectSchema.parse(filter);
+      const fieldCondition = Prisma.raw(field);
+
+      if (operator === "empty") {
+        return Prisma.sql`array_length(m.${fieldCondition}, 1) IS NULL OR array_length(m.${fieldCondition}, 1) = 0`;
+      }
+      if (operator === "not_empty") {
+        return Prisma.sql`array_length(m.${fieldCondition}, 1) > 0`;
+      }
+
+      const conditions = values.map((value) => {
+        const likePattern = `%${value}%`;
+        return operator === "contains"
+          ? Prisma.sql`m.${fieldCondition}::text ILIKE ${likePattern}`
+          : Prisma.sql`m.${fieldCondition}::text NOT ILIKE ${likePattern}`;
+      });
+
+      const joinOperator = operator === "contains" ? " OR " : " AND ";
+      return Prisma.sql`(${Prisma.join(conditions, joinOperator)})`;
+    }
+
     if (filter.type === "text") {
       const { value, operator, field } = FilterTextSchema.parse(filter);
       const fieldCondition = Prisma.raw(field);
@@ -24,6 +50,10 @@ export const getFilters = ({ filters }: Props) => {
           return Prisma.sql`m.${fieldCondition}::text ILIKE ${likePattern}`;
         case "not_contains":
           return Prisma.sql`m.${fieldCondition}::text NOT ILIKE ${likePattern}`;
+        case "empty":
+          return Prisma.sql`m.${fieldCondition}::text IS NULL`;
+        case "not_empty":
+          return Prisma.sql`m.${fieldCondition}::text IS NOT NULL`;
         default:
           return Prisma.sql`TRUE`;
       }
@@ -33,14 +63,20 @@ export const getFilters = ({ filters }: Props) => {
       const { values, operator, field } = FilterSelectSchema.parse(filter);
       const fieldCondition = Prisma.raw(field);
 
-      if (values.length === 0) return Prisma.sql`TRUE`;
+      const conditions =
+        values.length === 0
+          ? [Prisma.sql`TRUE`]
+          : values.map((value) => {
+              const likePattern = `%${value}%`;
+              return operator === "contains"
+                ? Prisma.sql`m.${fieldCondition}::text ILIKE ${likePattern}`
+                : Prisma.sql`m.${fieldCondition}::text NOT ILIKE ${likePattern}`;
+            });
 
-      const conditions = values.map((value) => {
-        const likePattern = `%${value}%`;
-        return operator === "contains"
-          ? Prisma.sql`m.${fieldCondition}::text ILIKE ${likePattern}`
-          : Prisma.sql`m.${fieldCondition}::text NOT ILIKE ${likePattern}`;
-      });
+      if (operator === "empty")
+        return Prisma.sql`m.${fieldCondition}::text IS NULL`;
+      if (operator === "not_empty")
+        return Prisma.sql`m.${fieldCondition}::text IS NOT NULL`;
 
       const joinOperator = operator === "contains" ? " OR " : " AND ";
       return Prisma.sql`(${Prisma.join(conditions, joinOperator)})`;

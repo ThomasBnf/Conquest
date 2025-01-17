@@ -58,6 +58,7 @@ export default async function Page({ searchParams: { code } }: Props) {
       scopes: DISCORD_SCOPES,
       permissions: DISCORD_PERMISSIONS,
     },
+    created_by: user.id,
     workspace_id,
   });
 

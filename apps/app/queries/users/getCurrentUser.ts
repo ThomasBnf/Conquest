@@ -6,9 +6,7 @@ import { redirect } from "next/navigation";
 export const getCurrentUser = async () => {
   const session = await auth();
 
-  if (!session?.user?.id) {
-    throw new Error("Session not found!");
-  }
+  if (!session?.user?.id) return redirect("/auth/login");
 
   const user = await prisma.users.findUnique({
     where: {
@@ -23,7 +21,7 @@ export const getCurrentUser = async () => {
     },
   });
 
-  if (!user) redirect("/auth/login");
+  if (!user) return redirect("/auth/login");
 
   return UserWithWorkspaceSchema.parse(user);
 };

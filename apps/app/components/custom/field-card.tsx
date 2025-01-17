@@ -16,10 +16,10 @@ export const FieldCard = ({
   className,
 }: PropsWithChildren<Props>) => {
   return (
-    <div className={cn("flex min-h-8 items-center space-x-1.5", className)}>
-      <div className="flex w-28 shrink-0 items-center gap-2 text-muted-foreground">
-        <Icon name={icon} size={15} />
-        <p>{label}</p>
+    <div className={cn("flex items-start gap-2", className)}>
+      <div className="flex w-28 shrink-0 items-center gap-2 py-1.5 text-muted-foreground">
+        <Icon name={icon} size={15} className="shrink-0" />
+        <p className="truncate">{label}</p>
       </div>
       {children}
     </div>

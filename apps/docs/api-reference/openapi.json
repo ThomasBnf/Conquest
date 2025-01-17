@@ -1399,7 +1399,7 @@
                   "nullable": true,
                   "example": "thomasbonfils"
                 },
-                "location": {
+                "locale": {
                   "type": "string",
                   "nullable": true,
                   "example": "FR"
@@ -1559,7 +1559,7 @@
                 "nullable": true,
                 "example": "thomasbonfils"
               },
-              "location": {
+              "locale": {
                 "type": "string",
                 "nullable": true,
                 "example": "FR"

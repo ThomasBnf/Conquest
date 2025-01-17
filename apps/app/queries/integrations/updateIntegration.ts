@@ -11,6 +11,7 @@ type Props = {
   connected_at?: Date;
   details?: IntegrationDetails;
   status?: Status;
+  created_by?: string;
 };
 
 export const updateIntegration = async ({
@@ -19,6 +20,7 @@ export const updateIntegration = async ({
   connected_at,
   details,
   status,
+  created_by,
 }: Props) => {
   const integration = await prisma.integrations.update({
     where: {
@@ -29,6 +31,7 @@ export const updateIntegration = async ({
       details,
       connected_at,
       status,
+      created_by,
     },
   });
 

@@ -32,7 +32,7 @@ export const companies = new Hono()
       const { search, id, desc, page, pageSize } = c.req.valid("query");
 
       const searchParsed = search.toLowerCase().trim();
-      const orderBy = getOrderBy({ id, desc });
+      const orderBy = getOrderBy({ id, desc, type: "companies" });
 
       const companies = await prisma.$queryRaw`
         SELECT 

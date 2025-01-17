@@ -1,36 +1,19 @@
 import { type SlackFile, createFiles } from "@/features/slack/helpers/getFiles";
 import type { Channel } from "@conquest/zod/schemas/channel.schema";
 import type { WebClient } from "@slack/web-api";
-import { prisma } from "lib/prisma";
-import { getActivityType } from "../activity-type/getActivityType";
+import { createActivity } from "../activities/createActivity";
 import { getMember } from "../members/getMember";
-import { createReaction } from "./createReaction";
 
 type Props = {
   web: WebClient;
   channel: Channel;
   reply_to?: string | null;
-  workspace_id: string;
 };
 
-export const listReplies = async ({
-  web,
-  channel,
-  reply_to,
-  workspace_id,
-}: Props) => {
+export const listReplies = async ({ web, channel, reply_to }: Props) => {
+  const { workspace_id } = channel;
+
   let cursor: string | undefined;
-
-  const type_reply = await getActivityType({
-    key: "slack:reply",
-    workspace_id,
-  });
-  const type_reaction = await getActivityType({
-    key: "slack:reaction",
-    workspace_id,
-  });
-
-  if (!type_reply || !type_reaction) return;
 
   do {
     const { messages, response_metadata } = await web.conversations.replies({
@@ -52,34 +35,21 @@ export const listReplies = async ({
 
       if (!member) continue;
 
-      const upsertedActivity = await prisma.activities.upsert({
-        where: {
-          external_id_workspace_id: {
-            external_id: ts ?? "",
-            workspace_id,
-          },
-        },
-        update: {
-          message: text ?? "",
-          activity_type_id: type_reply.id,
-          reply_to,
-        },
-        create: {
-          external_id: ts,
-          message: text ?? "",
-          activity_type_id: type_reply.id,
-          reply_to,
-          channel_id: channel.id,
-          member_id: member.id,
-          workspace_id,
-          created_at: new Date(Number(ts) * 1000),
-          updated_at: new Date(Number(ts) * 1000),
-        },
+      const activity = await createActivity({
+        external_id: ts ?? null,
+        activity_type_key: "slack:reply",
+        message: text ?? "",
+        reply_to,
+        member_id: member.id,
+        channel_id: channel.id,
+        created_at: new Date(Number(ts) * 1000),
+        updated_at: new Date(Number(ts) * 1000),
+        workspace_id,
       });
 
       await createFiles({
         files: files as SlackFile[],
-        activity_id: upsertedActivity.id,
+        activity_id: activity?.id,
       });
 
       if (reactions?.length) {
@@ -87,12 +57,22 @@ export const listReplies = async ({
           const { name } = reaction;
 
           for (const user of reaction.users ?? []) {
-            await createReaction({
-              user,
+            const member = await getMember({
+              slack_id: user,
+              workspace_id,
+            });
+
+            if (!member) continue;
+
+            await createActivity({
+              external_id: null,
+              activity_type_key: "slack:reaction",
               message: name ?? "",
+              react_to: activity?.external_id,
               channel_id: channel.id,
-              react_to: upsertedActivity?.external_id,
-              ts: message.ts ?? "",
+              member_id: member.id,
+              created_at: new Date(Number(ts) * 1000),
+              updated_at: new Date(Number(ts) * 1000),
               workspace_id,
             });
           }

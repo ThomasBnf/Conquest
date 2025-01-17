@@ -84,7 +84,7 @@ export type Organization = {
     };
   };
   primaryOrganizationType: string;
-  locations: unknown[];
+  locales: unknown[];
   id: number;
   localizedDescription?: string;
   localizedWebsite?: string;

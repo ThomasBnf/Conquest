@@ -16,10 +16,18 @@ export const createManyTags = async ({
   for (const badge of badges ?? []) {
     const { id, name, badge_type_id } = badge;
 
+    const colorMap = {
+      "1": "#E7C200",
+      "2": "#CD7F31",
+      "3": "#C0C0C0",
+    } as const;
+
+    const color = colorMap[String(badge_type_id) as keyof typeof colorMap];
+
     const createdTag = await createTag({
       external_id: String(id),
       name,
-      color: String(badge_type_id),
+      color,
       source: "DISCOURSE",
       workspace_id,
     });

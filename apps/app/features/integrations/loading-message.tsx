@@ -1,15 +1,15 @@
-import { Info } from "lucide-react";
-
 export const LoadingMessage = () => (
-  <div className="actions-secondary mt-6 rounded-md border p-4">
-    <Info size={18} className="text-muted-foreground" />
-    <p className="mt-2 mb-1 font-medium">Collecting data</p>
-    <p className="text-muted-foreground">
-      This may take a few minutes.
+  <div className="actions-primary rounded bg-foreground p-3 text-white">
+    <div className="mb-1 flex items-center gap-2">
+      <p className="text-xl">⚠️</p>
+      <p className="font-medium">Sync in progress</p>
+    </div>
+    <p className="opacity-80">
+      It may take from a few minutes to several hours, depending on your
+      community <br />
+      You'll be notified by email when complete.
       <br />
-      You can leave this page while we collect your data.
-      <br />
-      Do not hesitate to refresh the page to see data changes.
+      View imported members in real-time.
     </p>
   </div>
 );

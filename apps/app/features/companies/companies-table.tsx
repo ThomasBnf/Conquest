@@ -37,8 +37,8 @@ export const CompaniesTable = ({ tags }: Props) => {
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const isClient = useIsClient();
-  const scrollX = useScrollX({ isClient, id: "companies-table" });
-  const hasScrollY = useHasScrollY({ isClient, id: "companies-table" });
+  const scrollX = useScrollX({ isClient });
+  const hasScrollY = useHasScrollY({ isClient });
 
   const columns = Columns({ tags });
   const fixedColumn = columns.slice(0, 2);
@@ -55,53 +55,49 @@ export const CompaniesTable = ({ tags }: Props) => {
           placeholder="Search in companies..."
         />
       </div>
-      <div className="relative flex-1 overflow-hidden">
-        <ScrollArea
-          id="companies-table"
-          className="h-full overflow-hidden"
-          ref={scrollRef}
-        >
-          <div className="sticky top-0 z-30 flex">
-            <div
-              className={cn(
-                "sticky left-0 z-10 shrink-0 border-b [&:not(:first-child)]:border-r",
-              )}
-              style={{ width: fixedColumn[0]?.width }}
-            >
-              <div className="flex items-center">
-                {fixedColumn[0]?.header({
-                  companies,
-                  rowSelected,
-                  setRowSelected,
-                })}
+      {isLoading ? (
+        <TableSkeleton />
+      ) : (
+        <div className="relative flex-1 overflow-hidden">
+          <ScrollArea className="h-full overflow-hidden" ref={scrollRef}>
+            <div className="sticky top-0 z-30 flex">
+              <div
+                className={cn(
+                  "sticky left-0 z-10 shrink-0 border-b [&:not(:first-child)]:border-r",
+                )}
+                style={{ width: fixedColumn[0]?.width }}
+              >
+                <div className="flex items-center">
+                  {fixedColumn[0]?.header({
+                    companies,
+                    rowSelected,
+                    setRowSelected,
+                  })}
+                </div>
+              </div>
+              <div
+                className={cn("sticky left-[40px] z-10 flex border-r border-b")}
+                style={{ width: fixedColumn[1]?.width }}
+              >
+                {fixedColumn[1]?.header({})}
+                {scrollX > 0 && (
+                  <div className="-mr-12 absolute top-0 right-0 h-full w-12 bg-gradient-to-r from-black to-transparent opacity-[0.075]" />
+                )}
+              </div>
+              <div className="flex divide-x border-b">
+                {scrollableColumns.map((column) => (
+                  <div
+                    key={column.id}
+                    className="flex items-center"
+                    style={{ width: column.width }}
+                  >
+                    {column.header({})}
+                  </div>
+                ))}
               </div>
             </div>
-            <div
-              className={cn("sticky left-[40px] z-10 flex border-r border-b")}
-              style={{ width: fixedColumn[1]?.width }}
-            >
-              {fixedColumn[1]?.header({})}
-              {scrollX > 0 && (
-                <div className="-mr-12 absolute top-0 right-0 h-full w-12 bg-gradient-to-r from-black to-transparent opacity-[0.075]" />
-              )}
-            </div>
-            <div className="flex divide-x border-b">
-              {scrollableColumns.map((column) => (
-                <div
-                  key={column.id}
-                  className="flex items-center"
-                  style={{ width: column.width }}
-                >
-                  {column.header({})}
-                </div>
-              ))}
-            </div>
-          </div>
-          <div className="relative">
-            {isLoading ? (
-              <TableSkeleton />
-            ) : (
-              companies?.map((company) => (
+            <div className="relative">
+              {companies?.map((company) => (
                 <div
                   key={company.id}
                   className={cn(
@@ -161,38 +157,38 @@ export const CompaniesTable = ({ tags }: Props) => {
                     </div>
                   </div>
                 </div>
-              ))
+              ))}
+            </div>
+            {!isLoading && companies?.length === 0 && (
+              <EmptyState
+                icon={<Companies size={36} />}
+                title="No companies found"
+                description={
+                  search
+                    ? "None of your companies match the current filters"
+                    : "No companies found in your workspace"
+                }
+                className={open ? "max-w-[calc(100vw-14rem)]" : "max-w-[100vw]"}
+              >
+                {search && (
+                  <Button onClick={() => setParams({ search: "" })}>
+                    Clear filters
+                  </Button>
+                )}
+              </EmptyState>
             )}
-          </div>
-          {!isLoading && companies?.length === 0 && (
-            <EmptyState
-              icon={<Companies size={36} />}
-              title="No companies found"
-              description={
-                search
-                  ? "None of your companies match the current filters"
-                  : "No companies found in your workspace"
-              }
-              className={open ? "max-w-[calc(100vw-14rem)]" : "max-w-[100vw]"}
-            >
-              {search && (
-                <Button onClick={() => setParams({ search: "" })}>
-                  Clear filters
-                </Button>
-              )}
-            </EmptyState>
-          )}
-          {rowSelected.length > 0 && (
-            <ActionMenu
-              rowSelected={rowSelected}
-              setRowSelected={setRowSelected}
-              table="companies"
-            />
-          )}
-          <ScrollBar orientation="horizontal" />
-          <ScrollBar orientation="vertical" />
-        </ScrollArea>
-      </div>
+            {rowSelected.length > 0 && (
+              <ActionMenu
+                rowSelected={rowSelected}
+                setRowSelected={setRowSelected}
+                table="companies"
+              />
+            )}
+            <ScrollBar orientation="horizontal" />
+            <ScrollBar orientation="vertical" />
+          </ScrollArea>
+        </div>
+      )}
       <Pagination count={count ?? 0} />
     </>
   );

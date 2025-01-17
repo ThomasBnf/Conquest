@@ -42,7 +42,6 @@ export const SignupForm = () => {
 
     const rUser = await signUp({ email, password });
 
-    console.log(rUser);
     const error = rUser?.serverError;
 
     if (error) {

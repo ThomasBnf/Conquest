@@ -28,10 +28,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import {
-  type MemberForm,
-  MemberFormSchema,
-} from "../schema/member-form.schema";
+import { type MemberForm, MemberFormSchema } from "./schema/member-form.schema";
 
 export const MemberDialog = () => {
   const { slug } = useUser();

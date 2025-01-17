@@ -1,3 +1,76 @@
+import z from "zod";
+
+export const AdminListUsersSchema = z.object({
+  id: z.number(),
+  username: z.string(),
+  name: z.string().nullable(),
+  avatar_template: z.string(),
+  email: z.string().optional(),
+  secondary_emails: z.array(z.string()).optional(),
+  active: z.boolean(),
+  admin: z.boolean(),
+  moderator: z.boolean(),
+  last_seen_at: z.string().nullable(),
+  last_emailed_at: z.string().nullable(),
+  created_at: z.string(),
+  last_seen_age: z.number().nullable(),
+  last_emailed_age: z.number().nullable(),
+  created_at_age: z.number().nullable(),
+  trust_level: z.number(),
+  manual_locked_trust_level: z.number().nullable(),
+  title: z.string().nullable(),
+  time_read: z.number(),
+  staged: z.boolean(),
+  days_visited: z.number(),
+  posts_read_count: z.number(),
+  topics_entered: z.number(),
+  post_count: z.number(),
+});
+
+export type AdminListUsers = z.infer<typeof AdminListUsersSchema>;
+
+export const DirectoryItemsSchema = z.object({
+  directory_items: z
+    .object({
+      id: z.number(),
+      likes_received: z.number(),
+      topic_count: z.number(),
+      post_count: z.number(),
+      time_read: z.number(),
+      user: z.object({
+        id: z.number(),
+        username: z.string(),
+        name: z.string(),
+        avatar_template: z.string(),
+        user_fields: z.record(z.string(), z.string()),
+        geo_location: z.union([
+          z.object({
+            lat: z.string(),
+            lon: z.string(),
+            address: z.string(),
+            countrycode: z.string(),
+            city: z.string(),
+            state: z.string(),
+            country: z.string(),
+            postalcode: z.string().optional(),
+            boundingbox: z.array(z.string()),
+            type: z.string(),
+          }),
+          z.string(),
+          z.null(),
+        ]),
+      }),
+    })
+    .array(),
+  meta: z.object({
+    last_updated_at: z.string(),
+    total_rows_directory_items: z.number(),
+    load_more_directory_items: z.string(),
+  }),
+});
+
+export type DirectoryItems = z.infer<typeof DirectoryItemsSchema>;
+
 export type Category = {
   id: number;
   name: string;

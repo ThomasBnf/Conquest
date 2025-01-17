@@ -1,6 +1,7 @@
 import { AppSidebar } from "@/components/layouts/app-sidebar";
 import { IsLoading } from "@/components/states/is-loading";
 import { UserProvider } from "@/context/userContext";
+import { listLists } from "@/queries/lists/listLists";
 import { getCurrentUser } from "@/queries/users/getCurrentUser";
 import { SidebarProvider } from "@conquest/ui/sidebar";
 import { cookies } from "next/headers";
@@ -18,6 +19,7 @@ export default async function Layout({
   params,
 }: PropsWithChildren<Props>) {
   const user = await getCurrentUser();
+  const { workspace_id } = user;
 
   if (!user?.onboarding) redirect("/");
   if (user?.workspace.slug !== params.slug) redirect(`/${user.workspace.slug}`);
@@ -26,11 +28,13 @@ export default async function Layout({
   const sidebarState = cookieStore.get("sidebar:state");
   const defaultOpen = sidebarState ? sidebarState.value === "true" : true;
 
+  const lists = await listLists({ workspace_id });
+
   return (
     <Suspense fallback={<IsLoading />}>
       <UserProvider user={user}>
         <SidebarProvider defaultOpen={defaultOpen}>
-          <AppSidebar />
+          <AppSidebar lists={lists} />
           <main className="h-dvh flex-1 overflow-hidden">{children}</main>
         </SidebarProvider>
       </UserProvider>

@@ -29,7 +29,7 @@ export const createManyComments = async ({ linkedin, comments }: Props) => {
       localizedHeadline,
     } = people;
 
-    const location = headline.preferredLocale.country;
+    const locale = headline.preferredLocale.country;
     const avatar_url = profilePicture["displayImage~"]?.elements?.find(
       (element) => element?.artifact?.includes("800_800"),
     )?.identifiers?.[0]?.identifier;
@@ -41,7 +41,7 @@ export const createManyComments = async ({ linkedin, comments }: Props) => {
         username: vanityName,
         first_name: localizedFirstName,
         last_name: localizedLastName,
-        location,
+        locale,
         avatar_url,
         job_title: localizedHeadline,
         source: "LINKEDIN",

@@ -13,8 +13,14 @@ export const LogSchema = z.object({
   max_weight_activity: z.string(),
 });
 
+export const CustomFieldSchema = z.object({
+  id: z.string(),
+  value: z.string(),
+});
+
 export const MemberSchema = z.object({
   id: z.string().cuid(),
+  external_id: z.string().nullable(),
   discord_id: z.string().nullable(),
   discourse_id: z.string().nullable(),
   livestorm_id: z.string().nullable(),
@@ -23,7 +29,7 @@ export const MemberSchema = z.object({
   first_name: z.string().nullable(),
   last_name: z.string().nullable(),
   username: z.string().nullable(),
-  location: z.string().nullable(),
+  locale: z.string().nullable(),
   avatar_url: z.string().nullable(),
   job_title: z.string().nullable(),
   primary_email: z.string().nullable(),
@@ -34,8 +40,9 @@ export const MemberSchema = z.object({
   pulse: z.number(),
   presence: z.number(),
   gender: GENDER.nullable(),
-  source: SOURCE,
   logs: z.array(LogSchema),
+  source: SOURCE,
+  custom_fields: z.array(CustomFieldSchema),
   company_id: z.string().cuid().nullable(),
   workspace_id: z.string().cuid(),
   first_activity: z.coerce.date().nullable(),
@@ -57,3 +64,4 @@ export type Member = z.infer<typeof MemberSchema>;
 export type MemberWithCompany = z.infer<typeof MemberWithCompanySchema>;
 export type CompanyWithMembers = z.infer<typeof CompanyWithMembersSchema>;
 export type Log = z.infer<typeof LogSchema>;
+export type CustomField = z.infer<typeof CustomFieldSchema>;

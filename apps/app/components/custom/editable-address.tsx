@@ -17,7 +17,7 @@ import usePlacesAutocomplete from "use-places-autocomplete";
 
 type Props = {
   address: string | null;
-  onUpdate: (value: string) => void;
+  onUpdate: (value: string | null) => void;
 };
 
 export function EditableAddress({ address, onUpdate }: Props) {
@@ -38,7 +38,7 @@ export function EditableAddress({ address, onUpdate }: Props) {
     },
   });
 
-  const onSelect = (newAddress: string) => {
+  const onSelect = (newAddress: string | null) => {
     setOpen(false);
     setSelectedAddress(newAddress);
     onUpdate(newAddress);
@@ -49,12 +49,26 @@ export function EditableAddress({ address, onUpdate }: Props) {
       <PopoverTrigger
         className={cn(
           buttonVariants({ variant: "ghost" }),
-          "w-full justify-start",
+          "w-full cursor-pointer justify-start",
         )}
-        onClick={() => setValue(selectedAddress ?? "")}
+        asChild
       >
         {selectedAddress ? (
-          <span className="text-balance text-start">{selectedAddress}</span>
+          <div className="relative">
+            <span className="line-clamp-1 text-balance text-start">
+              {selectedAddress}
+            </span>
+            {open && (
+              <Button
+                variant="outline"
+                size="icon"
+                className="absolute inset-y right-1 text-muted-foreground"
+                onClick={() => onSelect(null)}
+              >
+                <X size={15} />
+              </Button>
+            )}
+          </div>
         ) : (
           <span className="text-muted-foreground">Set address</span>
         )}

@@ -10,26 +10,25 @@ import { WebClient } from "@slack/web-api";
 import { schemaTask } from "@trigger.dev/sdk/v3";
 import { z } from "zod";
 import { calculateMembersLevel } from "./calculateMembersLevel";
+import { integrationSuccessEmail } from "./integrationSuccessEmail";
 
 export const installSlack = schemaTask({
   id: "install-slack",
   machine: {
     preset: "small-2x",
   },
+  retry: {
+    maxAttempts: 1,
+  },
   schema: z.object({
     slack: SlackIntegrationSchema,
     channels: z.array(z.string()),
   }),
-  retry: {
-    maxAttempts: 1,
-  },
   run: async ({ slack, channels }) => {
     const { workspace_id, details } = slack;
     const { token, slack_user_token } = details;
 
-    if (!token || !slack_user_token) {
-      return;
-    }
+    if (!token || !slack_user_token) return;
 
     await updateIntegration({
       id: slack.id,
@@ -47,7 +46,6 @@ export const installSlack = schemaTask({
 
     await createManyActivityTypes({
       activity_types: SLACK_ACTIVITY_TYPES,
-      channels: createdChannels,
       workspace_id,
     });
 
@@ -56,11 +54,16 @@ export const installSlack = schemaTask({
     for (const channel of createdChannels) {
       await listMessages({ web, channel, workspace_id });
     }
+
+    await calculateMembersLevel.trigger({ workspace_id });
   },
   onSuccess: async ({ slack }) => {
     const { workspace_id } = slack;
 
-    calculateMembersLevel.trigger({ workspace_id });
+    await integrationSuccessEmail.trigger({
+      integration: slack,
+      workspace_id,
+    });
 
     await updateIntegration({
       id: slack.id,

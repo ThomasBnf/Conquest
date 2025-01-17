@@ -1,0 +1,249 @@
+import { updateWorkspace } from "@/actions/workspaces/updateWorkspace";
+import { listTags } from "@/client/tags/listTags";
+import { QueryInput } from "@/components/custom/query-input";
+import { Members } from "@/components/icons/Members";
+import { EmptyState } from "@/components/states/empty-state";
+import { useUser } from "@/context/userContext";
+import { FilterButton } from "@/features/filters/filter-button";
+import { FiltersList } from "@/features/filters/filters-list";
+import { ActionMenu } from "@/features/table/action-menu";
+import { useScrollX } from "@/features/table/hooks/useScrollX";
+import { useHasScrollY } from "@/features/table/hooks/usehasScrollY";
+import { Pagination } from "@/features/table/pagination";
+import { TableSkeleton } from "@/features/table/table-skeletton";
+import { useIsClient } from "@/hooks/useIsClient";
+import { tableParsers } from "@/lib/searchParamsTable";
+import { Button } from "@conquest/ui/button";
+import { cn } from "@conquest/ui/cn";
+import { ScrollArea, ScrollBar } from "@conquest/ui/scroll-area";
+import { Separator } from "@conquest/ui/separator";
+import { useSidebar } from "@conquest/ui/sidebar";
+import type { Filter } from "@conquest/zod/schemas/filters.schema";
+import type { MemberWithCompany } from "@conquest/zod/schemas/member.schema";
+import { useQueryStates } from "nuqs";
+import { type Dispatch, type SetStateAction, useRef, useState } from "react";
+import { ExportList } from "../lists/export-list";
+import { SaveList } from "../lists/save-list";
+import { MembersColumns } from "./members-columns";
+
+type Props = {
+  members: MemberWithCompany[] | undefined;
+  isLoading: boolean;
+  count: number;
+  filters: Filter[];
+  setFilters: Dispatch<SetStateAction<Filter[]>>;
+  emptyDescription?: string;
+  className?: string;
+};
+
+export const MembersTable = ({
+  members,
+  isLoading,
+  count,
+  filters,
+  setFilters,
+  emptyDescription,
+  className,
+}: Props) => {
+  const { slug } = useUser();
+  const { open } = useSidebar();
+  const { tags } = listTags();
+
+  const [rowSelected, setRowSelected] = useState<string[]>([]);
+
+  const isClient = useIsClient();
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const scrollX = useScrollX({ isClient });
+  const hasScrollY = useHasScrollY({ isClient });
+
+  const columns = MembersColumns({ tags });
+  const fixedColumn = columns.slice(0, 2);
+  const scrollableColumns = columns.slice(2);
+
+  const [{ search, idMember, descMember, pageSize }, setParams] =
+    useQueryStates(tableParsers);
+
+  const handleUpdate = async (filters: Filter[]) => {
+    await updateWorkspace({
+      members_preferences: {
+        id: idMember,
+        desc: descMember,
+        pageSize,
+        filters,
+      },
+    });
+  };
+
+  const onClearFilters = async () => {
+    setParams({ search: "" });
+    setFilters([]);
+    handleUpdate?.([]);
+  };
+
+  return (
+    <div
+      className={cn("flex flex-1 flex-col divide-y overflow-hidden", className)}
+    >
+      <div className="flex items-center justify-between px-4 py-2">
+        <div className="flex flex-1 items-center gap-2">
+          <QueryInput
+            query={search}
+            setQuery={(value) => setParams({ search: value, page: 1 })}
+            placeholder="Search in members..."
+          />
+          {filters.length > 0 ? (
+            <FiltersList
+              filters={filters}
+              setFilters={setFilters}
+              handleUpdate={handleUpdate}
+              align="start"
+            />
+          ) : (
+            <FilterButton
+              filters={filters}
+              setFilters={setFilters}
+              handleUpdate={handleUpdate}
+            />
+          )}
+        </div>
+        <div className="flex h-full items-center gap-2">
+          <SaveList filters={filters} setFilters={setFilters} />
+          <ExportList members={members} />
+        </div>
+      </div>
+      {isLoading ? (
+        <TableSkeleton />
+      ) : (
+        <div className="relative flex-1 overflow-hidden">
+          <ScrollArea className="h-full overflow-hidden" ref={scrollRef}>
+            <div className="sticky top-0 z-30 flex">
+              <div
+                className={cn(
+                  "sticky left-0 z-10 shrink-0 border-b [&:not(:first-child)]:border-r",
+                )}
+                style={{ width: fixedColumn[0]?.width }}
+              >
+                <div className="flex items-center">
+                  {fixedColumn[0]?.header({
+                    members,
+                    rowSelected,
+                    setRowSelected,
+                  })}
+                </div>
+              </div>
+              <div
+                className={cn("sticky left-[40px] z-10 flex border-r border-b")}
+                style={{ width: fixedColumn[1]?.width }}
+              >
+                {fixedColumn[1]?.header({})}
+                {scrollX > 0 && (
+                  <div className="-mr-12 absolute top-0 right-0 h-full w-12 bg-gradient-to-r from-black to-transparent opacity-[0.075]" />
+                )}
+              </div>
+              <div className="flex divide-x border-b">
+                {scrollableColumns.map((column) => (
+                  <div
+                    key={column.id}
+                    className="flex items-center"
+                    style={{ width: column.width }}
+                  >
+                    {column.header({})}
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="relative">
+              {members?.map((member) => (
+                <div
+                  key={member.id}
+                  className={cn(
+                    "[&:not(:last-child)]:border-b",
+                    rowSelected.includes(member.id) && "bg-muted-hover",
+                    !hasScrollY && "border-b",
+                  )}
+                >
+                  <div className="flex">
+                    <div
+                      className={cn(
+                        "sticky left-0 flex items-center justify-center [&:not(:first-child)]:border-r",
+                        rowSelected.includes(member.id)
+                          ? "bg-muted-hover"
+                          : "bg-background",
+                      )}
+                      style={{ width: fixedColumn[0]?.width }}
+                    >
+                      {fixedColumn[0]?.cell({
+                        member,
+                        rowSelected,
+                        setRowSelected,
+                      })}
+                      {scrollX > 0 && (
+                        <div className="-mr-12 absolute top-0 right-0 h-full w-12 bg-gradient-to-r from-black to-transparent opacity-[0.075]" />
+                      )}
+                    </div>
+                    <div
+                      className={cn(
+                        "sticky left-[40px] flex items-center border-r",
+                        rowSelected.includes(member.id)
+                          ? "bg-muted-hover"
+                          : "bg-background",
+                      )}
+                      style={{ width: fixedColumn[1]?.width }}
+                    >
+                      {fixedColumn[1]?.cell({
+                        slug,
+                        member,
+                        rowSelected,
+                        setRowSelected,
+                      })}
+                      {scrollX > 0 && (
+                        <div className="-mr-12 absolute top-0 right-0 h-full w-12 bg-gradient-to-r from-black to-transparent opacity-[0.075]" />
+                      )}
+                    </div>
+                    <div className="flex divide-x">
+                      {scrollableColumns.map((column) => (
+                        <div
+                          key={column.id}
+                          style={{ width: column.width }}
+                          className="flex items-center"
+                        >
+                          {column.cell({ member })}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+            {!isLoading && members?.length === 0 && (
+              <EmptyState
+                icon={<Members size={36} />}
+                title="No members found"
+                description={
+                  search
+                    ? "None of your members match the current filters"
+                    : (emptyDescription ?? "No members found in your workspace")
+                }
+                className={open ? "max-w-[calc(100vw-14rem)]" : "max-w-[100vw]"}
+              >
+                {search && (
+                  <Button onClick={onClearFilters}>Clear filters</Button>
+                )}
+              </EmptyState>
+            )}
+            {rowSelected.length > 0 && (
+              <ActionMenu
+                rowSelected={rowSelected}
+                setRowSelected={setRowSelected}
+                table="members"
+              />
+            )}
+            <ScrollBar orientation="horizontal" />
+            <ScrollBar orientation="vertical" />
+          </ScrollArea>
+        </div>
+      )}
+      <Pagination count={count ?? 0} />
+    </div>
+  );
+};

@@ -42,7 +42,6 @@ export const installLinkedin = schemaTask({
 
     await createManyActivityTypes({
       activity_types: LINKEDIN_ACTIVITY_TYPES,
-      channels: [],
       workspace_id,
     });
 
@@ -61,10 +60,12 @@ export const installLinkedin = schemaTask({
       });
       await createManyLikes({ linkedin: parsedLinkedin, likes });
     }
-
-    await calculateMembersLevel.trigger({ workspace_id });
   },
   onSuccess: async ({ linkedin }) => {
+    const { workspace_id } = linkedin;
+    
+    calculateMembersLevel.trigger({ workspace_id });
+
     await updateIntegration({
       id: linkedin.id,
       connected_at: new Date(),

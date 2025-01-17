@@ -1,15 +1,16 @@
 "use client";
 
+import { deleteIntegration } from "@/actions/integrations/deleteIntegration";
 import { useUser } from "@/context/userContext";
-import { InstallForm } from "@/features/discourse/install-form";
 import { Button, buttonVariants } from "@conquest/ui/button";
 import { Card, CardContent, CardHeader } from "@conquest/ui/card";
 import { cn } from "@conquest/ui/cn";
-import { CircleCheck, ExternalLink } from "lucide-react";
+import { CirclePlus, ExternalLink } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { DiscourseForm } from "./discourse-form";
 
 type Props = {
   error: string;
@@ -18,9 +19,13 @@ type Props = {
 export const EnabledCard = ({ error }: Props) => {
   const { slug, discourse } = useUser();
   const { trigger_token, trigger_token_expires_at } = discourse ?? {};
-
   const [loading, setLoading] = useState(false);
+  const [isConnecting, setIsConnecting] = useState(false);
   const router = useRouter();
+
+  const isEnabled = discourse?.status === "ENABLED";
+  const isSyncing = discourse?.status === "SYNCING";
+  const isConnected = discourse?.status === "CONNECTED";
   const isExpired =
     trigger_token_expires_at && trigger_token_expires_at < new Date();
 
@@ -29,8 +34,23 @@ export const EnabledCard = ({ error }: Props) => {
     router.push("/connect/discourse");
   };
 
+  const onDisconnect = async () => {
+    if (!discourse) return;
+
+    const response = await deleteIntegration({
+      integration: discourse,
+      source: "DISCOURSE",
+    });
+
+    const error = response?.serverError;
+    if (error) toast.error(error);
+  };
+
   useEffect(() => {
-    router.refresh();
+    if (trigger_token_expires_at && trigger_token_expires_at < new Date()) {
+      onDisconnect();
+    }
+
     if (error) {
       switch (error) {
         case "invalid_code":
@@ -47,16 +67,16 @@ export const EnabledCard = ({ error }: Props) => {
       }
       router.replace(`/${slug}/settings/integrations/discourse`);
     }
-  }, [error]);
+  }, [trigger_token_expires_at, error]);
 
-  if (discourse?.status === "CONNECTED") return;
+  if (isConnected) return;
 
   return (
     <Card>
       <CardHeader className="flex h-14 flex-row items-center justify-between space-y-0">
         <div className="flex w-full items-center justify-between">
           <Link
-            href="https://doc.useconquest.com/discourse"
+            href="https://docs.useconquest.com/discourse"
             target="_blank"
             className={cn(
               buttonVariants({ variant: "link", size: "xs" }),
@@ -67,9 +87,14 @@ export const EnabledCard = ({ error }: Props) => {
             <p>Documentation</p>
           </Link>
           {(!trigger_token || isExpired) && (
-            <Button onClick={onEnable} loading={loading} disabled={loading}>
-              <CircleCheck size={16} />
+            <Button onClick={onEnable} loading={loading}>
+              <CirclePlus size={16} />
               Enable
+            </Button>
+          )}
+          {isEnabled && !isConnecting && !isExpired && (
+            <Button variant="destructive" onClick={onDisconnect}>
+              Disconnect
             </Button>
           )}
         </div>
@@ -78,13 +103,13 @@ export const EnabledCard = ({ error }: Props) => {
         <div>
           <p className="font-medium text-base">Overview</p>
           <p className="text-balance text-muted-foreground">
-            Connect your Discourse workspace to automatically sync messages,
-            collect member interactions, and send personalized direct messages
-            through automated workflows.
+            Connect your Discourse community to get a complete overview of your
+            members and community activity.
           </p>
         </div>
-        {(discourse?.status === "ENABLED" || discourse?.status === "SYNCING") &&
-          !isExpired && <InstallForm />}
+        {(isEnabled || isSyncing) && !isExpired && (
+          <DiscourseForm setIsConnecting={setIsConnecting} />
+        )}
       </CardContent>
     </Card>
   );

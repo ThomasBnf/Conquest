@@ -49,7 +49,11 @@ export const ColumnHeader = ({
   const isCompany = pathname.includes("companies");
 
   const onSort = (desc: boolean) => {
-    setParams(isCompany ? { descCompany: desc } : { descMember: desc });
+    setParams(
+      isCompany
+        ? { idCompany: id, descCompany: desc }
+        : { idMember: id, descMember: desc },
+    );
   };
 
   return (

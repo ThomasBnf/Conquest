@@ -1,11 +1,16 @@
 import { filteredDomain } from "@/features/members/helpers/filteredDomain";
 import { idParser } from "@/helpers/idParser";
 import { prisma } from "@/lib/prisma";
+import { mergeMembers } from "@/queries/members/mergeMembers";
 import {
   type Company,
   CompanySchema,
 } from "@conquest/zod/schemas/company.schema";
-import { type Member, MemberSchema } from "@conquest/zod/schemas/member.schema";
+import {
+  type Member,
+  MemberWithCompanySchema,
+} from "@conquest/zod/schemas/member.schema";
+import cuid from "cuid";
 
 type Props = {
   id: string;
@@ -59,6 +64,15 @@ export const upsertMember = async (props: Props) => {
   const parsedId = idParser({ id, source });
 
   const whereClause = () => {
+    if (formattedEmail) {
+      return {
+        primary_email_workspace_id: {
+          primary_email: formattedEmail,
+          workspace_id,
+        },
+      };
+    }
+
     if (id && source === "DISCORD") {
       return {
         discord_id_workspace_id: {
@@ -77,41 +91,44 @@ export const upsertMember = async (props: Props) => {
       };
     }
 
-    if (formattedEmail) {
-      return {
-        primary_email_workspace_id: {
-          primary_email: formattedEmail,
-          workspace_id,
-        },
-      };
-    }
-
     return {
       id,
       workspace_id,
     };
   };
 
-  const newMember = await prisma.members.upsert({
+  const existingMember = await prisma.members.findUnique({
     where: whereClause(),
-    update: {
-      ...data,
-      ...parsedId,
-      primary_email: formattedEmail ?? null,
-      phones: formattedPhones ?? undefined,
-      company_id: company?.id ?? null,
-      source,
-    },
-    create: {
-      ...data,
-      ...parsedId,
-      primary_email: formattedEmail ?? null,
-      phones: formattedPhones ?? undefined,
-      company_id: company?.id ?? null,
-      source,
-      workspace_id,
+    include: {
+      company: true,
     },
   });
 
-  return MemberSchema.parse(newMember);
+  const newMember = MemberWithCompanySchema.parse(
+    await prisma.members.create({
+      data: {
+        ...data,
+        ...parsedId,
+        primary_email: existingMember ? `${cuid()}@mail.com` : formattedEmail,
+        phones: formattedPhones ?? undefined,
+        company_id: company?.id ?? null,
+        source,
+        workspace_id,
+      },
+      include: {
+        company: true,
+      },
+    }),
+  );
+
+  if (existingMember) {
+    const mergedMember = await mergeMembers({
+      leftMember: newMember,
+      rightMember: MemberWithCompanySchema.parse(existingMember),
+    });
+
+    return MemberWithCompanySchema.parse(mergedMember);
+  }
+
+  return MemberWithCompanySchema.parse(newMember);
 };

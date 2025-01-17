@@ -26,6 +26,6 @@ export const countMembers = ({ filters }: Props) => {
 
   return {
     ...query,
-    count: query.data,
+    count: query.data ?? 0,
   };
 };

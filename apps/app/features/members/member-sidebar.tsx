@@ -4,10 +4,11 @@ import { updateMember } from "@/actions/members/updateMember";
 import { EditableCompany } from "@/components/custom/editable-company";
 import { EditableEmails } from "@/components/custom/editable-emails";
 import { EditableInput } from "@/components/custom/editable-input";
-import { EditableLocation } from "@/components/custom/editable-location";
+import { EditableLocale } from "@/components/custom/editable-locale";
 import { EditablePhones } from "@/components/custom/editable-phones";
 import { FieldCard } from "@/components/custom/field-card";
 import { SourceBadge } from "@/components/custom/source-badge";
+import { useUser } from "@/context/userContext";
 import { TagPicker } from "@/features/tags/tag-picker";
 import { Avatar, AvatarFallback, AvatarImage } from "@conquest/ui/avatar";
 import { Badge } from "@conquest/ui/badge";
@@ -17,8 +18,8 @@ import type { MemberWithCompany } from "@conquest/zod/schemas/member.schema";
 import type { Tag } from "@conquest/zod/schemas/tag.schema";
 import { format } from "date-fns";
 import { TagIcon } from "lucide-react";
-import { LevelTooltip } from "../level-tooltip";
-import { PulseTooltip } from "../pulse-tooltip";
+import { LevelTooltip } from "../members/level-tooltip";
+import { PulseTooltip } from "../members/pulse-tooltip";
 
 type Props = {
   member: MemberWithCompany;
@@ -26,6 +27,9 @@ type Props = {
 };
 
 export const MemberSidebar = ({ member, tags }: Props) => {
+  const { discourse } = useUser();
+  const { user_fields } = discourse?.details ?? {};
+
   const {
     id,
     source,
@@ -33,7 +37,8 @@ export const MemberSidebar = ({ member, tags }: Props) => {
     avatar_url,
     first_name,
     last_name,
-    location,
+    username,
+    locale,
     first_activity,
     last_activity,
     created_at,
@@ -43,9 +48,10 @@ export const MemberSidebar = ({ member, tags }: Props) => {
     field:
       | "first_name"
       | "last_name"
+      | "username"
       | "company_id"
       | "job_title"
-      | "location"
+      | "locale"
       | "source"
       | "tags",
     value: string | null | string[],
@@ -55,45 +61,45 @@ export const MemberSidebar = ({ member, tags }: Props) => {
 
   return (
     <div className="flex h-full max-w-sm flex-1 shrink-0 flex-col">
-      <div className="space-y-4 p-4">
-        <div className="flex items-center gap-2">
-          <Avatar className="size-9">
-            <AvatarImage src={avatar_url ?? ""} />
-            <AvatarFallback className="text-sm">
-              {first_name?.charAt(0).toUpperCase()}
-              {last_name?.charAt(0).toUpperCase()}
-            </AvatarFallback>
-          </Avatar>
-          <div>
-            <p className="font-medium text-base leading-tight">
-              {first_name} {last_name}
-            </p>
-            <p className="text-muted-foreground">{id}</p>
+      <ScrollArea className="flex-1">
+        <div className="space-y-4 p-4">
+          <div className="flex items-center gap-2">
+            <Avatar className="size-9">
+              <AvatarImage src={avatar_url ?? ""} />
+              <AvatarFallback className="text-sm">
+                {first_name?.charAt(0).toUpperCase()}
+                {last_name?.charAt(0).toUpperCase()}
+              </AvatarFallback>
+            </Avatar>
+            <div>
+              <p className="font-medium text-base leading-tight">
+                {first_name} {last_name}
+              </p>
+              <p className="text-muted-foreground">{id}</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <Badge variant="outline">
+              <LevelTooltip member={member} showIcon={false} />
+            </Badge>
+            <Badge variant="outline">
+              <PulseTooltip member={member} showIcon={false} />
+            </Badge>
           </div>
         </div>
-        <div className="flex items-center gap-2">
-          <Badge variant="outline">
-            <LevelTooltip member={member} showIcon={false} />
-          </Badge>
-          <Badge variant="outline">
-            <PulseTooltip member={member} showIcon={false} />
-          </Badge>
+        <Separator />
+        <div className="flex flex-col gap-2 p-4">
+          <div className="flex items-center gap-2 text-muted-foreground">
+            <TagIcon size={15} className="shrink-0" />
+            <p>Tags</p>
+          </div>
+          <TagPicker
+            record={member}
+            tags={tags}
+            onUpdate={(value) => onUpdateMember("tags", value)}
+          />
         </div>
-      </div>
-      <Separator />
-      <div className="flex flex-col gap-2 p-4">
-        <div className="flex items-center gap-2 text-muted-foreground">
-          <TagIcon size={15} className="shrink-0" />
-          <p>Tags</p>
-        </div>
-        <TagPicker
-          record={member}
-          tags={tags}
-          onUpdate={(value) => onUpdateMember("tags", value)}
-        />
-      </div>
-      <Separator />
-      <ScrollArea className="flex-1">
+        <Separator />
         <div className="space-y-2 p-4">
           <FieldCard icon="User" label="First name">
             <EditableInput
@@ -107,6 +113,13 @@ export const MemberSidebar = ({ member, tags }: Props) => {
               defaultValue={last_name}
               placeholder="Set last name"
               onUpdate={(value) => onUpdateMember("last_name", value)}
+            />
+          </FieldCard>
+          <FieldCard icon="User" label="Username">
+            <EditableInput
+              defaultValue={username}
+              placeholder="Set username"
+              onUpdate={(value) => onUpdateMember("username", value)}
             />
           </FieldCard>
           <FieldCard icon="Building2" label="Company">
@@ -132,18 +145,36 @@ export const MemberSidebar = ({ member, tags }: Props) => {
         <Separator />
         <div className="space-y-2 p-4">
           <FieldCard icon="Code" label="Source">
-            <div className="px-1">
+            <div className="flex flex-wrap gap-2">
               <SourceBadge source={source} />
             </div>
           </FieldCard>
-          <FieldCard icon="Flag" label="Location">
-            <EditableLocation
-              location={location}
-              onUpdate={(value) => onUpdateMember("location", value)}
+          <FieldCard icon="Flag" label="Locale">
+            <EditableLocale
+              locale={locale}
+              onUpdate={(value) => onUpdateMember("locale", value)}
             />
           </FieldCard>
         </div>
         <Separator />
+        {discourse && (
+          <>
+            <div className="space-y-2 p-4">
+              {user_fields?.map((user_field) => {
+                const { id, name } = user_field;
+                const field = member.custom_fields.find(
+                  (field) => field.id === id,
+                );
+                return (
+                  <FieldCard key={id} icon="User" label={name}>
+                    <p className="py-1.5">{field?.value}</p>
+                  </FieldCard>
+                );
+              })}
+            </div>
+            <Separator />
+          </>
+        )}
         <div className="space-y-2 p-4">
           {first_activity && (
             <FieldCard icon="Calendar" label="First activity">
