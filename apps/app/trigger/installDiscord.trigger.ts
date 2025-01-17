@@ -16,12 +16,6 @@ import { calculateMembersLevel } from "./calculateMembersLevel";
 
 export const installDiscord = schemaTask({
   id: "install-discord",
-  machine: {
-    preset: "small-2x",
-  },
-  retry: {
-    maxAttempts: 1,
-  },
   schema: z.object({
     discord: DiscordIntegrationSchema,
     channels: z.array(z.custom<APIGuildCategoryChannel>()),

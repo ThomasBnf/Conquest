@@ -19,6 +19,7 @@
         "VERCEL_ENV",
         "NODE_ENV",
         "AUTH_SECRET",
+        "DATABASE_URL",
         "SLACK_TOKEN",
         "SLACK_APP_ID",
         "SLACK_CLIENT_SECRET",

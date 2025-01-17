@@ -20,12 +20,6 @@ import { z } from "zod";
 
 export const installLivestorm = schemaTask({
   id: "install-livestorm",
-  machine: {
-    preset: "small-2x",
-  },
-  retry: {
-    maxAttempts: 1,
-  },
   schema: z.object({
     livestorm: LivestormIntegrationSchema,
     organization_id: z.string(),

@@ -14,12 +14,6 @@ import { calculateMembersLevel } from "./calculateMembersLevel";
 
 export const installLinkedin = schemaTask({
   id: "install-linkedin",
-  machine: {
-    preset: "small-2x",
-  },
-  retry: {
-    maxAttempts: 1,
-  },
   schema: z.object({
     linkedin: LinkedInIntegrationSchema,
     organization_id: z.string(),
@@ -63,7 +57,7 @@ export const installLinkedin = schemaTask({
   },
   onSuccess: async ({ linkedin }) => {
     const { workspace_id } = linkedin;
-    
+
     calculateMembersLevel.trigger({ workspace_id });
 
     await updateIntegration({
