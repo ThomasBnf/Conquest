@@ -1,3 +1,5 @@
+"use client";
+
 import { MenuBar } from "@/components/menu-bar";
 import { ScrollArea } from "@conquest/ui/scroll-area";
 import { Hero } from "./sections/hero";

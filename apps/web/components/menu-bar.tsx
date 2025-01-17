@@ -1,5 +1,3 @@
-"use client";
-
 import menu from "@/public/menu.json";
 import { Button, buttonVariants } from "@conquest/ui/button";
 import { cn } from "@conquest/ui/cn";
