@@ -47,7 +47,7 @@ export const linkedin = new Hono()
 
     if (!notification) {
       console.error("LinkedIn webhook: Missing notification");
-      return c.json({ error: "Missing notification" }, 400);
+      return c.json({ error: "Missing notification" }, 200);
     }
 
     const {
@@ -67,7 +67,7 @@ export const linkedin = new Hono()
         linkedinId,
         sourcePost,
       });
-      return c.json({ success: false }, 400);
+      return c.json({ error: "Missing required fields" }, 200);
     }
 
     const integration = LinkedInIntegrationSchema.parse(
@@ -78,7 +78,7 @@ export const linkedin = new Hono()
 
     if (!integration) {
       console.log("No integration");
-      return c.json({ success: false }, 400);
+      return c.json({ error: "No integration" }, 200);
     }
 
     const { workspace_id } = integration;
@@ -91,7 +91,7 @@ export const linkedin = new Hono()
 
     if (!post) {
       console.log("No post");
-      return c.json({ success: false }, 400);
+      return c.json({ error: "No post" }, 200);
     }
 
     let member: MemberWithCompany | null = null;
@@ -150,7 +150,7 @@ export const linkedin = new Hono()
         workspace_id,
       });
 
-      return c.json({ success: true });
+      return c.json({ success: true }, 200);
     }
 
     if (action === "COMMENT") {
@@ -166,7 +166,7 @@ export const linkedin = new Hono()
         workspace_id,
       });
 
-      return c.json({ success: true });
+      return c.json({ success: true }, 200);
     }
 
     if (action === "COMMENT_DELETE") {
@@ -177,11 +177,9 @@ export const linkedin = new Hono()
         external_id,
         workspace_id,
       });
-
-      return c.json({ success: true });
     }
 
-    return c.json({ success: false });
+    return c.json({ success: false }, 200);
   })
   .use(async (c, next) => {
     const user = await getAuthUser(c);
