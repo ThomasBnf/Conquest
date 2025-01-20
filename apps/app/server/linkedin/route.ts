@@ -3,10 +3,13 @@ import { createActivity } from "@/queries/activities/createActivity";
 import { deleteActivity } from "@/queries/activities/deleteActivity";
 import { getIntegration } from "@/queries/integrations/getIntegration";
 import { updateIntegration } from "@/queries/integrations/updateIntegration";
+import { getPeople } from "@/queries/linkedin/getPeople";
 import { getPost } from "@/queries/linkedin/getPost";
 import { getMember } from "@/queries/members/getMember";
+import { upsertMember } from "@/queries/members/upsertMember";
 import { getAuthUser } from "@/queries/users/getAuthUser";
 import { LinkedInIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
+import type { MemberWithCompany } from "@conquest/zod/schemas/member.schema";
 import {
   ListOrganizationsSchema,
   OrganizationsSchema,
@@ -42,8 +45,8 @@ export const linkedin = new Hono()
     const notification = body.notifications[0];
 
     if (!notification) {
-      console.log("No notification");
-      return c.json({ success: false }, 400);
+      console.error("LinkedIn webhook: Missing notification");
+      return c.json({ error: "Missing notification" }, 400);
     }
 
     const {
@@ -58,7 +61,11 @@ export const linkedin = new Hono()
     const linkedinId = subscriber?.split(":")[3];
 
     if (!organizationId || !linkedinId || !sourcePost) {
-      console.log("No organizationId, linkedinId, or sourcePost");
+      console.error("LinkedIn webhook: Missing required fields", {
+        organizationId,
+        linkedinId,
+        sourcePost,
+      });
       return c.json({ success: false }, 400);
     }
 
@@ -73,20 +80,60 @@ export const linkedin = new Hono()
 
     const { workspace_id } = integration;
 
-    const [post, member] = await Promise.all([
-      getPost({
-        urn: sourcePost,
-        workspace_id,
-      }),
-      getMember({
-        linkedin_id: linkedinId,
-        workspace_id,
-      }),
-    ]);
+    const post = await getPost({
+      urn: sourcePost,
+      workspace_id,
+    });
 
-    if (!member || !post) {
-      console.log("No member or post");
+    if (!post) {
+      console.log("No post");
       return c.json({ success: false }, 400);
+    }
+
+    let member: MemberWithCompany | null = null;
+
+    member = await getMember({
+      linkedin_id: linkedinId,
+      workspace_id,
+    });
+
+    if (!member) {
+      const parsedIntegration = LinkedInIntegrationSchema.parse(integration);
+      const people = await getPeople({
+        linkedin: parsedIntegration,
+        people_id: linkedinId,
+      });
+
+      const {
+        id,
+        vanityName,
+        headline,
+        profilePicture,
+        localizedFirstName,
+        localizedLastName,
+        localizedHeadline,
+      } = people;
+
+      const locale = headline.preferredLocale.country;
+      console.log(locale);
+      const avatar_url = profilePicture["displayImage~"]?.elements?.find(
+        (element) => element?.artifact?.includes("800_800"),
+      )?.identifiers?.[0]?.identifier;
+
+      member = await upsertMember({
+        id,
+        data: {
+          linkedin_id: id,
+          username: vanityName,
+          first_name: localizedFirstName,
+          last_name: localizedLastName,
+          locale,
+          avatar_url,
+          job_title: localizedHeadline,
+          source: "LINKEDIN",
+          workspace_id,
+        },
+      });
     }
 
     if (action === "LIKE") {
@@ -98,7 +145,11 @@ export const linkedin = new Hono()
         member_id: member.id,
         workspace_id,
       });
-    } else if (action === "COMMENT") {
+
+      return c.json({ success: true });
+    }
+
+    if (action === "COMMENT") {
       const { text, entity } = decoratedSourcePost;
       const external_id = entity.split(":")[3];
 
@@ -110,7 +161,11 @@ export const linkedin = new Hono()
         member_id: member.id,
         workspace_id,
       });
-    } else if (action === "COMMENT_DELETE") {
+
+      return c.json({ success: true });
+    }
+
+    if (action === "COMMENT_DELETE") {
       const { entity } = decoratedSourcePost;
       const external_id = entity.split(":")[3];
 
@@ -118,9 +173,11 @@ export const linkedin = new Hono()
         external_id,
         workspace_id,
       });
+
+      return c.json({ success: true });
     }
 
-    return c.json({ success: true });
+    return c.json({ success: false });
   })
   .use(async (c, next) => {
     const user = await getAuthUser(c);

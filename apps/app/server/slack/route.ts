@@ -205,8 +205,6 @@ export const slack = new Hono()
             workspace_id,
           });
 
-          if (!type) return c.json({ status: 200 });
-
           await createActivity({
             external_id: null,
             activity_type_key: "slack:reaction",
