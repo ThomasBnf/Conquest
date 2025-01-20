@@ -1,3 +1,5 @@
+import { env } from "@/env.mjs";
+
 import type { LinkedInIntegration } from "@conquest/zod/schemas/integration.schema";
 
 type WebhookSubscriptionParams = {
@@ -10,31 +12,33 @@ export const webhookSubscription = async ({
   const { external_id, details } = linkedin;
   const { user_id, access_token } = details;
 
+  const developerApp = "urn:li:developerApplication:221195903";
+  const userUrn = `urn:${user_id}`;
+  const orgUrn = `urn:li:organization:${external_id}`;
+  const eventType = "ORGANIZATION_SOCIAL_ACTION_NOTIFICATIONS";
+
+  const params = `(developerApplication:${developerApp},user:${userUrn},entity:${orgUrn},eventType:${eventType})`;
+
   const response = await fetch(
-    `https://api.linkedin.com/rest/eventSubscriptions/(developerApplication:${encodeURIComponent(
-      "urn:li:developerApplication:221195903",
-    )},user:${encodeURIComponent(
-      "urn:li:person:iuHQSczloT",
-    )},entity:${encodeURIComponent(
-      `urn:li:organization:${external_id}`,
-    )},eventType:ORGANIZATION_SOCIAL_ACTION_NOTIFICATIONS)`,
+    `https://api.linkedin.com/rest/eventSubscriptions/${params}`,
     {
       method: "PUT",
       headers: {
         Authorization: `Bearer ${access_token}`,
         "LinkedIn-Version": "202411",
         "Content-Type": "application/json",
-        "X-Restli-Protocol-Version": "2.0.0",
       },
       body: JSON.stringify({
-        webhook: "https://conquest.ngrok.app/api/linkedin",
+        webhook: `${env.NEXT_PUBLIC_BASE_URL}/api/linkedin`,
       }),
     },
   );
 
   if (!response.ok) {
+    const errorText = await response.text();
+    console.error("LinkedIn API error:", errorText);
     throw new Error(`Failed to subscribe to webhook: ${response.statusText}`);
   }
 
-  return response.json();
+  return { success: true, status: response.status };
 };
