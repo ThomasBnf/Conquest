@@ -72,6 +72,8 @@ export const linkedin = new Hono()
       return c.json({ error: "Missing required fields" }, 200);
     }
 
+    console.log("organizationId", organizationId);
+
     const integration = LinkedInIntegrationSchema.parse(
       await getIntegration({
         external_id: organizationId,
@@ -90,6 +92,8 @@ export const linkedin = new Hono()
       urn: entity,
       workspace_id,
     });
+
+    console.log("post", post);
 
     if (!post) {
       console.log("No post");
@@ -142,7 +146,7 @@ export const linkedin = new Hono()
       });
     }
 
-    console.log(member);
+    console.log("member", member);
 
     if (action === "LIKE") {
       const activity = await createActivity({
