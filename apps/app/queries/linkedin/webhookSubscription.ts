@@ -1,5 +1,3 @@
-import { env } from "@/env.mjs";
-
 import type { LinkedInIntegration } from "@conquest/zod/schemas/integration.schema";
 
 type WebhookSubscriptionParams = {
@@ -25,16 +23,13 @@ export const webhookSubscription = async ({
   const response = await fetch(
     `https://api.linkedin.com/rest/eventSubscriptions/${params}`,
     {
-      method: "PUT",
+      method: "GET",
       headers: {
         Authorization: `Bearer ${access_token}`,
         "LinkedIn-Version": "202411",
         "Content-Type": "application/json",
         "X-Restli-Protocol-Version": "2.0.0",
       },
-      body: JSON.stringify({
-        webhook: `${env.NEXT_PUBLIC_BASE_URL}/api/linkedin`,
-      }),
     },
   );
 
