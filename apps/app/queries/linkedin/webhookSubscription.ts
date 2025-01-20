@@ -55,5 +55,19 @@ export const webhookSubscription = async ({
     return { success: false };
   }
 
+  const subscription = await fetch(
+    "https://api.linkedin.com/rest/eventSubscriptions?q=subscriberAndEventType&eventType=ORGANIZATION_SOCIAL_ACTION_NOTIFICATIONS",
+    {
+      headers: {
+        Authorization: `Bearer ${access_token}`,
+        "LinkedIn-Version": "202411",
+        "Content-Type": "application/json",
+        "X-Restli-Protocol-Version": "2.0.0",
+      },
+    },
+  );
+
+  console.log(await subscription.json());
+
   return { success: true };
 };

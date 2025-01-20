@@ -28,7 +28,6 @@ export const installGithub = schemaTask({
         // const stargazerData = await octokit.rest.users.getByUsername({
         //   username: stargazer.login,
         // });
-        // console.log(stargazerData);
       }
     }
   },

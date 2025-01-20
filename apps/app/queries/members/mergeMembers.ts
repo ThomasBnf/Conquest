@@ -63,8 +63,6 @@ export const mergeMembers = async ({ leftMember, rightMember }: Props) => {
     ...Object.fromEntries(mergedEntries),
   };
 
-  console.log(mergedMember);
-
   const { id, company_name, company, workspace_id, ...memberData } =
     mergedMember;
 

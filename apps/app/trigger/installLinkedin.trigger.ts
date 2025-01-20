@@ -66,8 +66,7 @@ export const installLinkedin = schemaTask({
     //   });
     // }
 
-    const result = await webhookSubscription({ linkedin: parsedLinkedin });
-    console.log(result);
+    await webhookSubscription({ linkedin: parsedLinkedin });
   },
   onSuccess: async ({ linkedin }) => {
     await updateIntegration({
