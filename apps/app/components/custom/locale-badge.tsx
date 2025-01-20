@@ -20,7 +20,10 @@ export const LocaleBadge = ({ locale, className }: Props) => {
   if (!country) return null;
 
   return (
-    <Badge variant="outline" className={cn("gap-2 overflow-hidden", className)}>
+    <Badge
+      variant="secondary"
+      className={cn("gap-2 overflow-hidden", className)}
+    >
       <FlagComponent country={country.value} countryName={country.label} />
       <p className="truncate font-medium">{country.label}</p>
     </Badge>

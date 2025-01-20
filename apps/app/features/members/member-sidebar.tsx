@@ -79,10 +79,10 @@ export const MemberSidebar = ({ member, tags }: Props) => {
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <Badge variant="outline">
+            <Badge variant="secondary">
               <LevelTooltip member={member} showIcon={false} />
             </Badge>
-            <Badge variant="outline">
+            <Badge variant="secondary">
               <PulseTooltip member={member} showIcon={false} />
             </Badge>
           </div>

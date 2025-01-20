@@ -3,7 +3,6 @@
 import { deleteIntegration } from "@/actions/integrations/deleteIntegration";
 import { useUser } from "@/context/userContext";
 import { env } from "@/env.mjs";
-import { FormLivestorm } from "@/features/livestorm/form-livestorm";
 import { Button, buttonVariants } from "@conquest/ui/button";
 import { Card, CardContent, CardHeader } from "@conquest/ui/card";
 import { cn } from "@conquest/ui/cn";
@@ -12,41 +11,39 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { ListRepos } from "./list-repos";
 
 type Props = {
   error: string;
 };
 
 export const EnableCard = ({ error }: Props) => {
-  const { slug, livestorm } = useUser();
-  const { trigger_token, trigger_token_expires_at } = livestorm ?? {};
-  const [loading, setLoading] = useState(livestorm?.status === "SYNCING");
+  const { slug, github } = useUser();
+  const { trigger_token, trigger_token_expires_at } = github ?? {};
+  const [loading, setLoading] = useState(github?.status === "SYNCING");
   const router = useRouter();
 
-  const isEnabled = livestorm?.status === "ENABLED";
-  const isSyncing = livestorm?.status === "SYNCING";
-  const isConnected = livestorm?.status === "CONNECTED";
+  const isEnabled = github?.status === "ENABLED";
+  const isSyncing = github?.status === "SYNCING";
+  const isConnected = github?.status === "CONNECTED";
   const isExpired =
     trigger_token_expires_at && trigger_token_expires_at < new Date();
 
-  const onEnable = async () => {
+  const onEnable = () => {
     const params = new URLSearchParams({
-      response_type: "code",
-      client_id: env.NEXT_PUBLIC_LIVESTORM_CLIENT_ID,
-      redirect_uri: "https://app.useconquest.com/connect/livestorm",
-      scope: encodeURIComponent(
-        "identity:read events:read webhooks:read webhooks:write",
-      ),
+      client_id: env.NEXT_PUBLIC_GITHUB_CLIENT_ID,
+      redirect_uri: `${env.NEXT_PUBLIC_BASE_URL}/connect/github`,
+      scope: "repo",
     });
 
     router.push(
-      `https://app.livestorm.co/oauth/authorize?${params.toString()}`,
+      `https://github.com/login/oauth/authorize?${params.toString()}`,
     );
   };
 
   const onDisconnect = async () => {
-    if (!livestorm) return;
-    await deleteIntegration({ integration: livestorm, source: "LIVESTORM" });
+    if (!github) return;
+    await deleteIntegration({ integration: github, source: "GITHUB" });
   };
 
   useEffect(() => {
@@ -61,14 +58,14 @@ export const EnableCard = ({ error }: Props) => {
           break;
         case "already_connected":
           toast.error(
-            "This Livestorm workspace is already connected to another account",
+            "This Github account is already connected to another account",
             {
               duration: 10000,
             },
           );
           break;
       }
-      router.replace(`/${slug}/settings/integrations/livestorm`);
+      router.replace(`/${slug}/settings/integrations/github`);
     }
   }, [trigger_token_expires_at, error]);
 
@@ -77,9 +74,9 @@ export const EnableCard = ({ error }: Props) => {
   return (
     <Card>
       <CardHeader className="flex h-14 flex-row items-center justify-between space-y-0">
-        <div className="flex w-full items-center justify-between">
+        <div className="flex items-center">
           <Link
-            href="https://doc.useconquest.com/livestorm"
+            href="https://docs.useconquest.com/github"
             target="_blank"
             className={cn(
               buttonVariants({ variant: "link", size: "xs" }),
@@ -89,27 +86,27 @@ export const EnableCard = ({ error }: Props) => {
             <ExternalLink size={15} />
             <p>Documentation</p>
           </Link>
-          {(!trigger_token || isExpired) && (
-            <Button onClick={onEnable}>
-              <CirclePlus size={16} />
-              Enable
-            </Button>
-          )}
-          {isEnabled && !loading && !isExpired && (
-            <Button variant="destructive" onClick={onDisconnect}>
-              Disconnect
-            </Button>
-          )}
         </div>
+        {(!trigger_token || isExpired) && (
+          <Button onClick={onEnable}>
+            <CirclePlus size={16} />
+            Enable
+          </Button>
+        )}
+        {/* {isEnabled && !loading && !isExpired && ( */}
+        <Button variant="destructive" onClick={onDisconnect}>
+          Disconnect
+        </Button>
+        {/* )} */}
       </CardHeader>
       <CardContent className="mb-0.5">
         <p className="font-medium text-base">Overview</p>
         <p className="text-balance text-muted-foreground">
-          Connect your Livestorm workspace to retrieve all your webinar sessions
-          and their participants.
+          Connect your Github account to get a complete overview of your
+          repositories.
         </p>
         {(isEnabled || isSyncing) && !isExpired && (
-          <FormLivestorm loading={loading} setLoading={setLoading} />
+          <ListRepos loading={loading} setLoading={setLoading} />
         )}
       </CardContent>
     </Card>

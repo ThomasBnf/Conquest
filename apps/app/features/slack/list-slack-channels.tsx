@@ -14,12 +14,12 @@ import { LoadingChannels } from "../integrations/loading-channels";
 import { LoadingMessage } from "../integrations/loading-message";
 
 type Props = {
-  setIsConnecting: Dispatch<SetStateAction<boolean>>;
+  loading: boolean;
+  setLoading: Dispatch<SetStateAction<boolean>>;
 };
 
-export const ListSlackChannels = ({ setIsConnecting }: Props) => {
+export const ListSlackChannels = ({ loading, setLoading }: Props) => {
   const { slack } = useUser();
-  const [loading, setLoading] = useState(slack?.status === "SYNCING");
   const [selectedChannels, setSelectedChannels] = useState<string[]>([]);
   const router = useRouter();
 
@@ -53,8 +53,6 @@ export const ListSlackChannels = ({ setIsConnecting }: Props) => {
     if (!slack) return;
 
     setLoading(true);
-    setIsConnecting(true);
-
     submit({ slack, channels: selectedChannels });
   };
 
@@ -75,65 +73,67 @@ export const ListSlackChannels = ({ setIsConnecting }: Props) => {
   return (
     <>
       <Separator className="my-4" />
-      <p className="font-medium text-base">Imported channels</p>
-      <Button
-        variant="outline"
-        size="xs"
-        className="mt-3 mb-1.5"
-        disabled={loading}
-        onClick={
-          selectedChannels.length === slackChannels?.length
-            ? onUnselectAll
-            : onSelectAll
-        }
-      >
-        {selectedChannels.length === slackChannels?.length
-          ? "Unselect all"
-          : "Select all"}
-      </Button>
-      {isLoading ? (
-        <LoadingChannels />
-      ) : (
-        <div className="flex flex-col gap-2">
-          <div className="mt-2 flex flex-col gap-1">
-            {slackChannels?.map((slackChannel) => {
-              const isSelected = selectedChannels.some(
-                (channel) => channel === slackChannel.id,
-              );
-              const hasImported = channels?.some(
-                (channel) => channel.external_id === slackChannel.id,
-              );
-
-              return (
-                <button
-                  key={slackChannel.id}
-                  className={cn(
-                    "flex items-center gap-2",
-                    (hasImported || loading) && "opacity-50",
-                  )}
-                  type="button"
-                  onClick={() => onSelect(slackChannel.id)}
-                >
-                  <Checkbox
-                    checked={isSelected || hasImported}
-                    disabled={hasImported || loading}
-                  />
-                  <p>{slackChannel.name}</p>
-                </button>
-              );
-            })}
-          </div>
-          {loading && <LoadingMessage />}
+      <div className="space-y-4">
+        <div>
+          <p className="mb-2 font-medium text-base">Imported channels</p>
           <Button
-            loading={loading}
-            disabled={selectedChannels.length === 0}
-            className="mt-2 w-fit"
-            onClick={onStart}
+            variant="outline"
+            size="xs"
+            disabled={loading}
+            onClick={
+              selectedChannels.length === slackChannels?.length
+                ? onUnselectAll
+                : onSelectAll
+            }
           >
-            Let's start!
+            {selectedChannels.length === slackChannels?.length
+              ? "Unselect all"
+              : "Select all"}
           </Button>
         </div>
-      )}
+        {isLoading ? (
+          <LoadingChannels />
+        ) : (
+          <>
+            <div className="flex flex-col gap-1">
+              {slackChannels?.map((slackChannel) => {
+                const isSelected = selectedChannels.some(
+                  (channel) => channel === slackChannel.id,
+                );
+                const hasImported = channels?.some(
+                  (channel) => channel.external_id === slackChannel.id,
+                );
+
+                return (
+                  <button
+                    key={slackChannel.id}
+                    className={cn(
+                      "flex items-center gap-2",
+                      (hasImported || loading) && "opacity-50",
+                    )}
+                    type="button"
+                    onClick={() => onSelect(slackChannel.id)}
+                  >
+                    <Checkbox
+                      checked={isSelected || hasImported}
+                      disabled={hasImported || loading}
+                    />
+                    <p>{slackChannel.name}</p>
+                  </button>
+                );
+              })}
+            </div>
+            {loading && <LoadingMessage />}
+            <Button
+              loading={loading}
+              disabled={selectedChannels.length === 0 || loading}
+              onClick={onStart}
+            >
+              Let's start!
+            </Button>
+          </>
+        )}
+      </div>
     </>
   );
 };

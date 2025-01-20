@@ -7,6 +7,7 @@ import { dashboard } from "@/server/dashboard/route";
 import { discord } from "@/server/discord/route";
 import { discourse } from "@/server/discourse/route";
 import { files } from "@/server/files/route";
+import { github } from "@/server/github/route";
 import { linkedin } from "@/server/linkedin/route";
 import { livestorm } from "@/server/livestorm/route";
 import { members } from "@/server/members/route";
@@ -36,6 +37,7 @@ const api = app
   .route("/discord", discord)
   .route("/discourse", discourse)
   .route("/files", files)
+  .route("/github", github)
   .route("/linkedin", linkedin)
   .route("/livestorm", livestorm)
   .route("/members", members)

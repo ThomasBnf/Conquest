@@ -1,7 +1,6 @@
 import { useUser } from "@/context/userContext";
 import type { installDiscourse } from "@/trigger/installDiscourse.trigger";
 import { Button } from "@conquest/ui/button";
-import { cn } from "@conquest/ui/cn";
 import {
   Form,
   FormControl,
@@ -32,18 +31,18 @@ import {
 import { UserFields } from "./user-fields";
 
 type Props = {
-  setIsConnecting: Dispatch<SetStateAction<boolean>>;
+  loading: boolean;
+  setLoading: Dispatch<SetStateAction<boolean>>;
 };
 
-export const DiscourseForm = ({ setIsConnecting }: Props) => {
+export const DiscourseForm = ({ loading, setLoading }: Props) => {
   const { discourse } = useUser();
-  const [loading, setLoading] = useState(discourse?.status === "SYNCING");
   const [fields, setFields] = useState<Field[]>([
-    { id: "1234", external_id: "12", name: "Company" },
-    { id: "1235", external_id: "13", name: "Linkedin Profile" },
-    { id: "1236", external_id: "8", name: "Language" },
-    { id: "1237", external_id: "11", name: "Sell services" },
-    { id: "1238", external_id: "3", name: "Need VS Expertise" },
+    // { id: "1234", external_id: "12", name: "Company" },
+    // { id: "1235", external_id: "13", name: "Linkedin Profile" },
+    // { id: "1236", external_id: "8", name: "Language" },
+    // { id: "1237", external_id: "11", name: "Sell services" },
+    // { id: "1238", external_id: "3", name: "Need VS Expertise" },
   ]);
   const router = useRouter();
 
@@ -53,24 +52,24 @@ export const DiscourseForm = ({ setIsConnecting }: Props) => {
 
   const form = useForm<FormDiscourse>({
     resolver: zodResolver(FormDiscourseSchema),
-    defaultValues: {
-      community_url: "https://playground.lagrowthmachine.com",
-      api_key:
-        "a7e80919eecc82b71fe8a23d8d0e199bf3d593216835315133254de014e9e1b3",
-      payload_url: true,
-      content_type: true,
-      secret: true,
-      send_me_everything: true,
-    },
+    // defaultValues: {
+    //   community_url: "https://playground.lagrowthmachine.com",
+    //   api_key:
+    //     "a7e80919eecc82b71fe8a23d8d0e199bf3d593216835315133254de014e9e1b3",
+    //   payload_url: true,
+    //   content_type: true,
+    //   secret: true,
+    //   send_me_everything: true,
+    // },
   });
 
   const onSubmit = async ({ community_url, api_key }: FormDiscourse) => {
     if (!discourse) return;
 
     setLoading(true);
-    setIsConnecting(true);
 
     const formattedCommunityUrl = community_url.trim().replace(/\/$/, "");
+
     submit({
       discourse,
       community_url: formattedCommunityUrl,
@@ -110,8 +109,6 @@ export const DiscourseForm = ({ setIsConnecting }: Props) => {
     const isFailed = run.status === "FAILED";
 
     if (isFailed || error) {
-      setIsConnecting(false);
-      setLoading(false);
       router.refresh();
       toast.error("Failed to install Discourse", { duration: 5000 });
     }
@@ -125,10 +122,10 @@ export const DiscourseForm = ({ setIsConnecting }: Props) => {
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="flex flex-col gap-2"
+          className="flex flex-col gap-4"
         >
           <div className="flex flex-col gap-4">
-            <div className="mb-2 flex flex-col gap-1">
+            <div>
               <p className="font-medium text-base">API Configuration</p>
               <p className="text-muted-foreground">
                 You can find your API keys in the Discourse Admin panel.
@@ -181,18 +178,20 @@ export const DiscourseForm = ({ setIsConnecting }: Props) => {
                 </FormItem>
               )}
             />
-            <div className="flex flex-col">
-              <Label className="mb-2">User Fields</Label>
-              <UserFields
-                fields={fields}
-                onRemoveField={onRemoveField}
-                onChangeField={onChangeField}
-                disabled={loading}
-              />
+            <div className="flex flex-col gap-2">
+              <Label>User Fields</Label>
+              {fields.length > 0 && (
+                <UserFields
+                  fields={fields}
+                  onRemoveField={onRemoveField}
+                  onChangeField={onChangeField}
+                  disabled={loading}
+                />
+              )}
               <Button
                 type="button"
                 variant="outline"
-                className={cn("w-fit", fields.length > 0 && "mt-2")}
+                className="w-fit"
                 disabled={loading}
                 onClick={onAddField}
               >
@@ -201,17 +200,17 @@ export const DiscourseForm = ({ setIsConnecting }: Props) => {
               </Button>
             </div>
           </div>
-          <div className="mt-8 flex flex-col gap-4">
-            <div className="mb-2 flex flex-col gap-1">
+          <div className="mt-2 flex flex-col gap-4">
+            <div>
               <p className="font-medium text-base">Webhook Configuration</p>
               <p className="text-muted-foreground">
                 You can find your Webhooks in the Discourse Admin panel.
               </p>
-              <p className="w-fit rounded border bg-muted px-1 py-0.5">
+              <p className="mt-1 w-fit rounded border bg-muted px-1 py-0.5">
                 Admin {">"} Advanced {">"} Webhooks {">"} Add Webhook
               </p>
             </div>
-            <div className="flex flex-col gap-2">
+            <div className="space-y-2">
               <FormField
                 control={form.control}
                 name="payload_url"

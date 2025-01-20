@@ -9,13 +9,14 @@ import { Slack } from "@/components/icons/Slack";
 import { useUser } from "@/context/userContext";
 import { Badge } from "@conquest/ui/badge";
 import { Button } from "@conquest/ui/button";
+import { cn } from "@conquest/ui/cn";
 import { ScrollArea } from "@conquest/ui/scroll-area";
 import { Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 export const IntegrationsList = () => {
-  const { user, slug, slack, discourse, discord, livestorm, linkedin } =
+  const { user, slug, discord, discourse, github, linkedin, livestorm, slack } =
     useUser();
   const router = useRouter();
 
@@ -39,6 +40,7 @@ export const IntegrationsList = () => {
           description: "Synchronize your members with Slack",
           isConnected: slack?.status === "CONNECTED",
           isSyncing: slack?.status === "SYNCING",
+          soon: false,
         },
         {
           href: onboadingCompleted
@@ -49,6 +51,7 @@ export const IntegrationsList = () => {
           description: "Synchronize your members with Discourse",
           isConnected: discourse?.status === "CONNECTED",
           isSyncing: discourse?.status === "SYNCING",
+          soon: false,
         },
         {
           href: onboadingCompleted
@@ -59,6 +62,7 @@ export const IntegrationsList = () => {
           description: "Synchronize your members with Discord",
           isConnected: discord?.status === "CONNECTED",
           isSyncing: discord?.status === "SYNCING",
+          soon: true,
         },
       ],
     },
@@ -74,6 +78,7 @@ export const IntegrationsList = () => {
           description: "Connect your Linkedin account to your workspace",
           isConnected: linkedin?.status === "CONNECTED",
           isSyncing: linkedin?.status === "SYNCING",
+          soon: true,
         },
         {
           href: onboadingCompleted
@@ -84,7 +89,19 @@ export const IntegrationsList = () => {
           description: "Synchronize your members with Livestorm",
           isConnected: livestorm?.status === "CONNECTED",
           isSyncing: livestorm?.status === "SYNCING",
+          soon: false,
         },
+        // {
+        //   href: onboadingCompleted
+        //     ? `/${slug}/settings/integrations/github`
+        //     : "/welcome/github",
+        //   logo: <Github />,
+        //   name: "Github",
+        //   description: "Synchronize your members with Github",
+        //   isConnected: github?.status === "CONNECTED",
+        //   isSyncing: github?.status === "SYNCING",
+        //   soon: false,
+        // },
       ],
     },
   ];
@@ -100,34 +117,61 @@ export const IntegrationsList = () => {
           <div key={category.label}>
             <p className="mt-4 mb-2 font-medium text-base">{category.label}</p>
             <div className="grid grid-cols-2 gap-4">
-              {category.integrations.map((integration) => (
-                <Link
-                  href={integration.href}
-                  key={integration.name}
-                  className="relative flex items-start gap-4 rounded-md border p-4 transition-colors hover:bg-muted-hover"
-                >
-                  {integration.logo}
-                  <div>
-                    <p className="font-medium text-lg leading-tight">
-                      {integration.name}
-                    </p>
-                    <p className="text-muted-foreground">
-                      {integration.description}
-                    </p>
-                  </div>
-                  {integration.isConnected && (
-                    <Badge variant="success" className="absolute top-2 right-2">
-                      Connected
-                    </Badge>
-                  )}
-                  {integration.isSyncing && (
-                    <Badge variant="outline" className="absolute top-2 right-2">
-                      <Loader2 className="mr-1 size-3 animate-spin" />
-                      Syncing
-                    </Badge>
-                  )}
-                </Link>
-              ))}
+              {category.integrations.map((integration) => {
+                const {
+                  href,
+                  logo,
+                  name,
+                  description,
+                  isConnected,
+                  isSyncing,
+                  soon,
+                } = integration;
+
+                return (
+                  <Link
+                    href={soon ? "" : href}
+                    key={name}
+                    className={cn(
+                      "relative flex items-start gap-4 rounded-md border p-4 transition-colors hover:bg-muted-hover",
+                      soon && "cursor-not-allowed",
+                    )}
+                  >
+                    <div className={cn(soon && "opacity-50")}>{logo}</div>
+                    <div className={cn(soon && "opacity-50")}>
+                      <p className="font-medium text-lg leading-tight">
+                        {name}
+                      </p>
+                      <p className="text-muted-foreground">{description}</p>
+                    </div>
+                    {isConnected && (
+                      <Badge
+                        variant="success"
+                        className="absolute top-2 right-2"
+                      >
+                        Connected
+                      </Badge>
+                    )}
+                    {isSyncing && (
+                      <Badge
+                        variant="secondary"
+                        className="absolute top-2 right-2"
+                      >
+                        <Loader2 className="mr-1 size-3 animate-spin" />
+                        Syncing
+                      </Badge>
+                    )}
+                    {soon && (
+                      <Badge
+                        variant="secondary"
+                        className="absolute top-2 right-2"
+                      >
+                        Coming soon
+                      </Badge>
+                    )}
+                  </Link>
+                );
+              })}
             </div>
           </div>
         ))}

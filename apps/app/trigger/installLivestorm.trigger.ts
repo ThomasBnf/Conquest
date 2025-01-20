@@ -24,8 +24,9 @@ export const installLivestorm = schemaTask({
     livestorm: LivestormIntegrationSchema,
     organization_id: z.string(),
     organization_name: z.string(),
+    filter: z.string(),
   }),
-  run: async ({ livestorm, organization_id, organization_name }) => {
+  run: async ({ livestorm, organization_id, organization_name, filter }) => {
     const { id, details, workspace_id } = livestorm;
     const { access_token, expires_in } = details;
 
@@ -53,6 +54,7 @@ export const installLivestorm = schemaTask({
         ...details,
         name: organization_name,
         access_token: accessToken,
+        filter,
       },
       status: "SYNCING",
     });
@@ -66,7 +68,7 @@ export const installLivestorm = schemaTask({
     let page = 0;
 
     while (true) {
-      const listOfEvents = await listEvents({ accessToken, page });
+      const listOfEvents = await listEvents({ accessToken, page, filter });
       if (!listOfEvents?.length) break;
 
       events.push(...listOfEvents);

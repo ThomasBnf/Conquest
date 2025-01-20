@@ -48,6 +48,10 @@
       "pages": ["introduction"]
     },
     {
+      "group": "Integrations",
+      "pages": ["integrations/slack", "integrations/discourse"]
+    },
+    {
       "group": "Activities",
       "pages": [
         "api-reference/activities/list",

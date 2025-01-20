@@ -21,7 +21,7 @@ type Props = {
 export const EnableCard = ({ error }: Props) => {
   const { slug, slack } = useUser();
   const { trigger_token, trigger_token_expires_at } = slack ?? {};
-  const [isConnecting, setIsConnecting] = useState(false);
+  const [loading, setLoading] = useState(slack?.status === "SYNCING");
   const router = useRouter();
 
   const isEnabled = slack?.status === "ENABLED";
@@ -44,14 +44,7 @@ export const EnableCard = ({ error }: Props) => {
 
   const onDisconnect = async () => {
     if (!slack) return;
-
-    const response = await deleteIntegration({
-      integration: slack,
-      source: "SLACK",
-    });
-
-    const error = response?.serverError;
-    if (error) toast.error(error);
+    await deleteIntegration({ integration: slack, source: "SLACK" });
   };
 
   useEffect(() => {
@@ -101,7 +94,7 @@ export const EnableCard = ({ error }: Props) => {
             Enable
           </Button>
         )}
-        {isEnabled && !isConnecting && !isExpired && (
+        {isEnabled && !loading && !isExpired && (
           <Button variant="destructive" onClick={onDisconnect}>
             Disconnect
           </Button>
@@ -114,7 +107,7 @@ export const EnableCard = ({ error }: Props) => {
           members and community activity.
         </p>
         {(isEnabled || isSyncing) && !isExpired && (
-          <ListSlackChannels setIsConnecting={setIsConnecting} />
+          <ListSlackChannels loading={loading} setLoading={setLoading} />
         )}
       </CardContent>
     </Card>

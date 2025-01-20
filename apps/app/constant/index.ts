@@ -101,7 +101,7 @@ export const SLACK_ACTIVITY_TYPES = [
     name: "Add reaction",
     source: "SLACK" as const,
     key: "slack:reaction",
-    weight: 4,
+    weight: 0,
     deletable: false,
   },
 ];
@@ -139,7 +139,7 @@ export const DISCORD_ACTIVITY_TYPES = [
     name: "Add reaction",
     source: "DISCORD" as const,
     key: "discord:reaction",
-    weight: 4,
+    weight: 0,
     deletable: false,
   },
 ];
@@ -192,7 +192,7 @@ export const DISCOURSE_ACTIVITY_TYPES = [
     name: "Add reaction",
     source: "DISCOURSE" as const,
     key: "discourse:reaction",
-    weight: 4,
+    weight: 0,
     deletable: false,
   },
 ];
@@ -226,14 +226,14 @@ export const LINKEDIN_ACTIVITY_TYPES = [
     name: "Comment a post",
     source: "LINKEDIN" as const,
     key: "linkedin:comment",
-    weight: 2,
+    weight: 1,
     deletable: false,
   },
   {
     name: "Like a post",
     source: "LINKEDIN" as const,
     key: "linkedin:like",
-    weight: 1,
+    weight: 0,
     deletable: false,
   },
 ];

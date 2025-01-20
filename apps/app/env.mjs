@@ -19,6 +19,8 @@ export const env = createEnv({
 
     DISCOURSE_SECRET_KEY: z.string(),
 
+    GITHUB_CLIENT_SECRET: z.string(),
+
     DISCORD_CLIENT_SECRET: z.string(),
     DISCORD_BOT_TOKEN: z.string(),
 
@@ -39,6 +41,7 @@ export const env = createEnv({
     NEXT_PUBLIC_DISCORD_CLIENT_ID: z.string(),
     NEXT_PUBLIC_LIVESTORM_CLIENT_ID: z.string(),
     NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: z.string(),
+    NEXT_PUBLIC_GITHUB_CLIENT_ID: z.string(),
   },
   runtimeEnv: {
     PORT: process.env.PORT,
@@ -69,6 +72,9 @@ export const env = createEnv({
     NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY:
       process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,
     STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY,
+
+    NEXT_PUBLIC_GITHUB_CLIENT_ID: process.env.NEXT_PUBLIC_GITHUB_CLIENT_ID,
+    GITHUB_CLIENT_SECRET: process.env.GITHUB_CLIENT_SECRET,
 
     RESEND_API_KEY: process.env.RESEND_API_KEY,
 

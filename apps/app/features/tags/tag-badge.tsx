@@ -10,7 +10,7 @@ export const TagBadge = ({ tag, transparent = false }: Props) => {
   if (!tag) return null;
 
   return (
-    <Badge variant={transparent ? "transparent" : "outline"}>
+    <Badge variant={transparent ? "transparent" : "secondary"}>
       <div
         className="size-2.5 rounded-full"
         style={{ backgroundColor: tag.color }}

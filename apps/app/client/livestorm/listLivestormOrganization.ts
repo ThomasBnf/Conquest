@@ -3,7 +3,7 @@ import type { Organization } from "@conquest/zod/types/livestorm";
 import { useQuery } from "@tanstack/react-query";
 
 export const listLivestormOrganization = () => {
-  return useQuery({
+  const query = useQuery({
     queryKey: ["livestorm-organization"],
     queryFn: async () => {
       const response = await client.api.livestorm.organization.$get();
@@ -12,4 +12,9 @@ export const listLivestormOrganization = () => {
       return { ...data.data, included: data.included };
     },
   });
+
+  return {
+    ...query,
+    organization: query.data,
+  };
 };

@@ -19,8 +19,7 @@ type Props = {
 export const EnabledCard = ({ error }: Props) => {
   const { slug, discourse } = useUser();
   const { trigger_token, trigger_token_expires_at } = discourse ?? {};
-  const [loading, setLoading] = useState(false);
-  const [isConnecting, setIsConnecting] = useState(false);
+  const [loading, setLoading] = useState(discourse?.status === "SYNCING");
   const router = useRouter();
 
   const isEnabled = discourse?.status === "ENABLED";
@@ -36,14 +35,7 @@ export const EnabledCard = ({ error }: Props) => {
 
   const onDisconnect = async () => {
     if (!discourse) return;
-
-    const response = await deleteIntegration({
-      integration: discourse,
-      source: "DISCOURSE",
-    });
-
-    const error = response?.serverError;
-    if (error) toast.error(error);
+    await deleteIntegration({ integration: discourse, source: "DISCOURSE" });
   };
 
   useEffect(() => {
@@ -92,7 +84,7 @@ export const EnabledCard = ({ error }: Props) => {
               Enable
             </Button>
           )}
-          {isEnabled && !isConnecting && !isExpired && (
+          {isEnabled && !loading && !isExpired && (
             <Button variant="destructive" onClick={onDisconnect}>
               Disconnect
             </Button>
@@ -108,7 +100,7 @@ export const EnabledCard = ({ error }: Props) => {
           </p>
         </div>
         {(isEnabled || isSyncing) && !isExpired && (
-          <DiscourseForm setIsConnecting={setIsConnecting} />
+          <DiscourseForm loading={loading} setLoading={setLoading} />
         )}
       </CardContent>
     </Card>

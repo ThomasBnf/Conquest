@@ -1,14 +1,10 @@
 {
   "extends": "@conquest/typescript/nextjs.json",
   "compilerOptions": {
-    "jsx": "preserve",
     "baseUrl": ".",
     "paths": {
-      "@/*": [
-        "./*"
-      ]
-    },
-    "strict": true
+      "@/*": ["./*"]
+    }
   },
   "include": [
     "next-env.d.ts",
@@ -17,7 +13,5 @@
     ".next/types/**/*.ts",
     "tailwind.config.ts"
   ],
-  "exclude": [
-    "node_modules"
-  ]
+  "exclude": ["node_modules"]
 }

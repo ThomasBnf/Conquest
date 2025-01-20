@@ -53,6 +53,7 @@
     "next-safe-action": "^7.9.4",
     "next-themes": "^0.3.0",
     "nuqs": "^1.20.0",
+    "octokit": "^4.1.0",
     "papaparse": "^5.5.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
