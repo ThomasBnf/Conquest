@@ -75,7 +75,7 @@ export const ListSlackChannels = ({ loading, setLoading }: Props) => {
       <Separator className="my-4" />
       <div className="space-y-4">
         <div>
-          <p className="mb-2 font-medium text-base">Imported channels</p>
+          <p className="mb-2 font-medium text-base">Channels</p>
           <Button
             variant="outline"
             size="xs"

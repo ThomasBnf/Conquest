@@ -1,5 +1,5 @@
 import type { LinkedInIntegration } from "@conquest/zod/schemas/integration.schema";
-import type { PostsResponse } from "@conquest/zod/types/linkedin";
+import { type Posts, PostsSchema } from "@conquest/zod/types/linkedin";
 
 type Props = {
   linkedin: LinkedInIntegration;
@@ -9,12 +9,10 @@ export const listPosts = async ({ linkedin }: Props) => {
   const { external_id, details } = linkedin;
   const { access_token } = details;
 
-  const allPosts: PostsResponse["elements"] = [];
-
+  const allPosts: Posts["elements"] = [];
   let start = 0;
-  let hasMore = true;
 
-  while (hasMore) {
+  while (true) {
     const params = new URLSearchParams({
       author: `urn:li:organization:${external_id}`,
       q: "author",
@@ -40,13 +38,13 @@ export const listPosts = async ({ linkedin }: Props) => {
       );
     }
 
-    const postsData = (await postsResponse.json()) as PostsResponse;
+    const postsData = PostsSchema.parse(await postsResponse.json());
     allPosts.push(...postsData.elements);
 
     const total = postsData.paging?.total || 0;
 
     start += 100;
-    hasMore = start < total;
+    if (start > total) break;
   }
 
   return allPosts;

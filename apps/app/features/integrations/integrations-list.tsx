@@ -78,7 +78,7 @@ export const IntegrationsList = () => {
           description: "Connect your Linkedin account to your workspace",
           isConnected: linkedin?.status === "CONNECTED",
           isSyncing: linkedin?.status === "SYNCING",
-          soon: true,
+          soon: false,
         },
         {
           href: onboadingCompleted

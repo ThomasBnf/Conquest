@@ -1,16 +1,9 @@
-import { LINKEDIN_ACTIVITY_TYPES } from "@/constant";
-import { createManyActivityTypes } from "@/queries/activity-type/createManyActivityTypes";
 import { deleteIntegration } from "@/queries/integrations/deleteIntegration";
 import { updateIntegration } from "@/queries/integrations/updateIntegration";
-import { createManyComments } from "@/queries/linkedin/createManyComments";
-import { createManyLikes } from "@/queries/linkedin/createManyLikes";
-import { listComments } from "@/queries/linkedin/listComments";
-import { listLikes } from "@/queries/linkedin/listLikes";
-import { listPosts } from "@/queries/linkedin/listPosts";
+import { webhookSubscription } from "@/queries/linkedin/webhookSubscription";
 import { LinkedInIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
 import { schemaTask } from "@trigger.dev/sdk/v3";
 import { z } from "zod";
-import { calculateMembersLevel } from "./calculateMembersLevel";
 
 export const installLinkedin = schemaTask({
   id: "install-linkedin",
@@ -34,32 +27,49 @@ export const installLinkedin = schemaTask({
 
     const parsedLinkedin = LinkedInIntegrationSchema.parse(integration);
 
-    await createManyActivityTypes({
-      activity_types: LINKEDIN_ACTIVITY_TYPES,
-      workspace_id,
-    });
+    // await createManyActivityTypes({
+    //   activity_types: LINKEDIN_ACTIVITY_TYPES,
+    //   workspace_id,
+    // });
 
-    const posts = await listPosts({ linkedin: parsedLinkedin });
+    // const posts = await listPosts({ linkedin: parsedLinkedin });
 
-    for (const post of posts) {
-      const comments = await listComments({
-        linkedin: parsedLinkedin,
-        post_id: post.id,
-      });
-      await createManyComments({ linkedin: parsedLinkedin, comments });
+    // for (const post of posts) {
+    //   const createdPost = await createPost({
+    //     external_id: post.id,
+    //     content: post.commentary,
+    //     author_id: post.author,
+    //     workspace_id,
+    //     created_at: post.createdAt,
+    //   });
 
-      const likes = await listLikes({
-        linkedin: parsedLinkedin,
-        post_id: post.id,
-      });
-      await createManyLikes({ linkedin: parsedLinkedin, likes });
-    }
+    //   const comments = await listComments({
+    //     linkedin: parsedLinkedin,
+    //     post_id: post.id,
+    //   });
+
+    //   await createManyComments({
+    //     linkedin: parsedLinkedin,
+    //     post: createdPost,
+    //     comments,
+    //   });
+
+    //   const likes = await listLikes({
+    //     linkedin: parsedLinkedin,
+    //     post_id: post.id,
+    //   });
+
+    //   await createManyLikes({
+    //     linkedin: parsedLinkedin,
+    //     post: createdPost,
+    //     likes,
+    //   });
+    // }
+
+    await webhookSubscription({ linkedin: parsedLinkedin });
+    // await calculateMembersLevel.trigger({ workspace_id });
   },
   onSuccess: async ({ linkedin }) => {
-    const { workspace_id } = linkedin;
-
-    calculateMembersLevel.trigger({ workspace_id });
-
     await updateIntegration({
       id: linkedin.id,
       connected_at: new Date(),

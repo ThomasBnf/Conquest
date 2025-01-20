@@ -1,9 +1,43 @@
+import { env } from "@/env.mjs";
+import { updateIntegration } from "@/queries/integrations/updateIntegration";
 import { getAuthUser } from "@/queries/users/getAuthUser";
 import { LinkedInIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
-import type { organizationalEntityAclsResponse } from "@conquest/zod/types/linkedin";
+import {
+  ListOrganizationsSchema,
+  OrganizationsSchema,
+} from "@conquest/zod/types/linkedin";
 import { Hono } from "hono";
+import { createHmac } from "node:crypto";
+
+const generateChallengeResponse = (
+  challengeCode: string,
+  clientSecret: string,
+) => {
+  const hmac = createHmac("sha256", clientSecret);
+  hmac.update(challengeCode);
+  return hmac.digest("hex");
+};
 
 export const linkedin = new Hono()
+  .get("/", async (c) => {
+    const searchParams = new URL(c.req.url).searchParams;
+    const challengeCode = searchParams.get("challengeCode")!;
+
+    const clientSecret = env.LINKEDIN_CLIENT_SECRET as string;
+    const challengeResponse = generateChallengeResponse(
+      challengeCode,
+      clientSecret,
+    );
+
+    return c.json({ challengeCode, challengeResponse });
+  })
+  .post("/", async (c) => {
+    const body = await c.req.json();
+
+    console.log(body);
+
+    return c.json({ success: true });
+  })
   .use(async (c, next) => {
     const user = await getAuthUser(c);
     if (!user) throw new Error("Unauthorized");
@@ -18,10 +52,11 @@ export const linkedin = new Hono()
       (integration) => integration.details.source === "LINKEDIN",
     );
 
-    const { details } = LinkedInIntegrationSchema.parse(integration);
+    const parsedIntegration = LinkedInIntegrationSchema.parse(integration);
+    const { details } = parsedIntegration;
     const { access_token } = details;
 
-    const orgsResponse = await fetch(
+    const response = await fetch(
       "https://api.linkedin.com/v2/organizationalEntityAcls?q=roleAssignee&role=ADMINISTRATOR&state=APPROVED",
       {
         headers: {
@@ -32,14 +67,31 @@ export const linkedin = new Hono()
       },
     );
 
-    const dataOrgs =
-      (await orgsResponse.json()) as organizationalEntityAclsResponse;
-    const orgsIds = dataOrgs.elements
+    const organizationsList = ListOrganizationsSchema.parse(
+      await response.json(),
+    );
+
+    const userId = organizationsList.elements[0]?.roleAssignee.replace(
+      "person",
+      "user",
+    );
+
+    if (userId) {
+      await updateIntegration({
+        id: parsedIntegration?.id,
+        details: {
+          ...parsedIntegration?.details,
+          user_id: userId,
+        },
+      });
+    }
+
+    const organizationsIds = organizationsList.elements
       .map((org) => org.organizationalTarget.split(":").pop())
       .join(",");
 
-    const response = await fetch(
-      `https://api.linkedin.com/v2/organizations?ids=List(${orgsIds})`,
+    const orgsResponse = await fetch(
+      `https://api.linkedin.com/v2/organizations?ids=List(${organizationsIds})`,
       {
         headers: {
           Authorization: `Bearer ${access_token}`,
@@ -50,7 +102,5 @@ export const linkedin = new Hono()
       },
     );
 
-    const data = await response.json();
-
-    return c.json(data);
+    return c.json(OrganizationsSchema.parse(await orgsResponse.json()));
   });

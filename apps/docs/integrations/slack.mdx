@@ -1,106 +1,117 @@
 ---
 title: "Slack Integration"
-description: "Connect and manage your Slack community data with Conquest"
+description: "Connect and manage your Slack community data in Conquest"
 icon: "slack"
 iconType: "solid"
 ---
 
-The Conquest Slack integration seamlessly connects with your workspace, enabling comprehensive management of your community data. Access all workspace members, public channels, message history, threaded replies, and reactions in one centralized location.
+The Conquest Slack integration connects with your Slack workspace, enabling comprehensive management of your community data. Access all workspace members, public channels, message history, replies, files and reactions.
 
 ## Features
 
-### Data Collection
-Your Slack workspace provides access to the following data:
+<Note>If you are in free plan, you will only be able to collect data from the last 90 days.</Note>
 
-### Member Profiles
-| Field              | Description                                    |  
-|:-------------------|:-----------------------------------------------|  
-| **Full Name**      | Member's complete name                         |  
-| **Email**          | Professional email address                     |  
-| **Job Title**      | Professional role within the workspace         |  
-| **Phone**          | Contact information                           |  
-| **Avatar**         | Profile image                                 |  
-| **Locale**         | Language and regional preferences             |  
+### Members
+What we collect:
+- **Full Name**
+- **Email**
+- **Job Title** if provided
+- **Phone** if provided
+- **Avatar**
+- **Locale**
 
-### Communication Analytics  
-| Type               | Description                                    |  
-|:-------------------|:-----------------------------------------------|  
-| **Messages**       | All communications in public channels          |  
-| **Replies**        | Threaded conversations and responses           |  
-| **Reactions**      | Emoji interactions on messages and replies     |
+What we don't collect (not available in Slack API):
+- **Joined Date**
+
+### Conversations
+- **Messages** from public channels
+- **Replies** from public channels
+- **Reactions** from public channels
+- **Files** from public channels
 
 ### Real-Time Updates
-Monitor your community with instant notifications for:  
-1. New messages and engagement  
-2. Public channel updates and creation  
-3. Workspace membership changes  
+Once we are connected to your workspace, we will get real-time updates on:  
+- **Members joining the workspace**
+- **Messages, replies and reactions**
+- **Files shared to public channels**
+- **Public channel creation, updates and deletion**
+- **App uninstallation**
 
-### Security Notice
+## Merging Members
 
-<Note>
-While our application isn't currently listed on Slack's official marketplace, we maintain enterprise-grade security standards. The security notice during installation is expected and doesn't affect the integration's functionality or safety.
-</Note>
+<Tip>
+  When new Slack activity occurs, we automatically:
+  1. Check if the member exists in your Conquest workspace
+  2. Create a new member profile if they don't exist
+  3. Merge with an existing profile if we find a matching email
+</Tip>
 
-<Warning>
-Slack's API restrictions limit data retrieval to the last 90 days for workspaces on the free plan. This limitation cannot be bypassed and applies to all third-party integrations.
-</Warning>
 
-## Implementation Guide
+## Connecting to Slack
 
 <Steps>
   <Step title="Workspace Connection">
-    1. Access your Conquest dashboard's Integrations section
-    2. Find and select the Slack integration card
+    1. Go to the **Integrations** section in settings page
+    2. Select **Slack**
     3. Click "Enable" to begin the connection process
-    4. Complete authentication through Slack's secure portal
 
-    <Info>
-      Verify you're connecting to the intended workspace, as any member can initiate integration requests by default.
-    </Info>
+    <Frame>
+    ![Slack Connection](/images/slack-enable.png)
+    </Frame>
+  </Step>
+
+  <Step title="OAuth">
+    After clicking "Enable", you will be redirected to Slack to complete the OAuth process.
+    <Tip>
+     You have to be an Admin of the Slack workspace to enable the integration.
+    </Tip>
+
+    <Frame>
+    ![Slack OAuth](/images/slack-oauth.png)
+    </Frame>
+    
   </Step>
   
-  <Step title="Channel Configuration">
-    Post-authentication, you'll return to Conquest to:
-
-    1. Review available public channels
-    2. Select channels for monitoring
-    3. Customize channel-specific settings
+  <Step title="Channels selection">
+    One you have allowed Conquest integration, you will be redirected back to Conquest and see the list of public channels in your workspace.
+    <Tip>
+     If you don't see any channels, channels may be private.
+    </Tip>
+     <Frame>
+    ![Slack Channels](/images/slack-channels.png)
+    </Frame>
+    1. Select the channels you want to collect data from
+    2. Click "Let's Start"
   </Step>
-  
-  <Step title="Initialization">
-    Complete your setup by:
-
-    1. Confirming channel selections
-    2. Initiating sync with "Let's Start"
-    3. Monitoring the collection of:
-      - Member profiles
-      - Channel structures
-      - Message archives
-      - Historical interactions
+  <Step title="Collecting">
+   Conquest will start collecting data from the selected channels in the last 365 days maximum.
+   <Note>
+    If you have a free plan, you will only be able to collect data from the last 90 days.
+   </Note>
+    <Frame>
+    ![Slack Collecting](/images/slack-collecting.png)
+    </Frame>
   </Step>
 </Steps>
 
-## Troubleshooting
+  <Warning>
+    The data collection duration depends on your community size and can take from a few minutes to several hours to complete.
+  </Warning>
+
+## FAQ
 
 <AccordionGroup>
-  <Accordion title="Workspace Not Visible">
+  <Accordion title="My workspace is not visible">
     If your workspace isn't appearing in the available options:
-    - Verify your Slack account permissions
+    - Verify you are an admin of the Slack workspace
     - Ensure you're signed into the correct Slack account
-    - Check if your organization allows third-party integrations
-  </Accordion>
-  <Accordion title="Missing Historical Data">
-    Data availability limitations:
-    - Free workspaces: 90-day history limit
-    - Private channels: Require explicit access
-    - Archived channels: May need reactivation
   </Accordion>
 </AccordionGroup>
 
 ## Need Help?
 
 <Card title="Contact Support" icon="headset">
-  Our support team is available to assist you with any integration challenges. 
-  Reach out at [support@useconquest.com](mailto:support@useconquest.com) for personalized assistance.
+  Our support team is available to assist you with any integration issues. 
+  Reach out at [support@useconquest.com](mailto:support@useconquest.com).
 </Card>
 

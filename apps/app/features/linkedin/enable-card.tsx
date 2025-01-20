@@ -4,14 +4,14 @@ import { deleteIntegration } from "@/actions/integrations/deleteIntegration";
 import { LINKEDIN_SCOPES } from "@/constant";
 import { useUser } from "@/context/userContext";
 import { env } from "@/env.mjs";
-import { ListOrganizations } from "@/features/linkedin/list-organizations";
+import { LinkedinForm } from "@/features/linkedin/linkedin-form";
 import { Button, buttonVariants } from "@conquest/ui/button";
 import { Card, CardContent, CardHeader } from "@conquest/ui/card";
 import { cn } from "@conquest/ui/cn";
 import { CirclePlus, ExternalLink } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 type Props = {
@@ -21,10 +21,11 @@ type Props = {
 export const EnableCard = ({ error }: Props) => {
   const { slug, linkedin } = useUser();
   const { trigger_token, trigger_token_expires_at } = linkedin ?? {};
+  const [loading, setLoading] = useState(linkedin?.status === "SYNCING");
+  const router = useRouter();
+
   const isEnabled = linkedin?.status === "ENABLED";
   const isConnected = linkedin?.status === "CONNECTED";
-
-  const router = useRouter();
   const isExpired =
     trigger_token_expires_at && trigger_token_expires_at < new Date();
 
@@ -43,21 +44,14 @@ export const EnableCard = ({ error }: Props) => {
 
   const onDisconnect = async () => {
     if (!linkedin) return;
-
-    const response = await deleteIntegration({
-      integration: linkedin,
-      source: "LINKEDIN",
-    });
-
-    const error = response?.serverError;
-
-    if (error) toast.error(error);
+    await deleteIntegration({ integration: linkedin, source: "LINKEDIN" });
   };
 
   useEffect(() => {
     if (trigger_token_expires_at && trigger_token_expires_at < new Date()) {
       onDisconnect();
     }
+
     if (error) {
       switch (error) {
         case "invalid_code":
@@ -83,7 +77,7 @@ export const EnableCard = ({ error }: Props) => {
       <CardHeader className="flex h-14 flex-row items-center justify-between space-y-0">
         <div className="flex flex-1 items-center justify-between">
           <Link
-            href="https://doc.useconquest.com/linkedin"
+            href="https://docs.useconquest.com/linkedin"
             target="_blank"
             className={cn(
               buttonVariants({ variant: "link", size: "xs" }),
@@ -99,7 +93,7 @@ export const EnableCard = ({ error }: Props) => {
               Enable
             </Button>
           )}
-          {isEnabled && (
+          {isEnabled && !loading && !isExpired && (
             <Button variant="destructive" onClick={onDisconnect}>
               Disconnect
             </Button>
@@ -112,7 +106,9 @@ export const EnableCard = ({ error }: Props) => {
           Connect your Linkedin account to automatically get comments on your
           posts.
         </p>
-        {isEnabled && !isExpired && <ListOrganizations />}
+        {isEnabled && !isExpired && (
+          <LinkedinForm loading={loading} setLoading={setLoading} />
+        )}
       </CardContent>
     </Card>
   );

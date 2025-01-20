@@ -1,5 +1,8 @@
 import type { LinkedInIntegration } from "@conquest/zod/schemas/integration.schema";
-import type { SocialActionsResponse } from "@conquest/zod/types/linkedin";
+import {
+  type SocialActions,
+  SocialActionsSchema,
+} from "@conquest/zod/types/linkedin";
 
 type Props = {
   linkedin: LinkedInIntegration;
@@ -9,18 +12,16 @@ type Props = {
 export const listComments = async ({ linkedin, post_id }: Props) => {
   const { access_token } = linkedin.details;
 
-  const allComments: SocialActionsResponse["elements"] = [];
-
+  const allComments: SocialActions["elements"] = [];
   let start = 0;
-  let hasMore = true;
 
-  while (hasMore) {
+  while (true) {
     const params = new URLSearchParams({
       start: start.toString(),
       count: "600",
     });
 
-    const commentsResponse = await fetch(
+    const response = await fetch(
       `https://api.linkedin.com/v2/socialActions/${post_id}/comments?${params.toString()}`,
       {
         headers: {
@@ -31,20 +32,19 @@ export const listComments = async ({ linkedin, post_id }: Props) => {
       },
     );
 
-    if (!commentsResponse.ok) {
+    if (!response.ok) {
       throw new Error(
-        `Failed to fetch LinkedIn comments: ${commentsResponse.statusText}`,
+        `Failed to fetch LinkedIn comments: ${response.statusText}`,
       );
     }
 
-    const commentsData =
-      (await commentsResponse.json()) as SocialActionsResponse;
+    const commentsData = SocialActionsSchema.parse(await response.json());
     allComments.push(...commentsData.elements);
 
     const total = commentsData.paging?.total || 0;
 
     start += 600;
-    hasMore = start < total;
+    if (start > total) break;
   }
 
   return allComments;

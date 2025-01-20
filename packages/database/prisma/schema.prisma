@@ -291,6 +291,19 @@ model tags {
   @@index([id, workspace_id])
 }
 
+model posts {
+  id           String     @id @default(cuid())
+  external_id  String
+  content      String
+  author_id    String
+  workspace_id String
+  workspace    workspaces @relation(fields: [workspace_id], references: [id], onDelete: Cascade)
+
+  created_at DateTime @default(now())
+
+  @@index([id, workspace_id])
+}
+
 model users {
   id              String    @id @default(cuid())
   email           String    @unique
@@ -353,6 +366,7 @@ model workspaces {
   integrations     integrations[]
   lists            lists[]
   members          members[]
+  posts            posts[]
   tags             tags[]
   users            users[]
   webhooks         webhooks[]

@@ -1,15 +1,21 @@
 import type { LinkedInIntegration } from "@conquest/zod/schemas/integration.schema";
-import type { SocialActionsResponse } from "@conquest/zod/types/linkedin";
+import type { Post } from "@conquest/zod/schemas/posts.schema";
+import type { SocialActions } from "@conquest/zod/types/linkedin";
 import { createActivity } from "../activities/createActivity";
 import { upsertMember } from "../members/upsertMember";
 import { getPeople } from "./getPeople";
 
 type Props = {
   linkedin: LinkedInIntegration;
-  comments: SocialActionsResponse["elements"];
+  post: Post;
+  comments: SocialActions["elements"];
 };
 
-export const createManyComments = async ({ linkedin, comments }: Props) => {
+export const createManyComments = async ({
+  linkedin,
+  post,
+  comments,
+}: Props) => {
   const { workspace_id } = linkedin;
 
   for (const comment of comments) {
@@ -50,9 +56,10 @@ export const createManyComments = async ({ linkedin, comments }: Props) => {
     });
 
     await createActivity({
-      external_id: comment.id,
+      external_id: comment.id ?? null,
       activity_type_key: "linkedin:comment",
-      message: comment.message.text,
+      message: comment.message?.text ?? "",
+      reply_to: post.id,
       member_id: member.id,
       workspace_id,
     });

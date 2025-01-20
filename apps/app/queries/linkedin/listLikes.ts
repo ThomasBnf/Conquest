@@ -1,5 +1,8 @@
 import type { LinkedInIntegration } from "@conquest/zod/schemas/integration.schema";
-import type { SocialActionsResponse } from "@conquest/zod/types/linkedin";
+import {
+  type SocialActions,
+  SocialActionsSchema,
+} from "@conquest/zod/types/linkedin";
 
 type Props = {
   linkedin: LinkedInIntegration;
@@ -9,18 +12,16 @@ type Props = {
 export const listLikes = async ({ linkedin, post_id }: Props) => {
   const { access_token } = linkedin.details;
 
-  const allLikes: SocialActionsResponse["elements"] = [];
-
+  const allLikes: SocialActions["elements"] = [];
   let start = 0;
-  let hasMore = true;
 
-  while (hasMore) {
+  while (true) {
     const params = new URLSearchParams({
       start: start.toString(),
       count: "600",
     });
 
-    const likesResponse = await fetch(
+    const response = await fetch(
       `https://api.linkedin.com/v2/socialActions/${post_id}/likes?${params.toString()}`,
       {
         headers: {
@@ -31,19 +32,17 @@ export const listLikes = async ({ linkedin, post_id }: Props) => {
       },
     );
 
-    if (!likesResponse.ok) {
-      throw new Error(
-        `Failed to fetch LinkedIn likes: ${likesResponse.statusText}`,
-      );
+    if (!response.ok) {
+      throw new Error(`Failed to fetch LinkedIn likes: ${response.statusText}`);
     }
 
-    const likesData = (await likesResponse.json()) as SocialActionsResponse;
+    const likesData = SocialActionsSchema.parse(await response.json());
     allLikes.push(...likesData.elements);
 
     const total = likesData.paging?.total || 0;
 
     start += 600;
-    hasMore = start < total;
+    if (start > total) break;
   }
 
   return allLikes;
