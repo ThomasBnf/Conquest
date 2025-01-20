@@ -55,20 +55,16 @@ export const linkedin = new Hono()
     const {
       action,
       sourcePost,
-      subscriber,
       organizationalEntity,
       decoratedSourcePost,
+      decoratedGeneratedActivity,
     } = notification;
 
     const organizationId = organizationalEntity?.split(":")[3];
-    const linkedinId = subscriber?.split(":")[3];
+    const { owner } = decoratedGeneratedActivity?.comment ?? {};
+    const linkedinId = owner?.split(":")[3];
 
-    if (!organizationId || !linkedinId || !sourcePost) {
-      console.error("LinkedIn webhook: Missing required fields", {
-        organizationId,
-        linkedinId,
-        sourcePost,
-      });
+    if (!organizationId || !linkedinId) {
       return c.json({ error: "Missing required fields" }, 200);
     }
 
@@ -124,8 +120,9 @@ export const linkedin = new Hono()
       } = people;
 
       const countryCode = headline.preferredLocale.country;
+      console.log("countryCode", countryCode);
       const locale = getLocaleByAlpha2(countryCode) ?? null;
-      console.log(locale);
+      console.log("locale", locale);
       const avatar_url = profilePicture["displayImage~"]?.elements?.find(
         (element) => element?.artifact?.includes("800_800"),
       )?.identifiers?.[0]?.identifier;
@@ -146,31 +143,14 @@ export const linkedin = new Hono()
       });
     }
 
-    console.log("member", member);
-
-    if (action === "LIKE") {
-      const activity = await createActivity({
-        external_id: null,
-        activity_type_key: "linkedin:like",
-        message: "Like",
-        react_to: post.external_id,
-        member_id: member.id,
-        workspace_id,
-      });
-
-      console.log("like", activity);
-
-      return c.json({ success: true }, 200);
-    }
-
     if (action === "COMMENT") {
-      const { text, entity } = decoratedSourcePost;
-      const external_id = entity.split(":")[3];
+      const { text, entity } = decoratedGeneratedActivity?.comment ?? {};
+      const external_id = entity?.split(":")[3];
 
       const activity = await createActivity({
         external_id: external_id ?? null,
         activity_type_key: "linkedin:comment",
-        message: text,
+        message: text ?? "",
         reply_to: post.external_id,
         member_id: member.id,
         workspace_id,
