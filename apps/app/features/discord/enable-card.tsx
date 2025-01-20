@@ -10,7 +10,7 @@ import { cn } from "@conquest/ui/cn";
 import { CirclePlus, ExternalLink } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { ListDiscordChannels } from "./list-discord-channels";
 
@@ -21,6 +21,7 @@ type Props = {
 export const EnableCard = ({ error }: Props) => {
   const { slug, discord } = useUser();
   const { trigger_token, trigger_token_expires_at } = discord ?? {};
+  const [loading, setLoading] = useState(discord?.status === "SYNCING");
   const router = useRouter();
 
   const isEnabled = discord?.status === "ENABLED";
@@ -30,6 +31,7 @@ export const EnableCard = ({ error }: Props) => {
     trigger_token_expires_at && trigger_token_expires_at < new Date();
 
   const onEnable = () => {
+    setLoading(true);
     const params = new URLSearchParams({
       response_type: "code",
       client_id: env.NEXT_PUBLIC_DISCORD_CLIENT_ID,
@@ -94,7 +96,7 @@ export const EnableCard = ({ error }: Props) => {
           </Link>
         </div>
         {(!trigger_token || isExpired) && (
-          <Button onClick={onEnable}>
+          <Button onClick={onEnable} loading={loading} disabled={loading}>
             <CirclePlus size={16} />
             Enable
           </Button>
@@ -112,7 +114,9 @@ export const EnableCard = ({ error }: Props) => {
           member interactions, and send personalized direct messages through
           automated workflows.
         </p>
-        {(isEnabled || isSyncing) && !isExpired && <ListDiscordChannels />}
+        {(isEnabled || isSyncing) && !isExpired && (
+          <ListDiscordChannels loading={loading} setLoading={setLoading} />
+        )}
       </CardContent>
     </Card>
   );

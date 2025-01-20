@@ -1,5 +1,3 @@
-"use client";
-
 import { listChannels } from "@/client/channels/listChannels";
 import { listDiscordChannels } from "@/client/discord/listChannels";
 import { useUser } from "@/context/userContext";
@@ -24,9 +22,13 @@ const EXCLUDED_CHANNEL_TYPES = [
   ChannelType.GuildVoice,
 ] as number[];
 
-export const ListDiscordChannels = () => {
+type Props = {
+  loading: boolean;
+  setLoading: (loading: boolean) => void;
+};
+
+export const ListDiscordChannels = ({ loading, setLoading }: Props) => {
   const { discord } = useUser();
-  const [loading, setLoading] = useState(discord?.status === "SYNCING");
   const [selectedChannels, setSelectedChannels] = useState<
     APIGuildCategoryChannel[]
   >([]);

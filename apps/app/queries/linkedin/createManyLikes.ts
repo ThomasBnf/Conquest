@@ -1,6 +1,7 @@
 import type { LinkedInIntegration } from "@conquest/zod/schemas/integration.schema";
 import type { Post } from "@conquest/zod/schemas/posts.schema";
 import type { SocialActions } from "@conquest/zod/types/linkedin";
+import { getLocaleByAlpha2 } from "country-locale-map";
 import { createActivity } from "../activities/createActivity";
 import { upsertMember } from "../members/upsertMember";
 import { getPeople } from "./getPeople";
@@ -31,7 +32,9 @@ export const createManyLikes = async ({ linkedin, post, likes }: Props) => {
       localizedHeadline,
     } = people;
 
-    const locale = headline.preferredLocale.country;
+    const countryCode = headline.preferredLocale.country;
+    const locale = getLocaleByAlpha2(countryCode) ?? null;
+    console.log(locale);
     const avatar_url = profilePicture["displayImage~"]?.elements?.find(
       (element) => element?.artifact?.includes("800_800"),
     )?.identifiers?.[0]?.identifier;

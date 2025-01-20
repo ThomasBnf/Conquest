@@ -30,6 +30,8 @@ export const EnableCard = ({ error }: Props) => {
     trigger_token_expires_at && trigger_token_expires_at < new Date();
 
   const onEnable = async () => {
+    setLoading(true);
+
     const params = new URLSearchParams({
       response_type: "code",
       client_id: env.NEXT_PUBLIC_LINKEDIN_CLIENT_ID,
@@ -88,7 +90,7 @@ export const EnableCard = ({ error }: Props) => {
             <p>Documentation</p>
           </Link>
           {(!trigger_token || isExpired) && (
-            <Button onClick={onEnable}>
+            <Button onClick={onEnable} loading={loading} disabled={loading}>
               <CirclePlus size={16} />
               Enable
             </Button>

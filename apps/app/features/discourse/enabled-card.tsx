@@ -79,7 +79,7 @@ export const EnabledCard = ({ error }: Props) => {
             <p>Documentation</p>
           </Link>
           {(!trigger_token || isExpired) && (
-            <Button onClick={onEnable} loading={loading}>
+            <Button onClick={onEnable} loading={loading} disabled={loading}>
               <CirclePlus size={16} />
               Enable
             </Button>
