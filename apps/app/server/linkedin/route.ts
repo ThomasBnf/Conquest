@@ -71,10 +71,9 @@ export const linkedin = new Hono()
       await response.json(),
     );
 
-    const userId = organizationsList.elements[0]?.roleAssignee.replace(
-      "person",
-      "user",
-    );
+    const userId = organizationsList.elements[0]?.roleAssignee.split(":")[3];
+
+    console.log("userId", userId);
 
     if (userId) {
       await updateIntegration({

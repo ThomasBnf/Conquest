@@ -36,6 +36,7 @@ export const createManyComments = async ({
     } = people;
 
     const locale = headline.preferredLocale.country;
+    console.log(locale);
     const avatar_url = profilePicture["displayImage~"]?.elements?.find(
       (element) => element?.artifact?.includes("800_800"),
     )?.identifiers?.[0]?.identifier;

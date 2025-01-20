@@ -25,6 +25,7 @@ export const env = createEnv({
     DISCORD_BOT_TOKEN: z.string(),
 
     LINKEDIN_CLIENT_SECRET: z.string(),
+    LINKEDIN_APP_ID: z.string(),
 
     LIVESTORM_CLIENT_SECRET: z.string(),
 
@@ -64,6 +65,7 @@ export const env = createEnv({
 
     NEXT_PUBLIC_LINKEDIN_CLIENT_ID: process.env.NEXT_PUBLIC_LINKEDIN_CLIENT_ID,
     LINKEDIN_CLIENT_SECRET: process.env.LINKEDIN_CLIENT_SECRET,
+    LINKEDIN_APP_ID: process.env.LINKEDIN_APP_ID,
 
     NEXT_PUBLIC_LIVESTORM_CLIENT_ID:
       process.env.NEXT_PUBLIC_LIVESTORM_CLIENT_ID,

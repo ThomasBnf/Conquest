@@ -1,5 +1,4 @@
 import { prisma } from "@/lib/prisma";
-import { calculateMembersLevel } from "@/trigger/calculateMembersLevel";
 import type { SOURCE } from "@conquest/database";
 import {
   type Integration,
@@ -53,7 +52,7 @@ export const deleteIntegration = async ({ source, integration }: Props) => {
     await tx.companies.deleteMany({ where: { source, workspace_id } });
   });
 
-  calculateMembersLevel.trigger({ workspace_id });
+  // calculateMembersLevel.trigger({ workspace_id });
 
   return { success: true };
 };
