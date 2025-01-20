@@ -45,6 +45,8 @@ export const linkedin = new Hono()
     const body = WebhookSubscriptionSchema.parse(await c.req.json());
     const notification = body.notifications[0];
 
+    console.log("notification", notification);
+
     if (!notification) {
       console.error("LinkedIn webhook: Missing notification");
       return c.json({ error: "Missing notification" }, 200);
@@ -140,8 +142,10 @@ export const linkedin = new Hono()
       });
     }
 
+    console.log(member);
+
     if (action === "LIKE") {
-      await createActivity({
+      const activity = await createActivity({
         external_id: null,
         activity_type_key: "linkedin:like",
         message: "Like",
@@ -150,6 +154,8 @@ export const linkedin = new Hono()
         workspace_id,
       });
 
+      console.log("like", activity);
+
       return c.json({ success: true }, 200);
     }
 
@@ -157,7 +163,7 @@ export const linkedin = new Hono()
       const { text, entity } = decoratedSourcePost;
       const external_id = entity.split(":")[3];
 
-      await createActivity({
+      const activity = await createActivity({
         external_id: external_id ?? null,
         activity_type_key: "linkedin:comment",
         message: text,
@@ -166,6 +172,8 @@ export const linkedin = new Hono()
         workspace_id,
       });
 
+      console.log("comment", activity);
+
       return c.json({ success: true }, 200);
     }
 
@@ -173,10 +181,12 @@ export const linkedin = new Hono()
       const { entity } = decoratedSourcePost;
       const external_id = entity.split(":")[3];
 
-      await deleteActivity({
+      const activity = await deleteActivity({
         external_id,
         workspace_id,
       });
+
+      console.log("delete", activity);
     }
 
     return c.json({ success: false }, 200);
