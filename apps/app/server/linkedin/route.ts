@@ -34,7 +34,7 @@ export const linkedin = new Hono()
   .post("/", async (c) => {
     const body = await c.req.json();
 
-    console.log(body);
+    console.dir(body, { depth: 100 });
 
     return c.json({ success: true });
   })
