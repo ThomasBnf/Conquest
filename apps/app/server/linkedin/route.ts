@@ -42,6 +42,7 @@ export const linkedin = new Hono()
     const notification = body.notifications[0];
 
     if (!notification) {
+      console.log("No notification");
       return c.json({ success: false }, 400);
     }
 
@@ -57,6 +58,7 @@ export const linkedin = new Hono()
     const linkedinId = subscriber?.split(":")[3];
 
     if (!organizationId || !linkedinId || !sourcePost) {
+      console.log("No organizationId, linkedinId, or sourcePost");
       return c.json({ success: false }, 400);
     }
 
@@ -65,6 +67,7 @@ export const linkedin = new Hono()
     });
 
     if (!integration) {
+      console.log("No integration");
       return c.json({ success: false }, 400);
     }
 
@@ -82,6 +85,7 @@ export const linkedin = new Hono()
     ]);
 
     if (!member || !post) {
+      console.log("No member or post");
       return c.json({ success: false }, 400);
     }
 
