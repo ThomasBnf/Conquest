@@ -301,7 +301,8 @@ model posts {
 
   created_at DateTime @default(now())
 
-  @@index([id, workspace_id])
+  @@unique([external_id, workspace_id])
+  @@index([external_id, workspace_id])
 }
 
 model users {

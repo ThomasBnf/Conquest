@@ -1,10 +1,16 @@
 import { env } from "@/env.mjs";
+import { createActivity } from "@/queries/activities/createActivity";
+import { deleteActivity } from "@/queries/activities/deleteActivity";
+import { getIntegration } from "@/queries/integrations/getIntegration";
 import { updateIntegration } from "@/queries/integrations/updateIntegration";
+import { getPost } from "@/queries/linkedin/getPost";
+import { getMember } from "@/queries/members/getMember";
 import { getAuthUser } from "@/queries/users/getAuthUser";
 import { LinkedInIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
 import {
   ListOrganizationsSchema,
   OrganizationsSchema,
+  WebhookSubscriptionSchema,
 } from "@conquest/zod/types/linkedin";
 import { Hono } from "hono";
 import { createHmac } from "node:crypto";
@@ -32,9 +38,83 @@ export const linkedin = new Hono()
     return c.json({ challengeCode, challengeResponse });
   })
   .post("/", async (c) => {
-    const body = await c.req.json();
+    const body = WebhookSubscriptionSchema.parse(await c.req.json());
+    const notification = body.notifications[0];
 
-    console.dir(body, { depth: 100 });
+    if (!notification) {
+      return c.json({ success: false }, 400);
+    }
+
+    const {
+      action,
+      sourcePost,
+      subscriber,
+      organizationalEntity,
+      decoratedSourcePost,
+    } = notification;
+
+    const organizationId = organizationalEntity?.split(":")[3];
+    const linkedinId = subscriber?.split(":")[3];
+
+    if (!organizationId || !linkedinId || !sourcePost) {
+      return c.json({ success: false }, 400);
+    }
+
+    const integration = await getIntegration({
+      external_id: organizationId,
+    });
+
+    if (!integration) {
+      return c.json({ success: false }, 400);
+    }
+
+    const { workspace_id } = integration;
+
+    const [post, member] = await Promise.all([
+      getPost({
+        urn: sourcePost,
+        workspace_id,
+      }),
+      getMember({
+        linkedin_id: linkedinId,
+        workspace_id,
+      }),
+    ]);
+
+    if (!member || !post) {
+      return c.json({ success: false }, 400);
+    }
+
+    if (action === "LIKE") {
+      await createActivity({
+        external_id: null,
+        activity_type_key: "linkedin:like",
+        message: "Like",
+        react_to: post.external_id,
+        member_id: member.id,
+        workspace_id,
+      });
+    } else if (action === "COMMENT") {
+      const { text, entity } = decoratedSourcePost;
+      const external_id = entity.split(":")[3];
+
+      await createActivity({
+        external_id: external_id ?? null,
+        activity_type_key: "linkedin:comment",
+        message: text,
+        reply_to: post.external_id,
+        member_id: member.id,
+        workspace_id,
+      });
+    } else if (action === "COMMENT_DELETE") {
+      const { entity } = decoratedSourcePost;
+      const external_id = entity.split(":")[3];
+
+      await deleteActivity({
+        external_id,
+        workspace_id,
+      });
+    }
 
     return c.json({ success: true });
   })

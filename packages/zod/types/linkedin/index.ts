@@ -257,5 +257,36 @@ export const PeopleSchema = z.object({
   localizedFirstName: z.string(),
 });
 
+export const WebhookSubscriptionSchema = z.object({
+  type: z.literal("ORGANIZATION_SOCIAL_ACTION_NOTIFICATIONS"),
+  notifications: z.array(
+    z.object({
+      subscriber: z.string(),
+      lastModifiedAt: z.number(),
+      decoratedSourcePost: z.object({
+        owner: z.string(),
+        mediaCategory: z.string(),
+        text: z.string(),
+        entity: z.string(),
+      }),
+      sourcePost: z.string(),
+      decoratedGeneratedActivity: z
+        .object({
+          comment: z.object({
+            owner: z.string(),
+            text: z.string(),
+            entity: z.string(),
+            object: z.string(),
+          }),
+        })
+        .optional(),
+      action: z.string(),
+      notificationId: z.number(),
+      organizationalEntity: z.string(),
+      generatedActivity: z.string().optional(),
+    }),
+  ),
+});
+
 export type Posts = z.infer<typeof PostsSchema>;
 export type SocialActions = z.infer<typeof SocialActionsSchema>;
