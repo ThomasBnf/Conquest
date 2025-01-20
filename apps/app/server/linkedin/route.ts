@@ -15,6 +15,7 @@ import {
   OrganizationsSchema,
   WebhookSubscriptionSchema,
 } from "@conquest/zod/types/linkedin";
+import { getLocaleByAlpha2 } from "country-locale-map";
 import { Hono } from "hono";
 import { createHmac } from "node:crypto";
 
@@ -69,9 +70,11 @@ export const linkedin = new Hono()
       return c.json({ success: false }, 400);
     }
 
-    const integration = await getIntegration({
-      external_id: organizationId,
-    });
+    const integration = LinkedInIntegrationSchema.parse(
+      await getIntegration({
+        external_id: organizationId,
+      }),
+    );
 
     if (!integration) {
       console.log("No integration");
@@ -79,9 +82,10 @@ export const linkedin = new Hono()
     }
 
     const { workspace_id } = integration;
+    const { entity } = decoratedSourcePost;
 
     const post = await getPost({
-      urn: sourcePost,
+      urn: entity,
       workspace_id,
     });
 
@@ -98,9 +102,8 @@ export const linkedin = new Hono()
     });
 
     if (!member) {
-      const parsedIntegration = LinkedInIntegrationSchema.parse(integration);
       const people = await getPeople({
-        linkedin: parsedIntegration,
+        linkedin: integration,
         people_id: linkedinId,
       });
 
@@ -114,7 +117,8 @@ export const linkedin = new Hono()
         localizedHeadline,
       } = people;
 
-      const locale = headline.preferredLocale.country;
+      const countryCode = headline.preferredLocale.country;
+      const locale = getLocaleByAlpha2(countryCode) ?? null;
       console.log(locale);
       const avatar_url = profilePicture["displayImage~"]?.elements?.find(
         (element) => element?.artifact?.includes("800_800"),
