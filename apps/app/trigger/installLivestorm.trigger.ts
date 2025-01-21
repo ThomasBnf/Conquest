@@ -119,7 +119,7 @@ export const installLivestorm = schemaTask({
         });
 
         const peoples = await listPeopleFromSession({
-          accessToken,
+          access_token: accessToken,
           id: session.id,
         });
 
@@ -160,20 +160,20 @@ export const installLivestorm = schemaTask({
             await createActivity({
               external_id: null,
               activity_type_key: "livestorm:co-host",
-              message: `Co-hosted the Livestorm event: ${title}`,
+              message: `Co-hosted to: ${title}`,
               member_id: createdMember.id,
               event_id: createdEvent.id,
-              created_at: new Date(created_at * 1000),
+              created_at: new Date(ended_at * 1000),
               workspace_id,
             });
           } else {
             await createActivity({
               external_id: null,
               activity_type_key: "livestorm:register",
-              message: `Registered for the Livestorm event: ${title}`,
+              message: `Registered to: ${title}`,
               member_id: createdMember.id,
               event_id: createdEvent.id,
-              created_at: new Date(ended_at * 1000),
+              created_at: new Date(created_at * 1000),
               workspace_id,
             });
 
@@ -181,7 +181,7 @@ export const installLivestorm = schemaTask({
               await createActivity({
                 external_id: null,
                 activity_type_key: "livestorm:attend",
-                message: `Attended the Livestorm event: ${title}`,
+                message: `Attended to: ${title}`,
                 member_id: createdMember.id,
                 event_id: createdEvent.id,
                 created_at: new Date(ended_at * 1000),

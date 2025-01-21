@@ -1,6 +1,5 @@
 import { deleteEvent } from "@/actions/events/deleteEvent";
 import { AlertDialog } from "@/components/custom/alert-dialog";
-import { formatDateRange } from "@/helpers/format-date-range";
 import { Badge } from "@conquest/ui/badge";
 import { Button } from "@conquest/ui/button";
 import {
@@ -35,44 +34,44 @@ export const EventCard = ({ event }: Props) => {
   };
 
   return (
-    <div
-      key={id}
-      className="-m-2 flex items-center justify-between rounded-md p-2 transition-colors hover:bg-muted-hover"
-    >
-      <div>
-        <div className="flex items-center gap-2">
-          <p className="font-medium">{title}</p>
-          {!ended_at && <Badge variant="secondary">Upcoming</Badge>}
+    <div>
+      <div
+        key={id}
+        className="mt-2 flex cursor-default items-start justify-between rounded-md p-3 transition-colors hover:bg-muted-hover"
+      >
+        <div className="space-y-0.5">
+          <div className="flex items-center gap-2">
+            <p className="font-medium">{title}</p>
+            {!ended_at && <Badge variant="info">Upcoming</Badge>}
+          </div>
+          <p className="text-muted-foreground">
+            {format(started_at, "PP, HH'h'mm")}
+          </p>
         </div>
-        <p className="text-muted-foreground">
-          {ended_at
-            ? formatDateRange(started_at, ended_at, { includeTime: false })
-            : format(started_at, "PP, HH'h'mm")}
-        </p>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" size="icon">
+              <MoreVertical size={16} />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem
+              onClick={() => setOpen(true)}
+              className="text-destructive focus:text-destructive"
+            >
+              <Trash2 size={16} />
+              <p>Delete</p>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+        <AlertDialog
+          title="Delete event"
+          description="Are you sure you want to delete this event?"
+          onConfirm={onDelete}
+          open={open}
+          setOpen={setOpen}
+        />
       </div>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="icon">
-            <MoreVertical size={16} />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          <DropdownMenuItem
-            onClick={() => setOpen(true)}
-            className="text-destructive focus:text-destructive"
-          >
-            <Trash2 size={16} />
-            <p>Delete</p>
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-      <AlertDialog
-        title="Delete event"
-        description="Are you sure you want to delete this event?"
-        onConfirm={onDelete}
-        open={open}
-        setOpen={setOpen}
-      />
     </div>
   );
 };

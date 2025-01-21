@@ -1,4 +1,4 @@
-import type { Session } from "@conquest/zod/types/livestorm";
+import { ListEventSessionsSchema } from "@conquest/zod/types/livestorm";
 import { startOfDay, subDays } from "date-fns";
 
 type Props = {
@@ -15,10 +15,11 @@ export const listEventSessions = async ({
   const today = startOfDay(new Date());
   const last365Days = startOfDay(subDays(today, 365));
 
-  const params = new URLSearchParams();
-  params.set("page[size]", "100");
-  params.set("page[number]", `${page}`);
-  params.set("filter[created_since]", last365Days.toISOString());
+  const params = new URLSearchParams({
+    "page[size]": "100",
+    "page[number]": `${page}`,
+    "filter[created_since]": last365Days.toISOString(),
+  });
 
   const response = await fetch(
     `https://api.livestorm.co/v1/events/${event_id}/sessions?${params.toString()}`,
@@ -29,6 +30,6 @@ export const listEventSessions = async ({
     },
   );
 
-  const { data } = await response.json();
-  return data as Session[];
+  const { data } = ListEventSessionsSchema.parse(await response.json());
+  return data;
 };

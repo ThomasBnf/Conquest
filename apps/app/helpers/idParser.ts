@@ -6,6 +6,7 @@ type Props = {
 };
 
 export const idParser = ({ id, source }: Props) => {
+  console.log("idParser", id, source);
   switch (source) {
     case "SLACK":
       return { slack_id: id };

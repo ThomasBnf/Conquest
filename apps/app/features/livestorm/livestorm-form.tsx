@@ -1,3 +1,4 @@
+import { livestormAction } from "@/actions/livestormAction";
 import { listLivestormOrganization } from "@/client/livestorm/listLivestormOrganization";
 import { useUser } from "@/context/userContext";
 import type { installLivestorm } from "@/trigger/installLivestorm.trigger";
@@ -50,8 +51,15 @@ export const LivestormForm = ({ loading, setLoading }: Props) => {
 
     const organization_id = included?.at(0)?.id ?? "";
     const organization_name = included?.at(0)?.attributes.name ?? "";
+    await livestormAction({
+      livestorm,
+      organization_id,
+      organization_name,
+      filter,
+    });
+    setLoading(true);
 
-    submit({ livestorm, organization_id, organization_name, filter });
+    // submit({ livestorm, organization_id, organization_name, filter });
   };
 
   useEffect(() => {

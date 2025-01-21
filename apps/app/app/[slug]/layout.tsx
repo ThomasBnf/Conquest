@@ -21,6 +21,10 @@ export default async function Layout({
   const user = await getCurrentUser();
   const { workspace_id } = user;
 
+  if (!user) {
+    console.log(user);
+  }
+
   if (!user?.onboarding) redirect("/");
   if (user?.workspace.slug !== params.slug) redirect(`/${user.workspace.slug}`);
 

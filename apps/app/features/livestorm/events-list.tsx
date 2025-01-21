@@ -16,7 +16,7 @@ export const EventsList = ({ events }: Props) => {
       <CardHeader>
         <CardTitle className="font-medium text-base">Events</CardTitle>
       </CardHeader>
-      <CardContent className="mb-0.5">
+      <CardContent className="flex flex-col gap-2 divide-y">
         {events.map((event) => (
           <EventCard key={event.id} event={event} />
         ))}

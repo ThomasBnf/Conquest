@@ -145,9 +145,7 @@ export const MemberSidebar = ({ member, tags }: Props) => {
         <Separator />
         <div className="space-y-2 p-4">
           <FieldCard icon="Code" label="Source">
-            <div className="flex flex-wrap gap-2">
-              <SourceBadge source={source} />
-            </div>
+            <SourceBadge source={source} className="ml-1 self-center" />
           </FieldCard>
           <FieldCard icon="Flag" label="Locale">
             <EditableLocale
@@ -178,16 +176,22 @@ export const MemberSidebar = ({ member, tags }: Props) => {
         <div className="space-y-2 p-4">
           {first_activity && (
             <FieldCard icon="Calendar" label="First activity">
-              <p className="pl-1.5">{format(first_activity, "PP, HH'h'mm")}</p>
+              <p className="h-8 place-content-center pl-1">
+                {format(first_activity, "PP, HH'h'mm")}
+              </p>
             </FieldCard>
           )}
           {last_activity && (
             <FieldCard icon="CalendarSearch" label="Last activity">
-              <p className="pl-1.5">{format(last_activity, "PP, HH'h'mm")}</p>
+              <p className="h-8 place-content-center pl-1">
+                {format(last_activity, "PP, HH'h'mm")}
+              </p>
             </FieldCard>
           )}
           <FieldCard icon="CalendarPlus" label="Created at">
-            <p className="pl-1.5">{format(created_at, "PP, HH'h'mm")}</p>
+            <p className="h-8 place-content-center pl-1">
+              {format(created_at, "PP, HH'h'mm")}
+            </p>
           </FieldCard>
         </div>
       </ScrollArea>

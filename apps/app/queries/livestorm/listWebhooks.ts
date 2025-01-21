@@ -1,4 +1,4 @@
-import type { Webhook } from "@conquest/zod/types/livestorm";
+import { WebhookSchema } from "@conquest/zod/types/livestorm";
 
 type Props = {
   accessToken: string;
@@ -14,5 +14,5 @@ export const listWebhooks = async ({ accessToken }: Props) => {
   });
 
   const { data } = await response.json();
-  return data as Webhook[];
+  return WebhookSchema.array().parse(data);
 };

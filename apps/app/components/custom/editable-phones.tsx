@@ -63,7 +63,7 @@ export const EditablePhones = ({ member }: Props) => {
 
   return (
     <DropdownMenu open={open} onOpenChange={setOpen}>
-      <DropdownMenuTrigger asChild className="w-full cursor-pointer">
+      <DropdownMenuTrigger className="w-full cursor-pointer" asChild>
         {phones.filter((phone) => phone.content !== "").length > 0 ? (
           <div className="flex w-full flex-col gap-1 rounded-md p-1 hover:bg-muted">
             {phones.map((phone) => {
@@ -84,7 +84,8 @@ export const EditablePhones = ({ member }: Props) => {
         ) : (
           <Button
             variant="ghost"
-            classNameSpan="text-muted-foreground justify-start"
+            className="text-muted-foreground"
+            classNameSpan="justify-start"
             onClick={() => {
               setOpen(true);
               if (phones.length === 0) {

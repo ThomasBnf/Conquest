@@ -25,7 +25,7 @@ export const upsertMember = async (props: Props) => {
   const { id, data } = props;
   const { primary_email, phones, source, workspace_id } = data;
 
-  console.log("data", data);
+  console.log(props);
 
   if (!source) throw new Error("Source is required");
   if (!workspace_id) throw new Error("Workspace ID is required");
@@ -67,6 +67,15 @@ export const upsertMember = async (props: Props) => {
   const parsedId = idParser({ id, source });
 
   const whereClause = () => {
+    if (formattedEmail) {
+      return {
+        primary_email_workspace_id: {
+          primary_email: formattedEmail,
+          workspace_id,
+        },
+      };
+    }
+
     if (id && source === "SLACK") {
       return {
         slack_id_workspace_id: {
@@ -94,21 +103,28 @@ export const upsertMember = async (props: Props) => {
       };
     }
 
+    if (id && source === "LIVESTORM") {
+      return {
+        livestorm_id_workspace_id: {
+          livestorm_id: id,
+          workspace_id,
+        },
+      };
+    }
+
     return {
       id,
       workspace_id,
     };
   };
 
-  console.log("formattedEmail", formattedEmail);
+  console.log(data);
 
   if (formattedEmail) {
     const existingMember = await getMember({
       email: formattedEmail,
       workspace_id,
     });
-
-    console.log("existingMember", existingMember);
 
     if (existingMember && existingMember.source !== source) {
       const tempEmail = `${cuid()}@mail.com`;
@@ -128,8 +144,6 @@ export const upsertMember = async (props: Props) => {
           },
         }),
       );
-
-      console.log("createdMember", createdMember);
 
       return await mergeMembers({
         leftMember: createdMember,
@@ -161,8 +175,6 @@ export const upsertMember = async (props: Props) => {
       company: true,
     },
   });
-
-  console.log("newMember", newMember);
 
   return MemberWithCompanySchema.parse(newMember);
 };

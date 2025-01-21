@@ -62,17 +62,6 @@ export const installLinkedin = schemaTask({
         post: createdPost,
         comments,
       });
-
-      // const likes = await listLikes({
-      //   linkedin: parsedLinkedin,
-      //   post_id: post.id,
-      // });
-
-      // await createManyLikes({
-      //   linkedin: parsedLinkedin,
-      //   post: createdPost,
-      //   likes,
-      // });
     }
 
     await webhookSubscription({ linkedin: parsedLinkedin });

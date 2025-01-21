@@ -1,4 +1,4 @@
-import type { Event } from "@conquest/zod/types/livestorm";
+import { ListEventsSchema } from "@conquest/zod/types/livestorm";
 
 type Props = {
   accessToken?: string;
@@ -21,6 +21,6 @@ export const listEvents = async ({ accessToken, page, filter }: Props) => {
     },
   );
 
-  const { data } = await response.json();
-  return data as Event[];
+  const { data } = ListEventsSchema.parse(await response.json());
+  return data;
 };
