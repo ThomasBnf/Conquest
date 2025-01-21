@@ -68,11 +68,18 @@ export const linkedin = new Hono()
       }),
     );
 
-    const { details } = integration;
+    const { external_id, details } = integration;
     const { access_token } = details;
 
     const response = await fetch(
-      "https://api.linkedin.com/rest/organizationalEntityNotifications?q=criteria&actions=List(COMMENT,SHARE_MENTION)&organizationalEntity={URL_ENCODED_ORGANIZATION_URN}",
+      `https://api.linkedin.com/rest/organizationalEntityNotifications?${new URLSearchParams(
+        {
+          q: "criteria",
+          actions:
+            "List(LIKE,COMMENT,SHARE,SHARE_MENTION,COMMENT_DELETE,COMMENT_EDIT)",
+          organizationalEntity: `urn:li:organization:${external_id}`,
+        },
+      )}`,
       {
         headers: {
           Authorization: `Bearer ${access_token}`,
