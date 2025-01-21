@@ -229,13 +229,6 @@ export const LINKEDIN_ACTIVITY_TYPES = [
     weight: 1,
     deletable: false,
   },
-  {
-    name: "Like a post",
-    source: "LINKEDIN" as const,
-    key: "linkedin:like",
-    weight: 0,
-    deletable: false,
-  },
 ];
 
 export const LINKEDIN_SCOPES =

@@ -3,9 +3,7 @@ import { createManyActivityTypes } from "@/queries/activity-type/createManyActiv
 import { deleteIntegration } from "@/queries/integrations/deleteIntegration";
 import { updateIntegration } from "@/queries/integrations/updateIntegration";
 import { createManyComments } from "@/queries/linkedin/createManyComments";
-import { createManyLikes } from "@/queries/linkedin/createManyLikes";
 import { listComments } from "@/queries/linkedin/listComments";
-import { listLikes } from "@/queries/linkedin/listLikes";
 import { listPosts } from "@/queries/linkedin/listPosts";
 import { webhookSubscription } from "@/queries/linkedin/webhookSubscription";
 import { createPost } from "@/queries/posts/createPost";
@@ -63,16 +61,16 @@ export const installLinkedin = schemaTask({
         comments,
       });
 
-      const likes = await listLikes({
-        linkedin: parsedLinkedin,
-        post_id: post.id,
-      });
+      // const likes = await listLikes({
+      //   linkedin: parsedLinkedin,
+      //   post_id: post.id,
+      // });
 
-      await createManyLikes({
-        linkedin: parsedLinkedin,
-        post: createdPost,
-        likes,
-      });
+      // await createManyLikes({
+      //   linkedin: parsedLinkedin,
+      //   post: createdPost,
+      //   likes,
+      // });
     }
 
     await webhookSubscription({ linkedin: parsedLinkedin });
