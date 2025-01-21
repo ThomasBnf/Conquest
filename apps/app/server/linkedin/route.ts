@@ -75,12 +75,14 @@ export const linkedin = new Hono()
       `https://api.linkedin.com/rest/organizationalEntityNotifications?${new URLSearchParams(
         {
           q: "criteria",
-          actions:
-            "List(LIKE,COMMENT,SHARE,SHARE_MENTION,COMMENT_DELETE,COMMENT_EDIT)",
-          organizationalEntity: `urn:li:organization:${external_id}`,
+          actions: "List(LIKE,COMMENT,SHARE_MENTION)",
+          organizationalEntity: encodeURIComponent(
+            `urn:li:organization:${external_id}`,
+          ),
         },
       )}`,
       {
+        method: "GET",
         headers: {
           Authorization: `Bearer ${access_token}`,
           "LinkedIn-Version": "202411",
