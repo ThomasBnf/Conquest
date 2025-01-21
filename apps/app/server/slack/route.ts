@@ -261,7 +261,7 @@ export const slack = new Hono()
           if (!profile) return c.json({ status: 200 });
 
           const { user: userInfo } = await web.users.info({ user });
-          const locale = userInfo?.locale;
+          const locale = userInfo?.locale?.replace("-", "_");
 
           const { first_name, last_name, email, phone, image_1024, title } =
             profile;
@@ -356,7 +356,7 @@ export const slack = new Hono()
               last_name,
               primary_email: email,
               phones: phone ? [phone] : [],
-              locale: userInfo?.locale,
+              locale: userInfo?.locale?.replace("-", "_"),
               avatar_url: image_1024,
               job_title: title,
               source: "SLACK",

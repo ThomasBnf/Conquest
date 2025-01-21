@@ -10,7 +10,7 @@ type Props = {
 };
 
 export const LocaleBadge = ({ locale, className }: Props) => {
-  const countryCode = locale?.split("-")[1];
+  const countryCode = locale?.split("_")[1];
   const countries = getCountries().map((country: Country) => ({
     label: en[country],
     value: country,

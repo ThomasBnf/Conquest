@@ -38,6 +38,7 @@ CREATE TABLE "activities_types" (
     "source" "SOURCE" NOT NULL,
     "key" TEXT NOT NULL,
     "weight" INTEGER NOT NULL DEFAULT 1,
+    "channels" TEXT[] DEFAULT ARRAY[]::TEXT[],
     "deletable" BOOLEAN NOT NULL DEFAULT true,
     "workspace_id" TEXT NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -126,6 +127,7 @@ CREATE TABLE "integrations" (
     "details" JSONB NOT NULL,
     "trigger_token" TEXT NOT NULL,
     "trigger_token_expires_at" TIMESTAMP(3) NOT NULL,
+    "created_by" TEXT NOT NULL,
     "workspace_id" TEXT NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
@@ -134,8 +136,22 @@ CREATE TABLE "integrations" (
 );
 
 -- CreateTable
+CREATE TABLE "lists" (
+    "id" TEXT NOT NULL,
+    "emoji" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "filters" JSONB[],
+    "workspace_id" TEXT NOT NULL,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "lists_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "members" (
     "id" TEXT NOT NULL,
+    "external_id" TEXT,
     "discord_id" TEXT,
     "discourse_id" TEXT,
     "linkedin_id" TEXT,
@@ -144,7 +160,7 @@ CREATE TABLE "members" (
     "first_name" TEXT,
     "last_name" TEXT,
     "username" TEXT,
-    "location" TEXT,
+    "locale" TEXT,
     "avatar_url" TEXT,
     "job_title" TEXT,
     "primary_email" TEXT,
@@ -157,6 +173,7 @@ CREATE TABLE "members" (
     "gender" "GENDER",
     "source" "SOURCE" NOT NULL,
     "logs" JSONB[] DEFAULT ARRAY[]::JSONB[],
+    "custom_fields" JSONB[] DEFAULT ARRAY[]::JSONB[],
     "company_id" TEXT,
     "workspace_id" TEXT NOT NULL,
     "first_activity" TIMESTAMP(3),
@@ -183,6 +200,18 @@ CREATE TABLE "tags" (
 );
 
 -- CreateTable
+CREATE TABLE "posts" (
+    "id" TEXT NOT NULL,
+    "external_id" TEXT NOT NULL,
+    "content" TEXT NOT NULL,
+    "author_id" TEXT NOT NULL,
+    "workspace_id" TEXT NOT NULL,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "posts_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "users" (
     "id" TEXT NOT NULL,
     "email" TEXT NOT NULL,
@@ -195,6 +224,17 @@ CREATE TABLE "users" (
     "updated_at" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "users_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "webhooks" (
+    "id" TEXT NOT NULL,
+    "trigger" TEXT NOT NULL,
+    "url" TEXT NOT NULL,
+    "secret" TEXT NOT NULL,
+    "workspace_id" TEXT NOT NULL,
+
+    CONSTRAINT "webhooks_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -295,6 +335,9 @@ CREATE INDEX "integrations_id_workspace_id_idx" ON "integrations"("id", "workspa
 CREATE INDEX "integrations_external_id_idx" ON "integrations"("external_id");
 
 -- CreateIndex
+CREATE INDEX "lists_id_workspace_id_idx" ON "lists"("id", "workspace_id");
+
+-- CreateIndex
 CREATE INDEX "members_id_workspace_id_idx" ON "members"("id", "workspace_id");
 
 -- CreateIndex
@@ -344,6 +387,12 @@ CREATE INDEX "tags_id_workspace_id_idx" ON "tags"("id", "workspace_id");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "tags_external_id_workspace_id_key" ON "tags"("external_id", "workspace_id");
+
+-- CreateIndex
+CREATE INDEX "posts_external_id_workspace_id_idx" ON "posts"("external_id", "workspace_id");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "posts_external_id_workspace_id_key" ON "posts"("external_id", "workspace_id");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
@@ -397,6 +446,9 @@ ALTER TABLE "files" ADD CONSTRAINT "files_activity_id_fkey" FOREIGN KEY ("activi
 ALTER TABLE "integrations" ADD CONSTRAINT "integrations_workspace_id_fkey" FOREIGN KEY ("workspace_id") REFERENCES "workspaces"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "lists" ADD CONSTRAINT "lists_workspace_id_fkey" FOREIGN KEY ("workspace_id") REFERENCES "workspaces"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "members" ADD CONSTRAINT "members_company_id_fkey" FOREIGN KEY ("company_id") REFERENCES "companies"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
@@ -406,7 +458,13 @@ ALTER TABLE "members" ADD CONSTRAINT "members_workspace_id_fkey" FOREIGN KEY ("w
 ALTER TABLE "tags" ADD CONSTRAINT "tags_workspace_id_fkey" FOREIGN KEY ("workspace_id") REFERENCES "workspaces"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "posts" ADD CONSTRAINT "posts_workspace_id_fkey" FOREIGN KEY ("workspace_id") REFERENCES "workspaces"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "users" ADD CONSTRAINT "users_workspace_id_fkey" FOREIGN KEY ("workspace_id") REFERENCES "workspaces"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "webhooks" ADD CONSTRAINT "webhooks_workspace_id_fkey" FOREIGN KEY ("workspace_id") REFERENCES "workspaces"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "workflows" ADD CONSTRAINT "workflows_workspace_id_fkey" FOREIGN KEY ("workspace_id") REFERENCES "workspaces"("id") ON DELETE CASCADE ON UPDATE CASCADE;

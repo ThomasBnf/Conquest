@@ -23,6 +23,7 @@ export const createListMembers = async ({ web, workspace_id }: Props) => {
 
       if (profile && !isDeleted && !isBot) {
         const { locale } = member;
+        console.log(locale);
         const { first_name, last_name, email, phone, image_1024, title } =
           profile;
 
@@ -35,7 +36,7 @@ export const createListMembers = async ({ web, workspace_id }: Props) => {
             last_name,
             primary_email: email,
             phones: phone ? [phone] : [],
-            locale,
+            locale: locale?.replace("-", "_"),
             avatar_url: image_1024,
             job_title: title === "" ? null : title,
             source: "SLACK",

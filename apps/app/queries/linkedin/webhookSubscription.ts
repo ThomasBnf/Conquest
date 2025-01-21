@@ -1,6 +1,5 @@
 import { env } from "@/env.mjs";
 import type { LinkedInIntegration } from "@conquest/zod/schemas/integration.schema";
-import { fetchSubscriptions } from "./fetchSubscriptions";
 
 type WebhookSubscriptionParams = {
   linkedin: LinkedInIntegration;
@@ -47,16 +46,8 @@ export const webhookSubscription = async ({
   );
 
   const responseText = await response.text();
-  console.log(responseText);
 
-  if (!response.ok) {
-    console.log(`LinkedIn API Error (${response.status}): ${responseText}`);
-    return { success: false };
-  }
+  if (!response.ok) throw new Error(`LinkedIn API Error: ${responseText}`);
 
-  const { data } = await fetchSubscriptions({ linkedin });
-
-  console.log("subscriptions", data);
-
-  return { success: true };
+  return responseText;
 };

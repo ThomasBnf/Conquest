@@ -4,7 +4,7 @@ type Props = {
   linkedin: LinkedInIntegration;
 };
 
-export const fetchSubscriptions = async ({ linkedin }: Props) => {
+export const listSubscriptions = async ({ linkedin }: Props) => {
   const { details } = linkedin;
   const { access_token } = details;
 
@@ -27,5 +27,5 @@ export const fetchSubscriptions = async ({ linkedin }: Props) => {
     return { success: false, data: null };
   }
 
-  return { success: true, data };
+  return { subscriptions: data };
 };

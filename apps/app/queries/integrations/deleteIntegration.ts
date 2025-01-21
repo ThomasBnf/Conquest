@@ -8,8 +8,9 @@ import {
   SlackIntegrationSchema,
 } from "@conquest/zod/schemas/integration.schema";
 import { WebClient } from "@slack/web-api";
-import { unsubscribeWebhook } from "../linkedin/unsubscribeWebhook";
+import { listSubscriptions } from "../linkedin/listSubscriptions";
 import { deleteWebhook } from "../livestorm/deleteWebhhok";
+import { removeWebhook } from "../linkedin/removeWebhook";
 import { listWebhooks } from "../livestorm/listWebhooks";
 
 type Props = {
@@ -50,7 +51,12 @@ export const deleteIntegration = async ({ source, integration }: Props) => {
     const linkedin = LinkedInIntegrationSchema.parse(integration);
 
     await prisma.posts.deleteMany({ where: { workspace_id } });
-    await unsubscribeWebhook({ linkedin });
+
+    const { subscriptions } = await listSubscriptions({ linkedin });
+
+    if (subscriptions.elements.length > 0) {
+      await removeWebhook({ linkedin });
+    }
   }
 
   await prisma.$transaction(async (tx) => {

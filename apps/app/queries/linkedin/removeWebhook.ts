@@ -1,20 +1,15 @@
 import { env } from "@/env.mjs";
 import type { LinkedInIntegration } from "@conquest/zod/schemas/integration.schema";
-import { fetchSubscriptions } from "./fetchSubscriptions";
 
 type WebhookSubscriptionParams = {
   linkedin: LinkedInIntegration;
 };
 
-export const unsubscribeWebhook = async ({
+export const removeWebhook = async ({
   linkedin,
 }: WebhookSubscriptionParams) => {
   const { external_id, details } = linkedin;
   const { user_id, access_token } = details;
-
-  const { data } = await fetchSubscriptions({ linkedin });
-
-  console.log("initial subscriptions", data);
 
   const urns = {
     developerApp: encodeURIComponent(
@@ -47,16 +42,10 @@ export const unsubscribeWebhook = async ({
   );
 
   const responseText = await response.text();
-  console.log("Unsubscribe response", responseText);
 
-  if (!response.ok) {
-    console.log(`LinkedIn API Error : ${responseText}`);
-    return { success: false };
-  }
+  console.log("removeWebhook", responseText);
 
-  const { data: subscriptions } = await fetchSubscriptions({ linkedin });
+  if (!response.ok) throw new Error(`LinkedIn API Error : ${responseText}`);
 
-  console.log("Check subscriptions", subscriptions);
-
-  return { success: true };
+  return responseText;
 };
