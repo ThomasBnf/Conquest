@@ -19,12 +19,16 @@ export default async function Page({ searchParams: { code } }: Props) {
     code,
   });
 
+  console.log(params);
+
   const response = await fetch(
     `https://app.livestorm.co/oauth/token?${params.toString()}`,
     {
       method: "POST",
     },
   );
+
+  console.log(await response.json());
 
   if (!response.ok) {
     return redirect(

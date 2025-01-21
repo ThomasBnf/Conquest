@@ -3,7 +3,6 @@
 import { deleteIntegration } from "@/actions/integrations/deleteIntegration";
 import { useUser } from "@/context/userContext";
 import { env } from "@/env.mjs";
-import { FormLivestorm } from "@/features/livestorm/form-livestorm";
 import { Button, buttonVariants } from "@conquest/ui/button";
 import { Card, CardContent, CardHeader } from "@conquest/ui/card";
 import { cn } from "@conquest/ui/cn";
@@ -12,6 +11,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { LivestormForm } from "./livestorm-form";
 
 type Props = {
   error: string;
@@ -110,7 +110,7 @@ export const EnableCard = ({ error }: Props) => {
           and their participants.
         </p>
         {(isEnabled || isSyncing) && !isExpired && (
-          <FormLivestorm loading={loading} setLoading={setLoading} />
+          <LivestormForm loading={loading} setLoading={setLoading} />
         )}
       </CardContent>
     </Card>

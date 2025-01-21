@@ -27,7 +27,7 @@ type Props = {
   setLoading: Dispatch<SetStateAction<boolean>>;
 };
 
-export const FormLivestorm = ({ loading, setLoading }: Props) => {
+export const LivestormForm = ({ loading, setLoading }: Props) => {
   const { livestorm } = useUser();
   const router = useRouter();
 
