@@ -15,8 +15,8 @@ export const webhookSubscription = async ({
     developerApp: encodeURIComponent(
       `urn:li:developerApplication:${env.LINKEDIN_APP_ID}`,
     ),
-    user: encodeURIComponent("urn:li:person:iuHQSczloT"),
-    org: encodeURIComponent("urn:li:organization:105844665"),
+    user: encodeURIComponent(`urn:li:person:${user_id}`),
+    org: encodeURIComponent(`urn:li:organization:${external_id}`),
     eventType: "ORGANIZATION_SOCIAL_ACTION_NOTIFICATIONS",
   };
 
@@ -58,6 +58,7 @@ export const webhookSubscription = async ({
   const subscription = await fetch(
     "https://api.linkedin.com/rest/eventSubscriptions?q=subscriberAndEventType&eventType=ORGANIZATION_SOCIAL_ACTION_NOTIFICATIONS",
     {
+      method: "GET",
       headers: {
         Authorization: `Bearer ${access_token}`,
         "LinkedIn-Version": "202411",

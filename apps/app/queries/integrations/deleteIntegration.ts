@@ -3,10 +3,12 @@ import { calculateMembersLevel } from "@/trigger/calculateMembersLevel";
 import type { SOURCE } from "@conquest/database";
 import {
   type Integration,
+  LinkedInIntegrationSchema,
   LivestormIntegrationSchema,
   SlackIntegrationSchema,
 } from "@conquest/zod/schemas/integration.schema";
 import { WebClient } from "@slack/web-api";
+import { unsubscribeWebhook } from "../linkedin/unsubscribeWebhook";
 import { deleteWebhook } from "../livestorm/deleteWebhhok";
 import { listWebhooks } from "../livestorm/listWebhooks";
 
@@ -45,7 +47,10 @@ export const deleteIntegration = async ({ source, integration }: Props) => {
   }
 
   if (source === "LINKEDIN") {
+    const linkedin = LinkedInIntegrationSchema.parse(integration);
+
     await prisma.posts.deleteMany({ where: { workspace_id } });
+    await unsubscribeWebhook({ linkedin });
   }
 
   await prisma.$transaction(async (tx) => {

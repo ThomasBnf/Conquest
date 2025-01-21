@@ -12,6 +12,7 @@ export const listOrganizations = () => {
 
   return {
     ...query,
-    organizations: query.data?.results,
+    user_id: query.data?.user_id,
+    organizations: query.data?.organizations.results,
   };
 };

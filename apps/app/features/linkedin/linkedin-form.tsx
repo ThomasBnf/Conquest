@@ -19,7 +19,7 @@ type Props = {
 
 export const LinkedinForm = ({ loading, setLoading }: Props) => {
   const { linkedin } = useUser();
-  const { organizations, isLoading } = listOrganizations();
+  const { organizations, user_id, isLoading } = listOrganizations();
   const router = useRouter();
 
   const [selectedOrg, setSelectedOrg] = useState({
@@ -33,11 +33,12 @@ export const LinkedinForm = ({ loading, setLoading }: Props) => {
   );
 
   const onStart = async () => {
-    if (!linkedin) return;
+    if (!linkedin || !user_id) return;
 
     setLoading(true);
     submit({
       linkedin,
+      user_id,
       organization_id: selectedOrg.organization_id,
       organization_name: selectedOrg.organization_name,
     });

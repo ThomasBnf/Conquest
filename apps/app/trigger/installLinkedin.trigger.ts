@@ -1,25 +1,19 @@
-import { LINKEDIN_ACTIVITY_TYPES } from "@/constant";
-import { createManyActivityTypes } from "@/queries/activity-type/createManyActivityTypes";
 import { deleteIntegration } from "@/queries/integrations/deleteIntegration";
 import { updateIntegration } from "@/queries/integrations/updateIntegration";
-import { createManyComments } from "@/queries/linkedin/createManyComments";
-import { listComments } from "@/queries/linkedin/listComments";
-import { listPosts } from "@/queries/linkedin/listPosts";
 import { webhookSubscription } from "@/queries/linkedin/webhookSubscription";
-import { createPost } from "@/queries/posts/createPost";
 import { LinkedInIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
 import { schemaTask } from "@trigger.dev/sdk/v3";
 import { z } from "zod";
-import { calculateMembersLevel } from "./calculateMembersLevel";
 
 export const installLinkedin = schemaTask({
   id: "install-linkedin",
   schema: z.object({
     linkedin: LinkedInIntegrationSchema,
+    user_id: z.string(),
     organization_id: z.string(),
     organization_name: z.string(),
   }),
-  run: async ({ linkedin, organization_id, organization_name }) => {
+  run: async ({ linkedin, user_id, organization_id, organization_name }) => {
     const { workspace_id } = LinkedInIntegrationSchema.parse(linkedin);
 
     const integration = await updateIntegration({
@@ -28,53 +22,54 @@ export const installLinkedin = schemaTask({
       details: {
         ...linkedin.details,
         name: organization_name,
+        user_id,
       },
       status: "SYNCING",
     });
 
     const parsedLinkedin = LinkedInIntegrationSchema.parse(integration);
 
-    await createManyActivityTypes({
-      activity_types: LINKEDIN_ACTIVITY_TYPES,
-      workspace_id,
-    });
+    // await createManyActivityTypes({
+    //   activity_types: LINKEDIN_ACTIVITY_TYPES,
+    //   workspace_id,
+    // });
 
-    const posts = await listPosts({ linkedin: parsedLinkedin });
+    // const posts = await listPosts({ linkedin: parsedLinkedin });
 
-    for (const post of posts) {
-      const createdPost = await createPost({
-        external_id: post.id,
-        content: post.commentary,
-        author_id: post.author,
-        workspace_id,
-        created_at: post.createdAt,
-      });
+    // for (const post of posts) {
+    //   const createdPost = await createPost({
+    //     external_id: post.id,
+    //     content: post.commentary,
+    //     author_id: post.author,
+    //     workspace_id,
+    //     created_at: post.createdAt,
+    //   });
 
-      const comments = await listComments({
-        linkedin: parsedLinkedin,
-        post_id: post.id,
-      });
+    //   const comments = await listComments({
+    //     linkedin: parsedLinkedin,
+    //     post_id: post.id,
+    //   });
 
-      await createManyComments({
-        linkedin: parsedLinkedin,
-        post: createdPost,
-        comments,
-      });
+    //   await createManyComments({
+    //     linkedin: parsedLinkedin,
+    //     post: createdPost,
+    //     comments,
+    //   });
 
-      // const likes = await listLikes({
-      //   linkedin: parsedLinkedin,
-      //   post_id: post.id,
-      // });
+    // const likes = await listLikes({
+    //   linkedin: parsedLinkedin,
+    //   post_id: post.id,
+    // });
 
-      // await createManyLikes({
-      //   linkedin: parsedLinkedin,
-      //   post: createdPost,
-      //   likes,
-      // });
-    }
+    // await createManyLikes({
+    //   linkedin: parsedLinkedin,
+    //   post: createdPost,
+    //   likes,
+    // });
+    // }
 
     await webhookSubscription({ linkedin: parsedLinkedin });
-    await calculateMembersLevel.trigger({ workspace_id });
+    // await calculateMembersLevel.trigger({ workspace_id });
   },
   onSuccess: async ({ linkedin }) => {
     await updateIntegration({

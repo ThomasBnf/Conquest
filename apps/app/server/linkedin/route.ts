@@ -2,7 +2,6 @@ import { env } from "@/env.mjs";
 import { createActivity } from "@/queries/activities/createActivity";
 import { deleteActivity } from "@/queries/activities/deleteActivity";
 import { getIntegration } from "@/queries/integrations/getIntegration";
-import { updateIntegration } from "@/queries/integrations/updateIntegration";
 import { getPeople } from "@/queries/linkedin/getPeople";
 import { getPost } from "@/queries/linkedin/getPost";
 import { getMember } from "@/queries/members/getMember";
@@ -188,18 +187,6 @@ export const linkedin = new Hono()
       await response.json(),
     );
 
-    const userId = organizationsList.elements[0]?.roleAssignee.split(":")[3];
-
-    if (userId) {
-      await updateIntegration({
-        id: parsedIntegration?.id,
-        details: {
-          ...parsedIntegration?.details,
-          user_id: userId,
-        },
-      });
-    }
-
     const organizationsIds = organizationsList.elements
       .map((org) => org.organizationalTarget.split(":").pop())
       .join(",");
@@ -216,5 +203,8 @@ export const linkedin = new Hono()
       },
     );
 
-    return c.json(OrganizationsSchema.parse(await orgsResponse.json()));
+    return c.json({
+      user_id: organizationsList.elements[0]?.roleAssignee?.split(":")[3],
+      organizations: OrganizationsSchema.parse(await orgsResponse.json()),
+    });
   });
