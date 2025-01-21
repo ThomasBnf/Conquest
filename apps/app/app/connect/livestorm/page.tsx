@@ -14,6 +14,7 @@ export default async function Page({ searchParams: { code } }: Props) {
   const { slug, id: workspace_id } = user.workspace;
 
   const params = new URLSearchParams({
+    grant_type: "authorization_code",
     client_id: env.NEXT_PUBLIC_LIVESTORM_CLIENT_ID,
     client_secret: env.LIVESTORM_CLIENT_SECRET,
     code,
