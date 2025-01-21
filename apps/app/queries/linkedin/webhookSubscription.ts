@@ -1,5 +1,6 @@
 import { env } from "@/env.mjs";
 import type { LinkedInIntegration } from "@conquest/zod/schemas/integration.schema";
+import { fetchSubscriptions } from "./fetchSubscriptions";
 
 type WebhookSubscriptionParams = {
   linkedin: LinkedInIntegration;
@@ -16,20 +17,18 @@ export const webhookSubscription = async ({
       `urn:li:developerApplication:${env.LINKEDIN_APP_ID}`,
     ),
     user: encodeURIComponent(`urn:li:person:${user_id}`),
-    org: encodeURIComponent(`urn:li:organization:${external_id}`),
+    entity: encodeURIComponent(`urn:li:organization:${external_id}`),
     eventType: "ORGANIZATION_SOCIAL_ACTION_NOTIFICATIONS",
   };
 
   const params = Object.entries({
     developerApplication: urns.developerApp,
     user: urns.user,
-    entity: urns.org,
+    entity: urns.entity,
     eventType: urns.eventType,
   })
     .map(([key, value]) => `${key}:${value}`)
     .join(",");
-
-  console.log(params);
 
   const response = await fetch(
     `https://api.linkedin.com/rest/eventSubscriptions/(${params})`,
@@ -55,20 +54,9 @@ export const webhookSubscription = async ({
     return { success: false };
   }
 
-  const subscription = await fetch(
-    "https://api.linkedin.com/rest/eventSubscriptions?q=subscriberAndEventType&eventType=ORGANIZATION_SOCIAL_ACTION_NOTIFICATIONS",
-    {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${access_token}`,
-        "LinkedIn-Version": "202411",
-        "Content-Type": "application/json",
-        "X-Restli-Protocol-Version": "2.0.0",
-      },
-    },
-  );
+  const { data } = await fetchSubscriptions({ linkedin });
 
-  console.log(await subscription.json());
+  console.log("subscriptions", data);
 
   return { success: true };
 };

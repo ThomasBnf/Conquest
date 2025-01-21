@@ -76,7 +76,10 @@ export const LinkedinForm = ({ loading, setLoading }: Props) => {
           >
             {organizations &&
               Object.entries(organizations).map(([id, organization]) => (
-                <div key={id} className="cursor-pointer space-x-2">
+                <div
+                  key={id}
+                  className="flex cursor-pointer items-center gap-2"
+                >
                   <RadioGroupItem value={id} id={id} />
                   <Label htmlFor={id}>{organization.localizedName}</Label>
                 </div>
