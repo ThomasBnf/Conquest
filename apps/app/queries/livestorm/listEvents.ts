@@ -7,9 +7,14 @@ type Props = {
 };
 
 export const listEvents = async ({ accessToken, page, filter }: Props) => {
-  const params = new URLSearchParams();
-  params.set("page[size]", "100");
-  params.set("page[number]", page.toString());
+  const params = new URLSearchParams({
+    "page[size]": "100",
+    "page[number]": page.toString(),
+    "filter[created_since]": new Date(
+      Date.now() - 365 * 24 * 60 * 60 * 1000,
+    ).toISOString(),
+  });
+
   if (filter) params.set("filter[title]", filter);
 
   const response = await fetch(

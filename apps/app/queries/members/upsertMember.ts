@@ -25,8 +25,6 @@ export const upsertMember = async (props: Props) => {
   const { id, data } = props;
   const { primary_email, phones, source, workspace_id } = data;
 
-  console.log(props);
-
   if (!source) throw new Error("Source is required");
   if (!workspace_id) throw new Error("Workspace ID is required");
 
@@ -117,8 +115,6 @@ export const upsertMember = async (props: Props) => {
       workspace_id,
     };
   };
-
-  console.log(data);
 
   if (formattedEmail) {
     const existingMember = await getMember({

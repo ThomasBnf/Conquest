@@ -10,7 +10,7 @@ import {
 } from "@conquest/ui/dropdown-menu";
 import type { Event } from "@conquest/zod/schemas/event.schema";
 import { format } from "date-fns";
-import { MoreVertical, Trash2 } from "lucide-react";
+import { MoreHorizontal, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -51,7 +51,7 @@ export const EventCard = ({ event }: Props) => {
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="icon">
-              <MoreVertical size={16} />
+              <MoreHorizontal size={16} />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
