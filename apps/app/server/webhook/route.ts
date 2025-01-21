@@ -5,10 +5,12 @@ import { listPeopleFromSession } from "@/queries/livestorm/listPeopleFromSession
 import { upsertMember } from "@/queries/members/upsertMember";
 import { LivestormIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
 import type { Session } from "@conquest/zod/types/livestorm";
+import { getLocaleByAlpha2 } from "country-locale-map";
 import { Hono } from "hono";
 
 export const webhook = new Hono().post("/livestorm", async (c) => {
   const { data } = await c.req.json();
+  console.log(data);
   const { organization_id } = data.meta.webhook;
 
   const integration = await prisma.integrations.findFirst({
@@ -48,11 +50,13 @@ export const webhook = new Hono().post("/livestorm", async (c) => {
         avatar_link,
         registrant_detail,
         role,
+        created_at,
       } = attributes;
-
-      const { ip_country_code } = registrant_detail;
+      const { ip_country_code, attended, is_guest_speaker } = registrant_detail;
 
       if (role === "team_member") continue;
+
+      const locale = getLocaleByAlpha2(ip_country_code) ?? null;
 
       const createdMember = await upsertMember({
         id,
@@ -61,19 +65,45 @@ export const webhook = new Hono().post("/livestorm", async (c) => {
           last_name,
           primary_email: email,
           avatar_url: avatar_link,
-          locale: ip_country_code,
+          locale,
           source: "LIVESTORM",
           workspace_id,
         },
       });
 
-      await createActivity({
-        external_id: null,
-        activity_type_key: "livestorm:attend",
-        message: `Attended the Livestorm event: ${title}`,
-        member_id: createdMember.id,
-        workspace_id,
-      });
+      if (is_guest_speaker) {
+        await prisma.activities.deleteMany({
+          where: {
+            activity_type: {
+              key: "livestorm:register",
+            },
+            member_id: createdMember.id,
+            event_id: event.id,
+          },
+        });
+
+        await createActivity({
+          external_id: null,
+          activity_type_key: "livestorm:co-host",
+          message: `Co-hosted the Livestorm event: ${title}`,
+          member_id: createdMember.id,
+          event_id: event.id,
+          created_at: new Date(created_at * 1000),
+          workspace_id,
+        });
+      }
+
+      if (attended) {
+        await createActivity({
+          external_id: null,
+          activity_type_key: "livestorm:attend",
+          message: `Attended the Livestorm event: ${title}`,
+          member_id: createdMember.id,
+          event_id: event.id,
+          created_at: new Date(ended_at * 1000),
+          workspace_id,
+        });
+      }
     }
 
     return c.json({ success: true });

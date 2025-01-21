@@ -1,6 +1,7 @@
 import { deleteEvent } from "@/actions/events/deleteEvent";
 import { AlertDialog } from "@/components/custom/alert-dialog";
 import { formatDateRange } from "@/helpers/format-date-range";
+import { Badge } from "@conquest/ui/badge";
 import { Button } from "@conquest/ui/button";
 import {
   DropdownMenu,
@@ -9,6 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "@conquest/ui/dropdown-menu";
 import type { Event } from "@conquest/zod/schemas/event.schema";
+import { format } from "date-fns";
 import { MoreVertical, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -19,9 +21,10 @@ type Props = {
 
 export const EventCard = ({ event }: Props) => {
   const [open, setOpen] = useState(false);
+  const { id, title, started_at, ended_at } = event;
 
   const onDelete = async () => {
-    const response = await deleteEvent({ id: event.id });
+    const response = await deleteEvent({ id: id });
     const error = response?.serverError;
 
     if (error) {
@@ -33,17 +36,18 @@ export const EventCard = ({ event }: Props) => {
 
   return (
     <div
-      key={event.id}
+      key={id}
       className="-m-2 flex items-center justify-between rounded-md p-2 transition-colors hover:bg-muted-hover"
     >
       <div>
-        <p className="font-medium">{event.title}</p>
+        <div className="flex items-center gap-2">
+          <p className="font-medium">{title}</p>
+          {!ended_at && <Badge variant="secondary">Upcoming</Badge>}
+        </div>
         <p className="text-muted-foreground">
-          {formatDateRange(
-            event.started_at ?? new Date(),
-            event.ended_at ?? new Date(),
-            { includeTime: false },
-          )}
+          {ended_at
+            ? formatDateRange(started_at, ended_at, { includeTime: false })
+            : format(started_at, "PP, HH'h'mm")}
         </p>
       </div>
       <DropdownMenu>

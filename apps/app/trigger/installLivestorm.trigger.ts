@@ -38,7 +38,11 @@ export const installLivestorm = schemaTask({
       accessToken = await getRefreshToken(livestorm);
     }
 
-    const webhookEvents = ["session.created", "session.ended"];
+    const webhookEvents = [
+      "session.created",
+      "session.ended",
+      "people.registered",
+    ];
 
     for (const event of webhookEvents) {
       await createWebhook({
@@ -109,7 +113,7 @@ export const installLivestorm = schemaTask({
             source: "LIVESTORM",
             title: name ? `${title} - ${name}` : title,
             started_at: new Date(estimated_started_at * 1000),
-            ended_at: new Date(ended_at * 1000),
+            ended_at: ended_at ? new Date(ended_at * 1000) : null,
             workspace_id,
           },
         });

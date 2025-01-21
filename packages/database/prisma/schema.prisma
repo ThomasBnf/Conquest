@@ -153,11 +153,11 @@ model companies {
 }
 
 model events {
-  id          String   @id @default(cuid())
-  external_id String   @unique
+  id          String    @id @default(cuid())
+  external_id String    @unique
   title       String
   started_at  DateTime
-  ended_at    DateTime
+  ended_at    DateTime?
   source      SOURCE
 
   workspace_id String
