@@ -24,7 +24,7 @@ export const installLivestorm = schemaTask({
     livestorm: LivestormIntegrationSchema,
     organization_id: z.string(),
     organization_name: z.string(),
-    filter: z.string(),
+    filter: z.string().optional(),
   }),
   run: async ({ livestorm, organization_id, organization_name, filter }) => {
     const { id, details, workspace_id } = livestorm;
