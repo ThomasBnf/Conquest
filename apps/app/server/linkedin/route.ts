@@ -123,7 +123,7 @@ export const linkedin = new Hono()
 
     if (action === "COMMENT") {
       const { text, object } = decoratedGeneratedActivity?.comment ?? {};
-      const external_id = object?.split(":")[3];
+      const external_id = object?.match(/\(.*,(\d+)\)/)?.[1];
 
       const activity = await createActivity({
         external_id: external_id ?? null,
