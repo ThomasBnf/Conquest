@@ -57,6 +57,7 @@ export const linkedin = new Hono()
       organizationalEntity,
       decoratedSourcePost,
       decoratedGeneratedActivity,
+      generatedActivity,
     } = notification;
 
     const organization_id = organizationalEntity?.split(":")[3];
@@ -122,8 +123,8 @@ export const linkedin = new Hono()
     }
 
     if (action === "COMMENT") {
-      const { text, object } = decoratedGeneratedActivity?.comment ?? {};
-      const external_id = object?.match(/\(.*,(\d+)\)/)?.[1];
+      const { text, entity } = decoratedGeneratedActivity?.comment ?? {};
+      const external_id = entity?.split(",")?.[1]?.replace(/\D/g, "");
 
       const activity = await createActivity({
         external_id: external_id ?? null,
@@ -140,8 +141,9 @@ export const linkedin = new Hono()
     }
 
     if (action === "COMMENT_DELETE") {
-      const { entity } = decoratedSourcePost;
-      const external_id = entity.split(":")[3];
+      const external_id = generatedActivity
+        ?.split(",")?.[1]
+        ?.replace(/\D/g, "");
 
       const activity = await deleteActivity({
         external_id,
