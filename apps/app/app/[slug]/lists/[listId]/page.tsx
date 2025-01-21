@@ -22,7 +22,7 @@ export default async function Page({ params: { listId } }: Props) {
       <Header title={list.name}>
         <ListMenu listId={listId} />
       </Header>
-      <Table />
+      <Table initialFilters={list.filters} />
     </PageLayout>
   );
 }

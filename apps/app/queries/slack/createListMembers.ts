@@ -23,7 +23,6 @@ export const createListMembers = async ({ web, workspace_id }: Props) => {
 
       if (profile && !isDeleted && !isBot) {
         const { locale } = member;
-        console.log(locale);
         const { first_name, last_name, email, phone, image_1024, title } =
           profile;
 
