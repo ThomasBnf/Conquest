@@ -71,29 +71,28 @@ export const linkedin = new Hono()
     const { external_id, details } = integration;
     const { access_token } = details;
 
+    const params = new URLSearchParams({
+      q: "criteria",
+      actions: "List(LIKE,COMMENT,SHARE_MENTION)",
+      organizationalEntity: `urn%3Ali%3Aorganization%3${external_id}`,
+    });
+
+    console.log(params.toString());
+
     const response = await fetch(
-      `https://api.linkedin.com/rest/organizationalEntityNotifications?${new URLSearchParams(
-        {
-          q: "criteria",
-          actions: "List(LIKE,COMMENT,SHARE_MENTION)",
-          organizationalEntity: encodeURIComponent(
-            `urn:li:organization:${external_id}`,
-          ),
-        },
-      )}`,
+      `https://api.linkedin.com/rest/organizationalEntityNotifications?${params.toString()}`,
       {
         method: "GET",
         headers: {
           Authorization: `Bearer ${access_token}`,
           "LinkedIn-Version": "202411",
-          "Content-Type": "application/json",
           "X-Restli-Protocol-Version": "2.0.0",
         },
       },
     );
 
     const data = await response.json();
-    console.log("data", data);
+    console.dir(data, { depth: 100 });
 
     // if (!integration) {
     //   console.log("No integration");
