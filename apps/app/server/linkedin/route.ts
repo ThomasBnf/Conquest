@@ -73,7 +73,7 @@ export const linkedin = new Hono()
 
     const params = new URLSearchParams({
       q: "criteria",
-      actions: "List(LIKE,COMMENT,SHARE_MENTION)",
+      actions: "List(COMMENT,SHARE_MENTION)",
       organizationalEntity: `urn%3Ali%3Aorganization%3${external_id}`,
     });
 
