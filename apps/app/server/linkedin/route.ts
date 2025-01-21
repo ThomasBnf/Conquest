@@ -1,13 +1,21 @@
 import { env } from "@/env.mjs";
+import { createActivity } from "@/queries/activities/createActivity";
+import { deleteActivity } from "@/queries/activities/deleteActivity";
 import { getIntegration } from "@/queries/integrations/getIntegration";
 import { updateIntegration } from "@/queries/integrations/updateIntegration";
+import { getPeople } from "@/queries/linkedin/getPeople";
+import { getPost } from "@/queries/linkedin/getPost";
+import { getMember } from "@/queries/members/getMember";
+import { upsertMember } from "@/queries/members/upsertMember";
 import { getAuthUser } from "@/queries/users/getAuthUser";
 import { LinkedInIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
+import type { MemberWithCompany } from "@conquest/zod/schemas/member.schema";
 import {
   ListOrganizationsSchema,
   OrganizationsSchema,
   WebhookSubscriptionSchema,
 } from "@conquest/zod/types/linkedin";
+import { getLocaleByAlpha2 } from "country-locale-map";
 import { Hono } from "hono";
 import { createHmac } from "node:crypto";
 
@@ -39,157 +47,109 @@ export const linkedin = new Hono()
 
     console.log("notification", notification);
 
-    // if (!notification) {
-    //   console.error("LinkedIn webhook: Missing notification");
-    //   return c.json({ error: "Missing notification" }, 200);
-    // }
+    if (!notification) {
+      console.error("LinkedIn webhook: Missing notification");
+      return c.json(200);
+    }
 
     const {
       action,
-      sourcePost,
       organizationalEntity,
       decoratedSourcePost,
       decoratedGeneratedActivity,
-    } = notification ?? {};
+    } = notification;
 
-    const organizationId = organizationalEntity?.split(":")[3];
-    // const { owner } = decoratedGeneratedActivity?.comment ?? {};
-    // const linkedinId = owner?.split(":")[3];
+    const organization_id = organizationalEntity?.split(":")[3];
+    const { owner } = decoratedGeneratedActivity?.comment ?? {};
+    const linkedin_id = owner?.split(":")[3];
 
-    // if (!organizationId || !linkedinId) {
-    //   return c.json({ error: "Missing required fields" }, 200);
-    // }
+    if (!organization_id || !linkedin_id) return c.json(200);
 
-    // console.log("organizationId", organizationId);
+    console.log("organizationId", organization_id);
 
     const integration = LinkedInIntegrationSchema.parse(
       await getIntegration({
-        external_id: organizationId ?? "",
+        external_id: organization_id,
       }),
     );
 
-    const { external_id, details } = integration;
-    const { access_token } = details;
+    const { workspace_id } = integration;
+    const { entity } = decoratedSourcePost;
 
-    const params = new URLSearchParams({
-      q: "criteria",
-      actions: "COMMENT,SHARE_MENTION",
-      organizationalEntity: `urn:li:organization:${external_id}`,
-    });
+    const post = await getPost({ urn: entity, workspace_id });
 
-    console.log(params.toString());
+    let member: MemberWithCompany | null = null;
 
-    const response = await fetch(
-      `https://api.linkedin.com/rest/organizationalEntityNotifications?${params.toString()}`,
-      {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${access_token}`,
-          "LinkedIn-Version": "202411",
-          "X-Restli-Protocol-Version": "2.0.0",
+    member = await getMember({ linkedin_id, workspace_id });
+
+    if (!member) {
+      const people = await getPeople({
+        linkedin: integration,
+        people_id: linkedin_id,
+      });
+
+      const {
+        id,
+        vanityName,
+        headline,
+        profilePicture,
+        localizedFirstName,
+        localizedLastName,
+        localizedHeadline,
+      } = people;
+
+      const countryCode = headline.preferredLocale.country;
+      const locale = getLocaleByAlpha2(countryCode) ?? null;
+      console.log("locale", locale);
+      const avatar_url = profilePicture["displayImage~"]?.elements?.find(
+        (element) => element?.artifact?.includes("800_800"),
+      )?.identifiers?.[0]?.identifier;
+
+      member = await upsertMember({
+        id,
+        data: {
+          linkedin_id: id,
+          username: vanityName,
+          first_name: localizedFirstName,
+          last_name: localizedLastName,
+          locale,
+          avatar_url,
+          job_title: localizedHeadline,
+          source: "LINKEDIN",
+          workspace_id,
         },
-      },
-    );
+      });
+    }
 
-    const data = await response.json();
-    console.dir(data, { depth: 100 });
+    if (action === "COMMENT") {
+      const { text, object } = decoratedGeneratedActivity?.comment ?? {};
+      const external_id = object?.split(":")[3];
 
-    // if (!integration) {
-    //   console.log("No integration");
-    //   return c.json({ error: "No integration" }, 200);
-    // }
+      const activity = await createActivity({
+        external_id: external_id ?? null,
+        activity_type_key: "linkedin:comment",
+        message: text ?? "",
+        reply_to: post?.external_id,
+        member_id: member.id,
+        workspace_id,
+      });
 
-    // const { workspace_id } = integration;
-    // const { entity } = decoratedSourcePost;
+      console.log("comment", activity);
 
-    // const post = await getPost({
-    //   urn: entity,
-    //   workspace_id,
-    // });
+      return c.json(200);
+    }
 
-    // console.log("post", post);
+    if (action === "COMMENT_DELETE") {
+      const { entity } = decoratedSourcePost;
+      const external_id = entity.split(":")[3];
 
-    // if (!post) {
-    //   console.log("No post");
-    //   return c.json({ error: "No post" }, 200);
-    // }
+      const activity = await deleteActivity({
+        external_id,
+        workspace_id,
+      });
 
-    // let member: MemberWithCompany | null = null;
-
-    // member = await getMember({
-    //   linkedin_id: linkedinId,
-    //   workspace_id,
-    // });
-
-    // if (!member) {
-    //   const people = await getPeople({
-    //     linkedin: integration,
-    //     people_id: linkedinId,
-    //   });
-
-    //   const {
-    //     id,
-    //     vanityName,
-    //     headline,
-    //     profilePicture,
-    //     localizedFirstName,
-    //     localizedLastName,
-    //     localizedHeadline,
-    //   } = people;
-
-    //   const countryCode = headline.preferredLocale.country;
-    //   console.log("countryCode", countryCode);
-    //   const locale = getLocaleByAlpha2(countryCode) ?? null;
-    //   console.log("locale", locale);
-    //   const avatar_url = profilePicture["displayImage~"]?.elements?.find(
-    //     (element) => element?.artifact?.includes("800_800"),
-    //   )?.identifiers?.[0]?.identifier;
-
-    //   member = await upsertMember({
-    //     id,
-    //     data: {
-    //       linkedin_id: id,
-    //       username: vanityName,
-    //       first_name: localizedFirstName,
-    //       last_name: localizedLastName,
-    //       locale,
-    //       avatar_url,
-    //       job_title: localizedHeadline,
-    //       source: "LINKEDIN",
-    //       workspace_id,
-    //     },
-    //   });
-    // }
-
-    // if (action === "COMMENT") {
-    //   const { text, object } = decoratedGeneratedActivity?.comment ?? {};
-    //   const external_id = object?.split(":")[3];
-
-    //   const activity = await createActivity({
-    //     external_id: external_id ?? null,
-    //     activity_type_key: "linkedin:comment",
-    //     message: text ?? "",
-    //     reply_to: post.external_id,
-    //     member_id: member.id,
-    //     workspace_id,
-    //   });
-
-    //   console.log("comment", activity);
-
-    //   return c.json({ success: true }, 200);
-    // }
-
-    // if (action === "COMMENT_DELETE") {
-    //   const { entity } = decoratedSourcePost;
-    //   const external_id = entity.split(":")[3];
-
-    //   const activity = await deleteActivity({
-    //     external_id,
-    //     workspace_id,
-    //   });
-
-    //   console.log("delete", activity);
-    // }
+      console.log("delete", activity);
+    }
 
     return c.json(200);
   })

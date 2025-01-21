@@ -44,6 +44,10 @@ export const deleteIntegration = async ({ source, integration }: Props) => {
     });
   }
 
+  if (source === "LINKEDIN") {
+    await prisma.posts.deleteMany({ where: { workspace_id } });
+  }
+
   await prisma.$transaction(async (tx) => {
     await tx.integrations.delete({ where: { id: integration.id } });
     await tx.activities_types.deleteMany({ where: { source, workspace_id } });
