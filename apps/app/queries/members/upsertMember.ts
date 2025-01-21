@@ -25,6 +25,8 @@ export const upsertMember = async (props: Props) => {
   const { id, data } = props;
   const { primary_email, phones, source, workspace_id } = data;
 
+  console.log("data", data);
+
   if (!source) throw new Error("Source is required");
   if (!workspace_id) throw new Error("Workspace ID is required");
 
@@ -98,19 +100,24 @@ export const upsertMember = async (props: Props) => {
     };
   };
 
+  console.log("formattedEmail", formattedEmail);
+
   if (formattedEmail) {
     const existingMember = await getMember({
       email: formattedEmail,
       workspace_id,
     });
 
+    console.log("existingMember", existingMember);
+
     if (existingMember && existingMember.source !== source) {
-      const newMember = MemberWithCompanySchema.parse(
+      const tempEmail = `${cuid()}@mail.com`;
+      const createdMember = MemberWithCompanySchema.parse(
         await prisma.members.create({
           data: {
             ...data,
             ...parsedId,
-            primary_email: `${cuid()}@mail.com`,
+            primary_email: tempEmail,
             phones: formattedPhones ?? [],
             company_id: company?.id ?? null,
             source,
@@ -122,8 +129,10 @@ export const upsertMember = async (props: Props) => {
         }),
       );
 
+      console.log("createdMember", createdMember);
+
       return await mergeMembers({
-        leftMember: newMember,
+        leftMember: createdMember,
         rightMember: existingMember,
       });
     }
@@ -152,6 +161,8 @@ export const upsertMember = async (props: Props) => {
       company: true,
     },
   });
+
+  console.log("newMember", newMember);
 
   return MemberWithCompanySchema.parse(newMember);
 };

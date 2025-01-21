@@ -15,6 +15,4 @@ export const createWebhook = async ({ accessToken, event }: Props) => {
     },
     body: `{"data":{"type":"webhooks","attributes":{"url":"${env.NEXT_PUBLIC_BASE_URL}/api/webhook/livestorm","event":"${event}"}}}`,
   });
-
-  console.log(await response.json());
 };
