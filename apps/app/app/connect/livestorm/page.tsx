@@ -28,8 +28,6 @@ export default async function Page({ searchParams: { code } }: Props) {
     },
   );
 
-  console.log(await response.json());
-
   if (!response.ok) {
     return redirect(
       `/${slug}/settings/integrations/livestorm?error=invalid_code`,
