@@ -45,11 +45,29 @@
   "navigation": [
     {
       "group": "Getting Started",
-      "pages": ["introduction"]
+      "pages": ["quickstart"]
+    },
+    {
+      "group": "Pulse System",
+      "pages": [
+        "pulse-system/introduction",
+        "pulse-system/activities",
+        "pulse-system/activity-types",
+        "pulse-system/max-weight",
+        "pulse-system/presence",
+        "pulse-system/level",
+        "pulse-system/pulse-score"
+      ]
     },
     {
       "group": "Integrations",
-      "pages": ["integrations/slack", "integrations/discourse"]
+      "pages": [
+        "integrations/discourse",
+        "integrations/discord",
+        "integrations/slack",
+        "integrations/linkedin",
+        "integrations/livestorm"
+      ]
     },
     {
       "group": "Activities",
