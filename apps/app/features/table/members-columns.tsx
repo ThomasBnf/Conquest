@@ -129,7 +129,7 @@ export const MembersColumns = ({ tags }: Props): Column[] => [
   },
   {
     id: "level",
-    header: () => <ColumnHeader id="level" title="Level" width={185} />,
+    header: () => <ColumnHeader id="level" title="Level" width={200} />,
     cell: ({ member }) => {
       return (
         <div className="flex w-full items-center justify-end p-2">
@@ -141,7 +141,7 @@ export const MembersColumns = ({ tags }: Props): Column[] => [
   },
   {
     id: "pulse",
-    header: () => <ColumnHeader id="pulse" title="Pulse" width={185} />,
+    header: () => <ColumnHeader id="pulse" title="Pulse" width={200} />,
     cell: ({ member }) => {
       return (
         <div className="flex w-full items-center justify-end p-2">
