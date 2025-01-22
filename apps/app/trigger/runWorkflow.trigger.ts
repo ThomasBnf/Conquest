@@ -412,8 +412,10 @@ export const createSelectFilter = (filter: FilterSelect) => {
     execute: ({ member }: { member: MemberWithActivities }) => {
       const field = (() => {
         switch (filter.field) {
-          case "locale":
+          case "country":
             return member.locale;
+          case "language":
+            return member.locale?.split("_")[0];
           case "tags":
             return member.tags;
           case "source":

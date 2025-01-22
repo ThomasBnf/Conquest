@@ -32,16 +32,21 @@ import { type FormList, formListSchema } from "./schemas/form-list";
 type Props = {
   filters: Filter[];
   setFilters: Dispatch<SetStateAction<Filter[]>>;
+  handleUpdate?: (filters: Filter[]) => void;
 };
 
-export const SaveList = ({ filters, setFilters }: Props) => {
+export const SaveList = ({ filters, setFilters, handleUpdate }: Props) => {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const queryClient = useQueryClient();
   const pathname = usePathname();
   const isListPage = pathname.includes("lists");
 
-  const onClearFilters = () => setFilters([]);
+  const onClearFilters = () => {
+    setFilters([]);
+    setOpen(false);
+    handleUpdate?.([]);
+  };
 
   const form = useForm<FormList>({
     resolver: zodResolver(formListSchema),

@@ -16,7 +16,6 @@ import { tableParsers } from "@/lib/searchParamsTable";
 import { Button } from "@conquest/ui/button";
 import { cn } from "@conquest/ui/cn";
 import { ScrollArea, ScrollBar } from "@conquest/ui/scroll-area";
-import { Separator } from "@conquest/ui/separator";
 import { useSidebar } from "@conquest/ui/sidebar";
 import type { Filter } from "@conquest/zod/schemas/filters.schema";
 import type { MemberWithCompany } from "@conquest/zod/schemas/member.schema";
@@ -107,7 +106,11 @@ export const MembersTable = ({
           )}
         </div>
         <div className="flex h-full items-center gap-2">
-          <SaveList filters={filters} setFilters={setFilters} />
+          <SaveList
+            handleUpdate={handleUpdate}
+            filters={filters}
+            setFilters={setFilters}
+          />
           <ExportList members={members} />
         </div>
       </div>
