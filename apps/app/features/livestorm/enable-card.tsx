@@ -106,8 +106,8 @@ export const EnableCard = ({ error }: Props) => {
       <CardContent className="mb-0.5">
         <p className="font-medium text-base">Overview</p>
         <p className="text-balance text-muted-foreground">
-          Connect your Livestorm workspace to retrieve all your webinar sessions
-          and their participants.
+          Connect your Livestorm workspace to access all your webinar sessions
+          and participant data.
         </p>
         {(isEnabled || isSyncing) && !isExpired && (
           <LivestormForm loading={loading} setLoading={setLoading} />

@@ -5,10 +5,10 @@ export const LoadingMessage = () => (
       <p className="font-medium">Sync in progress</p>
     </div>
     <p className="text-muted-foreground">
-      It may take from a few minutes to several hours, depending on your
-      community size. <br />
+      The process can take from a few minutes to several hours, depending on the
+      volume of your data. <br />
       <span className="text-foreground">
-        You'll be notified by email when is finished.
+        You will be notified by email when the sync is complete.
       </span>
     </p>
   </div>

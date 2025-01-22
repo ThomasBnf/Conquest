@@ -7,6 +7,7 @@ import { getRefreshToken } from "@/queries/livestorm/getRefreshToken";
 import { listEventSessions } from "@/queries/livestorm/listEventSessions";
 import { listPeopleFromSession } from "@/queries/livestorm/listPeopleFromSession";
 import { upsertMember } from "@/queries/members/upsertMember";
+import { updateMemberMetrics } from "@/trigger/updateMemberMetrics.trigger";
 import { LivestormIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
 import {
   PeopleRegisteredSchema,
@@ -101,7 +102,7 @@ export const webhook = new Hono().post("/livestorm", async (c) => {
 
     const locale = ip_country_code ? getLocaleByAlpha2(ip_country_code) : null;
 
-    const createdMember = await upsertMember({
+    const member = await upsertMember({
       id,
       data: {
         first_name,
@@ -119,10 +120,12 @@ export const webhook = new Hono().post("/livestorm", async (c) => {
       external_id: null,
       activity_type_key: "livestorm:register",
       message: `Registered to: ${title}`,
-      member_id: createdMember.id,
+      member_id: member.id,
       event_id: session.id,
       workspace_id,
     });
+
+    await updateMemberMetrics.trigger({ member });
 
     return c.json(200);
   }
@@ -176,6 +179,8 @@ export const webhook = new Hono().post("/livestorm", async (c) => {
           event_id: session.id,
           workspace_id,
         });
+
+        await updateMemberMetrics.trigger({ member });
       } else {
         await createActivity({
           external_id: null,
@@ -185,6 +190,8 @@ export const webhook = new Hono().post("/livestorm", async (c) => {
           event_id: session.id,
           workspace_id,
         });
+
+        await updateMemberMetrics.trigger({ member });
       }
     }
   }

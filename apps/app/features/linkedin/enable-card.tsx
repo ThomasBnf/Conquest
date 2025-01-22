@@ -57,14 +57,12 @@ export const EnableCard = ({ error }: Props) => {
     if (error) {
       switch (error) {
         case "invalid_code":
-          toast.error("Error: Invalid code");
+          toast.error("Error: Invalid code", { duration: 10000 });
           break;
         case "already_connected":
           toast.error(
             "This Linkedin page is already connected to another account",
-            {
-              duration: 10000,
-            },
+            { duration: 10000 },
           );
           break;
       }
@@ -105,8 +103,8 @@ export const EnableCard = ({ error }: Props) => {
       <CardContent className="mb-0.5">
         <p className="font-medium text-base">Overview</p>
         <p className="text-balance text-muted-foreground">
-          Connect your Linkedin account to automatically get comments on your
-          posts.
+          Connect your LinkedIn organization page to sync and track members who
+          engage with your posts.
         </p>
         {isEnabled && !isExpired && (
           <LinkedinForm loading={loading} setLoading={setLoading} />

@@ -83,6 +83,8 @@ export const createManyArchivedThreads = async ({
                 });
               }
 
+              if (!member) continue;
+
               if (!parent_id) {
                 console.error("parent_id not found", id);
                 continue;
@@ -111,7 +113,7 @@ export const createManyArchivedThreads = async ({
                   title: name,
                   message: content,
                   thread_id: thread.id,
-                  member_id: member?.id ?? "",
+                  member_id: member.id,
                   channel_id: channel.id,
                   created_at: new Date(timestamp),
                   updated_at: new Date(edited_timestamp ?? timestamp),
@@ -131,7 +133,7 @@ export const createManyArchivedThreads = async ({
                     activity_type_key: "discord:reply",
                     message: content,
                     thread_id: thread.id,
-                    member_id: member?.id ?? "",
+                    member_id: member.id,
                     channel_id: channel.id,
                     created_at: new Date(timestamp),
                     updated_at: new Date(edited_timestamp ?? timestamp),
@@ -153,7 +155,7 @@ export const createManyArchivedThreads = async ({
                     message: message.content,
                     reply_to: message_id,
                     thread_id: thread.id,
-                    member_id: member?.id ?? "",
+                    member_id: member.id,
                     channel_id: channel.id,
                     created_at: new Date(timestamp),
                     updated_at: new Date(edited_timestamp ?? timestamp),

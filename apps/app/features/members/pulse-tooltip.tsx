@@ -14,13 +14,6 @@ type Props = {
 
 type GroupedActivities = Record<string, Record<string, ActivityWithType[]>>;
 
-type ActivityMetrics = {
-  source: string;
-  name: string;
-  count: number;
-  weight: number;
-};
-
 export const PulseTooltip = ({ member, showIcon = true }: Props) => {
   const [hover, setHover] = useState(false);
 

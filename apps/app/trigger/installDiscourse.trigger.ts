@@ -9,7 +9,7 @@ import { updateIntegration } from "@/queries/integrations/updateIntegration";
 import { DiscourseIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
 import { schemaTask } from "@trigger.dev/sdk/v3";
 import { z } from "zod";
-import { integrationSuccessEmail } from "./integrationSuccessEmail";
+import { integrationSuccessEmail } from "./integrationSuccessEmail.trigger";
 
 export const installDiscourse = schemaTask({
   id: "install-discourse",

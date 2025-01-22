@@ -143,7 +143,7 @@ export const installLivestorm = schemaTask({
 
           const locale = getLocaleByAlpha2(ip_country_code) ?? null;
 
-          const createdMember = await upsertMember({
+          const member = await upsertMember({
             id,
             data: {
               first_name,
@@ -161,7 +161,7 @@ export const installLivestorm = schemaTask({
               external_id: null,
               activity_type_key: "livestorm:co-host",
               message: `Co-hosted to: ${title}`,
-              member_id: createdMember.id,
+              member_id: member.id,
               event_id: createdEvent.id,
               created_at: new Date(ended_at * 1000),
               workspace_id,
@@ -171,7 +171,7 @@ export const installLivestorm = schemaTask({
               external_id: null,
               activity_type_key: "livestorm:register",
               message: `Registered to: ${title}`,
-              member_id: createdMember.id,
+              member_id: member.id,
               event_id: createdEvent.id,
               created_at: new Date(created_at * 1000),
               workspace_id,
@@ -182,7 +182,7 @@ export const installLivestorm = schemaTask({
                 external_id: null,
                 activity_type_key: "livestorm:attend",
                 message: `Attended to: ${title}`,
-                member_id: createdMember.id,
+                member_id: member.id,
                 event_id: createdEvent.id,
                 created_at: new Date(ended_at * 1000),
                 workspace_id,
@@ -190,7 +190,7 @@ export const installLivestorm = schemaTask({
             }
           }
 
-          await calculateMemberMetrics({ member: createdMember });
+          await calculateMemberMetrics({ member });
         }
       }
     }

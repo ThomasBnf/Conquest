@@ -13,6 +13,7 @@ import { getMember } from "@/queries/members/getMember";
 import { upsertMember } from "@/queries/members/upsertMember";
 import { deleteListReactions } from "@/queries/slack/deleteListReactions";
 import { getAuthUser } from "@/queries/users/getAuthUser";
+import { updateMemberMetrics } from "@/trigger/updateMemberMetrics.trigger";
 import { SlackIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
 import { zValidator } from "@hono/zod-validator";
 import {
@@ -131,6 +132,8 @@ export const slack = new Hono()
               workspace_id,
             });
 
+            await updateMemberMetrics.trigger({ member });
+
             await createFiles({
               files: files as SlackFile[],
               activity_id: activity?.id,
@@ -214,6 +217,9 @@ export const slack = new Hono()
             react_to: ts,
             workspace_id,
           });
+
+          await updateMemberMetrics.trigger({ member });
+
           break;
         }
 
@@ -308,6 +314,9 @@ export const slack = new Hono()
             member_id: member.id,
             workspace_id,
           });
+
+          await updateMemberMetrics.trigger({ member: inviterMember });
+          await updateMemberMetrics.trigger({ member });
 
           break;
         }

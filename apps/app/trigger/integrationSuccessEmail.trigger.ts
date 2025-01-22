@@ -31,7 +31,7 @@ export const integrationSuccessEmail = schemaTask({
     await resend.emails.send({
       from: "Conquest <noreply@useconquest.com>",
       to: email,
-      subject: `Your ${sourceFormatted} integration is connected`,
+      subject: `Your ${sourceFormatted} integration is ready`,
       react: SuccessIntegrationEmail({ source: sourceFormatted, url }),
     });
   },

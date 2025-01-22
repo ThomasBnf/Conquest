@@ -13,6 +13,9 @@ export const listEvents = async ({ source, workspace_id }: Props) => {
       source,
       workspace_id,
     },
+    orderBy: {
+      started_at: "desc",
+    },
   });
 
   return EventSchema.array().parse(events);

@@ -86,7 +86,7 @@ export const LivestormForm = ({ loading, setLoading }: Props) => {
                   />
                 </FormControl>
                 <FormDescription>
-                  Filters your Livestorm events by title. eg: "Community Event"
+                  Filter your Livestorm events by title. eg: "Community Event"
                 </FormDescription>
                 <FormMessage />
               </FormItem>

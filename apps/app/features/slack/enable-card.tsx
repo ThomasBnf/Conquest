@@ -55,15 +55,16 @@ export const EnableCard = ({ error }: Props) => {
 
     if (error) {
       switch (error) {
+        case "access_denied":
+          toast.error("Access denied", { duration: 10000 });
+          break;
         case "invalid_code":
-          toast.error("Error: Invalid code");
+          toast.error("Error: Invalid code", { duration: 10000 });
           break;
         case "already_connected":
           toast.error(
             "This Slack workspace is already connected to another account",
-            {
-              duration: 10000,
-            },
+            { duration: 10000 },
           );
           break;
       }

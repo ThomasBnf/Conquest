@@ -24,7 +24,7 @@ export const SuccessIntegrationEmail = ({ source, url }: Props) => (
       <Body className="bg-white font-sans">
         <Container className="mx-auto max-w-lg py-5">
           <Heading className="pt-4 font-medium text-2xl text-neutral-800 leading-snug tracking-tight">
-            Your {source} integration is connected
+            Your {source} integration is ready
           </Heading>
           <Text className="text-base text-neutral-600 leading-relaxed">
             Your {source} is now connected to Conquest. Ready to explore your

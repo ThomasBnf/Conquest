@@ -12,7 +12,7 @@ import { DiscordIntegrationSchema } from "@conquest/zod/schemas/integration.sche
 import { schemaTask } from "@trigger.dev/sdk/v3";
 import type { APIGuildCategoryChannel } from "discord-api-types/v10";
 import { z } from "zod";
-import { calculateMembersLevel } from "./calculateMembersLevel";
+import { calculateMembersLevel } from "./calculateMembersLevel.trigger";
 
 export const installDiscord = schemaTask({
   id: "install-discord",

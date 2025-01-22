@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { calculateMembersLevel } from "@/trigger/calculateMembersLevel";
+import { calculateMembersLevel } from "@/trigger/calculateMembersLevel.trigger";
 import type { SOURCE } from "@conquest/database";
 import {
   type Integration,
@@ -9,8 +9,8 @@ import {
 } from "@conquest/zod/schemas/integration.schema";
 import { WebClient } from "@slack/web-api";
 import { listSubscriptions } from "../linkedin/listSubscriptions";
-import { deleteWebhook } from "../livestorm/deleteWebhhok";
 import { removeWebhook } from "../linkedin/removeWebhook";
+import { deleteWebhook } from "../livestorm/deleteWebhhok";
 import { listWebhooks } from "../livestorm/listWebhooks";
 
 type Props = {
@@ -59,15 +59,57 @@ export const deleteIntegration = async ({ source, integration }: Props) => {
     }
   }
 
-  await prisma.$transaction(async (tx) => {
-    await tx.integrations.delete({ where: { id: integration.id } });
-    await tx.activities_types.deleteMany({ where: { source, workspace_id } });
-    await tx.channels.deleteMany({ where: { source, workspace_id } });
-    await tx.tags.deleteMany({ where: { source, workspace_id } });
-    await tx.members.deleteMany({ where: { source, workspace_id } });
-    await tx.companies.deleteMany({ where: { source, workspace_id } });
-  });
+  try {
+    await prisma.$transaction(async (tx) => {
+      const queries = [
+        {
+          name: "integrations",
+          action: () =>
+            tx.integrations.delete({ where: { id: integration.id } }),
+        },
+        {
+          name: "activities_types",
+          action: () =>
+            tx.activities_types.deleteMany({ where: { source, workspace_id } }),
+        },
+        {
+          name: "channels",
+          action: () =>
+            tx.channels.deleteMany({ where: { source, workspace_id } }),
+        },
+        {
+          name: "tags",
+          action: () => tx.tags.deleteMany({ where: { source, workspace_id } }),
+        },
+        {
+          name: "members",
+          action: () =>
+            tx.members.deleteMany({ where: { source, workspace_id } }),
+        },
+        {
+          name: "companies",
+          action: () =>
+            tx.companies.deleteMany({ where: { source, workspace_id } }),
+        },
+      ];
 
+      for (const query of queries) {
+        try {
+          await query.action();
+        } catch (error) {
+          console.error(`Error in ${query.name} deletion:`, error);
+          throw new Error(
+            `Failed to delete ${query.name}: ${error instanceof Error ? error.message : "Unknown error"}`,
+          );
+        }
+      }
+    });
+  } catch (error) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Transaction failed",
+    };
+  }
   calculateMembersLevel.trigger({ workspace_id });
 
   return { success: true };

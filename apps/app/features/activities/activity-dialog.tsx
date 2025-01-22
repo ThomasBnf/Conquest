@@ -2,6 +2,7 @@
 
 import { createActivity } from "@/actions/activities/createActivity";
 import { listActivityTypes } from "@/client/activity-types/listActivityTypes";
+import { updateMemberMetrics } from "@/trigger/updateMemberMetrics.trigger";
 import { Button } from "@conquest/ui/button";
 import {
   Dialog,
@@ -80,6 +81,7 @@ export const ActivityDialog = ({ member }: Props) => {
       activity_type_key,
       message,
     });
+    await updateMemberMetrics.trigger({ member });
 
     const error = activity?.serverError;
 

@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { updateMemberMetrics } from "@/trigger/updateMemberMetrics";
+import { refreshMemberMetrics } from "@/trigger/refreshMemberMetrics.trigger";
 import {
   type MemberWithCompany,
   MemberWithCompanySchema,
@@ -112,7 +112,7 @@ export const mergeMembers = async ({ leftMember, rightMember }: Props) => {
     return MemberWithCompanySchema.parse(member);
   });
 
-  await updateMemberMetrics.trigger({ member: updatedMember });
+  await refreshMemberMetrics.trigger({ member: updatedMember });
 
   return MemberWithCompanySchema.parse(updatedMember);
 };

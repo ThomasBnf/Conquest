@@ -7,6 +7,7 @@ import { getPost } from "@/queries/linkedin/getPost";
 import { getMember } from "@/queries/members/getMember";
 import { upsertMember } from "@/queries/members/upsertMember";
 import { getAuthUser } from "@/queries/users/getAuthUser";
+import { updateMemberMetrics } from "@/trigger/updateMemberMetrics.trigger";
 import { LinkedInIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
 import type { MemberWithCompany } from "@conquest/zod/schemas/member.schema";
 import {
@@ -133,6 +134,8 @@ export const linkedin = new Hono()
         member_id: member.id,
         workspace_id,
       });
+
+      await updateMemberMetrics.trigger({ member });
 
       console.log("comment", activity);
 

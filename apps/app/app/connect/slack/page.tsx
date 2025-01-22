@@ -7,13 +7,18 @@ import { redirect } from "next/navigation";
 
 type Props = {
   searchParams: {
+    error?: string;
     code: string;
   };
 };
 
-export default async function Page({ searchParams: { code } }: Props) {
+export default async function Page({ searchParams: { error, code } }: Props) {
   const user = await getCurrentUser();
   const { slug, id: workspace_id } = user.workspace;
+
+  if (error) {
+    redirect(`/${slug}/settings/integrations/slack?error=access_denied`);
+  }
 
   const response = await fetch("https://slack.com/api/oauth.v2.access", {
     method: "POST",

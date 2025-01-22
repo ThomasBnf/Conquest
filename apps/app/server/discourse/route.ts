@@ -14,6 +14,7 @@ import { getMember } from "@/queries/members/getMember";
 import { upsertMember } from "@/queries/members/upsertMember";
 import { createTag } from "@/queries/tags/createTag";
 import { listTags } from "@/queries/tags/listTags";
+import { updateMemberMetrics } from "@/trigger/updateMemberMetrics.trigger";
 import type { DiscourseWebhook } from "@conquest/zod/types/discourse";
 import { Hono } from "hono";
 
@@ -161,6 +162,7 @@ export const discourse = new Hono().post("/", async (c) => {
         channel_id: channel.id,
         workspace_id,
       });
+      await updateMemberMetrics.trigger({ member });
 
       return c.json({ status: 200 });
     }
@@ -188,6 +190,7 @@ export const discourse = new Hono().post("/", async (c) => {
       channel_id: channel.id,
       workspace_id,
     });
+    await updateMemberMetrics.trigger({ member });
   }
 
   if (post && event === "post_edited") {
@@ -205,12 +208,21 @@ export const discourse = new Hono().post("/", async (c) => {
 
   if (post && event === "post_destroyed") {
     await sleep(1000);
-    const { id } = post;
+    const { id, username } = post;
+
+    const member = await getMember({
+      username,
+      workspace_id,
+    });
+
+    if (!member) return c.json({ error: "Member not found" }, 404);
 
     await deleteActivity({
       external_id: `p-${id}`,
       workspace_id,
     });
+
+    await updateMemberMetrics.trigger({ member });
   }
 
   if (like && event === "post_liked") {
@@ -244,6 +256,7 @@ export const discourse = new Hono().post("/", async (c) => {
       channel_id: channel.id,
       workspace_id,
     });
+    await updateMemberMetrics.trigger({ member });
   }
 
   if (user && event === "user_confirmed_email") {
@@ -288,6 +301,9 @@ export const discourse = new Hono().post("/", async (c) => {
       member_id: createdMember.id,
       workspace_id,
     });
+
+    await updateMemberMetrics.trigger({ member: inviter });
+    await updateMemberMetrics.trigger({ member: createdMember });
   }
 
   if (user && event === "user_updated") {
@@ -349,6 +365,8 @@ export const discourse = new Hono().post("/", async (c) => {
       member_id: member.id,
       workspace_id,
     });
+
+    await updateMemberMetrics.trigger({ member });
   }
 
   if (category && event === "category_created") {

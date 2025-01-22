@@ -110,9 +110,8 @@ export const EnableCard = ({ error }: Props) => {
       <CardContent className="mb-0.5">
         <p className="font-medium text-base">Overview</p>
         <p className="text-balance text-muted-foreground">
-          Connect your Discord workspace to automatically sync messages, collect
-          member interactions, and send personalized direct messages through
-          automated workflows.
+          Connect your Discord community to get a complete overview of your
+          members and community activity.
         </p>
         {(isEnabled || isSyncing) && !isExpired && (
           <ListDiscordChannels loading={loading} setLoading={setLoading} />

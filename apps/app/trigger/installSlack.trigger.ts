@@ -9,8 +9,8 @@ import { SlackIntegrationSchema } from "@conquest/zod/schemas/integration.schema
 import { WebClient } from "@slack/web-api";
 import { schemaTask } from "@trigger.dev/sdk/v3";
 import { z } from "zod";
-import { calculateMembersLevel } from "./calculateMembersLevel";
-import { integrationSuccessEmail } from "./integrationSuccessEmail";
+import { calculateMembersLevel } from "./calculateMembersLevel.trigger";
+import { integrationSuccessEmail } from "./integrationSuccessEmail.trigger";
 
 export const installSlack = schemaTask({
   id: "install-slack",

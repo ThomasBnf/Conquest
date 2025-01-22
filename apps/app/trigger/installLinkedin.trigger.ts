@@ -10,7 +10,7 @@ import { createPost } from "@/queries/posts/createPost";
 import { LinkedInIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
 import { schemaTask } from "@trigger.dev/sdk/v3";
 import { z } from "zod";
-import { calculateMembersLevel } from "./calculateMembersLevel";
+import { calculateMembersLevel } from "./calculateMembersLevel.trigger";
 
 export const installLinkedin = schemaTask({
   id: "install-linkedin",
