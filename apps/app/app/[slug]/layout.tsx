@@ -1,5 +1,5 @@
 import { IsLoading } from "@/components/states/is-loading";
-import { ClientProviders } from "@/providers/ClientProviders";
+import { SlugProvider } from "@/providers/SlugProvider";
 import { listLists } from "@/queries/lists/listLists";
 import { getCurrentUser } from "@/queries/users/getCurrentUser";
 import { cookies } from "next/headers";
@@ -30,9 +30,9 @@ export default async function Layout({
 
   return (
     <Suspense fallback={<IsLoading />}>
-      <ClientProviders user={user} defaultOpen={defaultOpen} lists={lists}>
+      <SlugProvider user={user} defaultOpen={defaultOpen} lists={lists}>
         {children}
-      </ClientProviders>
+      </SlugProvider>
     </Suspense>
   );
 }

@@ -13,20 +13,13 @@ type Props = {
   children: React.ReactNode;
 };
 
-export const ClientProviders = ({
-  user,
-  defaultOpen,
-  lists,
-  children,
-}: Props) => {
+export const SlugProvider = ({ user, defaultOpen, lists, children }: Props) => {
   return (
     <UserProvider user={user}>
-      <UserProvider user={user}>
-        <SidebarProvider defaultOpen={defaultOpen}>
-          <AppSidebar lists={lists} />
-          <main className="h-dvh flex-1 overflow-hidden">{children}</main>
-        </SidebarProvider>
-      </UserProvider>
+      <SidebarProvider defaultOpen={defaultOpen}>
+        <AppSidebar lists={lists} />
+        <main className="h-dvh flex-1 overflow-hidden">{children}</main>
+      </SidebarProvider>
     </UserProvider>
   );
 };
