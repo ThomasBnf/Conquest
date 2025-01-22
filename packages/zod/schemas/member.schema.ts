@@ -29,6 +29,7 @@ export const MemberSchema = z.object({
   first_name: z.string().nullable(),
   last_name: z.string().nullable(),
   username: z.string().nullable(),
+  linkedin_url: z.string().nullable(),
   locale: z.string().nullable(),
   avatar_url: z.string().nullable(),
   job_title: z.string().nullable(),

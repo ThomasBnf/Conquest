@@ -37,7 +37,16 @@ export default async function Page({ searchParams: { error, code } }: Props) {
   }
 
   const data = await response.json();
-  const { access_token, authed_user, team } = data;
+  const { access_token, authed_user } = data;
+
+  const responseTeam = await fetch("https://slack.com/api/team.info", {
+    headers: {
+      Authorization: `Bearer ${access_token}`,
+    },
+  });
+
+  const dataTeam = await responseTeam.json();
+  const { team } = dataTeam;
 
   const integration = await getIntegration({
     external_id: team.id,
@@ -54,6 +63,7 @@ export default async function Page({ searchParams: { error, code } }: Props) {
     details: {
       source: "SLACK",
       name: team.name,
+      url: team.url,
       token: access_token,
       slack_user_token: authed_user.access_token,
       scopes: SLACK_SCOPES,

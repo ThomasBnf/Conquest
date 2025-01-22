@@ -4,6 +4,7 @@ import { updateMember } from "@/actions/members/updateMember";
 import { EditableCompany } from "@/components/custom/editable-company";
 import { EditableEmails } from "@/components/custom/editable-emails";
 import { EditableInput } from "@/components/custom/editable-input";
+import { EditableLink } from "@/components/custom/editable-link";
 import { EditableLocale } from "@/components/custom/editable-locale";
 import { EditablePhones } from "@/components/custom/editable-phones";
 import { FieldCard } from "@/components/custom/field-card";
@@ -39,6 +40,7 @@ export const MemberSidebar = ({ member, tags }: Props) => {
     last_name,
     username,
     locale,
+    linkedin_url,
     first_activity,
     last_activity,
     created_at,
@@ -49,6 +51,7 @@ export const MemberSidebar = ({ member, tags }: Props) => {
       | "first_name"
       | "last_name"
       | "username"
+      | "linkedin_url"
       | "company_id"
       | "job_title"
       | "locale"
@@ -98,6 +101,16 @@ export const MemberSidebar = ({ member, tags }: Props) => {
             tags={tags}
             onUpdate={(value) => onUpdateMember("tags", value)}
           />
+        </div>
+        <Separator />
+        <div className="space-y-2 p-4">
+          <FieldCard icon="Linkedin" label="Linkedin">
+            <EditableLink
+              defaultValue={linkedin_url}
+              placeholder="Set linkedin url"
+              onUpdate={(value) => onUpdateMember("linkedin_url", value)}
+            />
+          </FieldCard>
         </div>
         <Separator />
         <div className="space-y-2 p-4">

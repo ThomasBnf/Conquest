@@ -46,7 +46,6 @@ export const CreateActivityType = () => {
     defaultValues: {
       source: "API",
       key: "api:",
-      weight: 1,
     },
   });
 
@@ -122,7 +121,7 @@ export const CreateActivityType = () => {
                         onBlur={() => {
                           form.setValue(
                             "key",
-                            `${form.getValues("source").toLowerCase()}:${field.value.toLowerCase().replaceAll(" ", "_")}`,
+                            `${form.getValues("source").toLowerCase()}:${field.value?.toLowerCase().replaceAll(" ", "_")}`,
                           );
                         }}
                       />
@@ -154,7 +153,7 @@ export const CreateActivityType = () => {
                   <FormItem>
                     <FormLabel>Weight</FormLabel>
                     <FormControl>
-                      <Input {...field} />
+                      <Input type="number" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

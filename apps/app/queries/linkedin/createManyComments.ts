@@ -46,9 +46,9 @@ export const createManyComments = async ({
       id,
       data: {
         linkedin_id: id,
-        username: vanityName,
         first_name: localizedFirstName,
         last_name: localizedLastName,
+        linkedin_url: `https://www.linkedin.com/in/${vanityName}`,
         locale,
         avatar_url,
         job_title: localizedHeadline,

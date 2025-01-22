@@ -230,6 +230,7 @@ model members {
   first_name       String?
   last_name        String?
   username         String?
+  linkedin_url     String?
   locale           String?
   avatar_url       String?
   job_title        String?
