@@ -8,15 +8,16 @@ import { useState } from "react";
 type Props = {
   defaultValue: string | null;
   placeholder?: string;
-  onUpdate: (value: string) => void;
+  editable?: boolean;
+  onUpdate?: (value: string) => void;
   className?: string;
 };
 
 export const EditableLink = ({
   defaultValue,
   placeholder,
+  editable = true,
   onUpdate,
-
   className,
 }: Props) => {
   const [value, setValue] = useState(defaultValue);
@@ -24,14 +25,16 @@ export const EditableLink = ({
   const [isHover, setIsHover] = useState(false);
 
   const onBlur = (value: string) => {
-    onUpdate(value);
+    setIsHover(false);
     setIsFocus(false);
+    onUpdate?.(value);
   };
 
   const onKeyDown = (key: string) => {
     if (key === "Enter") {
-      onUpdate(value ?? "");
+      setIsHover(false);
       setIsFocus(false);
+      onUpdate?.(value ?? "");
     }
   };
 
@@ -50,13 +53,13 @@ export const EditableLink = ({
             className,
           )}
           classNameSpan={cn("justify-start", value && "text-foreground")}
-          onClick={() => setIsFocus(true)}
+          onClick={() => editable && setIsFocus(true)}
         >
           <span className="truncate">
             {value === "" || value === null ? placeholder : value}
           </span>
         </Button>
-        {isHover && (
+        {isHover && value && (
           <Link
             href={value ?? ""}
             target="_blank"

@@ -9,6 +9,9 @@ import { EditableLocale } from "@/components/custom/editable-locale";
 import { EditablePhones } from "@/components/custom/editable-phones";
 import { FieldCard } from "@/components/custom/field-card";
 import { SourceBadge } from "@/components/custom/source-badge";
+import { Discourse } from "@/components/icons/Discourse";
+import { Linkedin } from "@/components/icons/Linkedin";
+import { Slack } from "@/components/icons/Slack";
 import { useUser } from "@/context/userContext";
 import { TagPicker } from "@/features/tags/tag-picker";
 import { Avatar, AvatarFallback, AvatarImage } from "@conquest/ui/avatar";
@@ -28,11 +31,13 @@ type Props = {
 };
 
 export const MemberSidebar = ({ member, tags }: Props) => {
-  const { discourse } = useUser();
+  const { slack, discourse } = useUser();
   const { user_fields } = discourse?.details ?? {};
+  const { url } = slack?.details ?? {};
 
   const {
     id,
+    slack_id,
     source,
     job_title,
     avatar_url,
@@ -104,13 +109,29 @@ export const MemberSidebar = ({ member, tags }: Props) => {
         </div>
         <Separator />
         <div className="space-y-2 p-4">
-          <FieldCard icon="Linkedin" label="Linkedin">
+          <FieldCard icon={<Linkedin size={16} />} label="Linkedin">
             <EditableLink
               defaultValue={linkedin_url}
               placeholder="Set linkedin url"
               onUpdate={(value) => onUpdateMember("linkedin_url", value)}
             />
           </FieldCard>
+          {slack && (
+            <FieldCard icon={<Slack size={14} />} label="Slack">
+              <EditableLink
+                defaultValue={`${url}/team/${slack_id}`}
+                editable={false}
+              />
+            </FieldCard>
+          )}
+          {discourse && (
+            <FieldCard icon={<Discourse size={14} />} label="Discourse">
+              <EditableLink
+                defaultValue={`https://playground.lagrowthmachine.com/u/${username}/summary`}
+                editable={false}
+              />
+            </FieldCard>
+          )}
         </div>
         <Separator />
         <div className="space-y-2 p-4">
