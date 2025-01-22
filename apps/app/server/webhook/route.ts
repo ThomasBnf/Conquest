@@ -147,7 +147,7 @@ export const webhook = new Hono().post("/livestorm", async (c) => {
 
       if (role === "team_member") continue;
 
-      const { ip_country_code, attended, is_guest_speaker } = registrant_detail;
+      const { ip_country_code, is_guest_speaker } = registrant_detail;
 
       const locale = ip_country_code
         ? getLocaleByAlpha2(ip_country_code)
@@ -168,16 +168,6 @@ export const webhook = new Hono().post("/livestorm", async (c) => {
       });
 
       if (is_guest_speaker) {
-        await prisma.activities.deleteMany({
-          where: {
-            activity_type: {
-              key: "livestorm:register",
-            },
-            member_id: member.id,
-            event_id: event.id,
-          },
-        });
-
         await createActivity({
           external_id: null,
           activity_type_key: "livestorm:co-host",
@@ -186,9 +176,7 @@ export const webhook = new Hono().post("/livestorm", async (c) => {
           event_id: session.id,
           workspace_id,
         });
-      }
-
-      if (attended) {
+      } else {
         await createActivity({
           external_id: null,
           activity_type_key: "livestorm:attend",
