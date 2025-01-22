@@ -137,7 +137,7 @@ export const MembersColumns = ({ tags }: Props): Column[] => [
         </div>
       );
     },
-    width: 185,
+    width: 200,
   },
   {
     id: "pulse",
@@ -149,7 +149,7 @@ export const MembersColumns = ({ tags }: Props): Column[] => [
         </div>
       );
     },
-    width: 185,
+    width: 200,
   },
   {
     id: "last_activity",
