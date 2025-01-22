@@ -63,10 +63,24 @@ export const getFilters = ({ filters }: Props) => {
       const { values, operator, field } = FilterSelectSchema.parse(filter);
       const fieldCondition = Prisma.raw(field);
 
+      console.log(filter);
+
       const conditions =
         values.length === 0
           ? [Prisma.sql`TRUE`]
           : values.map((value) => {
+              if (field === "language") {
+                return operator === "contains"
+                  ? Prisma.sql`split_part(m.locale::text, '_', 1) = ${value}`
+                  : Prisma.sql`split_part(m.locale::text, '_', 1) != ${value}`;
+              }
+
+              if (field === "country") {
+                return operator === "contains"
+                  ? Prisma.sql`m.locale = ${value}`
+                  : Prisma.sql`m.locale != ${value}`;
+              }
+
               const likePattern = `%${value}%`;
               return operator === "contains"
                 ? Prisma.sql`m.${fieldCondition}::text ILIKE ${likePattern}`

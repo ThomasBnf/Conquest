@@ -3,6 +3,7 @@ import { APIActivity } from "./api-activity";
 import { DiscourseActivity } from "./discourse/discourse-activity";
 import { LinkedinActivity } from "./linkedin/linkedin-activity";
 import { LivestormActivity } from "./livestorm/livestorm-activity";
+import { ManualActivity } from "./manual/manual-activity";
 import { SlackActivity } from "./slack/slack-activity";
 
 type Props = {
@@ -13,6 +14,8 @@ export const ActivityParser = ({ activity }: Props) => {
   const { source } = activity.activity_type;
 
   switch (source) {
+    case "MANUAL":
+      return <ManualActivity activity={activity} />;
     case "API":
       return <APIActivity activity={activity} />;
     case "DISCOURSE":

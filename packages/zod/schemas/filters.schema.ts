@@ -38,7 +38,7 @@ export const FilterBaseSchema = z.object({
 
 export const FilterSelectSchema = FilterBaseSchema.extend({
   type: z.literal("select"),
-  field: z.enum(["source", "locale", "tags"]),
+  field: z.enum(["source", "language", "country", "tags"]),
   operator: BaseOperatorSchema,
   values: z.array(z.string()).default([]),
 });

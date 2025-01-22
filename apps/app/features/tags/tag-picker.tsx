@@ -47,6 +47,7 @@ export const TagPicker = ({ record, tags, onUpdate, className }: Props) => {
           ))}
           <Button
             variant="ghost"
+            size="xs"
             className={cn(
               "text-muted-foreground",
               recordTags.length > 0 ? "" : "-ml-1.5",

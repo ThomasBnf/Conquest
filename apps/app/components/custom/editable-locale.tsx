@@ -8,10 +8,11 @@ import {
   CommandList,
 } from "@conquest/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@conquest/ui/popover";
+import type { Country as CountryType } from "@conquest/zod/types/country";
+import { getAllCountries } from "country-locale-map";
 import { useState } from "react";
-import { type Country, getCountries } from "react-phone-number-input";
-import en from "react-phone-number-input/locale/en.json";
-import { LocaleBadge } from "./locale-badge";
+import type { Country } from "react-phone-number-input";
+import { CountryBadge } from "./country-badge";
 import { FlagComponent } from "./phone-input";
 
 type Props = {
@@ -23,14 +24,11 @@ export const EditableLocale = ({ locale, onUpdate }: Props) => {
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState(locale);
 
-  const countries = getCountries().map((country: Country) => ({
-    label: en[country],
-    value: country,
-  }));
+  const countries = getAllCountries();
 
-  const onUpdateLocale = (locale: string | null) => {
-    setValue(locale);
-    onUpdate(locale);
+  const onUpdateLocale = (country: CountryType) => {
+    setValue(country.default_locale);
+    onUpdate(country.default_locale);
     setOpen(false);
   };
 
@@ -42,7 +40,7 @@ export const EditableLocale = ({ locale, onUpdate }: Props) => {
           className="w-full justify-start p-1"
           classNameSpan="text-muted-foreground justify-start "
         >
-          {value ? <LocaleBadge locale={value} /> : "Select locale"}
+          {value ? <CountryBadge locale={value} /> : "Select locale"}
         </Button>
       </PopoverTrigger>
       <PopoverContent align="start" className="w-[233px] p-0">
@@ -53,15 +51,15 @@ export const EditableLocale = ({ locale, onUpdate }: Props) => {
             <CommandGroup>
               {countries?.map((country) => (
                 <CommandItem
-                  key={country.label}
-                  value={country.label}
-                  onSelect={() => onUpdateLocale(country.value)}
+                  key={country.name}
+                  value={country.name}
+                  onSelect={() => onUpdateLocale(country as CountryType)}
                 >
                   <FlagComponent
-                    country={country.value}
-                    countryName={country.label}
+                    country={country.alpha2 as Country}
+                    countryName={country.name}
                   />
-                  <p className="ml-2">{country.label}</p>
+                  <p className="ml-2">{country.name}</p>
                 </CommandItem>
               ))}
             </CommandGroup>

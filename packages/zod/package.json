@@ -5,11 +5,12 @@
   "exports": {
     "./schemas/*": "./schemas/*.ts",
     "./enum/*": "./enum/*.ts",
-    "./types/livestorm": "./types/livestorm/index.ts",
-    "./types/linkedin": "./types/linkedin/index.ts",
-    "./types/discourse": "./types/discourse/index.ts",
-    "./types/slack": "./types/slack/index.ts",
-    "./types/github": "./types/github/index.ts"
+    "./types/livestorm": "./types/livestorm.ts",
+    "./types/linkedin": "./types/linkedin.ts",
+    "./types/discourse": "./types/discourse.ts",
+    "./types/slack": "./types/slack.ts",
+    "./types/github": "./types/github.ts",
+    "./types/country": "./types/country.ts"
   },
   "dependencies": {
     "zod": "^3.23.8"

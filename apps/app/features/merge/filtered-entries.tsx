@@ -1,4 +1,4 @@
-import { LocaleBadge } from "@/components/custom/locale-badge";
+import { CountryBadge } from "@/components/custom/country-badge";
 import { SourceBadge } from "@/components/custom/source-badge";
 import { cn } from "@conquest/ui/cn";
 import type { Source } from "@conquest/zod/enum/source.enum";
@@ -26,7 +26,7 @@ export const FilteredEntries = ({ member }: Props) => {
           <div className="space-y-1">
             <p className="text-muted-foreground text-xs capitalize">Locale</p>
             {value ? (
-              <LocaleBadge locale={value as string} />
+              <CountryBadge locale={value as string} />
             ) : (
               <p className="text-muted-foreground">N/A</p>
             )}

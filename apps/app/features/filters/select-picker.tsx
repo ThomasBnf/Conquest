@@ -1,4 +1,5 @@
-import { LocaleBadge } from "@/components/custom/locale-badge";
+import { CountryBadge } from "@/components/custom/country-badge";
+import { LanguageBadge } from "@/components/custom/language-badge";
 import { SourceBadge } from "@/components/custom/source-badge";
 import { client } from "@/lib/rpc";
 import { Button } from "@conquest/ui/button";
@@ -49,7 +50,20 @@ export const SelectPicker = ({
     queryFn: async () => {
       const selectFilter = FilterSelectSchema.parse(filter);
       switch (selectFilter.field) {
-        case "locale": {
+        case "language": {
+          const response = await client.api.members.locales.$get();
+          const allLocales = await response.json();
+          // Extract language codes and remove duplicates
+          const uniqueLanguages = [
+            ...new Set(
+              allLocales
+                .filter((locale): locale is string => Boolean(locale))
+                .map((locale) => locale.split("_")[0]),
+            ),
+          ];
+          return uniqueLanguages;
+        }
+        case "country": {
           const response = await client.api.members.locales.$get();
 
           return await response.json();
@@ -151,6 +165,28 @@ export const SelectPicker = ({
               const parseItem = typeof item === "string" ? item : item.id;
               const isSelected = filter?.values.includes(parseItem);
 
+              const renderBadge = () => {
+                switch (filter?.field) {
+                  case "country":
+                    return (
+                      <CountryBadge locale={parseItem} variant="transparent" />
+                    );
+                  case "source":
+                    return (
+                      <SourceBadge
+                        source={parseItem as Source}
+                        variant="transparent"
+                      />
+                    );
+                  case "language":
+                    return (
+                      <LanguageBadge locale={parseItem} variant="transparent" />
+                    );
+                  default:
+                    return <TagBadge tag={item as Tag} />;
+                }
+              };
+
               return (
                 <CommandItem
                   key={parseItem}
@@ -162,19 +198,7 @@ export const SelectPicker = ({
                 >
                   <div className="flex items-center gap-2">
                     <Checkbox checked={isSelected} />
-                    {filter?.field === "locale" ? (
-                      <LocaleBadge
-                        locale={parseItem}
-                        className="border-none bg-transparent p-0"
-                      />
-                    ) : filter?.field === "source" ? (
-                      <SourceBadge
-                        source={parseItem as Source}
-                        className="border-none bg-transparent p-0"
-                      />
-                    ) : (
-                      <TagBadge tag={item as Tag} />
-                    )}
+                    {renderBadge()}
                   </div>
                 </CommandItem>
               );
@@ -210,16 +234,12 @@ export const SelectPicker = ({
                   selectedItems.map((item) =>
                     typeof item === "string" ? (
                       <div key={item}>
-                        {filter.field === "locale" ? (
-                          <LocaleBadge
-                            locale={item}
-                            className="border-none bg-transparent p-0"
-                          />
+                        {filter.field === "country" ? (
+                          <CountryBadge locale={item} variant="transparent" />
+                        ) : filter.field === "language" ? (
+                          <LanguageBadge locale={item} variant="transparent" />
                         ) : filter.field === "source" ? (
-                          <SourceBadge
-                            source={item as Source}
-                            className="border-none bg-transparent p-0"
-                          />
+                          <SourceBadge source={item as Source} />
                         ) : (
                           item
                         )}

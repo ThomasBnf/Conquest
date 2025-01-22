@@ -14,89 +14,94 @@ import { Zendesk } from "../icons/Zendesk";
 
 type Props = {
   source: Source;
+  variant?: "secondary" | "transparent";
   className?: string;
 };
 
-export const SourceBadge = ({ source, className }: Props) => {
+export const SourceBadge = ({
+  source,
+  variant = "secondary",
+  className,
+}: Props) => {
   switch (source) {
     case "SLACK":
       return (
-        <Badge variant="secondary" className={cn("gap-2", className)}>
+        <Badge variant={variant} className={cn("gap-2", className)}>
           <Slack className="size-3.5" />
           <span className="font-medium text-sm">Slack</span>
         </Badge>
       );
     case "MANUAL":
       return (
-        <Badge variant="secondary" className={cn("gap-2", className)}>
+        <Badge variant={variant} className={cn("gap-2", className)}>
           <span className="font-medium text-sm">Manual</span>
         </Badge>
       );
     case "API":
       return (
-        <Badge variant="secondary" className={cn("gap-2", className)}>
+        <Badge variant={variant} className={cn("gap-2", className)}>
           <span className="font-medium text-sm">API</span>
         </Badge>
       );
     case "HUBSPOT":
       return (
-        <Badge variant="secondary" className={cn("gap-2", className)}>
+        <Badge variant={variant} className={cn("gap-2", className)}>
           <Hubspot className="size-3.5" />
           <span className="font-medium text-sm">Hubspot</span>
         </Badge>
       );
     case "BREVO":
       return (
-        <Badge variant="secondary" className={cn("gap-2", className)}>
+        <Badge variant={variant} className={cn("gap-2", className)}>
           <Brevo className="size-3.5" />
           <span className="font-medium text-sm">Brevo</span>
         </Badge>
       );
     case "DISCOURSE":
       return (
-        <Badge variant="secondary" className={cn("gap-2", className)}>
+        <Badge variant={variant} className={cn("gap-2", className)}>
           <Discourse className="size-3.5" />
           <span className="font-medium text-sm">Discourse</span>
         </Badge>
       );
     case "DISCORD":
       return (
-        <Badge variant="secondary" className={cn("gap-2", className)}>
+        <Badge variant={variant} className={cn("gap-2", className)}>
           <Discord className="size-3.5" />
           <span className="font-medium text-sm">Discord</span>
         </Badge>
       );
     case "GITHUB":
       return (
-        <Badge variant="secondary" className={cn("gap-2", className)}>
+        <Badge variant={variant} className={cn("gap-2", className)}>
           <Github className="size-3.5" />
           <span className="font-medium text-sm">Github</span>
         </Badge>
       );
     case "LINKEDIN":
       return (
-        <Badge variant="secondary" className={cn("gap-2", className)}>
+        <Badge variant={variant} className={cn("gap-2", className)}>
           <Linkedin className="size-3.5" />
           <span className="font-medium text-sm">Linkedin</span>
         </Badge>
       );
     case "ZENDESK":
       return (
-        <Badge variant="secondary" className={cn("gap-2", className)}>
+        <Badge variant={variant} className={cn("gap-2", className)}>
           <Zendesk className="size-3.5" />
           <span className="font-medium text-sm">Zendesk</span>
         </Badge>
       );
     case "LIVESTORM":
       return (
-        <Badge variant="secondary" className={cn("gap-2", className)}>
+        <Badge variant={variant} className={cn("gap-2", className)}>
           <Livestorm className="size-3.5" />
           <span className="font-medium text-sm">Livestorm</span>
         </Badge>
       );
     case "X":
       return (
-        <Badge variant="secondary" className={cn("h-[26px] gap-2", className)}>
+        <Badge variant={variant} className={cn("h-[26px] gap-2", className)}>
           <X className="size-3.5" />
         </Badge>
       );

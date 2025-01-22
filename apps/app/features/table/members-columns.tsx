@@ -1,5 +1,6 @@
+import { CountryBadge } from "@/components/custom/country-badge";
 import { DateCell } from "@/components/custom/date-cell";
-import { LocaleBadge } from "@/components/custom/locale-badge";
+import { LanguageBadge } from "@/components/custom/language-badge";
 import { SourceBadge } from "@/components/custom/source-badge";
 import { ColumnHeader } from "@/features/table/column-header";
 import { TagsCell } from "@/features/table/tags-cell";
@@ -159,11 +160,21 @@ export const MembersColumns = ({ tags }: Props): Column[] => [
     width: 250,
   },
   {
-    id: "location",
-    header: () => <ColumnHeader id="location" title="Location" width={250} />,
+    id: "language",
+    header: () => <ColumnHeader id="language" title="Language" width={250} />,
     cell: ({ member }) => (
       <div className="p-2">
-        <LocaleBadge locale={member.locale} />
+        <LanguageBadge locale={member.locale} />
+      </div>
+    ),
+    width: 250,
+  },
+  {
+    id: "country",
+    header: () => <ColumnHeader id="country" title="Country" width={250} />,
+    cell: ({ member }) => (
+      <div className="p-2">
+        <CountryBadge locale={member.locale} />
       </div>
     ),
     width: 250,
