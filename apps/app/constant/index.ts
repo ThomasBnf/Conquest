@@ -161,14 +161,14 @@ export const DISCOURSE_ACTIVITY_TYPES = [
     deletable: false,
   },
   {
-    name: "Write a post",
+    name: "Write a topic",
     source: "DISCOURSE" as const,
-    key: "discourse:post",
+    key: "discourse:topic",
     weight: 6,
     deletable: false,
   },
   {
-    name: "Reply to post",
+    name: "Reply to topic",
     source: "DISCOURSE" as const,
     key: "discourse:reply",
     weight: 5,

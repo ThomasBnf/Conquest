@@ -1,6 +1,192 @@
 ---
 title: "Discourse Integration"
-description: "Connect and manage your Discourse community data with Conquest"
+description: "Connect and manage your Discourse community data with Conquest."
 icon: "discourse"
 iconType: "solid"
 ---
+
+The Conquest Discourse integration enables you to access and manage community data from your Discourse workspace. Gain insights into member activity, topics, replies, and engagement metrics, all in one place.
+
+<Note>
+  We can only collect data from the last 365 days.
+</Note>
+
+## Data Collection
+
+### Members
+
+The integration collects information about:
+- **Full Name**
+- **Username** 
+- **Email**
+- **Job Title** if provided
+- **Avatar** if provided
+- **Locale** if provided
+- **Tags**
+- **Custom Fields**
+- **Joined Date**
+
+### Community Activity
+
+- **Topics** from all categories
+- **Replies** to topics
+- **Reactions** on posts
+- **Solved marks** on responses
+- **Invitations** sent to new members
+
+## Activity Types
+
+When you connect your Discourse workspace, activity types are automatically generated and configured.
+
+<Tip>
+  Activity weights can be customized to fit your community's scoring system.
+</Tip>
+
+- **Invitation** - 7 weight
+- **Post marked as solved** - 7 weight
+- **Write a topic** - 6 weight
+- **Reply to topic** - 5 weight
+- **Join Discourse community** - 4 weight
+- **Login** - 0 weight
+- **Add reaction** - 0 weight
+
+## Real-Time Updates
+
+Once connected, Conquest syncs the following events in real-time:
+- **Members joining the workspace**
+- **Topics, replies, and reactions**
+- **Category creation, updates, and deletion**
+- **Post marked as solved**
+- **API disconnection**
+
+## Merging Members
+
+<Tip>
+  When new Discourse activity occurs, we automatically:
+  1. Check if the member exists in your Conquest workspace
+  2. Create a new member if they don't exist
+  3. Merge with an existing member if we find a matching email
+</Tip>
+
+## Setup Guide
+
+<Steps>
+  <Step title="Connect Your Community">
+    1. Navigate to **Settings** > **Integrations**
+    2. Select **Discourse**
+    3. Click **"Enable"** to start the connection process
+
+    <Frame>
+      ![Discourse Connection](/images/discourse-enable.png)
+    </Frame>
+  </Step>
+
+  <Step title="Configure API / Webhook">
+    Complete the API / Webhook configuration process on Discourse.
+    
+    <Tip>
+      You must be an admin of the Discourse community.
+    </Tip>
+
+    ### API
+
+    <ParamField path="Api Key">
+      You can create an API key by navigating to **Admin** > **Advanced** > **API Keys** > **Add API Key**.
+      Add a description to avoid revoking it.
+    </ParamField>
+
+    <ParamField path="User Level">
+      Select **"All users"**
+    </ParamField>
+
+    <ParamField path="Scope">
+      Select **"Read Only"**
+    </ParamField>
+
+    <ParamField path="User Fields">
+      If you have custom user fields, you can add them here.
+      Navigate to and add **".json"** to the end of the URL, eg:"https://your-discourse-community/admin/config/user-fields.json".
+
+      You will get a JSON response like this:
+
+      <Frame>
+        ![Discourse User Fields](/images/discourse-user-fields.png)
+      </Frame>
+
+      Add the ID and name from the JSON response into the form fields.
+
+      <Frame>
+        ![Discourse User Fields](/images/discourse-field.png)
+      </Frame>
+
+      You can add multiple custom fields by clicking the "Add field" button and repeating this process.
+
+      <Frame>
+        ![Discourse API](/images/discourse-form.png)
+      </Frame>
+    </ParamField>
+
+    ### Webhook
+    You can create a webhook by navigating to **Admin** > **Advanced** > **Webhooks** > **Add Webhook**
+
+    <ParamField path="Payload URL">
+      Add the following URL: `https://app.useconquest.com/api/discourse/webhook`
+    </ParamField>
+
+    <ParamField path="Content Type">
+      Select **"application/json"**
+    </ParamField>
+
+    <ParamField path="Secret">
+      Add a secret provided by Conquest. (It use to verify the webhook)
+    </ParamField>
+
+    <ParamField path="Events">
+      Select **"Send me everything"**
+    </ParamField>
+
+    Click on **"Create"**
+  </Step>
+
+  <Step title="Data Collection">
+    Conquest will begin importing historical data.
+    
+    <Note>
+      We can only collect data from the last 365 days.
+    </Note>
+
+    <Frame>
+      ![Discourse Collecting](/images/discourse-collecting.png)
+    </Frame>
+  </Step>
+</Steps>
+
+<Warning>
+  The data collection duration depends on your community size and can take from a few minutes to several hours to complete.
+</Warning>
+
+## FAQ
+
+<AccordionGroup>
+  <Accordion title="Why can't I connect my Discourse community?">
+    - Verify that you have admin privileges in your Discourse community
+    - Ensure your API credentials are correctly configured
+    - Check if your Discourse version is compatible
+  </Accordion>
+  
+  <Accordion title="How long does data collection take?">
+    The data collection duration depends on your community size and can take from a few minutes to several hours to complete.
+  </Accordion>
+</AccordionGroup>
+
+## Need Help?
+
+<Card title="Contact Support" icon="envelope">
+  For any issues with your integration, our support team is here to help:
+  [support@useconquest.com](mailto:support@useconquest.com).
+</Card>
+
+<Card title="Join the Community" icon="slack">
+  Get additional support and answers by connecting with other Conquest users in our community:
+  [Slack](https://join.slack.com/t/useconquest/shared_invite/zt-2x4fg4fut-7k0G3_D649TkfPc5WIPdgA).
+</Card>

@@ -164,7 +164,7 @@ export const DiscourseForm = ({ loading, setLoading }: Props) => {
                     <Input
                       {...field}
                       disabled={loading}
-                      placeholder="a7e80919eecc82b71fe8a23d8d0e199bf3d593216835315133254de014e9e1b3"
+                      placeholder="b4f92c38d15a76e9f3c1a4b5d2e8x7y6p9m4n2q1r8t3v5w7h9j6k4l8s2u4v7"
                     />
                   </FormControl>
                   <FormDescription>

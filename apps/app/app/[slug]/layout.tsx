@@ -1,9 +1,7 @@
-import { AppSidebar } from "@/components/layouts/app-sidebar";
 import { IsLoading } from "@/components/states/is-loading";
-import { UserProvider } from "@/context/userContext";
+import { ClientProviders } from "@/providers/ClientProviders";
 import { listLists } from "@/queries/lists/listLists";
 import { getCurrentUser } from "@/queries/users/getCurrentUser";
-import { SidebarProvider } from "@conquest/ui/sidebar";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import type { PropsWithChildren } from "react";
@@ -21,10 +19,6 @@ export default async function Layout({
   const user = await getCurrentUser();
   const { workspace_id } = user;
 
-  if (!user) {
-    console.log(user);
-  }
-
   if (!user?.onboarding) redirect("/");
   if (user?.workspace.slug !== params.slug) redirect(`/${user.workspace.slug}`);
 
@@ -36,12 +30,9 @@ export default async function Layout({
 
   return (
     <Suspense fallback={<IsLoading />}>
-      <UserProvider user={user}>
-        <SidebarProvider defaultOpen={defaultOpen}>
-          <AppSidebar lists={lists} />
-          <main className="h-dvh flex-1 overflow-hidden">{children}</main>
-        </SidebarProvider>
-      </UserProvider>
+      <ClientProviders user={user} defaultOpen={defaultOpen} lists={lists}>
+        {children}
+      </ClientProviders>
     </Suspense>
   );
 }

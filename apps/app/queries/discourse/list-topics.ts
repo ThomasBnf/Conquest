@@ -47,7 +47,7 @@ export const listTopics = async ({
 
     await createActivity({
       external_id: String(id),
-      activity_type_key: "discourse:post",
+      activity_type_key: "discourse:topic",
       message: title,
       channel_id: channel.id,
       member_id: member.id,
@@ -89,7 +89,7 @@ export const listTopics = async ({
 
       await createActivity({
         external_id: String(id),
-        activity_type_key: "discourse:post",
+        activity_type_key: "discourse:topic",
         message: title,
         channel_id: channel.id,
         member_id: member.id,

@@ -72,7 +72,6 @@ export const createManyMembers = async ({
     });
 
     const data = await response.json();
-    console.dir(data, { depth: 100 });
     const parsedReponse = DirectoryItemsSchema.parse(data);
     const { directory_items } = parsedReponse;
 

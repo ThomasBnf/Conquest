@@ -34,7 +34,7 @@ export const discourse = new Hono().post("/", async (c) => {
 
   const post_type = await getActivityType({
     workspace_id,
-    key: "discourse:post",
+    key: "discourse:topic",
   });
 
   if (topic && (event === "topic_created" || event === "topic_recovered")) {
@@ -86,7 +86,7 @@ export const discourse = new Hono().post("/", async (c) => {
 
     await updateActivity({
       external_id: String(id),
-      activity_type_key: "discourse:post",
+      activity_type_key: "discourse:topic",
       title,
       workspace_id,
     });
@@ -128,7 +128,7 @@ export const discourse = new Hono().post("/", async (c) => {
       await updateActivity({
         external_id: `t-${topic_id}`,
         message: post.cooked,
-        activity_type_key: "discourse:post",
+        activity_type_key: "discourse:topic",
         workspace_id,
       });
 
@@ -200,7 +200,7 @@ export const discourse = new Hono().post("/", async (c) => {
     await updateActivity({
       external_id: post_number === 1 ? `t-${topic_id}` : `p-${id}`,
       activity_type_key:
-        post_number === 1 ? "discourse:post" : "discourse:reply",
+        post_number === 1 ? "discourse:topic" : "discourse:reply",
       message: post.cooked,
       workspace_id,
     });

@@ -86,7 +86,7 @@ export const createManyActivities = async ({ client, member }: Props) => {
 
           await createActivity({
             external_id: `t-${topic_id}`,
-            activity_type_key: "discourse:post",
+            activity_type_key: "discourse:topic",
             title,
             message: excerpt,
             thread_id: `t-${topic_id}`,

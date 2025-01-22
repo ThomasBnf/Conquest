@@ -1,40 +1,59 @@
 ---
 title: "Slack Integration"
-description: "Connect and manage your Slack community data in Conquest"
-icon: "slack"
+description: "Connect and manage your Slack community data with Conquest."
+icon: "slack" 
 iconType: "solid"
 ---
 
-The Conquest Slack integration connects with your Slack workspace, enabling comprehensive management of your community data. Access all workspace members, public channels, message history, replies, files and reactions.
+The Conquest Slack integration enables you to access and manage community data from your Slack workspace. Gain insights into member activity, message history, and shared content, all in one place.
 
-## Features
+<Note>
+  If you are in free plan, you will only be able to collect data from the last 90 days.
+</Note>
 
-<Note>If you are in free plan, you will only be able to collect data from the last 90 days.</Note>
+## Data collection
 
 ### Members
-What we collect:
+
+The integration collects information about:
 - **Full Name**
 - **Email**
 - **Job Title** if provided
 - **Phone** if provided
-- **Avatar**
+- **Avatar** if provided
 - **Locale**
 
-What we don't collect (not available in Slack API):
-- **Joined Date**
+<Note>
+  The Slack API does not provide join dates.
+</Note>
 
 ### Conversations
+
 - **Messages** from public channels
 - **Replies** from public channels
 - **Reactions** from public channels
 - **Files** from public channels
 
-### Real-Time Updates
-Once we are connected to your workspace, we will get real-time updates on:  
+## Activity Types
+
+When you connect your Slack workspace, activity types are automatically generated and configured.
+
+<Tip>
+  Activity weights can be customized to fit your community's scoring system.
+</Tip>
+
+- **Invitation** - 7 weight
+- **Write a post** - 6 weight
+- **Reply to post** - 5 weight
+- **Join Slack community** - 4 weight
+- **Add reaction** - 0 weight 
+
+## Real-Time Updates
+
+Once connected, Conquest syncs the following events in real-time:  
 - **Members joining the workspace**
-- **Messages, replies and reactions**
-- **Files shared to public channels**
-- **Public channel creation, updates and deletion**
+- **Messages, replies, reactions, and files shared in public channels**
+- **Creation, updates, and deletion of public channels**
 - **App uninstallation**
 
 ## Merging Members
@@ -42,76 +61,82 @@ Once we are connected to your workspace, we will get real-time updates on:
 <Tip>
   When new Slack activity occurs, we automatically:
   1. Check if the member exists in your Conquest workspace
-  2. Create a new member profile if they don't exist
-  3. Merge with an existing profile if we find a matching email
+  2. Create a new member if they don't exist
+  3. Merge with an existing member if we find a matching email
 </Tip>
 
-
-## Connecting to Slack
+## Setup guide
 
 <Steps>
-  <Step title="Workspace Connection">
-    1. Go to the **Integrations** section in settings page
-    2. Select **Slack**
-    3. Click "Enable" to begin the connection process
+  <Step title="Connect Your Workspace">
+    1. Navigate to **Settings** > **Integrations**.
+    2. Select **Slack**.
+    3. Click **"Enable"** to start the connection process.
 
     <Frame>
-    ![Slack Connection](/images/slack-enable.png)
+      ![Slack Connection](/images/slack-enable.png)
     </Frame>
   </Step>
 
-  <Step title="OAuth">
-    After clicking "Enable", you will be redirected to Slack to complete the OAuth process.
+  <Step title="Authorize Access">
+    Complete the OAuth process on Slack.
     <Tip>
-     You have to be an Admin of the Slack workspace to enable the integration.
+      You must be an admin of the Slack workspace.
     </Tip>
 
     <Frame>
-    ![Slack OAuth](/images/slack-oauth.png)
+      ![Slack OAuth](/images/slack-oauth.png)
     </Frame>
-    
   </Step>
   
-  <Step title="Channels selection">
-    One you have allowed Conquest integration, you will be redirected back to Conquest and see the list of public channels in your workspace.
+  <Step title="Select Channels">
+    Once authorized, you'll be redirected to Conquest to select public channels for data collection.
     <Tip>
-     If you don't see any channels, channels may be private.
+      If no channels appear, ensure they are not private.
     </Tip>
-     <Frame>
-    ![Slack Channels](/images/slack-channels.png)
+    <Frame>
+      ![Slack Channels](/images/slack-channels.png)
     </Frame>
     1. Select the channels you want to collect data from
-    2. Click "Let's Start"
+    2. Click **"Let's Start"**
   </Step>
-  <Step title="Collecting">
-   Conquest will start collecting data from the selected channels in the last 365 days maximum.
-   <Note>
-    If you have a free plan, you will only be able to collect data from the last 90 days.
-   </Note>
+
+  <Step title="Data Collection">
+    Conquest will begin importing historical data.
+    <Note>
+      If you are in free plan, you will only be able to collect data from the last 90 days.
+    </Note>
     <Frame>
-    ![Slack Collecting](/images/slack-collecting.png)
+      ![Slack Collecting](/images/slack-collecting.png)
     </Frame>
   </Step>
 </Steps>
 
-  <Warning>
-    The data collection duration depends on your community size and can take from a few minutes to several hours to complete.
-  </Warning>
+<Warning>
+  The data collection duration depends on your community size and can take from a few minutes to several hours to complete.
+</Warning>
 
 ## FAQ
 
 <AccordionGroup>
-  <Accordion title="My workspace is not visible">
-    If your workspace isn't appearing in the available options:
-    - Verify you are an admin of the Slack workspace
-    - Ensure you're signed into the correct Slack account
+  <Accordion title="Why my Slack workspace is not visible?">
+    - Confirm that you are an admin of the Slack workspace
+    - Ensure you are logged into the correct Slack account
+  </Accordion>
+  
+  <Accordion title="How long does data collection take?">
+    The data collection duration depends on your community size and can take from a few minutes to several hours to complete.
   </Accordion>
 </AccordionGroup>
 
 ## Need Help?
 
-<Card title="Contact Support" icon="headset">
-  Our support team is available to assist you with any integration issues. 
-  Reach out at [support@useconquest.com](mailto:support@useconquest.com).
+<Card title="Contact Support" icon="envelope">
+  For any issues with your integration, our support team is here to help:
+  [support@useconquest.com](mailto:support@useconquest.com).
 </Card>
 
+<Card title="Join the Community" icon="slack">
+  Get additional support and answers by connecting with other Conquest users in our community:
+  [Slack](https://join.slack.com/t/useconquest/shared_invite/zt-2x4fg4fut-7k0G3_D649TkfPc5WIPdgA).
+</Card>
