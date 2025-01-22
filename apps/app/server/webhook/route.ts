@@ -75,9 +75,9 @@ export const webhook = new Hono().post("/livestorm", async (c) => {
           workspace_id,
         },
       });
-
-      return c.json(200);
     }
+
+    return c.json(200);
   }
 
   if (event === "people.registered") {
@@ -134,6 +134,7 @@ export const webhook = new Hono().post("/livestorm", async (c) => {
     const peoples = await listPeopleFromSession({ access_token, id });
 
     for (const people of peoples) {
+      console.log(people);
       const { id, attributes } = people;
       const {
         email,
