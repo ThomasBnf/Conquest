@@ -13,6 +13,7 @@ import { integrationSuccessEmail } from "./integrationSuccessEmail.trigger";
 
 export const installDiscourse = schemaTask({
   id: "install-discourse",
+  machine: "small-2x",
   schema: z.object({
     discourse: DiscourseIntegrationSchema,
     community_url: z.string(),
