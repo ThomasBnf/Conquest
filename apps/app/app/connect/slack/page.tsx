@@ -53,6 +53,8 @@ export default async function Page({ searchParams: { error, code } }: Props) {
     external_id: team.id,
   });
 
+  console.log(integration);
+
   if (integration) {
     return redirect(
       `/${slug}/settings/integrations/slack?error=already_connected`,
@@ -62,7 +64,7 @@ export default async function Page({ searchParams: { error, code } }: Props) {
   await createIntegration({
     external_id: team.id,
     details: {
-      source: "SLACK",
+      source: "SLACK" as const,
       name: team.name,
       url: team.url,
       token: access_token,
