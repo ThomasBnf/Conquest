@@ -62,7 +62,7 @@ export const IntegrationsList = () => {
           description: "Sync your Discord community members",
           isConnected: discord?.status === "CONNECTED",
           isSyncing: discord?.status === "SYNCING",
-          soon: false,
+          soon: true,
         },
       ],
     },
