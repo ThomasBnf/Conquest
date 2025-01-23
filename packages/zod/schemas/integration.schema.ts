@@ -19,7 +19,7 @@ const SlackDetailsSchema = z.object({
   source: z.literal("SLACK"),
   name: z.string(),
   url: z.string(),
-  token: z.string(),
+  access_token: z.string(),
   slack_user_token: z.string(),
   scopes: z.string(),
   user_scopes: z.string(),
@@ -69,11 +69,11 @@ const GithubDetailsSchema = z.object({
 });
 
 export const IntegrationDetailsSchema = z.discriminatedUnion("source", [
-  SlackDetailsSchema,
-  DiscourseDetailsSchema,
   DiscordDetailsSchema,
+  DiscourseDetailsSchema,
   LinkedInDetailsSchema,
   LivestormDetailsSchema,
+  SlackDetailsSchema,
   GithubDetailsSchema,
 ]);
 

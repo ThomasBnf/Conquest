@@ -41,9 +41,7 @@ export default async function Page({ searchParams: { error, code } }: Props) {
   const { access_token, authed_user } = data;
 
   const web = new WebClient(access_token);
-  const responseTeam = await web.team.info();
-  console.log(responseTeam);
-  const { team } = responseTeam;
+  const { team } = await web.team.info();
 
   if (!team?.id || !team?.name || !team?.url) {
     return redirect(`/${slug}/settings/integrations/slack?error=invalid_code`);
@@ -52,8 +50,6 @@ export default async function Page({ searchParams: { error, code } }: Props) {
   const integration = await getIntegration({
     external_id: team.id,
   });
-
-  console.log(integration);
 
   if (integration) {
     return redirect(
@@ -64,10 +60,10 @@ export default async function Page({ searchParams: { error, code } }: Props) {
   await createIntegration({
     external_id: team.id,
     details: {
-      source: "SLACK" as const,
+      source: "SLACK",
       name: team.name,
       url: team.url,
-      token: access_token,
+      access_token,
       slack_user_token: authed_user.access_token,
       scopes: SLACK_SCOPES,
       user_scopes: USER_SCOPES,

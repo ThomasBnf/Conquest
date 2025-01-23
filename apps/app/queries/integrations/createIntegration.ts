@@ -38,9 +38,7 @@ export const createIntegration = async ({
 
       const triggerToken = await auth.createTriggerPublicToken(
         `install-${source}`,
-        {
-          expirationTime: expiresAt,
-        },
+        { expirationTime: expiresAt },
       );
 
       const updatedIntegration = await prisma.integrations.update({
