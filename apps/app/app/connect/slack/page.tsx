@@ -3,6 +3,7 @@ import { env } from "@/env.mjs";
 import { createIntegration } from "@/queries/integrations/createIntegration";
 import { getIntegration } from "@/queries/integrations/getIntegration";
 import { getCurrentUser } from "@/queries/users/getCurrentUser";
+import { WebClient } from "@slack/web-api";
 import { redirect } from "next/navigation";
 
 type Props = {
@@ -39,16 +40,14 @@ export default async function Page({ searchParams: { error, code } }: Props) {
   const data = await response.json();
   const { access_token, authed_user } = data;
 
-  const responseTeam = await fetch("https://slack.com/api/team.info", {
-    method: "GET",
-    headers: {
-      Authorization: `Bearer ${access_token}`,
-    },
-  });
+  const web = new WebClient(access_token);
+  const responseTeam = await web.team.info();
+  console.log(responseTeam);
+  const { team } = responseTeam;
 
-  const dataTeam = await responseTeam.json();
-  console.log(dataTeam);
-  const { team } = dataTeam;
+  if (!team?.id || !team?.name || !team?.url) {
+    return redirect(`/${slug}/settings/integrations/slack?error=invalid_code`);
+  }
 
   const integration = await getIntegration({
     external_id: team.id,
