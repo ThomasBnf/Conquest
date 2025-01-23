@@ -40,12 +40,14 @@ export default async function Page({ searchParams: { error, code } }: Props) {
   const { access_token, authed_user } = data;
 
   const responseTeam = await fetch("https://slack.com/api/team.info", {
+    method: "GET",
     headers: {
       Authorization: `Bearer ${access_token}`,
     },
   });
 
   const dataTeam = await responseTeam.json();
+  console.log(dataTeam);
   const { team } = dataTeam;
 
   const integration = await getIntegration({
