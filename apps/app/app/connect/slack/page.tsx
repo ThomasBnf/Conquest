@@ -63,7 +63,7 @@ export default async function Page({ searchParams: { error, code } }: Props) {
       source: "SLACK",
       name: team.name,
       url: team.url,
-      access_token,
+      token: access_token,
       slack_user_token: authed_user.access_token,
       scopes: SLACK_SCOPES,
       user_scopes: USER_SCOPES,

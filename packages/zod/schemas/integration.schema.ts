@@ -19,7 +19,7 @@ const SlackDetailsSchema = z.object({
   source: z.literal("SLACK"),
   name: z.string(),
   url: z.string(),
-  access_token: z.string(),
+  token: z.string(),
   slack_user_token: z.string(),
   scopes: z.string(),
   user_scopes: z.string(),
