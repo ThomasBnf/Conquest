@@ -1,6 +1,7 @@
 "use client";
 
 import { deleteActivity } from "@/actions/activities/deleteActivity";
+import { updateMemberMetrics } from "@/actions/members/updateMemberMetrics";
 import { AlertDialog } from "@/components/custom/alert-dialog";
 import { Button } from "@conquest/ui/button";
 import {
@@ -28,6 +29,8 @@ export const Menu = ({ activity }: Props) => {
     const error = rActivity?.serverError;
 
     if (error) return toast.error(error);
+
+    await updateMemberMetrics({ member_id: activity.member_id });
     queryClient.invalidateQueries({ queryKey: ["activities"] });
     return toast.success("Activity deleted");
   };

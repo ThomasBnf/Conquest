@@ -6,6 +6,7 @@ import { createManyTags } from "@/queries/discourse/createManyTags";
 import { listCategories } from "@/queries/discourse/list-categories";
 import { deleteIntegration } from "@/queries/integrations/deleteIntegration";
 import { updateIntegration } from "@/queries/integrations/updateIntegration";
+import { batchMergeMembers } from "@/queries/members/batchMergeMembers";
 import { DiscourseIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
 import { schemaTask } from "@trigger.dev/sdk/v3";
 import { z } from "zod";
@@ -39,26 +40,22 @@ export const installDiscourse = schemaTask({
       }),
     );
 
-    await listCategories({
-      client,
-      workspace_id,
-    });
+    await listCategories({ client, workspace_id });
 
     await createManyActivityTypes({
       activity_types: DISCOURSE_ACTIVITY_TYPES,
       workspace_id,
     });
 
-    const tags = await createManyTags({
-      client,
-      workspace_id,
-    });
+    const tags = await createManyTags({ client, workspace_id });
 
-    await createManyMembers({
+    const members = await createManyMembers({
       discourse: discourseUpdated,
       client,
       tags,
     });
+
+    await batchMergeMembers({ members });
 
     integrationSuccessEmail.trigger({
       integration: discourseUpdated,

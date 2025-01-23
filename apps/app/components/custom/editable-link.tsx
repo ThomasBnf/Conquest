@@ -6,8 +6,9 @@ import Link from "next/link";
 import { useState } from "react";
 
 type Props = {
-  defaultValue: string | null;
   placeholder?: string;
+  defaultValue: string | null;
+  href?: string | null;
   editable?: boolean;
   onUpdate?: (value: string) => void;
   className?: string;
@@ -16,6 +17,7 @@ type Props = {
 export const EditableLink = ({
   defaultValue,
   placeholder,
+  href,
   editable = true,
   onUpdate,
   className,
@@ -49,7 +51,7 @@ export const EditableLink = ({
           variant="ghost"
           className={cn(
             "w-full overflow-hidden text-muted-foreground",
-            isHover && "bg-muted",
+            !editable && "hover:bg-transparent hover:text-muted-foreground",
             className,
           )}
           classNameSpan={cn("justify-start", value && "text-foreground")}
@@ -59,9 +61,10 @@ export const EditableLink = ({
             {value === "" || value === null ? placeholder : value}
           </span>
         </Button>
+
         {isHover && value && (
           <Link
-            href={value ?? ""}
+            href={href ?? ""}
             target="_blank"
             className={cn(
               buttonVariants({ variant: "outline", size: "icon" }),

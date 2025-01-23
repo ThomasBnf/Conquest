@@ -13,7 +13,7 @@ type Props = {
 export const createManyInvites = async ({ discourse, member }: Props) => {
   const { details, workspace_id } = discourse;
   const { community_url, api_key } = details;
-  const { username } = member;
+  const { discourse_username } = member;
 
   const today = startOfDay(new Date());
   const last365Days = subDays(today, 365);
@@ -23,7 +23,7 @@ export const createManyInvites = async ({ discourse, member }: Props) => {
 
   while (hasMore) {
     const response = await fetch(
-      `${community_url}/u/${username}/invited.json?filter=redeemed${
+      `${community_url}/u/${discourse_username}/invited.json?filter=redeemed${
         offSet ? `&offset=${offSet}` : ""
       }`,
       {
@@ -65,7 +65,7 @@ export const createManyInvites = async ({ discourse, member }: Props) => {
       await createActivity({
         external_id: null,
         activity_type_key: "discourse:invite",
-        message: `${inviteTo.username} accepted your invitation`,
+        message: `${inviteTo.discourse_username} accepted your invitation`,
         invite_to: inviteTo.id,
         member_id: member.id,
         channel_id: null,

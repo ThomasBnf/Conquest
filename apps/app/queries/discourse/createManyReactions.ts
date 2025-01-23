@@ -13,7 +13,7 @@ type Props = {
 export const createManyReactions = async ({ discourse, member }: Props) => {
   const { details, workspace_id } = discourse;
   const { community_url, api_key } = details;
-  const { username } = member;
+  const { discourse_username } = member;
 
   const today = startOfDay(new Date());
   const last365Days = subDays(today, 365);
@@ -23,7 +23,7 @@ export const createManyReactions = async ({ discourse, member }: Props) => {
 
   while (hasMore) {
     const response = await fetch(
-      `${community_url}/discourse-reactions/posts/reactions.json?username=${username}${
+      `${community_url}/discourse-reactions/posts/reactions.json?username=${discourse_username}${
         before ? `&before_reaction_user_id=${before}` : ""
       }`,
       {

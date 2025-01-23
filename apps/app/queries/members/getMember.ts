@@ -8,8 +8,8 @@ type Props = (
   | { linkedin_id: string }
   | { livestorm_id: string }
   | { slack_id: string }
-  | { email: string }
-  | { username: string }
+  | { discord_username: string }
+  | { discourse_username: string }
 ) & {
   workspace_id: string;
 };
@@ -23,19 +23,12 @@ export const getMember = async (props: Props) => {
   const linkedin_id = "linkedin_id" in props ? props.linkedin_id : undefined;
   const livestorm_id = "livestorm_id" in props ? props.livestorm_id : undefined;
   const slack_id = "slack_id" in props ? props.slack_id : undefined;
-  const email = "email" in props ? props.email : undefined;
-  const username = "username" in props ? props.username : undefined;
+  const discord_username =
+    "discord_username" in props ? props.discord_username : undefined;
+  const discourse_username =
+    "discourse_username" in props ? props.discourse_username : undefined;
 
   const whereClause = () => {
-    if (email) {
-      return {
-        primary_email_workspace_id: {
-          primary_email: email,
-          workspace_id,
-        },
-      };
-    }
-
     if (discord_id) {
       return {
         discord_id_workspace_id: {
@@ -45,10 +38,28 @@ export const getMember = async (props: Props) => {
       };
     }
 
+    if (discord_username) {
+      return {
+        discord_username_workspace_id: {
+          discord_username,
+          workspace_id,
+        },
+      };
+    }
+
     if (discourse_id) {
       return {
         discourse_id_workspace_id: {
           discourse_id,
+          workspace_id,
+        },
+      };
+    }
+
+    if (discourse_username) {
+      return {
+        discourse_username_workspace_id: {
+          discourse_username,
           workspace_id,
         },
       };
@@ -76,15 +87,6 @@ export const getMember = async (props: Props) => {
       return {
         slack_id_workspace_id: {
           slack_id,
-          workspace_id,
-        },
-      };
-    }
-
-    if (username) {
-      return {
-        username_workspace_id: {
-          username,
           workspace_id,
         },
       };

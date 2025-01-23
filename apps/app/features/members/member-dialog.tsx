@@ -1,7 +1,6 @@
 "use client";
 
 import { createMember } from "@/actions/members/createMember";
-import { useUser } from "@/context/userContext";
 import { Button } from "@conquest/ui/button";
 import {
   Dialog,
@@ -22,48 +21,31 @@ import {
 } from "@conquest/ui/form";
 import { Input } from "@conquest/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useQueryClient } from "@tanstack/react-query";
 import { Plus } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { type MemberForm, MemberFormSchema } from "./schema/member-form.schema";
 
 export const MemberDialog = () => {
-  const { slug } = useUser();
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  const router = useRouter();
-  const queryClient = useQueryClient();
 
   const form = useForm<MemberForm>({
     resolver: zodResolver(MemberFormSchema),
-    defaultValues: {
-      first_name: "",
-      last_name: "",
-      email: "",
-    },
   });
-
-  const isDisabled = loading || !form.formState.isValid;
 
   const onSubmit = async ({ first_name, last_name, email }: MemberForm) => {
     setLoading(true);
 
     const rMember = await createMember({ first_name, last_name, email });
     const error = rMember?.serverError;
-    const member = rMember?.data;
 
-    if (error) toast.error(error);
-    if (member) {
-      queryClient.invalidateQueries({ queryKey: ["members"] });
-      router.push(`/${slug}/members/${member.id}`);
+    if (error) {
+      setLoading(false);
+      toast.error(error);
+      form.reset();
     }
-
-    setLoading(false);
-    setOpen(false);
-    form.reset();
   };
 
   return (
@@ -130,7 +112,7 @@ export const MemberDialog = () => {
                   Cancel
                 </Button>
               </DialogTrigger>
-              <Button type="submit" loading={loading} disabled={isDisabled}>
+              <Button type="submit" loading={loading} disabled={loading}>
                 Add Member
               </Button>
             </DialogFooter>

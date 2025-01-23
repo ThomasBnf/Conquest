@@ -244,7 +244,7 @@ export const members = new Hono()
     const { username } = c.req.param();
 
     const member = await getMember({
-      username,
+      discourse_username: username,
       workspace_id,
     });
 

@@ -10,6 +10,7 @@ import { deleteChannel } from "@/queries/channels/deleteChannel";
 import { getChannel } from "@/queries/channels/getChannel";
 import { updateChannel } from "@/queries/channels/updateChannel";
 import { checkSignature } from "@/queries/discourse/checkSignature";
+import { checkMerging } from "@/queries/members/checkMerging";
 import { getMember } from "@/queries/members/getMember";
 import { upsertMember } from "@/queries/members/upsertMember";
 import { createTag } from "@/queries/tags/createTag";
@@ -44,7 +45,7 @@ export const discourse = new Hono().post("/", async (c) => {
     if (user_id < 0) return c.json({ status: 200 });
 
     const member = await getMember({
-      username,
+      discourse_username: username,
       workspace_id,
     });
 
@@ -139,7 +140,7 @@ export const discourse = new Hono().post("/", async (c) => {
       const { category_id, username } = post;
 
       const member = await getMember({
-        username,
+        discourse_username: username,
         workspace_id,
       });
 
@@ -168,7 +169,7 @@ export const discourse = new Hono().post("/", async (c) => {
     }
 
     const member = await getMember({
-      username,
+      discourse_username: username,
       workspace_id,
     });
 
@@ -211,7 +212,7 @@ export const discourse = new Hono().post("/", async (c) => {
     const { id, username } = post;
 
     const member = await getMember({
-      username,
+      discourse_username: username,
       workspace_id,
     });
 
@@ -231,7 +232,7 @@ export const discourse = new Hono().post("/", async (c) => {
     const { username } = user;
 
     const member = await getMember({
-      username,
+      discourse_username: username,
       workspace_id,
     });
 
@@ -268,19 +269,19 @@ export const discourse = new Hono().post("/", async (c) => {
     const createdMember = await upsertMember({
       id: String(id),
       data: {
-        username,
+        discourse_username: username,
         first_name,
         last_name,
         primary_email: email,
         avatar_url,
-        source: "DISCOURSE",
         created_at: new Date(),
-        workspace_id,
       },
+      source: "DISCOURSE",
+      workspace_id,
     });
 
     const inviter = await getMember({
-      username: String(invited_by.username),
+      discourse_username: String(invited_by.username),
       workspace_id,
     });
 
@@ -304,6 +305,7 @@ export const discourse = new Hono().post("/", async (c) => {
 
     await updateMemberMetrics.trigger({ member: inviter });
     await updateMemberMetrics.trigger({ member: createdMember });
+    await checkMerging({ member_id: createdMember.id, workspace_id });
   }
 
   if (user && event === "user_updated") {
@@ -323,16 +325,16 @@ export const discourse = new Hono().post("/", async (c) => {
     await upsertMember({
       id: String(id),
       data: {
-        username,
+        discourse_username: username,
         first_name,
         last_name,
         primary_email: email,
         secondary_emails,
         avatar_url,
         job_title: title,
-        source: "DISCOURSE",
-        workspace_id,
       },
+      source: "DISCOURSE",
+      workspace_id,
     });
   }
 
@@ -341,8 +343,8 @@ export const discourse = new Hono().post("/", async (c) => {
 
     await prisma.members.delete({
       where: {
-        username_workspace_id: {
-          username,
+        discourse_username_workspace_id: {
+          discourse_username: username,
           workspace_id,
         },
       },
@@ -352,7 +354,7 @@ export const discourse = new Hono().post("/", async (c) => {
   if (user && event === "user_logged_in") {
     const { username } = user;
     const member = await getMember({
-      username,
+      discourse_username: username,
       workspace_id,
     });
 
@@ -507,7 +509,10 @@ export const discourse = new Hono().post("/", async (c) => {
   ) {
     const { id, username, category_id } = solved;
 
-    const member = await getMember({ username, workspace_id });
+    const member = await getMember({
+      discourse_username: username,
+      workspace_id,
+    });
 
     if (!member) return c.json({ error: "Member not found" }, 404);
 

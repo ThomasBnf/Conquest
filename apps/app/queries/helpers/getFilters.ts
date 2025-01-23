@@ -63,8 +63,6 @@ export const getFilters = ({ filters }: Props) => {
       const { values, operator, field } = FilterSelectSchema.parse(filter);
       const fieldCondition = Prisma.raw(field);
 
-      console.log(filter);
-
       const conditions =
         values.length === 0
           ? [Prisma.sql`TRUE`]

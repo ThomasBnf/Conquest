@@ -12,19 +12,19 @@ type Props = {
 };
 
 export const createManyActivities = async ({ client, member }: Props) => {
-  const { username, workspace_id } = member;
+  const { discourse_username, workspace_id } = member;
 
   const today = startOfDay(new Date());
   const last365Days = subDays(today, 365);
 
-  if (!username) return;
+  if (!discourse_username) return;
 
   let offset = 0;
   let hasMore = true;
 
   while (hasMore) {
     const { user_actions } = await client.listUserActions({
-      username,
+      username: discourse_username,
       filter: "1,4,5,6,15",
       offset,
     });

@@ -4,6 +4,7 @@ import { deleteActivity } from "@/queries/activities/deleteActivity";
 import { getIntegration } from "@/queries/integrations/getIntegration";
 import { getPeople } from "@/queries/linkedin/getPeople";
 import { getPost } from "@/queries/linkedin/getPost";
+import { checkMerging } from "@/queries/members/checkMerging";
 import { getMember } from "@/queries/members/getMember";
 import { upsertMember } from "@/queries/members/upsertMember";
 import { getAuthUser } from "@/queries/users/getAuthUser";
@@ -47,10 +48,7 @@ export const linkedin = new Hono()
 
     console.log("notification", notification);
 
-    if (!notification) {
-      console.error("LinkedIn webhook: Missing notification");
-      return c.json(200);
-    }
+    if (!notification) return c.json(200);
 
     const {
       action,
@@ -65,8 +63,6 @@ export const linkedin = new Hono()
     const linkedin_id = owner?.split(":")[3];
 
     if (!organization_id || !linkedin_id) return c.json(200);
-
-    console.log("organizationId", organization_id);
 
     const integration = LinkedInIntegrationSchema.parse(
       await getIntegration({
@@ -110,15 +106,15 @@ export const linkedin = new Hono()
         id,
         data: {
           linkedin_id: id,
-          username: vanityName,
+          linkedin_url: `https://www.linkedin.com/in/${vanityName}`,
           first_name: localizedFirstName,
           last_name: localizedLastName,
           locale,
           avatar_url,
           job_title: localizedHeadline,
-          source: "LINKEDIN",
-          workspace_id,
         },
+        source: "LINKEDIN",
+        workspace_id,
       });
     }
 
@@ -126,7 +122,7 @@ export const linkedin = new Hono()
       const { text, entity } = decoratedGeneratedActivity?.comment ?? {};
       const external_id = entity?.split(",")?.[1]?.replace(/\D/g, "");
 
-      const activity = await createActivity({
+      await createActivity({
         external_id: external_id ?? null,
         activity_type_key: "linkedin:comment",
         message: text ?? "",
@@ -136,8 +132,7 @@ export const linkedin = new Hono()
       });
 
       await updateMemberMetrics.trigger({ member });
-
-      console.log("comment", activity);
+      await checkMerging({ member_id: member.id, workspace_id });
 
       return c.json(200);
     }
@@ -147,12 +142,10 @@ export const linkedin = new Hono()
         ?.split(",")?.[1]
         ?.replace(/\D/g, "");
 
-      const activity = await deleteActivity({
-        external_id,
-        workspace_id,
-      });
+      await deleteActivity({ external_id, workspace_id });
 
-      console.log("delete", activity);
+      await updateMemberMetrics.trigger({ member });
+      await checkMerging({ member_id: member.id, workspace_id });
     }
 
     return c.json(200);

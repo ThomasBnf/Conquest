@@ -220,54 +220,53 @@ model lists {
 }
 
 model members {
-  id               String   @id @default(cuid())
-  external_id      String?
-  discord_id       String?
-  discourse_id     String?
-  linkedin_id      String?
-  livestorm_id     String?
-  slack_id         String?
-  first_name       String?
-  last_name        String?
-  username         String?
-  linkedin_url     String?
-  locale           String?
-  avatar_url       String?
-  job_title        String?
-  primary_email    String?
-  secondary_emails String[] @default([])
-  phones           String[] @default([])
-  tags             String[] @default([])
-  level            Int      @default(0)
-  pulse            Int      @default(0)
-  presence         Int      @default(0)
-  gender           GENDER?
-  source           SOURCE
-  logs             Json[]   @default([])
-  custom_fields    Json[]   @default([])
+  id                 String       @id @default(cuid())
+  external_id        String?
+  livestorm_id       String?
+  slack_id           String?
+  discord_id         String?
+  discord_username   String?
+  discourse_id       String?
+  discourse_username String?
+  linkedin_id        String?
+  linkedin_url       String?
+  first_name         String?
+  last_name          String?
+  primary_email      String?
+  secondary_emails   String[]     @default([])
+  phones             String[]     @default([])
+  job_title          String?
+  avatar_url         String?
+  locale             String?
+  tags               String[]     @default([])
+  level              Int          @default(0)
+  pulse              Int          @default(0)
+  presence           Int          @default(0)
+  gender             GENDER?
+  source             SOURCE
+  logs               Json[]       @default([])
+  custom_fields      Json[]       @default([])
+  company_id         String?
+  company            companies?   @relation(fields: [company_id], references: [id], onDelete: SetNull)
+  workspace_id       String
+  workspace          workspaces   @relation(fields: [workspace_id], references: [id], onDelete: Cascade)
+  activities         activities[]
+  first_activity     DateTime?
+  last_activity      DateTime?
+  created_at         DateTime     @default(now())
+  updated_at         DateTime     @updatedAt
 
-  company_id   String?
-  company      companies?   @relation(fields: [company_id], references: [id], onDelete: SetNull)
-  workspace_id String
-  workspace    workspaces   @relation(fields: [workspace_id], references: [id], onDelete: Cascade)
-  activities   activities[]
-
-  first_activity DateTime?
-  last_activity  DateTime?
-  deleted_at     DateTime?
-  created_at     DateTime  @default(now())
-  updated_at     DateTime  @updatedAt
-
-  @@unique([primary_email, workspace_id])
-  @@unique([username, workspace_id])
-  @@unique([discord_id, workspace_id])
   @@unique([discourse_id, workspace_id])
+  @@unique([discourse_username, workspace_id])
+  @@unique([discord_id, workspace_id])
+  @@unique([discord_username, workspace_id])
   @@unique([linkedin_id, workspace_id])
   @@unique([livestorm_id, workspace_id])
   @@unique([slack_id, workspace_id])
-  @@index([id, workspace_id])
+  @@index([id])
   @@index([primary_email, workspace_id])
-  @@index([username, workspace_id])
+  @@index([discourse_username, workspace_id])
+  @@index([discord_username, workspace_id])
   @@index([discord_id, workspace_id])
   @@index([discourse_id, workspace_id])
   @@index([linkedin_id, workspace_id])

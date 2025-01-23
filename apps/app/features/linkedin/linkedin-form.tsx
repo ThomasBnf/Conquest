@@ -51,6 +51,7 @@ export const LinkedinForm = ({ loading, setLoading }: Props) => {
     const isFailed = run.status === "FAILED";
 
     if (isFailed) {
+      setLoading(false);
       router.refresh();
       toast.error("Failed to install Linkedin", { duration: 5000 });
     }

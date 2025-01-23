@@ -32,13 +32,12 @@ export const createMember = async ({ discord, member_id }: Props) => {
       data: {
         first_name: firstName,
         last_name: lastName,
-        username,
+        discord_username: username,
         avatar_url: avatarUrl,
-        source: "DISCORD",
         created_at: new Date(),
-        deleted_at: new Date(),
-        workspace_id,
       },
+      source: "DISCORD",
+      workspace_id,
     });
 
     return MemberSchema.parse(member);

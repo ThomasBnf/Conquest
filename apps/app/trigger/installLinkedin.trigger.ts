@@ -6,11 +6,14 @@ import { createManyComments } from "@/queries/linkedin/createManyComments";
 import { listComments } from "@/queries/linkedin/listComments";
 import { listPosts } from "@/queries/linkedin/listPosts";
 import { webhookSubscription } from "@/queries/linkedin/webhookSubscription";
+import { batchMergeMembers } from "@/queries/members/batchMergeMembers";
 import { createPost } from "@/queries/posts/createPost";
 import { LinkedInIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
+import type { MemberWithCompany } from "@conquest/zod/schemas/member.schema";
 import { schemaTask } from "@trigger.dev/sdk/v3";
 import { z } from "zod";
 import { calculateMembersLevel } from "./calculateMembersLevel.trigger";
+import { integrationSuccessEmail } from "./integrationSuccessEmail.trigger";
 
 export const installLinkedin = schemaTask({
   id: "install-linkedin",
@@ -22,6 +25,8 @@ export const installLinkedin = schemaTask({
   }),
   run: async ({ linkedin, user_id, organization_id, organization_name }) => {
     const { workspace_id } = LinkedInIntegrationSchema.parse(linkedin);
+
+    const createdMembers: MemberWithCompany[] = [];
 
     const integration = await updateIntegration({
       id: linkedin.id,
@@ -57,15 +62,23 @@ export const installLinkedin = schemaTask({
         post_id: post.id,
       });
 
-      await createManyComments({
+      const members = await createManyComments({
         linkedin: parsedLinkedin,
         post: createdPost,
         comments,
       });
+
+      createdMembers.push(...members);
     }
 
     await webhookSubscription({ linkedin: parsedLinkedin });
     await calculateMembersLevel.trigger({ workspace_id });
+    await batchMergeMembers({ members: createdMembers });
+
+    integrationSuccessEmail.trigger({
+      integration: parsedLinkedin,
+      workspace_id,
+    });
   },
   onSuccess: async ({ linkedin }) => {
     await updateIntegration({

@@ -1,7 +1,7 @@
 "use server";
 
 import { authAction } from "@/lib/authAction";
-import { prisma } from "@/lib/prisma";
+import { deleteActivity as _deleteActivity } from "@/queries/activities/deleteActivity";
 import { revalidatePath } from "next/dist/server/web/spec-extension/revalidate";
 import { z } from "zod";
 
@@ -12,18 +12,15 @@ export const deleteActivity = authAction
   .schema(
     z.object({
       id: z.string(),
+      external_id: z.string().optional(),
+      channel_id: z.string().optional(),
     }),
   )
-  .action(async ({ parsedInput, ctx }) => {
-    const { id } = parsedInput;
-    const workspace_id = ctx.user.workspace_id;
+  .action(
+    async ({ ctx: { user }, parsedInput: { id, external_id, channel_id } }) => {
+      const { workspace_id } = user;
 
-    await prisma.activities.delete({
-      where: {
-        id,
-        workspace_id,
-      },
-    });
-
-    return revalidatePath("/activities");
-  });
+      await _deleteActivity({ id, external_id, channel_id, workspace_id });
+      return revalidatePath("/activities");
+    },
+  );

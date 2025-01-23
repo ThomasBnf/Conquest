@@ -42,15 +42,15 @@ export const createManyLikes = async ({ linkedin, post, likes }: Props) => {
       id,
       data: {
         linkedin_id: id,
-        username: vanityName,
+        linkedin_url: `https://www.linkedin.com/in/${vanityName}`,
         first_name: localizedFirstName,
         last_name: localizedLastName,
         locale,
         avatar_url,
         job_title: localizedHeadline,
-        source: "LINKEDIN",
-        workspace_id,
       },
+      source: "LINKEDIN",
+      workspace_id,
     });
 
     await createActivity({

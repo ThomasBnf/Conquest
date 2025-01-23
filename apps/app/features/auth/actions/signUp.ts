@@ -34,9 +34,9 @@ export const signUp = safeAction
 
     const user = await prisma.users.create({
       data: {
-        workspace_id: workspace.id,
         email,
         hashed_password,
+        workspace_id: workspace.id,
       },
     });
 

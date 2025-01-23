@@ -13,7 +13,9 @@ export const integrationSuccessEmail = schemaTask({
     integration: IntegrationSchema,
     workspace_id: z.string(),
   }),
-  run: async ({ integration, workspace_id }) => {
+  run: async ({ integration, workspace_id }, { ctx }) => {
+    if (ctx.environment.type === "DEVELOPMENT") return;
+
     const { created_by, details } = integration;
     const { source } = details;
 

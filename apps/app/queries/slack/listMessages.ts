@@ -35,10 +35,7 @@ export const listMessages = async ({ web, channel, workspace_id }: Props) => {
 
       if (subtype === "channel_join") continue;
 
-      const member = await getMember({
-        slack_id: user,
-        workspace_id,
-      });
+      const member = await getMember({ slack_id: user, workspace_id });
 
       if (!member) continue;
 

@@ -2,7 +2,11 @@ import { prisma } from "@/lib/prisma";
 import { getFirstActivity } from "@/queries/activities/getFirstActivity";
 import { listActivitiesIn365Days } from "@/queries/activities/listActivitiesIn365Days";
 import { getMemberMetrics } from "@/queries/members/getMemberMetrics";
-import type { Log, Member } from "@conquest/zod/schemas/member.schema";
+import {
+  type Log,
+  type Member,
+  MemberWithCompanySchema,
+} from "@conquest/zod/schemas/member.schema";
 import { eachWeekOfInterval, endOfDay, subDays } from "date-fns";
 
 type Props = {
@@ -39,7 +43,7 @@ export const calculateMemberMetrics = async ({ member }: Props) => {
     }),
   );
 
-  await prisma.members.update({
+  const updatedMember = await prisma.members.update({
     where: {
       id,
       workspace_id,
@@ -52,5 +56,10 @@ export const calculateMemberMetrics = async ({ member }: Props) => {
       first_activity: firstActivity?.created_at,
       last_activity: activities.at(-1)?.created_at,
     },
+    include: {
+      company: true,
+    },
   });
+
+  return MemberWithCompanySchema.parse(updatedMember);
 };

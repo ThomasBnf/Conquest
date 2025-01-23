@@ -1,5 +1,6 @@
+import type { MemberWithCompany } from "@conquest/zod/schemas/member.schema";
 import type { WebClient } from "@slack/web-api";
-import { upsertMember } from "../members/upsertMember";
+import { createMember } from "../members/createMember";
 
 type Props = {
   web: WebClient;
@@ -7,6 +8,7 @@ type Props = {
 };
 
 export const createListMembers = async ({ web, workspace_id }: Props) => {
+  const createdMembers: MemberWithCompany[] = [];
   let cursor: string | undefined;
 
   do {
@@ -28,25 +30,27 @@ export const createListMembers = async ({ web, workspace_id }: Props) => {
 
         if (first_name === "slackbot" || !email) continue;
 
-        const createdMember = await upsertMember({
-          id,
+        const createdMember = await createMember({
           data: {
+            slack_id: id,
             first_name,
             last_name,
             primary_email: email,
             phones: phone ? [phone] : [],
-            locale: locale?.replace("-", "_"),
             avatar_url: image_1024,
             job_title: title === "" ? null : title,
-            source: "SLACK",
-            workspace_id,
+            locale: locale ? locale.replace("-", "_") : null,
           },
+          source: "SLACK",
+          workspace_id,
         });
 
-        if (!createdMember) continue;
+        createdMembers?.push(createdMember);
       }
     }
 
     cursor = response_metadata?.next_cursor;
   } while (cursor);
+
+  return createdMembers;
 };

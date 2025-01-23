@@ -1,8 +1,8 @@
 "use client";
 
 import { createActivity } from "@/actions/activities/createActivity";
+import { updateMemberMetrics } from "@/actions/members/updateMemberMetrics";
 import { listActivityTypes } from "@/client/activity-types/listActivityTypes";
-import { updateMemberMetrics } from "@/trigger/updateMemberMetrics.trigger";
 import { Button } from "@conquest/ui/button";
 import {
   Dialog,
@@ -46,6 +46,7 @@ type Props = {
 
 export const ActivityDialog = ({ member }: Props) => {
   const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
   const { data: activity_types } = listActivityTypes();
   const queryClient = useQueryClient();
 
@@ -76,12 +77,13 @@ export const ActivityDialog = ({ member }: Props) => {
   }, []);
 
   const onSubmit = async ({ activity_type_key, message }: AddActivityForm) => {
+    setLoading(true);
     const activity = await createActivity({
       member_id: member.id,
       activity_type_key,
       message,
     });
-    await updateMemberMetrics.trigger({ member });
+    await updateMemberMetrics({ member_id: member.id });
 
     const error = activity?.serverError;
 
@@ -90,7 +92,9 @@ export const ActivityDialog = ({ member }: Props) => {
     queryClient.invalidateQueries({
       queryKey: ["activities", member.id],
     });
+
     setOpen(false);
+    setLoading(false);
     form.reset();
   };
 
@@ -162,7 +166,9 @@ export const ActivityDialog = ({ member }: Props) => {
               <DialogTrigger asChild>
                 <Button variant="outline">Cancel</Button>
               </DialogTrigger>
-              <Button type="submit">Add activity</Button>
+              <Button type="submit" loading={loading} disabled={loading}>
+                Add activity
+              </Button>
             </DialogFooter>
           </form>
         </Form>

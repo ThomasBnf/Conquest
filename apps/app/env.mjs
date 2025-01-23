@@ -34,6 +34,8 @@ export const env = createEnv({
     RESEND_API_KEY: z.string(),
 
     GOOGLE_API_KEY: z.string(),
+
+    TRIGGER_SECRET_KEY: z.string(),
   },
   client: {
     NEXT_PUBLIC_BASE_URL: z.string(),
@@ -81,6 +83,8 @@ export const env = createEnv({
     RESEND_API_KEY: process.env.RESEND_API_KEY,
 
     GOOGLE_API_KEY: process.env.GOOGLE_API_KEY,
+
+    TRIGGER_SECRET_KEY: process.env.TRIGGER_SECRET_KEY,
   },
   skipValidation: !!process.env.CI || !!process.env.SKIP_ENV_VALIDATION,
 });

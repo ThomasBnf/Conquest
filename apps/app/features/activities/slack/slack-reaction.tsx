@@ -28,7 +28,7 @@ export const SlackReaction = ({ activity }: Props) => {
         <Markdown activity={data} />
       </ActivityCard>
       <p className="size-7 place-content-center rounded-md border border-[#1264a3] bg-[#e3f8ff] text-center">
-        {emojiParser(activity.message)}
+        {activity.message === "heart" ? "❤️" : emojiParser(activity.message)}
       </p>
     </div>
   );

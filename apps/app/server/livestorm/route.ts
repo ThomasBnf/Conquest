@@ -6,6 +6,7 @@ import { getEvent } from "@/queries/livestorm/getEvent";
 import { getRefreshToken } from "@/queries/livestorm/getRefreshToken";
 import { listEventSessions } from "@/queries/livestorm/listEventSessions";
 import { listPeopleFromSession } from "@/queries/livestorm/listPeopleFromSession";
+import { checkMerging } from "@/queries/members/checkMerging";
 import { upsertMember } from "@/queries/members/upsertMember";
 import { getAuthUser } from "@/queries/users/getAuthUser";
 import { updateMemberMetrics } from "@/trigger/updateMemberMetrics.trigger";
@@ -51,7 +52,7 @@ export const livestorm = new Hono()
 
       while (true) {
         const listOfSessions = await listEventSessions({
-          accessToken: access_token,
+          access_token,
           event_id,
           page: sessionPage,
         });
@@ -115,9 +116,9 @@ export const livestorm = new Hono()
           primary_email: email,
           avatar_url: avatar_link,
           locale,
-          source: "LIVESTORM",
-          workspace_id,
         },
+        source: "LIVESTORM",
+        workspace_id,
       });
 
       await createActivity({
@@ -130,6 +131,7 @@ export const livestorm = new Hono()
       });
 
       await updateMemberMetrics.trigger({ member });
+      await checkMerging({ member_id: member.id, workspace_id });
 
       return c.json(200);
     }
@@ -141,7 +143,6 @@ export const livestorm = new Hono()
       const peoples = await listPeopleFromSession({ access_token, id });
 
       for (const people of peoples) {
-        console.log(people);
         const { id, attributes } = people;
         const {
           email,
@@ -169,9 +170,9 @@ export const livestorm = new Hono()
             primary_email: email,
             avatar_url: avatar_link,
             locale,
-            source: "LIVESTORM",
-            workspace_id,
           },
+          source: "LIVESTORM",
+          workspace_id,
         });
 
         if (is_guest_speaker) {
@@ -196,6 +197,7 @@ export const livestorm = new Hono()
           });
 
           await updateMemberMetrics.trigger({ member });
+          await checkMerging({ member_id: member.id, workspace_id });
         }
       }
     }

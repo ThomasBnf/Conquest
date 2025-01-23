@@ -4,11 +4,14 @@ import { prisma } from "@/lib/prisma";
 import { createActivity } from "@/queries/activities/createActivity";
 import { deleteActivity } from "@/queries/activities/deleteActivity";
 import { updateActivity } from "@/queries/activities/updateActivity";
+import { upsertActivity } from "@/queries/activities/upsertActivity";
 import { createChannel } from "@/queries/channels/createChannel";
 import { deleteChannel } from "@/queries/channels/deleteChannel";
 import { getChannel } from "@/queries/channels/getChannel";
 import { updateChannel } from "@/queries/channels/updateChannel";
 import { getIntegration } from "@/queries/integrations/getIntegration";
+import { updateIntegration } from "@/queries/integrations/updateIntegration";
+import { checkMerging } from "@/queries/members/checkMerging";
 import { getMember } from "@/queries/members/getMember";
 import { upsertMember } from "@/queries/members/upsertMember";
 import { deleteListReactions } from "@/queries/slack/deleteListReactions";
@@ -22,7 +25,6 @@ import {
   WebClient,
 } from "@slack/web-api";
 import { Hono } from "hono";
-import { NextResponse } from "next/server";
 import { z } from "zod";
 
 export const slack = new Hono()
@@ -45,36 +47,34 @@ export const slack = new Hono()
         event,
       } = c.req.valid("json");
 
-      if (!event || typeof event !== "object") {
-        return c.json({ status: 200 });
-      }
+      if (!event || typeof event !== "object") return c.json({ status: 200 });
 
       if (slack_token !== env.SLACK_TOKEN && api_app_id !== env.SLACK_APP_ID) {
-        return c.json({ message: "Unauthorized" }, { status: 401 });
+        return c.json({ status: 200 });
       }
 
       const { type } = event;
 
       const integration = await getIntegration({ external_id: team_id });
 
-      if (!integration) return NextResponse.json({ status: 200 });
+      if (!integration) return c.json({ status: 200 });
 
       const slackIntegration = SlackIntegrationSchema.parse(integration);
 
       const { workspace_id } = slackIntegration;
       const { token } = slackIntegration.details;
 
-      if (!workspace_id || !token) return NextResponse.json({ status: 200 });
+      if (!workspace_id || !token) return c.json({ status: 200 });
 
       const web = new WebClient(token);
 
       switch (type) {
         case "app_uninstalled": {
-          await prisma.integrations.delete({
-            where: {
-              id: integration.id,
-            },
+          await updateIntegration({
+            id: integration.id,
+            status: "DISCONNECTED",
           });
+
           break;
         }
 
@@ -262,17 +262,26 @@ export const slack = new Hono()
 
           if (!inviter) break;
 
-          const { profile } = await web.users.profile.get({ user });
+          const response = await web.users.profile.get({ user });
+          const profile = response.profile;
 
           if (!profile) return c.json({ status: 200 });
 
           const { user: userInfo } = await web.users.info({ user });
+
           const locale = userInfo?.locale?.replace("-", "_");
 
           const { first_name, last_name, email, phone, image_1024, title } =
             profile;
 
           if (!email) return c.json({ status: 200 });
+
+          const existingMember = await getMember({
+            slack_id: user,
+            workspace_id,
+          });
+
+          if (existingMember) return c.json({ status: 200 });
 
           const member = await upsertMember({
             id: user,
@@ -284,10 +293,12 @@ export const slack = new Hono()
               locale,
               avatar_url: image_1024,
               job_title: title,
-              source: "SLACK",
-              workspace_id,
             },
+            source: "SLACK",
+            workspace_id,
           });
+
+          if (!member) return c.json({ status: 200 });
 
           const inviterMember = await getMember({
             slack_id: inviter,
@@ -296,27 +307,29 @@ export const slack = new Hono()
 
           if (!inviterMember) return c.json({ status: 200 });
 
-          await createActivity({
-            external_id: null,
+          await upsertActivity({
+            external_id: user,
             activity_type_key: "slack:invitation",
-            message: `<@${member.id}> has joined the community through your invitation`,
-            invite_to: member.id,
+            message: `<@${member.slack_id}> accepted your invitation`,
+            data: {
+              invite_to: member.id,
+              created_at: new Date(Number.parseFloat(event_ts) * 1000),
+              updated_at: new Date(Number.parseFloat(event_ts) * 1000),
+            },
             member_id: inviterMember.id,
-            created_at: new Date(Number.parseFloat(event_ts) * 1000),
-            updated_at: new Date(Number.parseFloat(event_ts) * 1000),
             workspace_id,
           });
 
-          await createActivity({
-            external_id: null,
+          await upsertActivity({
+            external_id: inviter,
             activity_type_key: "slack:join",
-            message: `${first_name} has joined the community`,
+            message: "Has joined the community",
             member_id: member.id,
             workspace_id,
           });
 
           await updateMemberMetrics.trigger({ member: inviterMember });
-          await updateMemberMetrics.trigger({ member });
+          await checkMerging({ member_id: member.id, workspace_id });
 
           break;
         }
@@ -368,9 +381,9 @@ export const slack = new Hono()
               locale: userInfo?.locale?.replace("-", "_"),
               avatar_url: image_1024,
               job_title: title,
-              source: "SLACK",
-              workspace_id,
             },
+            source: "SLACK",
+            workspace_id,
           });
 
           break;

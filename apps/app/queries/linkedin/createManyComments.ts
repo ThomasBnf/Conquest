@@ -1,4 +1,5 @@
 import type { LinkedInIntegration } from "@conquest/zod/schemas/integration.schema";
+import type { MemberWithCompany } from "@conquest/zod/schemas/member.schema";
 import type { Post } from "@conquest/zod/schemas/posts.schema";
 import type { SocialActions } from "@conquest/zod/types/linkedin";
 import { getLocaleByAlpha2 } from "country-locale-map";
@@ -18,6 +19,7 @@ export const createManyComments = async ({
   comments,
 }: Props) => {
   const { workspace_id } = linkedin;
+  const createdMembers: MemberWithCompany[] = [];
 
   for (const comment of comments) {
     const actorId = comment.created.actor.split(":").pop();
@@ -45,16 +47,15 @@ export const createManyComments = async ({
     const member = await upsertMember({
       id,
       data: {
-        linkedin_id: id,
         first_name: localizedFirstName,
         last_name: localizedLastName,
         linkedin_url: `https://www.linkedin.com/in/${vanityName}`,
         locale,
         avatar_url,
         job_title: localizedHeadline,
-        source: "LINKEDIN",
-        workspace_id,
       },
+      source: "LINKEDIN",
+      workspace_id,
     });
 
     await createActivity({
@@ -65,5 +66,9 @@ export const createManyComments = async ({
       member_id: member.id,
       workspace_id,
     });
+
+    createdMembers.push(member);
   }
+
+  return createdMembers;
 };

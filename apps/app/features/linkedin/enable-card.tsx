@@ -77,7 +77,7 @@ export const EnableCard = ({ error }: Props) => {
       <CardHeader className="flex h-14 flex-row items-center justify-between space-y-0">
         <div className="flex flex-1 items-center justify-between">
           <Link
-            href="https://docs.useconquest.com/linkedin"
+            href="https://docs.useconquest.com/integrations/linkedin"
             target="_blank"
             className={cn(
               buttonVariants({ variant: "link", size: "xs" }),

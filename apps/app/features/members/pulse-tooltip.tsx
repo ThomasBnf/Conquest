@@ -98,23 +98,31 @@ export const PulseTooltip = ({ member, showIcon = true }: Props) => {
         </div>
         <div className="flex w-full flex-col gap-1 text-start">
           {Object.entries(groupedActivities || {}).map(
-            ([source, activities]) => (
-              <div key={source} className="mb-2">
-                <p className="mb-1 text-xs opacity-60">{source}</p>
-                {Object.entries(activities).map(([name, items]) => (
-                  <div
-                    key={name}
-                    className="flex items-center justify-between text-sm"
-                  >
-                    <p className="w-36">{name}</p>
-                    <p className="flex items-baseline gap-1">
-                      {items.length} <span>x</span>{" "}
-                      {items[0]?.activity_type.weight}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            ),
+            ([source, activities]) => {
+              const sortedActivities = Object.entries(activities).sort(
+                (a, b) =>
+                  (b[1][0]?.activity_type.weight ?? 0) -
+                  (a[1][0]?.activity_type.weight ?? 0),
+              );
+
+              return (
+                <div key={source} className="mb-2">
+                  <p className="mb-1 text-xs opacity-60">{source}</p>
+                  {sortedActivities.map(([name, items]) => (
+                    <div
+                      key={name}
+                      className="flex items-center justify-between text-sm"
+                    >
+                      <p className="w-36">{name}</p>
+                      <p className="flex items-baseline gap-1">
+                        {items.length} <span>x</span>{" "}
+                        {items[0]?.activity_type.weight}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              );
+            },
           )}
         </div>
       </TooltipContent>

@@ -1,12 +1,12 @@
 import { ListEventsSchema } from "@conquest/zod/types/livestorm";
 
 type Props = {
-  accessToken?: string;
+  access_token?: string;
   page: number;
   filter?: string;
 };
 
-export const listEvents = async ({ accessToken, page, filter }: Props) => {
+export const listEvents = async ({ access_token, page, filter }: Props) => {
   const params = new URLSearchParams({
     "page[size]": "100",
     "page[number]": page.toString(),
@@ -21,7 +21,7 @@ export const listEvents = async ({ accessToken, page, filter }: Props) => {
     `https://api.livestorm.co/v1/events?${params.toString()}`,
     {
       headers: {
-        Authorization: `Bearer ${accessToken}`,
+        Authorization: `Bearer ${access_token}`,
       },
     },
   );

@@ -38,14 +38,15 @@ export const MemberSidebar = ({ member, tags }: Props) => {
   const {
     id,
     slack_id,
+    discourse_username,
+    discord_username,
+    first_name,
+    last_name,
     source,
     job_title,
     avatar_url,
-    first_name,
-    last_name,
-    username,
-    locale,
     linkedin_url,
+    locale,
     first_activity,
     last_activity,
     created_at,
@@ -55,7 +56,8 @@ export const MemberSidebar = ({ member, tags }: Props) => {
     field:
       | "first_name"
       | "last_name"
-      | "username"
+      | "discourse_username"
+      | "discord_username"
       | "linkedin_url"
       | "company_id"
       | "job_title"
@@ -112,6 +114,7 @@ export const MemberSidebar = ({ member, tags }: Props) => {
           <FieldCard icon={<Linkedin size={16} />} label="Linkedin">
             <EditableLink
               defaultValue={linkedin_url}
+              href={linkedin_url}
               placeholder="Set linkedin url"
               onUpdate={(value) => onUpdateMember("linkedin_url", value)}
             />
@@ -119,7 +122,9 @@ export const MemberSidebar = ({ member, tags }: Props) => {
           {slack && (
             <FieldCard icon={<Slack size={14} />} label="Slack">
               <EditableLink
-                defaultValue={`${url}/team/${slack_id}`}
+                placeholder="Slack Id not available"
+                defaultValue={slack_id}
+                href={`${url}team/${slack_id}`}
                 editable={false}
               />
             </FieldCard>
@@ -127,8 +132,9 @@ export const MemberSidebar = ({ member, tags }: Props) => {
           {discourse && (
             <FieldCard icon={<Discourse size={14} />} label="Discourse">
               <EditableLink
-                defaultValue={`https://playground.lagrowthmachine.com/u/${username}/summary`}
-                editable={false}
+                placeholder="Set discourse username"
+                defaultValue={discourse_username}
+                href={`https://playground.lagrowthmachine.com/u/${discourse_username}/summary`}
               />
             </FieldCard>
           )}
@@ -147,13 +153,6 @@ export const MemberSidebar = ({ member, tags }: Props) => {
               defaultValue={last_name}
               placeholder="Set last name"
               onUpdate={(value) => onUpdateMember("last_name", value)}
-            />
-          </FieldCard>
-          <FieldCard icon="User" label="Username">
-            <EditableInput
-              defaultValue={username}
-              placeholder="Set username"
-              onUpdate={(value) => onUpdateMember("username", value)}
             />
           </FieldCard>
           <FieldCard icon="Building2" label="Company">
@@ -188,9 +187,9 @@ export const MemberSidebar = ({ member, tags }: Props) => {
             />
           </FieldCard>
         </div>
-        <Separator />
-        {discourse && (
+        {discourse?.details.community_url && (
           <>
+            <Separator />
             <div className="space-y-2 p-4">
               {user_fields?.map((user_field) => {
                 const { id, name } = user_field;
@@ -204,9 +203,9 @@ export const MemberSidebar = ({ member, tags }: Props) => {
                 );
               })}
             </div>
-            <Separator />
           </>
         )}
+        <Separator />
         <div className="space-y-2 p-4">
           {first_activity && (
             <FieldCard icon="Calendar" label="First activity">

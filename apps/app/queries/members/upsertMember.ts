@@ -1,6 +1,7 @@
 import { filteredDomain } from "@/features/members/helpers/filteredDomain";
 import { idParser } from "@/helpers/idParser";
 import { prisma } from "@/lib/prisma";
+import type { Source } from "@conquest/zod/enum/source.enum";
 import {
   type Company,
   CompanySchema,
@@ -9,9 +10,6 @@ import {
   type Member,
   MemberWithCompanySchema,
 } from "@conquest/zod/schemas/member.schema";
-import cuid from "cuid";
-import { getMember } from "./getMember";
-import { mergeMembers } from "./mergeMembers";
 
 type Props = {
   id: string;
@@ -19,14 +17,17 @@ type Props = {
     primary_email?: string;
     phones?: string[];
   };
+  source: Source;
+  workspace_id: string;
 };
 
-export const upsertMember = async (props: Props) => {
-  const { id, data } = props;
-  const { primary_email, phones, source, workspace_id } = data;
-
-  if (!source) throw new Error("Source is required");
-  if (!workspace_id) throw new Error("Workspace ID is required");
+export const upsertMember = async ({
+  id,
+  data,
+  source,
+  workspace_id,
+}: Props) => {
+  const { primary_email, phones } = data;
 
   const formattedEmail = primary_email?.toLowerCase().trim();
   const formattedPhones = phones?.map((phone) => phone.toLowerCase().trim());
@@ -65,15 +66,6 @@ export const upsertMember = async (props: Props) => {
   const parsedId = idParser({ id, source });
 
   const whereClause = () => {
-    if (formattedEmail) {
-      return {
-        primary_email_workspace_id: {
-          primary_email: formattedEmail,
-          workspace_id,
-        },
-      };
-    }
-
     if (id && source === "SLACK") {
       return {
         slack_id_workspace_id: {
@@ -116,39 +108,7 @@ export const upsertMember = async (props: Props) => {
     };
   };
 
-  if (formattedEmail) {
-    const existingMember = await getMember({
-      email: formattedEmail,
-      workspace_id,
-    });
-
-    if (existingMember && existingMember.source !== source) {
-      const tempEmail = `${cuid()}@mail.com`;
-      const createdMember = MemberWithCompanySchema.parse(
-        await prisma.members.create({
-          data: {
-            ...data,
-            ...parsedId,
-            primary_email: tempEmail,
-            phones: formattedPhones ?? [],
-            company_id: company?.id ?? null,
-            source,
-            workspace_id,
-          },
-          include: {
-            company: true,
-          },
-        }),
-      );
-
-      return await mergeMembers({
-        leftMember: createdMember,
-        rightMember: existingMember,
-      });
-    }
-  }
-
-  const newMember = await prisma.members.upsert({
+  const member = await prisma.members.upsert({
     where: whereClause(),
     update: {
       ...data,
@@ -162,7 +122,7 @@ export const upsertMember = async (props: Props) => {
       ...data,
       ...parsedId,
       primary_email: formattedEmail ?? null,
-      phones: formattedPhones ?? undefined,
+      phones: formattedPhones ?? [],
       company_id: company?.id ?? null,
       source,
       workspace_id,
@@ -172,5 +132,5 @@ export const upsertMember = async (props: Props) => {
     },
   });
 
-  return MemberWithCompanySchema.parse(newMember);
+  return MemberWithCompanySchema.parse(member);
 };

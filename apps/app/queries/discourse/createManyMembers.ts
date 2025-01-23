@@ -1,15 +1,16 @@
 import { calculateMemberMetrics } from "@/client/dashboard/calculateMemberMetrics";
-import { sleep } from "@/helpers/sleep";
 import type { DiscourseIntegration } from "@conquest/zod/schemas/integration.schema";
+import type { MemberWithCompany } from "@conquest/zod/schemas/member.schema";
 import type { Tag } from "@conquest/zod/schemas/tag.schema";
 import {
   type AdminListUsers,
   AdminListUsersSchema,
   DirectoryItemsSchema,
 } from "@conquest/zod/types/discourse";
+import { wait } from "@trigger.dev/sdk/v3";
 import { getLocaleByAlpha2 } from "country-locale-map";
 import type DiscourseAPI from "discourse2";
-import { upsertMember } from "../members/upsertMember";
+import { createMember } from "../members/createMember";
 import { createManyActivities } from "./createManyActivities";
 import { createManyInvites } from "./createManyInvites";
 import { createManyReactions } from "./createManyReactions";
@@ -27,6 +28,7 @@ export const createManyMembers = async ({
   const { community_url, api_key, user_fields } = discourse.details;
 
   let members: AdminListUsers[] = [];
+  const createdMembers: MemberWithCompany[] = [];
 
   let page = 0;
   let hasMore = true;
@@ -47,7 +49,7 @@ export const createManyMembers = async ({
     members = [...members, ...parsedListOfUsers];
     page += 1;
 
-    await sleep(500);
+    await wait.for({ seconds: 0.5 });
   }
 
   let _page = 0;
@@ -116,23 +118,22 @@ export const createManyMembers = async ({
         value,
       }));
 
-      const member = await upsertMember({
-        id: String(id),
+      const member = await createMember({
         data: {
+          discourse_id: String(id),
           first_name: firstName,
           last_name: lastName,
-          username,
+          discourse_username: username,
           primary_email: email,
-          phones: [],
           locale,
           avatar_url: avatarUrl,
           job_title: title,
           tags: memberTags,
           custom_fields,
-          source: "DISCOURSE",
           created_at: new Date(created_at),
-          workspace_id,
         },
+        source: "DISCOURSE",
+        workspace_id,
       });
 
       await createManyReactions({
@@ -140,28 +141,32 @@ export const createManyMembers = async ({
         member,
       });
 
-      await sleep(500);
+      await wait.for({ seconds: 0.5 });
 
       await createManyInvites({
         discourse,
         member,
       });
 
-      await sleep(500);
+      await wait.for({ seconds: 0.5 });
 
       await createManyActivities({
         client,
         member,
       });
 
-      await sleep(500);
+      await wait.for({ seconds: 0.5 });
 
-      await calculateMemberMetrics({ member });
+      const updatedMember = await calculateMemberMetrics({ member });
 
-      await sleep(2500);
+      createdMembers.push(updatedMember);
+
+      await wait.for({ seconds: 2.5 });
     }
 
     if (data.directory_items.length < 50) _hasMore = false;
     _page += 1;
   }
+
+  return createdMembers;
 };

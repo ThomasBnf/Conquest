@@ -1,6 +1,6 @@
-import { sleep } from "@/helpers/sleep";
 import type { Channel } from "@conquest/zod/schemas/channel.schema";
 import type { ReponseListTopics } from "@conquest/zod/types/discourse";
+import { wait } from "@trigger.dev/sdk/v3";
 import { createActivity } from "../activities/createActivity";
 import { getMember } from "../members/getMember";
 
@@ -98,7 +98,7 @@ export const listTopics = async ({
         workspace_id: member.workspace_id,
       });
 
-      await sleep(200);
+      await wait.for({ seconds: 0.2 });
     }
 
     if (pageTopics.length < 30) {

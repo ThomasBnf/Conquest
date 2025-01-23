@@ -48,13 +48,13 @@ export const createManyMembers = async ({ discord, tags }: Props) => {
           data: {
             first_name: firstName,
             last_name: lastName,
-            username,
+            discord_username: username,
             avatar_url: avatarUrl,
             tags: memberTags,
-            source: "DISCORD",
             created_at: new Date(joined_at),
-            workspace_id,
           },
+          source: "DISCORD",
+          workspace_id,
         });
       } catch (error) {
         console.error("Error creating member", error);

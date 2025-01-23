@@ -37,17 +37,29 @@ export const ListDiscordChannels = ({ loading, setLoading }: Props) => {
   const { discordChannels, isLoading } = listDiscordChannels();
   const router = useRouter();
 
-  const allFilteredChannels =
-    discordChannels
-      ?.sort((a, b) => a.position - b.position)
-      .filter(
-        (channel) =>
-          channel.parent_id !== null &&
-          !EXCLUDED_CHANNEL_TYPES.includes(channel.type),
-      ) ?? [];
+  const categoriesChannels = discordChannels
+    ?.filter(
+      (channel) =>
+        channel.type === ChannelType.GuildCategory &&
+        !channel.permission_overwrites?.some(
+          (permission) => permission.deny === "1024",
+        ),
+    )
+    .sort((a, b) => a.position - b.position);
+
+  const subChannels = discordChannels?.filter(
+    (channel) =>
+      categoriesChannels?.some(
+        (category) => category.id === channel.parent_id,
+      ) &&
+      !EXCLUDED_CHANNEL_TYPES.includes(channel.type) &&
+      !channel.permission_overwrites?.some(
+        (permission) => permission.deny === "1024",
+      ),
+  );
 
   const isAllSelected =
-    selectedChannels.length === allFilteredChannels.length && !isLoading;
+    selectedChannels.length === subChannels?.length && !isLoading;
 
   const onSelect = (channel: APIGuildCategoryChannel) => {
     if (!channel) return;
@@ -60,22 +72,14 @@ export const ListDiscordChannels = ({ loading, setLoading }: Props) => {
   };
 
   const onSelectAll = () => {
-    const allSubChannels = discordChannels?.filter(
-      (channel) =>
-        channel.parent_id !== null &&
-        !EXCLUDED_CHANNEL_TYPES.includes(channel.type),
-    );
-
-    setSelectedChannels(allSubChannels ?? []);
+    setSelectedChannels(subChannels ?? []);
   };
 
   const onUnselectAll = () => setSelectedChannels([]);
 
   const { submit, run, error } = useRealtimeTaskTrigger<typeof installDiscord>(
     "install-discord",
-    {
-      accessToken: discord?.trigger_token,
-    },
+    { accessToken: discord?.trigger_token },
   );
 
   const onStart = async () => {
@@ -121,57 +125,45 @@ export const ListDiscordChannels = ({ loading, setLoading }: Props) => {
       ) : (
         <>
           <div className="mt-2 flex flex-col gap-4">
-            {discordChannels?.map((channel) => {
-              if (
-                channel.parent_id !== null ||
-                EXCLUDED_CHANNEL_TYPES.includes(channel.type)
-              ) {
-                return null;
-              }
-
-              const subChannels = discordChannels
-                ?.filter(
-                  (c) =>
-                    c.parent_id === channel.id &&
-                    !EXCLUDED_CHANNEL_TYPES.includes(c.type),
-                )
-                .sort((a, b) => a.position - b.position);
-
-              if (!subChannels?.length) return null;
-
+            {categoriesChannels?.map((category) => {
               return (
-                <div key={channel.id}>
+                <div key={category.id} className="mt-2 flex flex-col gap-2">
                   <p className="font-medium text-muted-foreground text-xs uppercase">
-                    {channel.name}
+                    {category.name}
                   </p>
-                  <div className="mt-2 flex flex-col gap-1">
-                    {subChannels.map((subChannel) => {
-                      const isSelected = selectedChannels.some(
-                        (channel) => channel === subChannel,
-                      );
+                  <div className="flex flex-col gap-1">
+                    {subChannels
+                      ?.filter(
+                        (subChannel) => subChannel.parent_id === category.id,
+                      )
+                      .sort((a, b) => a.position - b.position)
+                      .map((subChannel) => {
+                        const isSelected = selectedChannels.some(
+                          (channel) => channel === subChannel,
+                        );
 
-                      const hasImported = channels?.some(
-                        (channel) => channel.external_id === subChannel.id,
-                      );
+                        const hasImported = channels?.some(
+                          (channel) => channel.external_id === subChannel.id,
+                        );
 
-                      return (
-                        <button
-                          type="button"
-                          key={subChannel.id}
-                          className={cn(
-                            "flex items-center gap-2",
-                            (hasImported || loading) && "opacity-50",
-                          )}
-                          onClick={() => onSelect(subChannel)}
-                        >
-                          <Checkbox
-                            checked={isSelected || hasImported}
-                            disabled={hasImported || loading}
-                          />
-                          <p>{subChannel.name}</p>
-                        </button>
-                      );
-                    })}
+                        return (
+                          <button
+                            type="button"
+                            key={subChannel.id}
+                            className={cn(
+                              "flex items-center gap-2",
+                              (hasImported || loading) && "opacity-50",
+                            )}
+                            onClick={() => onSelect(subChannel)}
+                          >
+                            <Checkbox
+                              checked={isSelected || hasImported}
+                              disabled={hasImported || loading}
+                            />
+                            <p>{subChannel.name}</p>
+                          </button>
+                        );
+                      })}
                   </div>
                 </div>
               );

@@ -28,10 +28,7 @@ export const listReplies = async ({ web, channel, reply_to }: Props) => {
 
       if (!user) continue;
 
-      const member = await getMember({
-        slack_id: user,
-        workspace_id,
-      });
+      const member = await getMember({ slack_id: user, workspace_id });
 
       if (!member) continue;
 

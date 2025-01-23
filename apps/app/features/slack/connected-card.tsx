@@ -81,7 +81,7 @@ export const ConnectedCard = ({ channels }: Props) => {
           </div>
           <Separator className="my-4" />
           <div>
-            <p className="mb-2 font-medium">Imported Channels</p>
+            <p className="mb-2 font-medium">Channels</p>
             <div className="space-y-1">
               {channels?.map((channel) => (
                 <p key={channel.id}># {channel.name}</p>

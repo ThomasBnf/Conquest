@@ -30,8 +30,8 @@ export const updateMemberMetrics = schemaTask({
         pulse,
         presence,
         level,
-        first_activity: firstActivity?.created_at,
-        last_activity: activities.at(-1)?.created_at,
+        first_activity: firstActivity?.created_at ?? null,
+        last_activity: activities.at(-1)?.created_at ?? null,
       },
     });
   },
