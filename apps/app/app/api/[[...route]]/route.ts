@@ -13,7 +13,6 @@ import { livestorm } from "@/server/livestorm/route";
 import { members } from "@/server/members/route";
 import { slack } from "@/server/slack/route";
 import { tags } from "@/server/tags/route";
-import { webhook } from "@/server/webhook/route";
 import { workflows } from "@/server/workflows/route";
 import { Hono } from "hono";
 import { handle } from "hono/vercel";
@@ -43,7 +42,6 @@ const api = app
   .route("/members", members)
   .route("/slack", slack)
   .route("/tags", tags)
-  .route("/webhook", webhook)
   .route("/workflows", workflows);
 
 export const GET = handle(api);

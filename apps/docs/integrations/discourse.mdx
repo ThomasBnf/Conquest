@@ -5,10 +5,10 @@ icon: "discourse"
 iconType: "solid"
 ---
 
-The Conquest Discourse integration enables you to access and manage community data from your Discourse workspace. Gain insights into member activity, topics, replies, and engagement metrics, all in one place.
+The Conquest Discourse integration enables you to access and manage community data from your Discourse workspace. Gain insights into member activities, topics, replies, and engagement metrics, all in one place.
 
 <Note>
-  We can only collect data from the last 365 days.
+  We only collect data from the last 365 days.
 </Note>
 
 ## Data Collection
@@ -23,7 +23,7 @@ The integration collects information about:
 - **Avatar** if provided
 - **Locale** if provided
 - **Tags**
-- **Custom Fields**
+- **User Fields**
 - **Joined Date**
 
 ### Community Activity
@@ -31,8 +31,8 @@ The integration collects information about:
 - **Topics** from all categories
 - **Replies** to topics
 - **Reactions** on posts
-- **Solved marks** on responses
-- **Invitations** sent to new members
+- **Replies marked as solved**
+- **Invitations**
 
 ## Activity Types
 
@@ -47,24 +47,23 @@ When you connect your Discourse workspace, activity types are automatically gene
 - **Write a topic** - 6 weight
 - **Reply to topic** - 5 weight
 - **Join Discourse community** - 4 weight
-- **Login** - 0 weight
 - **Add reaction** - 0 weight
+- **Login** - 0 weight
 
 ## Real-Time Updates
 
-Once connected, Conquest syncs the following events in real-time:
+Once connected and webhook is configured, Conquest syncs the following events in real-time:
 - **Members joining the workspace**
 - **Topics, replies, and reactions**
 - **Category creation, updates, and deletion**
 - **Post marked as solved**
-- **API disconnection**
 
 ## Merging Members
 
 <Tip>
   When new Discourse activity occurs, we automatically:
   1. Check if the member exists in your Conquest workspace
-  2. Create a new member if they don't exist
+  2. Create a new member if  doesn't exist
   3. Merge with an existing member if we find a matching email
 </Tip>
 
@@ -105,7 +104,7 @@ Once connected, Conquest syncs the following events in real-time:
 
     <ParamField path="User Fields">
       If you have custom user fields, you can add them here.
-      Navigate to and add **".json"** to the end of the URL, eg:"https://your-discourse-community/admin/config/user-fields.json".
+      Add**".json"** to the end of your community URL, eg:"https://your-discourse-community/admin/config/user-fields.json".
 
       You will get a JSON response like this:
 
@@ -130,7 +129,7 @@ Once connected, Conquest syncs the following events in real-time:
     You can create a webhook by navigating to **Admin** > **Advanced** > **Webhooks** > **Add Webhook**
 
     <ParamField path="Payload URL">
-      Add the following URL: `https://app.useconquest.com/api/discourse/webhook`
+      Add the following URL: `https://app.useconquest.com/api/discourse`
     </ParamField>
 
     <ParamField path="Content Type">
@@ -138,7 +137,8 @@ Once connected, Conquest syncs the following events in real-time:
     </ParamField>
 
     <ParamField path="Secret">
-      Add a secret provided by Conquest. (It use to verify the webhook)
+      Add a secret provided by Conquest. (It is used to verify the webhook)
+      <Warning>This signature is essential for webhook authentication. Without it, we cannot create activities and sync your community in real-time.</Warning>
     </ParamField>
 
     <ParamField path="Events">
@@ -152,12 +152,8 @@ Once connected, Conquest syncs the following events in real-time:
     Conquest will begin importing historical data.
     
     <Note>
-      We can only collect data from the last 365 days.
+      We only collect data from the last 365 days.
     </Note>
-
-    <Frame>
-      ![Discourse Collecting](/images/discourse-collecting.png)
-    </Frame>
   </Step>
 </Steps>
 
@@ -168,14 +164,14 @@ Once connected, Conquest syncs the following events in real-time:
 ## FAQ
 
 <AccordionGroup>
-  <Accordion title="Why can't I connect my Discourse community?">
-    - Verify that you have admin privileges in your Discourse community
-    - Ensure your API credentials are correctly configured
-    - Check if your Discourse version is compatible
-  </Accordion>
-  
-  <Accordion title="How long does data collection take?">
-    The data collection duration depends on your community size and can take from a few minutes to several hours to complete.
+   <Accordion title="Why my community updates are not showing in Conquest?">
+    If you are not seeing your community updates in Conquest, the most common cause is an incorrect webhook configuration. Please verify that:
+    - You've added the correct secret key provided by Conquest
+    - The webhook URL is exactly `https://app.useconquest.com/api/discourse`
+    - Content type is set to "application/json"
+    - All events are selected ("Send me everything")
+
+    Without proper webhook configuration, especially the secret key, we cannot authenticate and process real-time updates from your community.
   </Accordion>
 </AccordionGroup>
 

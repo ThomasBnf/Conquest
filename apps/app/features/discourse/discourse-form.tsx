@@ -37,13 +37,7 @@ type Props = {
 
 export const DiscourseForm = ({ loading, setLoading }: Props) => {
   const { discourse } = useUser();
-  const [fields, setFields] = useState<Field[]>([
-    // { id: "1234", external_id: "12", name: "Company" },
-    // { id: "1235", external_id: "13", name: "Linkedin Profile" },
-    // { id: "1236", external_id: "8", name: "Language" },
-    // { id: "1237", external_id: "11", name: "Sell services" },
-    // { id: "1238", external_id: "3", name: "Need VS Expertise" },
-  ]);
+  const [fields, setFields] = useState<Field[]>([]);
   const router = useRouter();
 
   const { submit, run, error } = useRealtimeTaskTrigger<
@@ -52,15 +46,6 @@ export const DiscourseForm = ({ loading, setLoading }: Props) => {
 
   const form = useForm<FormDiscourse>({
     resolver: zodResolver(FormDiscourseSchema),
-    // defaultValues: {
-    //   community_url: "https://playground.lagrowthmachine.com",
-    //   api_key:
-    //     "a7e80919eecc82b71fe8a23d8d0e199bf3d593216835315133254de014e9e1b3",
-    //   payload_url: true,
-    //   content_type: true,
-    //   secret: true,
-    //   send_me_everything: true,
-    // },
   });
 
   const onSubmit = async ({ community_url, api_key }: FormDiscourse) => {

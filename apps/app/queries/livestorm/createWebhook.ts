@@ -13,6 +13,6 @@ export const createWebhook = async ({ accessToken, event }: Props) => {
       accept: "application/vnd.api+json",
       "content-type": "application/vnd.api+json",
     },
-    body: `{"data":{"type":"webhooks","attributes":{"url":"${env.NEXT_PUBLIC_BASE_URL}/api/webhook/livestorm","event":"${event}"}}}`,
+    body: `{"data":{"type":"webhooks","attributes":{"url":"${env.NEXT_PUBLIC_BASE_URL}/api/livestorm","event":"${event}"}}}`,
   });
 };
