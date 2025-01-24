@@ -45,7 +45,7 @@
   "navigation": [
     {
       "group": "Getting Started",
-      "pages": ["quickstart"]
+      "pages": ["quickstart", "changelog"]
     },
     {
       "group": "Pulse System",
