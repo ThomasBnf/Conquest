@@ -149,7 +149,7 @@ export const FilterButton = ({ filters, setFilters, handleUpdate }: Props) => {
             ) : (
               <Command>
                 <CommandInput placeholder="Search filter..." />
-                <CommandList>
+                <CommandList className="max-h-[450px]">
                   <CommandGroup heading="Activity">
                     {filtersActivity.map((filter) => (
                       <CommandItem
@@ -183,9 +183,25 @@ export const FilterButton = ({ filters, setFilters, handleUpdate }: Props) => {
 const filtersMember: Filter[] = [
   {
     id: "1",
-    label: "Tag",
+    label: "Country",
     type: "select",
-    field: "tags",
+    field: "country",
+    operator: "contains",
+    values: [],
+  },
+  {
+    id: "1",
+    label: "Job title",
+    type: "text",
+    field: "job_title",
+    operator: "contains",
+    value: "",
+  },
+  {
+    id: "1",
+    label: "Language",
+    type: "select",
+    field: "language",
     operator: "contains",
     values: [],
   },
@@ -196,6 +212,30 @@ const filtersMember: Filter[] = [
     field: "level",
     operator: "greater or equal",
     value: 1,
+  },
+  {
+    id: "1",
+    label: "Linked profiles",
+    type: "select",
+    field: "linked_profiles",
+    operator: "contains",
+    values: [],
+  },
+  {
+    id: "1",
+    label: "Phones",
+    type: "text",
+    field: "phones",
+    operator: "contains",
+    value: "",
+  },
+  {
+    id: "1",
+    label: "Primary email",
+    type: "text",
+    field: "primary_email",
+    operator: "contains",
+    value: "",
   },
   {
     id: "1",
@@ -215,49 +255,18 @@ const filtersMember: Filter[] = [
   },
   {
     id: "1",
-    label: "Language",
+    label: "Tags",
     type: "select",
-    field: "language",
+    field: "tags",
     operator: "contains",
     values: [],
-  },
-  {
-    id: "1",
-    label: "Country",
-    type: "select",
-    field: "country",
-    operator: "contains",
-    values: [],
-  },
-  {
-    id: "1",
-    label: "Job title",
-    type: "text",
-    field: "job_title",
-    operator: "contains",
-    value: "",
-  },
-  {
-    id: "1",
-    label: "Primary email",
-    type: "text",
-    field: "primary_email",
-    operator: "contains",
-    value: "",
-  },
-  {
-    id: "1",
-    label: "Phones",
-    type: "text",
-    field: "phones",
-    operator: "contains",
-    value: "",
   },
 ];
 
 const filtersActivity: Filter[] = [
   {
     id: "1",
+    who: "who_did",
     label: "Activity type",
     type: "activity",
     field: "activity_type",

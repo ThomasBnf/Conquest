@@ -6,14 +6,18 @@ import {
   FilterActivitySchema,
   NumberOperatorSchema,
   type Operator,
+  type WhoOptions,
+  WhoOptionsSchema,
   type FilterActivity as _FilterActivity,
 } from "@conquest/zod/schemas/filters.schema";
 import { X } from "lucide-react";
 import type { Dispatch, SetStateAction } from "react";
 import { ActivityTypePicker } from "./activity-type-picker";
+import { FilterMenu } from "./filter-menu";
 import { InputDialog } from "./input-dialog";
 import { OperatorPicker } from "./operator-picker";
 import { RelativePicker } from "./relative-picker";
+import { WhoPicker } from "./who-picker";
 
 type Props = {
   filter: _FilterActivity;
@@ -26,7 +30,7 @@ export const FilterActivity = ({ filter, setFilters, handleUpdate }: Props) => {
 
   const filterActivity = FilterActivitySchema.parse(filter);
 
-  const handleDeleteFilter = () => {
+  const onDeleteFilter = () => {
     setFilters((prevFilters) => {
       const newFilters = prevFilters.filter((f) => f.id !== filter.id);
 
@@ -35,7 +39,21 @@ export const FilterActivity = ({ filter, setFilters, handleUpdate }: Props) => {
     });
   };
 
-  const handleUpdateActivityTypes = ({
+  const onUpdateWho = (option: WhoOptions) => {
+    if (filter.type === "activity") {
+      const who = WhoOptionsSchema.parse(option);
+      setFilters((prevFilters) => {
+        const newFilters = prevFilters.map((f) =>
+          f.id === filter.id ? { ...filter, who } : f,
+        );
+
+        handleUpdate?.(newFilters);
+        return newFilters;
+      });
+    }
+  };
+
+  const onUpdateActivityTypes = ({
     key,
     name,
   }: {
@@ -65,7 +83,7 @@ export const FilterActivity = ({ filter, setFilters, handleUpdate }: Props) => {
     });
   };
 
-  const handleUpdateOperator = (operator: Operator) => {
+  const onUpdateOperator = (operator: Operator) => {
     if (filter.type === "activity") {
       const numberOperator = NumberOperatorSchema.parse(operator);
 
@@ -80,7 +98,7 @@ export const FilterActivity = ({ filter, setFilters, handleUpdate }: Props) => {
     }
   };
 
-  const handleApply = (query: string | number) => {
+  const onApply = (query: string | number) => {
     if (!filter) return;
 
     setFilters((prev) => {
@@ -96,7 +114,7 @@ export const FilterActivity = ({ filter, setFilters, handleUpdate }: Props) => {
     });
   };
 
-  const handleUpdateDate = (dynamic_date: DynamicDate) => {
+  const onUpdateDate = (dynamic_date: DynamicDate) => {
     setFilters((prev) => {
       const newFilters = prev.map((f) =>
         f.id === filter.id ? { ...filter, dynamic_date } : f,
@@ -107,37 +125,49 @@ export const FilterActivity = ({ filter, setFilters, handleUpdate }: Props) => {
     });
   };
 
+  const onUpdateDisplayCount = (display_count: boolean) => {
+    setFilters((prev) => {
+      const newFilters = prev.map((f) =>
+        f.id === filter.id ? { ...filter, display_count } : f,
+      );
+
+      handleUpdate?.(newFilters);
+      return newFilters;
+    });
+  };
+
   return (
-    <div className="flex h-8 items-center overflow-hidden rounded-md border">
-      <p className="h-full place-content-center bg-muted px-2 first-letter:capitalize">
-        Who did
-      </p>
+    <div className="flex h-8 w-fit items-center overflow-hidden rounded-md border">
+      <WhoPicker filter={filter} handleUpdate={onUpdateWho} />
       <Separator orientation="vertical" />
       <ActivityTypePicker
         filter={filter}
-        handleUpdateActivityTypes={handleUpdateActivityTypes}
+        handleUpdateActivityTypes={onUpdateActivityTypes}
       />
+      {filter.display_count && (
+        <>
+          <Separator orientation="vertical" />
+          <OperatorPicker
+            filter={filterActivity}
+            handleUpdate={onUpdateOperator}
+          />
+          <Separator orientation="vertical" />
+          <InputDialog
+            type="number"
+            filter={filter}
+            handleApply={onApply}
+            triggerButton
+          />
+        </>
+      )}
       <Separator orientation="vertical" />
-      <OperatorPicker
-        filter={filterActivity}
-        handleUpdate={handleUpdateOperator}
-      />
+      <RelativePicker filter={filterActivity} handleUpdateDate={onUpdateDate} />
       <Separator orientation="vertical" />
-      <InputDialog
-        type="number"
-        filter={filter}
-        handleApply={handleApply}
-        triggerButton
-      />
-      <Separator orientation="vertical" />
-      <RelativePicker
-        filter={filterActivity}
-        handleUpdateDate={handleUpdateDate}
-      />
+      <FilterMenu filter={filter} handleUpdate={onUpdateDisplayCount} />
       <Separator orientation="vertical" />
       <Button
         variant="ghost"
-        onClick={handleDeleteFilter}
+        onClick={onDeleteFilter}
         className="h-full rounded-none"
       >
         <X size={15} />

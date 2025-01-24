@@ -38,7 +38,7 @@ export default async function Page({ searchParams: { code } }: Props) {
   const { access_token, expires_in, refresh_token, scope } = data;
 
   await createIntegration({
-    external_id: null,
+    external_id: user.workspace_id,
     details: {
       source: "LIVESTORM",
       name: "",

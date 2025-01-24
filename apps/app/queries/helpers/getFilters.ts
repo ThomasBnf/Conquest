@@ -79,6 +79,13 @@ export const getFilters = ({ filters }: Props) => {
                   : Prisma.sql`m.locale != ${value}`;
               }
 
+              if (field === "linked_profiles") {
+                const profileField = `${value.toLowerCase()}_id`;
+                return operator === "contains"
+                  ? Prisma.sql`m.${Prisma.raw(profileField)} IS NOT NULL`
+                  : Prisma.sql`m.${Prisma.raw(profileField)} IS NULL`;
+              }
+
               const likePattern = `%${value}%`;
               return operator === "contains"
                 ? Prisma.sql`m.${fieldCondition}::text ILIKE ${likePattern}`
@@ -141,28 +148,40 @@ export const getFilters = ({ filters }: Props) => {
     if (filter.type === "activity" && filter.activity_types.length) {
       const {
         activity_types,
+        who,
         operator,
         value: count,
         dynamic_date,
+        display_count,
       } = FilterActivitySchema.parse(filter);
 
       const intervalStr = `'${dynamic_date}'::interval`;
-
       const activityKeys = activity_types.map((at) => at.key);
       const operatorParsed = getOperator(operator);
 
-      const condition = Prisma.sql`(
-        SELECT COUNT(*)
+      if (display_count) {
+        return Prisma.sql`(
+          SELECT COUNT(*)
+          FROM activities a
+          JOIN activities_types at ON a.activity_type_id = at.id
+          WHERE a.member_id ${who === "who_did_not" ? Prisma.sql`!=` : Prisma.sql`=`} m.id
+          AND at.key = ANY(${Prisma.raw(
+            `ARRAY[${activityKeys.map((key) => `'${key}'`).join(",")}]`,
+          )})
+          AND a.created_at >= NOW() - ${Prisma.raw(intervalStr)}
+        ) ${Prisma.raw(operatorParsed)} ${count}`;
+      }
+
+      return Prisma.sql`EXISTS (
+        SELECT 1
         FROM activities a
         JOIN activities_types at ON a.activity_type_id = at.id
-        WHERE a.member_id = m.id
+        WHERE a.member_id ${who === "who_did_not" ? Prisma.sql`!=` : Prisma.sql`=`} m.id
         AND at.key = ANY(${Prisma.raw(
           `ARRAY[${activityKeys.map((key) => `'${key}'`).join(",")}]`,
         )})
         AND a.created_at >= NOW() - ${Prisma.raw(intervalStr)}
-      ) ${Prisma.raw(operatorParsed)} ${count}`;
-
-      return condition;
+      )`;
     }
 
     return Prisma.sql`TRUE`;

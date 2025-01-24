@@ -9,7 +9,10 @@ export const colors = [
   "#EB5756",
 ];
 
-import type { Operator } from "@conquest/zod/schemas/filters.schema";
+import type {
+  Operator,
+  WhoOptions,
+} from "@conquest/zod/schemas/filters.schema";
 
 export const OPERATORS: Operator[] = [
   "contains",
@@ -23,6 +26,8 @@ export const OPERATORS: Operator[] = [
   "empty",
   "not_empty",
 ];
+
+export const WHO_OPTIONS: WhoOptions[] = ["who_did", "who_did_not"] as const;
 
 import type { RepeatOn } from "@conquest/zod/schemas/node.schema";
 

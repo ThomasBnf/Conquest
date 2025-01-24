@@ -1,6 +1,7 @@
 import { CountryBadge } from "@/components/custom/country-badge";
 import { LanguageBadge } from "@/components/custom/language-badge";
 import { SourceBadge } from "@/components/custom/source-badge";
+import { useUser } from "@/context/userContext";
 import { client } from "@/lib/rpc";
 import { Button } from "@conquest/ui/button";
 import { Checkbox } from "@conquest/ui/checkbox";
@@ -42,6 +43,7 @@ export const SelectPicker = ({
   triggerButton,
   handleUpdate,
 }: Props) => {
+  const { user } = useUser();
   const { setTab } = useTab();
   const [open, setOpen] = useState(false);
 
@@ -53,7 +55,7 @@ export const SelectPicker = ({
         case "language": {
           const response = await client.api.members.locales.$get();
           const allLocales = await response.json();
-          // Extract language codes and remove duplicates
+
           const uniqueLanguages = [
             ...new Set(
               allLocales
@@ -77,6 +79,12 @@ export const SelectPicker = ({
           const response = await client.api.tags.$get();
 
           return TagSchema.array().parse(await response.json());
+        }
+        case "linked_profiles": {
+          return user?.workspace.integrations.map((integration) => {
+            const { source } = integration.details;
+            return source.charAt(0) + source.slice(1).toLowerCase();
+          });
         }
         default:
           return [];
@@ -153,7 +161,13 @@ export const SelectPicker = ({
       <CommandInput autoFocus placeholder="Search value..." />
       <CommandList>
         {!isLoading && (
-          <CommandEmpty>No {filter?.label.toLowerCase()}s found</CommandEmpty>
+          <CommandEmpty>
+            {filter?.field === "linked_profiles"
+              ? "No linked profiles found"
+              : filter?.field === "tags"
+                ? "No tags found"
+                : `No ${filter?.label.toLowerCase()}s found`}
+          </CommandEmpty>
         )}
         <CommandGroup>
           {isLoading ? (
@@ -182,6 +196,8 @@ export const SelectPicker = ({
                     return (
                       <LanguageBadge locale={parseItem} variant="transparent" />
                     );
+                  case "linked_profiles":
+                    return <p>{parseItem}</p>;
                   default:
                     return <TagBadge tag={item as Tag} />;
                 }
@@ -196,10 +212,8 @@ export const SelectPicker = ({
                       : handleSelect(parseItem)
                   }
                 >
-                  <div className="flex items-center gap-2">
-                    <Checkbox checked={isSelected} />
-                    {renderBadge()}
-                  </div>
+                  <Checkbox checked={isSelected} className="mr-2" />
+                  {renderBadge()}
                 </CommandItem>
               );
             })
@@ -228,7 +242,11 @@ export const SelectPicker = ({
               <div className="flex flex-wrap gap-1">
                 {selectedItems.length > 1 ? (
                   <p className="lowercase">
-                    {selectedItems.length} {filter.label}s
+                    {filter.field === "linked_profiles"
+                      ? `${selectedItems.length} linked profiles`
+                      : filter.field === "tags"
+                        ? `${selectedItems.length} tags`
+                        : `${selectedItems.length} ${filter.label}s`}
                   </p>
                 ) : (
                   selectedItems.map((item) =>
@@ -239,7 +257,10 @@ export const SelectPicker = ({
                         ) : filter.field === "language" ? (
                           <LanguageBadge locale={item} variant="transparent" />
                         ) : filter.field === "source" ? (
-                          <SourceBadge source={item as Source} />
+                          <SourceBadge
+                            source={item as Source}
+                            variant="transparent"
+                          />
                         ) : (
                           item
                         )}

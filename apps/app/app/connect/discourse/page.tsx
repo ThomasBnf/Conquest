@@ -7,7 +7,7 @@ export default async function Page() {
   const { slug, id: workspace_id } = user.workspace;
 
   await createIntegration({
-    external_id: null,
+    external_id: user.workspace_id,
     details: {
       source: "DISCOURSE",
       community_url: "",

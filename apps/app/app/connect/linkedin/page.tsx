@@ -53,7 +53,7 @@ export default async function Page({ searchParams: { code } }: Props) {
 
   if (integrations.length === 0) {
     await createIntegration({
-      external_id: null,
+      external_id: user.workspace_id,
       details: {
         source: "LINKEDIN",
         name: "",

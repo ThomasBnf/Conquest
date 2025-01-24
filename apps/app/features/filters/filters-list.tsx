@@ -40,7 +40,7 @@ export const FiltersList = ({
       <div className="flex h-8 w-fit items-center divide-x overflow-hidden rounded-md border">
         <PopoverTrigger asChild>
           <Button variant="dropdown">
-            Advanced filters{" "}
+            Filters{" "}
             <span className="actions-secondary flex size-5 items-center justify-center rounded-md border bg-muted text-xs">
               {filters.length}
             </span>

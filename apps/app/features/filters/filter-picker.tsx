@@ -104,8 +104,6 @@ export const FilterPicker = ({ filter, setFilters, handleUpdate }: Props) => {
               type="number"
               triggerButton
             />
-          ) : filter.type === "date" ? (
-            <p className="px-1">{filter.days}</p>
           ) : filter.type === "level" ? (
             <LevelPicker
               filter={filter}
@@ -113,6 +111,8 @@ export const FilterPicker = ({ filter, setFilters, handleUpdate }: Props) => {
               handleUpdate={handleUpdate}
               triggerButton
             />
+          ) : filter.type === "date" ? (
+            <p className="px-1">{filter.days}</p>
           ) : null}
           <Separator orientation="vertical" />
         </>

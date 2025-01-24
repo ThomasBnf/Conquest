@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+export const WhoOptionsSchema = z.enum(["who_did", "who_did_not"]);
+
 export const BaseOperatorSchema = z.enum([
   "contains",
   "not_contains",
@@ -38,7 +40,7 @@ export const FilterBaseSchema = z.object({
 
 export const FilterSelectSchema = FilterBaseSchema.extend({
   type: z.literal("select"),
-  field: z.enum(["source", "language", "country", "tags"]),
+  field: z.enum(["source", "language", "country", "tags", "linked_profiles"]),
   operator: BaseOperatorSchema,
   values: z.array(z.string()).default([]),
 });
@@ -75,6 +77,7 @@ export const FilterLevelSchema = FilterBaseSchema.extend({
 export const FilterActivitySchema = FilterBaseSchema.extend({
   type: z.literal("activity"),
   field: z.enum(["activity_type"]),
+  who: z.enum(["who_did", "who_did_not"]),
   activity_types: z
     .object({
       key: z.string(),
@@ -89,6 +92,7 @@ export const FilterActivitySchema = FilterBaseSchema.extend({
   }),
   dynamic_date: DynamicDateSchema.optional(),
   days: z.number().default(1),
+  display_count: z.boolean().default(false),
 });
 
 export const FilterSchema = z.discriminatedUnion("type", [
@@ -109,5 +113,6 @@ export type FilterLevel = z.infer<typeof FilterLevelSchema>;
 export type FilterActivity = z.infer<typeof FilterActivitySchema>;
 export type DynamicDate = z.infer<typeof DynamicDateSchema>;
 
+export type WhoOptions = z.infer<typeof WhoOptionsSchema>;
 export type Operator = z.infer<typeof OperatorSchema>;
 export type NumberOperator = z.infer<typeof NumberOperatorSchema>;
