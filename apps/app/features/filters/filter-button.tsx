@@ -279,5 +279,6 @@ const filtersActivity: Filter[] = [
     },
     dynamic_date: "30 days",
     days: 30,
+    display_count: false,
   },
 ];
