@@ -13,7 +13,10 @@ import { useState } from "react";
 
 type Props = {
   filter: FilterActivity;
-  handleUpdate: (display_count: boolean) => void;
+  handleUpdate: (
+    key: "display_count" | "display_date" | "display_channel",
+    value: boolean,
+  ) => void;
 };
 
 export const FilterMenu = ({ filter, handleUpdate }: Props) => {
@@ -27,17 +30,35 @@ export const FilterMenu = ({ filter, handleUpdate }: Props) => {
         </Button>
       </PopoverTrigger>
       <PopoverContent align="start" className="p-0">
-        <Command className="w-36">
+        <Command className="w-fit">
           <CommandList>
             <CommandGroup>
               <CommandItem
                 onSelect={() => {
-                  handleUpdate(!filter.display_count);
                   setOpen(false);
+                  handleUpdate("display_count", !filter.display_count);
                 }}
               >
                 <Checkbox checked={filter.display_count} className="mr-2" />
                 Filter by count
+              </CommandItem>
+              <CommandItem
+                onSelect={() => {
+                  setOpen(false);
+                  handleUpdate("display_date", !filter.display_date);
+                }}
+              >
+                <Checkbox checked={filter.display_date} className="mr-2" />
+                Filter by date
+              </CommandItem>
+              <CommandItem
+                onSelect={() => {
+                  setOpen(false);
+                  handleUpdate("display_channel", !filter.display_channel);
+                }}
+              >
+                <Checkbox checked={filter.display_channel} className="mr-2" />
+                Filter by channel
               </CommandItem>
             </CommandGroup>
           </CommandList>

@@ -273,12 +273,11 @@ const filtersActivity: Filter[] = [
     activity_types: [],
     operator: "greater or equal",
     value: 1,
-    channel: {
-      id: "",
-      label: "",
-    },
+    channels: [],
     dynamic_date: "30 days",
     days: 30,
     display_count: false,
+    display_date: false,
+    display_channel: false,
   },
 ];

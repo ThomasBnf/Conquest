@@ -151,8 +151,11 @@ export const getFilters = ({ filters }: Props) => {
         who,
         operator,
         value: count,
+        channels,
         dynamic_date,
         display_count,
+        display_date,
+        display_channel,
       } = FilterActivitySchema.parse(filter);
 
       const intervalStr = `'${dynamic_date}'::interval`;
@@ -168,7 +171,14 @@ export const getFilters = ({ filters }: Props) => {
           AND at.key = ANY(${Prisma.raw(
             `ARRAY[${activityKeys.map((key) => `'${key}'`).join(",")}]`,
           )})
-          AND a.created_at >= NOW() - ${Prisma.raw(intervalStr)}
+          ${display_date ? Prisma.sql`AND a.created_at >= NOW() - ${Prisma.raw(intervalStr)}` : Prisma.sql``}
+          ${
+            display_channel
+              ? Prisma.sql`AND a.channel_id = ANY(${Prisma.raw(
+                  `ARRAY[${channels.map((channel) => `'${channel.id}'`).join(",")}]`,
+                )})`
+              : Prisma.sql``
+          }
         ) ${Prisma.raw(operatorParsed)} ${count}`;
       }
 
@@ -180,7 +190,14 @@ export const getFilters = ({ filters }: Props) => {
         AND at.key = ANY(${Prisma.raw(
           `ARRAY[${activityKeys.map((key) => `'${key}'`).join(",")}]`,
         )})
-        AND a.created_at >= NOW() - ${Prisma.raw(intervalStr)}
+        ${display_date ? Prisma.sql`AND a.created_at >= NOW() - ${Prisma.raw(intervalStr)}` : Prisma.sql``}
+        ${
+          display_channel
+            ? Prisma.sql`AND a.channel_id = ANY(${Prisma.raw(
+                `ARRAY[${channels.map((channel) => `'${channel.id}'`).join(",")}]`,
+              )})`
+            : Prisma.sql``
+        }
       )`;
     }
 

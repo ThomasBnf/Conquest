@@ -86,13 +86,17 @@ export const FilterActivitySchema = FilterBaseSchema.extend({
     .array(),
   operator: NumberOperatorSchema,
   value: z.number().min(0).default(1),
-  channel: z.object({
-    id: z.string(),
-    label: z.string(),
-  }),
+  channels: z
+    .object({
+      id: z.string(),
+      label: z.string(),
+    })
+    .array(),
   dynamic_date: DynamicDateSchema.optional(),
   days: z.number().default(1),
-  display_count: z.boolean().default(false),
+  display_count: z.boolean(),
+  display_date: z.boolean(),
+  display_channel: z.boolean(),
 });
 
 export const FilterSchema = z.discriminatedUnion("type", [

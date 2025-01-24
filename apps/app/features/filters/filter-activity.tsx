@@ -13,6 +13,7 @@ import {
 import { X } from "lucide-react";
 import type { Dispatch, SetStateAction } from "react";
 import { ActivityTypePicker } from "./activity-type-picker";
+import { ChannelsPicker } from "./channels-picker";
 import { FilterMenu } from "./filter-menu";
 import { InputDialog } from "./input-dialog";
 import { OperatorPicker } from "./operator-picker";
@@ -125,11 +126,37 @@ export const FilterActivity = ({ filter, setFilters, handleUpdate }: Props) => {
     });
   };
 
-  const onUpdateDisplayCount = (display_count: boolean) => {
+  const onUpdateDisplay = (
+    key: "display_count" | "display_date" | "display_channel",
+    value: boolean,
+  ) => {
     setFilters((prev) => {
       const newFilters = prev.map((f) =>
-        f.id === filter.id ? { ...filter, display_count } : f,
+        f.id === filter.id ? { ...filter, [key]: value } : f,
       );
+
+      handleUpdate?.(newFilters);
+      return newFilters;
+    });
+  };
+
+  const onUpdateChannel = (channel: { id: string; label: string }) => {
+    setFilters((prev) => {
+      const exists = prev.some((f) => f.id === filter.id);
+      const currentFilter = prev.find((f) => f.id === filter.id);
+      const parsedFilter = FilterActivitySchema.parse(currentFilter);
+      const hasChannel = parsedFilter.channels.some((c) => c.id === channel.id);
+
+      const updatedFilter = {
+        ...filter,
+        channels: hasChannel
+          ? filter.channels.filter((c) => c.id !== channel.id)
+          : [...filter.channels, channel],
+      };
+
+      const newFilters = exists
+        ? prev.map((f) => (f.id === filter.id ? updatedFilter : f))
+        : [...prev, updatedFilter];
 
       handleUpdate?.(newFilters);
       return newFilters;
@@ -160,10 +187,26 @@ export const FilterActivity = ({ filter, setFilters, handleUpdate }: Props) => {
           />
         </>
       )}
+      {filter.display_date && (
+        <>
+          <Separator orientation="vertical" />
+          <RelativePicker
+            filter={filterActivity}
+            handleUpdateDate={onUpdateDate}
+          />
+        </>
+      )}
+      {filter.display_channel && (
+        <>
+          <Separator orientation="vertical" />
+          <ChannelsPicker
+            filter={filterActivity}
+            handleUpdate={onUpdateChannel}
+          />
+        </>
+      )}
       <Separator orientation="vertical" />
-      <RelativePicker filter={filterActivity} handleUpdateDate={onUpdateDate} />
-      <Separator orientation="vertical" />
-      <FilterMenu filter={filter} handleUpdate={onUpdateDisplayCount} />
+      <FilterMenu filter={filter} handleUpdate={onUpdateDisplay} />
       <Separator orientation="vertical" />
       <Button
         variant="ghost"
