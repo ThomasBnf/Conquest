@@ -1,6 +1,9 @@
 {
   "extends": "@conquest/typescript/base.json",
   "compilerOptions": {
+    "module": "CommonJS",
+    "target": "ES2022",
+    "moduleResolution": "node",
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]
