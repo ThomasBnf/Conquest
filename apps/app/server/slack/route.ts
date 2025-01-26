@@ -1,5 +1,4 @@
 import { env } from "@/env.mjs";
-import { type SlackFile, createFiles } from "@/features/slack/helpers/getFiles";
 import { prisma } from "@/lib/prisma";
 import { createActivity } from "@/queries/activities/createActivity";
 import { deleteActivity } from "@/queries/activities/deleteActivity";
@@ -14,6 +13,7 @@ import { updateIntegration } from "@/queries/integrations/updateIntegration";
 import { checkMerging } from "@/queries/members/checkMerging";
 import { getMember } from "@/queries/members/getMember";
 import { upsertMember } from "@/queries/members/upsertMember";
+import { type SlackFile, createFiles } from "@/queries/slack/createFiles";
 import { deleteListReactions } from "@/queries/slack/deleteListReactions";
 import { getAuthUser } from "@/queries/users/getAuthUser";
 import { updateMemberMetrics } from "@/trigger/updateMemberMetrics.trigger";

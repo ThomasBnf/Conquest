@@ -13,8 +13,6 @@ export const createManyChannels = async ({ discord, channels }: Props) => {
 
   if (!external_id) return;
 
-  console.log("Creating many channels");
-
   let createdChannels: Channel[] = [];
 
   for (const channel of channels) {

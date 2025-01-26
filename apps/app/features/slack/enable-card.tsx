@@ -1,7 +1,7 @@
 "use client";
 
 import { deleteIntegration } from "@/actions/integrations/deleteIntegration";
-import { SLACK_SCOPES, USER_SCOPES } from "@/constant";
+import { SLACK_SCOPES, SLACK_USER_SCOPES } from "@/constant";
 import { useUser } from "@/context/userContext";
 import { env } from "@/env.mjs";
 import { Button, buttonVariants } from "@conquest/ui/button";
@@ -12,7 +12,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { ListSlackChannels } from "./list-slack-channels";
+import { SlackForm } from "./slack-form";
 
 type Props = {
   error: string;
@@ -36,7 +36,7 @@ export const EnableCard = ({ error }: Props) => {
       response_type: "code",
       client_id: env.NEXT_PUBLIC_SLACK_CLIENT_ID,
       scope: SLACK_SCOPES,
-      user_scope: USER_SCOPES,
+      user_scope: SLACK_USER_SCOPES,
       redirect_uri: `${env.NEXT_PUBLIC_BASE_URL}/connect/slack`,
     });
 
@@ -109,7 +109,7 @@ export const EnableCard = ({ error }: Props) => {
           members and community activity.
         </p>
         {(isEnabled || isSyncing) && !isExpired && (
-          <ListSlackChannels loading={loading} setLoading={setLoading} />
+          <SlackForm loading={loading} setLoading={setLoading} />
         )}
       </CardContent>
     </Card>

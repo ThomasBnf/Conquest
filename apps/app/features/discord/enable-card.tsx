@@ -12,7 +12,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { ListDiscordChannels } from "./list-discord-channels";
+import { DiscordForm } from "./discord-form";
 
 type Props = {
   error?: string;
@@ -50,8 +50,8 @@ export const EnableCard = ({ error }: Props) => {
       source: "DISCORD",
     });
 
+    setLoading(false);
     const error = response?.serverError;
-
     if (error) toast.error(error);
   };
 
@@ -101,7 +101,7 @@ export const EnableCard = ({ error }: Props) => {
             Enable
           </Button>
         )}
-        {isEnabled && (
+        {isEnabled && !loading && !isExpired && (
           <Button variant="destructive" onClick={onDisconnect}>
             Disconnect
           </Button>
@@ -114,7 +114,7 @@ export const EnableCard = ({ error }: Props) => {
           members and community activity.
         </p>
         {(isEnabled || isSyncing) && !isExpired && (
-          <ListDiscordChannels loading={loading} setLoading={setLoading} />
+          <DiscordForm loading={loading} setLoading={setLoading} />
         )}
       </CardContent>
     </Card>

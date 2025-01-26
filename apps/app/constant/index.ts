@@ -1,4 +1,10 @@
-export const colors = [
+import type {
+  Operator,
+  WhoOptions,
+} from "@conquest/zod/schemas/filters.schema";
+import type { RepeatOn } from "@conquest/zod/schemas/node.schema";
+
+export const COLORS = [
   "#95999F",
   "#6E7B8B",
   "#00A8C1",
@@ -8,11 +14,6 @@ export const colors = [
   "#F38E82",
   "#EB5756",
 ];
-
-import type {
-  Operator,
-  WhoOptions,
-} from "@conquest/zod/schemas/filters.schema";
 
 export const OPERATORS: Operator[] = [
   "contains",
@@ -27,11 +28,9 @@ export const OPERATORS: Operator[] = [
   "not_empty",
 ];
 
-export const WHO_OPTIONS: WhoOptions[] = ["who_did", "who_did_not"] as const;
+export const WHO_OPTIONS: WhoOptions[] = ["who_did", "who_did_not"];
 
-import type { RepeatOn } from "@conquest/zod/schemas/node.schema";
-
-export const weekdays: RepeatOn[] = [
+export const REPEAT_ON: RepeatOn[] = [
   "monday",
   "tuesday",
   "wednesday",
@@ -41,15 +40,8 @@ export const weekdays: RepeatOn[] = [
   "sunday",
 ];
 
-export const SLACK_SCOPES =
-  "channels:history,channels:join,channels:read,files:read,groups:history,groups:read,links:read,reactions:read,team:read,users.profile:read,users:read,users:read.email";
+export const WEEKDAYS = ["Mon", "Wed", "Fri", "Sun"];
 
-export const DISCORD_PERMISSIONS = "1108370064384";
-export const DISCORD_SCOPES = "bot";
-
-export const USER_SCOPES = "chat:write,im:write,channels:write";
-
-export const WEEKDAYS = ["Mon", "Wed", "Fri", "Sun"] as const;
 export const MONTHS = [
   "January",
   "February",
@@ -236,8 +228,15 @@ export const LINKEDIN_ACTIVITY_TYPES = [
   },
 ];
 
+export const DISCORD_PERMISSIONS = "8858436672";
+export const DISCORD_SCOPES = "bot";
+
 export const LINKEDIN_SCOPES =
   "r_organization_social,r_organization_social_feed,rw_organization_admin";
 
 export const LIVESTORM_SCOPES =
   "identity:read events:read webhook:read webhook:write";
+
+export const SLACK_USER_SCOPES = "chat:write,im:write,channels:write";
+export const SLACK_SCOPES =
+  "channels:history,channels:join,channels:read,files:read,groups:history,groups:read,links:read,reactions:read,team:read,users.profile:read,users:read,users:read.email";

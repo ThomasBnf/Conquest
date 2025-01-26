@@ -7,7 +7,7 @@ import { createWebhook } from "@/queries/livestorm/createWebhook";
 import { getRefreshToken } from "@/queries/livestorm/getRefreshToken";
 import { batchMergeMembers } from "@/queries/members/batchMergeMembers";
 import { LivestormIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
-import { schemaTask } from "@trigger.dev/sdk/v3";
+import { schemaTask, usage } from "@trigger.dev/sdk/v3";
 import { z } from "zod";
 import { calculateMembersLevel } from "./calculateMembersLevel.trigger";
 import { integrationSuccessEmail } from "./integrationSuccessEmail.trigger";
@@ -70,6 +70,8 @@ export const installLivestorm = schemaTask({
     });
   },
   onSuccess: async ({ livestorm }) => {
+    console.log(usage.getCurrent());
+
     await updateIntegration({
       id: livestorm.id,
       connected_at: new Date(),

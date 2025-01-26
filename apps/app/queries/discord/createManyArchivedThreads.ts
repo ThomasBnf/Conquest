@@ -1,10 +1,8 @@
 import { discordClient } from "@/lib/discord";
 import type { Channel } from "@conquest/zod/schemas/channel.schema";
 import type { DiscordIntegration } from "@conquest/zod/schemas/integration.schema";
-import type { Member } from "@conquest/zod/schemas/member.schema";
 import {
   type APIMessage,
-  type APIMessageReference,
   type APIThreadChannel,
   type APIThreadList,
   Routes,
@@ -12,6 +10,7 @@ import {
 import { createActivity } from "../activities/createActivity";
 import { getChannel } from "../channels/getChannel";
 import { getMember } from "../members/getMember";
+import { createFiles } from "./createFiles";
 import { createMember } from "./createMember";
 
 type Props = {
@@ -28,159 +27,120 @@ export const createManyArchivedThreads = async ({
 
   if (!external_id) return;
 
-  console.log("Creating many archived threads", channel.external_id);
-
   let before: string | undefined = undefined;
 
   while (true) {
+    const params = new URLSearchParams({
+      limit: "100",
+      ...(before ? { before: new Date(before).toISOString() } : {}),
+    });
+
     const responseThreads = (await discordClient.get(
-      `${Routes.channelThreads(external_id, "public")}?limit=100${before ? `&before=${new Date(before).toISOString()}` : ""}`,
+      `${Routes.channelThreads(external_id, "public")}?${params.toString()}`,
     )) as APIThreadList;
 
     const threads = responseThreads.threads as APIThreadChannel[];
 
     for (const thread of threads) {
-      console.log(thread);
-      try {
-        const { name, parent_id } = thread;
+      const { name, parent_id, owner_id: discord_id, thread_metadata } = thread;
+      const { create_timestamp } = thread_metadata ?? {};
 
-        let messageBefore: string | undefined = undefined;
-        let firstMessage: APIMessage | undefined;
+      if (!discord_id || !parent_id) continue;
 
-        while (true) {
-          const messages = (await discordClient.get(
-            `${Routes.channelMessages(thread.id)}?limit=100${messageBefore ? `&before=${messageBefore}` : ""}`,
-          )) as APIMessage[];
+      let before: string | undefined = undefined;
+      let firstMessage: APIMessage | undefined;
 
-          if (messages.length < 100) {
-            firstMessage = messages.at(-1);
+      while (true) {
+        const params = new URLSearchParams({
+          limit: "100",
+          ...(before ? { before: new Date(before).toISOString() } : {}),
+        });
+
+        const messages = (await discordClient.get(
+          `${Routes.channelMessages(thread.id)}?${params.toString()}`,
+        )) as APIMessage[];
+
+        if (messages.length < 100) firstMessage = messages.at(-1);
+
+        const channel = await getChannel({
+          external_id: parent_id,
+          workspace_id,
+        });
+
+        if (!channel) continue;
+
+        for (const message of messages) {
+          const {
+            type,
+            content,
+            referenced_message,
+            attachments,
+            timestamp,
+            sticker_items,
+            author,
+          } = message;
+          const { content: message_content } = referenced_message ?? {};
+
+          if (sticker_items && sticker_items.length > 0) continue;
+
+          if (message.id === firstMessage?.id) {
+            const member =
+              (await getMember({ discord_id, workspace_id })) ??
+              (await createMember({ discord, discord_id }));
+
+            if (!member) continue;
+
+            const activity = await createActivity({
+              external_id: thread.id,
+              activity_type_key: "discord:post",
+              title: name,
+              message: type === 21 ? (message_content ?? "") : content,
+              member_id: member.id,
+              channel_id: channel.id,
+              created_at: new Date(create_timestamp ?? ""),
+              updated_at: new Date(create_timestamp ?? ""),
+              workspace_id,
+            });
+
+            await createFiles({
+              files: attachments ?? [],
+              activity_id: activity?.id,
+            });
+
+            break;
           }
 
-          for (const message of messages) {
-            try {
-              const {
-                id,
-                type,
-                content,
-                message_reference,
-                timestamp,
-                edited_timestamp,
-                sticker_items,
-              } = message;
-              const { author } = message;
+          const member =
+            (await getMember({ discord_id: author.id, workspace_id })) ??
+            (await createMember({ discord, discord_id: author.id }));
 
-              let member: Member | null = null;
+          if (!member) continue;
 
-              member = await getMember({
-                discord_id: author.id,
-                workspace_id,
-              });
+          const activity = await createActivity({
+            external_id: message.id,
+            activity_type_key: "discord:reply",
+            message: content,
+            reply_to: type === 19 ? referenced_message?.id : thread.id,
+            thread_id: thread.id,
+            member_id: member.id,
+            channel_id: channel.id,
+            created_at: new Date(timestamp),
+            updated_at: new Date(timestamp),
+            workspace_id,
+          });
 
-              if (!member) {
-                member = await createMember({
-                  discord,
-                  member_id: author.id,
-                });
-              }
-
-              if (!member) continue;
-
-              if (!parent_id) {
-                console.error("parent_id not found", id);
-                continue;
-              }
-
-              const channel = await getChannel({
-                external_id: parent_id,
-                workspace_id,
-              });
-
-              if (!channel) {
-                console.error("channel not found", parent_id);
-                continue;
-              }
-
-              if (id === firstMessage?.id) {
-                let content = message.content;
-
-                if (type === 21) {
-                  content = message.referenced_message?.content ?? "";
-                }
-
-                await createActivity({
-                  external_id: id,
-                  activity_type_key: "discord:post",
-                  title: name,
-                  message: content,
-                  thread_id: thread.id,
-                  member_id: member.id,
-                  channel_id: channel.id,
-                  created_at: new Date(timestamp),
-                  updated_at: new Date(edited_timestamp ?? timestamp),
-                  workspace_id,
-                });
-
-                continue;
-              }
-
-              switch (type) {
-                case 0: {
-                  if (content === "") break;
-                  if (sticker_items && sticker_items.length > 0) break;
-
-                  await createActivity({
-                    external_id: id,
-                    activity_type_key: "discord:reply",
-                    message: content,
-                    thread_id: thread.id,
-                    member_id: member.id,
-                    channel_id: channel.id,
-                    created_at: new Date(timestamp),
-                    updated_at: new Date(edited_timestamp ?? timestamp),
-                    workspace_id,
-                  });
-
-                  break;
-                }
-                case 19: {
-                  if (content === "") break;
-                  if (sticker_items && sticker_items.length > 0) break;
-
-                  const { message_id } =
-                    message_reference as APIMessageReference;
-
-                  await createActivity({
-                    external_id: message.id,
-                    activity_type_key: "discord:reply",
-                    message: message.content,
-                    reply_to: message_id,
-                    thread_id: thread.id,
-                    member_id: member.id,
-                    channel_id: channel.id,
-                    created_at: new Date(timestamp),
-                    updated_at: new Date(edited_timestamp ?? timestamp),
-                    workspace_id,
-                  });
-
-                  break;
-                }
-              }
-            } catch (error) {
-              console.error("Error creating archived thread message", error);
-            }
-          }
-
-          messageBefore = messages.at(-1)?.id;
-
-          if (messages.length < 100) break;
+          await createFiles({
+            files: attachments ?? [],
+            activity_id: activity?.id,
+          });
         }
-      } catch (error) {
-        console.error("Error creating archived threads", error);
+
+        before = messages.at(-1)?.id;
+        if (messages.length < 100) break;
       }
     }
 
     before = threads.at(-1)?.thread_metadata?.create_timestamp;
-
     if (threads.length < 100) break;
   }
 };

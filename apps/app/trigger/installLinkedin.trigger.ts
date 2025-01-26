@@ -10,7 +10,7 @@ import { batchMergeMembers } from "@/queries/members/batchMergeMembers";
 import { createPost } from "@/queries/posts/createPost";
 import { LinkedInIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
 import type { MemberWithCompany } from "@conquest/zod/schemas/member.schema";
-import { schemaTask } from "@trigger.dev/sdk/v3";
+import { schemaTask, usage } from "@trigger.dev/sdk/v3";
 import { z } from "zod";
 import { calculateMembersLevel } from "./calculateMembersLevel.trigger";
 import { integrationSuccessEmail } from "./integrationSuccessEmail.trigger";
@@ -81,6 +81,8 @@ export const installLinkedin = schemaTask({
     });
   },
   onSuccess: async ({ linkedin }) => {
+    console.log(usage.getCurrent());
+
     await updateIntegration({
       id: linkedin.id,
       connected_at: new Date(),

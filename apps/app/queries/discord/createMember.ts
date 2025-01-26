@@ -6,14 +6,14 @@ import { upsertMember } from "../members/upsertMember";
 
 type Props = {
   discord: DiscordIntegration;
-  member_id: string;
+  discord_id: string;
 };
 
-export const createMember = async ({ discord, member_id }: Props) => {
+export const createMember = async ({ discord, discord_id }: Props) => {
   const { workspace_id } = discord;
 
   try {
-    const owner = (await discordClient.get(Routes.user(member_id))) as APIUser;
+    const owner = (await discordClient.get(Routes.user(discord_id))) as APIUser;
 
     if (!owner) return null;
 

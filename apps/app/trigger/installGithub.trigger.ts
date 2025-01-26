@@ -1,6 +1,6 @@
 import { deleteIntegration } from "@/queries/integrations/deleteIntegration";
 import { GithubIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
-import { schemaTask } from "@trigger.dev/sdk/v3";
+import { schemaTask, usage } from "@trigger.dev/sdk/v3";
 import { Octokit } from "octokit";
 import { z } from "zod";
 
@@ -32,6 +32,8 @@ export const installGithub = schemaTask({
     }
   },
   onSuccess: async ({ github }) => {
+    console.log(usage.getCurrent());
+
     await deleteIntegration({
       source: "GITHUB",
       integration: github,

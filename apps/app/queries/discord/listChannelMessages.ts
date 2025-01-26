@@ -1,14 +1,10 @@
 import { discordClient } from "@/lib/discord";
 import type { Channel } from "@conquest/zod/schemas/channel.schema";
 import type { DiscordIntegration } from "@conquest/zod/schemas/integration.schema";
-import type { Member } from "@conquest/zod/schemas/member.schema";
-import {
-  type APIMessage,
-  type APIMessageReference,
-  Routes,
-} from "discord-api-types/v10";
+import { type APIMessage, Routes } from "discord-api-types/v10";
 import { createActivity } from "../activities/createActivity";
 import { getMember } from "../members/getMember";
+import { createFiles } from "./createFiles";
 import { createMember } from "./createMember";
 
 type Props = {
@@ -26,8 +22,6 @@ export const listChannelMessages = async ({
 
   if (!external_id) return;
 
-  console.log("Listing channel messages", external_id);
-
   let before: string | undefined;
 
   while (true) {
@@ -36,75 +30,64 @@ export const listChannelMessages = async ({
     )) as APIMessage[];
 
     for (const message of messages) {
-      try {
-        const {
-          id,
-          type,
-          content,
-          thread,
-          message_reference,
-          timestamp,
-          edited_timestamp,
-          sticker_items,
-        } = message;
-        const { author } = message;
+      const {
+        id,
+        type,
+        content,
+        thread,
+        message_reference,
+        attachments,
+        timestamp,
+        sticker_items,
+      } = message;
+      const { author } = message;
+      const discord_id = author.id;
 
-        let member: Member | null = null;
+      const member =
+        (await getMember({ discord_id, workspace_id })) ??
+        (await createMember({ discord, discord_id }));
 
-        member = await getMember({
-          discord_id: author.id,
-          workspace_id,
-        });
+      if (!member) continue;
+      if (thread) break;
+      if (sticker_items && sticker_items.length > 0) break;
 
-        if (!member) {
-          member = await createMember({
-            discord,
-            member_id: author.id,
+      switch (type) {
+        case 0: {
+          const activity = await createActivity({
+            external_id: id,
+            activity_type_key: "discord:post",
+            message: content,
+            member_id: member.id,
+            channel_id: channel.id,
+            created_at: new Date(timestamp),
+            updated_at: new Date(timestamp ?? ""),
+            workspace_id,
           });
+
+          await createFiles({
+            files: attachments ?? [],
+            activity_id: activity?.id,
+          });
+
+          break;
         }
+        case 19: {
+          const { message_id } = message_reference ?? {};
 
-        switch (type) {
-          case 0: {
-            if (content === "") break;
-            if (thread) break;
-            if (sticker_items && sticker_items.length > 0) break;
+          await createActivity({
+            external_id: message.id,
+            activity_type_key: "discord:reply",
+            message: message.content,
+            reply_to: message_id,
+            member_id: member.id,
+            channel_id: channel.id,
+            created_at: new Date(timestamp),
+            updated_at: new Date(timestamp ?? ""),
+            workspace_id,
+          });
 
-            await createActivity({
-              external_id: id,
-              activity_type_key: "discord:post",
-              message: content,
-              member_id: member?.id ?? "",
-              channel_id: channel.id,
-              created_at: new Date(timestamp),
-              updated_at: new Date(edited_timestamp ?? timestamp),
-              workspace_id,
-            });
-
-            break;
-          }
-          case 19: {
-            const { message_id } = message_reference as APIMessageReference;
-
-            if (content === "") break;
-            if (sticker_items && sticker_items.length > 0) break;
-
-            await createActivity({
-              external_id: message.id,
-              activity_type_key: "discord:reply",
-              message: message.content,
-              reply_to: message_id,
-              member_id: member?.id ?? "",
-              channel_id: channel.id,
-              created_at: new Date(timestamp),
-              updated_at: new Date(edited_timestamp ?? timestamp),
-              workspace_id,
-            });
-
-            break;
-          }
+          break;
         }
-      } catch (error) {
-        console.error("Failed creating channel message", error);
       }
     }
 

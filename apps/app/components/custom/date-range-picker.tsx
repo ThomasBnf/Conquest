@@ -29,6 +29,10 @@ export const DateRangePicker = () => {
     isEqual(from, subDays(startOfDay(new Date()), 90)) &&
     isEqual(to, endOfDay(new Date()));
 
+  const isLast365Days =
+    isEqual(from, subDays(startOfDay(new Date()), 365)) &&
+    isEqual(to, endOfDay(new Date()));
+
   const isYearToDate =
     isEqual(from, startOfYear(new Date())) && isEqual(to, endOfDay(new Date()));
 
@@ -113,6 +117,18 @@ export const DateRangePicker = () => {
         }
       >
         90D
+      </Button>
+      <Button
+        variant={isLast365Days ? "default" : "outline"}
+        className="justify-start"
+        onClick={() =>
+          onUpdateDateRange(
+            subDays(startOfDay(new Date()), 365),
+            endOfDay(new Date()),
+          )
+        }
+      >
+        365D
       </Button>
       <Button
         variant={isYearToDate ? "default" : "outline"}

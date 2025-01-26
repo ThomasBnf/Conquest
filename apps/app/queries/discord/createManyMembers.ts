@@ -14,8 +14,6 @@ export const createManyMembers = async ({ discord, tags }: Props) => {
 
   if (!external_id) return;
 
-  console.log("Creating many members");
-
   let after: string | undefined;
 
   while (true) {

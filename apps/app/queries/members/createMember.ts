@@ -1,4 +1,4 @@
-import { filteredDomain } from "@/features/members/helpers/filteredDomain";
+import { filteredDomain } from "@/helpers/filteredDomain";
 import { prisma } from "@/lib/prisma";
 import type { Source } from "@conquest/zod/enum/source.enum";
 import {

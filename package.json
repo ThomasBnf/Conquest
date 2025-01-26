@@ -15,7 +15,7 @@
     "dev:api": "turbo dev --filter=api",
     "dev:docs": "turbo dev --filter=docs",
     "dev:web": "turbo dev --filter=web",
-    "dev:bots": "turbo dev --filter=bots",
+    "dev:discord": "turbo dev --filter=discord",
     "start:app": "turbo start --filter=app",
     "start:web": "turbo start --filter=web",
     "test": "turbo test --parallel",

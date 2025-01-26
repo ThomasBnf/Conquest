@@ -9,6 +9,7 @@ import { EditableLocale } from "@/components/custom/editable-locale";
 import { EditablePhones } from "@/components/custom/editable-phones";
 import { FieldCard } from "@/components/custom/field-card";
 import { SourceBadge } from "@/components/custom/source-badge";
+import { Discord } from "@/components/icons/Discord";
 import { Discourse } from "@/components/icons/Discourse";
 import { Linkedin } from "@/components/icons/Linkedin";
 import { Slack } from "@/components/icons/Slack";
@@ -31,7 +32,7 @@ type Props = {
 };
 
 export const MemberSidebar = ({ member, tags }: Props) => {
-  const { slack, discourse } = useUser();
+  const { discord, discourse, slack } = useUser();
   const { user_fields } = discourse?.details ?? {};
   const { url } = slack?.details ?? {};
 
@@ -40,6 +41,7 @@ export const MemberSidebar = ({ member, tags }: Props) => {
     slack_id,
     discourse_username,
     discord_username,
+    discord_id,
     first_name,
     last_name,
     source,
@@ -56,8 +58,6 @@ export const MemberSidebar = ({ member, tags }: Props) => {
     field:
       | "first_name"
       | "last_name"
-      | "discourse_username"
-      | "discord_username"
       | "linkedin_url"
       | "company_id"
       | "job_title"
@@ -119,12 +119,12 @@ export const MemberSidebar = ({ member, tags }: Props) => {
               onUpdate={(value) => onUpdateMember("linkedin_url", value)}
             />
           </FieldCard>
-          {slack && (
-            <FieldCard icon={<Slack size={14} />} label="Slack">
+          {discord && (
+            <FieldCard icon={<Discord size={14} />} label="Discord">
               <EditableLink
-                placeholder="Slack Id not available"
-                defaultValue={slack_id}
-                href={`${url}team/${slack_id}`}
+                placeholder="No discord profile"
+                defaultValue={discord_username}
+                href={`https://discordapp.com/users/${discord_id}`}
                 editable={false}
               />
             </FieldCard>
@@ -132,9 +132,20 @@ export const MemberSidebar = ({ member, tags }: Props) => {
           {discourse && (
             <FieldCard icon={<Discourse size={14} />} label="Discourse">
               <EditableLink
-                placeholder="Set discourse username"
+                placeholder="No discourse profile"
                 defaultValue={discourse_username}
                 href={`https://playground.lagrowthmachine.com/u/${discourse_username}/summary`}
+                editable={false}
+              />
+            </FieldCard>
+          )}
+          {slack && (
+            <FieldCard icon={<Slack size={14} />} label="Slack">
+              <EditableLink
+                placeholder="No slack profile"
+                defaultValue={slack_id}
+                href={`${url}team/${slack_id}`}
+                editable={false}
               />
             </FieldCard>
           )}

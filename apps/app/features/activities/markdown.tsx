@@ -10,9 +10,10 @@ import { SlackMention } from "./slack/slack-mention";
 
 type Props = {
   activity: ActivityWithMember;
+  className?: string;
 };
 
-export const Markdown = ({ activity }: Props) => {
+export const Markdown = ({ activity, className }: Props) => {
   const [show, setShow] = useState(false);
 
   const { message } = activity;
@@ -231,7 +232,9 @@ export const Markdown = ({ activity }: Props) => {
     return result;
   };
 
-  const lines = message.split("\n").length;
+  const words = message.split(" ").length;
+  const truncatedMessage = message.slice(0, 100);
+  const hasMoreThan100Words = words > 100;
 
   return (
     <div>
@@ -239,11 +242,12 @@ export const Markdown = ({ activity }: Props) => {
         className={cn(
           "whitespace-pre-wrap break-words",
           show ? "" : "line-clamp-3",
+          className,
         )}
       >
-        {convertToJsx(message)}
+        {convertToJsx(truncatedMessage)}
       </p>
-      {lines > 2 && (
+      {hasMoreThan100Words && (
         <Button
           variant="secondary"
           size="xs"

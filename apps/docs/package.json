@@ -6,6 +6,6 @@
     "build": "mintlify broken-links"
   },
   "devDependencies": {
-    "mintlify": "4.0.228"
+    "mintlify": "^4.0.338"
   }
 }

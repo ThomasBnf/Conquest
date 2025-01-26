@@ -13,8 +13,6 @@ export const createManyTags = async ({ discord }: Props) => {
 
   if (!external_id) return;
 
-  console.log("Creating many tags");
-
   const roles = (await discordClient.get(
     Routes.guildRoles(external_id),
   )) as APIRole[];

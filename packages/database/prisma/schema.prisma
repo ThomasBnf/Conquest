@@ -259,7 +259,6 @@ model members {
   @@unique([discourse_id, workspace_id])
   @@unique([discourse_username, workspace_id])
   @@unique([discord_id, workspace_id])
-  @@unique([discord_username, workspace_id])
   @@unique([linkedin_id, workspace_id])
   @@unique([livestorm_id, workspace_id])
   @@unique([slack_id, workspace_id])

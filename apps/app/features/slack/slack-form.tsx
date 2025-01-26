@@ -18,7 +18,7 @@ type Props = {
   setLoading: Dispatch<SetStateAction<boolean>>;
 };
 
-export const ListSlackChannels = ({ loading, setLoading }: Props) => {
+export const SlackForm = ({ loading, setLoading }: Props) => {
   const { slack } = useUser();
   const [selectedChannels, setSelectedChannels] = useState<string[]>([]);
   const router = useRouter();

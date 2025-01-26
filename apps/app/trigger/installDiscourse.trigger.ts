@@ -8,7 +8,7 @@ import { deleteIntegration } from "@/queries/integrations/deleteIntegration";
 import { updateIntegration } from "@/queries/integrations/updateIntegration";
 import { batchMergeMembers } from "@/queries/members/batchMergeMembers";
 import { DiscourseIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
-import { schemaTask } from "@trigger.dev/sdk/v3";
+import { schemaTask, usage } from "@trigger.dev/sdk/v3";
 import { z } from "zod";
 import { integrationSuccessEmail } from "./integrationSuccessEmail.trigger";
 
@@ -63,6 +63,8 @@ export const installDiscourse = schemaTask({
     });
   },
   onSuccess: async ({ discourse }) => {
+    console.log(usage.getCurrent());
+
     await updateIntegration({
       id: discourse.id,
       connected_at: new Date(),

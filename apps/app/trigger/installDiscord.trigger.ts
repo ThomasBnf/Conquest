@@ -9,10 +9,11 @@ import { listChannelMessages } from "@/queries/discord/listChannelMessages";
 import { deleteIntegration } from "@/queries/integrations/deleteIntegration";
 import { updateIntegration } from "@/queries/integrations/updateIntegration";
 import { DiscordIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
-import { schemaTask } from "@trigger.dev/sdk/v3";
+import { schemaTask, usage } from "@trigger.dev/sdk/v3";
 import type { APIGuildCategoryChannel } from "discord-api-types/v10";
 import { z } from "zod";
 import { calculateMembersLevel } from "./calculateMembersLevel.trigger";
+import { integrationSuccessEmail } from "./integrationSuccessEmail.trigger";
 
 export const installDiscord = schemaTask({
   id: "install-discord",
@@ -53,11 +54,15 @@ export const installDiscord = schemaTask({
         workspace_id,
       });
     }
+
+    await calculateMembersLevel.trigger({ workspace_id });
+    integrationSuccessEmail.trigger({
+      integration: discord,
+      workspace_id,
+    });
   },
   onSuccess: async ({ discord }) => {
-    const { workspace_id } = discord;
-
-    calculateMembersLevel.trigger({ workspace_id });
+    console.log(usage.getCurrent());
 
     await updateIntegration({
       id: discord.id,

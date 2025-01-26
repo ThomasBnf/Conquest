@@ -82,6 +82,9 @@ const config = {
         livestorm: {
           DEFAULT: "hsl(var(--livestorm))",
         },
+        discord: {
+          DEFAULT: "hsl(var(--discord))",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",
