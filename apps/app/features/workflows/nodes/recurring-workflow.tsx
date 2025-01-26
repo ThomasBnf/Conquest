@@ -22,7 +22,7 @@ import {
 } from "@conquest/zod/schemas/node.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useReactFlow } from "@xyflow/react";
-import { weekdays } from "constant";
+import { REPEAT_ON } from "constant";
 import { useForm } from "react-hook-form";
 import {
   type FormRecurring,
@@ -102,7 +102,7 @@ export const RecurringWorkflow = () => {
                     }}
                     value={field.value}
                   >
-                    {weekdays.map((day) => (
+                    {REPEAT_ON.map((day) => (
                       <ToggleGroupItem
                         key={day}
                         value={day}

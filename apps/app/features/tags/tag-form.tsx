@@ -1,6 +1,6 @@
 import { createTag } from "@/actions/tags/createTag";
 import { updateTag } from "@/actions/tags/updateTag";
-import { colors } from "@/constant";
+import { COLORS } from "@/constant";
 import { Button } from "@conquest/ui/button";
 import { ColorPicker } from "@conquest/ui/color-picker";
 import { Form, FormControl, FormField, FormItem } from "@conquest/ui/form";
@@ -83,9 +83,9 @@ export const TagForm = ({
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="flex w-fit items-center gap-4 p-2">
-                    {colors.map((color) => (
-                      // biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
-                      <div
+                    {COLORS.map((color) => (
+                      <button
+                        type="button"
                         key={color}
                         onClick={() => field.onChange(color)}
                         className="flex size-4 cursor-pointer items-center justify-center rounded-full text-white transition-transform hover:scale-110"
@@ -94,7 +94,7 @@ export const TagForm = ({
                         }}
                       >
                         {field.value === color && <Check size={13} />}
-                      </div>
+                      </button>
                     ))}
                     <ColorPicker
                       value={field.value}

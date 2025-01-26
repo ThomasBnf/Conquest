@@ -1,4 +1,4 @@
-import { SLACK_SCOPES, USER_SCOPES } from "@/constant";
+import { SLACK_SCOPES, SLACK_USER_SCOPES } from "@/constant";
 import { env } from "@/env.mjs";
 import { createIntegration } from "@/queries/integrations/createIntegration";
 import { getIntegration } from "@/queries/integrations/getIntegration";
@@ -66,7 +66,7 @@ export default async function Page({ searchParams: { error, code } }: Props) {
       token: access_token,
       slack_user_token: authed_user.access_token,
       scopes: SLACK_SCOPES,
-      user_scopes: USER_SCOPES,
+      user_scopes: SLACK_USER_SCOPES,
     },
     created_by: user.id,
     workspace_id,
