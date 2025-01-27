@@ -1,4 +1,3 @@
-import type { activities as ActivityPrisma } from "@prisma/client";
 import { z } from "zod";
 import { ActivityTypeSchema } from "./activity-type.schema";
 import { CompanySchema } from "./company.schema";
@@ -20,7 +19,7 @@ export const ActivitySchema = z.object({
   workspace_id: z.string().cuid(),
   created_at: z.coerce.date(),
   updated_at: z.coerce.date(),
-}) satisfies z.ZodType<ActivityPrisma>;
+});
 
 export const ActivityWithTypeSchema = ActivitySchema.extend({
   activity_type: ActivityTypeSchema,
