@@ -39,6 +39,8 @@ export const Message = ({ activity }: Props) => {
   }
 
   if (key === "discord:post") {
+    if (!activity.title) return <Markdown activity={activity} />;
+
     return (
       <div>
         <p className="font-medium">{activity.title}</p>
