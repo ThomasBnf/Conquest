@@ -30,6 +30,8 @@ export const createManyMembers = async ({ discord, tags }: Props) => {
 
         if (bot) continue;
 
+        console.log(member);
+
         const firstName = global_name?.split(" ")[0] ?? null;
         const lastName = global_name?.split(" ")[1] ?? null;
 

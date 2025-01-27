@@ -1,5 +1,5 @@
+import { prisma } from "@/lib/prisma";
 import { ActivitySchema } from "@conquest/zod/schemas/activity.schema";
-import { prisma } from "lib/prisma";
 
 type Props = {
   external_id: string | null;

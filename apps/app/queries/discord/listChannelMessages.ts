@@ -30,6 +30,7 @@ export const listChannelMessages = async ({
     )) as APIMessage[];
 
     for (const message of messages) {
+      console.log(message);
       const {
         id,
         type,

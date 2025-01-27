@@ -22,6 +22,8 @@ export const createManyTags = async ({ discord }: Props) => {
   for (const role of roles) {
     const { id, name, color } = role;
 
+    if (["Conquest", "conquest-sandbox"].includes(name)) continue;
+
     const decimalToHex = (decimal: number) =>
       `#${decimal.toString(16).padStart(6, "0")}`;
 

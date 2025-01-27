@@ -228,7 +228,7 @@ export const LINKEDIN_ACTIVITY_TYPES = [
   },
 ];
 
-export const DISCORD_PERMISSIONS = "8858436672";
+export const DISCORD_PERMISSIONS = "66560";
 export const DISCORD_SCOPES = "bot";
 
 export const LINKEDIN_SCOPES =
