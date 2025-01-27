@@ -28,6 +28,7 @@ export const listMessages = async ({ web, channel, workspace_id }: Props) => {
     const { messages, response_metadata } = result;
 
     for (const message of messages ?? []) {
+      console.log("message", message);
       if (!message.user) continue;
 
       const { text, ts, user, reactions, reply_count, files, subtype } =

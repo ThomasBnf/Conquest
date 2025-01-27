@@ -24,6 +24,7 @@ export const listReplies = async ({ web, channel, reply_to }: Props) => {
     });
 
     for (const message of messages?.slice(1) ?? []) {
+      console.log("replies", message);
       const { text, ts, user, reactions, files } = message;
 
       if (!user) continue;
@@ -51,6 +52,7 @@ export const listReplies = async ({ web, channel, reply_to }: Props) => {
 
       if (reactions?.length) {
         for (const reaction of reactions) {
+          console.log("reaction", reaction);
           const { name } = reaction;
 
           for (const user of reaction.users ?? []) {
