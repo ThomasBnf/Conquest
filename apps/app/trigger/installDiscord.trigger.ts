@@ -17,10 +17,12 @@ import { integrationSuccessEmail } from "./integrationSuccessEmail.trigger";
 
 export const installDiscord = schemaTask({
   id: "install-discord",
+  machine: "small-2x",
   schema: z.object({
     discord: DiscordIntegrationSchema,
     channels: z.array(z.custom<APIGuildCategoryChannel>()),
   }),
+
   run: async ({ discord, channels }) => {
     const { workspace_id, external_id } = discord;
 

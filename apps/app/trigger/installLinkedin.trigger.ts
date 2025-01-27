@@ -17,6 +17,7 @@ import { integrationSuccessEmail } from "./integrationSuccessEmail.trigger";
 
 export const installLinkedin = schemaTask({
   id: "install-linkedin",
+  machine: "small-2x",
   schema: z.object({
     linkedin: LinkedInIntegrationSchema,
     user_id: z.string(),

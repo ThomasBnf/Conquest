@@ -15,6 +15,7 @@ import { integrationSuccessEmail } from "./integrationSuccessEmail.trigger";
 
 export const installSlack = schemaTask({
   id: "install-slack",
+  machine: "small-2x",
   schema: z.object({
     slack: SlackIntegrationSchema,
     channels: z.array(z.string()),

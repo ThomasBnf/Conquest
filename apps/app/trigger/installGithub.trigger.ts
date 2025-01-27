@@ -6,6 +6,7 @@ import { z } from "zod";
 
 export const installGithub = schemaTask({
   id: "install-github",
+  machine: "small-2x",
   schema: z.object({
     github: GithubIntegrationSchema,
     repos: z.array(z.string()),

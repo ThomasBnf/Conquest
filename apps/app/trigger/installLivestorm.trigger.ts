@@ -14,6 +14,7 @@ import { integrationSuccessEmail } from "./integrationSuccessEmail.trigger";
 
 export const installLivestorm = schemaTask({
   id: "install-livestorm",
+  machine: "small-2x",
   schema: z.object({
     livestorm: LivestormIntegrationSchema,
     organization_id: z.string(),
