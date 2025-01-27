@@ -50,7 +50,10 @@ client.on(Events.GuildMemberAdd, async (member) => {
 
   if (bot) return;
 
-  const integration = await getIntegration({ external_id: guild.id });
+  const integration = await getIntegration({
+    external_id: guild.id,
+    status: "CONNECTED",
+  });
   if (!integration) return;
   const { workspace_id } = integration;
 
@@ -86,7 +89,10 @@ client.on(Events.GuildMemberRemove, async (member) => {
   const { user, guild } = member;
   const { id } = user;
 
-  const integration = await getIntegration({ external_id: guild.id });
+  const integration = await getIntegration({
+    external_id: guild.id,
+    status: "CONNECTED",
+  });
   if (!integration) return;
   const { workspace_id } = integration;
 
@@ -124,7 +130,10 @@ client.on(Events.UserUpdate, async (user) => {
 client.on(Events.ChannelCreate, async (channel) => {
   const { id, type, guildId, name, permissionOverwrites } = channel;
 
-  const integration = await getIntegration({ external_id: guildId });
+  const integration = await getIntegration({
+    external_id: guildId,
+    status: "CONNECTED",
+  });
   if (!integration) return;
   const { workspace_id } = integration;
 
@@ -160,7 +169,10 @@ client.on(Events.ChannelCreate, async (channel) => {
 client.on(Events.ChannelUpdate, async (channel) => {
   const { id, name, guildId } = channel as NonThreadGuildBasedChannel;
 
-  const integration = await getIntegration({ external_id: guildId });
+  const integration = await getIntegration({
+    external_id: guildId,
+    status: "CONNECTED",
+  });
   if (!integration) return;
   const { workspace_id } = integration;
 
@@ -182,7 +194,10 @@ client.on(Events.ChannelUpdate, async (channel) => {
 client.on(Events.ChannelDelete, async (channel) => {
   const { id, guildId } = channel as NonThreadGuildBasedChannel;
 
-  const integration = await getIntegration({ external_id: guildId });
+  const integration = await getIntegration({
+    external_id: guildId,
+    status: "CONNECTED",
+  });
   if (!integration) return;
   const { workspace_id } = integration;
 
@@ -216,7 +231,10 @@ client.on(Events.MessageCreate, async (message) => {
 
   if (!guildId) return;
 
-  const integration = await getIntegration({ external_id: guildId });
+  const integration = await getIntegration({
+    external_id: guildId,
+    status: "CONNECTED",
+  });
   if (!integration) return;
   const { workspace_id } = integration;
 
@@ -317,7 +335,10 @@ client.on(Events.MessageUpdate, async (message) => {
 
   if (!guildId) return;
 
-  const integration = await getIntegration({ external_id: guildId });
+  const integration = await getIntegration({
+    external_id: guildId,
+    status: "CONNECTED",
+  });
   if (!integration) return;
   const { workspace_id } = integration;
 
@@ -343,7 +364,10 @@ client.on(Events.MessageDelete, async (message) => {
 
   if (!guildId) return;
 
-  const integration = await getIntegration({ external_id: guildId });
+  const integration = await getIntegration({
+    external_id: guildId,
+    status: "CONNECTED",
+  });
   if (!integration) return;
   const { workspace_id } = integration;
 
@@ -366,7 +390,10 @@ client.on(Events.ThreadCreate, async (thread) => {
 
   if (!guildId || !parentId) return;
 
-  const integration = await getIntegration({ external_id: guildId });
+  const integration = await getIntegration({
+    external_id: guildId,
+    status: "CONNECTED",
+  });
   if (!integration) return;
   const { workspace_id } = integration;
 
@@ -394,7 +421,10 @@ client.on(Events.ThreadCreate, async (thread) => {
 client.on(Events.ThreadDelete, async (thread) => {
   const { id, guildId } = thread;
 
-  const integration = await getIntegration({ external_id: guildId });
+  const integration = await getIntegration({
+    external_id: guildId,
+    status: "CONNECTED",
+  });
   if (!integration) return;
   const { workspace_id } = integration;
 
@@ -430,7 +460,10 @@ client.on(Events.GuildRoleCreate, async (role) => {
   const { id, name, guild } = role;
   const { id: guildId } = guild;
 
-  const integration = await getIntegration({ external_id: guildId });
+  const integration = await getIntegration({
+    external_id: guildId,
+    status: "CONNECTED",
+  });
   if (!integration) return;
   const { workspace_id } = integration;
 
@@ -445,12 +478,15 @@ client.on(Events.GuildRoleCreate, async (role) => {
   });
 });
 
-client.on(Events.GuildRoleUpdate, async (role) => {
+client.on(Events.GuildRoleUpdate, async (_, role) => {
   console.log(role);
   const { id, name, guild, color } = role;
   const { id: guildId } = guild;
 
-  const integration = await getIntegration({ external_id: guildId });
+  const integration = await getIntegration({
+    external_id: guildId,
+    status: "CONNECTED",
+  });
   if (!integration) return;
   const { workspace_id } = integration;
 
@@ -475,7 +511,10 @@ client.on(Events.GuildRoleDelete, async (role) => {
   const { id, guild } = role;
   const { id: guildId } = guild;
 
-  const integration = await getIntegration({ external_id: guildId });
+  const integration = await getIntegration({
+    external_id: guildId,
+    status: "CONNECTED",
+  });
   if (!integration) return;
   const { workspace_id } = integration;
 
