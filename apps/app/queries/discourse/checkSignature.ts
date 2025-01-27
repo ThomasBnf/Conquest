@@ -31,6 +31,7 @@ export const checkSignature = async ({ c }: Props) => {
         path: ["community_url"],
         equals: community_url,
       },
+      status: "CONNECTED",
     },
   });
 

@@ -55,7 +55,10 @@ export const slack = new Hono()
 
       const { type } = event;
 
-      const integration = await getIntegration({ external_id: team_id });
+      const integration = await getIntegration({
+        external_id: team_id,
+        status: "CONNECTED",
+      });
 
       if (!integration) return c.json({ status: 200 });
 

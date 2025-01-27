@@ -27,7 +27,11 @@ export const livestorm = new Hono()
 
     console.dir(data, { depth: 100 });
 
-    const integration = await getIntegration({ external_id: organization_id });
+    const integration = await getIntegration({
+      external_id: organization_id,
+      status: "CONNECTED",
+    });
+
     if (!integration) return c.json(200);
 
     const livestorm = LivestormIntegrationSchema.parse(integration);

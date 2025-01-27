@@ -67,8 +67,11 @@ export const linkedin = new Hono()
     const integration = LinkedInIntegrationSchema.parse(
       await getIntegration({
         external_id: organization_id,
+        status: "CONNECTED",
       }),
     );
+
+    if (!integration) return c.json(200);
 
     const { workspace_id } = integration;
     const { entity } = decoratedSourcePost;
