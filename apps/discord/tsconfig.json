@@ -1,11 +1,7 @@
 {
   "extends": "@conquest/typescript/base.json",
   "compilerOptions": {
-    "moduleResolution": "node",
-    "outDir": "./dist",
-    "rootDir": "src",
-    "module": "CommonJS",
-    "esModuleInterop": true
+    "outDir": "./dist"
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules"]
