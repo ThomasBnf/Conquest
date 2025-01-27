@@ -1,4 +1,4 @@
-import { prisma } from "@/lib/prisma";
+import { prisma } from "../../lib/prisma";
 import { ChannelSchema } from "@conquest/zod/schemas/channel.schema";
 
 type Props = {

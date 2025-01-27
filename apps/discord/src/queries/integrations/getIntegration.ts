@@ -1,4 +1,4 @@
-import { prisma } from "@/lib/prisma";
+import { prisma } from "../../lib/prisma";
 import { IntegrationSchema } from "@conquest/zod/schemas/integration.schema";
 
 type Props = {

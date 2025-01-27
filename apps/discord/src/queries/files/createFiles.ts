@@ -1,4 +1,4 @@
-import { prisma } from "@/lib/prisma";
+import { prisma } from "../../lib/prisma";
 import type { Attachment, Collection } from "discord.js";
 
 type Props = {
