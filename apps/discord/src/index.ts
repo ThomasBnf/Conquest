@@ -15,6 +15,7 @@ import { getChannel } from "./queries/channels/getChannel";
 import { createFiles } from "./queries/files/createFiles";
 import { getIntegration } from "./queries/integrations/getIntegration";
 import { getMember } from "./queries/members/getMember";
+import { updateMemberMetrics } from "./queries/members/updateMemberMetrics";
 import { upsertMember } from "./queries/members/upsertMember";
 
 const app = express();
@@ -262,6 +263,8 @@ client.on(Events.MessageCreate, async (message) => {
           files: attachments,
           activity_id: createdActivity?.id,
         });
+
+        await updateMemberMetrics(member);
       } catch (error) {
         console.error("ReplyToThread", error);
       }
@@ -297,8 +300,10 @@ client.on(Events.MessageCreate, async (message) => {
         files: attachments,
         activity_id: createdActivity?.id,
       });
+
+      await updateMemberMetrics(member);
     } catch (error) {
-      console.error("MessageCreate", error);
+      console.error("MessageCreate", type, error);
     }
   }
 
@@ -318,8 +323,10 @@ client.on(Events.MessageCreate, async (message) => {
         files: attachments,
         activity_id: createdActivity?.id,
       });
+
+      await updateMemberMetrics(member);
     } catch (error) {
-      console.error("MessageCreate", error);
+      console.error("MessageCreate", type, error);
     }
   }
 });
@@ -356,7 +363,8 @@ client.on(Events.MessageUpdate, async (message) => {
 });
 
 client.on(Events.MessageDelete, async (message) => {
-  const { id, guildId } = message;
+  const { id, guildId, author } = message;
+  const { id: discord_id } = author ?? {};
 
   if (!guildId) return;
 
@@ -367,6 +375,11 @@ client.on(Events.MessageDelete, async (message) => {
   if (!integration) return;
   const { workspace_id } = integration;
 
+  if (!discord_id) return;
+
+  const member = await getMember({ discord_id, workspace_id });
+  if (!member) return;
+
   try {
     await prisma.activities.delete({
       where: {
@@ -376,6 +389,8 @@ client.on(Events.MessageDelete, async (message) => {
         },
       },
     });
+
+    await updateMemberMetrics(member);
   } catch (error) {
     console.error("MessageDelete", error);
   }
@@ -409,13 +424,15 @@ client.on(Events.ThreadCreate, async (thread) => {
       channel_id: channel.id,
       workspace_id,
     });
+
+    await updateMemberMetrics(member);
   } catch (error) {
     console.error("ThreadCreate", error);
   }
 });
 
 client.on(Events.ThreadDelete, async (thread) => {
-  const { id, guildId } = thread;
+  const { id, guildId, ownerId } = thread;
 
   const integration = await getIntegration({
     external_id: guildId,
@@ -424,20 +441,29 @@ client.on(Events.ThreadDelete, async (thread) => {
   if (!integration) return;
   const { workspace_id } = integration;
 
-  await prisma.activities.deleteMany({
-    where: {
-      OR: [
-        {
-          external_id: id,
-          workspace_id,
-        },
-        {
-          thread_id: id,
-          workspace_id,
-        },
-      ],
-    },
-  });
+  const member = await getMember({ discord_id: ownerId, workspace_id });
+  if (!member) return;
+
+  try {
+    await prisma.activities.deleteMany({
+      where: {
+        OR: [
+          {
+            external_id: id,
+            workspace_id,
+          },
+          {
+            thread_id: id,
+            workspace_id,
+          },
+        ],
+      },
+    });
+
+    await updateMemberMetrics(member);
+  } catch (error) {
+    console.error("ThreadDelete", error);
+  }
 });
 
 client.on(Events.GuildRoleCreate, async (role) => {
