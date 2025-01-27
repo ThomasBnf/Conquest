@@ -1,4 +1,3 @@
-import { prisma } from "./lib/prisma";
 import {
   ChannelType,
   Client,
@@ -7,6 +6,8 @@ import {
   type NonThreadGuildBasedChannel,
 } from "discord.js";
 import { config } from "dotenv";
+import express from "express";
+import { prisma } from "./lib/prisma";
 import { sleep } from "./lib/sleep";
 import { createActivity } from "./queries/activities/createActivity";
 import { getActivity } from "./queries/activities/getActivity";
@@ -15,6 +16,17 @@ import { createFiles } from "./queries/files/createFiles";
 import { getIntegration } from "./queries/integrations/getIntegration";
 import { getMember } from "./queries/members/getMember";
 import { upsertMember } from "./queries/members/upsertMember";
+
+const app = express();
+const port = process.env.PORT || 4000;
+
+app.get("/", (req, res) => {
+  res.send("Hello World!");
+});
+
+app.listen(port, () => {
+  console.log(`Example app listening on port ${port}`);
+});
 
 config();
 
