@@ -20,13 +20,9 @@ import { upsertMember } from "./queries/members/upsertMember";
 const app = express();
 const port = process.env.PORT || 10000;
 
-app.get("/", (req, res) => {
-  res.send("Hello World!");
-});
+app.get("/", (req, res) => {});
 
-app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`);
-});
+app.listen(port, () => {});
 
 config();
 
@@ -34,9 +30,9 @@ const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
     GatewayIntentBits.GuildMessages,
-    GatewayIntentBits.MessageContent,
     GatewayIntentBits.GuildMembers,
     GatewayIntentBits.GuildMessageReactions,
+    GatewayIntentBits.MessageContent,
   ],
 });
 
@@ -442,18 +438,6 @@ client.on(Events.ThreadDelete, async (thread) => {
       ],
     },
   });
-});
-
-client.on(Events.MessageReactionAdd, async (reaction) => {
-  console.log(reaction);
-});
-
-client.on(Events.MessageReactionRemove, async (reaction) => {
-  console.log(reaction);
-});
-
-client.on(Events.InteractionCreate, async (interaction) => {
-  console.log(interaction);
 });
 
 client.on(Events.GuildRoleCreate, async (role) => {
