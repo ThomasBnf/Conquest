@@ -26,7 +26,9 @@ export const listReplies = async ({ web, channel, reply_to }: Props) => {
     for (const message of messages?.slice(1) ?? []) {
       console.log("replies", message);
       const { text, ts, user, reactions, files } = message;
+      const subtype = "subtype" in message ? message.subtype : undefined;
 
+      if (subtype === "thread_broadcast") continue;
       if (!user) continue;
 
       const member = await getMember({ slack_id: user, workspace_id });
