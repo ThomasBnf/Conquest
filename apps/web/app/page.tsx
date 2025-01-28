@@ -2,8 +2,10 @@
 
 import { MenuBar } from "@/components/menu-bar";
 import { ScrollArea } from "@conquest/ui/scroll-area";
+import { CollaborativePlatform } from "./sections/collaborative-platform";
+import { CommunityCRM } from "./sections/community-crm";
+import { FreeTrial } from "./sections/free-trial";
 import { Hero } from "./sections/hero";
-import { Section } from "./sections/section";
 
 export default function Page() {
   return (
@@ -11,11 +13,10 @@ export default function Page() {
       <ScrollArea>
         <MenuBar />
         <Hero />
-        <Section />
-        <div className="h-[100vh] bg-blue-50">section</div>
-        <div className="h-[100vh] bg-blue-50">section</div>
-        <div className="h-[100vh] bg-blue-50">section</div>
-        <div className="h-[100vh] bg-blue-50">section</div>
+        <CommunityCRM />
+        <FreeTrial />
+        <CollaborativePlatform />
+        <div className="h-[100vh] bg-blue-50" />
       </ScrollArea>
     </main>
   );

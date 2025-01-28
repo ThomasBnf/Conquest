@@ -169,7 +169,6 @@ export const members = new Hono()
           LOWER(COALESCE(m.first_name, '')) ILIKE '%' || LOWER(${searchParsed}) || '%'
           OR LOWER(COALESCE(m.last_name, '')) ILIKE '%' || LOWER(${searchParsed}) || '%'
           OR LOWER(COALESCE(m.primary_email, '')) ILIKE '%' || LOWER(${searchParsed}) || '%'
-          OR LOWER(COALESCE(m.username, '')) ILIKE '%' || LOWER(${searchParsed}) || '%'
         )
         ORDER BY 
           sort_priority,

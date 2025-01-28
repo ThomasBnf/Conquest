@@ -8,5 +8,6 @@ export default {
     "./sections/**/*.{ts,tsx}",
     "../../packages/ui/**/*.{ts,tsx}",
   ],
+
   presets: [baseConfig],
 } satisfies Config;

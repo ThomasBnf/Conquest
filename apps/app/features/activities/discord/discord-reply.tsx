@@ -13,8 +13,6 @@ export const DiscordReply = ({ activity }: Props) => {
   const { reply_to } = activity;
   const { data, isLoading } = getActivity({ id: reply_to });
 
-  console.log(activity);
-
   if (isLoading) {
     return (
       <div className="h-16 w-full rounded-md border p-3">

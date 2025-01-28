@@ -213,7 +213,6 @@ client.on(Events.ChannelDelete, async (channel) => {
 });
 
 client.on(Events.MessageCreate, async (message) => {
-  console.log(message);
   const {
     id,
     channelId,
@@ -489,7 +488,6 @@ client.on(Events.GuildRoleCreate, async (role) => {
 });
 
 client.on(Events.GuildRoleUpdate, async (_, role) => {
-  console.log(role);
   const { id, name, guild, color } = role;
   const { id: guildId } = guild;
 
