@@ -83,7 +83,7 @@ export const EnableCard = ({ error }: Props) => {
               "flex w-fit items-center gap-2 text-foreground",
             )}
           >
-            <ExternalLink size={15} />
+            <ExternalLink size={16} />
             <p>Documentation</p>
           </Link>
         </div>

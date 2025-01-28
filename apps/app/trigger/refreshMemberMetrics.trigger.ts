@@ -1,4 +1,4 @@
-import { calculateMemberMetrics } from "@/client/dashboard/calculateMemberMetrics";
+import { calculateMemberMetrics } from "@/queries/dashboard/calculateMemberMetrics";
 import { MemberSchema } from "@conquest/zod/schemas/member.schema";
 import { schemaTask } from "@trigger.dev/sdk/v3";
 import { z } from "zod";

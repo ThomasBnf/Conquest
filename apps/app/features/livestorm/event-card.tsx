@@ -47,7 +47,7 @@ export const EventCard = ({ event }: Props) => {
         </div>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon">
+            <Button variant="outline" size="icon">
               <MoreHorizontal size={16} />
             </Button>
           </DropdownMenuTrigger>

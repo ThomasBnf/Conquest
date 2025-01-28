@@ -43,7 +43,7 @@ export const MemberPicker = ({ currentMember, onSelect }: Props) => {
     <Popover open={open} onOpenChange={setOpen} modal>
       <PopoverTrigger asChild>
         <Button>
-          <Plus size={15} />
+          <Plus size={16} />
         </Button>
       </PopoverTrigger>
       <PopoverContent align="start" className="w-72 p-0">

@@ -55,11 +55,11 @@ export const ApiKeyCard = ({ apiKey }: Props) => {
           variant="outline"
           size="icon"
         >
-          {isRevealed ? <EyeOff size={15} /> : <Eye size={15} />}
+          {isRevealed ? <EyeOff size={16} /> : <Eye size={16} />}
         </Button>
         <Button onClick={onCopy} variant="outline" size="icon">
           {isCopied ? (
-            <Check size={15} className="text-green-500" />
+            <Check size={16} className="text-green-500" />
           ) : (
             <Copy size={13} />
           )}

@@ -91,7 +91,7 @@ export const MergeDialog = ({ open, setOpen, member }: Props) => {
                   disabled={!leftMember}
                   onClick={onSwitchMembers}
                 >
-                  <ArrowLeftRight size={15} />
+                  <ArrowLeftRight size={16} />
                 </Button>
                 <Separator className="flex-1" />
               </div>
@@ -100,7 +100,7 @@ export const MergeDialog = ({ open, setOpen, member }: Props) => {
             <div className="flex w-12 items-center">
               <Separator className="flex-1" />
               <div className="flex size-6 shrink-0 items-center justify-center rounded-md border">
-                <Equal size={15} className="text-muted-foreground" />
+                <Equal size={16} className="text-muted-foreground" />
               </div>
               <Separator className="flex-1" />
             </div>

@@ -46,9 +46,9 @@ export const Instruction = ({
             onClick={onCopy}
           >
             {isCopied ? (
-              <Check size={15} className="text-green-600" />
+              <Check size={16} className="text-green-600" />
             ) : (
-              <Copy size={15} />
+              <Copy size={16} />
             )}
           </Button>
         </div>

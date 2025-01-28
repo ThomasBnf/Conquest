@@ -20,16 +20,8 @@ export const HeaderSubPage = ({ children }: PropsWithChildren) => {
             <Separator orientation="vertical" className="mr-1 h-4" />
           </>
         )}
-        <Button
-          variant="outline"
-          size="icon"
-          className="group"
-          onClick={() => router.back()}
-        >
-          <X
-            size={16}
-            className="text-muted-foreground group-hover:text-foreground"
-          />
+        <Button variant="outline" size="icon" onClick={() => router.back()}>
+          <X size={16} />
         </Button>
       </div>
       {children}

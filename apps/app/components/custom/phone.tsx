@@ -53,7 +53,7 @@ export const Phone = ({
         className="mr-1 shrink-0"
         onClick={() => onDeletePhone(phone.id)}
       >
-        <X size={15} />
+        <X size={16} />
       </Button>
     </div>
   );

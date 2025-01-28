@@ -1,5 +1,3 @@
-"use client";
-
 import { useUser } from "@/context/userContext";
 import { Button, buttonVariants } from "@conquest/ui/button";
 import { Card, CardContent, CardHeader } from "@conquest/ui/card";
@@ -84,7 +82,7 @@ export const EnableCard = ({
               "flex w-fit items-center gap-2 text-foreground",
             )}
           >
-            <ExternalLink size={15} />
+            <ExternalLink size={16} />
             <p>Documentation</p>
           </Link>
         </div>

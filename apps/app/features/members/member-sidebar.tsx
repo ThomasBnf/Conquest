@@ -101,7 +101,7 @@ export const MemberSidebar = ({ member, tags }: Props) => {
         <Separator />
         <div className="flex flex-col gap-2 p-4">
           <div className="flex items-center gap-2 text-muted-foreground">
-            <TagIcon size={15} className="shrink-0" />
+            <TagIcon size={16} className="shrink-0" />
             <p>Tags</p>
           </div>
           <TagPicker

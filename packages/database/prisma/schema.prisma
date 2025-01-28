@@ -27,7 +27,6 @@ enum SOURCE {
 enum GENDER {
   MALE
   FEMALE
-  OTHER
 }
 
 enum STATUS {

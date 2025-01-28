@@ -122,7 +122,7 @@ export const EditableEmails = ({ member }: Props) => {
           classNameSpan="justify-start"
           onClick={onAddEmail}
         >
-          <Plus size={15} />
+          <Plus size={16} />
           Add email
         </Button>
       </DropdownMenuContent>

@@ -49,17 +49,17 @@ export const MemberMenu = ({ member }: Props) => {
       <MergeDialog open={mergeOpen} setOpen={setMergeOpen} member={member} />
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="icon">
-            <MoreHorizontal size={15} className="text-muted-foreground" />
+          <Button variant="outline" size="icon_sm">
+            <MoreHorizontal size={16} />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           <DropdownMenuItem onClick={() => setMergeOpen(true)}>
-            <Merge size={15} />
+            <Merge size={16} />
             Merge
           </DropdownMenuItem>
           <DropdownMenuItem onClick={onCopy}>
-            <Copy size={15} />
+            <Copy size={16} />
             Copy ID
           </DropdownMenuItem>
           <DropdownMenuSeparator />
@@ -67,7 +67,7 @@ export const MemberMenu = ({ member }: Props) => {
             onClick={() => setOpen(true)}
             className="text-destructive focus:text-destructive"
           >
-            <Trash2 size={15} />
+            <Trash2 size={16} />
             Delete
           </DropdownMenuItem>
         </DropdownMenuContent>

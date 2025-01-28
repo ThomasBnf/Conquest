@@ -41,7 +41,7 @@ export const WorkflowMenu = ({ workflow }: Props) => {
       />
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="icon">
+          <Button variant="outline" size="icon">
             <MoreHorizontal size={16} />
           </Button>
         </DropdownMenuTrigger>

@@ -55,7 +55,7 @@ export const TagPicker = ({ record, tags, onUpdate, className }: Props) => {
             )}
             classNameSpan="justify-start"
           >
-            <Plus size={15} />
+            <Plus size={16} />
             Add tags
           </Button>
         </div>

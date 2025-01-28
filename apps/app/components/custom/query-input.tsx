@@ -46,7 +46,7 @@ export const QueryInput = ({
       )}
     >
       <Search
-        size={15}
+        size={16}
         className={cn(
           "shrink-0 text-muted-foreground",
           isFocus && "text-main-500",

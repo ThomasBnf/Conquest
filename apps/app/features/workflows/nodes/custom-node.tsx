@@ -43,7 +43,7 @@ export const CustomNode = ({ hasEdges, ...props }: Props) => {
             node?.id === props.id && "bg-muted text-main-500",
           )}
         >
-          <Target size={15} />
+          <Target size={16} />
           <p className="text-xs leading-none">Trigger</p>
         </div>
       )}
@@ -79,7 +79,7 @@ export const CustomNode = ({ hasEdges, ...props }: Props) => {
         {!isTrigger && <CustomHandle position={Position.Top} type="target" />}
         <CustomHandle position={Position.Bottom} type="source" />
       </div>
-      {!hasEdge &&  (
+      {!hasEdge && (
         <>
           <div className="-bottom-9 -translate-x-1/2 absolute left-1/2 h-7 w-px bg-border" />
           <Button

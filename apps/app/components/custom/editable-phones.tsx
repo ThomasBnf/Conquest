@@ -124,7 +124,7 @@ export const EditablePhones = ({ member }: Props) => {
           classNameSpan="justify-start"
           onClick={onAddPhone}
         >
-          <Plus size={15} />
+          <Plus size={16} />
           Add phone
         </Button>
       </DropdownMenuContent>

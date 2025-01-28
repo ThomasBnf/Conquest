@@ -39,8 +39,8 @@ export const TagMenu = ({ tag, setIsEditing }: Props) => {
       )}
       <DropdownMenu open={open} onOpenChange={setOpen} modal>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="icon">
-            <MoreHorizontal size={16} className="text-muted-foreground" />
+          <Button variant="outline" size="icon">
+            <MoreHorizontal size={16} />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">

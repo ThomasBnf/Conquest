@@ -1,5 +1,4 @@
 import { prisma } from "@/lib/prisma";
-import { getFirstActivity } from "@/queries/activities/getFirstActivity";
 import { listActivitiesIn365Days } from "@/queries/activities/listActivitiesIn365Days";
 import { getMemberMetrics } from "@/queries/members/getMemberMetrics";
 import {
@@ -19,7 +18,16 @@ export const calculateMemberMetrics = async ({ member }: Props) => {
   const today = new Date();
   const last365Days = subDays(today, 365);
 
-  const firstActivity = await getFirstActivity({ member });
+  const firstActivity = await prisma.activities.findFirst({
+    where: {
+      member_id: id,
+      workspace_id,
+    },
+    orderBy: {
+      created_at: "asc",
+    },
+  });
+
   const activities = await listActivitiesIn365Days({ member });
 
   const metrics = await getMemberMetrics({ activities, today });

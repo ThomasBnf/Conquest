@@ -45,8 +45,8 @@ export const ListMenu = ({ listId }: Props) => {
       />
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="icon">
-            <MoreHorizontal size={15} className="text-muted-foreground" />
+          <Button variant="outline" size="icon_sm">
+            <MoreHorizontal size={16} />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
@@ -54,7 +54,7 @@ export const ListMenu = ({ listId }: Props) => {
             onClick={() => setOpen(true)}
             className="text-destructive focus:text-destructive"
           >
-            <Trash2 size={15} />
+            <Trash2 size={16} />
             Delete list
           </DropdownMenuItem>
         </DropdownMenuContent>

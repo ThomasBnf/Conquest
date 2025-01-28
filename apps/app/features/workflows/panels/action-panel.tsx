@@ -62,11 +62,11 @@ export const ActionPanel = () => {
                     >
                       <div className="rounded-md border p-1">
                         {data.icon === "Slack" ? (
-                          <Slack size={15} />
+                          <Slack size={16} />
                         ) : (
                           <Icon
                             name={data.icon as keyof typeof icons}
-                            size={15}
+                            size={16}
                           />
                         )}
                       </div>
@@ -184,7 +184,7 @@ export const nodes: {
             description: "",
             type: "loop",
             category: "utilities",
-            sub_nodes:[]
+            sub_nodes: [],
           },
         },
         {

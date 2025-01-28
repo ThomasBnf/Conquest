@@ -24,7 +24,10 @@ export const Providers = ({ children }: Props) => {
       <Toaster position="bottom-right" closeButton duration={3500} />
       <TooltipProvider>{children}</TooltipProvider>
       {process.env.NODE_ENV === "development" && (
-        <ReactQueryDevtools initialIsOpen={false} />
+        <ReactQueryDevtools
+          initialIsOpen={false}
+          buttonPosition="bottom-left"
+        />
       )}
     </QueryClientProvider>
   );

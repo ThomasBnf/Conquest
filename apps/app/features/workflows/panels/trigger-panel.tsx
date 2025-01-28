@@ -58,7 +58,7 @@ export const TriggerPanel = () => {
                       <div className="rounded-md border p-1">
                         <Icon
                           name={data.icon as keyof typeof icons}
-                          size={15}
+                          size={16}
                         />
                       </div>
                       <p className="font-medium">{data.label}</p>

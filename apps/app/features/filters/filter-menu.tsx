@@ -26,7 +26,7 @@ export const FilterMenu = ({ filter, handleUpdate }: Props) => {
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button variant="dropdown">
-          <MoreHorizontal size={15} />
+          <MoreHorizontal size={16} />
         </Button>
       </PopoverTrigger>
       <PopoverContent align="start" className="p-0">

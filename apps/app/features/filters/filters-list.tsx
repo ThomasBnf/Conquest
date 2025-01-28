@@ -49,7 +49,7 @@ export const FiltersList = ({
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="dropdown">
-              <MoreVertical size={15} className="text-muted-foreground" />
+              <MoreVertical size={16} className="text-muted-foreground" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
@@ -57,7 +57,7 @@ export const FiltersList = ({
               className="text-destructive focus:text-destructive"
               onClick={onClearFilters}
             >
-              <Trash2 size={15} />
+              <Trash2 size={16} />
               Delete {filters.length > 1 ? "filters" : "filter"}
             </DropdownMenuItem>
           </DropdownMenuContent>

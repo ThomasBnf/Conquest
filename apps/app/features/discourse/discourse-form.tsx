@@ -195,7 +195,7 @@ export const DiscourseForm = ({ loading, setLoading }: Props) => {
                 disabled={loading}
                 onClick={onAddField}
               >
-                <Plus size={15} />
+                <Plus size={16} />
                 Add field
               </Button>
             </div>

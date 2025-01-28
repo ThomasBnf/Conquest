@@ -1,5 +1,3 @@
-"use client";
-
 import { AlertDialog } from "@/components/custom/alert-dialog";
 import { Button } from "@conquest/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@conquest/ui/card";
@@ -67,7 +65,7 @@ export const ConnectedCard = ({
             </div>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost">
+                <Button variant="outline">
                   <div className="size-2.5 rounded-full bg-green-500" />
                   <p>Connected</p>
                   <ChevronDown size={16} />

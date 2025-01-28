@@ -51,7 +51,7 @@ export const Email = ({
         className="ml-auto shrink-0 opacity-0 group-hover:opacity-100"
         onClick={() => onDeleteEmail(email.id)}
       >
-        <X size={15} />
+        <X size={16} />
       </Button>
     </div>
   );

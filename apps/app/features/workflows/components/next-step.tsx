@@ -85,7 +85,7 @@ export const NextStep = () => {
                   className="ml-auto"
                   onClick={onDeleteNode}
                 >
-                  <X size={15} />
+                  <X size={16} />
                 </Button>
               )}
             </div>

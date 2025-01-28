@@ -14,6 +14,7 @@ import { APIKey } from "components/icons/APIKey";
 import { Tags } from "components/icons/Tags";
 import { User } from "components/icons/User";
 import { ArrowLeft } from "lucide-react";
+import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ActivitiesTypes } from "../icons/ActivitiesTypes";
 import { Integration } from "../icons/Integration";
@@ -67,11 +68,11 @@ export const SidebarSettings = () => {
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton asChild>
-              <a href={`/${slug}`}>
+            <SidebarMenuButton asChild className="w-fit">
+              <Link href={`/${slug}`}>
                 <ArrowLeft />
                 Back to dashboard
-              </a>
+              </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>

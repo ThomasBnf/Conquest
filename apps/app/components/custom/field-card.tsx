@@ -21,7 +21,7 @@ export const FieldCard = ({
         {typeof icon === "string" ? (
           <Icon
             name={icon as keyof typeof icons}
-            size={15}
+            size={16}
             className="shrink-0"
           />
         ) : (

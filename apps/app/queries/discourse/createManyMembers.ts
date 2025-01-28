@@ -1,4 +1,4 @@
-import { calculateMemberMetrics } from "@/client/dashboard/calculateMemberMetrics";
+import { calculateMemberMetrics } from "@/queries/dashboard/calculateMemberMetrics";
 import type { DiscourseIntegration } from "@conquest/zod/schemas/integration.schema";
 import type { MemberWithCompany } from "@conquest/zod/schemas/member.schema";
 import type { Tag } from "@conquest/zod/schemas/tag.schema";

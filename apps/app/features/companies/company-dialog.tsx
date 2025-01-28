@@ -71,7 +71,7 @@ export const CompanyDialog = () => {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button>
-          <Plus size={15} />
+          <Plus size={16} />
           Add Company
         </Button>
       </DialogTrigger>

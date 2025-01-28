@@ -213,7 +213,7 @@ export const FilterActivity = ({ filter, setFilters, handleUpdate }: Props) => {
         onClick={onDeleteFilter}
         className="h-full rounded-none"
       >
-        <X size={15} />
+        <X size={16} />
       </Button>
     </div>
   );

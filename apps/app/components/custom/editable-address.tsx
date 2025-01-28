@@ -62,10 +62,10 @@ export function EditableAddress({ address, onUpdate }: Props) {
               <Button
                 variant="outline"
                 size="icon"
-                className="absolute inset-y right-1 text-muted-foreground"
+                className="absolute inset-y right-1"
                 onClick={() => onSelect(null)}
               >
-                <X size={15} />
+                <X size={16} />
               </Button>
             )}
           </div>
@@ -89,7 +89,7 @@ export function EditableAddress({ address, onUpdate }: Props) {
           />
           {value && (
             <Button
-              variant="ghost"
+              variant="outline"
               size="icon"
               className="absolute top-1.5 right-1"
               onClick={() => {
@@ -97,7 +97,7 @@ export function EditableAddress({ address, onUpdate }: Props) {
                 ref.current?.focus();
               }}
             >
-              <X className="h-4 w-4" />
+              <X size={16} />
             </Button>
           )}
           <CommandList>

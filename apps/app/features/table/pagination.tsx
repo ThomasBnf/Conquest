@@ -38,7 +38,7 @@ export const Pagination = ({ count }: Props) => {
               if (hasPreviousPage) setParams({ page: page - 1 });
             }}
           >
-            <ChevronLeftIcon size={15} />
+            <ChevronLeftIcon size={16} />
           </Button>
           <p className="text-sm">
             {page}/{totalPages}
@@ -52,7 +52,7 @@ export const Pagination = ({ count }: Props) => {
               if (hasNextPage) setParams({ page: page + 1 });
             }}
           >
-            <ChevronRightIcon size={15} />
+            <ChevronRightIcon size={16} />
           </Button>
         </div>
       )}

@@ -71,7 +71,7 @@ export const EditableLink = ({
               "-ml-7 z-10",
             )}
           >
-            <ExternalLink size={15} />
+            <ExternalLink size={16} />
           </Link>
         )}
       </div>

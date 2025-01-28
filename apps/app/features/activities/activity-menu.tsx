@@ -47,11 +47,11 @@ export const Menu = ({ activity }: Props) => {
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button
-            variant="ghost"
+            variant="outline"
             size="icon"
-            className="absolute top-4 right-4"
+            className="absolute top-3 right-3"
           >
-            <MoreHorizontal size={16} className="text-muted-foreground" />
+            <MoreHorizontal size={16} />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="start">

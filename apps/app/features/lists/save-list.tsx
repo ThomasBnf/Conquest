@@ -129,7 +129,7 @@ export const SaveList = ({ filters, setFilters, handleUpdate }: Props) => {
       <div className="flex h-full items-center gap-1">
         <Tooltip>
           <TooltipTrigger asChild>
-            <Button variant="ghost" onClick={onClearFilters}>
+            <Button variant="outline" onClick={onClearFilters}>
               Clear
             </Button>
           </TooltipTrigger>

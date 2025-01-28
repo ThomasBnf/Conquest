@@ -82,7 +82,7 @@ export const EditableCompany = ({ member, onUpdate }: Props) => {
                     onUpdateMemberCompany(null);
                   }}
                 >
-                  <X size={15} />
+                  <X size={16} />
                 </div>
               )}
             </Button>
@@ -118,7 +118,7 @@ export const EditableCompany = ({ member, onUpdate }: Props) => {
                   }
                 }}
               >
-                <Plus size={15} className="shrink-0" />
+                <Plus size={16} className="shrink-0" />
                 Create "{search}"
               </Button>
             </CommandEmpty>

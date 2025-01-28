@@ -122,7 +122,7 @@ export const FilterPicker = ({ filter, setFilters, handleUpdate }: Props) => {
         onClick={handleDeleteFilter}
         className="h-full rounded-none px-1"
       >
-        <X size={15} />
+        <X size={16} />
       </Button>
     </div>
   );

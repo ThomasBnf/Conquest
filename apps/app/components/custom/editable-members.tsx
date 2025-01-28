@@ -98,7 +98,7 @@ export const EditableMembers = ({ company }: Props) => {
                         onUpdate(member.id);
                       }}
                     >
-                      <X size={15} />
+                      <X size={16} />
                     </div>
                   )}
                 </Button>
