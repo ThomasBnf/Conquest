@@ -42,7 +42,7 @@ export const DirectoryItemsSchema = z.object({
         username: z.string(),
         name: z.string(),
         avatar_template: z.string(),
-        user_fields: z.record(z.string(), z.string()),
+        user_fields: z.record(z.string(), z.string()).optional(),
         geo_location: z.union([
           z.object({
             lat: z.string(),

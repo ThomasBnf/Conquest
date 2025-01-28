@@ -87,10 +87,13 @@ export const LinkedinForm = ({ loading, setLoading }: Props) => {
               ))}
           </RadioGroup>
         )}
-        {loading && <LoadingMessage />}
-        <Button onClick={onStart} loading={loading} disabled={!selectedOrg}>
-          Let's start!
-        </Button>
+        {loading ? (
+          <LoadingMessage />
+        ) : (
+          <Button onClick={onStart} loading={loading} disabled={!selectedOrg}>
+            Let's start!
+          </Button>
+        )}
       </div>
     </>
   );

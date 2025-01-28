@@ -7,7 +7,7 @@ import cuid from "cuid";
 import { prisma } from "lib/prisma";
 import { safeAction } from "lib/safeAction";
 import { cookies } from "next/headers";
-import { logIn } from "./logIn";
+import { logIn } from "./log-in";
 
 export const signUp = safeAction
   .metadata({ name: "signUp" })
@@ -17,6 +17,16 @@ export const signUp = safeAction
     const hashed_password = await hash(password, 10);
 
     cookieStore.set("sidebar:state", "true");
+
+    const existingUser = await prisma.users.findUnique({
+      where: {
+        email,
+      },
+    });
+
+    console.log(existingUser);
+
+    if (existingUser) return;
 
     const workspace = await prisma.workspaces.create({
       data: {
@@ -40,7 +50,7 @@ export const signUp = safeAction
       },
     });
 
-    if (user) await logIn({ email, password, redirectTo: "/" });
+    await logIn({ email, password, redirectTo: "/" });
 
     return UserSchema.parse(user);
   });

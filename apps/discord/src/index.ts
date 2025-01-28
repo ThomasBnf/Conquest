@@ -4,6 +4,7 @@ import {
   Events,
   GatewayIntentBits,
   type NonThreadGuildBasedChannel,
+  Partials,
 } from "discord.js";
 import { config } from "dotenv";
 import express from "express";
@@ -35,6 +36,7 @@ const client = new Client({
     GatewayIntentBits.GuildMessageReactions,
     GatewayIntentBits.MessageContent,
   ],
+  partials: [Partials.Message, Partials.Channel, Partials.GuildMember],
 });
 
 client.once(Events.ClientReady, (readyClient) => {
@@ -389,7 +391,12 @@ client.on(Events.MessageDelete, async (message) => {
       },
     });
 
-    await updateMemberMetrics(member);
+    await prisma.activities.deleteMany({
+      where: {
+        react_to: id,
+        workspace_id,
+      },
+    });
   } catch (error) {
     console.error("MessageDelete", error);
   }
@@ -556,6 +563,64 @@ client.on(Events.GuildRoleDelete, async (role) => {
   } catch (error) {
     console.error("GuildRoleDelete", error);
   }
+});
+
+client.on(Events.MessageReactionAdd, async (reaction, user) => {
+  const { message, emoji } = reaction;
+  const { id, guildId, channelId } = message;
+  const { id: discord_id } = user;
+
+  if (!guildId) return;
+
+  const integration = await getIntegration({
+    external_id: guildId,
+    status: "CONNECTED",
+  });
+  if (!integration) return;
+  const { workspace_id } = integration;
+
+  const member = await getMember({ discord_id, workspace_id });
+  if (!member) return;
+
+  const channel = await getChannel({ external_id: channelId, workspace_id });
+  if (!channel) return;
+
+  await createActivity({
+    external_id: null,
+    activity_type_key: "discord:reaction",
+    message: emoji.name ?? "",
+    react_to: id,
+    member_id: member.id,
+    channel_id: channel.id,
+    workspace_id,
+  });
+});
+
+client.on(Events.MessageReactionRemove, async (reaction, user) => {
+  const { message, emoji } = reaction;
+  const { id: messageId, guildId } = message;
+  const { id: discord_id } = user;
+
+  if (!guildId) return;
+
+  const integration = await getIntegration({
+    external_id: guildId,
+    status: "CONNECTED",
+  });
+  if (!integration) return;
+  const { workspace_id } = integration;
+
+  const member = await getMember({ discord_id, workspace_id });
+  if (!member) return;
+
+  await prisma.activities.deleteMany({
+    where: {
+      message: emoji.name ?? "",
+      react_to: messageId,
+      member_id: member.id,
+      workspace_id,
+    },
+  });
 });
 
 client.login(process.env.DISCORD_BOT_TOKEN);

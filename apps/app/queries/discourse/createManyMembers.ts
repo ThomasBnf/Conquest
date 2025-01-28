@@ -60,9 +60,12 @@ export const createManyMembers = async ({
     const params = new URLSearchParams({
       period: "all",
       order: "likes_received",
-      user_field_ids: fieldsIds?.join("|") ?? "",
       page: _page.toString(),
     });
+
+    if (fieldsIds?.length) {
+      params.set("user_field_ids", fieldsIds.join("|"));
+    }
 
     const url = `${community_url}/directory_items.json?${params.toString()}`;
 
@@ -77,7 +80,7 @@ export const createManyMembers = async ({
     const parsedReponse = DirectoryItemsSchema.parse(data);
     const { directory_items } = parsedReponse;
 
-    for (const item of directory_items) {
+    for (const item of directory_items ?? []) {
       let locale: string | null = null;
       const { id, username, name, avatar_template, user_fields, geo_location } =
         item.user;
@@ -113,10 +116,12 @@ export const createManyMembers = async ({
 
       const { email, title, created_at } = filteredMember;
 
-      const custom_fields = Object.entries(user_fields).map(([id, value]) => ({
-        id,
-        value,
-      }));
+      const custom_fields = Object.entries(user_fields ?? {}).map(
+        ([id, value]) => ({
+          id,
+          value,
+        }),
+      );
 
       const member = await createMember({
         data: {
@@ -129,7 +134,7 @@ export const createManyMembers = async ({
           avatar_url: avatarUrl,
           job_title: title,
           tags: memberTags,
-          custom_fields,
+          custom_fields: custom_fields ?? [],
           created_at: new Date(created_at),
         },
         source: "DISCOURSE",

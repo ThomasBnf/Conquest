@@ -26,10 +26,7 @@ export const EventCard = ({ event }: Props) => {
     const response = await deleteEvent({ id: id });
     const error = response?.serverError;
 
-    if (error) {
-      return toast.error(error);
-    }
-
+    if (error) return toast.error(error);
     return toast.success("Event deleted");
   };
 

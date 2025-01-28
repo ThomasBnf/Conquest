@@ -1,3 +1,5 @@
+import { updateIntegration } from "@/actions/integrations/updateIntegration";
+import { IconDoc } from "@/components/custom/icon-doc";
 import { useUser } from "@/context/userContext";
 import type { installDiscourse } from "@/trigger/installDiscourse.trigger";
 import { Button } from "@conquest/ui/button";
@@ -37,33 +39,7 @@ type Props = {
 
 export const DiscourseForm = ({ loading, setLoading }: Props) => {
   const { discourse } = useUser();
-  const [fields, setFields] = useState<Field[]>([
-    // {
-    //   id: cuid(),
-    //   external_id: "12",
-    //   name: "Company",
-    // },
-    // {
-    //   id: cuid(),
-    //   external_id: "13",
-    //   name: "Linkedin Profile",
-    // },
-    // {
-    //   id: cuid(),
-    //   external_id: "8",
-    //   name: "Language ",
-    // },
-    // {
-    //   id: cuid(),
-    //   external_id: "11",
-    //   name: "Sell services",
-    // },
-    // {
-    //   id: cuid(),
-    //   external_id: "3",
-    //   name: "Need VS Expertise",
-    // },
-  ]);
+  const [fields, setFields] = useState<Field[]>([]);
   const router = useRouter();
 
   const { submit, run, error } = useRealtimeTaskTrigger<
@@ -72,15 +48,15 @@ export const DiscourseForm = ({ loading, setLoading }: Props) => {
 
   const form = useForm<FormDiscourse>({
     resolver: zodResolver(FormDiscourseSchema),
-    // defaultValues: {
-    //   community_url: "https://playground.lagrowthmachine.com/",
-    //   api_key:
-    //     "a7e80919eecc82b71fe8a23d8d0e199bf3d593216835315133254de014e9e1b3",
-    //   payload_url: true,
-    //   content_type: true,
-    //   secret: true,
-    //   send_me_everything: true,
-    // },
+    defaultValues: {
+      community_url: "https://playground.lagrowthmachine.com",
+      api_key:
+        "a7e80919eecc82b71fe8a23d8d0e199bf3d593216835315133254de014e9e1b3",
+      content_type: true,
+      payload_url: true,
+      secret: true,
+      send_me_everything: true,
+    },
   });
 
   const onSubmit = async ({ community_url, api_key }: FormDiscourse) => {
@@ -89,7 +65,7 @@ export const DiscourseForm = ({ loading, setLoading }: Props) => {
     setLoading(true);
 
     const formattedCommunityUrl = community_url.trim().replace(/\/$/, "");
-
+    await updateIntegration({ id: discourse.id, status: "SYNCING" });
     submit({
       discourse,
       community_url: formattedCommunityUrl,
@@ -131,6 +107,7 @@ export const DiscourseForm = ({ loading, setLoading }: Props) => {
     if (isFailed || error) {
       router.refresh();
       toast.error("Failed to install Discourse", { duration: 5000 });
+      setLoading(false);
     }
 
     if (isCompleted) router.refresh();
@@ -199,7 +176,10 @@ export const DiscourseForm = ({ loading, setLoading }: Props) => {
               )}
             />
             <div className="flex flex-col gap-2">
-              <Label>User Fields</Label>
+              <Label className="flex items-center gap-2">
+                User Fields (optional){" "}
+                <IconDoc url="https://docs.useconquest.com/integrations/discourse#param-user-fields" />
+              </Label>
               {fields.length > 0 && (
                 <UserFields
                   fields={fields}
@@ -307,15 +287,17 @@ export const DiscourseForm = ({ loading, setLoading }: Props) => {
               />
             </div>
           </div>
-          {loading && <LoadingMessage />}
-          <Button
-            type="submit"
-            className="w-fit"
-            loading={loading}
-            disabled={!form.formState.isValid || loading}
-          >
-            Let's start !
-          </Button>
+          {loading ? (
+            <LoadingMessage />
+          ) : (
+            <Button
+              type="submit"
+              className="w-fit"
+              disabled={!form.formState.isValid || loading}
+            >
+              Let's start !
+            </Button>
+          )}
         </form>
       </Form>
     </>

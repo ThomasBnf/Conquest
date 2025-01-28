@@ -1,3 +1,4 @@
+import { updateIntegration } from "@/actions/integrations/updateIntegration";
 import { listChannels } from "@/client/channels/listChannels";
 import { listSLackChannels } from "@/client/slack/listSlackChannels";
 import { useUser } from "@/context/userContext";
@@ -7,6 +8,7 @@ import { Checkbox } from "@conquest/ui/checkbox";
 import { cn } from "@conquest/ui/cn";
 import { Separator } from "@conquest/ui/separator";
 import { useRealtimeTaskTrigger } from "@trigger.dev/react-hooks";
+import { Hash } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { type Dispatch, type SetStateAction, useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -53,6 +55,7 @@ export const SlackForm = ({ loading, setLoading }: Props) => {
     if (!slack) return;
 
     setLoading(true);
+    await updateIntegration({ id: slack.id, status: "SYNCING" });
     submit({ slack, channels: selectedChannels });
   };
 
@@ -118,19 +121,24 @@ export const SlackForm = ({ loading, setLoading }: Props) => {
                       checked={isSelected || hasImported}
                       disabled={hasImported || loading}
                     />
-                    <p>{slackChannel.name}</p>
+                    <div className="flex items-center gap-1">
+                      <Hash size={16} />
+                      <p>{slackChannel.name}</p>
+                    </div>
                   </button>
                 );
               })}
             </div>
-            {loading && <LoadingMessage />}
-            <Button
-              loading={loading}
-              disabled={selectedChannels.length === 0 || loading}
-              onClick={onStart}
-            >
-              Let's start!
-            </Button>
+            {loading ? (
+              <LoadingMessage />
+            ) : (
+              <Button
+                disabled={selectedChannels.length === 0}
+                onClick={onStart}
+              >
+                Let's start!
+              </Button>
+            )}
           </>
         )}
       </div>

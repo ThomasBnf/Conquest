@@ -5,6 +5,4 @@ import { safeAction } from "lib/safeAction";
 
 export const logOut = safeAction
   .metadata({ name: "logOut" })
-  .action(async () => {
-    await signOut();
-  });
+  .action(async () => await signOut());

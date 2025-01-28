@@ -52,6 +52,7 @@ export const MemberSidebar = ({ member, tags }: Props) => {
     first_activity,
     last_activity,
     created_at,
+    custom_fields,
   } = member;
 
   const onUpdateMember = async (
@@ -198,15 +199,14 @@ export const MemberSidebar = ({ member, tags }: Props) => {
             />
           </FieldCard>
         </div>
-        {discourse?.details.community_url && (
+        {custom_fields.length > 0 && (
           <>
             <Separator />
             <div className="space-y-2 p-4">
               {user_fields?.map((user_field) => {
                 const { id, name } = user_field;
-                const field = member.custom_fields.find(
-                  (field) => field.id === id,
-                );
+                const field = custom_fields.find((field) => field.id === id);
+
                 return (
                   <FieldCard key={id} icon="User" label={name}>
                     <p className="py-1.5">{field?.value}</p>

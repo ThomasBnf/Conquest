@@ -1,4 +1,5 @@
 import type { ActivityWithTypeAndMember } from "@conquest/zod/schemas/activity.schema";
+import { DiscordReaction } from "./discord/discord-reaction";
 import { DiscordReply } from "./discord/discord-reply";
 import { DiscourseReaction } from "./discourse/discourse-reaction";
 import { DiscourseReply } from "./discourse/discourse-reply";
@@ -16,6 +17,10 @@ export const Message = ({ activity }: Props) => {
 
   if (key === "discord:reply") {
     return <DiscordReply activity={activity} />;
+  }
+
+  if (key === "discord:reaction") {
+    return <DiscordReaction activity={activity} />;
   }
 
   if (key === "discourse:reaction") {

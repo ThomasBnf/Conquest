@@ -1,8 +1,6 @@
 "use client";
 
-import { deleteIntegration } from "@/actions/integrations/deleteIntegration";
 import { AlertDialog } from "@/components/custom/alert-dialog";
-import { useUser } from "@/context/userContext";
 import { Button } from "@conquest/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@conquest/ui/card";
 import {
@@ -11,41 +9,46 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@conquest/ui/dropdown-menu";
+import type { Integration } from "@conquest/zod/schemas/integration.schema";
 import { format } from "date-fns";
 import { ChevronDown } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import { toast } from "sonner";
+import { type PropsWithChildren, useEffect, useState } from "react";
 
-export const ConnectedCard = () => {
-  const { discourse } = useUser();
-  const { connected_at } = discourse ?? {};
+type Props = {
+  integration: Integration | undefined;
+  name: string | undefined;
+  onDisconnect: () => Promise<string | number | undefined>;
+};
 
-  const [open, setOpen] = useState(false);
+export const ConnectedCard = ({
+  integration,
+  name,
+  onDisconnect,
+  children,
+}: PropsWithChildren<Props>) => {
+  const { status, connected_at } = integration ?? {};
+  const isConnected = status === "CONNECTED";
   const router = useRouter();
 
-  const onDisconnect = async () => {
-    if (!discourse) return;
-
-    const response = await deleteIntegration({
-      integration: discourse,
-      source: "DISCOURSE",
-    });
-
-    const error = response?.serverError;
-
-    if (error) toast.error(error);
-    return toast.success("Discourse disconnected");
-  };
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     router.refresh();
   }, []);
 
-  if (discourse?.status !== "CONNECTED") return;
+  if (!isConnected) return null;
 
   return (
     <>
+      <AlertDialog
+        title={`Disconnect ${name}`}
+        description="Integration will be removed from your workspace and all your data will be deleted."
+        onConfirm={onDisconnect}
+        open={open}
+        setOpen={setOpen}
+        buttonLabel="Disconnect"
+      />
       <Card>
         <CardHeader>
           <CardTitle className="font-medium text-base">
@@ -55,7 +58,7 @@ export const ConnectedCard = () => {
         <CardContent className="mb-0.5">
           <div className=" flex items-end justify-between">
             <div>
-              <p className="font-medium">Discourse</p>
+              <p className="font-medium">{name}</p>
               {connected_at && (
                 <p className="text-muted-foreground">
                   Connected on {format(connected_at, "PP")}
@@ -73,21 +76,14 @@ export const ConnectedCard = () => {
               <DropdownMenuContent align="end">
                 <DropdownMenuItem onClick={() => setOpen(true)}>
                   <div className="size-2.5 rounded-full bg-red-500" />
-                  <p>Disconnect Discourse</p>
+                  <p>Disconnect {name}</p>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
+          {children}
         </CardContent>
       </Card>
-      <AlertDialog
-        title="Disconnect Discourse workspace"
-        description="Discourse integration will be removed from your workspace and all your data will be deleted."
-        onConfirm={onDisconnect}
-        open={open}
-        setOpen={setOpen}
-        buttonLabel="Disconnect"
-      />
     </>
   );
 };

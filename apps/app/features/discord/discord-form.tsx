@@ -1,3 +1,4 @@
+import { updateIntegration } from "@/actions/integrations/updateIntegration";
 import { listChannels } from "@/client/channels/listChannels";
 import { listDiscordChannels } from "@/client/discord/listChannels";
 import { useUser } from "@/context/userContext";
@@ -11,6 +12,7 @@ import {
   type APIGuildCategoryChannel,
   ChannelType,
 } from "discord-api-types/v10";
+import { Hash } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -33,7 +35,7 @@ export const DiscordForm = ({ loading, setLoading }: Props) => {
     APIGuildCategoryChannel[]
   >([]);
 
-  const { channels, refetch } = listChannels();
+  const { channels } = listChannels();
   const { discordChannels, isLoading } = listDiscordChannels();
   const router = useRouter();
 
@@ -86,6 +88,7 @@ export const DiscordForm = ({ loading, setLoading }: Props) => {
     if (!discord) return;
 
     setLoading(true);
+    await updateIntegration({ id: discord.id, status: "SYNCING" });
     submit({ discord, channels: selectedChannels });
   };
 
@@ -98,9 +101,7 @@ export const DiscordForm = ({ loading, setLoading }: Props) => {
     if (isFailed || error) {
       router.refresh();
       toast.error("Failed to install Discord", { duration: 5000 });
-      setTimeout(() => {
-        setLoading(false);
-      }, 100);
+      setLoading(false);
     }
 
     if (isCompleted) router.refresh();
@@ -166,7 +167,10 @@ export const DiscordForm = ({ loading, setLoading }: Props) => {
                                 checked={isSelected || hasImported}
                                 disabled={hasImported || loading}
                               />
-                              <p># {subChannel.name}</p>
+                              <div className="flex items-center gap-1">
+                                <Hash size={16} />
+                                <p>{subChannel.name}</p>
+                              </div>
                             </button>
                           );
                         })}
@@ -175,15 +179,17 @@ export const DiscordForm = ({ loading, setLoading }: Props) => {
                 );
               })}
             </div>
-            {loading && <LoadingMessage />}
-            <Button
-              className="mt-4"
-              onClick={onStart}
-              loading={loading}
-              disabled={selectedChannels.length === 0 || loading}
-            >
-              Let's start
-            </Button>
+            {loading ? (
+              <LoadingMessage />
+            ) : (
+              <Button
+                className="mt-4"
+                onClick={onStart}
+                disabled={selectedChannels.length === 0}
+              >
+                Let's start
+              </Button>
+            )}
           </>
         )}
       </div>

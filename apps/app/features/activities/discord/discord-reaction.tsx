@@ -34,11 +34,7 @@ export const DiscordReaction = ({ activity }: Props) => {
         </div>
       )}
       <p className="size-7 place-content-center rounded-md border border-[#1264a3] bg-[#e3f8ff] text-center">
-        {message === "like" && <p>❤️</p>}
-        {message === "pray" && <p>🙏</p>}
-        {message === "bulb" && <p>💡</p>}
-        {message === "clap" && <p>👏</p>}
-        {message === "laugh" && <p>😂</p>}
+        {message}
       </p>
     </div>
   );

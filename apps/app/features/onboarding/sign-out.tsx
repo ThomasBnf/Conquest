@@ -5,9 +5,7 @@ import { Button } from "@conquest/ui/button";
 import { logOut } from "../auth/actions/sign-out";
 
 export const SignOut = () => {
-  const onClick = async () => {
-    await logOut();
-  };
+  const onClick = async () => await logOut();
 
   return (
     <Button onClick={onClick} variant="outline" className="self-start">

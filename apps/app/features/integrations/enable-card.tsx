@@ -1,52 +1,50 @@
 "use client";
 
-import { deleteIntegration } from "@/actions/integrations/deleteIntegration";
-import { SLACK_SCOPES, SLACK_USER_SCOPES } from "@/constant";
 import { useUser } from "@/context/userContext";
-import { env } from "@/env.mjs";
 import { Button, buttonVariants } from "@conquest/ui/button";
 import { Card, CardContent, CardHeader } from "@conquest/ui/card";
 import { cn } from "@conquest/ui/cn";
+import type { Integration } from "@conquest/zod/schemas/integration.schema";
 import { CirclePlus, ExternalLink } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { type PropsWithChildren, useEffect } from "react";
 import { toast } from "sonner";
-import { SlackForm } from "./slack-form";
 
 type Props = {
   error: string;
+  integration: Integration | undefined;
+  description: string;
+  docUrl: string;
+  loading: boolean;
+  onEnable: () => void;
+  onDisconnect: () => void;
 };
 
-export const EnableCard = ({ error }: Props) => {
-  const { slug, slack } = useUser();
-  const { trigger_token, trigger_token_expires_at } = slack ?? {};
-  const [loading, setLoading] = useState(slack?.status === "SYNCING");
+export const EnableCard = ({
+  error,
+  integration,
+  docUrl,
+  description,
+  loading,
+  onEnable,
+  onDisconnect,
+  children,
+}: PropsWithChildren<Props>) => {
+  const { slug } = useUser();
+  const { status, trigger_token, trigger_token_expires_at } = integration ?? {};
+  const { source } = integration?.details ?? {};
+  const sourceName = source
+    ? source.toLowerCase().charAt(0).toUpperCase() + source.slice(1)
+    : null;
+
   const router = useRouter();
 
-  const isEnabled = slack?.status === "ENABLED";
-  const isSyncing = slack?.status === "SYNCING";
-  const isConnected = slack?.status === "CONNECTED";
+  const isEnabled = status === "ENABLED";
+  const isSyncing = status === "SYNCING";
+  const isConnected = status === "CONNECTED";
   const isExpired =
     trigger_token_expires_at && trigger_token_expires_at < new Date();
-
-  const onEnable = () => {
-    setLoading(true);
-    const params = new URLSearchParams({
-      response_type: "code",
-      client_id: env.NEXT_PUBLIC_SLACK_CLIENT_ID,
-      scope: SLACK_SCOPES,
-      user_scope: SLACK_USER_SCOPES,
-      redirect_uri: `${env.NEXT_PUBLIC_BASE_URL}/connect/slack`,
-    });
-
-    router.push(`https://slack.com/oauth/v2/authorize?${params.toString()}`);
-  };
-
-  const onDisconnect = async () => {
-    if (!slack) return;
-    await deleteIntegration({ integration: slack, source: "SLACK" });
-  };
 
   useEffect(() => {
     if (trigger_token_expires_at && trigger_token_expires_at < new Date()) {
@@ -56,19 +54,19 @@ export const EnableCard = ({ error }: Props) => {
     if (error) {
       switch (error) {
         case "access_denied":
-          toast.error("Access denied", { duration: 10000 });
+          toast.error("Error: Access denied", { duration: 10000 });
           break;
         case "invalid_code":
           toast.error("Error: Invalid code", { duration: 10000 });
           break;
         case "already_connected":
           toast.error(
-            "This Slack workspace is already connected to another account",
+            `Error: This ${sourceName} workspace is already connected to another account`,
             { duration: 10000 },
           );
           break;
       }
-      router.replace(`/${slug}/settings/integrations/slack`);
+      router.replace(`/${slug}/settings/integrations/${source?.toLowerCase()}`);
     }
   }, [trigger_token_expires_at, error]);
 
@@ -79,7 +77,7 @@ export const EnableCard = ({ error }: Props) => {
       <CardHeader className="flex h-14 flex-row items-center justify-between space-y-0">
         <div className="flex items-center">
           <Link
-            href="https://docs.useconquest.com/integrations/slack"
+            href={docUrl}
             target="_blank"
             className={cn(
               buttonVariants({ variant: "link", size: "xs" }),
@@ -104,13 +102,8 @@ export const EnableCard = ({ error }: Props) => {
       </CardHeader>
       <CardContent className="mb-0.5">
         <p className="font-medium text-base">Overview</p>
-        <p className="text-balance text-muted-foreground">
-          Connect your Slack community to get a complete overview of your
-          members and community activity.
-        </p>
-        {(isEnabled || isSyncing) && !isExpired && (
-          <SlackForm loading={loading} setLoading={setLoading} />
-        )}
+        <p className="text-balance text-muted-foreground">{description}</p>
+        {(isEnabled || isSyncing) && !isExpired && children}
       </CardContent>
     </Card>
   );
