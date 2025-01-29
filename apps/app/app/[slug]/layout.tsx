@@ -19,7 +19,6 @@ export default async function Layout({
 }: PropsWithChildren<Props>) {
   const user = await getCurrentUser();
   await updateUser({ id: user.id });
-
   const { workspace_id } = user;
 
   if (!user?.onboarding) redirect("/");
