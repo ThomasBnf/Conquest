@@ -18,7 +18,6 @@
   },
   "devDependencies": {
     "@conquest/db": "workspace:*",
-    "@conquest/env": "workspace:*",
     "@conquest/tsconfig": "workspace:*",
     "@conquest/zod": "workspace:*",
     "@types/node": "^20.11.24",
