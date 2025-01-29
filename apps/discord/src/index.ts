@@ -24,8 +24,13 @@ config();
 const app = express();
 const port = process.env.PORT || 10000;
 
-app.get("/", () => {});
-app.listen(port, () => {});
+app.get("/", (_req, res) => {
+  res.send("Discord bot is running!");
+});
+
+app.listen(port, () => {
+  console.log(`Express server listening on port ${port}`);
+});
 
 const client = new Client({
   intents: [
