@@ -1,6 +1,7 @@
 {
   "name": "discord",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "dotenv -e ./.env -e ../../.env -- tsx src/index.ts --watch",
     "build": "dotenv -e ./.env -e ../../.env -- tsup src/index.ts",
