@@ -40,7 +40,7 @@ const client = new Client({
     GatewayIntentBits.GuildMessageReactions,
     GatewayIntentBits.MessageContent,
   ],
-  partials: [Partials.Message, Partials.Channel, Partials.GuildMember],
+  partials: [Partials.Message, Partials.Channel, Partials.Reaction],
 });
 
 client.once(Events.ClientReady, (readyClient) => {

@@ -48,9 +48,7 @@ export const listChannelMessages = async ({
         (await getMember({ discord_id, workspace_id })) ??
         (await createMember({ discord, discord_id }));
 
-      if (!member) continue;
-      if (thread) break;
-      if (sticker_items && sticker_items.length > 0) break;
+      if (!member || !content || thread || sticker_items) continue;
 
       switch (type) {
         case 0: {
