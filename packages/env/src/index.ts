@@ -85,9 +85,9 @@ const resendEnv = {
 
 const slackEnv = {
   server: {
-    SLACK_TOKEN: z.string(),
     SLACK_APP_ID: z.string(),
     SLACK_CLIENT_SECRET: z.string(),
+    SLACK_VERIFICATION_TOKEN: z.string(),
     SLACK_SIGNING_SECRET: z.string(),
   },
   client: {

@@ -52,7 +52,10 @@ export const slack = new Hono()
 
       if (!event || typeof event !== "object") return c.json({ status: 200 });
 
-      if (slack_token !== env.SLACK_TOKEN && api_app_id !== env.SLACK_APP_ID) {
+      if (
+        slack_token !== env.SLACK_VERIFICATION_TOKEN &&
+        api_app_id !== env.SLACK_APP_ID
+      ) {
         return c.json({ status: 200 });
       }
 
