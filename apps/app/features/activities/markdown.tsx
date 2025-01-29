@@ -232,9 +232,10 @@ export const Markdown = ({ activity, className }: Props) => {
     return result;
   };
 
-  const words = message.split(" ").length;
-  const truncatedMessage = message.slice(0, 100);
-  const hasMoreThan100Words = words > 100;
+  const words = message.split(/(\s+)/g).filter(Boolean);
+  const truncatedMessage =
+    message.length > 150 ? `${message.slice(0, 150)}...` : message;
+  const shouldTruncate = message.length > 150;
 
   return (
     <div>
@@ -245,9 +246,9 @@ export const Markdown = ({ activity, className }: Props) => {
           className,
         )}
       >
-        {convertToJsx(truncatedMessage)}
+        {convertToJsx(shouldTruncate && !show ? truncatedMessage : message)}
       </p>
-      {hasMoreThan100Words && (
+      {shouldTruncate && (
         <Button
           variant="secondary"
           size="xs"
