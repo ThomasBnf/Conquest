@@ -4,7 +4,7 @@ import type { MemberWithCompany } from "@conquest/zod/schemas/member.schema";
 import { Download } from "lucide-react";
 import { unparse } from "papaparse";
 import { useState } from "react";
-import { parseData } from "./helpers/parseData";
+import { exportParser } from "./helpers/exportParser";
 
 type Props = {
   members: MemberWithCompany[] | undefined;
@@ -20,7 +20,7 @@ export const ExportList = ({ members }: Props) => {
 
     setLoading(true);
     await sleep(500);
-    const transformedMembers = members.map(parseData);
+    const transformedMembers = members.map(exportParser);
 
     const csv = unparse(transformedMembers);
 

@@ -1,6 +1,6 @@
 import { listActivityTypes } from "@/actions/activity-types/listActivityTypes";
-import { ActivityType } from "@/features/activities-types/activity-type";
-import { CreateActivityType } from "@/features/activities-types/create-activity-type";
+import { ActivityType } from "@/features/activities-types/activity-type-card";
+import { CreateActivityTypeDialog } from "@/features/activities-types/create-activity-type-dialog";
 import { ScrollArea } from "@conquest/ui/scroll-area";
 import { Separator } from "@conquest/ui/separator";
 
@@ -16,7 +16,7 @@ export default async function Page() {
             <p className="font-medium text-2xl">Activity Types</p>
             <p className="text-muted-foreground">Manage activity types</p>
           </div>
-          <CreateActivityType />
+          <CreateActivityTypeDialog />
         </div>
         <Separator className="my-4" />
         <div className="flex flex-col gap-4">

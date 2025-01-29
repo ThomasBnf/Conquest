@@ -1,5 +1,5 @@
 {
-  "extends": "@conquest/typescript/react-library.json",
+  "extends": "@conquest/tsconfig/react-library.json",
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {

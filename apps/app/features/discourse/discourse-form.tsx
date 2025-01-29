@@ -1,7 +1,7 @@
 import { updateIntegration } from "@/actions/integrations/updateIntegration";
 import { IconDoc } from "@/components/custom/icon-doc";
 import { useUser } from "@/context/userContext";
-import type { installDiscourse } from "@/trigger/installDiscourse.trigger";
+import type { installDiscourse } from "@conquest/trigger/tasks/installDiscourse.trigger";
 import { Button } from "@conquest/ui/button";
 import {
   Form,
@@ -24,12 +24,12 @@ import { type Dispatch, type SetStateAction, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { LoadingMessage } from "../integrations/loading-message";
-import { Instruction } from "./instruction";
+import { DiscourseInstruction } from "./discourse-instruction";
 import {
   type Field,
-  type FormDiscourse,
-  FormDiscourseSchema,
-} from "./schemas/form-discourse.schema";
+  type FormCreate,
+  FormCreateSchema,
+} from "./schemas/form-create";
 import { UserFields } from "./user-fields";
 
 type Props = {
@@ -46,8 +46,8 @@ export const DiscourseForm = ({ loading, setLoading }: Props) => {
     typeof installDiscourse
   >("install-discourse", { accessToken: discourse?.trigger_token });
 
-  const form = useForm<FormDiscourse>({
-    resolver: zodResolver(FormDiscourseSchema),
+  const form = useForm<FormCreate>({
+    resolver: zodResolver(FormCreateSchema),
     defaultValues: {
       community_url: "https://playground.lagrowthmachine.com",
       api_key:
@@ -59,22 +59,28 @@ export const DiscourseForm = ({ loading, setLoading }: Props) => {
     },
   });
 
-  const onSubmit = async ({ community_url, api_key }: FormDiscourse) => {
+  const onSubmit = async ({ community_url, api_key }: FormCreate) => {
     if (!discourse) return;
 
     setLoading(true);
 
     const formattedCommunityUrl = community_url.trim().replace(/\/$/, "");
-    await updateIntegration({ id: discourse.id, status: "SYNCING" });
-    submit({
-      discourse,
-      community_url: formattedCommunityUrl,
-      api_key,
-      user_fields: fields.map((field) => ({
-        id: field.external_id,
-        name: field.name,
-      })),
+
+    await updateIntegration({
+      id: discourse.id,
+      details: {
+        source: "DISCOURSE",
+        community_url: formattedCommunityUrl,
+        api_key,
+        user_fields: fields.map((field) => ({
+          id: field.external_id,
+          name: field.name,
+        })),
+      },
+      status: "SYNCING",
     });
+
+    submit({ discourse });
   };
 
   const onAddField = () => {
@@ -217,7 +223,7 @@ export const DiscourseForm = ({ loading, setLoading }: Props) => {
                 render={({ field }) => (
                   <FormItem>
                     <FormControl>
-                      <Instruction
+                      <DiscourseInstruction
                         title="Payload URL"
                         text="I have copied, pasted the Payload URL"
                         toCopy="https://app.useconquest.com/api/discourse"
@@ -236,7 +242,7 @@ export const DiscourseForm = ({ loading, setLoading }: Props) => {
                 render={({ field }) => (
                   <FormItem>
                     <FormControl>
-                      <Instruction
+                      <DiscourseInstruction
                         title="Content Type"
                         text={`I have selected "application/json"`}
                         value={field.value}
@@ -254,7 +260,7 @@ export const DiscourseForm = ({ loading, setLoading }: Props) => {
                 render={({ field }) => (
                   <FormItem>
                     <FormControl>
-                      <Instruction
+                      <DiscourseInstruction
                         title="Secret"
                         text="I have copied, pasted the secret key"
                         toCopy="5771586e347bcbf533f83f14cd2bea6afab412d068bb9cb2e34152bdc3c01f7f"
@@ -273,7 +279,7 @@ export const DiscourseForm = ({ loading, setLoading }: Props) => {
                 render={({ field }) => (
                   <FormItem>
                     <FormControl>
-                      <Instruction
+                      <DiscourseInstruction
                         title="Send me everything"
                         text={`I have selected "Send me everything" Webhook events`}
                         value={field.value}

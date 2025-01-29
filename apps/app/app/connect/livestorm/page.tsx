@@ -1,6 +1,6 @@
-import { env } from "@/env.mjs";
-import { createIntegration } from "@/queries/integrations/createIntegration";
-import { getCurrentUser } from "@/queries/users/getCurrentUser";
+import { getCurrentUser } from "@/queries/getCurrentUser";
+import { createIntegration } from "@conquest/db/queries/integrations/createIntegration";
+import { env } from "@conquest/env";
 import { redirect } from "next/navigation";
 
 type Props = {

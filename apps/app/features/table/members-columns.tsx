@@ -1,7 +1,7 @@
-import { CountryBadge } from "@/components/custom/country-badge";
+import { CountryBadge } from "@/components/badges/country-badge";
+import { LanguageBadge } from "@/components/badges/language-badge";
+import { SourceBadge } from "@/components/badges/source-badge";
 import { DateCell } from "@/components/custom/date-cell";
-import { LanguageBadge } from "@/components/custom/language-badge";
-import { SourceBadge } from "@/components/custom/source-badge";
 import { ColumnHeader } from "@/features/table/column-header";
 import { TagsCell } from "@/features/table/tags-cell";
 import { Avatar, AvatarFallback, AvatarImage } from "@conquest/ui/avatar";

@@ -4,7 +4,7 @@ import { deleteIntegration } from "@/actions/integrations/deleteIntegration";
 import { Discord } from "@/components/icons/Discord";
 import { DISCORD_PERMISSIONS, DISCORD_SCOPES } from "@/constant";
 import { useUser } from "@/context/userContext";
-import { env } from "@/env.mjs";
+import { env } from "@conquest/env";
 import { Separator } from "@conquest/ui/separator";
 import type { Channel } from "@conquest/zod/schemas/channel.schema";
 import { Hash } from "lucide-react";
@@ -29,9 +29,10 @@ export const DiscordIntegration = ({ error, channels }: Props) => {
 
   const onEnable = () => {
     setLoading(true);
+
     const params = new URLSearchParams({
       response_type: "code",
-      client_id: env.NEXT_PUBLIC_DISCORD_CLIENT_ID,
+      client_id: env.NEXT_PUBLIC_DISCORD_CLIENT_ID!,
       permissions: DISCORD_PERMISSIONS,
       scope: DISCORD_SCOPES,
     });
@@ -48,6 +49,7 @@ export const DiscordIntegration = ({ error, channels }: Props) => {
     });
     const error = response?.serverError;
 
+    setLoading(false);
     if (error) return toast.error(error);
     return toast.success("Discord disconnected");
   };

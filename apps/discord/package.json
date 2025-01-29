@@ -1,11 +1,12 @@
 {
   "name": "discord",
-  "version": "1.0.0",
   "private": true,
+  "type": "module",
   "scripts": {
-    "dev": "tsx src/index.ts --watch",
-    "build": "tsup src/index.ts",
-    "start": "node dist/index.js"
+    "dev": "dotenv -e ./.env -e ../../.env -- tsx src/index.ts --watch",
+    "build": "dotenv -e ./.env -e ../../.env -- tsup src/index.ts",
+    "start": "dotenv -e ./.env -e ../../.env -- node dist/index.js",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@types/express": "^5.0.0",
@@ -16,8 +17,8 @@
     "zod": "^3.22.4"
   },
   "devDependencies": {
-    "@conquest/database": "workspace:*",
-    "@conquest/typescript": "workspace:*",
+    "@conquest/db": "workspace:*",
+    "@conquest/tsconfig": "workspace:*",
     "@conquest/zod": "workspace:*",
     "@types/node": "^20.11.24",
     "typescript": "^5.3.3"

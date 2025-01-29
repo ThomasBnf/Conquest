@@ -3,8 +3,8 @@ import { PageLayout } from "@/components/layouts/page-layout";
 import { CreateWorkflow } from "@/features/workflows/components/create-workflow";
 import { IsPublished } from "@/features/workflows/components/isPublished";
 import { WorkflowMenu } from "@/features/workflows/components/workflow-menu";
-import { getCurrentUser } from "@/queries/users/getCurrentUser";
-import { listWorkflows } from "@/queries/workflows/listWorkflows";
+import { getCurrentUser } from "@/queries/getCurrentUser";
+import { listWorkflows } from "@conquest/db/queries/workflows/listWorkflows";
 import { ScrollArea } from "@conquest/ui/scroll-area";
 import Link from "next/link";
 

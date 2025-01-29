@@ -6,11 +6,11 @@ import { Form, FormControl, FormField, FormItem } from "@conquest/ui/form";
 import { Input } from "@conquest/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { type FormApiKey, FormApiKeySchema } from "./schema/form.schema";
+import { type FormCreate, FormCreateSchema } from "./schema/form-create.schema";
 
 export const FormAPIKey = () => {
-  const form = useForm<FormApiKey>({
-    resolver: zodResolver(FormApiKeySchema),
+  const form = useForm<FormCreate>({
+    resolver: zodResolver(FormCreateSchema),
     defaultValues: {
       name: "",
     },
@@ -19,7 +19,7 @@ export const FormAPIKey = () => {
   const loading = form.formState.isSubmitting;
   const disabled = !form.formState.isValid;
 
-  const onSubmit = async ({ name }: FormApiKey) => {
+  const onSubmit = async ({ name }: FormCreate) => {
     await createApiKey({ name });
     form.reset();
   };

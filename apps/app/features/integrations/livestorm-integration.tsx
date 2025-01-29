@@ -3,7 +3,7 @@
 import { deleteIntegration } from "@/actions/integrations/deleteIntegration";
 import { Livestorm } from "@/components/icons/Livestorm";
 import { useUser } from "@/context/userContext";
-import { env } from "@/env.mjs";
+import { env } from "@conquest/env";
 import { Separator } from "@conquest/ui/separator";
 import type { Event } from "@conquest/zod/schemas/event.schema";
 import { useRouter } from "next/navigation";
@@ -30,7 +30,7 @@ export const LivestormIntegration = ({ error, events }: Props) => {
     setLoading(true);
     const params = new URLSearchParams({
       response_type: "code",
-      client_id: env.NEXT_PUBLIC_LIVESTORM_CLIENT_ID,
+      client_id: env.NEXT_PUBLIC_LIVESTORM_CLIENT_ID!,
       redirect_uri: "https://app.useconquest.com/connect/livestorm",
       scope: encodeURIComponent(
         "identity:read events:read webhooks:read webhooks:write",
@@ -51,6 +51,7 @@ export const LivestormIntegration = ({ error, events }: Props) => {
     });
     const error = response?.serverError;
 
+    setLoading(false);
     if (error) return toast.error(error);
     return toast.success("Livestorm disconnected");
   };

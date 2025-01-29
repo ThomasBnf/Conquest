@@ -1,0 +1,61 @@
+import { EventSchema } from "@conquest/zod/schemas/event.schema";
+import type { LivestormIntegration } from "@conquest/zod/schemas/integration.schema";
+import type { MemberWithCompany } from "@conquest/zod/schemas/member.schema";
+import type { Event, Session } from "@conquest/zod/types/livestorm";
+import { listEventSessions } from "../../queries/livestorm/listEventSessions";
+import { createEvent } from "../events/createEvent";
+import { createManyPeoples } from "./createManyPeoples";
+
+type Props = {
+  livestorm: LivestormIntegration;
+  event: Event;
+};
+
+export const createManySessions = async ({ livestorm, event }: Props) => {
+  const { workspace_id, details } = livestorm;
+  const { access_token } = details;
+
+  const members: MemberWithCompany[] = [];
+
+  const { attributes } = event;
+  const { title } = attributes;
+
+  let sessionPage = 0;
+  const allSessions: Session[] = [];
+
+  while (true) {
+    const listOfSessions = await listEventSessions({
+      access_token,
+      event_id: event.id,
+      page: sessionPage,
+    });
+
+    if (!listOfSessions?.length) break;
+
+    allSessions.push(...listOfSessions);
+    sessionPage++;
+
+    if (listOfSessions.length < 100) break;
+  }
+
+  for (const session of allSessions) {
+    const { attributes } = session;
+    const { name, estimated_started_at, ended_at } = attributes;
+
+    const createdEvent = await createEvent({
+      external_id: session.id,
+      source: "LIVESTORM",
+      title: name ? `${title} - ${name}` : title,
+      started_at: new Date(estimated_started_at * 1000),
+      ended_at: ended_at ? new Date(ended_at * 1000) : null,
+      workspace_id,
+    });
+
+    const event = EventSchema.parse(createdEvent);
+
+    const members = await createManyPeoples({ livestorm, event, session });
+    members.push(...members);
+  }
+
+  return members;
+};

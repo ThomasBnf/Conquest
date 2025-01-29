@@ -4,7 +4,7 @@ import { deleteIntegration } from "@/actions/integrations/deleteIntegration";
 import { Slack } from "@/components/icons/Slack";
 import { SLACK_SCOPES, SLACK_USER_SCOPES } from "@/constant";
 import { useUser } from "@/context/userContext";
-import { env } from "@/env.mjs";
+import { env } from "@conquest/env";
 import { Separator } from "@conquest/ui/separator";
 import type { Channel } from "@conquest/zod/schemas/channel.schema";
 import { Hash } from "lucide-react";
@@ -31,7 +31,7 @@ export const SlackIntegration = ({ error, channels }: Props) => {
     setLoading(true);
     const params = new URLSearchParams({
       response_type: "code",
-      client_id: env.NEXT_PUBLIC_SLACK_CLIENT_ID,
+      client_id: env.NEXT_PUBLIC_SLACK_CLIENT_ID!,
       scope: SLACK_SCOPES,
       user_scope: SLACK_USER_SCOPES,
       redirect_uri: `${env.NEXT_PUBLIC_BASE_URL}/connect/slack`,
@@ -49,6 +49,7 @@ export const SlackIntegration = ({ error, channels }: Props) => {
     });
     const error = response?.serverError;
 
+    setLoading(false);
     if (error) return toast.error(error);
     return toast.success("Slack disconnected");
   };

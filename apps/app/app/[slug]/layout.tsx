@@ -1,7 +1,8 @@
 import { IsLoading } from "@/components/states/is-loading";
 import { SlugProvider } from "@/providers/SlugProvider";
-import { listLists } from "@/queries/lists/listLists";
-import { getCurrentUser } from "@/queries/users/getCurrentUser";
+import { getCurrentUser } from "@/queries/getCurrentUser";
+import { listLists } from "@conquest/db/queries/lists/listLists";
+import { updateUser } from "@conquest/db/queries/users/updateUser";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import type { PropsWithChildren } from "react";
@@ -17,6 +18,8 @@ export default async function Layout({
   params,
 }: PropsWithChildren<Props>) {
   const user = await getCurrentUser();
+  await updateUser({ id: user.id });
+
   const { workspace_id } = user;
 
   if (!user?.onboarding) redirect("/");

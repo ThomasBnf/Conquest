@@ -1,7 +1,7 @@
 "use server";
 
 import { authAction } from "@/lib/authAction";
-import { deleteActivity as _deleteActivity } from "@/queries/activities/deleteActivity";
+import { deleteActivity as _deleteActivity } from "@conquest/db/queries/activities/deleteActivity";
 import { revalidatePath } from "next/dist/server/web/spec-extension/revalidate";
 import { z } from "zod";
 

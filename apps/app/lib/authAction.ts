@@ -1,5 +1,5 @@
 import { auth } from "@/auth";
-import { prisma } from "@conquest/database";
+import { prisma } from "@conquest/db/prisma";
 import { UserWithWorkspaceSchema } from "@conquest/zod/schemas/user.schema";
 import { safeAction } from "./safeAction";
 

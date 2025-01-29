@@ -20,7 +20,7 @@ import { ActionMenu } from "../table/action-menu";
 import { useScrollX } from "../table/hooks/useScrollX";
 import { useHasScrollY } from "../table/hooks/usehasScrollY";
 import { TableSkeleton } from "../table/table-skeletton";
-import { Columns } from "./columns";
+import { Columns } from "./companies-columns";
 
 type Props = {
   tags: Tag[] | undefined;

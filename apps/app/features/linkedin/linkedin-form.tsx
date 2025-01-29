@@ -1,6 +1,7 @@
+import { updateIntegration } from "@/actions/integrations/updateIntegration";
 import { listOrganizations } from "@/client/linkedin/listOrganizations";
 import { useUser } from "@/context/userContext";
-import type { installLinkedin } from "@/trigger/installLinkedin.trigger";
+import type { installLinkedin } from "@conquest/trigger/tasks/installLinkedin.trigger";
 import { Button } from "@conquest/ui/button";
 import { Label } from "@conquest/ui/label";
 import { RadioGroup, RadioGroupItem } from "@conquest/ui/radio-group";
@@ -36,11 +37,20 @@ export const LinkedinForm = ({ loading, setLoading }: Props) => {
     if (!linkedin || !user_id) return;
 
     setLoading(true);
+
+    await updateIntegration({
+      id: linkedin.id,
+      external_id: selectedOrg.organization_id,
+      details: {
+        ...linkedin.details,
+        name: selectedOrg.organization_name,
+        user_id,
+      },
+      status: "SYNCING",
+    });
+
     submit({
       linkedin,
-      user_id,
-      organization_id: selectedOrg.organization_id,
-      organization_name: selectedOrg.organization_name,
     });
   };
 

@@ -1,7 +1,7 @@
 "use server";
 
 import { authAction } from "@/lib/authAction";
-import { deleteIntegration as _deleteIntegration } from "@/queries/integrations/deleteIntegration";
+import { deleteIntegration as _deleteIntegration } from "@conquest/db/queries/integrations/deleteIntegration";
 import { SOURCE } from "@conquest/zod/enum/source.enum";
 import { IntegrationSchema } from "@conquest/zod/schemas/integration.schema";
 import { slug } from "cuid";

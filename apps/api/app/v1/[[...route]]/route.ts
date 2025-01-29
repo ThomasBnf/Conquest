@@ -1,7 +1,7 @@
-import { prisma } from "@/lib/prisma";
 import { activities } from "@/server/activities/route";
 import { companies } from "@/server/companies/route";
 import { members } from "@/server/members/route";
+import { prisma } from "@conquest/db/prisma";
 import { Hono } from "hono";
 import { handle } from "hono/vercel";
 

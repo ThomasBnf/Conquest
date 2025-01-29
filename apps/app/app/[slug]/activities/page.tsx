@@ -1,8 +1,8 @@
 import { Header } from "@/components/layouts/header";
 import { PageLayout } from "@/components/layouts/page-layout";
 import { Activities } from "@/features/activities/activities";
-import { listActivities } from "@/queries/activities/listActivities";
-import { getCurrentUser } from "@/queries/users/getCurrentUser";
+import { getCurrentUser } from "@/queries/getCurrentUser";
+import { listActivities } from "@conquest/db/queries/activities/listActivities";
 import { ScrollArea } from "@conquest/ui/scroll-area";
 import { notFound } from "next/navigation";
 

@@ -1,16 +1,11 @@
 {
   "name": "@conquest/zod",
-  "version": "1.0.0",
   "private": true,
+  "type": "module",
   "exports": {
-    "./schemas/*": "./schemas/*.ts",
-    "./enum/*": "./enum/*.ts",
-    "./types/livestorm": "./types/livestorm.ts",
-    "./types/linkedin": "./types/linkedin.ts",
-    "./types/discourse": "./types/discourse.ts",
-    "./types/slack": "./types/slack.ts",
-    "./types/github": "./types/github.ts",
-    "./types/country": "./types/country.ts"
+    "./schemas/*": "./src/schemas/*.ts",
+    "./enum/*": "./src/enum/*.ts",
+    "./types/*": "./src/types/*.ts"
   },
   "dependencies": {
     "zod": "^3.23.8"

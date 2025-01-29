@@ -1,12 +1,12 @@
 import { HeaderSubPage } from "@/components/layouts/header-subpage";
 import { PageLayout } from "@/components/layouts/page-layout";
-import { ActivityDialog } from "@/features/activities/activity-dialog";
+import { CreateActivityDialog } from "@/features/activities/create-activity-dialog";
 import { MemberMenu } from "@/features/members/member-menu";
 import { MemberSidebar } from "@/features/members/member-sidebar";
 import { Tabs } from "@/features/members/tabs";
-import { getMember } from "@/queries/members/getMember";
-import { listTags } from "@/queries/tags/listTags";
-import { getCurrentUser } from "@/queries/users/getCurrentUser";
+import { getCurrentUser } from "@/queries/getCurrentUser";
+import { getMember } from "@conquest/db/queries/members/getMember";
+import { listTags } from "@conquest/db/queries/tags/listTags";
 import { ScrollArea } from "@conquest/ui/scroll-area";
 import { redirect } from "next/navigation";
 import type { PropsWithChildren } from "react";
@@ -35,7 +35,7 @@ export default async function Layout({
       <PageLayout className="flex h-full rounded-lg border shadow-lg">
         <HeaderSubPage>
           <div className="flex items-center gap-2">
-            <ActivityDialog member={member} />
+            <CreateActivityDialog member={member} />
             <MemberMenu member={member} />
           </div>
         </HeaderSubPage>

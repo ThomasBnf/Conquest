@@ -2,8 +2,8 @@ import { Header } from "@/components/layouts/header";
 import { PageLayout } from "@/components/layouts/page-layout";
 import { ListMenu } from "@/features/lists/list-menu";
 import { Table } from "@/features/members/table";
-import { getList } from "@/queries/lists/getList";
-import { getCurrentUser } from "@/queries/users/getCurrentUser";
+import { getCurrentUser } from "@/queries/getCurrentUser";
+import { getList } from "@conquest/db/queries/lists/getList";
 
 type Props = {
   params: {

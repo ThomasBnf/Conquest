@@ -17,7 +17,7 @@ import {
 } from "@conquest/ui/sidebar";
 import { ChevronsUpDown } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { logOut } from "../auth/actions/sign-out";
+import { logOut } from "../../actions/auth/sign-out";
 
 export const WorkspaceMenu = () => {
   const { user } = useUser();

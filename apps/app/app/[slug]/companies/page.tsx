@@ -1,10 +1,10 @@
 import { Header } from "@/components/layouts/header";
 import { PageLayout } from "@/components/layouts/page-layout";
 import { CompaniesTable } from "@/features/companies/companies-table";
-import { CompanyDialog } from "@/features/companies/company-dialog";
+import { CreateCompanyDialog } from "@/features/companies/create-company-dialog";
 import { searchParamsTable } from "@/lib/searchParamsTable";
-import { listTags } from "@/queries/tags/listTags";
-import { getCurrentUser } from "@/queries/users/getCurrentUser";
+import { getCurrentUser } from "@/queries/getCurrentUser";
+import { listTags } from "@conquest/db/queries/tags/listTags";
 
 type Props = {
   searchParams: Record<string, string | string[] | undefined>;
@@ -21,7 +21,7 @@ export default async function Page({ searchParams }: Props) {
   return (
     <PageLayout>
       <Header title="Companies">
-        <CompanyDialog />
+        <CreateCompanyDialog />
       </Header>
       <CompaniesTable tags={tags} />
     </PageLayout>

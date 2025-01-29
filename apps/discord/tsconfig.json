@@ -1,6 +1,10 @@
 {
-  "extends": "@conquest/typescript/base.json",
+  "extends": "@conquest/tsconfig/base.json",
   "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./*"]
+    },
     "outDir": "./dist"
   },
   "include": ["src/**/*"],

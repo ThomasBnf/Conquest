@@ -1,9 +1,9 @@
-import { prisma } from "@/lib/prisma";
-import { getActivity } from "@/queries/activities/getActivity";
-import { listActivities } from "@/queries/activities/listActivities";
-import { listCompanyActivities } from "@/queries/activities/listCompanyActivities";
-import { listMemberActivities } from "@/queries/activities/listMemberActivities";
-import { getAuthUser } from "@/queries/users/getAuthUser";
+import { getAuthUser } from "@/queries/getAuthUser";
+import { prisma } from "@conquest/db/prisma";
+import { getActivity } from "@conquest/db/queries/activities/getActivity";
+import { listActivities } from "@conquest/db/queries/activities/listActivities";
+import { listCompanyActivities } from "@conquest/db/queries/activities/listCompanyActivities";
+import { listMemberActivities } from "@conquest/db/queries/activities/listMemberActivities";
 import {
   ActivityWithMemberSchema,
   ActivityWithTypeAndMemberSchema,

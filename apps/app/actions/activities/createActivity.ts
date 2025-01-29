@@ -1,7 +1,7 @@
 "use server";
 
 import { authAction } from "@/lib/authAction";
-import { createActivity as _createActivity } from "@/queries/activities/createActivity";
+import { createActivity as _createActivity } from "@conquest/db/queries/activities/createActivity";
 import { ActivitySchema } from "@conquest/zod/schemas/activity.schema";
 import { z } from "zod";
 

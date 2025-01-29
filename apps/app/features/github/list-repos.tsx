@@ -1,6 +1,6 @@
 import { listRepositories } from "@/client/github/listRepositories";
 import { useUser } from "@/context/userContext";
-import type { installGithub } from "@/trigger/installGithub.trigger";
+import type { installGithub } from "@conquest/trigger/tasks/installGithub.trigger";
 import { Button } from "@conquest/ui/button";
 import { Checkbox } from "@conquest/ui/checkbox";
 import { cn } from "@conquest/ui/cn";

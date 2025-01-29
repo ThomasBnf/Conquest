@@ -1,6 +1,5 @@
 "use client";
 
-import { updateUser } from "@/actions/users/updateUser";
 import { Discord } from "@/components/icons/Discord";
 import { Discourse } from "@/components/icons/Discourse";
 import { Linkedin } from "@/components/icons/Linkedin";
@@ -18,11 +17,6 @@ export default function Page() {
   const { user, slug, discord, discourse, linkedin, livestorm, slack } =
     useUser();
   const router = useRouter();
-
-  const onComplete = async () => {
-    await updateUser({ onboarding: new Date() });
-    router.push(`/${slug}`);
-  };
 
   const categories = [
     {

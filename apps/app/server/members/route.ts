@@ -1,10 +1,10 @@
-import { prisma } from "@/lib/prisma";
-import { listActivitiesIn365Days } from "@/queries/activities/listActivitiesIn365Days";
-import { getFilters } from "@/queries/helpers/getFilters";
-import { getOrderBy } from "@/queries/helpers/getOrderBy";
-import { getMember } from "@/queries/members/getMember";
-import { getMemberMetrics } from "@/queries/members/getMemberMetrics";
-import { getAuthUser } from "@/queries/users/getAuthUser";
+import { getAuthUser } from "@/queries/getAuthUser";
+import { getFilters } from "@conquest/db/helpers/getFilters";
+import { orderByParser } from "@conquest/db/helpers/orderByParser";
+import { prisma } from "@conquest/db/prisma";
+import { listActivitiesIn365Days } from "@conquest/db/queries/activities/listActivitiesIn365Days";
+import { getMember } from "@conquest/db/queries/members/getMember";
+import { getMemberMetrics } from "@conquest/db/queries/members/getMemberMetrics";
 import { FilterSchema } from "@conquest/zod/schemas/filters.schema";
 import {
   MemberSchema,
@@ -53,7 +53,7 @@ export const members = new Hono()
         c.req.valid("query");
 
       const searchParsed = search.toLowerCase().trim();
-      const orderBy = getOrderBy({ id, desc, type: "members" });
+      const orderBy = orderByParser({ id, desc, type: "members" });
       const filterBy = getFilters({ filters });
 
       const members = await prisma.$queryRaw`

@@ -1,5 +1,5 @@
-import { createIntegration } from "@/queries/integrations/createIntegration";
-import { getCurrentUser } from "@/queries/users/getCurrentUser";
+import { getCurrentUser } from "@/queries/getCurrentUser";
+import { createIntegration } from "@conquest/db/queries/integrations/createIntegration";
 import { redirect } from "next/navigation";
 
 export default async function Page() {

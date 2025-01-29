@@ -1,5 +1,5 @@
 import { OnboardingProvider } from "@/providers/OnboardingProvider";
-import { getCurrentUser } from "@/queries/users/getCurrentUser";
+import { getCurrentUser } from "@/queries/getCurrentUser";
 import { redirect } from "next/navigation";
 import type { PropsWithChildren } from "react";
 

@@ -2,11 +2,11 @@
 
 import { MemberFormSchema } from "@/features/members/schema/member-form.schema";
 import { CustomError } from "@/lib/safeAction";
-import { runWorkflowTrigger } from "@/trigger/runWorkflow.trigger";
+import { prisma } from "@conquest/db/prisma";
+import { runWorkflowTrigger } from "@conquest/trigger/tasks/runWorkflow.trigger";
 import { MemberWithActivitiesSchema } from "@conquest/zod/schemas/activity.schema";
 import { WorkflowSchema } from "@conquest/zod/schemas/workflow.schema";
 import { authAction } from "lib/authAction";
-import { prisma } from "lib/prisma";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 

@@ -1,5 +1,5 @@
-import { CountryBadge } from "@/components/custom/country-badge";
-import { SourceBadge } from "@/components/custom/source-badge";
+import { CountryBadge } from "@/components/badges/country-badge";
+import { SourceBadge } from "@/components/badges/source-badge";
 import { cn } from "@conquest/ui/cn";
 import type { Source } from "@conquest/zod/enum/source.enum";
 import type { MemberWithCompany } from "@conquest/zod/schemas/member.schema";

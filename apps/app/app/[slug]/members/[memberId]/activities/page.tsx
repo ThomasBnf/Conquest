@@ -1,6 +1,6 @@
 import { MemberActivities } from "@/features/activities/member-activities";
-import { listMemberActivities } from "@/queries/activities/listMemberActivities";
-import { getCurrentUser } from "@/queries/users/getCurrentUser";
+import { getCurrentUser } from "@/queries/getCurrentUser";
+import { listMemberActivities } from "@conquest/db/queries/activities/listMemberActivities";
 
 type Props = {
   params: {

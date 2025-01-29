@@ -1,3 +1,11 @@
+import { createActivity } from "@conquest/db/queries/activities/createActivity";
+import { getActivity } from "@conquest/db/queries/activities/getActivity";
+import { getChannel } from "@conquest/db/queries/channels/getChannel";
+// import { createFiles } from "@conquest/db/queries/files/createFiles";
+import { getIntegration } from "@conquest/db/queries/integrations/getIntegration";
+import { getMember } from "@conquest/db/queries/members/getMember";
+import { upsertMember } from "@conquest/db/queries/members/upsertMember";
+import { env } from "@conquest/env";
 import {
   ChannelType,
   Client,
@@ -10,14 +18,6 @@ import { config } from "dotenv";
 import express from "express";
 import { prisma } from "./lib/prisma";
 import { sleep } from "./lib/sleep";
-import { createActivity } from "./queries/activities/createActivity";
-import { getActivity } from "./queries/activities/getActivity";
-import { getChannel } from "./queries/channels/getChannel";
-import { createFiles } from "./queries/files/createFiles";
-import { getIntegration } from "./queries/integrations/getIntegration";
-import { getMember } from "./queries/members/getMember";
-import { updateMemberMetrics } from "./queries/members/updateMemberMetrics";
-import { upsertMember } from "./queries/members/upsertMember";
 
 const app = express();
 const port = process.env.PORT || 10000;
@@ -260,12 +260,10 @@ client.on(Events.MessageCreate, async (message) => {
           workspace_id,
         });
 
-        await createFiles({
-          files: attachments,
-          activity_id: createdActivity?.id,
-        });
-
-        await updateMemberMetrics(member);
+        // await createFiles({
+        //   files: attachments,
+        //   activity_id: createdActivity?.id,
+        // });
       } catch (error) {
         console.error("ReplyToThread", error);
       }
@@ -297,12 +295,10 @@ client.on(Events.MessageCreate, async (message) => {
         workspace_id,
       });
 
-      await createFiles({
-        files: attachments,
-        activity_id: createdActivity?.id,
-      });
-
-      await updateMemberMetrics(member);
+      // await createFiles({
+      //   files: attachments,
+      //   activity_id: createdActivity?.id,
+      // });
     } catch (error) {
       console.error("MessageCreate", type, error);
     }
@@ -320,12 +316,10 @@ client.on(Events.MessageCreate, async (message) => {
         workspace_id,
       });
 
-      await createFiles({
-        files: attachments,
-        activity_id: createdActivity?.id,
-      });
-
-      await updateMemberMetrics(member);
+      // await createFiles({
+      //   files: attachments,
+      //   activity_id: createdActivity?.id,
+      // });
     } catch (error) {
       console.error("MessageCreate", type, error);
     }
@@ -430,8 +424,6 @@ client.on(Events.ThreadCreate, async (thread) => {
       channel_id: channel.id,
       workspace_id,
     });
-
-    await updateMemberMetrics(member);
   } catch (error) {
     console.error("ThreadCreate", error);
   }
@@ -465,8 +457,6 @@ client.on(Events.ThreadDelete, async (thread) => {
         ],
       },
     });
-
-    await updateMemberMetrics(member);
   } catch (error) {
     console.error("ThreadDelete", error);
   }
@@ -623,4 +613,4 @@ client.on(Events.MessageReactionRemove, async (reaction, user) => {
   });
 });
 
-client.login(process.env.DISCORD_BOT_TOKEN);
+client.login(env.DISCORD_BOT_TOKEN);

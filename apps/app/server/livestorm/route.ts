@@ -1,15 +1,15 @@
-import { prisma } from "@/lib/prisma";
-import { createActivity } from "@/queries/activities/createActivity";
-import { getEvent as getDBEvent } from "@/queries/events/getEvent";
-import { getIntegration } from "@/queries/integrations/getIntegration";
-import { getEvent } from "@/queries/livestorm/getEvent";
-import { getRefreshToken } from "@/queries/livestorm/getRefreshToken";
-import { listEventSessions } from "@/queries/livestorm/listEventSessions";
-import { listPeopleFromSession } from "@/queries/livestorm/listPeopleFromSession";
-import { checkMerging } from "@/queries/members/checkMerging";
-import { upsertMember } from "@/queries/members/upsertMember";
-import { getAuthUser } from "@/queries/users/getAuthUser";
-import { updateMemberMetrics } from "@/trigger/updateMemberMetrics.trigger";
+import { getAuthUser } from "@/queries/getAuthUser";
+import { prisma } from "@conquest/db/prisma";
+import { createActivity } from "@conquest/db/queries/activities/createActivity";
+import { getEvent as getDBEvent } from "@conquest/db/queries/events/getEvent";
+import { getIntegration } from "@conquest/db/queries/integrations/getIntegration";
+import { getEvent } from "@conquest/db/queries/livestorm/getEvent";
+import { getRefreshToken } from "@conquest/db/queries/livestorm/getRefreshToken";
+import { listEventSessions } from "@conquest/db/queries/livestorm/listEventSessions";
+import { listPeopleFromSession } from "@conquest/db/queries/livestorm/listPeopleFromSession";
+import { checkMerging } from "@conquest/db/queries/members/checkMerging";
+import { upsertMember } from "@conquest/db/queries/members/upsertMember";
+import { updateMemberMetrics } from "@conquest/trigger/tasks/updateMemberMetrics.trigger";
 import { LivestormIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
 import {
   PeopleRegisteredSchema,

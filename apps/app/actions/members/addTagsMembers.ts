@@ -1,7 +1,7 @@
 "use server";
 
 import { authAction } from "@/lib/authAction";
-import { prisma } from "@/lib/prisma";
+import { prisma } from "@conquest/db/prisma";
 import { z } from "zod";
 
 export const addTagsMembers = authAction

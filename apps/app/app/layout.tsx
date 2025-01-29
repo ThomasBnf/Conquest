@@ -1,5 +1,6 @@
 import { cn } from "@conquest/ui/cn";
 import "@conquest/ui/globals.css";
+import { env } from "@conquest/env";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import Script from "next/script";
@@ -24,8 +25,7 @@ export default function RootLayout({
         <Script
           id="initMap"
           strategy="beforeInteractive"
-          src={`https://maps.googleapis.com/maps/api/js?key=${process.env
-            .GOOGLE_API_KEY!}&libraries=places&loading=async`}
+          src={`https://maps.googleapis.com/maps/api/js?key=${env.GOOGLE_API_KEY!}&libraries=places&loading=async`}
         />
       </body>
     </html>

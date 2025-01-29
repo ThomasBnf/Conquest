@@ -1,7 +1,7 @@
 import { Button } from "@conquest/ui/button";
 import { Input } from "@conquest/ui/input";
 import { Trash } from "lucide-react";
-import type { Field } from "./schemas/form-discourse.schema";
+import type { Field } from "./schemas/form-create";
 
 type Props = {
   fields: Field[];

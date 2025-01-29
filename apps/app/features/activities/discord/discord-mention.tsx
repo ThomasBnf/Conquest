@@ -1,5 +1,5 @@
-import { useUser } from "@/context/userContext";
 import { getMemberByUsername } from "@/client/members/getMemberByUsername";
+import { useUser } from "@/context/userContext";
 import Link from "next/link";
 
 type Props = {

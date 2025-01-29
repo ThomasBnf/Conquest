@@ -1,7 +1,7 @@
 import { z } from "zod";
 
-export const FormFilterSchema = z.object({
+export const FormCreateSchema = z.object({
   filter: z.string().optional(),
 });
 
-export type FormFilter = z.infer<typeof FormFilterSchema>;
+export type FormCreate = z.infer<typeof FormCreateSchema>;

@@ -2,9 +2,9 @@ import { MemberHeatmap } from "@/features/members/member-heatmap";
 import { MemberLevelLogs } from "@/features/members/member-level-logs";
 import { MemberPresenceLogs } from "@/features/members/member-presence-logs";
 import { MemberPulseLogs } from "@/features/members/member-pulse-logs";
-import { listMemberActivitiesCount } from "@/queries/activities/listMemberActivitiesCount";
-import { getMember } from "@/queries/members/getMember";
-import { getCurrentUser } from "@/queries/users/getCurrentUser";
+import { getCurrentUser } from "@/queries/getCurrentUser";
+import { listMemberActivitiesCount } from "@conquest/db/queries/activities/listMemberActivitiesCount";
+import { getMember } from "@conquest/db/queries/members/getMember";
 import { redirect } from "next/navigation";
 
 type Props = {

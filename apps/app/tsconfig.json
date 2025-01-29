@@ -1,9 +1,10 @@
 {
-  "extends": "@conquest/typescript/nextjs.json",
+  "extends": "@conquest/tsconfig/nextjs.json",
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./*"]
+      "@/*": ["./*"],
+      "@conquest/env": ["../../packages/env/src/index.ts"]
     }
   },
   "include": [
@@ -11,7 +12,8 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "tailwind.config.ts"
+    "tailwind.config.ts",
+    "../../packages/db/src/helpers/idParser.ts"
   ],
   "exclude": ["node_modules"]
 }

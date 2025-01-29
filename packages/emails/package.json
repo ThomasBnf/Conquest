@@ -1,9 +1,9 @@
 {
   "name": "@conquest/emails",
-  "version": "0.1.0",
   "private": true,
+  "type": "module",
   "exports": {
-    "./*": "./src/templates/*.tsx"
+    "./*": "./src/*.tsx"
   },
   "dependencies": {
     "@react-email/components": "^0.0.24",

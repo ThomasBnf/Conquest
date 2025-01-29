@@ -1,6 +1,6 @@
 import { DiscordIntegration } from "@/features/integrations/discord-integration";
-import { listChannels } from "@/queries/channels/listChannels";
-import { getCurrentUser } from "@/queries/users/getCurrentUser";
+import { getCurrentUser } from "@/queries/getCurrentUser";
+import { listChannels } from "@conquest/db/queries/channels/listChannels";
 import { ScrollArea } from "@conquest/ui/scroll-area";
 
 type Props = {

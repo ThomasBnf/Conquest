@@ -1,11 +1,11 @@
 "use server";
 
+import { prisma } from "@conquest/db/prisma";
 import {
   MembersPreferencesSchema,
   WorkspaceSchema,
 } from "@conquest/zod/schemas/workspace.schema";
 import { authAction } from "lib/authAction";
-import { prisma } from "lib/prisma";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 

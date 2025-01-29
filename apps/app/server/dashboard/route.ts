@@ -1,7 +1,7 @@
-import { prisma } from "@/lib/prisma";
-import { getFilters } from "@/queries/helpers/getFilters";
-import { getOrderBy } from "@/queries/helpers/getOrderBy";
-import { getAuthUser } from "@/queries/users/getAuthUser";
+import { getAuthUser } from "@/queries/getAuthUser";
+import { getFilters } from "@conquest/db/helpers/getFilters";
+import { orderByParser } from "@conquest/db/helpers/orderByParser";
+import { prisma } from "@conquest/db/prisma";
 import { FilterSchema } from "@conquest/zod/schemas/filters.schema";
 import {
   LogSchema,
@@ -493,7 +493,7 @@ export const dashboard = new Hono()
         c.req.valid("query");
 
       const searchParsed = search.toLowerCase().trim();
-      const orderBy = getOrderBy({ id, desc, type: "members" });
+      const orderBy = orderByParser({ id, desc, type: "members" });
       const filterBy = getFilters({ filters });
 
       const count = await prisma.$queryRaw<[{ count: bigint }]>`
@@ -595,7 +595,7 @@ export const dashboard = new Hono()
         c.req.valid("query");
 
       const searchParsed = search.toLowerCase().trim();
-      const orderBy = getOrderBy({ id, desc, type: "members" });
+      const orderBy = orderByParser({ id, desc, type: "members" });
       const filterBy = getFilters({ filters });
 
       const count = await prisma.$queryRaw<[{ count: bigint }]>`

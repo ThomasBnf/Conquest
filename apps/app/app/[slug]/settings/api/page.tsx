@@ -1,12 +1,15 @@
 import { ApiKeyCard } from "@/features/api-keys/api-key-card";
 import { FormAPIKey } from "@/features/api-keys/form-api-key";
-import { listAPIKeys } from "@/queries/api-keys/listAPIKeys";
+import { getCurrentUser } from "@/queries/getCurrentUser";
+import { listAPIKeys } from "@conquest/db/queries/api-keys/listAPIKeys";
 import { ScrollArea } from "@conquest/ui/scroll-area";
 import { Separator } from "@conquest/ui/separator";
 
 export default async function Page() {
-  const rApiKeys = await listAPIKeys();
-  const apiKeys = rApiKeys?.data;
+  const user = await getCurrentUser();
+  const { workspace_id } = user;
+
+  const apiKeys = await listAPIKeys({ workspace_id });
 
   return (
     <ScrollArea className="h-dvh">

@@ -1,7 +1,7 @@
 "use server";
 
 import { authAction } from "@/lib/authAction";
-import { runWorkflowTrigger } from "@/trigger/runWorkflow.trigger";
+import { runWorkflowTrigger } from "@conquest/trigger/tasks/runWorkflow.trigger";
 import { z } from "zod";
 
 export const runWorkflow = authAction

@@ -2,17 +2,16 @@
   "name": "api",
   "version": "1.0.0",
   "private": true,
+  "type": "module",
   "scripts": {
-    "dev": "next dev -p 3001 --turbo",
-    "build": "next build",
-    "clean": "git clean -xdf .next .turbo node_modules",
-    "lint": "biome lint",
-    "format": "biome format --write .",
-    "start": "next start",
+    "dev": "dotenv -e ./.env -e ../../.env -- next dev -p 3001 --turbo",
+    "build": "dotenv -e ./.env -e ../../.env -- next build",
+    "start": "dotenv -e ./.env -e ../../.env -- next start",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@conquest/database": "workspace:*",
+    "@conquest/db": "workspace:*",
+    "@conquest/env": "workspace:*",
     "@conquest/zod": "workspace:*",
     "@hono/zod-validator": "^0.4.1",
     "hono": "^4.6.12",
@@ -20,7 +19,7 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
-    "@conquest/typescript": "workspace:*",
+    "@conquest/tsconfig": "workspace:*",
     "@types/node": "^22.7.5",
     "typescript": "^5.6.3"
   }

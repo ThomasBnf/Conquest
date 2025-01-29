@@ -1,6 +1,6 @@
 "use server";
 
-import { prisma } from "lib/prisma";
+import { prisma } from "@conquest/db/prisma";
 import { safeAction } from "lib/safeAction";
 import { z } from "zod";
 

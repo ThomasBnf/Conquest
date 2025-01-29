@@ -1,9 +1,9 @@
 "use server";
 
-import { env } from "@/env.mjs";
 import { authAction } from "@/lib/authAction";
-import { getMember } from "@/queries/members/getMember";
-import { updateMemberMetrics as updateMemberMetricsTrigger } from "@/trigger/updateMemberMetrics.trigger";
+import { getMember } from "@conquest/db/queries/members/getMember";
+import { env } from "@conquest/env";
+import { updateMemberMetrics as updateMemberMetricsTrigger } from "@conquest/trigger/tasks/updateMemberMetrics.trigger";
 import { MemberSchema } from "@conquest/zod/schemas/member.schema";
 import { configure } from "@trigger.dev/sdk/v3";
 import { z } from "zod";

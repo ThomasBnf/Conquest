@@ -1,4 +1,4 @@
-import type { getAuthUser } from "@/queries/users/getAuthUser";
+import type { getAuthUser } from "@/queries/getAuthUser";
 import { activities } from "@/server/activities/route";
 import { activityTypes } from "@/server/activity-types/route";
 import { channels } from "@/server/channels/route";

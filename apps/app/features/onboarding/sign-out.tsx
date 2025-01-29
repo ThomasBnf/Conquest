@@ -2,7 +2,7 @@
 
 import { LogOut } from "@/components/icons/LogOut";
 import { Button } from "@conquest/ui/button";
-import { logOut } from "../auth/actions/sign-out";
+import { logOut } from "../../actions/auth/sign-out";
 
 export const SignOut = () => {
   const onClick = async () => await logOut();

@@ -1,8 +1,8 @@
 import { LINKEDIN_SCOPES } from "@/constant";
-import { env } from "@/env.mjs";
-import { createIntegration } from "@/queries/integrations/createIntegration";
-import { getCurrentUser } from "@/queries/users/getCurrentUser";
-import { prisma } from "@conquest/database";
+import { getCurrentUser } from "@/queries/getCurrentUser";
+import { prisma } from "@conquest/db/prisma";
+import { createIntegration } from "@conquest/db/queries/integrations/createIntegration";
+import { env } from "@conquest/env";
 import { redirect } from "next/navigation";
 
 type Props = {

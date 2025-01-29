@@ -1,6 +1,7 @@
-import { discordClient } from "@/lib/discord";
-import { prisma } from "@/lib/prisma";
-import { getAuthUser } from "@/queries/users/getAuthUser";
+import { getAuthUser } from "@/queries/getAuthUser";
+import { discordClient } from "@conquest/db/discord";
+import { prisma } from "@conquest/db/prisma";
+import { getRefreshToken } from "@conquest/db/queries/discord/getRefreshToken";
 import { DiscordIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
 import { type APIGuildCategoryChannel, Routes } from "discord-api-types/v10";
 import { Hono } from "hono";
@@ -23,9 +24,12 @@ export const discord = new Hono().get("/channels", async (c) => {
   );
 
   const { external_id, details } = discord;
-  const { access_token } = details;
+  const { expires_in } = details;
 
-  if (!access_token || !external_id) return c.json([]);
+  const isExpired = new Date(Date.now() + expires_in * 1000) < new Date();
+  if (isExpired) await getRefreshToken(discord);
+
+  if (!external_id) return c.json([]);
 
   const channels = (await discordClient.get(
     Routes.guildChannels(external_id),

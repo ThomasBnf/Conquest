@@ -1,6 +1,7 @@
+import { updateIntegration } from "@/actions/integrations/updateIntegration";
 import { listLivestormOrganization } from "@/client/livestorm/listLivestormOrganization";
 import { useUser } from "@/context/userContext";
-import type { installLivestorm } from "@/trigger/installLivestorm.trigger";
+import type { installLivestorm } from "@conquest/trigger/tasks/installLivestorm.trigger";
 import { Button } from "@conquest/ui/button";
 import {
   Form,
@@ -20,7 +21,7 @@ import { type Dispatch, type SetStateAction, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { LoadingMessage } from "../integrations/loading-message";
-import { type FormFilter, FormFilterSchema } from "./schemas/form.schema";
+import { type FormCreate, FormCreateSchema } from "./schemas/form.schema";
 
 type Props = {
   loading: boolean;
@@ -38,19 +39,31 @@ export const LivestormForm = ({ loading, setLoading }: Props) => {
 
   const { organization } = listLivestormOrganization();
 
-  const form = useForm<FormFilter>({
-    resolver: zodResolver(FormFilterSchema),
+  const form = useForm<FormCreate>({
+    resolver: zodResolver(FormCreateSchema),
   });
 
-  const onSubmit = async ({ filter }: FormFilter) => {
+  const onSubmit = async ({ filter }: FormCreate) => {
     if (!livestorm) return;
+
     const { included } = organization ?? {};
+    const organization_id = included?.at(0)?.id ?? "";
+    const organization_name = included?.at(0)?.attributes.name ?? "";
 
     setLoading(true);
 
-    const organization_id = included?.at(0)?.id ?? "";
-    const organization_name = included?.at(0)?.attributes.name ?? "";
-    submit({ livestorm, organization_id, organization_name, filter });
+    await updateIntegration({
+      id: livestorm.id,
+      external_id: organization_id,
+      details: {
+        ...livestorm.details,
+        name: organization_name,
+        filter,
+      },
+      status: "SYNCING",
+    });
+
+    submit({ livestorm });
   };
 
   useEffect(() => {

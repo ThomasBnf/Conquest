@@ -38,6 +38,7 @@ export const DiscourseIntegration = ({ error, channels }: Props) => {
     });
     const error = response?.serverError;
 
+    setLoading(false);
     if (error) return toast.error(error);
     return toast.success("Discourse disconnected");
   };

@@ -1,7 +1,7 @@
 "use server";
 
 import { authAction } from "@/lib/authAction";
-import { createIntegration as _createIntegration } from "@/queries/integrations/createIntegration";
+import { createIntegration as _createIntegration } from "@conquest/db/queries/integrations/createIntegration";
 import {
   IntegrationDetailsSchema,
   IntegrationSchema,

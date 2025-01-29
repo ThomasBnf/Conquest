@@ -1,4 +1,4 @@
-import { getCurrentUser } from "@/queries/users/getCurrentUser";
+import { getCurrentUser } from "@/queries/getCurrentUser";
 import { redirect } from "next/navigation";
 
 export default async function Page() {

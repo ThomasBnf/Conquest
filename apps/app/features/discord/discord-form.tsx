@@ -2,7 +2,7 @@ import { updateIntegration } from "@/actions/integrations/updateIntegration";
 import { listChannels } from "@/client/channels/listChannels";
 import { listDiscordChannels } from "@/client/discord/listChannels";
 import { useUser } from "@/context/userContext";
-import type { installDiscord } from "@/trigger/installDiscord.trigger";
+import type { installDiscord } from "@conquest/trigger/tasks/installDiscord.trigger";
 import { Button } from "@conquest/ui/button";
 import { Checkbox } from "@conquest/ui/checkbox";
 import { cn } from "@conquest/ui/cn";

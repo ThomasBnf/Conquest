@@ -1,10 +1,10 @@
 "use server";
 
 import { authAction } from "@/lib/authAction";
-import { prisma } from "@/lib/prisma";
 import { CustomError } from "@/lib/safeAction";
-import { ActivityTypeSchema } from "@conquest/zod/schemas/activity-type.schema";
+import { prisma } from "@conquest/db/prisma";
 import { SOURCE } from "@conquest/zod/enum/source.enum";
+import { ActivityTypeSchema } from "@conquest/zod/schemas/activity-type.schema";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 

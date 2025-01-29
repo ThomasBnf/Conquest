@@ -1,9 +1,9 @@
-import { prisma } from "@/lib/prisma";
 import { badRequest, notFound } from "@/lib/utils";
 import {
   V1CreateActivitySchema,
   V1UpdateActivitySchema,
 } from "@/schemas/activity.schema";
+import { prisma } from "@conquest/db/prisma";
 import { ActivitySchema } from "@conquest/zod/schemas/activity.schema";
 import { zValidator } from "@hono/zod-validator";
 import { Prisma } from "@prisma/client";

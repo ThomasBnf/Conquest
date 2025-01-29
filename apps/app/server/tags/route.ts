@@ -1,5 +1,5 @@
-import { listTags } from "@/queries/tags/listTags";
-import { getAuthUser } from "@/queries/users/getAuthUser";
+import { getAuthUser } from "@/queries/getAuthUser";
+import { listTags } from "@conquest/db/queries/tags/listTags";
 import { TagSchema } from "@conquest/zod/schemas/tag.schema";
 import { Hono } from "hono";
 

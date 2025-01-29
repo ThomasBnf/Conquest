@@ -2,7 +2,7 @@ import { updateIntegration } from "@/actions/integrations/updateIntegration";
 import { listChannels } from "@/client/channels/listChannels";
 import { listSLackChannels } from "@/client/slack/listSlackChannels";
 import { useUser } from "@/context/userContext";
-import type { installSlack } from "@/trigger/installSlack.trigger";
+import type { installSlack } from "@conquest/trigger/tasks/installSlack.trigger";
 import { Button } from "@conquest/ui/button";
 import { Checkbox } from "@conquest/ui/checkbox";
 import { cn } from "@conquest/ui/cn";

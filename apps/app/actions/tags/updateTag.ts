@@ -1,8 +1,8 @@
 "use server";
 
+import { prisma } from "@conquest/db/prisma";
 import { TagSchema } from "@conquest/zod/schemas/tag.schema";
 import { authAction } from "lib/authAction";
-import { prisma } from "lib/prisma";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 

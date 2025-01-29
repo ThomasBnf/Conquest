@@ -1,8 +1,8 @@
 import { PageLayout } from "@/components/layouts/page-layout";
 import { Editor } from "@/features/workflows/components/editor";
 import { Header } from "@/features/workflows/components/header";
-import { getCurrentUser } from "@/queries/users/getCurrentUser";
-import { getWorkflow } from "@/queries/workflows/getWorkflow";
+import { getCurrentUser } from "@/queries/getCurrentUser";
+import { getWorkflow } from "@conquest/db/queries/workflows/getWorkflow";
 import { ReactFlowProvider } from "@xyflow/react";
 import { redirect } from "next/navigation";
 

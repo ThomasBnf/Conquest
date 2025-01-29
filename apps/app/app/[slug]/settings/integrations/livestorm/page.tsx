@@ -1,6 +1,6 @@
 import { LivestormIntegration } from "@/features/integrations/livestorm-integration";
-import { listEvents } from "@/queries/events/listEvents";
-import { getCurrentUser } from "@/queries/users/getCurrentUser";
+import { getCurrentUser } from "@/queries/getCurrentUser";
+import { listEvents } from "@conquest/db/queries/events/listEvents";
 import { ScrollArea } from "@conquest/ui/scroll-area";
 
 type Props = {

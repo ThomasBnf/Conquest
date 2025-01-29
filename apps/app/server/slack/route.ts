@@ -1,22 +1,25 @@
-import { env } from "@/env.mjs";
-import { prisma } from "@/lib/prisma";
-import { createActivity } from "@/queries/activities/createActivity";
-import { deleteActivity } from "@/queries/activities/deleteActivity";
-import { updateActivity } from "@/queries/activities/updateActivity";
-import { upsertActivity } from "@/queries/activities/upsertActivity";
-import { createChannel } from "@/queries/channels/createChannel";
-import { deleteChannel } from "@/queries/channels/deleteChannel";
-import { getChannel } from "@/queries/channels/getChannel";
-import { updateChannel } from "@/queries/channels/updateChannel";
-import { getIntegration } from "@/queries/integrations/getIntegration";
-import { updateIntegration } from "@/queries/integrations/updateIntegration";
-import { checkMerging } from "@/queries/members/checkMerging";
-import { getMember } from "@/queries/members/getMember";
-import { upsertMember } from "@/queries/members/upsertMember";
-import { type SlackFile, createFiles } from "@/queries/slack/createFiles";
-import { deleteListReactions } from "@/queries/slack/deleteListReactions";
-import { getAuthUser } from "@/queries/users/getAuthUser";
-import { updateMemberMetrics } from "@/trigger/updateMemberMetrics.trigger";
+import { getAuthUser } from "@/queries/getAuthUser";
+import { prisma } from "@conquest/db/prisma";
+import { createActivity } from "@conquest/db/queries/activities/createActivity";
+import { deleteActivity } from "@conquest/db/queries/activities/deleteActivity";
+import { updateActivity } from "@conquest/db/queries/activities/updateActivity";
+import { upsertActivity } from "@conquest/db/queries/activities/upsertActivity";
+import { createChannel } from "@conquest/db/queries/channels/createChannel";
+import { deleteChannel } from "@conquest/db/queries/channels/deleteChannel";
+import { getChannel } from "@conquest/db/queries/channels/getChannel";
+import { updateChannel } from "@conquest/db/queries/channels/updateChannel";
+import { getIntegration } from "@conquest/db/queries/integrations/getIntegration";
+import { updateIntegration } from "@conquest/db/queries/integrations/updateIntegration";
+import { checkMerging } from "@conquest/db/queries/members/checkMerging";
+import { getMember } from "@conquest/db/queries/members/getMember";
+import { upsertMember } from "@conquest/db/queries/members/upsertMember";
+import {
+  type SlackFile,
+  createFiles,
+} from "@conquest/db/queries/slack/createFiles";
+import { deleteListReactions } from "@conquest/db/queries/slack/deleteListReactions";
+import { env } from "@conquest/env";
+import { updateMemberMetrics } from "@conquest/trigger/tasks/updateMemberMetrics.trigger";
 import { SlackIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
 import { zValidator } from "@hono/zod-validator";
 import {

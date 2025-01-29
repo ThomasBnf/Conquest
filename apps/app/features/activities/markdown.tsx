@@ -1,4 +1,4 @@
-import { emojiParser } from "@/features/activities/helpers/emoji-parser";
+import { emojiParser } from "@/helpers/emoji-parser";
 import { Button, buttonVariants } from "@conquest/ui/button";
 import { cn } from "@conquest/ui/cn";
 import type { ActivityWithMember } from "@conquest/zod/schemas/activity.schema";

@@ -1,5 +1,5 @@
-import { prisma } from "@/lib/prisma";
-import { getAuthUser } from "@/queries/users/getAuthUser";
+import { getAuthUser } from "@/queries/getAuthUser";
+import { prisma } from "@conquest/db/prisma";
 import { FileWithTypeSchema } from "@conquest/zod/schemas/file.schema";
 import { zValidator } from "@hono/zod-validator";
 import { Hono } from "hono";

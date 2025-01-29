@@ -1,8 +1,8 @@
 import { SLACK_SCOPES, SLACK_USER_SCOPES } from "@/constant";
-import { env } from "@/env.mjs";
-import { createIntegration } from "@/queries/integrations/createIntegration";
-import { getIntegration } from "@/queries/integrations/getIntegration";
-import { getCurrentUser } from "@/queries/users/getCurrentUser";
+import { getCurrentUser } from "@/queries/getCurrentUser";
+import { createIntegration } from "@conquest/db/queries/integrations/createIntegration";
+import { getIntegration } from "@conquest/db/queries/integrations/getIntegration";
+import { env } from "@conquest/env";
 import { WebClient } from "@slack/web-api";
 import { redirect } from "next/navigation";
 

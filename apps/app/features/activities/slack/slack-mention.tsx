@@ -1,5 +1,5 @@
-import { useUser } from "@/context/userContext";
 import { getSlackMember } from "@/client/slack/getSlackMember";
+import { useUser } from "@/context/userContext";
 import Link from "next/link";
 
 type Props = {

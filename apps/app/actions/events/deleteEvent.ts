@@ -1,7 +1,7 @@
 "use server";
 
 import { authAction } from "@/lib/authAction";
-import { prisma } from "@conquest/database";
+import { prisma } from "@conquest/db/prisma";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 

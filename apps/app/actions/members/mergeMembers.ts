@@ -1,7 +1,7 @@
 "use server";
 
 import { authAction } from "@/lib/authAction";
-import { mergeMembers as _mergeMembers } from "@/queries/members/mergeMembers";
+import { mergeMembers as _mergeMembers } from "@conquest/db/queries/members/mergeMembers";
 import { MemberWithCompanySchema } from "@conquest/zod/schemas/member.schema";
 import { z } from "zod";
 

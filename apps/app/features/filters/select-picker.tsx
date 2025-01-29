@@ -1,6 +1,6 @@
-import { CountryBadge } from "@/components/custom/country-badge";
-import { LanguageBadge } from "@/components/custom/language-badge";
-import { SourceBadge } from "@/components/custom/source-badge";
+import { CountryBadge } from "@/components/badges/country-badge";
+import { LanguageBadge } from "@/components/badges/language-badge";
+import { SourceBadge } from "@/components/badges/source-badge";
 import { useUser } from "@/context/userContext";
 import { client } from "@/lib/rpc";
 import { Button } from "@conquest/ui/button";

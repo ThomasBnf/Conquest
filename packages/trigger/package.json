@@ -1,0 +1,24 @@
+{
+  "name": "@conquest/trigger",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "trigger:dev": "bunx trigger.dev dev",
+    "trigger:deploy": "bunx trigger.dev@latest deploy"
+  },
+  "exports": {
+    "./*": "./src/*.ts"
+  },
+  "dependencies": {
+    "@conquest/db": "workspace:*",
+    "@conquest/emails": "workspace:*",
+    "@conquest/zod": "workspace:*",
+    "@trigger.dev/react-hooks": "3.3.12",
+    "@trigger.dev/sdk": "3.3.12",
+    "trigger.dev": "^3.3.10",
+    "octokit": "^4.1.0"
+  },
+  "devDependencies": {
+    "@trigger.dev/build": "3.3.12"
+  }
+}

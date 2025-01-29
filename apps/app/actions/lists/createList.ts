@@ -1,7 +1,7 @@
 "use server";
 
 import { authAction } from "@/lib/authAction";
-import { prisma } from "@/lib/prisma";
+import { prisma } from "@conquest/db/prisma";
 import { FilterSchema } from "@conquest/zod/schemas/filters.schema";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";

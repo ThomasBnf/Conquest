@@ -1,19 +1,16 @@
 {
   "name": "web",
-  "version": "0.1.0",
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "next dev -p 3003 --turbo",
-    "build": "next build",
-    "clean": "git clean -xdf .next .turbo node_modules",
-    "lint": "biome lint",
-    "format": "biome format --write .",
-    "start": "next start",
+    "dev": "dotenv -e ./.env -e ../../.env -- next dev -p 3003 --turbo",
+    "build": "dotenv -e ./.env -e ../../.env -- next build",
+    "start": "dotenv -e ./.env -e ../../.env -- next start",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@conquest/database": "workspace:*",
+    "@conquest/db": "workspace:*",
+    "@conquest/env": "workspace:*",
     "@conquest/ui": "workspace:*",
     "@radix-ui/react-icons": "^1.3.0",
     "lucide-react": "^0.452.0",
@@ -22,7 +19,7 @@
     "react-dom": "^18.3.1"
   },
   "devDependencies": {
-    "@conquest/typescript": "workspace:*",
+    "@conquest/tsconfig": "workspace:*",
     "@types/node": "^22.7.5",
     "@types/react": "^18.3.11",
     "@types/react-dom": "^18.3.1",

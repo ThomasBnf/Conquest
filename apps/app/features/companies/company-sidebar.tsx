@@ -1,11 +1,11 @@
 "use client";
 
 import { updateCompany } from "@/actions/companies/updateCompany";
-import { EditableAddress } from "@/components/custom/editable-address";
-import { EditableDate } from "@/components/custom/editable-date";
-import { EditableInput } from "@/components/custom/editable-input";
-import { EditableMembers } from "@/components/custom/editable-members";
-import { FieldCard } from "@/components/custom/field-card";
+import { EditableAddress } from "@/components/editable/editable-address";
+import { EditableDate } from "@/components/editable/editable-date";
+import { EditableInput } from "@/components/editable/editable-input";
+import { EditableMembers } from "@/components/editable/editable-members";
+import { FieldCard } from "@/components/editable/field-card";
 import { TagPicker } from "@/features/tags/tag-picker";
 import { Avatar, AvatarFallback, AvatarImage } from "@conquest/ui/avatar";
 import { ScrollArea } from "@conquest/ui/scroll-area";

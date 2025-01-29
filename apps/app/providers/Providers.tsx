@@ -1,5 +1,6 @@
 "use client";
 
+import { env } from "@conquest/env";
 import { TooltipProvider } from "@conquest/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";

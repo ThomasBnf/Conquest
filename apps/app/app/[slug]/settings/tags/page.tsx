@@ -1,12 +1,12 @@
 import { Tags } from "@/features/tags/tags";
-import { listTags } from "@/queries/tags/listTags";
-import { getCurrentUser } from "@/queries/users/getCurrentUser";
+import { getCurrentUser } from "@/queries/getCurrentUser";
+import { listTags } from "@conquest/db/queries/tags/listTags";
 import { ScrollArea } from "@conquest/ui/scroll-area";
 import { Separator } from "@conquest/ui/separator";
 
 export default async function Page() {
   const user = await getCurrentUser();
-  const workspace_id = user.workspace_id;
+  const { workspace_id } = user;
 
   const tags = await listTags({ workspace_id });
 

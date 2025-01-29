@@ -1,5 +1,5 @@
-import { prisma } from "@/lib/prisma";
-import { getAuthUser } from "@/queries/users/getAuthUser";
+import { getAuthUser } from "@/queries/getAuthUser";
+import { prisma } from "@conquest/db/prisma";
 import { ChannelSchema } from "@conquest/zod/schemas/channel.schema";
 import { Hono } from "hono";
 

@@ -1,5 +1,5 @@
 import { FormUser } from "@/features/users/form-user";
-import { getCurrentUser } from "@/queries/users/getCurrentUser";
+import { getCurrentUser } from "@/queries/getCurrentUser";
 import { Separator } from "@conquest/ui/separator";
 
 export default async function Page() {

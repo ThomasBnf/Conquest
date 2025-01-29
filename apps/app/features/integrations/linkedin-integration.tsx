@@ -4,7 +4,7 @@ import { deleteIntegration } from "@/actions/integrations/deleteIntegration";
 import { Linkedin } from "@/components/icons/Linkedin";
 import { LINKEDIN_SCOPES } from "@/constant/index";
 import { useUser } from "@/context/userContext";
-import { env } from "@/env.mjs";
+import { env } from "@conquest/env";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -27,9 +27,9 @@ export const LinkedInIntegration = ({ error }: Props) => {
     setLoading(true);
     const params = new URLSearchParams({
       response_type: "code",
-      client_id: env.NEXT_PUBLIC_LINKEDIN_CLIENT_ID,
-      scope: LINKEDIN_SCOPES,
-      redirect_uri: `${env.NEXT_PUBLIC_BASE_URL}/connect/linkedin`,
+      client_id: env.NEXT_PUBLIC_LINKEDIN_CLIENT_ID!,
+      scope: LINKEDIN_SCOPES!,
+      redirect_uri: `${env.NEXT_PUBLIC_BASE_URL!}/connect/linkedin`,
     });
 
     router.push(
@@ -46,6 +46,7 @@ export const LinkedInIntegration = ({ error }: Props) => {
     });
     const error = response?.serverError;
 
+    setLoading(false);
     if (error) return toast.error(error);
     return toast.success("LinkedIn disconnected");
   };

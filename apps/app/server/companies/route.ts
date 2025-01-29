@@ -1,6 +1,6 @@
-import { prisma } from "@/lib/prisma";
-import { getOrderBy } from "@/queries/helpers/getOrderBy";
-import { getAuthUser } from "@/queries/users/getAuthUser";
+import { getAuthUser } from "@/queries/getAuthUser";
+import { orderByParser } from "@conquest/db/helpers/orderByParser";
+import { prisma } from "@conquest/db/prisma";
 import { CompanySchema } from "@conquest/zod/schemas/company.schema";
 import { zValidator } from "@hono/zod-validator";
 import { Prisma } from "@prisma/client";
@@ -32,7 +32,7 @@ export const companies = new Hono()
       const { search, id, desc, page, pageSize } = c.req.valid("query");
 
       const searchParsed = search.toLowerCase().trim();
-      const orderBy = getOrderBy({ id, desc, type: "companies" });
+      const orderBy = orderByParser({ id, desc, type: "companies" });
 
       const companies = await prisma.$queryRaw`
         SELECT 

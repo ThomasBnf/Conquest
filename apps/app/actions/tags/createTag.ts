@@ -1,6 +1,6 @@
 "use server";
 
-import { createTag as _createTag } from "@/queries/tags/createTag";
+import { createTag as _createTag } from "@conquest/db/queries/tags/createTag";
 import { SOURCE } from "@conquest/zod/enum/source.enum";
 import { TagSchema } from "@conquest/zod/schemas/tag.schema";
 import { authAction } from "lib/authAction";

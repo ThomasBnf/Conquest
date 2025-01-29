@@ -2,7 +2,6 @@ import { GENDER } from "@conquest/zod/enum/gender.enum";
 import { z } from "zod";
 
 export const V1CreateMemberSchema = z.object({
-  external_id: z.string().nullable(),
   first_name: z.string().nullable(),
   last_name: z.string().nullable(),
   primary_email: z.string().nullable(),
@@ -25,7 +24,6 @@ export const V1CreateMemberSchema = z.object({
 });
 
 export const V1UpdateMemberSchema = z.object({
-  external_id: z.string().nullable().optional(),
   first_name: z.string().nullable().optional(),
   last_name: z.string().nullable().optional(),
   primary_email: z.string().nullable().optional(),

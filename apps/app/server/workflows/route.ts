@@ -1,5 +1,5 @@
-import { getAuthUser } from "@/queries/users/getAuthUser";
-import { getWorkflow } from "@/queries/workflows/getWorkflow";
+import { getAuthUser } from "@/queries/getAuthUser";
+import { getWorkflow } from "@conquest/db/queries/workflows/getWorkflow";
 import { zValidator } from "@hono/zod-validator";
 import { Hono } from "hono";
 import { z } from "zod";

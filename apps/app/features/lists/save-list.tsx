@@ -27,7 +27,10 @@ import { useQueryClient } from "@tanstack/react-query";
 import { usePathname } from "next/navigation";
 import { type Dispatch, type SetStateAction, useState } from "react";
 import { useForm } from "react-hook-form";
-import { type FormList, formListSchema } from "./schemas/form-list";
+import {
+  type FormCreate,
+  FormCreateSchema,
+} from "./schemas/form-create.schema";
 
 type Props = {
   filters: Filter[];
@@ -48,15 +51,15 @@ export const SaveList = ({ filters, setFilters, handleUpdate }: Props) => {
     handleUpdate?.([]);
   };
 
-  const form = useForm<FormList>({
-    resolver: zodResolver(formListSchema),
+  const form = useForm<FormCreate>({
+    resolver: zodResolver(FormCreateSchema),
     defaultValues: {
       emoji: "🙂",
       name: "New List",
     },
   });
 
-  const onSubmit = async ({ emoji, name }: FormList) => {
+  const onSubmit = async ({ emoji, name }: FormCreate) => {
     setLoading(true);
     await createList({ emoji, name, filters });
     queryClient.invalidateQueries({ queryKey: ["lists"] });

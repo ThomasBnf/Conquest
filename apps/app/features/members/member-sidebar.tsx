@@ -1,14 +1,15 @@
 "use client";
 
 import { updateMember } from "@/actions/members/updateMember";
-import { EditableCompany } from "@/components/custom/editable-company";
-import { EditableEmails } from "@/components/custom/editable-emails";
-import { EditableInput } from "@/components/custom/editable-input";
-import { EditableLink } from "@/components/custom/editable-link";
-import { EditableLocale } from "@/components/custom/editable-locale";
-import { EditablePhones } from "@/components/custom/editable-phones";
-import { FieldCard } from "@/components/custom/field-card";
-import { SourceBadge } from "@/components/custom/source-badge";
+import { SourceBadge } from "@/components/badges/source-badge";
+import { EditableCompany } from "@/components/editable/editable-company";
+import { EditableEmails } from "@/components/editable/editable-emails";
+import { EditableGender } from "@/components/editable/editable-gender";
+import { EditableInput } from "@/components/editable/editable-input";
+import { EditableLink } from "@/components/editable/editable-link";
+import { EditableLocale } from "@/components/editable/editable-locale";
+import { EditablePhones } from "@/components/editable/editable-phones";
+import { FieldCard } from "@/components/editable/field-card";
 import { Discord } from "@/components/icons/Discord";
 import { Discourse } from "@/components/icons/Discourse";
 import { Linkedin } from "@/components/icons/Linkedin";
@@ -19,7 +20,10 @@ import { Avatar, AvatarFallback, AvatarImage } from "@conquest/ui/avatar";
 import { Badge } from "@conquest/ui/badge";
 import { ScrollArea } from "@conquest/ui/scroll-area";
 import { Separator } from "@conquest/ui/separator";
-import type { MemberWithCompany } from "@conquest/zod/schemas/member.schema";
+import type {
+  Member,
+  MemberWithCompany,
+} from "@conquest/zod/schemas/member.schema";
 import type { Tag } from "@conquest/zod/schemas/tag.schema";
 import { format } from "date-fns";
 import { TagIcon } from "lucide-react";
@@ -39,35 +43,28 @@ export const MemberSidebar = ({ member, tags }: Props) => {
   const {
     id,
     slack_id,
-    discourse_username,
-    discord_username,
     discord_id,
+    discord_username,
+    discourse_username,
     first_name,
     last_name,
-    source,
     job_title,
     avatar_url,
     linkedin_url,
     locale,
+    gender,
+    source,
+    custom_fields,
     first_activity,
     last_activity,
     created_at,
-    custom_fields,
   } = member;
 
   const onUpdateMember = async (
-    field:
-      | "first_name"
-      | "last_name"
-      | "linkedin_url"
-      | "company_id"
-      | "job_title"
-      | "locale"
-      | "source"
-      | "tags",
+    field: keyof Member,
     value: string | null | string[],
   ) => {
-    await updateMember({ id, [field]: value });
+    await updateMember({ id, data: { [field]: value } });
   };
 
   return (
@@ -153,6 +150,12 @@ export const MemberSidebar = ({ member, tags }: Props) => {
         </div>
         <Separator />
         <div className="space-y-2 p-4">
+          <FieldCard icon="Users" label="Gender">
+            <EditableGender
+              gender={gender}
+              onUpdate={(value) => onUpdateMember("gender", value)}
+            />
+          </FieldCard>
           <FieldCard icon="User" label="First name">
             <EditableInput
               defaultValue={first_name}
@@ -183,7 +186,7 @@ export const MemberSidebar = ({ member, tags }: Props) => {
           <FieldCard icon="Mail" label="Emails">
             <EditableEmails member={member} />
           </FieldCard>
-          <FieldCard icon="Phone" label="Phone">
+          <FieldCard icon="Phone" label="Phones">
             <EditablePhones member={member} />
           </FieldCard>
         </div>

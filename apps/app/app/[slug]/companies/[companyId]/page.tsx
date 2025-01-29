@@ -2,10 +2,10 @@ import { HeaderSubPage } from "@/components/layouts/header-subpage";
 import { PageLayout } from "@/components/layouts/page-layout";
 import { CompanyActivities } from "@/features/activities/company-activities";
 import { CompanySidebar } from "@/features/companies/company-sidebar";
-import { listCompanyActivities } from "@/queries/activities/listCompanyActivities";
-import { getCompanyWithMembers } from "@/queries/companies/getCompany";
-import { listTags } from "@/queries/tags/listTags";
-import { getCurrentUser } from "@/queries/users/getCurrentUser";
+import { getCurrentUser } from "@/queries/getCurrentUser";
+import { listCompanyActivities } from "@conquest/db/queries/activities/listCompanyActivities";
+import { getCompanyWithMembers } from "@conquest/db/queries/companies/getCompany";
+import { listTags } from "@conquest/db/queries/tags/listTags";
 import { ScrollArea } from "@conquest/ui/scroll-area";
 import { redirect } from "next/navigation";
 
