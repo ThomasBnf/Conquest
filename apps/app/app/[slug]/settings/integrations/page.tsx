@@ -11,12 +11,10 @@ import { cn } from "@conquest/ui/cn";
 import { ScrollArea } from "@conquest/ui/scroll-area";
 import { Loader2 } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 
 export default function Page() {
   const { user, slug, discord, discourse, linkedin, livestorm, slack } =
     useUser();
-  const router = useRouter();
 
   const categories = [
     {

@@ -5,7 +5,7 @@ import { cn } from "@conquest/ui/cn";
 import type { Integration } from "@conquest/zod/schemas/integration.schema";
 import { CirclePlus, ExternalLink } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { type PropsWithChildren, useEffect } from "react";
 import { toast } from "sonner";
 
@@ -31,11 +31,8 @@ export const EnableCard = ({
 }: PropsWithChildren<Props>) => {
   const { slug } = useUser();
   const { status, trigger_token, trigger_token_expires_at } = integration ?? {};
-  const { source } = integration?.details ?? {};
-  const sourceName = source
-    ? source.toLowerCase().charAt(0).toUpperCase() + source.slice(1)
-    : null;
-
+  const pathname = usePathname();
+  const source = pathname.split("/").pop();
   const router = useRouter();
 
   const isEnabled = status === "ENABLED";
@@ -59,12 +56,12 @@ export const EnableCard = ({
           break;
         case "already_connected":
           toast.error(
-            `Error: This ${sourceName} workspace is already connected to another account`,
+            "Error: This integration is already connected to another account",
             { duration: 10000 },
           );
           break;
       }
-      router.replace(`/${slug}/settings/integrations/${source?.toLowerCase()}`);
+      router.replace(`/${slug}/settings/integrations/${source}`);
     }
   }, [trigger_token_expires_at, error]);
 
