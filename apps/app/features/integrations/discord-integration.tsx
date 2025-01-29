@@ -34,6 +34,7 @@ export const DiscordIntegration = ({ error, channels }: Props) => {
       response_type: "code",
       client_id: env.NEXT_PUBLIC_DISCORD_CLIENT_ID,
       permissions: DISCORD_PERMISSIONS,
+      redirect_uri: `${env.NEXT_PUBLIC_BASE_URL}/connect/discord`,
       scope: DISCORD_SCOPES,
     });
 
