@@ -1,6 +1,6 @@
 import { Header } from "@/components/layouts/header";
 import { PageLayout } from "@/components/layouts/page-layout";
-import { ListMenu } from "@/features/lists/list-menu";
+import { MenuList } from "@/features/lists/menu-list";
 import { Table } from "@/features/members/table";
 import { getCurrentUser } from "@/queries/getCurrentUser";
 import { getList } from "@conquest/db/queries/lists/getList";
@@ -20,7 +20,7 @@ export default async function Page({ params: { listId } }: Props) {
   return (
     <PageLayout>
       <Header title={list.name}>
-        <ListMenu listId={listId} />
+        <MenuList listId={listId} />
       </Header>
       <Table initialFilters={list.filters} />
     </PageLayout>

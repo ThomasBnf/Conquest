@@ -18,7 +18,7 @@ type Props = {
   listId: string;
 };
 
-export const ListMenu = ({ listId }: Props) => {
+export const MenuList = ({ listId }: Props) => {
   const [open, setOpen] = useState(false);
   const queryClient = useQueryClient();
 
@@ -37,8 +37,8 @@ export const ListMenu = ({ listId }: Props) => {
   return (
     <>
       <AlertDialog
-        title="Delete member"
-        description="Are you sure you want to delete this member?"
+        title="Delete list"
+        description="Are you sure you want to delete this list?"
         onConfirm={onDelete}
         open={open}
         setOpen={setOpen}
