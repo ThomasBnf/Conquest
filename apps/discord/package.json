@@ -3,9 +3,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "dotenv -e ./.env -e ../../.env -- tsx src/index.ts --watch",
-    "build": "dotenv -e ./.env -e ../../.env -- tsup src/index.ts",
-    "start": "dotenv -e ./.env -e ../../.env -- node dist/index.cjs",
+    "dev": "tsx src/index.ts --watch",
+    "build": "tsup src/index.ts",
+    "start": "node dist/index.cjs",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
@@ -18,7 +18,6 @@
   },
   "devDependencies": {
     "@conquest/db": "workspace:*",
-    "@conquest/env": "workspace:*",
     "@conquest/tsconfig": "workspace:*",
     "@conquest/zod": "workspace:*",
     "@types/node": "^20.11.24",

@@ -6,7 +6,6 @@ import { getChannel } from "@conquest/db/queries/channels/getChannel";
 import { getIntegration } from "@conquest/db/queries/integrations/getIntegration";
 import { getMember } from "@conquest/db/queries/members/getMember";
 import { upsertMember } from "@conquest/db/queries/members/upsertMember";
-import { env } from "@conquest/env";
 import {
   ChannelType,
   Client,
@@ -617,4 +616,4 @@ client.on(Events.MessageReactionRemove, async (reaction, user) => {
   });
 });
 
-client.login(env.DISCORD_BOT_TOKEN);
+client.login(process.env.DISCORD_BOT_TOKEN);
