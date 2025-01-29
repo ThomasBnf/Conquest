@@ -8,7 +8,7 @@
     "db:seed": "dotenv -e ./.env -e ../../.env -- prisma db seed",
     "db:migrate": "dotenv -e ./.env -e ../../.env -- prisma migrate dev",
     "db:deploy": "dotenv -e ./.env -e ../../.env -- prisma migrate deploy",
-    "db:migrate-status": "dotenv -e ./.env -e ../../.env -- prisma migrate status"
+    "typecheck": "tsc --noEmit"
   },
   "prisma": {
     "schema": "./src/prisma/schema.prisma",
@@ -20,7 +20,6 @@
   "dependencies": {
     "@conquest/env": "workspace:*",
     "@conquest/zod": "workspace:*",
-    "@conquest/trigger": "workspace:*",
     "@discordjs/rest": "^2.4.2",
     "@faker-js/faker": "^9.4.0",
     "@prisma/client": "^6.2.1",
