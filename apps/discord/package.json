@@ -1,10 +1,9 @@
 {
   "name": "discord",
   "private": true,
-  "type": "module",
   "scripts": {
     "dev": "dotenv -e ./.env -e ../../.env -- tsx src/index.ts --watch",
-    "build": "dotenv -e ./.env -e ../../.env -- tsup src/index.ts",
+    "build": "dotenv -e ./.env -e ../../.env -- tsup src/index.ts --format cjs",
     "start": "dotenv -e ./.env -e ../../.env -- node dist/index.js",
     "typecheck": "tsc --noEmit"
   },

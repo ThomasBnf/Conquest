@@ -1,3 +1,4 @@
+import { prisma } from "@conquest/db/prisma";
 import { createActivity } from "@conquest/db/queries/activities/createActivity";
 import { getActivity } from "@conquest/db/queries/activities/getActivity";
 import { getChannel } from "@conquest/db/queries/channels/getChannel";
@@ -16,8 +17,7 @@ import {
 } from "discord.js";
 import { config } from "dotenv";
 import express from "express";
-import { prisma } from "./lib/prisma";
-import { sleep } from "./lib/sleep";
+import { sleep } from "./helpers/sleep";
 
 config();
 
