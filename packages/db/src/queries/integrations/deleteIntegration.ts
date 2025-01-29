@@ -1,4 +1,5 @@
 import { env } from "@conquest/env";
+import { calculateMembersLevel } from "@conquest/trigger/tasks/calculateMembersLevel.trigger";
 import {
   type Integration,
   LinkedInIntegrationSchema,
@@ -59,22 +60,23 @@ export const deleteIntegration = async ({ source, integration }: Props) => {
     }
   }
 
-  // if (source === "DISCORD") {
-  //   await prisma.events.deleteMany({
-  //     where: { source: "DISCORD", workspace_id },
-  //   });
-  // }
+  if (source === "DISCORD") {
+    await prisma.events.deleteMany({
+      where: { source: "DISCORD", workspace_id },
+    });
+  }
 
-  await prisma.$transaction(async (tx) => {
-    await tx.activities_types.deleteMany({ where: { source, workspace_id } });
-    await tx.channels.deleteMany({ where: { source, workspace_id } });
-    await tx.tags.deleteMany({ where: { source, workspace_id } });
-    await tx.members.deleteMany({ where: { source, workspace_id } });
-    await tx.companies.deleteMany({ where: { source, workspace_id } });
-    await tx.integrations.delete({ where: { id: integration.id } });
-  });
+  await Promise.all([
+    prisma.activities_types.deleteMany({ where: { source, workspace_id } }),
+    prisma.channels.deleteMany({ where: { source, workspace_id } }),
+    prisma.tags.deleteMany({ where: { source, workspace_id } }),
+    prisma.companies.deleteMany({ where: { source, workspace_id } }),
+  ]);
 
-  // calculateMembersLevel.trigger({ workspace_id });
+  await prisma.members.deleteMany({ where: { source, workspace_id } });
+  await prisma.integrations.delete({ where: { id: integration.id } });
+
+  calculateMembersLevel.trigger({ workspace_id });
 
   return { success: true };
 };
