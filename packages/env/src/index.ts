@@ -5,12 +5,14 @@ const baseEnv = {
   server: {
     AUTH_SECRET: z.string(),
     DATABASE_URL: z.string(),
+    DIRECT_URL: z.string(),
   },
   client: {
     NEXT_PUBLIC_BASE_URL: z.string(),
   },
   runtimeEnv: {
     NEXT_PUBLIC_BASE_URL: process.env.NEXT_PUBLIC_BASE_URL,
+    DIRECT_URL: process.env.DIRECT_URL,
   },
 };
 
