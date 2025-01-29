@@ -62,7 +62,7 @@ export const TopChannels = ({ from, to }: Props) => {
             >
               <LabelList
                 dataKey="name"
-                position="insideLeft"
+                position="left"
                 offset={10}
                 className="fill-muted-foreground text-xs"
                 content={({ value, x, y, height }) => {
