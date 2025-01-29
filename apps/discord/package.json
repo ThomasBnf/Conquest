@@ -21,6 +21,7 @@
     "@conquest/tsconfig": "workspace:*",
     "@conquest/zod": "workspace:*",
     "@types/node": "^20.11.24",
-    "typescript": "^5.3.3"
+    "typescript": "^5.3.3",
+    "dotenv-cli": "8.0.0"
   }
 }

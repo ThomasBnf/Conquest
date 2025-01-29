@@ -29,6 +29,7 @@
     "stripe": "^17.5.0"
   },
   "devDependencies": {
-    "prisma": "^6.2.1"
+    "prisma": "^6.2.1",
+    "dotenv-cli": "8.0.0"
   }
 }
