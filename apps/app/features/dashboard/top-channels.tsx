@@ -62,13 +62,18 @@ export const TopChannels = ({ from, to }: Props) => {
             >
               <LabelList
                 dataKey="name"
-                position="left"
+                position="insideLeft"
                 offset={10}
                 className="fill-muted-foreground text-xs"
-                content={({ value, x, y, height }) => {
+                content={({ value, x, y, height, width }) => {
                   const yPos = Number(y) + Number(height) / 2 + 5;
+
                   return (
-                    <text x={Number(x) + 10} y={yPos} className="font-medium">
+                    <text
+                      x={width ? Number(x) + 10 : 10}
+                      y={yPos}
+                      className="font-medium"
+                    >
                       #{value}
                     </text>
                   );
