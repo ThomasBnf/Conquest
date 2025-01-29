@@ -232,7 +232,6 @@ export const Markdown = ({ activity, className }: Props) => {
     return result;
   };
 
-  const words = message.split(/(\s+)/g).filter(Boolean);
   const truncatedMessage =
     message.length > 150 ? `${message.slice(0, 150)}...` : message;
   const shouldTruncate = message.length > 150;
