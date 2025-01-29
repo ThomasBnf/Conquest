@@ -1,5 +1,4 @@
 import { env } from "@conquest/env";
-import { calculateMembersLevel } from "@conquest/trigger/tasks/calculateMembersLevel.trigger";
 import {
   type Integration,
   LinkedInIntegrationSchema,
@@ -75,8 +74,6 @@ export const deleteIntegration = async ({ source, integration }: Props) => {
 
   await prisma.members.deleteMany({ where: { source, workspace_id } });
   await prisma.integrations.delete({ where: { id: integration.id } });
-
-  calculateMembersLevel.trigger({ workspace_id });
 
   return { success: true };
 };

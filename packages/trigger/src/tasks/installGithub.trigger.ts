@@ -3,6 +3,7 @@ import { GithubIntegrationSchema } from "@conquest/zod/schemas/integration.schem
 import { schemaTask, usage } from "@trigger.dev/sdk/v3";
 import { Octokit } from "octokit";
 import { z } from "zod";
+import { calculateMembersLevel } from "./calculateMembersLevel.trigger";
 
 export const installGithub = schemaTask({
   id: "install-github",
@@ -41,9 +42,13 @@ export const installGithub = schemaTask({
     });
   },
   onFailure: async ({ github }) => {
+    const { workspace_id } = github;
+
     await deleteIntegration({
       source: "GITHUB",
       integration: github,
     });
+
+    await calculateMembersLevel.trigger({ workspace_id });
   },
 });

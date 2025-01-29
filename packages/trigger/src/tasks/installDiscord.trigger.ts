@@ -52,7 +52,7 @@ export const installDiscord = schemaTask({
     }
 
     await calculateMembersLevel.trigger({ workspace_id });
-    integrationSuccessEmail.trigger({
+    await integrationSuccessEmail.trigger({
       integration: discord,
       workspace_id,
     });
@@ -67,9 +67,13 @@ export const installDiscord = schemaTask({
     });
   },
   onFailure: async ({ discord }) => {
+    const { workspace_id } = discord;
+
     await deleteIntegration({
       source: "DISCORD",
       integration: discord,
     });
+
+    await calculateMembersLevel.trigger({ workspace_id });
   },
 });

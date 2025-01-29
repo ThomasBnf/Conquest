@@ -57,7 +57,6 @@ export const installLivestorm = schemaTask({
 
     await calculateMembersLevel.trigger({ workspace_id });
     await batchMergeMembers({ members });
-
     await integrationSuccessEmail.trigger({
       integration: livestorm,
       workspace_id,
@@ -73,9 +72,13 @@ export const installLivestorm = schemaTask({
     });
   },
   onFailure: async ({ livestorm }) => {
+    const { workspace_id } = livestorm;
+
     await deleteIntegration({
       source: "LIVESTORM",
       integration: livestorm,
     });
+
+    await calculateMembersLevel.trigger({ workspace_id });
   },
 });

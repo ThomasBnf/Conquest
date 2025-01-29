@@ -55,8 +55,10 @@ export const installLinkedin = schemaTask({
     await webhookSubscription({ linkedin });
     await calculateMembersLevel.trigger({ workspace_id });
     await batchMergeMembers({ members: createdMembers });
-
-    integrationSuccessEmail.trigger({ integration: linkedin, workspace_id });
+    await integrationSuccessEmail.trigger({
+      integration: linkedin,
+      workspace_id,
+    });
   },
   onSuccess: async ({ linkedin }) => {
     console.log(usage.getCurrent());
@@ -68,9 +70,13 @@ export const installLinkedin = schemaTask({
     });
   },
   onFailure: async ({ linkedin }) => {
+    const { workspace_id } = linkedin;
+
     await deleteIntegration({
       source: "LINKEDIN",
       integration: linkedin,
     });
+
+    await calculateMembersLevel.trigger({ workspace_id });
   },
 });

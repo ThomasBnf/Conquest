@@ -48,7 +48,6 @@ export const installSlack = schemaTask({
 
     await calculateMembersLevel.trigger({ workspace_id });
     await batchMergeMembers({ members });
-
     await integrationSuccessEmail.trigger({ integration: slack, workspace_id });
   },
   onSuccess: async ({ slack }) => {
@@ -61,9 +60,13 @@ export const installSlack = schemaTask({
     });
   },
   onFailure: async ({ slack }) => {
+    const { workspace_id } = slack;
+
     await deleteIntegration({
       source: "SLACK",
       integration: slack,
     });
+
+    await calculateMembersLevel.trigger({ workspace_id });
   },
 });

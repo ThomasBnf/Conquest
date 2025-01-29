@@ -10,6 +10,7 @@ import { DiscourseIntegrationSchema } from "@conquest/zod/schemas/integration.sc
 import { schemaTask, usage } from "@trigger.dev/sdk/v3";
 import { z } from "zod";
 import { DISCOURSE_ACTIVITY_TYPES } from "../constants";
+import { calculateMembersLevel } from "./calculateMembersLevel.trigger";
 import { integrationSuccessEmail } from "./integrationSuccessEmail.trigger";
 
 export const installDiscourse = schemaTask({
@@ -35,8 +36,7 @@ export const installDiscourse = schemaTask({
     const members = await createManyMembers({ discourse, client, tags });
 
     await batchMergeMembers({ members });
-
-    integrationSuccessEmail.trigger({
+    await integrationSuccessEmail.trigger({
       integration: discourse,
       workspace_id,
     });
@@ -51,9 +51,13 @@ export const installDiscourse = schemaTask({
     });
   },
   onFailure: async ({ discourse }) => {
+    const { workspace_id } = discourse;
+
     await deleteIntegration({
       source: "DISCOURSE",
       integration: discourse,
     });
+
+    await calculateMembersLevel.trigger({ workspace_id });
   },
 });
