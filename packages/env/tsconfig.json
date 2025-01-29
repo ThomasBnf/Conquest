@@ -1,7 +1,4 @@
 {
   "extends": "@conquest/tsconfig/base.json",
-  "include": ["src/**/*.ts"],
-  "compilerOptions": {
-    "outDir": "dist"
-  }
+  "include": ["src/**/*.ts"]
 }

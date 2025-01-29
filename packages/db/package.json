@@ -18,14 +18,14 @@
     "./*": "./src/*.ts"
   },
   "dependencies": {
-    "@conquest/zod": "workspace:*",
     "@conquest/env": "workspace:*",
-    "@t3-oss/env-nextjs": "^0.11.1",
+    "@conquest/zod": "workspace:*",
+    "@discordjs/rest": "^2.4.2",
     "@prisma/client": "^6.2.1",
     "@slack/web-api": "^7.6.0",
-    "@discordjs/rest": "^2.4.2",
     "discord-api-types": "^0.37.115",
     "discourse2": "^1.1.23",
+    "resend": "^4.1.1",
     "stripe": "^17.5.0"
   },
   "devDependencies": {

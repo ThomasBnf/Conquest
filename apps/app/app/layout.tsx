@@ -25,7 +25,7 @@ export default function RootLayout({
         <Script
           id="initMap"
           strategy="beforeInteractive"
-          src={`https://maps.googleapis.com/maps/api/js?key=${env.GOOGLE_API_KEY!}&libraries=places&loading=async`}
+          src={`https://maps.googleapis.com/maps/api/js?key=${env.GOOGLE_API_KEY}&libraries=places&loading=async`}
         />
       </body>
     </html>

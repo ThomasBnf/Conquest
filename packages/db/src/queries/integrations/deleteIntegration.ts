@@ -42,8 +42,8 @@ export const deleteIntegration = async ({ source, integration }: Props) => {
 
     await web.apps.uninstall({
       token: slack.details.token,
-      client_id: env.NEXT_PUBLIC_SLACK_CLIENT_ID!,
-      client_secret: env.SLACK_CLIENT_SECRET!,
+      client_id: env.NEXT_PUBLIC_SLACK_CLIENT_ID,
+      client_secret: env.SLACK_CLIENT_SECRET,
     });
   }
 

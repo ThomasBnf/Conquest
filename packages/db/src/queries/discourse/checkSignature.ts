@@ -15,7 +15,7 @@ export const checkSignature = async ({ c }: Props) => {
 
   if (!signature) return false;
 
-  const secret = env.DISCOURSE_SECRET_KEY!;
+  const secret = env.DISCOURSE_SECRET_KEY;
 
   const expectedSignature = createHmac("sha256", secret)
     .update(rawBody)

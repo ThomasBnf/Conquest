@@ -27,9 +27,9 @@ export const LinkedInIntegration = ({ error }: Props) => {
     setLoading(true);
     const params = new URLSearchParams({
       response_type: "code",
-      client_id: env.NEXT_PUBLIC_LINKEDIN_CLIENT_ID!,
-      scope: LINKEDIN_SCOPES!,
-      redirect_uri: `${env.NEXT_PUBLIC_BASE_URL!}/connect/linkedin`,
+      client_id: env.NEXT_PUBLIC_LINKEDIN_CLIENT_ID,
+      scope: LINKEDIN_SCOPES,
+      redirect_uri: `${env.NEXT_PUBLIC_BASE_URL}/connect/linkedin`,
     });
 
     router.push(

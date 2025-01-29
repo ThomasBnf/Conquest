@@ -21,8 +21,8 @@ export default async function Page({ searchParams: { code } }: Props) {
       response_type: "code",
       code,
       grant_type: "authorization_code",
-      client_id: env.NEXT_PUBLIC_DISCORD_CLIENT_ID!,
-      client_secret: env.DISCORD_CLIENT_SECRET!,
+      client_id: env.NEXT_PUBLIC_DISCORD_CLIENT_ID,
+      client_secret: env.DISCORD_CLIENT_SECRET,
       redirect_uri: `${env.NEXT_PUBLIC_BASE_URL}/connect/discord`,
     }),
   });

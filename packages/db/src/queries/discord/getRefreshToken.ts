@@ -7,8 +7,8 @@ export const getRefreshToken = async (discord: DiscordIntegration) => {
   const { refresh_token } = details;
 
   const params = new URLSearchParams({
-    client_id: env.NEXT_PUBLIC_DISCORD_CLIENT_ID!,
-    client_secret: env.DISCORD_CLIENT_SECRET!,
+    client_id: env.NEXT_PUBLIC_DISCORD_CLIENT_ID,
+    client_secret: env.DISCORD_CLIENT_SECRET,
     grant_type: "refresh_token",
     refresh_token,
   });

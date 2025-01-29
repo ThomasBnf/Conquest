@@ -31,7 +31,7 @@ export const SlackIntegration = ({ error, channels }: Props) => {
     setLoading(true);
     const params = new URLSearchParams({
       response_type: "code",
-      client_id: env.NEXT_PUBLIC_SLACK_CLIENT_ID!,
+      client_id: env.NEXT_PUBLIC_SLACK_CLIENT_ID,
       scope: SLACK_SCOPES,
       user_scope: SLACK_USER_SCOPES,
       redirect_uri: `${env.NEXT_PUBLIC_BASE_URL}/connect/slack`,

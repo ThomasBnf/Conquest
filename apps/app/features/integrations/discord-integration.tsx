@@ -32,7 +32,7 @@ export const DiscordIntegration = ({ error, channels }: Props) => {
 
     const params = new URLSearchParams({
       response_type: "code",
-      client_id: env.NEXT_PUBLIC_DISCORD_CLIENT_ID!,
+      client_id: env.NEXT_PUBLIC_DISCORD_CLIENT_ID,
       permissions: DISCORD_PERMISSIONS,
       scope: DISCORD_SCOPES,
     });

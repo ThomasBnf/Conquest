@@ -1,4 +1,3 @@
-import { createHmac } from "node:crypto";
 import { getAuthUser } from "@/queries/getAuthUser";
 import { createActivity } from "@conquest/db/queries/activities/createActivity";
 import { deleteActivity } from "@conquest/db/queries/activities/deleteActivity";
@@ -19,6 +18,7 @@ import {
 } from "@conquest/zod/types/linkedin";
 import { getLocaleByAlpha2 } from "country-locale-map";
 import { Hono } from "hono";
+import { createHmac } from "node:crypto";
 
 const generateChallengeResponse = (
   challengeCode: string,
@@ -34,7 +34,7 @@ export const linkedin = new Hono()
     const searchParams = new URL(c.req.url).searchParams;
     const challengeCode = searchParams.get("challengeCode")!;
 
-    const clientSecret = env.LINKEDIN_CLIENT_SECRET as string;
+    const clientSecret = env.LINKEDIN_CLIENT_SECRET;
     const challengeResponse = generateChallengeResponse(
       challengeCode,
       clientSecret,

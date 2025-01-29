@@ -7,8 +7,8 @@ export const getRefreshToken = async (integration: LivestormIntegration) => {
   const { refresh_token } = details;
 
   const params = new URLSearchParams({
-    client_id: env.NEXT_PUBLIC_LIVESTORM_CLIENT_ID!,
-    client_secret: env.LIVESTORM_CLIENT_SECRET!,
+    client_id: env.NEXT_PUBLIC_LIVESTORM_CLIENT_ID,
+    client_secret: env.LIVESTORM_CLIENT_SECRET,
     grant_type: "refresh_token",
     refresh_token: refresh_token,
   });
