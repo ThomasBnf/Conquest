@@ -116,6 +116,7 @@ const stripeEnv = {
 const triggerEnv = {
   server: {
     TRIGGER_SECRET_KEY: z.string(),
+    TRIGGER_ACCESS_TOKEN: z.string(),
   },
 };
 
