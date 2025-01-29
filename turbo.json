@@ -1,36 +1,8 @@
 {
   "$schema": "https://turborepo.org/schema.json",
   "globalDependencies": ["**/.env"],
-  "globalEnv": [
-    "NEXT_PUBLIC_BASE_URL",
-    "AUTH_SECRET",
-    "DATABASE_URL",
-    "DIRECT_URL",
-    "SLACK_APP_ID",
-    "SLACK_CLIENT_SECRET",
-    "SLACK_VERIFICATION_TOKEN",
-    "SLACK_SIGNING_SECRET",
-    "NEXT_PUBLIC_SLACK_CLIENT_ID",
-    "NEXT_PUBLIC_DISCORD_CLIENT_ID",
-    "DISCORD_CLIENT_SECRET",
-    "DISCORD_BOT_TOKEN",
-    "DISCOURSE_SECRET_KEY",
-    "NEXT_PUBLIC_GITHUB_CLIENT_ID",
-    "GITHUB_CLIENT_SECRET",
-    "GOOGLE_API_KEY",
-    "TRIGGER_SECRET_KEY",
-    "TRIGGER_ACCESS_TOKEN",
-    "GITHUB_URL",
-    "NEXT_PUBLIC_LIVESTORM_CLIENT_ID",
-    "LIVESTORM_CLIENT_SECRET",
-    "NEXT_PUBLIC_LINKEDIN_CLIENT_ID",
-    "LINKEDIN_CLIENT_SECRET",
-    "LINKEDIN_APP_ID",
-    "CODE_RECUPERATION",
-    "NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY",
-    "STRIPE_SECRET_KEY",
-    "RESEND_API_KEY"
-  ],
+  "globalEnv": ["AUTH_SECRET", "DATABASE_URL", "DIRECT_URL"],
+  "envMode": "loose",
   "tasks": {
     "topo": {
       "dependsOn": ["^topo"]
