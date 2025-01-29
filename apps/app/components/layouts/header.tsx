@@ -1,5 +1,7 @@
 "use client";
 
+import { useUser } from "@/context/userContext";
+import { seedDB } from "@/queries/seedDb";
 import { cn } from "@conquest/ui/cn";
 import { Separator } from "@conquest/ui/separator";
 import { SidebarTrigger, useSidebar } from "@conquest/ui/sidebar";
@@ -11,6 +13,7 @@ type Props = HTMLAttributes<HTMLDivElement> & {
 
 export const Header = ({ title, children, className }: Props) => {
   const { open } = useSidebar();
+  const { user } = useUser();
 
   return (
     <div
@@ -26,7 +29,17 @@ export const Header = ({ title, children, className }: Props) => {
             <Separator orientation="vertical" className="mr-1 h-4" />
           </>
         )}
-        <h2 className="font-medium">{title}</h2>
+        {/* biome-ignore lint/a11y/useKeyWithClickEvents: <explanation> */}
+        <h2
+          className="font-medium"
+          onClick={() => {
+            if (user?.role === "STAFF") {
+              seedDB();
+            }
+          }}
+        >
+          {title}
+        </h2>
       </div>
       {children}
     </div>

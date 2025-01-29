@@ -65,6 +65,36 @@ export const ACTIVITY_COLORS = {
   4: "bg-main-900",
 } as const;
 
+export const EUROPEAN_COUNTRIES = [
+  "AT",
+  "BE",
+  "BG",
+  "HR",
+  "CY",
+  "CZ",
+  "DK",
+  "EE",
+  "FI",
+  "FR",
+  "DE",
+  "GR",
+  "HU",
+  "IE",
+  "IT",
+  "LV",
+  "LT",
+  "LU",
+  "MT",
+  "NL",
+  "PL",
+  "PT",
+  "RO",
+  "SK",
+  "SI",
+  "ES",
+  "SE",
+];
+
 export const DISCORD_PERMISSIONS = "8590001152";
 export const DISCORD_SCOPES = "bot";
 

@@ -36,7 +36,7 @@ const EUROPEAN_COUNTRIES = [
   "SE",
 ];
 
-async function main() {
+async function seedDb() {
   const workspace = WorkspaceSchema.parse(await prisma.workspaces.findFirst());
 
   const activities_types = ActivityTypeSchema.array().parse(
@@ -217,7 +217,7 @@ async function main() {
   }
 }
 
-main()
+seedDb()
   .then(async () => {
     await prisma.$disconnect();
   })

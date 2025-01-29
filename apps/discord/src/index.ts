@@ -19,14 +19,13 @@ import express from "express";
 import { prisma } from "./lib/prisma";
 import { sleep } from "./lib/sleep";
 
+config();
+
 const app = express();
 const port = process.env.PORT || 10000;
 
-app.get("/", (req, res) => {});
-
+app.get("/", () => {});
 app.listen(port, () => {});
-
-config();
 
 const client = new Client({
   intents: [
