@@ -27,6 +27,8 @@ export const installDiscord = schemaTask({
     const { workspace_id, external_id } = discord;
     if (!external_id) return;
 
+    console.log("channels", channels);
+
     const createdChannels = await createManyChannels({ discord, channels });
 
     await createManyActivityTypes({

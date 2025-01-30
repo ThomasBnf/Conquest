@@ -25,6 +25,8 @@ export const createManyThreads = async ({ discord }: Props) => {
     `${Routes.guildActiveThreads(external_id)}`,
   )) as APIThreadList;
 
+  console.log(responseThreads);
+
   const threads = responseThreads.threads as APIThreadChannel[];
 
   for (const thread of threads) {
