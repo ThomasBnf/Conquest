@@ -17,6 +17,7 @@ import {
 import { config } from "dotenv";
 import express from "express";
 import { sleep } from "./helpers/sleep";
+import { createFiles } from "./queries/createFiles";
 
 config();
 
@@ -67,25 +68,29 @@ client.on(Events.GuildMemberAdd, async (member) => {
     ? `https://cdn.discordapp.com/avatars/${id}/${avatar}.webp`
     : null;
 
-  const createdMember = await upsertMember({
-    id,
-    data: {
-      first_name: firstName,
-      last_name: lastName,
-      discord_username: username,
-      avatar_url: avatarUrl,
-    },
-    source: "DISCORD",
-    workspace_id,
-  });
+  try {
+    const createdMember = await upsertMember({
+      id,
+      data: {
+        first_name: firstName,
+        last_name: lastName,
+        discord_username: username,
+        avatar_url: avatarUrl,
+      },
+      source: "DISCORD",
+      workspace_id,
+    });
 
-  await createActivity({
-    external_id: id,
-    activity_type_key: "discord:join",
-    message: "Has joined the community",
-    member_id: createdMember.id,
-    workspace_id,
-  });
+    await createActivity({
+      external_id: id,
+      activity_type_key: "discord:join",
+      message: "Has joined the community",
+      member_id: createdMember.id,
+      workspace_id,
+    });
+  } catch (error) {
+    console.error("GuildMemberAdd", error);
+  }
 });
 
 client.on(Events.GuildMemberRemove, async (member) => {
@@ -100,12 +105,16 @@ client.on(Events.GuildMemberRemove, async (member) => {
   if (!integration) return;
   const { workspace_id } = integration;
 
-  await prisma.members.deleteMany({
-    where: {
-      id,
-      workspace_id,
-    },
-  });
+  try {
+    await prisma.members.deleteMany({
+      where: {
+        id,
+        workspace_id,
+      },
+    });
+  } catch (error) {
+    console.error("GuildMemberRemove", error);
+  }
 });
 
 client.on(Events.UserUpdate, async (user) => {
@@ -119,17 +128,21 @@ client.on(Events.UserUpdate, async (user) => {
     ? `https://cdn.discordapp.com/avatars/${id}/${avatar}.webp`
     : null;
 
-  await prisma.members.update({
-    where: {
-      id,
-    },
-    data: {
-      first_name: firstName,
-      last_name: lastName,
-      discord_username: username,
-      avatar_url: avatarUrl,
-    },
-  });
+  try {
+    await prisma.members.update({
+      where: {
+        id,
+      },
+      data: {
+        first_name: firstName,
+        last_name: lastName,
+        discord_username: username,
+        avatar_url: avatarUrl,
+      },
+    });
+  } catch (error) {
+    console.error("UserUpdate", error);
+  }
 });
 
 client.on(Events.ChannelCreate, async (channel) => {
@@ -270,28 +283,28 @@ client.on(Events.MessageCreate, async (message) => {
           workspace_id,
         });
 
-        // await createFiles({
-        //   files: attachments,
-        //   activity_id: createdActivity?.id,
-        // });
+        await sleep(1000);
+
+        await prisma.activities.update({
+          where: {
+            external_id_workspace_id: {
+              external_id: id,
+              workspace_id,
+            },
+          },
+          data: {
+            message: content,
+          },
+        });
+
+        await createFiles({
+          files: attachments,
+          activity_id: createdActivity?.id,
+        });
       } catch (error) {
         console.error("ReplyToThread", error);
       }
     }
-
-    await sleep(1000);
-
-    return await prisma.activities.update({
-      where: {
-        external_id_workspace_id: {
-          external_id: id,
-          workspace_id,
-        },
-      },
-      data: {
-        message: content,
-      },
-    });
   }
 
   if (type === 0) {
@@ -305,10 +318,10 @@ client.on(Events.MessageCreate, async (message) => {
         workspace_id,
       });
 
-      // await createFiles({
-      //   files: attachments,
-      //   activity_id: createdActivity?.id,
-      // });
+      await createFiles({
+        files: attachments,
+        activity_id: createdActivity?.id,
+      });
     } catch (error) {
       console.error("MessageCreate", type, error);
     }
@@ -326,10 +339,10 @@ client.on(Events.MessageCreate, async (message) => {
         workspace_id,
       });
 
-      // await createFiles({
-      //   files: attachments,
-      //   activity_id: createdActivity?.id,
-      // });
+      await createFiles({
+        files: attachments,
+        activity_id: createdActivity?.id,
+      });
     } catch (error) {
       console.error("MessageCreate", type, error);
     }
@@ -488,15 +501,19 @@ client.on(Events.GuildRoleCreate, async (role) => {
   if (!integration) return;
   const { workspace_id } = integration;
 
-  await prisma.tags.create({
-    data: {
-      external_id: id,
-      name,
-      color: "#99AAB5",
-      source: "DISCORD",
-      workspace_id,
-    },
-  });
+  try {
+    await prisma.tags.create({
+      data: {
+        external_id: id,
+        name,
+        color: "#99AAB5",
+        source: "DISCORD",
+        workspace_id,
+      },
+    });
+  } catch (error) {
+    console.error("GuildRoleCreate", error);
+  }
 });
 
 client.on(Events.GuildRoleUpdate, async (_, role) => {
@@ -514,18 +531,22 @@ client.on(Events.GuildRoleUpdate, async (_, role) => {
   const hexColor =
     color === 0 ? "#99AAB5" : `#${color.toString(16).padStart(6, "0")}`;
 
-  await prisma.tags.update({
-    where: {
-      external_id_workspace_id: {
-        external_id: id,
-        workspace_id,
+  try {
+    await prisma.tags.update({
+      where: {
+        external_id_workspace_id: {
+          external_id: id,
+          workspace_id,
+        },
       },
-    },
-    data: {
-      name,
-      color: hexColor,
-    },
-  });
+      data: {
+        name,
+        color: hexColor,
+      },
+    });
+  } catch (error) {
+    console.error("GuildRoleUpdate", error);
+  }
 });
 
 client.on(Events.GuildRoleDelete, async (role) => {
@@ -593,15 +614,19 @@ client.on(Events.MessageReactionAdd, async (reaction, user) => {
   const channel = await getChannel({ external_id: channelId, workspace_id });
   if (!channel) return;
 
-  await createActivity({
-    external_id: null,
-    activity_type_key: "discord:reaction",
-    message: emoji.name ?? "",
-    react_to: id,
-    member_id: member.id,
-    channel_id: channel.id,
-    workspace_id,
-  });
+  try {
+    await createActivity({
+      external_id: null,
+      activity_type_key: "discord:reaction",
+      message: emoji.name ?? "",
+      react_to: id,
+      member_id: member.id,
+      channel_id: channel.id,
+      workspace_id,
+    });
+  } catch (error) {
+    console.error("MessageReactionAdd", error);
+  }
 });
 
 client.on(Events.MessageReactionRemove, async (reaction, user) => {
@@ -622,14 +647,18 @@ client.on(Events.MessageReactionRemove, async (reaction, user) => {
   const member = await getMember({ discord_id, workspace_id });
   if (!member) return;
 
-  await prisma.activities.deleteMany({
-    where: {
-      message: emoji.name ?? "",
-      react_to: messageId,
-      member_id: member.id,
-      workspace_id,
-    },
-  });
+  try {
+    await prisma.activities.deleteMany({
+      where: {
+        message: emoji.name ?? "",
+        react_to: messageId,
+        member_id: member.id,
+        workspace_id,
+      },
+    });
+  } catch (error) {
+    console.error("MessageReactionRemove", error);
+  }
 });
 
 client.login(process.env.DISCORD_BOT_TOKEN);
