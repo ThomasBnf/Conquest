@@ -106,24 +106,6 @@ export const EditableCompany = ({ member, onUpdate }: Props) => {
           />
 
           {!search && <CommandEmpty>No companies found.</CommandEmpty>}
-          {search && (
-            <CommandEmpty className="w-full p-1">
-              <Button
-                variant="ghost"
-                className="w-full"
-                onClick={onCreateCompany}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" && open) {
-                    onCreateCompany();
-                  }
-                }}
-              >
-                <Plus size={16} className="shrink-0" />
-                Create "{search}"
-              </Button>
-            </CommandEmpty>
-          )}
-
           <CommandList>
             <CommandGroup>
               {isLoading ? (
@@ -144,6 +126,25 @@ export const EditableCompany = ({ member, onUpdate }: Props) => {
                 ))
               )}
             </CommandGroup>
+            {search && (
+              <CommandGroup>
+                <CommandItem asChild>
+                  <Button
+                    variant="ghost"
+                    className="w-full text-left"
+                    onClick={onCreateCompany}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" && open) {
+                        onCreateCompany();
+                      }
+                    }}
+                  >
+                    <Plus size={16} className="shrink-0" />
+                    <span className="truncate">Create "{search}"</span>
+                  </Button>
+                </CommandItem>
+              </CommandGroup>
+            )}
           </CommandList>
         </Command>
       </PopoverContent>
