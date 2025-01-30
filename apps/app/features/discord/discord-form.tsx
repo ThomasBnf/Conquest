@@ -1,5 +1,6 @@
 import { updateIntegration } from "@/actions/integrations/updateIntegration";
 import { listChannels } from "@/client/channels/listChannels";
+import { EXCLUDED_CHANNEL_TYPES } from "@/client/discord/excluded-channels";
 import { listDiscordChannels } from "@/client/discord/listChannels";
 import { useUser } from "@/context/userContext";
 import type { installDiscord } from "@conquest/trigger/tasks/installDiscord.trigger";
@@ -18,10 +19,6 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { LoadingChannels } from "../integrations/loading-channels";
 import { LoadingMessage } from "../integrations/loading-message";
-import {
-  EXCLUDED_CHANNEL_TYPES,
-  hasPermission,
-} from "./helpers/hasPermissions";
 
 type Props = {
   loading: boolean;
@@ -39,19 +36,14 @@ export const DiscordForm = ({ loading, setLoading }: Props) => {
   const router = useRouter();
 
   const categoriesChannels = discordChannels
-    ?.filter(
-      (channel) =>
-        channel.type === ChannelType.GuildCategory && hasPermission(channel),
-    )
+    ?.filter((channel) => channel.type === ChannelType.GuildCategory)
     .sort((a, b) => a.position - b.position);
 
   const subChannels = discordChannels?.filter(
     (channel) =>
       categoriesChannels?.some(
         (category) => category.id === channel.parent_id,
-      ) &&
-      !EXCLUDED_CHANNEL_TYPES.includes(channel.type) &&
-      hasPermission(channel),
+      ) && !EXCLUDED_CHANNEL_TYPES.includes(channel.type),
   );
 
   const isAllSelected =
@@ -107,6 +99,21 @@ export const DiscordForm = ({ loading, setLoading }: Props) => {
       <div className="space-y-4">
         <div>
           <p className="mb-2 font-medium text-base">Channels</p>
+          <div className="mb-2 flex w-fit gap-2 text-balance rounded-md border bg-muted p-2">
+            <InfoIcon
+              className="mt-0.5 shrink-0 text-muted-foreground"
+              size={16}
+            />
+            <p>
+              Missing channels? Verify that the
+              <span className="font-medium"> @everyone</span> role has the
+              required permissions:
+              <span className="font-medium"> View Channel</span> and
+              <span className="font-medium"> Read Message History</span>. If
+              not, add the "conquest" role to the channel with these permissions
+              enabled.
+            </p>
+          </div>
           <Button
             variant="outline"
             size="xs"
@@ -120,14 +127,6 @@ export const DiscordForm = ({ loading, setLoading }: Props) => {
           <LoadingChannels />
         ) : (
           <>
-            <div className="flex w-fit items-center gap-2 rounded-md border bg-muted p-2">
-              <InfoIcon className="text-muted-foreground" size={16} />
-              <p>
-                Missing channels? Verify that your channel has the required
-                permissions: <span className="font-medium">View Channel</span>{" "}
-                and <span className="font-medium">Read Message History</span>
-              </p>
-            </div>
             <div className="flex flex-col gap-4">
               {categoriesChannels?.map((category) => {
                 const hasSubChannels = subChannels?.some(
