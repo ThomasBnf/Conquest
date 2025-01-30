@@ -5,6 +5,7 @@ import type { ActivityWithMember } from "@conquest/zod/schemas/activity.schema";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
+import { DiscordMention } from "./discord/discord-mention";
 import { DiscourseMention } from "./discourse/discourse-mention";
 import { SlackMention } from "./slack/slack-mention";
 
@@ -45,6 +46,19 @@ export const Markdown = ({ activity, className }: Props) => {
           }
           return part;
         });
+    });
+
+    // Discord mention
+    result = result.flatMap((chunk) => {
+      if (typeof chunk !== "string") return chunk;
+      return chunk.split(/(<@[A-Z0-9]+(?:\|[^>]+)?>)/g).map((part) => {
+        const mentionMatch = part.match(/^<@([A-Z0-9]+)(?:\|[^>]+)?>$/);
+        if (mentionMatch) {
+          const [, userId] = mentionMatch;
+          return <DiscordMention key={userId} discordId={userId ?? ""} />;
+        }
+        return part;
+      });
     });
 
     result = result.map((chunk) =>

@@ -48,15 +48,6 @@ export const DiscourseForm = ({ loading, setLoading }: Props) => {
 
   const form = useForm<FormCreate>({
     resolver: zodResolver(FormCreateSchema),
-    defaultValues: {
-      community_url: "https://playground.lagrowthmachine.com",
-      api_key:
-        "a7e80919eecc82b71fe8a23d8d0e199bf3d593216835315133254de014e9e1b3",
-      content_type: true,
-      payload_url: true,
-      secret: true,
-      send_me_everything: true,
-    },
   });
 
   const onSubmit = async ({ community_url, api_key }: FormCreate) => {

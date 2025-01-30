@@ -238,6 +238,17 @@ export const members = new Hono()
 
     return c.json(MemberSchema.parse(member));
   })
+  .get("/discord/:discordId", async (c) => {
+    const { workspace_id } = c.get("user");
+    const { discordId } = c.req.param();
+
+    const member = await getMember({
+      discord_id: discordId,
+      workspace_id,
+    });
+
+    return c.json(MemberSchema.parse(member));
+  })
   .get("/discourse/:username", async (c) => {
     const { workspace_id } = c.get("user");
     const { username } = c.req.param();

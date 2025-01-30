@@ -1,14 +1,14 @@
-import { getMemberByUsername } from "@/client/members/getMemberByUsername";
+import { getDiscordMember } from "@/client/discord/getDiscordMember";
 import { useUser } from "@/context/userContext";
 import Link from "next/link";
 
 type Props = {
-  username: string;
+  discordId: string;
 };
 
-export const DiscordMention = ({ username }: Props) => {
+export const DiscordMention = ({ discordId }: Props) => {
   const { slug } = useUser();
-  const { data: member } = getMemberByUsername({ username });
+  const { data: member } = getDiscordMember({ id: discordId });
   const { id, first_name, last_name } = member ?? {};
 
   return (
