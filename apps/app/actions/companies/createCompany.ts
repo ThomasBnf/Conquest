@@ -4,6 +4,7 @@ import { FormCreateSchema } from "@/features/companies/schema/company-form.schem
 import { authAction } from "@/lib/authAction";
 import { prisma } from "@conquest/db/prisma";
 import { CompanySchema } from "@conquest/zod/schemas/company.schema";
+import { revalidatePath } from "next/cache";
 
 export const createCompany = authAction
   .metadata({
@@ -21,5 +22,6 @@ export const createCompany = authAction
       },
     });
 
+    revalidatePath("/members");
     return CompanySchema.parse(company);
   });

@@ -47,6 +47,7 @@ client.once(Events.ClientReady, (readyClient) => {
 });
 
 client.on(Events.GuildMemberAdd, async (member) => {
+  console.log("GuildMemberAdd", member);
   const { user, guild } = member;
   const { id, bot, username, globalName, avatar } = user;
 
@@ -88,6 +89,7 @@ client.on(Events.GuildMemberAdd, async (member) => {
 });
 
 client.on(Events.GuildMemberRemove, async (member) => {
+  console.log("GuildMemberRemove", member);
   const { user, guild } = member;
   const { id } = user;
 
@@ -107,6 +109,7 @@ client.on(Events.GuildMemberRemove, async (member) => {
 });
 
 client.on(Events.UserUpdate, async (user) => {
+  console.log("UserUpdate", user);
   const { id, username, globalName, avatar } = user;
 
   const firstName = globalName?.split(" ")[0] ?? null;
@@ -130,6 +133,7 @@ client.on(Events.UserUpdate, async (user) => {
 });
 
 client.on(Events.ChannelCreate, async (channel) => {
+  console.log("ChannelCreate", channel);
   const { id, type, guildId, name, permissionOverwrites } = channel;
 
   const integration = await getIntegration({
@@ -169,6 +173,7 @@ client.on(Events.ChannelCreate, async (channel) => {
 });
 
 client.on(Events.ChannelUpdate, async (channel) => {
+  console.log("ChannelUpdate", channel);
   const { id, name, guildId } = channel as NonThreadGuildBasedChannel;
 
   const integration = await getIntegration({
@@ -194,6 +199,7 @@ client.on(Events.ChannelUpdate, async (channel) => {
 });
 
 client.on(Events.ChannelDelete, async (channel) => {
+  console.log("ChannelDelete", channel);
   const { id, guildId } = channel as NonThreadGuildBasedChannel;
 
   const integration = await getIntegration({
@@ -331,6 +337,7 @@ client.on(Events.MessageCreate, async (message) => {
 });
 
 client.on(Events.MessageUpdate, async (message) => {
+  console.log("MessageUpdate", message);
   const { id, guildId, reactions } = message;
   const { message: updatedMessage } = reactions;
   const { content } = updatedMessage;
@@ -362,6 +369,7 @@ client.on(Events.MessageUpdate, async (message) => {
 });
 
 client.on(Events.MessageDelete, async (message) => {
+  console.log("MessageDelete", message);
   const { id, guildId, author } = message;
   const { id: discord_id } = author ?? {};
 
@@ -435,6 +443,7 @@ client.on(Events.ThreadCreate, async (thread) => {
 });
 
 client.on(Events.ThreadDelete, async (thread) => {
+  console.log("ThreadDelete", thread);
   const { id, guildId, ownerId } = thread;
 
   const integration = await getIntegration({
@@ -468,6 +477,7 @@ client.on(Events.ThreadDelete, async (thread) => {
 });
 
 client.on(Events.GuildRoleCreate, async (role) => {
+  console.log("GuildRoleCreate", role);
   const { id, name, guild } = role;
   const { id: guildId } = guild;
 
@@ -490,6 +500,7 @@ client.on(Events.GuildRoleCreate, async (role) => {
 });
 
 client.on(Events.GuildRoleUpdate, async (_, role) => {
+  console.log("GuildRoleUpdate", role);
   const { id, name, guild, color } = role;
   const { id: guildId } = guild;
 
@@ -518,6 +529,7 @@ client.on(Events.GuildRoleUpdate, async (_, role) => {
 });
 
 client.on(Events.GuildRoleDelete, async (role) => {
+  console.log("GuildRoleDelete", role);
   const { id, guild } = role;
   const { id: guildId } = guild;
 
