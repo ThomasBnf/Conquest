@@ -42,6 +42,7 @@ export const createManyArchivedThreads = async ({
     const threads = responseThreads.threads as APIThreadChannel[];
 
     for (const thread of threads) {
+      console.log("archived thread", thread);
       const { name, parent_id, owner_id: discord_id, thread_metadata } = thread;
       const { create_timestamp } = thread_metadata ?? {};
 
@@ -70,6 +71,7 @@ export const createManyArchivedThreads = async ({
         if (!channel) continue;
 
         for (const message of messages) {
+          console.log("archived thread message", message);
           const {
             type,
             content,

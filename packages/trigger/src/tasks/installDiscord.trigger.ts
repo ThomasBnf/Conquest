@@ -40,6 +40,7 @@ export const installDiscord = schemaTask({
     await createManyThreads({ discord });
 
     for (const channel of createdChannels ?? []) {
+      console.log("channel", channel);
       await createManyArchivedThreads({ discord, channel });
 
       if (!channel.external_id) continue;
