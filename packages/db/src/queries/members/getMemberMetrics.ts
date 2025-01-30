@@ -51,7 +51,7 @@ export const getMemberMetrics = async ({ activities, today }: Props) => {
     : "No activity";
 
   const presence = getMemberPresence(activities, today);
-  const level = Math.max(maxWeight, presence);
+  const level = maxWeight > presence ? maxWeight : presence;
 
   return {
     pulse,
