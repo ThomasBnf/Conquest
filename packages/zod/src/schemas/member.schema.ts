@@ -1,6 +1,5 @@
 import type { members } from "@prisma/client";
 import { z } from "zod";
-import { GENDER } from "../enum/gender.enum";
 import { SOURCE } from "../enum/source.enum";
 import { CompanySchema } from "./company.schema";
 
@@ -40,7 +39,6 @@ export const MemberSchema = z.object({
   level: z.number(),
   pulse: z.number(),
   presence: z.number(),
-  gender: GENDER.nullable(),
   source: SOURCE,
   logs: z.array(LogSchema),
   custom_fields: z.array(CustomFieldSchema),

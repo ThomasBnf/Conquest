@@ -1,4 +1,3 @@
-import { GENDER } from "@conquest/zod/enum/gender.enum";
 import { z } from "zod";
 
 export const V1CreateMemberSchema = z.object({
@@ -16,7 +15,6 @@ export const V1CreateMemberSchema = z.object({
   secondary_emails: z.array(z.string()).optional(),
   phones: z.array(z.string()).optional(),
   tags: z.array(z.string()).optional(),
-  gender: GENDER.nullable().optional(),
   company_id: z.string().cuid().nullable().optional(),
   deleted_at: z.coerce.date().nullable().optional(),
   created_at: z.coerce.date().optional(),
@@ -38,7 +36,6 @@ export const V1UpdateMemberSchema = z.object({
   secondary_emails: z.array(z.string()).optional(),
   phones: z.array(z.string()).optional(),
   tags: z.array(z.string()).optional(),
-  gender: GENDER.nullable().optional(),
   company_id: z.string().cuid().nullable().optional(),
   deleted_at: z.coerce.date().nullable().optional(),
 });

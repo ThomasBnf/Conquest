@@ -25,11 +25,6 @@ enum SOURCE {
   ZENDESK
 }
 
-enum GENDER {
-  MALE
-  FEMALE
-}
-
 enum STATUS {
   ENABLED
   CONNECTED
@@ -246,7 +241,6 @@ model members {
   level              Int          @default(0)
   pulse              Int          @default(0)
   presence           Int          @default(0)
-  gender             GENDER?
   source             SOURCE
   logs               Json[]       @default([])
   custom_fields      Json[]       @default([])

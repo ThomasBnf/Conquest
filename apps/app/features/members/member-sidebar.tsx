@@ -4,7 +4,6 @@ import { updateMember } from "@/actions/members/updateMember";
 import { SourceBadge } from "@/components/badges/source-badge";
 import { EditableCompany } from "@/components/editable/editable-company";
 import { EditableEmails } from "@/components/editable/editable-emails";
-import { EditableGender } from "@/components/editable/editable-gender";
 import { EditableInput } from "@/components/editable/editable-input";
 import { EditableLink } from "@/components/editable/editable-link";
 import { EditableLocale } from "@/components/editable/editable-locale";
@@ -52,7 +51,6 @@ export const MemberSidebar = ({ member, tags }: Props) => {
     avatar_url,
     linkedin_url,
     locale,
-    gender,
     source,
     custom_fields,
     first_activity,
@@ -150,12 +148,6 @@ export const MemberSidebar = ({ member, tags }: Props) => {
         </div>
         <Separator />
         <div className="space-y-2 p-4">
-          <FieldCard icon="Users" label="Gender">
-            <EditableGender
-              gender={gender}
-              onUpdate={(value) => onUpdateMember("gender", value)}
-            />
-          </FieldCard>
           <FieldCard icon="User" label="First name">
             <EditableInput
               defaultValue={first_name}

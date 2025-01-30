@@ -155,7 +155,6 @@ async function main() {
       job_title: faker.person.jobTitle(),
       avatar_url: faker.image.avatar(),
       locale,
-      gender: faker.helpers.arrayElement(["MALE", "FEMALE"]),
       source: "DISCOURSE" as const,
       workspace_id: workspace.id,
       created_at: createdAt,
