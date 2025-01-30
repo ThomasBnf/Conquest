@@ -16,5 +16,7 @@ export const getChannel = async ({ external_id, workspace_id }: Props) => {
     },
   });
 
+  if (!channel) return null;
+
   return ChannelSchema.parse(channel);
 };

@@ -2,7 +2,6 @@ import { prisma } from "@conquest/db/prisma";
 import { createActivity } from "@conquest/db/queries/activities/createActivity";
 import { getActivity } from "@conquest/db/queries/activities/getActivity";
 import { getChannel } from "@conquest/db/queries/channels/getChannel";
-// import { createFiles } from "@conquest/db/queries/files/createFiles";
 import { getIntegration } from "@conquest/db/queries/integrations/getIntegration";
 import { getMember } from "@conquest/db/queries/members/getMember";
 import { upsertMember } from "@conquest/db/queries/members/upsertMember";
@@ -307,7 +306,7 @@ client.on(Events.MessageCreate, async (message) => {
     }
   }
 
-  if (type === 0) {
+  if (type === 0 && channel) {
     try {
       const createdActivity = await createActivity({
         external_id: id,
@@ -327,7 +326,7 @@ client.on(Events.MessageCreate, async (message) => {
     }
   }
 
-  if (type === 19) {
+  if (type === 19 && channel) {
     try {
       const createdActivity = await createActivity({
         external_id: id,
