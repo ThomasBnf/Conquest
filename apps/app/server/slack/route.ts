@@ -131,6 +131,8 @@ export const slack = new Hono()
               workspace_id,
             });
 
+            if (!channel) return c.json({ status: 200 });
+
             const activity = await createActivity({
               external_id: ts,
               activity_type_key: thread_ts ? "slack:reply" : "slack:post",
@@ -184,6 +186,8 @@ export const slack = new Hono()
                 workspace_id,
               });
 
+              if (!channel) return c.json({ status: 200 });
+
               await deleteListReactions({
                 channel_id: channel.id,
                 react_to: deleted_ts,
@@ -217,6 +221,8 @@ export const slack = new Hono()
             workspace_id,
           });
 
+          if (!channel) return c.json({ status: 200 });
+
           await createActivity({
             external_id: null,
             activity_type_key: "slack:reaction",
@@ -247,6 +253,8 @@ export const slack = new Hono()
             external_id: channel_id,
             workspace_id,
           });
+
+          if (!channel) return c.json({ status: 200 });
 
           await prisma.activities.deleteMany({
             where: {

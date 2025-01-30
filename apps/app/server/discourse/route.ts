@@ -382,7 +382,7 @@ export const discourse = new Hono().post("/", async (c) => {
         workspace_id,
       });
 
-      channel_name = `${parent.name} - ${name}`;
+      channel_name = `${parent?.name} - ${name}`;
     }
 
     await createChannel({
@@ -405,7 +405,7 @@ export const discourse = new Hono().post("/", async (c) => {
         workspace_id,
       });
 
-      channel_name = `${parent.name} - ${name}`;
+      channel_name = `${parent?.name} - ${name}`;
     }
 
     await updateChannel({
