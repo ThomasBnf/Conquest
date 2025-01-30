@@ -218,6 +218,7 @@ client.on(Events.ChannelDelete, async (channel) => {
 });
 
 client.on(Events.MessageCreate, async (message) => {
+  console.log("MessageCreate", message);
   const {
     id,
     channelId,
@@ -400,6 +401,7 @@ client.on(Events.MessageDelete, async (message) => {
 });
 
 client.on(Events.ThreadCreate, async (thread) => {
+  console.log("ThreadCreate", thread);
   const { id, parentId, guildId, name, ownerId } = thread;
 
   if (!guildId || !parentId) return;
@@ -559,6 +561,7 @@ client.on(Events.GuildRoleDelete, async (role) => {
 });
 
 client.on(Events.MessageReactionAdd, async (reaction, user) => {
+  console.log("MessageReactionAdd", reaction, user);
   const { message, emoji } = reaction;
   const { id, guildId, channelId } = message;
   const { id: discord_id } = user;
@@ -590,6 +593,7 @@ client.on(Events.MessageReactionAdd, async (reaction, user) => {
 });
 
 client.on(Events.MessageReactionRemove, async (reaction, user) => {
+  console.log("MessageReactionRemove", reaction, user);
   const { message, emoji } = reaction;
   const { id: messageId, guildId } = message;
   const { id: discord_id } = user;
