@@ -9,15 +9,44 @@ export const EXCLUDED_CHANNEL_TYPES = [
   ChannelType.GuildVoice,
 ] as number[];
 
-const VIEW_CHANNEL_PERMISSION = BigInt(PermissionFlagsBits.ViewChannel);
-const HAS_HISTORY_PERMISSION = BigInt(PermissionFlagsBits.ReadMessageHistory);
+const REQUIRED_PERMISSIONS = {
+  view: BigInt(PermissionFlagsBits.ViewChannel),
+  history: BigInt(PermissionFlagsBits.ReadMessageHistory),
+} as const;
+
+const hasRequiredPermission = (
+  permission: bigint,
+  requiredPermission: bigint,
+) => (permission & requiredPermission) === requiredPermission;
 
 export const hasPermission = (channel: APIGuildCategoryChannel) => {
-  return !channel.permission_overwrites?.some(
-    (permission) =>
-      (BigInt(permission.deny) & VIEW_CHANNEL_PERMISSION) ===
-        VIEW_CHANNEL_PERMISSION &&
-      (BigInt(permission.deny) & HAS_HISTORY_PERMISSION) ===
-        HAS_HISTORY_PERMISSION,
-  );
+  if (!channel.permission_overwrites?.length) return true;
+
+  return channel.permission_overwrites.every((permission) => {
+    const allow = BigInt(permission.allow);
+    const deny = BigInt(permission.deny);
+
+    const hasAllowedView = hasRequiredPermission(
+      allow,
+      REQUIRED_PERMISSIONS.view,
+    );
+    const hasAllowedHistory = hasRequiredPermission(
+      allow,
+      REQUIRED_PERMISSIONS.history,
+    );
+    const hasDeniedView = hasRequiredPermission(
+      deny,
+      REQUIRED_PERMISSIONS.view,
+    );
+    const hasDeniedHistory = hasRequiredPermission(
+      deny,
+      REQUIRED_PERMISSIONS.history,
+    );
+
+    return (
+      hasAllowedView ||
+      hasAllowedHistory ||
+      (!hasDeniedView && !hasDeniedHistory)
+    );
+  });
 };
