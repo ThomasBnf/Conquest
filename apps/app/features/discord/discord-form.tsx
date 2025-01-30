@@ -18,8 +18,10 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { LoadingChannels } from "../integrations/loading-channels";
 import { LoadingMessage } from "../integrations/loading-message";
-import { EXCLUDED_CHANNEL_TYPES } from "./constant";
-import { hasViewPermission } from "./helpers/hasViewPermission";
+import {
+  EXCLUDED_CHANNEL_TYPES,
+  hasPermission,
+} from "./helpers/hasPermissions";
 
 type Props = {
   loading: boolean;
@@ -39,8 +41,7 @@ export const DiscordForm = ({ loading, setLoading }: Props) => {
   const categoriesChannels = discordChannels
     ?.filter(
       (channel) =>
-        channel.type === ChannelType.GuildCategory &&
-        hasViewPermission(channel),
+        channel.type === ChannelType.GuildCategory && hasPermission(channel),
     )
     .sort((a, b) => a.position - b.position);
 
@@ -50,7 +51,7 @@ export const DiscordForm = ({ loading, setLoading }: Props) => {
         (category) => category.id === channel.parent_id,
       ) &&
       !EXCLUDED_CHANNEL_TYPES.includes(channel.type) &&
-      hasViewPermission(channel),
+      hasPermission(channel),
   );
 
   const isAllSelected =
