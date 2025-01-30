@@ -74,7 +74,7 @@ export const TopChannels = ({ from, to }: Props) => {
                       y={yPos}
                       className="font-medium"
                     >
-                      #{value}
+                      # {value}
                     </text>
                   );
                 }}

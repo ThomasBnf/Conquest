@@ -18,11 +18,8 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { LoadingChannels } from "../integrations/loading-channels";
 import { LoadingMessage } from "../integrations/loading-message";
-
-const EXCLUDED_CHANNEL_TYPES = [
-  ChannelType.GuildStageVoice,
-  ChannelType.GuildVoice,
-] as number[];
+import { EXCLUDED_CHANNEL_TYPES } from "./constant";
+import { hasViewPermission } from "./helpers/hasViewPermission";
 
 type Props = {
   loading: boolean;
@@ -43,9 +40,7 @@ export const DiscordForm = ({ loading, setLoading }: Props) => {
     ?.filter(
       (channel) =>
         channel.type === ChannelType.GuildCategory &&
-        !channel.permission_overwrites?.some(
-          (permission) => permission.deny === "1024",
-        ),
+        hasViewPermission(channel),
     )
     .sort((a, b) => a.position - b.position);
 
@@ -55,9 +50,7 @@ export const DiscordForm = ({ loading, setLoading }: Props) => {
         (category) => category.id === channel.parent_id,
       ) &&
       !EXCLUDED_CHANNEL_TYPES.includes(channel.type) &&
-      !channel.permission_overwrites?.some(
-        (permission) => permission.deny === "1024",
-      ),
+      hasViewPermission(channel),
   );
 
   const isAllSelected =
