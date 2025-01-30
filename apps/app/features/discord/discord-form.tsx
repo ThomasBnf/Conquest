@@ -12,7 +12,7 @@ import {
   type APIGuildCategoryChannel,
   ChannelType,
 } from "discord-api-types/v10";
-import { Hash } from "lucide-react";
+import { Hash, InfoIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -120,6 +120,14 @@ export const DiscordForm = ({ loading, setLoading }: Props) => {
           <LoadingChannels />
         ) : (
           <>
+            <div className="flex w-fit items-center gap-2 rounded-md border bg-muted p-2">
+              <InfoIcon className="text-muted-foreground" size={16} />
+              <p>
+                Missing channels? Verify that your channel has the required
+                permissions: <span className="font-medium">View Channel</span>{" "}
+                and <span className="font-medium">Read Message History</span>
+              </p>
+            </div>
             <div className="flex flex-col gap-4">
               {categoriesChannels?.map((category) => {
                 const hasSubChannels = subChannels?.some(

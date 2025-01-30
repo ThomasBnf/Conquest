@@ -39,12 +39,9 @@ export const createManyArchivedThreads = async ({
       `${Routes.channelThreads(external_id, "public")}?${params.toString()}`,
     )) as APIThreadList;
 
-    console.log(responseThreads);
-
     const threads = responseThreads.threads as APIThreadChannel[];
 
     for (const thread of threads) {
-      console.log("archived thread", thread);
       const { name, parent_id, owner_id: discord_id, thread_metadata } = thread;
       const { create_timestamp } = thread_metadata ?? {};
 
