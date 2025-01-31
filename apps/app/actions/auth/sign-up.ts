@@ -46,9 +46,14 @@ export const signUp = safeAction
         hashed_password,
         workspace_id: workspace.id,
       },
+      omit: {
+        hashed_password: true,
+      },
     });
 
     await logIn({ email, password, redirectTo: "/" });
 
-    return UserSchema.parse(user);
+    return UserSchema.omit({
+      hashed_password: true,
+    }).parse(user);
   });

@@ -5,7 +5,7 @@ import { SignOut } from "@/features/onboarding/sign-out";
 import type { UserWithWorkspace } from "@conquest/zod/schemas/user.schema";
 
 type Props = {
-  user: UserWithWorkspace;
+  user: Omit<UserWithWorkspace, "hashed_password">;
   children: React.ReactNode;
 };
 

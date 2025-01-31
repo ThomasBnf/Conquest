@@ -11,7 +11,12 @@ export const updateUser = async ({ id }: Props) => {
     data: {
       last_seen: new Date(),
     },
+    omit: {
+      hashed_password: true,
+    },
   });
 
-  return UserSchema.parse(user);
+  return UserSchema.omit({
+    hashed_password: true,
+  }).parse(user);
 };

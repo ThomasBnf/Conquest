@@ -19,9 +19,14 @@ export const getCurrentUser = async () => {
         },
       },
     },
+    omit: {
+      hashed_password: true,
+    },
   });
 
   if (!user) redirect("/auth/login");
 
-  return UserWithWorkspaceSchema.parse(user);
+  return UserWithWorkspaceSchema.omit({
+    hashed_password: true,
+  }).parse(user);
 };

@@ -7,7 +7,7 @@ import type { List } from "@conquest/zod/schemas/list.schema";
 import type { UserWithWorkspace } from "@conquest/zod/schemas/user.schema";
 
 type Props = {
-  user: UserWithWorkspace;
+  user: Omit<UserWithWorkspace, "hashed_password">;
   defaultOpen: boolean;
   lists: List[];
   children: React.ReactNode;

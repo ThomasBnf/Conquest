@@ -8,7 +8,12 @@ type Props = {
 export const getUser = async ({ id }: Props) => {
   const user = await prisma.users.findUnique({
     where: { id },
+    omit: {
+      hashed_password: true,
+    },
   });
 
-  return UserSchema.parse(user);
+  return UserSchema.omit({
+    hashed_password: true,
+  }).parse(user);
 };

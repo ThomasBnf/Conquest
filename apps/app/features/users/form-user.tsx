@@ -19,7 +19,7 @@ import { toast } from "sonner";
 import { FormUserSchema } from "./schema/form.schema";
 
 type Props = {
-  user: UserWithWorkspace;
+  user: Omit<UserWithWorkspace, "hashed_password">;
 };
 
 export const FormUser = ({ user }: Props) => {

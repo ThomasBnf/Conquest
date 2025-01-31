@@ -21,11 +21,16 @@ export const getAuthUser = async (c: Context) => {
         },
       },
     },
+    omit: {
+      hashed_password: true,
+    },
   });
 
   if (!user) {
     throw new Error("User not found!");
   }
 
-  return UserWithWorkspaceSchema.parse(user);
+  return UserWithWorkspaceSchema.omit({
+    hashed_password: true,
+  }).parse(user);
 };

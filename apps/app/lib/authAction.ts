@@ -21,7 +21,16 @@ export const authAction = safeAction.use(async ({ next }) => {
         },
       },
     },
+    omit: {
+      hashed_password: true,
+    },
   });
 
-  return next({ ctx: { user: UserWithWorkspaceSchema.parse(user) } });
+  return next({
+    ctx: {
+      user: UserWithWorkspaceSchema.omit({
+        hashed_password: true,
+      }).parse(user),
+    },
+  });
 });

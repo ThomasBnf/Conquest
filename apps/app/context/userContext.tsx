@@ -11,7 +11,7 @@ import type { MembersPreferences } from "@conquest/zod/schemas/workspace.schema"
 import * as React from "react";
 
 type userContext = {
-  user: UserWithWorkspace | undefined;
+  user: Omit<UserWithWorkspace, "hashed_password"> | undefined;
   slug: string | undefined;
   discord: DiscordIntegration | undefined;
   discourse: DiscourseIntegration | undefined;
@@ -25,7 +25,7 @@ type userContext = {
 const UserContext = React.createContext<userContext>({} as userContext);
 
 type Props = {
-  user: UserWithWorkspace | undefined;
+  user: Omit<UserWithWorkspace, "hashed_password"> | undefined;
   children: React.ReactNode;
 };
 

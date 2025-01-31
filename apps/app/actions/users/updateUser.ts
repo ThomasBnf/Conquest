@@ -16,8 +16,13 @@ export const updateUser = authAction
         id: user?.id,
       },
       data: parsedInput,
+      omit: {
+        hashed_password: true,
+      },
     });
 
     revalidatePath(`/app/${slug}/settings`);
-    return UserSchema.parse(updatedUser);
+    return UserSchema.omit({
+      hashed_password: true,
+    }).parse(updatedUser);
   });
