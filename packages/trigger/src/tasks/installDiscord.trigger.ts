@@ -27,8 +27,6 @@ export const installDiscord = schemaTask({
     const { workspace_id, external_id } = discord;
     if (!external_id) return;
 
-    console.log("channels", channels);
-
     const createdChannels = await createManyChannels({ discord, channels });
 
     await createManyActivityTypes({
@@ -42,10 +40,7 @@ export const installDiscord = schemaTask({
     await createManyThreads({ discord });
 
     for (const channel of createdChannels ?? []) {
-      console.log(
-        "channel",
-        channels.find((c) => c.id === channel.external_id),
-      );
+      console.log("channel", channel);
 
       await createManyArchivedThreads({ discord, channel });
 

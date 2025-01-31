@@ -67,6 +67,7 @@ export const createManyThreads = async ({ discord }: Props) => {
         } = message;
         const { content: message_content } = referenced_message ?? {};
 
+        if (author.bot) continue;
         if (sticker_items && sticker_items.length > 0) continue;
 
         if (message.id === firstMessage?.id) {

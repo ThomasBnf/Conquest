@@ -24,8 +24,6 @@ export const signUp = safeAction
       },
     });
 
-    console.log(existingUser);
-
     if (existingUser) return;
 
     const workspace = await prisma.workspaces.create({

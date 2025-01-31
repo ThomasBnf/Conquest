@@ -43,6 +43,8 @@ export const listChannelMessages = async ({
       const { author } = message;
       const discord_id = author.id;
 
+      if (author.bot) continue;
+
       const member =
         (await getMember({ discord_id, workspace_id })) ??
         (await createMember({ discord, discord_id }));
