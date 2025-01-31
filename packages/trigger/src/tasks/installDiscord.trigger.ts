@@ -1,10 +1,8 @@
 import { createManyActivityTypes } from "@conquest/db/queries/activity-type/createManyActivityTypes";
-import { createManyArchivedThreads } from "@conquest/db/queries/discord/createManyArchivedThreads";
 import { createManyChannels } from "@conquest/db/queries/discord/createManyChannels";
 import { createManyMembers } from "@conquest/db/queries/discord/createManyMembers";
 import { createManyTags } from "@conquest/db/queries/discord/createManyTags";
 import { createManyThreads } from "@conquest/db/queries/discord/createManyThreads";
-import { listChannelMessages } from "@conquest/db/queries/discord/listChannelMessages";
 import { deleteIntegration } from "@conquest/db/queries/integrations/deleteIntegration";
 import { updateIntegration } from "@conquest/db/queries/integrations/updateIntegration";
 import { DiscordIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
@@ -13,7 +11,6 @@ import type { APIGuildCategoryChannel } from "discord-api-types/v10";
 import { z } from "zod";
 import { DISCORD_ACTIVITY_TYPES } from "../constants";
 import { calculateMembersLevel } from "./calculateMembersLevel.trigger";
-import { integrationSuccessEmail } from "./integrationSuccessEmail.trigger";
 
 export const installDiscord = schemaTask({
   id: "install-discord",
@@ -27,6 +24,8 @@ export const installDiscord = schemaTask({
     const { workspace_id, external_id } = discord;
     if (!external_id) return;
 
+    console.log(channels);
+
     const createdChannels = await createManyChannels({ discord, channels });
 
     await createManyActivityTypes({
@@ -39,25 +38,25 @@ export const installDiscord = schemaTask({
     await createManyMembers({ discord, tags });
     await createManyThreads({ discord });
 
-    for (const channel of createdChannels ?? []) {
-      console.log("channel", channel);
+    // for (const channel of createdChannels ?? []) {
+    //   console.log("channel", channel);
 
-      await createManyArchivedThreads({ discord, channel });
+    //   await createManyArchivedThreads({ discord, channel });
 
-      if (!channel.external_id) continue;
+    //   if (!channel.external_id) continue;
 
-      await listChannelMessages({
-        discord,
-        channel,
-        workspace_id,
-      });
-    }
+    //   await listChannelMessages({
+    //     discord,
+    //     channel,
+    //     workspace_id,
+    //   });
+    // }
 
-    await calculateMembersLevel.trigger({ workspace_id });
-    await integrationSuccessEmail.trigger({
-      integration: discord,
-      workspace_id,
-    });
+    // await calculateMembersLevel.trigger({ workspace_id });
+    // await integrationSuccessEmail.trigger({
+    //   integration: discord,
+    //   workspace_id,
+    // });
   },
   onSuccess: async ({ discord }) => {
     console.log(usage.getCurrent());

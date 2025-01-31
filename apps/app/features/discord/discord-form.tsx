@@ -2,6 +2,7 @@ import { updateIntegration } from "@/actions/integrations/updateIntegration";
 import { listChannels } from "@/client/channels/listChannels";
 import { EXCLUDED_CHANNEL_TYPES } from "@/client/discord/excluded-channels";
 import { listDiscordChannels } from "@/client/discord/listChannels";
+import { IconDoc } from "@/components/custom/icon-doc";
 import { useUser } from "@/context/userContext";
 import type { installDiscord } from "@conquest/trigger/tasks/installDiscord.trigger";
 import { Button } from "@conquest/ui/button";
@@ -13,7 +14,7 @@ import {
   type APIGuildCategoryChannel,
   ChannelType,
 } from "discord-api-types/v10";
-import { Hash, InfoIcon } from "lucide-react";
+import { Hash } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -98,22 +99,12 @@ export const DiscordForm = ({ loading, setLoading }: Props) => {
       <Separator className="my-4" />
       <div className="space-y-4">
         <div>
-          <p className="mb-2 font-medium text-base">Channels</p>
-          <div className="mb-2 flex w-fit gap-2 text-balance rounded-md border bg-muted p-2">
-            <InfoIcon
-              className="mt-0.5 shrink-0 text-muted-foreground"
-              size={16}
-            />
-            <p>
-              Missing channels? Verify that the
-              <span className="font-medium"> @everyone</span> role has the
-              required permissions:
-              <span className="font-medium"> View Channel</span> and
-              <span className="font-medium"> Read Message History</span>. If
-              not, add the "conquest" role to the channel with these permissions
-              enabled.
-            </p>
-          </div>
+          <p className="font-medium text-base">Channels</p>
+          <IconDoc
+            url="http://docs.useconquest.com/integrations/discord#setup-guide"
+            title="Missing channels?"
+            className="my-2"
+          />
           <Button
             variant="outline"
             size="xs"

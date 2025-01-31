@@ -5,4 +5,129 @@ icon: "discord"
 iconType: "solid"
 ---
 
-Soon...
+The Conquest Discord integration enables you to access and manage community data from your Discord server. Gain insights into member activities, threads, messages, replies, reactions history, all in one place.
+
+
+
+## Data collection
+
+### Members
+
+The integration collects information about:
+- **Full Name**
+- **Username**
+- **Avatar** if provided
+- **Join Date**
+- **Roles**
+
+We do not collect:
+- **Email**
+
+
+### Conversations
+
+- **Active Threads** from public channels
+- **Archived Threads** from public channels
+- **Messages** from public channels
+- **Replies** from public channels
+- **Reactions** from public channels
+- **Files** from public channels
+
+## Activity Types
+
+When you connect your Discord server, activity types are automatically generated and configured.
+
+<Tip>
+  Activity weights can be customized to fit your community's scoring system.
+</Tip>
+
+- **Invitation** - 7 weight
+- **Write a post** - 6 weight
+- **Reply to post** - 5 weight
+- **Join Discord community** - 4 weight
+- **Add reaction** - 0 weight
+
+## Real-Time Updates
+
+Once connected, Conquest syncs the following events in real-time:
+- **Members joining the workspace**
+- **Threads, messages, replies, reactions, and files shared in public channels**
+- **Creation, updates, and deletion of public channels**
+
+## Setup guide
+
+<Steps>
+  <Step title="Connect Your Workspace">
+    1. Navigate to **Settings** > **Integrations**.
+    2. Select **Discord**.
+    3. Click **"Enable"** to start the connection process.
+
+    <Frame>
+      ![Discord Connection](/images/discord-enable.png)
+    </Frame>
+  </Step>
+
+  <Step title="Authorize Access">
+    Complete the OAuth process on Discord.
+    <Tip>
+      You must be an admin of the Discord server.
+    </Tip>
+
+    <Frame>
+      ![Discord OAuth](/images/discord-oauth.png)
+    </Frame>
+  </Step>
+  
+  <Step title="Select Channels">
+    Once authorized, you'll be redirected to Conquest to select public channels for data collection.
+
+    1. Select the channels you want to collect data from
+    2. Click **"Let's Start"**
+
+
+    ### Missing channels? 
+      Verify that the **@everyone** role has the required permissions: **"View Channel"** and **"Read Message History"**. 
+      If not, and you are not able to, add the **"Conquest"** role to the channel with these permissions enabled.
+
+
+    <Frame>
+      ![Discord view channel](/images/discord-view-channel.png)
+    </Frame>
+    <br/>
+     <Frame>
+      ![Discord read message history](/images/discord-read-message-history.png)
+    </Frame>
+  </Step>
+
+  <Step title="Data Collection">
+    Conquest will begin importing historical data.
+    <Frame>
+      ![Discord Collect](/images/discord-collect.png)
+    </Frame>
+  </Step>
+</Steps>
+
+<Warning>
+  The data collection duration depends on your community size and can take from a few minutes to several hours to complete.
+</Warning>
+
+## FAQ
+
+<AccordionGroup>
+  <Accordion title="Why my Discord server is not visible?">
+    - Confirm that you are an admin of the Discord server
+    - Ensure you are logged into the correct Discord account
+  </Accordion>
+</AccordionGroup>
+
+## Need Help?
+
+<Card title="Contact Support" icon="envelope">
+  For any issues with your integration, our support team is here to help:
+  [support@useconquest.com](mailto:support@useconquest.com).
+</Card>
+
+<Card title="Join the Community" icon="slack">
+  Get additional support and answers by connecting with other Conquest users in our community:
+  [Slack](https://join.slack.com/t/useconquest/shared_invite/zt-2x4fg4fut-7k0G3_D649TkfPc5WIPdgA).
+</Card>

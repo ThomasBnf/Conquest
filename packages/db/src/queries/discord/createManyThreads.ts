@@ -36,6 +36,13 @@ export const createManyThreads = async ({ discord }: Props) => {
     let before: string | undefined = undefined;
     let firstMessage: APIMessage | undefined;
 
+    const channel = await getChannel({
+      external_id: parent_id,
+      workspace_id,
+    });
+
+    if (!channel) continue;
+
     while (true) {
       const params = new URLSearchParams({
         limit: "100",
@@ -47,13 +54,6 @@ export const createManyThreads = async ({ discord }: Props) => {
       )) as APIMessage[];
 
       if (messages.length < 100) firstMessage = messages.at(-1);
-
-      const channel = await getChannel({
-        external_id: parent_id,
-        workspace_id,
-      });
-
-      if (!channel) continue;
 
       for (const message of messages) {
         const {
