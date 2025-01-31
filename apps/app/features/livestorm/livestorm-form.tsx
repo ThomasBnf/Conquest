@@ -105,10 +105,13 @@ export const LivestormForm = ({ loading, setLoading }: Props) => {
               </FormItem>
             )}
           />
-          {loading && <LoadingMessage />}
-          <Button loading={loading} disabled={loading}>
-            Let's start!
-          </Button>
+          {loading ? (
+            <LoadingMessage />
+          ) : (
+            <Button loading={loading} disabled={loading}>
+              Let's start!
+            </Button>
+          )}
         </form>
       </Form>
     </>

@@ -6,7 +6,7 @@ import { wait } from "@trigger.dev/sdk/v3";
 import { getLocaleByAlpha2 } from "country-locale-map";
 import { createActivity } from "../../queries/activities/createActivity";
 import { listPeopleFromSession } from "../../queries/livestorm/listPeopleFromSession";
-import { createMember } from "../members/createMember";
+import { upsertMember } from "../members/upsertMember";
 
 type Props = {
   livestorm: LivestormIntegration;
@@ -51,9 +51,9 @@ export const createManyPeoples = async ({
 
     const locale = getLocaleByAlpha2(ip_country_code) ?? null;
 
-    const member = await createMember({
+    const member = await upsertMember({
+      id,
       data: {
-        livestorm_id: id,
         first_name,
         last_name,
         primary_email: email,
