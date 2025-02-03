@@ -3,51 +3,66 @@ title: "Livestorm Integration"
 description: "Connect your Livestorm workspace to access all your webinar sessions and participant data."
 ---
 
-The Conquest Livestorm integration enables you to connect your Livestorm workspace and access all your webinar sessions and participant data. 
+The Conquest Livestorm integration enables you to connect your Livestorm workspace and access all your webinar sessions and participant data.
 Track registrations, attendance, co-hosting information from your webinars in one centralized place.
 
 ## Data collection
 
+The integration collects information about:
+
 ### Members
 
-The integration collects information about:
-- **Full Name**
-- **Email**
-- **Avatar** if provided
-- **Locale**
+* **Full Name**
+
+* **Email**
+
+* **Avatar** if provided
+
+* **Locale**
 
 ### Events
 
-- **Sessions details**
-- **Registrants**
-- **Co-hosts**
-- **Attendees**
+* **Sessions details**
+
+* **Registrants**
+
+* **Co-hosts**
+
+* **Attendees**
 
 ## Activity Types
 
-When you connect your Livestorm workspace, activity types are automatically generated and configured.
+When you connect your Livestorm workspace, activity types are automatically generated and integrated.
 
 <Tip>
   Activity weights can be customized to fit your community's scoring system.
 </Tip>
 
-- **Co-host a webinar** - 10 weight
-- **Attend a webinar** - 8 weight
-- **Register for a webinar** - 5 weight
+* **Co-host a webinar** - 10 weight
+
+* **Attend a webinar** - 8 weight
+
+* **Register for a webinar** - 5 weight
 
 ## Real-Time Updates
 
 Once connected, Conquest syncs the following events in real-time:
-- **Member registration**
-- **Member attendance**
-- **Member co-hosting**
+
+* **Member registration**
+
+* **Member attendance**
+
+* **Member co-hosting**
 
 ## Merging Members
 
 <Tip>
   When new Livestorm activity occurs, we automatically:
+
   1. Check if the member exists in your Conquest workspace
+
   2. Create a new member if  doesn't exist
+
   3. Merge with an existing member if we find a matching email
 </Tip>
 
@@ -56,7 +71,9 @@ Once connected, Conquest syncs the following events in real-time:
 <Steps>
   <Step title="Connect Your Workspace">
     1. Navigate to **Settings** > **Integrations**.
+
     2. Select **Livestorm**.
+
     3. Click **"Enable"** to start the connection process.
 
     <Frame>
@@ -66,11 +83,12 @@ Once connected, Conquest syncs the following events in real-time:
 
   <Step title="Authorize Access">
     Complete the OAuth process on Discord.
+
     <Tip>
       You must be an admin of the Discord server.
     </Tip>
   </Step>
-  
+
   <Step title="Filter Events">
     Once authorized, you'll be redirected to Conquest.
 
@@ -87,9 +105,10 @@ Once connected, Conquest syncs the following events in real-time:
 
   <Step title="Data Collection">
     Conquest will begin importing historical data.
+
     {/* <Frame>
-      ![Discord Collect](/images/discord-collect.png)
-    </Frame> */}
+          ![Discord Collect](/images/discord-collect.png)
+        </Frame> */}
   </Step>
 </Steps>
 

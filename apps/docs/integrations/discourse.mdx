@@ -13,58 +13,84 @@ The Conquest Discourse integration enables you to access and manage community da
 
 ## Data Collection
 
+The integration collects information about:
+
 ### Members
 
-The integration collects information about:
-- **Full Name**
-- **Username** 
-- **Email**
-- **Job Title** if provided
-- **Avatar** if provided
-- **Locale** if provided
-- **Tags**
-- **User Fields**
-- **Joined Date**
+* **Full Name**
+
+* **Username**
+
+* **Email**
+
+* **Job Title** if provided
+
+* **Avatar** if provided
+
+* **Locale** if provided
+
+* **Tags**
+
+* **User Fields**
+
+* **Joined Date**
 
 ### Community Activity
 
-- **Topics** from all categories
-- **Replies** to topics
-- **Reactions** on posts
-- **Replies marked as solved**
-- **Invitations**
+* **Topics** from all categories
+
+* **Replies** to topics
+
+* **Reactions** on posts
+
+* **Replies marked as solved**
+
+* **Invitations**
 
 ## Activity Types
 
-When you connect your Discourse workspace, activity types are automatically generated and configured.
+When you connect your Discourse workspace, activity types are automatically generated and integrated.
 
 <Tip>
   Activity weights can be customized to fit your community's scoring system.
 </Tip>
 
-- **Invitation** - 7 weight
-- **Post marked as solved** - 7 weight
-- **Write a topic** - 6 weight
-- **Reply to topic** - 5 weight
-- **Join Discourse community** - 4 weight
-- **Add reaction** - 0 weight
-- **Login** - 0 weight
+* **Invitation** - 7 weight
+
+* **Post marked as solved** - 7 weight
+
+* **Write a topic** - 6 weight
+
+* **Reply to topic** - 5 weight
+
+* **Join Discourse community** - 4 weight
+
+* **Add reaction** - 0 weight
+
+* **Login** - 0 weight
 
 ## Real-Time Updates
 
 Once connected and webhook is configured, Conquest syncs the following events in real-time:
-- **Members joining the workspace**
-- **Topics, replies, and reactions**
-- **Category creation, updates, and deletion**
-- **Post marked as solved**
+
+* **Members joining the workspace**
+
+* **Topics, replies, and reactions**
+
+* **Category creation, updates, and deletion**
+
+* **Post marked as solved**
 
 ## Merging Members
 
 <Tip>
   When new Discourse activity occurs, we automatically:
+
   1. Check if the member exists in your Conquest workspace
-  2. Create a new member if  doesn't exist
-  3. Merge with an existing member if we find a matching email
+
+  2. Merge with an existing member if we find a matching email
+
+  3. Create a new member if none exists
 </Tip>
 
 ## Setup Guide
@@ -72,7 +98,9 @@ Once connected and webhook is configured, Conquest syncs the following events in
 <Steps>
   <Step title="Connect Your Community">
     1. Navigate to **Settings** > **Integrations**
+
     2. Select **Discourse**
+
     3. Click **"Enable"** to start the connection process
 
     <Frame>
@@ -82,7 +110,7 @@ Once connected and webhook is configured, Conquest syncs the following events in
 
   <Step title="Configure API / Webhook">
     Complete the API / Webhook configuration process on Discourse.
-    
+
     <Tip>
       You must be an admin of the Discourse community.
     </Tip>
@@ -104,7 +132,7 @@ Once connected and webhook is configured, Conquest syncs the following events in
 
     <ParamField path="User Fields">
       If you have custom user fields, you can add them here.
-      Add**".json"** to the end of your community URL, eg:"https://your-discourse-community/admin/config/user-fields.json".
+      Add\*\*".json"\*\* to the end of your community URL, eg:"https://your-discourse-community/admin/config/user-fields.json".
 
       You will get a JSON response like this:
 
@@ -126,6 +154,7 @@ Once connected and webhook is configured, Conquest syncs the following events in
     </ParamField>
 
     ### Webhook
+
     You can create a webhook by navigating to **Admin** > **Advanced** > **Webhooks** > **Add Webhook**
 
     <ParamField path="Payload URL">
@@ -150,7 +179,7 @@ Once connected and webhook is configured, Conquest syncs the following events in
 
   <Step title="Data Collection">
     Conquest will begin importing historical data.
-    
+
     <Note>
       We only collect data from the last 365 days.
     </Note>
@@ -164,12 +193,16 @@ Once connected and webhook is configured, Conquest syncs the following events in
 ## FAQ
 
 <AccordionGroup>
-   <Accordion title="Why my community updates are not showing in Conquest?">
+  <Accordion title="Why my community updates are not showing in Conquest?">
     If you are not seeing your community updates in Conquest, the most common cause is an incorrect webhook configuration. Please verify that:
-    - You've added the correct secret key provided by Conquest
-    - The webhook URL is exactly `https://app.useconquest.com/api/discourse`
-    - Content type is set to "application/json"
-    - All events are selected ("Send me everything")
+
+    * You've added the correct secret key provided by Conquest
+
+    * The webhook URL is exactly `https://app.useconquest.com/api/discourse`
+
+    * Content type is set to "application/json"
+
+    * All events are selected ("Send me everything")
 
     Without proper webhook configuration, especially the secret key, we cannot authenticate and process real-time updates from your community.
   </Accordion>
