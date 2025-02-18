@@ -1,61 +1,64 @@
-import { deleteManyCompanies } from "@/actions/companies/deleteManyCompanies";
-import { deleteManyMembers } from "@/actions/members/deleteManyMembers";
 import { DeleteDialog } from "@/components/custom/delete-dialog";
+import { trpc } from "@/server/client";
 import { Button } from "@conquest/ui/button";
-import { useQueryClient } from "@tanstack/react-query";
+import { CompanySchema } from "@conquest/zod/schemas/company.schema";
+import { MemberSchema } from "@conquest/zod/schemas/member.schema";
+import type { Table } from "@tanstack/react-table";
 import { X } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { toast } from "sonner";
-import { AddTagDialog } from "./add-tag-dialog";
-import { RemoveTagDialog } from "./remove-tag-dialog";
+import { AddTagDialog } from "./cells/add-tag-dialog";
+import { RemoveTagDialog } from "./cells/remove-tag-dialog";
 
-type Props = {
-  rowSelected: string[];
-  setRowSelected: (ids: string[]) => void;
-  table: "members" | "companies";
+type Props<TData> = {
+  table: Table<TData>;
 };
 
-export const ActionMenu = ({ rowSelected, setRowSelected, table }: Props) => {
+export const ActionMenu = <TData,>({ table }: Props<TData>) => {
   const pathname = usePathname();
-  const queryClient = useQueryClient();
+  const isCompanyPage = pathname.includes("companies");
+  const utils = trpc.useUtils();
+
+  const rowSelected = table.getSelectedRowModel().rows;
+  const hasMultipleRows = rowSelected.length > 1;
+
+  const { mutateAsync: deleteMembers } =
+    trpc.members.deleteManyMembers.useMutation({
+      onSuccess: () => {
+        utils.members.getAllMembers.invalidate();
+        utils.members.countMembers.invalidate();
+        toast.success(` ${hasMultipleRows ? "members" : "member"} deleted`);
+        table.setRowSelection({});
+      },
+    });
+
+  const { mutateAsync: deleteCompanies } =
+    trpc.companies.deleteManyCompanies.useMutation({
+      onSuccess: () => {
+        utils.companies.getAllCompanies.invalidate();
+        utils.companies.countCompanies.invalidate();
+        toast.success(` ${hasMultipleRows ? "companies" : "company"} deleted`);
+        table.setRowSelection({});
+      },
+    });
 
   const onDelete = async () => {
-    if (pathname.includes("members")) {
-      await onDeleteMembers();
-    } else if (pathname.includes("companies")) {
-      return await onDeleteCompanies();
+    if (isCompanyPage) {
+      const companyIds = rowSelected.map(
+        (row) => CompanySchema.parse(row.original).id,
+      );
+      await deleteCompanies({ ids: companyIds });
+    } else {
+      const memberIds = rowSelected.map(
+        (row) => MemberSchema.parse(row.original).id,
+      );
+      await deleteMembers({ ids: memberIds });
     }
   };
 
-  const onDeleteMembers = async () => {
-    const ids = rowSelected.map((id) => id);
+  const onClearSelection = () => table.setRowSelection({});
 
-    const result = await deleteManyMembers({ ids });
-    const error = result?.serverError;
-
-    if (error) return toast.error(error);
-
-    toast.success("Members deleted");
-    queryClient.invalidateQueries({ queryKey: ["members"], exact: false });
-    setRowSelected([]);
-  };
-
-  const onClearSelection = () => {
-    setRowSelected([]);
-  };
-
-  const onDeleteCompanies = async () => {
-    const ids = rowSelected.map((id) => id);
-
-    const result = await deleteManyCompanies({ ids });
-    const error = result?.serverError;
-
-    if (error) return toast.error(error);
-
-    toast.success("Companies deleted");
-    queryClient.invalidateQueries({ queryKey: ["companies"], exact: false });
-    setRowSelected([]);
-  };
+  if (rowSelected.length === 0) return;
 
   return (
     <div className="absolute inset-x-0 bottom-10 mx-auto w-fit">
@@ -65,16 +68,8 @@ export const ActionMenu = ({ rowSelected, setRowSelected, table }: Props) => {
           <span className="ml-1 text-muted-foreground">selected</span>
         </p>
         <div className="ml-2 flex items-center gap-1.5">
-          <AddTagDialog
-            rowSelected={rowSelected}
-            setRowSelected={setRowSelected}
-            table={table}
-          />
-          <RemoveTagDialog
-            rowSelected={rowSelected}
-            setRowSelected={setRowSelected}
-            table={table}
-          />
+          <AddTagDialog table={table} />
+          <RemoveTagDialog table={table} />
           <DeleteDialog
             title="Delete Members"
             description="Are you sure you want to delete these members?"

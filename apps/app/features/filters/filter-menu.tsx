@@ -1,3 +1,4 @@
+import { useFilters } from "@/context/filtersContext";
 import { Button } from "@conquest/ui/button";
 import { Checkbox } from "@conquest/ui/checkbox";
 import {
@@ -13,19 +14,25 @@ import { useState } from "react";
 
 type Props = {
   filter: FilterActivity;
-  handleUpdate: (
-    key: "display_count" | "display_date" | "display_channel",
-    value: boolean,
-  ) => void;
 };
 
-export const FilterMenu = ({ filter, handleUpdate }: Props) => {
+export const FilterMenu = ({ filter }: Props) => {
   const [open, setOpen] = useState(false);
+  const { onUpdateFilter } = useFilters();
+
+  const onUpdateDisplay = (
+    field: "display_count" | "display_date" | "display_channel",
+  ) => {
+    onUpdateFilter({
+      ...filter,
+      [field]: !filter[field],
+    });
+  };
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button variant="dropdown">
+        <Button variant="outline" className="size-8">
           <MoreHorizontal size={16} />
         </Button>
       </PopoverTrigger>
@@ -36,7 +43,7 @@ export const FilterMenu = ({ filter, handleUpdate }: Props) => {
               <CommandItem
                 onSelect={() => {
                   setOpen(false);
-                  handleUpdate("display_count", !filter.display_count);
+                  onUpdateDisplay("display_count");
                 }}
               >
                 <Checkbox checked={filter.display_count} className="mr-2" />
@@ -45,20 +52,20 @@ export const FilterMenu = ({ filter, handleUpdate }: Props) => {
               <CommandItem
                 onSelect={() => {
                   setOpen(false);
-                  handleUpdate("display_date", !filter.display_date);
-                }}
-              >
-                <Checkbox checked={filter.display_date} className="mr-2" />
-                Filter by date
-              </CommandItem>
-              <CommandItem
-                onSelect={() => {
-                  setOpen(false);
-                  handleUpdate("display_channel", !filter.display_channel);
+                  onUpdateDisplay("display_channel");
                 }}
               >
                 <Checkbox checked={filter.display_channel} className="mr-2" />
                 Filter by channel
+              </CommandItem>
+              <CommandItem
+                onSelect={() => {
+                  setOpen(false);
+                  onUpdateDisplay("display_date");
+                }}
+              >
+                <Checkbox checked={filter.display_date} className="mr-2" />
+                Filter by date
               </CommandItem>
             </CommandGroup>
           </CommandList>

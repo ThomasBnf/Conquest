@@ -10,7 +10,8 @@
     "dev:docs": "turbo dev --filter=docs",
     "dev:web": "turbo dev --filter=web",
     "dev:discord": "turbo dev --filter=discord",
-    "format-and-lint": "biome check ."
+    "format-and-lint": "biome check .",
+    "typecheck": "turbo typecheck"
   },
   "dependencies": {
     "geist": "^1.3.1"

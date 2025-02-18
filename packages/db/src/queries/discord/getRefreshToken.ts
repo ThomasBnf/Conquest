@@ -1,6 +1,6 @@
 import { env } from "@conquest/env";
 import type { DiscordIntegration } from "@conquest/zod/schemas/integration.schema";
-import { updateIntegration } from "../integrations/updateIntegration";
+import { updateIntegration } from "../integration/updateIntegration";
 
 export const getRefreshToken = async (discord: DiscordIntegration) => {
   const { id, details } = discord;

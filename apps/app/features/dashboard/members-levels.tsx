@@ -1,6 +1,6 @@
 "use client";
 
-import { listMembersLevels } from "@/client/dashboard/listMembersLevels";
+import { trpc } from "@/server/client";
 import {
   type ChartConfig,
   ChartContainer,
@@ -17,49 +17,48 @@ type Props = {
 };
 
 const chartConfig = {
-  current: {
+  currentMembers: {
     label: "Current",
     color: "hsl(var(--main-500))",
   },
-  max: {
+  maxMembers: {
     label: "Ever",
     color: "hsl(var(--main-300))",
   },
 } satisfies ChartConfig;
 
-const LEVEL_LABELS = {
-  explorer: "Explorer",
-  active: "Active",
-  contributor: "Contributor",
-  ambassador: "Ambassador",
-} as const;
-
 export const MembersLevels = ({ from, to }: Props) => {
-  const { data } = listMembersLevels({ from, to });
-
-  const transformedData = Object.keys(LEVEL_LABELS).map((level) => ({
-    level,
-    levelLabel: LEVEL_LABELS[level as keyof typeof LEVEL_LABELS],
-    current: data?.current?.[level] ?? 0,
-    max: data?.max?.[level] ?? 0,
-  }));
+  const { data } = trpc.dashboard.membersLevels.useQuery({ from, to });
+  console.log(data);
 
   return (
     <div className="flex-1 space-y-2 p-4">
       <p className="pl-1.5 font-medium text-base">Members Levels</p>
       <ResponsiveContainer height={380} width="100%">
         <ChartContainer config={chartConfig}>
-          <BarChart data={transformedData} barGap={0} barCategoryGap={8}>
-            <XAxis dataKey="levelLabel" fontSize={12} tickLine={false} />
-            <YAxis scale="sqrt" hide />
+          <BarChart
+            data={data}
+            barGap={0}
+            barCategoryGap={8}
+            margin={{ left: 0, right: 16 }}
+          >
+            <XAxis
+              dataKey="name"
+              fontSize={10}
+              tickLine={false}
+              angle={-90}
+              textAnchor="end"
+              height={80}
+            />
+            <YAxis scale="linear" hide />
             <ChartTooltip content={<ChartTooltipContent />} />
             <Bar
-              dataKey="max"
+              dataKey="maxMembers"
               fill="hsl(var(--main-300))"
               radius={[4, 4, 0, 0]}
             />
             <Bar
-              dataKey="current"
+              dataKey="currentMembers"
               fill="hsl(var(--main-500))"
               radius={[4, 4, 0, 0]}
             />

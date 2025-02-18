@@ -2,7 +2,7 @@ import type { DiscordIntegration } from "@conquest/zod/schemas/integration.schem
 import type { Tag } from "@conquest/zod/schemas/tag.schema";
 import { type APIRole, Routes } from "discord-api-types/v10";
 import { discordClient } from "../../discord";
-import { createTag } from "../../queries/tags/createTag";
+import { createTag } from "../tag/createTag";
 
 type Props = {
   discord: DiscordIntegration;

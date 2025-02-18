@@ -1,6 +1,6 @@
 import { auth } from "@/auth";
 import { prisma } from "@conquest/db/prisma";
-import { UserWithWorkspaceSchema } from "@conquest/zod/schemas/user.schema";
+import { UserSchema } from "@conquest/zod/schemas/user.schema";
 import { redirect } from "next/navigation";
 
 export const getCurrentUser = async () => {
@@ -8,16 +8,9 @@ export const getCurrentUser = async () => {
 
   if (!session?.user?.id) redirect("/auth/login");
 
-  const user = await prisma.users.findUnique({
+  const user = await prisma.user.findUnique({
     where: {
       id: session.user.id,
-    },
-    include: {
-      workspace: {
-        include: {
-          integrations: true,
-        },
-      },
     },
     omit: {
       hashed_password: true,
@@ -26,7 +19,7 @@ export const getCurrentUser = async () => {
 
   if (!user) redirect("/auth/login");
 
-  return UserWithWorkspaceSchema.omit({
+  return UserSchema.omit({
     hashed_password: true,
   }).parse(user);
 };

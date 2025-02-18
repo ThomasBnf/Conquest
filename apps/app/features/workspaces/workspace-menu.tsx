@@ -1,6 +1,6 @@
 import { LogOut } from "@/components/icons/LogOut";
 import { Settings } from "@/components/icons/Settings";
-import { useUser } from "@/context/userContext";
+import { trpc } from "@/server/client";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,20 +13,26 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarTrigger,
-  useSidebar,
 } from "@conquest/ui/sidebar";
+import type { Workspace } from "@conquest/zod/schemas/workspace.schema";
 import { ChevronsUpDown } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { logOut } from "../../actions/auth/sign-out";
 
-export const WorkspaceMenu = () => {
-  const { user } = useUser();
-  const { open } = useSidebar();
+type Props = {
+  workspace: Workspace | undefined;
+};
+
+export const WorkspaceMenu = ({ workspace }: Props) => {
+  const { name, slug } = workspace ?? {};
   const router = useRouter();
 
-  const onLogout = async () => {
-    await logOut();
-  };
+  const { mutateAsync: signout } = trpc.auth.signout.useMutation({
+    onSuccess: () => {
+      router.push("/auth/login");
+    },
+  });
+
+  const onSignOut = async () => await signout();
 
   return (
     <SidebarMenu>
@@ -34,7 +40,7 @@ export const WorkspaceMenu = () => {
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <SidebarMenuButton className="w-fit font-medium data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground">
-              {open ? user?.workspace.name : user?.workspace.name.charAt(0)}
+              {name}
               <ChevronsUpDown className="!size-3.5" />
             </SidebarMenuButton>
           </DropdownMenuTrigger>
@@ -43,17 +49,15 @@ export const WorkspaceMenu = () => {
             align="start"
           >
             <DropdownMenuItem>
-              <span className="font-medium">{user?.workspace.name}</span>
+              <span className="font-medium">{name}</span>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem
-              onClick={() => router.push(`/${user?.workspace.slug}/settings`)}
-            >
-              <Settings className="size-[18px]" />
+            <DropdownMenuItem onClick={() => router.push(`/${slug}/settings`)}>
+              <Settings size={18} />
               Settings
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={onLogout}>
-              <LogOut className="size-[18px]" />
+            <DropdownMenuItem onClick={onSignOut}>
+              <LogOut size={18} />
               Logout
             </DropdownMenuItem>
           </DropdownMenuContent>

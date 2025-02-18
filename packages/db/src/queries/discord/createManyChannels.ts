@@ -1,7 +1,7 @@
 import type { Channel } from "@conquest/zod/schemas/channel.schema";
 import type { DiscordIntegration } from "@conquest/zod/schemas/integration.schema";
 import type { APIGuildCategoryChannel } from "discord-api-types/v10";
-import { createChannel } from "../channels/createChannel";
+import { createChannel } from "../channel/createChannel";
 
 type Props = {
   discord: DiscordIntegration;

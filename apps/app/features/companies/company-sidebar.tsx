@@ -1,26 +1,26 @@
 "use client";
 
-import { updateCompany } from "@/actions/companies/updateCompany";
 import { EditableAddress } from "@/components/editable/editable-address";
 import { EditableDate } from "@/components/editable/editable-date";
 import { EditableInput } from "@/components/editable/editable-input";
 import { EditableMembers } from "@/components/editable/editable-members";
 import { FieldCard } from "@/components/editable/field-card";
 import { TagPicker } from "@/features/tags/tag-picker";
+import { trpc } from "@/server/client";
 import { Avatar, AvatarFallback, AvatarImage } from "@conquest/ui/avatar";
 import { ScrollArea } from "@conquest/ui/scroll-area";
 import { Separator } from "@conquest/ui/separator";
-import type { CompanyWithMembers } from "@conquest/zod/schemas/member.schema";
-import type { Tag } from "@conquest/zod/schemas/tag.schema";
+import type { Company } from "@conquest/zod/schemas/company.schema";
 import { format } from "date-fns";
 import { TagIcon } from "lucide-react";
 
 type Props = {
-  company: CompanyWithMembers;
-  tags: Tag[] | undefined;
+  company: Company;
 };
 
-export const CompanySidebar = ({ company, tags }: Props) => {
+export const CompanySidebar = ({ company }: Props) => {
+  const { mutateAsync } = trpc.companies.updateCompany.useMutation();
+
   const {
     id,
     name,
@@ -44,7 +44,7 @@ export const CompanySidebar = ({ company, tags }: Props) => {
       | "founded_at",
     value: string | Date | string[] | null,
   ) => {
-    await updateCompany({ id, [field]: value });
+    await mutateAsync({ id, data: { [field]: value } });
   };
 
   return (
@@ -69,7 +69,6 @@ export const CompanySidebar = ({ company, tags }: Props) => {
         </div>
         <TagPicker
           record={company}
-          tags={tags}
           onUpdate={(value) => onUpdateCompany("tags", value)}
         />
       </div>
@@ -124,7 +123,11 @@ export const CompanySidebar = ({ company, tags }: Props) => {
             />
           </FieldCard>
           <FieldCard icon="CalendarPlus" label="Created at">
-            <p className="pl-1.5">{format(created_at, "PPP p")}</p>
+            <p className="h-8 place-content-center pl-0.5">
+              <span className="px-[7px]">
+                {format(created_at, "PP, HH'h'mm")}
+              </span>
+            </p>
           </FieldCard>
         </div>
       </ScrollArea>

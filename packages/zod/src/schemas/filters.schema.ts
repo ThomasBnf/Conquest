@@ -10,12 +10,12 @@ export const BaseOperatorSchema = z.enum([
 ]);
 export const DateOperatorSchema = z.enum(["is", "is_not"]);
 export const NumberOperatorSchema = z.enum([
-  "greater",
-  "greater or equal",
+  ">",
+  ">=",
   "equal",
   "not equal",
-  "less or equal",
-  "less",
+  "<=",
+  "<",
 ]);
 
 export const OperatorSchema = z.union([
@@ -40,7 +40,7 @@ export const FilterBaseSchema = z.object({
 
 export const FilterSelectSchema = FilterBaseSchema.extend({
   type: z.literal("select"),
-  field: z.enum(["source", "language", "country", "tags", "linked_profiles"]),
+  field: z.enum(["country", "language", "linked_profiles", "source", "tags"]),
   operator: BaseOperatorSchema,
   values: z.array(z.string()).default([]),
 });
@@ -62,16 +62,16 @@ export const FilterTextSchema = FilterBaseSchema.extend({
 
 export const FilterNumberSchema = FilterBaseSchema.extend({
   type: z.literal("number"),
-  field: z.enum(["pulse"]),
+  field: z.enum(["pulse", "level"]),
   operator: NumberOperatorSchema,
   value: z.number().min(0).default(1),
 });
 
 export const FilterLevelSchema = FilterBaseSchema.extend({
   type: z.literal("level"),
-  field: z.enum(["level"]),
+  field: z.literal("level"),
   operator: NumberOperatorSchema,
-  value: z.number().min(1).max(12),
+  value: z.number(),
 });
 
 export const FilterActivitySchema = FilterBaseSchema.extend({
@@ -104,11 +104,17 @@ export const FilterSchema = z.discriminatedUnion("type", [
   FilterDateSchema,
   FilterTextSchema,
   FilterNumberSchema,
-  FilterLevelSchema,
   FilterActivitySchema,
+  FilterLevelSchema,
 ]);
 
+export const GroupFiltersSchema = z.object({
+  filters: z.array(FilterSchema),
+  operator: z.enum(["AND", "OR"]),
+});
+
 export type Filter = z.infer<typeof FilterSchema>;
+export type GroupFilters = z.infer<typeof GroupFiltersSchema>;
 export type FilterSelect = z.infer<typeof FilterSelectSchema>;
 export type FilterDate = z.infer<typeof FilterDateSchema>;
 export type FilterText = z.infer<typeof FilterTextSchema>;

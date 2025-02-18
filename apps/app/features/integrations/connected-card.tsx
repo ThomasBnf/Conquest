@@ -14,9 +14,9 @@ import { useRouter } from "next/navigation";
 import { type PropsWithChildren, useEffect, useState } from "react";
 
 type Props = {
-  integration: Integration | undefined;
+  integration: Integration | null;
   name: string | undefined;
-  onDisconnect: () => Promise<string | number | undefined>;
+  onDisconnect: () => Promise<void>;
 };
 
 export const ConnectedCard = ({

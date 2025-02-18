@@ -1,8 +1,6 @@
 "use client";
 
-import { createActivity } from "@/actions/activities/createActivity";
-import { updateMemberMetrics } from "@/actions/members/updateMemberMetrics";
-import { listActivityTypes } from "@/client/activity-types/listActivityTypes";
+import { trpc } from "@/server/client";
 import { Button } from "@conquest/ui/button";
 import {
   Dialog,
@@ -24,78 +22,49 @@ import {
 import {
   Select,
   SelectContent,
-  SelectGroup,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@conquest/ui/select";
 import { TextField } from "@conquest/ui/text-field";
-import type { ActivityType } from "@conquest/zod/schemas/activity-type.schema";
-import type { MemberWithCompany } from "@conquest/zod/schemas/member.schema";
+import type { Member } from "@conquest/zod/schemas/member.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { toast } from "sonner";
 import { type FormCreate, FormCreateSchema } from "./schemas/form.schema";
 
 type Props = {
-  member: MemberWithCompany;
+  member: Member;
 };
 
 export const CreateActivityDialog = ({ member }: Props) => {
   const [open, setOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const { data: activity_types } = listActivityTypes();
-  const queryClient = useQueryClient();
+  const utils = trpc.useUtils();
+
+  const { data } = trpc.activityTypes.getAllActivityTypes.useQuery();
+  const { mutateAsync, isPending } = trpc.activities.createActivity.useMutation(
+    {
+      onSuccess: () => {
+        utils.activities.getMemberActivities.invalidate();
+        setOpen(false);
+        form.reset();
+      },
+    },
+  );
+
+  const activityTypes = data?.filter(
+    (activityType) => activityType.source === "MANUAL",
+  );
 
   const form = useForm<FormCreate>({
     resolver: zodResolver(FormCreateSchema),
+    defaultValues: {
+      member_id: member.id,
+    },
   });
 
-  const groupedActivityTypes = activity_types?.reduce<
-    Array<{
-      source: string;
-      activity_types: ActivityType[];
-    }>
-  >((acc, activity_type) => {
-    const existingGroup = acc.find(
-      (group) => group.source === activity_type.source,
-    );
-
-    if (existingGroup) {
-      existingGroup.activity_types.push(activity_type);
-      return acc;
-    }
-
-    acc.push({
-      source: activity_type.source,
-      activity_types: [activity_type],
-    });
-    return acc;
-  }, []);
-
-  const onSubmit = async ({ activity_type_key, message }: FormCreate) => {
-    setLoading(true);
-    const activity = await createActivity({
-      member_id: member.id,
-      activity_type_key,
-      message,
-    });
-    await updateMemberMetrics({ member_id: member.id });
-
-    const error = activity?.serverError;
-
-    if (error) toast.error(error);
-
-    queryClient.invalidateQueries({
-      queryKey: ["activities", member.id],
-    });
-
-    setOpen(false);
-    setLoading(false);
-    form.reset();
+  const onSubmit = async (values: FormCreate) => {
+    await mutateAsync(values);
   };
 
   return (
@@ -125,22 +94,20 @@ export const CreateActivityDialog = ({ member }: Props) => {
                           <SelectValue placeholder="Select activity type" />
                         </SelectTrigger>
                         <SelectContent>
-                          {groupedActivityTypes?.map((group) => (
-                            <SelectGroup key={group.source}>
-                              <SelectLabel>
-                                {group.source.charAt(0).toUpperCase() +
-                                  group.source.slice(1).toLowerCase()}
-                              </SelectLabel>
-                              {group.activity_types.map((activity_type) => (
-                                <SelectItem
-                                  key={activity_type.key}
-                                  value={activity_type.key}
-                                >
-                                  {activity_type.name}
-                                </SelectItem>
-                              ))}
-                            </SelectGroup>
-                          ))}
+                          {activityTypes && activityTypes?.length > 0 ? (
+                            activityTypes?.map((activity_type) => (
+                              <SelectItem
+                                key={activity_type.key}
+                                value={activity_type.key}
+                              >
+                                {activity_type.key}
+                              </SelectItem>
+                            ))
+                          ) : (
+                            <SelectItem value="empty" disabled>
+                              No activity types
+                            </SelectItem>
+                          )}
                         </SelectContent>
                       </Select>
                     </FormControl>
@@ -166,7 +133,7 @@ export const CreateActivityDialog = ({ member }: Props) => {
               <DialogTrigger asChild>
                 <Button variant="outline">Cancel</Button>
               </DialogTrigger>
-              <Button type="submit" loading={loading} disabled={loading}>
+              <Button type="submit" loading={isPending} disabled={isPending}>
                 Add activity
               </Button>
             </DialogFooter>

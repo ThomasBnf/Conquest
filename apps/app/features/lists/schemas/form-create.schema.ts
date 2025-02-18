@@ -1,8 +1,10 @@
+import { GroupFiltersSchema } from "@conquest/zod/schemas/filters.schema";
 import { z } from "zod";
 
-export const FormCreateSchema = z.object({
+export const FormListSchema = z.object({
   emoji: z.string(),
   name: z.string().min(1),
+  groupFilters: GroupFiltersSchema,
 });
 
-export type FormCreate = z.infer<typeof FormCreateSchema>;
+export type FormList = z.infer<typeof FormListSchema>;

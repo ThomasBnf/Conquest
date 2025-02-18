@@ -1,5 +1,5 @@
-import { updateUser } from "@/actions/users/updateUser";
-import { updateWorkspace } from "@/actions/workspaces/updateWorkspace";
+import { useUser } from "@/context/userContext";
+import { trpc } from "@/server/client";
 import { Button } from "@conquest/ui/button";
 import { CardContent, CardFooter } from "@conquest/ui/card";
 import { Form } from "@conquest/ui/form";
@@ -20,14 +20,30 @@ type Props = {
 };
 
 export const WorkspaceStep = ({ setStep }: Props) => {
+  const { user } = useUser();
   const [loading, setLoading] = useState(false);
+
+  const { mutateAsync } = trpc.users.updateUser.useMutation({
+    onError: (error) => {
+      setLoading(false);
+      toast.error(error.message);
+    },
+  });
+
+  const { mutateAsync: mutateWorkspace } =
+    trpc.workspaces.updateWorkspace.useMutation({
+      onSuccess: () => {
+        setStep(2);
+      },
+      onError: (error) => {
+        setLoading(false);
+        toast.error(error.message);
+      },
+    });
 
   const form = useForm<Workspace>({
     resolver: zodResolver(WorkspaceSchema),
     defaultValues: {
-      first_name: "",
-      last_name: "",
-      workspace_name: "",
       slug: "",
     },
   });
@@ -51,28 +67,18 @@ export const WorkspaceStep = ({ setStep }: Props) => {
     workspace_name,
     slug,
   }: Workspace) => {
+    if (!user) return;
+
     setLoading(true);
-
-    const rUser = await updateUser({ first_name, last_name });
-    const error = rUser?.serverError;
-
-    if (error) {
-      setLoading(false);
-      return toast.error(error);
-    }
-
-    const rWorkspace = await updateWorkspace({
-      name: workspace_name,
-      slug,
+    await mutateAsync({
+      id: user.id,
+      data: { first_name, last_name },
     });
-    const errorWorkspace = rWorkspace?.serverError;
 
-    if (errorWorkspace) {
-      setLoading(false);
-      return toast.error(errorWorkspace);
-    }
-
-    setStep(2);
+    await mutateWorkspace({
+      id: user.workspace_id,
+      data: { name: workspace_name, slug },
+    });
   };
 
   return (

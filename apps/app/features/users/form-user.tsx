@@ -1,6 +1,6 @@
 "use client";
 
-import { updateUser } from "@/actions/users/updateUser";
+import { trpc } from "@/server/client";
 import { Button } from "@conquest/ui/button";
 import {
   Form,
@@ -11,43 +11,42 @@ import {
   FormMessage,
 } from "@conquest/ui/form";
 import { Input } from "@conquest/ui/input";
-import type { UserWithWorkspace } from "@conquest/zod/schemas/user.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { FormUserSchema } from "./schema/form.schema";
 
-type Props = {
-  user: Omit<UserWithWorkspace, "hashed_password">;
-};
-
-export const FormUser = ({ user }: Props) => {
+export const FormUser = () => {
+  const { data: user } = trpc.users.getCurrentUser.useQuery();
   const [loading, setLoading] = useState(false);
+
+  const { mutateAsync } = trpc.users.updateUser.useMutation({
+    onSuccess: () => {
+      toast.success("Profile updated");
+    },
+    onError: (error) => {
+      toast.error(error.message);
+    },
+    onSettled: () => {
+      setLoading(false);
+    },
+  });
 
   const form = useForm<FormUserSchema>({
     resolver: zodResolver(FormUserSchema),
     defaultValues: {
-      first_name: user.first_name ?? "",
-      last_name: user.last_name ?? "",
-      email: user.email,
+      first_name: user?.first_name ?? "",
+      last_name: user?.last_name ?? "",
+      email: user?.email,
     },
   });
 
   const onSubmit = async (values: FormUserSchema) => {
+    if (!user) return;
+
     setLoading(true);
-
-    const updatedUser = await updateUser(values);
-
-    const error = updatedUser?.serverError;
-
-    if (error) {
-      toast.error(error);
-    } else {
-      toast.success("Profile updated");
-    }
-
-    setLoading(false);
+    await mutateAsync({ id: user.id, data: values });
   };
 
   return (

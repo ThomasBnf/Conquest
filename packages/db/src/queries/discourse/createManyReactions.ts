@@ -1,19 +1,20 @@
 import type { DiscourseIntegration } from "@conquest/zod/schemas/integration.schema";
-import type { Member } from "@conquest/zod/schemas/member.schema";
+import type { DiscourseProfile } from "@conquest/zod/schemas/profile.schema";
 import type { Reaction } from "@conquest/zod/types/discourse";
 import { startOfDay, subDays } from "date-fns";
-import { createActivity } from "../activities/createActivity";
-import { getChannel } from "../channels/getChannel";
+import { createActivity } from "../activity/createActivity";
+import { getChannel } from "../channel/getChannel";
 
 type Props = {
   discourse: DiscourseIntegration;
-  member: Member;
+  profile: DiscourseProfile;
 };
 
-export const createManyReactions = async ({ discourse, member }: Props) => {
+export const createManyReactions = async ({ discourse, profile }: Props) => {
   const { details, workspace_id } = discourse;
   const { community_url, api_key } = details;
-  const { discourse_username } = member;
+  const { member_id, attributes } = profile;
+  const { username } = attributes;
 
   const today = startOfDay(new Date());
   const last365Days = subDays(today, 365);
@@ -23,7 +24,7 @@ export const createManyReactions = async ({ discourse, member }: Props) => {
 
   while (hasMore) {
     const response = await fetch(
-      `${community_url}/discourse-reactions/posts/reactions.json?username=${discourse_username}${
+      `${community_url}/discourse-reactions/posts/reactions.json?username=${username}${
         before ? `&before_reaction_user_id=${before}` : ""
       }`,
       {
@@ -66,15 +67,15 @@ export const createManyReactions = async ({ discourse, member }: Props) => {
       if (!channel) continue;
 
       await createActivity({
-        external_id: String(id),
+        external_id: `r/${id}`,
         activity_type_key: "discourse:reaction",
         message: reaction_value,
-        react_to: `p-${post.id}`,
-        thread_id: `t-${topic_id}`,
-        member_id: member.id,
+        react_to: `t/${topic_id}/${post.post_number}`,
+        member_id: member_id,
         channel_id: channel.id,
         created_at: new Date(created_at),
         updated_at: new Date(created_at),
+        source: "DISCOURSE",
         workspace_id,
       });
     }

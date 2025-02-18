@@ -1,6 +1,5 @@
 generator client {
-  provider        = "prisma-client-js"
-  previewFeatures = ["typedSql"]
+  provider = "prisma-client-js"
 }
 
 datasource db {
@@ -11,18 +10,13 @@ datasource db {
 
 enum SOURCE {
   API
-  BREVO
   DISCOURSE
   DISCORD
   GITHUB
-  HUBSPOT
   LINKEDIN
   LIVESTORM
   MANUAL
   SLACK
-  X
-  YOUTUBE
-  ZENDESK
 }
 
 enum STATUS {
@@ -44,28 +38,25 @@ enum ROLE {
   ADMIN
 }
 
-model activities {
-  id          String  @id @default(cuid())
-  external_id String?
-  title       String?
-  message     String
-  thread_id   String?
-  reply_to    String?
-  react_to    String?
-  invite_to   String?
-
+model activity {
+  id               String        @id @default(cuid())
+  external_id      String?
+  title            String?
+  message          String
+  reply_to         String?
+  react_to         String?
+  invite_to        String?
+  source           SOURCE
   activity_type_id String
-  activity_type    activities_types @relation(fields: [activity_type_id], references: [id], onDelete: Cascade)
+  activity_type    activity_type @relation(fields: [activity_type_id], references: [id], onDelete: Cascade)
   channel_id       String?
-  channel          channels?        @relation(fields: [channel_id], references: [id], onDelete: Cascade)
+  channel          channel?      @relation(fields: [channel_id], references: [id], onDelete: Cascade)
   event_id         String?
-  event            events?          @relation(fields: [event_id], references: [id], onDelete: Cascade)
+  event            event?        @relation(fields: [event_id], references: [id], onDelete: Cascade)
   member_id        String
-  member           members          @relation(fields: [member_id], references: [id], onDelete: Cascade)
+  member           member        @relation(fields: [member_id], references: [id], onDelete: Cascade)
   workspace_id     String
-  workspace        workspaces       @relation(fields: [workspace_id], references: [id], onDelete: Cascade)
-
-  files files[]
+  workspace        workspace     @relation(fields: [workspace_id], references: [id], onDelete: Cascade)
 
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
@@ -75,19 +66,18 @@ model activities {
   @@index([workspace_id])
 }
 
-model activities_types {
-  id        String   @id @default(cuid())
-  name      String
-  source    SOURCE
-  key       String
-  weight    Int      @default(1)
-  channels  String[] @default([])
-  deletable Boolean  @default(true)
+model activity_type {
+  id         String  @id @default(cuid())
+  name       String
+  source     SOURCE
+  key        String
+  points     Int
+  conditions Json[]
+  deletable  Boolean @default(true)
 
+  activities   activity[]
   workspace_id String
-  workspace    workspaces @relation(fields: [workspace_id], references: [id], onDelete: Cascade)
-
-  activities activities[]
+  workspace    workspace  @relation(fields: [workspace_id], references: [id], onDelete: Cascade)
 
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
@@ -97,13 +87,13 @@ model activities_types {
   @@index([workspace_id])
 }
 
-model apikeys {
+model api_key {
   id    String @id @default(cuid())
   name  String
   token String @unique
 
   workspace_id String
-  workspace    workspaces @relation(fields: [workspace_id], references: [id], onDelete: Cascade)
+  workspace    workspace @relation(fields: [workspace_id], references: [id], onDelete: Cascade)
 
   created_at DateTime @default(now())
 
@@ -111,24 +101,26 @@ model apikeys {
   @@index([workspace_id])
 }
 
-model channels {
-  id           String       @id @default(cuid())
-  external_id  String?
-  name         String
-  slug         String?
-  source       SOURCE
+model channel {
+  id          String  @id @default(cuid())
+  external_id String?
+  name        String
+  slug        String?
+  source      SOURCE
+
+  activities   activity[]
   workspace_id String
-  workspace    workspaces   @relation(fields: [workspace_id], references: [id], onDelete: Cascade)
-  activities   activities[]
-  created_at   DateTime     @default(now())
-  updated_at   DateTime     @updatedAt
+  workspace    workspace  @relation(fields: [workspace_id], references: [id], onDelete: Cascade)
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 
   @@unique([external_id, workspace_id])
   @@index([external_id, workspace_id])
   @@index([workspace_id])
 }
 
-model companies {
+model company {
   id         String    @id @default(cuid())
   name       String
   industry   String?
@@ -140,10 +132,9 @@ model companies {
   tags       String[]  @default([])
   source     SOURCE
 
+  members      member[]
   workspace_id String
-  workspace    workspaces @relation(fields: [workspace_id], references: [id], onDelete: Cascade)
-
-  members members[]
+  workspace    workspace @relation(fields: [workspace_id], references: [id], onDelete: Cascade)
 
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
@@ -152,7 +143,7 @@ model companies {
   @@index([workspace_id])
 }
 
-model events {
+model event {
   id          String    @id @default(cuid())
   external_id String    @unique
   title       String
@@ -160,32 +151,18 @@ model events {
   ended_at    DateTime?
   source      SOURCE
 
+  activities   activity[]
   workspace_id String
-  workspace    workspaces @relation(fields: [workspace_id], references: [id], onDelete: Cascade)
+  workspace    workspace  @relation(fields: [workspace_id], references: [id], onDelete: Cascade)
 
-  created_at DateTime     @default(now())
-  updated_at DateTime     @updatedAt
-  activities activities[]
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 
   @@index([id, workspace_id])
   @@index([source, workspace_id])
 }
 
-model files {
-  id    String  @id @default(cuid())
-  title String?
-  url   String
-
-  activity_id String
-  activity    activities @relation(fields: [activity_id], references: [id], onDelete: Cascade)
-
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
-
-  @@index([activity_id])
-}
-
-model integrations {
+model integration {
   id                       String    @id @default(cuid())
   external_id              String?   @unique
   connected_at             DateTime?
@@ -196,7 +173,7 @@ model integrations {
   created_by               String
 
   workspace_id String
-  workspace    workspaces @relation(fields: [workspace_id], references: [id], onDelete: Cascade)
+  workspace    workspace @relation(fields: [workspace_id], references: [id], onDelete: Cascade)
 
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
@@ -205,13 +182,14 @@ model integrations {
   @@index([external_id])
 }
 
-model lists {
-  id           String     @id @default(cuid())
+model list {
+  id           String @id @default(cuid())
   emoji        String
   name         String
-  filters      Json[]
+  groupFilters Json   @default("{\"filters\":[],\"operator\":\"AND\"}")
+
   workspace_id String
-  workspace    workspaces @relation(fields: [workspace_id], references: [id], onDelete: Cascade)
+  workspace    workspace @relation(fields: [workspace_id], references: [id], onDelete: Cascade)
 
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
@@ -219,82 +197,63 @@ model lists {
   @@index([id, workspace_id])
 }
 
-model members {
-  id                 String       @id @default(cuid())
-  livestorm_id       String?
-  slack_id           String?
-  discord_id         String?
-  discord_username   String?
-  discourse_id       String?
-  discourse_username String?
-  linkedin_id        String?
-  linkedin_url       String?
-  first_name         String?
-  last_name          String?
-  primary_email      String?
-  secondary_emails   String[]     @default([])
-  phones             String[]     @default([])
-  job_title          String?
-  avatar_url         String?
-  locale             String?
-  tags               String[]     @default([])
-  level              Int          @default(0)
-  pulse              Int          @default(0)
-  presence           Int          @default(0)
-  source             SOURCE
-  logs               Json[]       @default([])
-  custom_fields      Json[]       @default([])
-  company_id         String?
-  company            companies?   @relation(fields: [company_id], references: [id], onDelete: SetNull)
-  workspace_id       String
-  workspace          workspaces   @relation(fields: [workspace_id], references: [id], onDelete: Cascade)
-  activities         activities[]
-  first_activity     DateTime?
-  last_activity      DateTime?
-  created_at         DateTime     @default(now())
-  updated_at         DateTime     @updatedAt
+model level {
+  id     String @id @default(cuid())
+  name   String
+  number Int
+  from   Int
+  to     Int?
 
-  @@unique([discourse_id, workspace_id])
-  @@unique([discourse_username, workspace_id])
-  @@unique([discord_id, workspace_id])
-  @@unique([linkedin_id, workspace_id])
-  @@unique([livestorm_id, workspace_id])
-  @@unique([slack_id, workspace_id])
+  workspace_id String
+  workspace    workspace @relation(fields: [workspace_id], references: [id], onDelete: Cascade)
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  member     member[]
+}
+
+model member {
+  id               String     @id @default(cuid())
+  first_name       String?
+  last_name        String?
+  primary_email    String?
+  secondary_emails String[]   @default([])
+  phones           String[]   @default([])
+  job_title        String?
+  avatar_url       String?
+  country          String?
+  language         String?
+  tags             String[]   @default([])
+  pulse            Int        @default(0)
+  source           SOURCE
+  logs             Json[]     @default([])
+  level_id         String?
+  level            level?     @relation(fields: [level_id], references: [id], onDelete: SetNull)
+  linkedin_url     String?
+  profiles         profile[]
+  activities       activity[]
+  company_id       String?
+  company          company?   @relation(fields: [company_id], references: [id], onDelete: SetNull)
+  workspace_id     String
+  workspace        workspace  @relation(fields: [workspace_id], references: [id], onDelete: Cascade)
+
+  first_activity DateTime?
+  last_activity  DateTime?
+  created_at     DateTime  @default(now())
+  updated_at     DateTime  @updatedAt
+
   @@index([id])
   @@index([primary_email, workspace_id])
-  @@index([discourse_username, workspace_id])
-  @@index([discord_username, workspace_id])
-  @@index([discord_id, workspace_id])
-  @@index([discourse_id, workspace_id])
-  @@index([linkedin_id, workspace_id])
-  @@index([livestorm_id, workspace_id])
-  @@index([slack_id, workspace_id])
 }
 
-model tags {
-  id          String  @id @default(cuid())
-  external_id String?
-  name        String
-  color       String
-  source      SOURCE
+model post {
+  id          String @id @default(cuid())
+  external_id String
+  content     String
+  author_id   String
 
   workspace_id String
-  workspace    workspaces @relation(fields: [workspace_id], references: [id], onDelete: Cascade)
-
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
-
-  @@unique([external_id, workspace_id])
-  @@index([id, workspace_id])
-}
-
-model posts {
-  id           String     @id @default(cuid())
-  external_id  String
-  content      String
-  author_id    String
-  workspace_id String
-  workspace    workspaces @relation(fields: [workspace_id], references: [id], onDelete: Cascade)
+  workspace    workspace @relation(fields: [workspace_id], references: [id], onDelete: Cascade)
 
   created_at DateTime @default(now())
 
@@ -302,18 +261,54 @@ model posts {
   @@index([external_id, workspace_id])
 }
 
-model users {
-  id              String    @id @default(cuid())
-  email           String    @unique
-  hashed_password String
-  first_name      String?
-  last_name       String?
-  onboarding      DateTime?
-  role            ROLE      @default(ADMIN)
-  last_seen       DateTime?
+model profile {
+  id          String  @id @default(cuid())
+  external_id String?
+  attributes  Json?
+
+  member_id    String
+  member       member    @relation(fields: [member_id], references: [id], onDelete: Cascade)
+  workspace_id String
+  workspace    workspace @relation(fields: [workspace_id], references: [id], onDelete: Cascade)
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@unique([external_id, workspace_id])
+  @@index([external_id, workspace_id])
+}
+
+model tag {
+  id          String  @id @default(cuid())
+  external_id String?
+  name        String
+  color       String
+  source      SOURCE
 
   workspace_id String
-  workspace    workspaces? @relation(fields: [workspace_id], references: [id], onDelete: Cascade)
+  workspace    workspace @relation(fields: [workspace_id], references: [id], onDelete: Cascade)
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@unique([external_id, workspace_id])
+  @@index([id, workspace_id])
+}
+
+model user {
+  id                    String    @id @default(cuid())
+  email                 String    @unique
+  hashed_password       String
+  first_name            String?
+  last_name             String?
+  onboarding            DateTime?
+  role                  ROLE      @default(ADMIN)
+  last_seen             DateTime?
+  members_preferences   Json      @default("{\"id\":\"full_name\",\"desc\":true,\"pageSize\":50,\"groupFilters\":{\"filters\":[],\"operator\":\"AND\"},\"columnVisibility\":{},\"columnOrder\":[]}")
+  companies_preferences Json      @default("{\"id\":\"name\",\"desc\":true,\"pageSize\":50,\"groupFilters\":{\"filters\":[],\"operator\":\"AND\"},\"columnVisibility\":{},\"columnOrder\":[]}")
+
+  workspace_id String
+  workspace    workspace? @relation(fields: [workspace_id], references: [id], onDelete: Cascade)
 
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
@@ -321,16 +316,23 @@ model users {
   @@index([id])
 }
 
-model webhooks {
-  id           String     @id @default(cuid())
-  trigger      String
-  url          String
-  secret       String
+model webhook {
+  id      String @id @default(cuid())
+  trigger String
+  url     String
+  secret  String
+
   workspace_id String
-  workspace    workspaces @relation(fields: [workspace_id], references: [id], onDelete: Cascade)
+  workspace    workspace @relation(fields: [workspace_id], references: [id], onDelete: Cascade)
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@index([id, workspace_id])
+  @@index([workspace_id])
 }
 
-model workflows {
+model workflow {
   id          String    @id @default(cuid())
   name        String
   description String?
@@ -340,7 +342,7 @@ model workflows {
   last_run_at DateTime?
 
   workspace_id String
-  workspace    workspaces @relation(fields: [workspace_id], references: [id], onDelete: Cascade)
+  workspace    workspace @relation(fields: [workspace_id], references: [id], onDelete: Cascade)
 
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
@@ -348,29 +350,30 @@ model workflows {
   @@index([id, workspace_id])
 }
 
-model workspaces {
-  id                  String  @id @default(cuid())
-  name                String
-  slug                String  @unique
-  source              String?
-  company_size        String?
-  members_preferences Json
-  plan                PLAN    @default(BASIC)
+model workspace {
+  id           String  @id @default(cuid())
+  name         String
+  slug         String  @unique
+  source       String?
+  company_size String?
+  plan         PLAN    @default(BASIC)
 
-  activities       activities[]
-  activities_types activities_types[]
-  apiKeys          apikeys[]
-  channels         channels[]
-  companies        companies[]
-  events           events[]
-  integrations     integrations[]
-  lists            lists[]
-  members          members[]
-  posts            posts[]
-  tags             tags[]
-  users            users[]
-  webhooks         webhooks[]
-  workflows        workflows[]
+  activities     activity[]
+  activity_types activity_type[]
+  api_keys       api_key[]
+  channels       channel[]
+  companies      company[]
+  events         event[]
+  integrations   integration[]
+  levels         level[]
+  lists          list[]
+  members        member[]
+  posts          post[]
+  profiles       profile[]
+  tags           tag[]
+  users          user[]
+  webhooks       webhook[]
+  workflows      workflow[]
 
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt

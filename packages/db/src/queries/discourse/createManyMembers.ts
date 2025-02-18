@@ -1,5 +1,7 @@
 import type { DiscourseIntegration } from "@conquest/zod/schemas/integration.schema";
-import type { MemberWithCompany } from "@conquest/zod/schemas/member.schema";
+import type { Level } from "@conquest/zod/schemas/level.schema";
+import type { Member } from "@conquest/zod/schemas/member.schema";
+import { DiscourseProfileSchema } from "@conquest/zod/schemas/profile.schema";
 import type { Tag } from "@conquest/zod/schemas/tag.schema";
 import {
   type AdminListUsers,
@@ -9,8 +11,10 @@ import {
 import { wait } from "@trigger.dev/sdk/v3";
 import { getLocaleByAlpha2 } from "country-locale-map";
 import type DiscourseAPI from "discourse2";
-import { calculateMemberMetrics } from "../../queries/dashboard/calculateMemberMetrics";
-import { createMember } from "../members/createMember";
+import ISO6391 from "iso-639-1";
+import { createMember } from "../member/createMember";
+import { getMembersMetrics } from "../member/getMembersMetrics";
+import { upsertProfile } from "../profile/upsertProfile";
 import { createManyActivities } from "./createManyActivities";
 import { createManyInvites } from "./createManyInvites";
 import { createManyReactions } from "./createManyReactions";
@@ -19,16 +23,18 @@ export const createManyMembers = async ({
   discourse,
   client,
   tags,
+  levels,
 }: {
   discourse: DiscourseIntegration;
   client: DiscourseAPI;
   tags: Tag[];
+  levels: Level[];
 }) => {
   const { workspace_id } = discourse;
   const { community_url, api_key, user_fields } = discourse.details;
 
   let members: AdminListUsers[] = [];
-  const createdMembers: MemberWithCompany[] = [];
+  const createdMembers: Member[] = [];
 
   let page = 0;
   let hasMore = true;
@@ -81,19 +87,21 @@ export const createManyMembers = async ({
     const { directory_items } = parsedReponse;
 
     for (const item of directory_items ?? []) {
-      let locale: string | null = null;
       const { id, username, name, avatar_template, user_fields, geo_location } =
         item.user;
 
       if (id < 1) continue;
 
-      if (typeof geo_location === "object" && geo_location !== null) {
-        const country =
-          "countrycode" in geo_location ? geo_location.countrycode : null;
+      let language: string | null = null;
+      let country: string | null = null;
 
-        if (country) {
-          locale = getLocaleByAlpha2(country.toUpperCase()) ?? null;
-        }
+      if (typeof geo_location === "object" && geo_location !== null) {
+        const { countrycode } = geo_location;
+
+        country = countrycode.toUpperCase();
+        const locale = getLocaleByAlpha2(countrycode.toUpperCase());
+        const languageCode = locale?.split("_")[0] ?? "";
+        language = languageCode ? ISO6391.getName(languageCode) : null;
       }
 
       const [firstName, lastName] = name?.split(" ") ?? [];
@@ -117,54 +125,63 @@ export const createManyMembers = async ({
       const { email, title, created_at } = filteredMember;
 
       const custom_fields = Object.entries(user_fields ?? {}).map(
-        ([id, value]) => ({
+        ([id, field]) => ({
           id,
-          value,
+          value: field.value[0] ?? "",
         }),
       );
 
       const member = await createMember({
         data: {
-          discourse_id: String(id),
           first_name: firstName,
           last_name: lastName,
-          discourse_username: username,
           primary_email: email,
-          locale,
           avatar_url: avatarUrl,
+          language,
+          country,
           job_title: title,
           tags: memberTags,
-          custom_fields: custom_fields ?? [],
           created_at: new Date(created_at),
         },
         source: "DISCOURSE",
         workspace_id,
       });
 
+      const profile = await upsertProfile({
+        external_id: String(id),
+        attributes: {
+          source: "DISCOURSE",
+          username: username,
+          custom_fields,
+        },
+        member_id: member.id,
+        workspace_id,
+      });
+
       await createManyReactions({
         discourse,
-        member,
+        profile: DiscourseProfileSchema.parse(profile),
       });
 
       await wait.for({ seconds: 0.5 });
 
       await createManyInvites({
         discourse,
-        member,
+        profile: DiscourseProfileSchema.parse(profile),
       });
 
       await wait.for({ seconds: 0.5 });
 
       await createManyActivities({
         client,
-        member,
+        profile: DiscourseProfileSchema.parse(profile),
       });
 
       await wait.for({ seconds: 0.5 });
 
-      const updatedMember = await calculateMemberMetrics({ member });
+      await getMembersMetrics({ members: [member], levels });
 
-      createdMembers.push(updatedMember);
+      createdMembers.push(member);
 
       await wait.for({ seconds: 2.5 });
     }

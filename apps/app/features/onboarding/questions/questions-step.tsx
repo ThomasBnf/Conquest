@@ -1,11 +1,10 @@
-import { updateWorkspace } from "@/actions/workspaces/updateWorkspace";
 import { useUser } from "@/context/userContext";
+import { trpc } from "@/server/client";
 import { Button } from "@conquest/ui/button";
 import { CardContent, CardFooter } from "@conquest/ui/card";
 import { Form } from "@conquest/ui/form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowRightIcon } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -21,36 +20,34 @@ type Props = {
 };
 
 export const QuestionsStep = ({ setStep }: Props) => {
-  const { slug } = useUser();
-
+  const { user } = useUser();
   const [loading, setLoading] = useState(false);
-  const router = useRouter();
+
+  const utils = trpc.useUtils();
+  const { mutateAsync: mutateWorkspace } =
+    trpc.workspaces.updateWorkspace.useMutation({
+      onSuccess: () => {
+        utils.workspaces.getWorkspace.invalidate();
+        setStep(3);
+      },
+      onError: (error) => {
+        setLoading(false);
+        toast.error(error.message);
+      },
+    });
 
   const form = useForm<Questions>({
     resolver: zodResolver(QuestionsSchema),
-    defaultValues: {
-      company_size: undefined,
-      source: undefined,
-    },
   });
 
-  const isDisabled = loading || !form.formState.isValid;
-
   const onSubmit = async ({ company_size, source }: Questions) => {
+    if (!user) return;
+
     setLoading(true);
-
-    const rWorkspace = await updateWorkspace({
-      company_size,
-      source,
+    await mutateWorkspace({
+      id: user.workspace_id,
+      data: { company_size, source },
     });
-    const errorWorkspace = rWorkspace?.serverError;
-
-    if (errorWorkspace) {
-      setLoading(false);
-      return toast.error(errorWorkspace);
-    }
-
-    setStep(3);
   };
 
   return (
@@ -63,9 +60,8 @@ export const QuestionsStep = ({ setStep }: Props) => {
         <CardFooter>
           <Button
             type="submit"
-            onClick={() => router.replace(`/${slug}`)}
             loading={loading}
-            disabled={isDisabled}
+            disabled={!form.formState.isValid || loading}
             className="w-full"
           >
             Continue

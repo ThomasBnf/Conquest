@@ -1,4 +1,4 @@
-import { listAllMembers } from "@/client/members/listAllMembers";
+import { trpc } from "@/server/client";
 import { Button } from "@conquest/ui/button";
 import {
   Command,
@@ -10,34 +10,41 @@ import {
 } from "@conquest/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@conquest/ui/popover";
 import { Skeleton } from "@conquest/ui/skeleton";
-import type { MemberWithCompany } from "@conquest/zod/schemas/member.schema";
+import type { Member } from "@conquest/zod/schemas/member.schema";
 import { Plus } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useInView } from "react-intersection-observer";
+import { useDebounce } from "use-debounce";
 import { MemberDetails } from "../members/member-details";
 
 type Props = {
-  currentMember?: MemberWithCompany;
-  onSelect: (member: MemberWithCompany) => void;
+  currentMember?: Member;
+  onSelect: (member: Member) => void;
 };
 
 export const MemberPicker = ({ currentMember, onSelect }: Props) => {
   const { first_name } = currentMember ?? {};
-  const [open, setOpen] = useState(false);
-  const [search, setSearch] = useState(`${first_name}`);
   const { ref, inView } = useInView();
 
-  const { data, hasNextPage, fetchNextPage, isLoading } = listAllMembers({
-    search,
-  });
+  const [open, setOpen] = useState(false);
+  const [query, setQuery] = useState(first_name ?? "");
+  const [search, setSearch] = useDebounce(query, 500);
 
-  const members = data?.pages.flat();
+  const { data, isLoading, fetchNextPage, hasNextPage } =
+    trpc.members.listMembers.useInfiniteQuery(
+      { search, take: 10 },
+      { getNextPageParam: (lastPage) => lastPage[lastPage.length - 1]?.id },
+    );
+
+  const members = data?.pages.flatMap((page) => page.map((member) => member));
 
   useEffect(() => {
-    if (inView && hasNextPage) {
-      fetchNextPage();
-    }
+    if (inView && hasNextPage) fetchNextPage();
   }, [inView]);
+
+  useEffect(() => {
+    setSearch(query);
+  }, [query]);
 
   return (
     <Popover open={open} onOpenChange={setOpen} modal>
@@ -50,13 +57,16 @@ export const MemberPicker = ({ currentMember, onSelect }: Props) => {
         <Command loop shouldFilter={false}>
           <CommandInput
             placeholder="Search member..."
-            value={search}
-            onValueChange={(value) => setSearch(value ?? "")}
+            value={query}
+            onValueChange={(value) => setQuery(value ?? "")}
           />
           <CommandList>
             <CommandGroup>
-              {isLoading && <Skeleton className="h-8 w-full" />}
-              {!isLoading && <CommandEmpty>No members found</CommandEmpty>}
+              {isLoading ? (
+                <Skeleton className="h-8 w-full" />
+              ) : (
+                <CommandEmpty>No members found</CommandEmpty>
+              )}
               {members
                 ?.filter((member) => member.id !== currentMember?.id)
                 ?.map((member) => (

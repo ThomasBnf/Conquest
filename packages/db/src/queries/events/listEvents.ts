@@ -8,7 +8,7 @@ type Props = {
 };
 
 export const listEvents = async ({ source, workspace_id }: Props) => {
-  const events = await prisma.events.findMany({
+  const events = await prisma.event.findMany({
     where: {
       source,
       workspace_id,

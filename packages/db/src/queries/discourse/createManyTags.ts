@@ -1,6 +1,6 @@
 import type { Tag } from "@conquest/zod/schemas/tag.schema";
 import type DiscourseAPI from "discourse2";
-import { createTag } from "../../queries/tags/createTag";
+import { createTag } from "../tag/createTag";
 
 export const createManyTags = async ({
   client,

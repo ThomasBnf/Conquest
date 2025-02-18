@@ -1,8 +1,10 @@
 import { OPERATORS } from "@/constant";
+import { useFilters } from "@/context/filtersContext";
 import { Button } from "@conquest/ui/button";
 import {
   Command,
   CommandGroup,
+  CommandInput,
   CommandItem,
   CommandList,
 } from "@conquest/ui/command";
@@ -11,29 +13,42 @@ import {
   BaseOperatorSchema,
   DateOperatorSchema,
   type Filter,
+  FilterSchema,
   NumberOperatorSchema,
   type Operator,
 } from "@conquest/zod/schemas/filters.schema";
+import { ChevronDown } from "lucide-react";
 import { useState } from "react";
 
 type Props = {
   filter: Filter;
-  handleUpdate: (operator: Operator) => void;
 };
 
-export const OperatorPicker = ({ filter, handleUpdate }: Props) => {
+export const OperatorPicker = ({ filter }: Props) => {
+  const { onUpdateFilter } = useFilters();
   const [open, setOpen] = useState(false);
+
+  const onUpdate = (operator: Operator) => {
+    const newFilter = FilterSchema.parse({
+      ...filter,
+      operator,
+    });
+
+    onUpdateFilter(newFilter);
+  };
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button variant="dropdown">
+        <Button variant="outline" className="w-[122px]">
           {filter.operator.replaceAll("_", " ")}
+          <ChevronDown size={16} className="ml-auto text-muted-foreground" />
         </Button>
       </PopoverTrigger>
       <PopoverContent align="start" className="p-0">
-        <Command className="w-36">
+        <Command className="w-36" loop>
           <CommandList>
+            <CommandInput placeholder="Search..." />
             <CommandGroup>
               {OPERATORS.filter((operator) => {
                 switch (filter.type) {
@@ -52,7 +67,7 @@ export const OperatorPicker = ({ filter, handleUpdate }: Props) => {
                 <CommandItem
                   key={operator}
                   onSelect={() => {
-                    handleUpdate(operator);
+                    onUpdate(operator);
                     setOpen(false);
                   }}
                 >

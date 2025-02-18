@@ -1,8 +1,11 @@
 "use client";
 
+import { IconDoc } from "@/components/custom/icon-doc";
 import { ACTIVITY_COLORS, WEEKDAYS } from "@/constant";
+import { trpc } from "@/server/client";
 import { cn } from "@conquest/ui/cn";
 import { ScrollArea, ScrollBar } from "@conquest/ui/scroll-area";
+import { Skeleton } from "@conquest/ui/skeleton";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@conquest/ui/tooltip";
 import type { ActivityWithType } from "@conquest/zod/schemas/activity.schema";
 import {
@@ -14,10 +17,75 @@ import {
 } from "date-fns";
 
 type Props = {
-  activities: {
-    date: Date;
-    activities: ActivityWithType[];
-  }[];
+  memberId: string;
+};
+
+export const MemberHeatmap = ({ memberId }: Props) => {
+  const calendar = generateCalendarGrid();
+
+  const { data, isLoading } = trpc.activities.getMemberActivitiesCount.useQuery(
+    {
+      memberId: memberId,
+    },
+  );
+
+  const activitiesCount = data?.reduce(
+    (acc, activity) => acc + activity.activities.length,
+    0,
+  );
+
+  return (
+    <div>
+      <div className="flex items-center gap-2">
+        <p className="font-medium text-lg">Member Heatmap</p>
+        <IconDoc url="https://docs.useconquest.com/member-heatmap" />
+      </div>
+      <p className="mb-4 flex items-center gap-1 text-muted-foreground">
+        {isLoading ? (
+          <Skeleton className="h-4 w-6" />
+        ) : (
+          <span>{activitiesCount}</span>
+        )}{" "}
+        activities in the last 365 days
+      </p>
+      <ScrollArea className="pb-4">
+        <div className="flex flex-col">
+          <MonthLabels calendar={calendar} />
+          <div className="flex">
+            <div className="grid grid-flow-col gap-1">
+              <div className="mr-2 flex flex-col justify-between text-muted-foreground text-xs">
+                {WEEKDAYS.map((day) => (
+                  <div key={day}>{day}</div>
+                ))}
+              </div>
+              {calendar.map((week) => (
+                <div
+                  key={format(week[0] ?? new Date(), "yyyy-MM-dd")}
+                  className="grid grid-rows-7 gap-1"
+                >
+                  {week.map((day) => {
+                    const dateStr = format(day, "yyyy-MM-dd");
+                    const dayActivities = data?.find(
+                      (a) => format(a.date, "yyyy-MM-dd") === dateStr,
+                    )?.activities;
+
+                    return (
+                      <DayCell
+                        key={dateStr}
+                        day={day}
+                        activities={dayActivities}
+                      />
+                    );
+                  })}
+                </div>
+              ))}
+            </div>
+          </div>
+          <ScrollBar orientation="horizontal" />
+        </div>
+      </ScrollArea>
+    </div>
+  );
 };
 
 type ActivityLevel = 0 | 1 | 2 | 3 | 4;
@@ -151,52 +219,6 @@ const MonthLabels = ({ calendar }: { calendar: Date[][] }) => {
         }
         return null;
       })}
-    </div>
-  );
-};
-
-export const MemberHeatmap = ({ activities }: Props) => {
-  const calendar = generateCalendarGrid();
-
-  return (
-    <div>
-      <p className="mb-2 font-medium text-lg">Member Heatmap</p>
-      <ScrollArea className="pb-4">
-        <div className="flex flex-col">
-          <MonthLabels calendar={calendar} />
-          <div className="flex">
-            <div className="grid grid-flow-col gap-1">
-              <div className="mr-2 flex flex-col justify-between text-muted-foreground text-xs">
-                {WEEKDAYS.map((day) => (
-                  <div key={day}>{day}</div>
-                ))}
-              </div>
-              {calendar.map((week) => (
-                <div
-                  key={format(week[0] ?? new Date(), "yyyy-MM-dd")}
-                  className="grid grid-rows-7 gap-1"
-                >
-                  {week.map((day) => {
-                    const dateStr = format(day, "yyyy-MM-dd");
-                    const dayActivities = activities.find(
-                      (a) => format(a.date, "yyyy-MM-dd") === dateStr,
-                    )?.activities;
-
-                    return (
-                      <DayCell
-                        key={dateStr}
-                        day={day}
-                        activities={dayActivities}
-                      />
-                    );
-                  })}
-                </div>
-              ))}
-            </div>
-          </div>
-          <ScrollBar orientation="horizontal" />
-        </div>
-      </ScrollArea>
     </div>
   );
 };

@@ -2,9 +2,8 @@ import type { Channel } from "@conquest/zod/schemas/channel.schema";
 import type { DiscordIntegration } from "@conquest/zod/schemas/integration.schema";
 import { type APIMessage, Routes } from "discord-api-types/v10";
 import { discordClient } from "../../discord";
-import { createActivity } from "../activities/createActivity";
-import { getMember } from "../members/getMember";
-import { createFiles } from "./createFiles";
+import { createActivity } from "../activity/createActivity";
+import { getProfile } from "../profile/getProfile";
 import { createMember } from "./createMember";
 
 type Props = {
@@ -36,7 +35,6 @@ export const listChannelMessages = async ({
         content,
         thread,
         message_reference,
-        attachments,
         timestamp,
         sticker_items,
       } = message;
@@ -45,28 +43,24 @@ export const listChannelMessages = async ({
 
       if (author.bot) continue;
 
-      const member =
-        (await getMember({ discord_id, workspace_id })) ??
-        (await createMember({ discord, discord_id }));
+      const member_id =
+        (await getProfile({ external_id: discord_id, workspace_id }))
+          ?.member_id ?? (await createMember({ discord, discord_id }))?.id;
 
-      if (!member || !content || thread || sticker_items) continue;
+      if (!member_id || !content || thread || sticker_items) continue;
 
       switch (type) {
         case 0: {
-          const activity = await createActivity({
+          await createActivity({
             external_id: id,
-            activity_type_key: "discord:post",
+            activity_type_key: "discord:message",
             message: content,
-            member_id: member.id,
+            member_id,
             channel_id: channel.id,
             created_at: new Date(timestamp),
             updated_at: new Date(timestamp ?? ""),
+            source: "DISCORD",
             workspace_id,
-          });
-
-          await createFiles({
-            files: attachments ?? [],
-            activity_id: activity?.id,
           });
 
           break;
@@ -79,10 +73,11 @@ export const listChannelMessages = async ({
             activity_type_key: "discord:reply",
             message: message.content,
             reply_to: message_id,
-            member_id: member.id,
+            member_id,
             channel_id: channel.id,
             created_at: new Date(timestamp),
             updated_at: new Date(timestamp ?? ""),
+            source: "DISCORD",
             workspace_id,
           });
 

@@ -1,4 +1,4 @@
-import type { channels as ChannelPrisma } from "@prisma/client";
+import type { channel as ChannelPrisma } from "@prisma/client";
 import { z } from "zod";
 import { SOURCE } from "../enum/source.enum";
 

@@ -18,7 +18,7 @@ export const createEvent = async ({
   source,
   workspace_id,
 }: Props) => {
-  const event = await prisma.events.create({
+  const event = await prisma.event.create({
     data: {
       external_id,
       title,

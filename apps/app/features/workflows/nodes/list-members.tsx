@@ -1,5 +1,3 @@
-import { FilterButton } from "@/features/filters/filter-button";
-import { FiltersList } from "@/features/filters/filters-list";
 import { useSelected } from "@/features/workflows/hooks/useSelected";
 import { Label } from "@conquest/ui/label";
 import type { Filter } from "@conquest/zod/schemas/filters.schema";
@@ -29,20 +27,6 @@ export const ListMembers = () => {
   return (
     <div className="flex flex-col gap-1.5">
       <Label>Filters</Label>
-      {filters.length > 0 ? (
-        <FiltersList
-          filters={filters}
-          setFilters={setFilters}
-          handleUpdate={handleUpdate}
-          align="end"
-        />
-      ) : (
-        <FilterButton
-          filters={filters}
-          setFilters={setFilters}
-          handleUpdate={handleUpdate}
-        />
-      )}
     </div>
   );
 };

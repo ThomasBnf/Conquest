@@ -1,7 +1,5 @@
 "use client";
 
-import { updateWorkflow } from "@/actions/workflows/updateWorkflow";
-import { getWorkflow } from "@/client/workflows/getWorkflow";
 import { useUser } from "@/context/userContext";
 import {
   Breadcrumb,
@@ -33,29 +31,29 @@ export const Header = ({ workflow_id }: Props) => {
   const { slug } = useUser();
   const queryClient = useQueryClient();
 
-  const { data: workflow } = getWorkflow({ workflow_id });
+  // const { data: workflow } = getWorkflow({ workflow_id });
 
-  const { mutate } = useMutation({
-    mutationFn: updateWorkflow,
-    onSuccess: () => {
-      queryClient.refetchQueries({ queryKey: ["workflow", workflow_id] });
-    },
-  });
+  // const { mutate } = useMutation({
+  //   mutationFn: updateWorkflow,
+  //   onSuccess: () => {
+  //     queryClient.refetchQueries({ queryKey: ["workflow", workflow_id] });
+  //   },
+  // });
 
   const form = useForm<FormName>({
     resolver: zodResolver(FormNameSchema),
-    defaultValues: {
-      name: workflow?.name,
-    },
+    // defaultValues: {
+    //   name: workflow?.name,
+    // },
   });
 
   const onSubmit = async ({ name }: FormName) => {
-    mutate({ id: workflow_id, name });
+    // mutate({ id: workflow_id, name });
   };
 
-  useEffect(() => {
-    form.setValue("name", workflow?.name ?? "");
-  }, [workflow]);
+  // useEffect(() => {
+  //   form.setValue("name", workflow?.name ?? "");
+  // }, [workflow]);
 
   return (
     <div className="flex h-12 shrink-0 items-center justify-between gap-2 px-4">
@@ -95,12 +93,12 @@ export const Header = ({ workflow_id }: Props) => {
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
-      {workflow && (
+      {/* {workflow && (
         <div className="flex items-center gap-4">
           <IsPublished workflow={workflow} />
           <WorkflowMenu workflow={workflow} />
         </div>
-      )}
+      )} */}
     </div>
   );
 };

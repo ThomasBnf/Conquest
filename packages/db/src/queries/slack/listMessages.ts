@@ -1,9 +1,8 @@
 import type { Channel } from "@conquest/zod/schemas/channel.schema";
 import type { WebClient } from "@slack/web-api";
-import { createActivity } from "../../queries/activities/createActivity";
-import { getMember } from "../../queries/members/getMember";
-import { type SlackFile, createFiles } from "../../queries/slack/createFiles";
 import { listReplies } from "../../queries/slack/listReplies";
+import { createActivity } from "../activity/createActivity";
+import { getProfile } from "../profile/getProfile";
 
 type Props = {
   web: WebClient;
@@ -28,7 +27,6 @@ export const listMessages = async ({ web, channel, workspace_id }: Props) => {
     const { messages, response_metadata } = result;
 
     for (const message of messages ?? []) {
-      console.log("message", message);
       if (!message.user) continue;
 
       const { text, ts, user, reactions, reply_count, files, subtype } =
@@ -36,24 +34,23 @@ export const listMessages = async ({ web, channel, workspace_id }: Props) => {
 
       if (subtype === "channel_join") continue;
 
-      const member = await getMember({ slack_id: user, workspace_id });
-
-      if (!member) continue;
-
-      const activity = await createActivity({
-        external_id: ts ?? null,
-        activity_type_key: "slack:post",
-        message: text ?? "",
-        member_id: member.id,
-        channel_id: channel.id,
-        created_at: new Date(Number(ts) * 1000),
-        updated_at: new Date(Number(ts) * 1000),
+      const profile = await getProfile({
+        external_id: user,
         workspace_id,
       });
 
-      await createFiles({
-        files: files as SlackFile[],
-        activity_id: activity?.id,
+      if (!profile) continue;
+
+      const activity = await createActivity({
+        external_id: ts ?? null,
+        activity_type_key: "slack:message",
+        message: text ?? "",
+        member_id: profile.member_id,
+        channel_id: channel.id,
+        created_at: new Date(Number(ts) * 1000),
+        updated_at: new Date(Number(ts) * 1000),
+        source: "SLACK",
+        workspace_id,
       });
 
       if (reactions?.length) {
@@ -61,22 +58,23 @@ export const listMessages = async ({ web, channel, workspace_id }: Props) => {
           const { name } = reaction;
 
           for (const user of reaction.users ?? []) {
-            const member = await getMember({
-              slack_id: user,
+            const profile = await getProfile({
+              external_id: user,
               workspace_id,
             });
 
-            if (!member) continue;
+            if (!profile) continue;
 
             await createActivity({
               external_id: null,
               activity_type_key: "slack:reaction",
               message: name ?? "",
               react_to: activity?.external_id,
-              member_id: member.id,
+              member_id: profile.member_id,
               channel_id: channel.id,
               created_at: new Date(Number(ts) * 1000),
               updated_at: new Date(Number(ts) * 1000),
+              source: "SLACK",
               workspace_id,
             });
           }

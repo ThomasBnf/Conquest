@@ -1,6 +1,5 @@
-import { createTag } from "@/actions/tags/createTag";
-import { updateTag } from "@/actions/tags/updateTag";
 import { COLORS } from "@/constant";
+import { trpc } from "@/server/client";
 import { Button } from "@conquest/ui/button";
 import { ColorPicker } from "@conquest/ui/color-picker";
 import { Form, FormControl, FormField, FormItem } from "@conquest/ui/form";
@@ -14,19 +13,31 @@ import { type FormTag, FormTagSchema } from "./schema/form.schema";
 
 type Props = {
   tag?: Tag;
-  isVisible?: boolean;
-  setIsVisible?: (value: boolean) => void;
-  isEditing?: boolean;
   setIsEditing?: (value: boolean) => void;
+  setIsVisible?: (value: boolean) => void;
 };
 
-export const TagForm = ({
-  tag,
-  isVisible,
-  setIsVisible,
-  isEditing,
-  setIsEditing,
-}: Props) => {
+export const TagForm = ({ tag, setIsVisible, setIsEditing }: Props) => {
+  const utils = trpc.useUtils();
+
+  const { mutateAsync: createTag } = trpc.tags.createTag.useMutation({
+    onSuccess: () => {
+      utils.tags.getAllTags.invalidate();
+      setIsVisible?.(false);
+      setIsEditing?.(false);
+      form.reset();
+    },
+  });
+
+  const { mutateAsync: updateTag } = trpc.tags.updateTag.useMutation({
+    onSuccess: () => {
+      utils.tags.getAllTags.invalidate();
+      setIsVisible?.(false);
+      setIsEditing?.(false);
+      form.reset();
+    },
+  });
+
   const form = useForm<FormTag>({
     resolver: zodResolver(FormTagSchema),
     defaultValues: {
@@ -35,24 +46,15 @@ export const TagForm = ({
     },
   });
 
-  if (isVisible !== undefined && !isVisible) return;
-  if (isEditing !== undefined && !isEditing) return;
-
   const onSubmit = async ({ name, color }: FormTag) => {
-    if (tag && isEditing !== undefined) {
-      await updateTag({ id: tag.id, name, color });
-    } else {
-      await createTag({
-        external_id: null,
-        name,
-        color,
-        source: "MANUAL",
+    if (tag) {
+      return await updateTag({
+        id: tag.id,
+        data: { name, color },
       });
     }
 
-    setIsVisible?.(false);
-    setIsEditing?.(false);
-    form.reset();
+    await createTag({ name, color });
   };
 
   const onCancel = () => {

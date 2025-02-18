@@ -1,6 +1,6 @@
 "use client";
 
-import { createApiKey } from "@/actions/api-keys/actions/createApiKey";
+import { trpc } from "@/server/client";
 import { Button } from "@conquest/ui/button";
 import { Form, FormControl, FormField, FormItem } from "@conquest/ui/form";
 import { Input } from "@conquest/ui/input";
@@ -9,6 +9,8 @@ import { useForm } from "react-hook-form";
 import { type FormCreate, FormCreateSchema } from "./schema/form-create.schema";
 
 export const FormAPIKey = () => {
+  const { mutateAsync } = trpc.apiKeys.createApiKey.useMutation();
+
   const form = useForm<FormCreate>({
     resolver: zodResolver(FormCreateSchema),
     defaultValues: {
@@ -20,7 +22,7 @@ export const FormAPIKey = () => {
   const disabled = !form.formState.isValid;
 
   const onSubmit = async ({ name }: FormCreate) => {
-    await createApiKey({ name });
+    await mutateAsync({ name });
     form.reset();
   };
 

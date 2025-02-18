@@ -1,4 +1,3 @@
-import { useUser } from "@/context/userContext";
 import { Button, buttonVariants } from "@conquest/ui/button";
 import { Card, CardContent, CardHeader } from "@conquest/ui/card";
 import { cn } from "@conquest/ui/cn";
@@ -11,7 +10,7 @@ import { toast } from "sonner";
 
 type Props = {
   error: string;
-  integration: Integration | undefined;
+  integration: Integration | null;
   description: string;
   docUrl: string;
   loading: boolean;
@@ -29,7 +28,6 @@ export const EnableCard = ({
   onDisconnect,
   children,
 }: PropsWithChildren<Props>) => {
-  const { slug } = useUser();
   const { status, trigger_token, trigger_token_expires_at } = integration ?? {};
   const pathname = usePathname();
   const source = pathname.split("/").pop();
@@ -61,7 +59,7 @@ export const EnableCard = ({
           );
           break;
       }
-      router.replace(`/${slug}/settings/integrations/${source}`);
+      router.replace(`/settings/integrations/${source}`);
     }
   }, [trigger_token_expires_at, error]);
 

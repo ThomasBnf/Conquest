@@ -1,4 +1,4 @@
-import type { companies as CompanyPrisma } from "@prisma/client";
+import type { company as CompanyPrisma } from "@prisma/client";
 import { z } from "zod";
 import { SOURCE } from "../enum/source.enum";
 

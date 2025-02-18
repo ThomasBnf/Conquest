@@ -1,85 +1,80 @@
-import { getLevelLabel } from "@/helpers/getLevelLabel";
+import { useFilters } from "@/context/filtersContext";
+import { trpc } from "@/server/client";
 import { Button } from "@conquest/ui/button";
 import {
   Command,
+  CommandEmpty,
   CommandGroup,
   CommandInput,
   CommandItem,
   CommandList,
 } from "@conquest/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@conquest/ui/popover";
-import type { Filter, FilterLevel } from "@conquest/zod/schemas/filters.schema";
-import type { Dispatch, SetStateAction } from "react";
+import { Skeleton } from "@conquest/ui/skeleton";
+import type { FilterLevel } from "@conquest/zod/schemas/filters.schema";
+import type { Level } from "@conquest/zod/schemas/level.schema";
+import { Check, ChevronDown } from "lucide-react";
 import { useState } from "react";
-import { useTab } from "./hooks/useTab";
 
 type Props = {
-  filter: FilterLevel | undefined;
-  setFilters: Dispatch<SetStateAction<Filter[]>>;
-  handleUpdate?: (filters: Filter[]) => void;
-  setOpenDropdown?: Dispatch<SetStateAction<boolean>>;
-  triggerButton?: boolean;
+  filter: FilterLevel;
 };
 
-export const LevelPicker = ({
-  filter,
-  setFilters,
-  setOpenDropdown,
-  triggerButton,
-  handleUpdate,
-}: Props) => {
-  const { setTab } = useTab();
+export const LevelPicker = ({ filter }: Props) => {
+  const { onUpdateFilter } = useFilters();
+  const { value } = filter;
   const [open, setOpen] = useState(false);
 
-  const handleSelect = (level: number) => {
-    if (!filter) return;
+  const { data: levels, isLoading } = trpc.levels.getAllLevels.useQuery();
+  const currentLevel = levels?.find((level) => level.number === value);
 
-    setOpenDropdown?.(false);
-    setTimeout(() => {
-      setOpen(false);
-      setFilters((prevFilters) => {
-        const exists = prevFilters.some((f) => f.id === filter.id);
-        const updatedFilters = exists
-          ? prevFilters.map((f) =>
-              f.id === filter.id ? { ...filter, value: level } : f,
-            )
-          : [...prevFilters, { ...filter, value: level }];
-        handleUpdate?.(updatedFilters);
-        setTab(undefined);
-        return updatedFilters;
-      });
-    }, 100);
+  const onSelect = (level: Level) => {
+    setOpen(false);
+    onUpdateFilter({ ...filter, value: level.number });
   };
 
-  const commandContent = (
-    <Command>
-      <CommandInput placeholder="Search level..." />
-      <CommandList>
-        <CommandGroup>
-          {Array.from({ length: 12 }, (_, i) => 12 - i).map((level) => (
-            <CommandItem key={level} onSelect={() => handleSelect(level)}>
-              {getLevelLabel(level)}
-            </CommandItem>
-          ))}
-        </CommandGroup>
-      </CommandList>
-    </Command>
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <Button
+          variant="outline"
+          aria-expanded={open}
+          className="min-w-[180px] justify-between"
+          classNameSpan="text-start justify-between text-nowrap"
+        >
+          {currentLevel ? (
+            <span>
+              {currentLevel.number} • {currentLevel.name}
+            </span>
+          ) : (
+            <span className="text-muted-foreground">Select</span>
+          )}
+          <ChevronDown size={16} className="text-muted-foreground" />
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent align="start" className="w-fit p-0">
+        <Command>
+          <CommandInput placeholder="Search..." />
+          <CommandList className="max-h-[450px]">
+            {!isLoading && <CommandEmpty>No sources found.</CommandEmpty>}
+            <CommandGroup>
+              {isLoading && <Skeleton className="h-8 w-full" />}
+              {levels?.map((level) => (
+                <CommandItem
+                  key={level.id}
+                  value={level.id}
+                  onSelect={() => onSelect(level)}
+                >
+                  {level.number} • {level.name}
+                  {value === level.number && (
+                    <Check size={16} className="ml-auto" />
+                  )}
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          </CommandList>
+        </Command>
+      </PopoverContent>
+    </Popover>
   );
-
-  if (triggerButton) {
-    return (
-      <Popover open={open} onOpenChange={setOpen}>
-        <PopoverTrigger asChild>
-          <Button variant="dropdown">
-            {filter ? getLevelLabel(filter.value) : "Select level"}
-          </Button>
-        </PopoverTrigger>
-        <PopoverContent align="start" className="p-0">
-          {commandContent}
-        </PopoverContent>
-      </Popover>
-    );
-  }
-
-  return commandContent;
 };

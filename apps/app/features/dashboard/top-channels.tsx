@@ -1,6 +1,6 @@
 "use client";
 
-import { useListTopChannels } from "@/client/dashboard/listTopChannels";
+import { trpc } from "@/server/client";
 import { type ChartConfig, ChartContainer } from "@conquest/ui/chart";
 import { useRef } from "react";
 import {
@@ -27,7 +27,10 @@ const chartConfig = {
 export const TopChannels = ({ from, to }: Props) => {
   const ref = useRef<HTMLDivElement>(null);
 
-  const { data: topChannels } = useListTopChannels({ from, to });
+  const { data } = trpc.dashboard.topChannels.useQuery({
+    from,
+    to,
+  });
 
   return (
     <div className="flex-1 p-4">
@@ -38,7 +41,7 @@ export const TopChannels = ({ from, to }: Props) => {
       </div>
       <ResponsiveContainer height={350} width="100%">
         <ChartContainer ref={ref} config={chartConfig}>
-          <BarChart accessibilityLayer data={topChannels} layout="vertical">
+          <BarChart accessibilityLayer data={data?.channels} layout="vertical">
             <YAxis
               dataKey="name"
               type="category"

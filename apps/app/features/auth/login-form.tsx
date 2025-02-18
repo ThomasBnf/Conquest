@@ -1,5 +1,6 @@
 "use client";
 
+import { trpc } from "@/server/client";
 import { Button, buttonVariants } from "@conquest/ui/button";
 import {
   Card,
@@ -21,32 +22,32 @@ import { type Login, LoginSchema } from "@conquest/zod/schemas/auth.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowRightIcon } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { logIn } from "../../actions/auth/log-in";
 
 export const LoginForm = () => {
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
+
+  const { mutateAsync } = trpc.auth.login.useMutation({
+    onSuccess: () => {
+      router.push("/");
+    },
+    onError: (error) => {
+      setLoading(false);
+      toast.error(error.message);
+    },
+  });
 
   const form = useForm<Login>({
     resolver: zodResolver(LoginSchema),
-    defaultValues: {
-      email: "",
-      password: "",
-    },
   });
 
   const onSubmit = async ({ email, password }: Login) => {
     setLoading(true);
-
-    const response = await logIn({ email, password });
-    const error = response?.serverError || response?.data?.error;
-
-    if (error) {
-      setLoading(false);
-      toast.error(error);
-    }
+    await mutateAsync({ email, password });
   };
 
   return (
@@ -66,7 +67,7 @@ export const LoginForm = () => {
                   <FormControl>
                     <Input
                       type="email"
-                      placeholder="email@example.com"
+                      placeholder="email@acme.com"
                       {...field}
                     />
                   </FormControl>

@@ -6,7 +6,7 @@ type Props = {
 };
 
 export const deleteListReactions = async ({ channel_id, react_to }: Props) => {
-  return await prisma.activities.deleteMany({
+  return await prisma.activity.deleteMany({
     where: {
       channel_id,
       react_to,

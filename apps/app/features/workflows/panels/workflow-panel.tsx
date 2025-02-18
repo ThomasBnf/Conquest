@@ -1,5 +1,3 @@
-import { updateWorkflow } from "@/actions/workflows/updateWorkflow";
-import { getWorkflow } from "@/client/workflows/getWorkflow";
 import {
   Form,
   FormControl,
@@ -25,32 +23,32 @@ export const WorkflowPanel = () => {
   const id = pathname.split("/").at(-1) as string;
   const queryClient = useQueryClient();
 
-  const { data: workflow } = getWorkflow({ workflow_id: id });
+  // const { data: workflow } = getWorkflow({ workflow_id: id });
 
   const form = useForm<FormWorkflow>({
     resolver: zodResolver(FormWorkflowSchema),
-    defaultValues: {
-      name: workflow?.name ?? "",
-      description: workflow?.description ?? "",
-    },
+    // defaultValues: {
+    //   name: workflow?.name ?? "",
+    //   description: workflow?.description ?? "",
+    // },
   });
 
-  const { mutate } = useMutation({
-    mutationFn: updateWorkflow,
-    onSuccess: () => {
-      queryClient.refetchQueries({ queryKey: ["workflow", id] });
-    },
-  });
+  // const { mutate } = useMutation({
+  //   mutationFn: updateWorkflow,
+  //   onSuccess: () => {
+  //     queryClient.refetchQueries({ queryKey: ["workflow", id] });
+  //   },
+  // });
 
   const onSubmit = async ({ name, description }: FormWorkflow) => {
-    if (!workflow?.id) return;
-    mutate({ id: workflow.id, name, description });
+    // if (!workflow?.id) return;
+    // mutate({ id: workflow.id, name, description });
   };
 
-  useEffect(() => {
-    form.setValue("name", workflow?.name ?? "");
-    form.setValue("description", workflow?.description ?? "");
-  }, [workflow]);
+  // useEffect(() => {
+  //   form.setValue("name", workflow?.name ?? "");
+  //   form.setValue("description", workflow?.description ?? "");
+  // }, [workflow]);
 
   return (
     <>

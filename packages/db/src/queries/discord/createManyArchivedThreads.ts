@@ -7,10 +7,9 @@ import {
   Routes,
 } from "discord-api-types/v10";
 import { discordClient } from "../../discord";
-import { createActivity } from "../activities/createActivity";
-import { getChannel } from "../channels/getChannel";
-import { getMember } from "../members/getMember";
-import { createFiles } from "./createFiles";
+import { createActivity } from "../activity/createActivity";
+import { getChannel } from "../channel/getChannel";
+import { getProfile } from "../profile/getProfile";
 import { createMember } from "./createMember";
 
 type Props = {
@@ -74,7 +73,6 @@ export const createManyArchivedThreads = async ({
             type,
             content,
             referenced_message,
-            attachments,
             timestamp,
             sticker_items,
             author,
@@ -85,54 +83,46 @@ export const createManyArchivedThreads = async ({
           if (sticker_items && sticker_items.length > 0) continue;
 
           if (message.id === firstMessage?.id) {
-            const member =
-              (await getMember({ discord_id, workspace_id })) ??
-              (await createMember({ discord, discord_id }));
+            const member_id =
+              (await getProfile({ external_id: discord_id, workspace_id }))
+                ?.member_id ??
+              (await createMember({ discord, discord_id }))?.id;
 
-            if (!member) continue;
+            if (!member_id) continue;
 
-            const activity = await createActivity({
+            await createActivity({
               external_id: thread.id,
-              activity_type_key: "discord:post",
+              activity_type_key: "discord:thread",
               title: name,
               message: type === 21 ? (message_content ?? "") : content,
-              member_id: member.id,
+              member_id,
               channel_id: channel.id,
               created_at: new Date(create_timestamp ?? ""),
               updated_at: new Date(create_timestamp ?? ""),
+              source: "DISCORD",
               workspace_id,
-            });
-
-            await createFiles({
-              files: attachments ?? [],
-              activity_id: activity?.id,
             });
 
             break;
           }
 
-          const member =
-            (await getMember({ discord_id: author.id, workspace_id })) ??
-            (await createMember({ discord, discord_id: author.id }));
+          const member_id =
+            (await getProfile({ external_id: discord_id, workspace_id }))
+              ?.member_id ?? (await createMember({ discord, discord_id }))?.id;
 
-          if (!member) continue;
+          if (!member_id) continue;
 
-          const activity = await createActivity({
+          await createActivity({
             external_id: message.id,
-            activity_type_key: "discord:reply",
+            activity_type_key: "discord:reply_thread",
             message: content,
-            reply_to: type === 19 ? referenced_message?.id : thread.id,
-            thread_id: thread.id,
-            member_id: member.id,
+            reply_to: thread.id,
+            member_id,
             channel_id: channel.id,
             created_at: new Date(timestamp),
             updated_at: new Date(timestamp),
+            source: "DISCORD",
             workspace_id,
-          });
-
-          await createFiles({
-            files: attachments ?? [],
-            activity_id: activity?.id,
           });
         }
 

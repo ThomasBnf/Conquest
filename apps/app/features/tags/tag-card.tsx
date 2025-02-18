@@ -10,11 +10,6 @@ type Props = {
 export const TagCard = ({ tag }: Props) => {
   const [isEditing, setIsEditing] = useState(false);
 
-  if (isEditing)
-    return (
-      <TagForm tag={tag} isEditing={isEditing} setIsEditing={setIsEditing} />
-    );
-
   const colorMap = {
     "1": "#E7C200",
     "2": "#CD7F31",
@@ -25,6 +20,8 @@ export const TagCard = ({ tag }: Props) => {
     tag.source === "DISCOURSE"
       ? colorMap[tag.color as keyof typeof colorMap]
       : tag.color;
+
+  if (isEditing) return <TagForm tag={tag} setIsEditing={setIsEditing} />;
 
   return (
     <div className="flex items-center justify-between rounded-md border px-4 py-2">

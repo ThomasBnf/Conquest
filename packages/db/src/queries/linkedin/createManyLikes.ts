@@ -1,9 +1,8 @@
 import type { LinkedInIntegration } from "@conquest/zod/schemas/integration.schema";
 import type { Post } from "@conquest/zod/schemas/posts.schema";
 import type { SocialActions } from "@conquest/zod/types/linkedin";
-import { getLocaleByAlpha2 } from "country-locale-map";
-import { createActivity } from "../activities/createActivity";
-import { upsertMember } from "../members/upsertMember";
+import { createActivity } from "../activity/createActivity";
+import { upsertMember } from "../member/upsertMember";
 import { getPeople } from "./getPeople";
 
 type Props = {
@@ -33,7 +32,7 @@ export const createManyLikes = async ({ linkedin, post, likes }: Props) => {
     } = people;
 
     const countryCode = headline.preferredLocale.country;
-    const locale = getLocaleByAlpha2(countryCode) ?? null;
+    // const locale = getLocaleByAlpha2(countryCode) ?? null;
     const avatar_url = profilePicture["displayImage~"]?.elements?.find(
       (element) => element?.artifact?.includes("800_800"),
     )?.identifiers?.[0]?.identifier;
@@ -41,11 +40,11 @@ export const createManyLikes = async ({ linkedin, post, likes }: Props) => {
     const member = await upsertMember({
       id,
       data: {
-        linkedin_id: id,
-        linkedin_url: `https://www.linkedin.com/in/${vanityName}`,
+        // linkedin_id: id,
+        // linkedin_url: `https://www.linkedin.com/in/${vanityName}`,
         first_name: localizedFirstName,
         last_name: localizedLastName,
-        locale,
+        // locale,
         avatar_url,
         job_title: localizedHeadline,
       },
@@ -59,6 +58,7 @@ export const createManyLikes = async ({ linkedin, post, likes }: Props) => {
       message: "like",
       react_to: post.id,
       member_id: member.id,
+      source: "LINKEDIN",
       workspace_id,
     });
   }

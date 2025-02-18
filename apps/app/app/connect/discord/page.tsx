@@ -1,19 +1,21 @@
 import { DISCORD_PERMISSIONS, DISCORD_SCOPES } from "@/constant";
 import { getCurrentUser } from "@/queries/getCurrentUser";
-import { createIntegration } from "@conquest/db/queries/integrations/createIntegration";
-import { getIntegration } from "@conquest/db/queries/integrations/getIntegration";
+import { createIntegration } from "@conquest/db/queries/integration/createIntegration";
+import { getIntegration } from "@conquest/db/queries/integration/getIntegration";
 import { env } from "@conquest/env";
 import { redirect } from "next/navigation";
 
 type Props = {
   searchParams: {
+    error?: string;
     code: string;
   };
 };
 
-export default async function Page({ searchParams: { code } }: Props) {
-  const user = await getCurrentUser();
-  const { slug, id: workspace_id } = user.workspace;
+export default async function Page({ searchParams: { code, error } }: Props) {
+  const { id: userId, workspace_id } = await getCurrentUser();
+
+  if (error) redirect("/settings/integrations/discord?error=access_denied");
 
   const response = await fetch("https://discord.com/api/oauth2/token", {
     method: "POST",
@@ -28,9 +30,7 @@ export default async function Page({ searchParams: { code } }: Props) {
   });
 
   if (!response.ok) {
-    return redirect(
-      `/${slug}/settings/integrations/discord?error=invalid_code`,
-    );
+    return redirect("settings/integrations/discord?error=invalid_code");
   }
 
   const data = await response.json();
@@ -42,9 +42,7 @@ export default async function Page({ searchParams: { code } }: Props) {
   });
 
   if (integration) {
-    return redirect(
-      `/${slug}/settings/integrations/discord?error=already_connected`,
-    );
+    return redirect("settings/integrations/discord?error=already_connected");
   }
 
   await createIntegration({
@@ -58,9 +56,9 @@ export default async function Page({ searchParams: { code } }: Props) {
       scopes: DISCORD_SCOPES,
       permissions: DISCORD_PERMISSIONS,
     },
-    created_by: user.id,
+    created_by: userId,
     workspace_id,
   });
 
-  redirect(`/${slug}/settings/integrations/discord`);
+  redirect("/settings/integrations/discord");
 }

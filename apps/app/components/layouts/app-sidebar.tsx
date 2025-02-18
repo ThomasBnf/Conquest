@@ -1,17 +1,20 @@
 "use client";
 
-import { Activities } from "@/components/icons/Activities";
 import { Companies } from "@/components/icons/Companies";
 import { Dashboard } from "@/components/icons/Dashboard";
 import { Members } from "@/components/icons/Members";
 import { useUser } from "@/context/userContext";
+import { CreateListDialog } from "@/features/lists/create-list-dialog";
 import { WorkspaceMenu } from "@/features/workspaces/workspace-menu";
+import { useOpenList } from "@/hooks/useOpenList";
+import { trpc } from "@/server/client";
 import { Separator } from "@conquest/ui/separator";
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
   SidebarGroup,
+  SidebarGroupAction,
   SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
@@ -19,97 +22,111 @@ import {
   SidebarMenuItem,
   SidebarRail,
 } from "@conquest/ui/sidebar";
-import type { List } from "@conquest/zod/schemas/list.schema";
+import type { Workspace } from "@conquest/zod/schemas/workspace.schema";
+import { Plus } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Documentation } from "../icons/Documentation";
 import { Settings } from "../icons/Settings";
 import { SlackCommunity } from "../icons/Slack-Community";
 import { LoadingIntegrations } from "../states/loading-integrations";
-import { SidebarSettings } from "./sidebar-settings";
 
 type Props = {
-  lists: List[];
+  workspace: Workspace | undefined;
 };
 
-export const AppSidebar = ({ lists }: Props) => {
+export const AppSidebar = ({ workspace }: Props) => {
   const { slug } = useUser();
+  const { setOpen } = useOpenList();
   const pathname = usePathname();
 
-  if (pathname.startsWith(`/${slug}/settings`)) return <SidebarSettings />;
+  const isMemberPage = pathname.startsWith(`/${slug}/members`);
+
+  const { data: lists } = trpc.lists.getAllLists.useQuery();
 
   const routes = [
     {
       label: "Dashboard",
-      icon: <Dashboard className="size-[18px]" />,
+      icon: <Dashboard size={18} />,
       href: `/${slug}`,
       isActive: pathname === `/${slug}`,
     },
     {
       label: "Members",
-      icon: <Members className="size-[18px]" />,
+      icon: <Members size={18} />,
       href: `/${slug}/members`,
       isActive: pathname.startsWith(`/${slug}/members`),
     },
     {
       label: "Companies",
-      icon: <Companies className="size-[18px]" />,
+      icon: <Companies size={18} />,
       href: `/${slug}/companies`,
       isActive: pathname.startsWith(`/${slug}/companies`),
-    },
-    {
-      label: "Activities",
-      icon: <Activities className="size-[18px]" />,
-      href: `/${slug}/activities`,
-      isActive: pathname.startsWith(`/${slug}/activities`),
     },
   ];
 
   const footer = [
     {
       label: "Settings",
-      icon: <Settings className="size-[18px]" />,
-      href: `/${slug}/settings`,
+      icon: <Settings size={18} />,
+      href: "/settings",
     },
   ];
 
   const links = [
     {
       label: "Documentation",
-      icon: <Documentation className="size-[18px]" />,
+      icon: <Documentation size={18} />,
       href: "https://docs.useconquest.com",
     },
     {
       label: "Community",
-      icon: <SlackCommunity className="size-[18px]" />,
+      icon: <SlackCommunity size={18} />,
       href: "https://join.slack.com/t/useconquest/shared_invite/zt-2x4fg4fut-7k0G3_D649TkfPc5WIPdgA",
     },
   ];
 
   return (
-    <Sidebar collapsible="offcanvas">
-      <SidebarHeader>
-        <WorkspaceMenu />
-      </SidebarHeader>
-      <SidebarContent>
-        <SidebarGroup>
-          <SidebarMenu>
-            {routes.map((route) => (
-              <SidebarMenuItem key={route.label}>
-                <SidebarMenuButton asChild isActive={route.isActive}>
-                  <Link href={route.href}>
-                    {route.icon}
-                    <span>{route.label}</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            ))}
-          </SidebarMenu>
-        </SidebarGroup>
-        {lists && lists.length > 0 && (
+    <>
+      {!isMemberPage && <CreateListDialog />}
+      <Sidebar collapsible="offcanvas">
+        <SidebarHeader>
+          <WorkspaceMenu workspace={workspace} />
+        </SidebarHeader>
+        <SidebarContent>
+          <SidebarGroup>
+            <SidebarMenu>
+              {routes.map((route) => (
+                <SidebarMenuItem key={route.label}>
+                  <SidebarMenuButton asChild isActive={route.isActive}>
+                    <Link href={route.href}>
+                      {route.icon}
+                      <span>{route.label}</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroup>
           <SidebarGroup>
             <SidebarGroupLabel>Lists</SidebarGroupLabel>
+            {lists && lists.length > 0 && (
+              <SidebarGroupAction onClick={() => setOpen(true)}>
+                <Plus size={16} />
+              </SidebarGroupAction>
+            )}
             <SidebarMenu>
+              {lists?.length === 0 && (
+                <SidebarMenuItem>
+                  <SidebarMenuButton
+                    className="justify-center border-border border-dashed"
+                    onClick={() => setOpen(true)}
+                  >
+                    <Plus size={16} />
+                    New List
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              )}
               {lists?.map((list) => (
                 <SidebarMenuItem key={list.id}>
                   <SidebarMenuButton
@@ -127,37 +144,37 @@ export const AppSidebar = ({ lists }: Props) => {
               ))}
             </SidebarMenu>
           </SidebarGroup>
-        )}
-      </SidebarContent>
-      <SidebarFooter>
-        <SidebarMenu>
-          {footer.map((route) => (
-            <SidebarMenuItem key={route.label}>
-              <SidebarMenuButton asChild>
-                <Link href={route.href}>
-                  {route.icon}
-                  <span>{route.label}</span>
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          ))}
-        </SidebarMenu>
-        <Separator />
-        <SidebarMenu>
-          {links.map((route) => (
-            <SidebarMenuItem key={route.label}>
-              <SidebarMenuButton asChild>
-                <Link href={route.href}>
-                  {route.icon}
-                  <span>{route.label}</span>
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          ))}
-        </SidebarMenu>
-      </SidebarFooter>
-      <LoadingIntegrations />
-      <SidebarRail />
-    </Sidebar>
+        </SidebarContent>
+        <SidebarFooter>
+          <SidebarMenu>
+            {footer.map((route) => (
+              <SidebarMenuItem key={route.label}>
+                <SidebarMenuButton asChild>
+                  <Link href={route.href}>
+                    {route.icon}
+                    <span>{route.label}</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            ))}
+          </SidebarMenu>
+          <Separator />
+          <SidebarMenu>
+            {links.map((route) => (
+              <SidebarMenuItem key={route.label}>
+                <SidebarMenuButton asChild>
+                  <Link href={route.href} target="_blank">
+                    {route.icon}
+                    <span>{route.label}</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            ))}
+          </SidebarMenu>
+        </SidebarFooter>
+        <LoadingIntegrations />
+        <SidebarRail />
+      </Sidebar>
+    </>
   );
 };

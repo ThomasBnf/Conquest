@@ -1,7 +1,5 @@
-import { updateIntegration } from "@/actions/integrations/updateIntegration";
-import { listLivestormOrganization } from "@/client/livestorm/listLivestormOrganization";
-import { useUser } from "@/context/userContext";
-import type { installLivestorm } from "@conquest/trigger/tasks/installLivestorm.trigger";
+import { useIntegration } from "@/context/integrationContext";
+import type { installLivestorm } from "@conquest/trigger/tasks/installLivestorm";
 import { Button } from "@conquest/ui/button";
 import {
   Form,
@@ -29,7 +27,7 @@ type Props = {
 };
 
 export const LivestormForm = ({ loading, setLoading }: Props) => {
-  const { livestorm } = useUser();
+  const { livestorm } = useIntegration();
   const router = useRouter();
 
   const { submit, run } = useRealtimeTaskTrigger<typeof installLivestorm>(
@@ -37,33 +35,30 @@ export const LivestormForm = ({ loading, setLoading }: Props) => {
     { accessToken: livestorm?.trigger_token },
   );
 
-  const { organization } = listLivestormOrganization();
+  // const { organization } = listLivestormOrganization();
 
   const form = useForm<FormCreate>({
     resolver: zodResolver(FormCreateSchema),
   });
 
   const onSubmit = async ({ filter }: FormCreate) => {
-    if (!livestorm) return;
-
-    const { included } = organization ?? {};
-    const organization_id = included?.at(0)?.id ?? "";
-    const organization_name = included?.at(0)?.attributes.name ?? "";
-
-    setLoading(true);
-
-    await updateIntegration({
-      id: livestorm.id,
-      external_id: organization_id,
-      details: {
-        ...livestorm.details,
-        name: organization_name,
-        filter,
-      },
-      status: "SYNCING",
-    });
-
-    submit({ livestorm });
+    // if (!livestorm) return;
+    // const { included } = organization ?? {};
+    // const organization_id = included?.at(0)?.id ?? "";
+    // const organization_name = included?.at(0)?.attributes.name ?? "";
+    // setLoading(true);
+    // const response = await updateIntegration({
+    //   id: livestorm.id,
+    //   external_id: organization_id,
+    //   details: {
+    //     ...livestorm.details,
+    //     name: organization_name,
+    //     filter,
+    //   },
+    //   status: "SYNCING",
+    // });
+    // const updatedLivestorm = LivestormIntegrationSchema.parse(response?.data);
+    // submit({ livestorm: updatedLivestorm });
   };
 
   useEffect(() => {
@@ -75,6 +70,7 @@ export const LivestormForm = ({ loading, setLoading }: Props) => {
     if (isFailed) {
       router.refresh();
       toast.error("Failed to install Livestorm", { duration: 5000 });
+      setLoading(false);
     }
 
     if (isCompleted) router.refresh();

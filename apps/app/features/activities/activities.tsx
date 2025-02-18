@@ -1,39 +1,41 @@
-"use client";
-
-import { listActivities } from "@/client/activities/listActivities";
 import { Activities as ActivitiesIcon } from "@/components/icons/Activities";
 import { EmptyState } from "@/components/states/empty-state";
 import { IsLoading } from "@/components/states/is-loading";
+import { IntegrationProvider } from "@/context/integrationContext";
 import { useUser } from "@/context/userContext";
-import { useIsClient } from "@/hooks/useIsClient";
 import { buttonVariants } from "@conquest/ui/button";
 import { cn } from "@conquest/ui/cn";
 import { Separator } from "@conquest/ui/separator";
-import type { ActivityWithTypeAndMember } from "@conquest/zod/schemas/activity.schema";
-import { format, isYesterday } from "date-fns";
+import type { ActivityWithType } from "@conquest/zod/schemas/activity.schema";
+import { format, isToday, isYesterday } from "date-fns";
 import Link from "next/link";
-import { useEffect, useMemo } from "react";
+import { type PropsWithChildren, useEffect, useMemo } from "react";
 import { useInView } from "react-intersection-observer";
 import { ActivityParser } from "./activity-parser";
 
-type Activities = Record<string, ActivityWithTypeAndMember[]>;
+type Activities = Record<string, ActivityWithType[]>;
 
 type Props = {
-  initialActivities: ActivityWithTypeAndMember[];
+  activities: ActivityWithType[];
+  hasNextPage: boolean;
+  fetchNextPage: () => void;
+  isLoading: boolean;
   className?: string;
 };
 
-export const Activities = ({ initialActivities, className }: Props) => {
+export const Activities = ({
+  activities,
+  hasNextPage,
+  fetchNextPage,
+  isLoading,
+  className,
+  children,
+}: PropsWithChildren<Props>) => {
   const { slug } = useUser();
   const { ref, inView } = useInView();
-  const isClient = useIsClient();
-
-  const { activities, isLoading, fetchNextPage, hasNextPage } = listActivities({
-    initialActivities,
-  });
 
   const groupedActivities = useMemo(() => {
-    if (!activities?.length) return {};
+    if (!activities) return {};
 
     return activities?.reduce((acc: Activities, activity) => {
       const createdAt = format(activity.created_at, "PP");
@@ -47,7 +49,7 @@ export const Activities = ({ initialActivities, className }: Props) => {
     if (inView && hasNextPage) fetchNextPage();
   }, [inView]);
 
-  if (!isClient) return <IsLoading />;
+  if (isLoading) return <IsLoading />;
 
   if (!activities?.length)
     return (
@@ -66,20 +68,31 @@ export const Activities = ({ initialActivities, className }: Props) => {
     );
 
   return (
-    <div className={cn("mx-auto max-w-3xl pt-6 pb-12", className)}>
+    <div className={cn("mx-auto max-w-3xl px-4 pt-6 pb-12", className)}>
       {Object.entries(groupedActivities).map(([date, activities]) => (
         <div key={date} className="mb-10 space-y-14">
           <div className="my-4 flex items-center">
             <Separator className="flex-1" />
-            <p className="mx-4 rounded-md border bg-muted p-1 leading-none">
-              {isYesterday(date) ? "Yesterday" : format(date, "MMMM d, yyyy")}
+            <p className="rounded-md border bg-white p-1.5 leading-none">
+              {isToday(date)
+                ? "Today"
+                : isYesterday(date)
+                  ? "Yesterday"
+                  : format(date, "MMMM d, yyyy")}
             </p>
             <Separator className="flex-1" />
           </div>
-          <div className="space-y-10">
-            {activities.map((activity) => (
-              <ActivityParser key={activity.id} activity={activity} />
-            ))}
+          <div className="space-y-4">
+            {activities.map((activity) => {
+              const { id, activity_type } = activity;
+              const { source } = activity_type;
+
+              return (
+                <IntegrationProvider key={id} source={source}>
+                  <ActivityParser key={id} activity={activity} />
+                </IntegrationProvider>
+              );
+            })}
           </div>
         </div>
       ))}

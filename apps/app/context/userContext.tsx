@@ -1,74 +1,33 @@
-import type {
-  DiscordIntegration,
-  DiscourseIntegration,
-  GithubIntegration,
-  LinkedInIntegration,
-  LivestormIntegration,
-  SlackIntegration,
-} from "@conquest/zod/schemas/integration.schema";
-import type { UserWithWorkspace } from "@conquest/zod/schemas/user.schema";
-import type { MembersPreferences } from "@conquest/zod/schemas/workspace.schema";
+import type { Preferences, User } from "@conquest/zod/schemas/user.schema";
+import type { Workspace } from "@conquest/zod/schemas/workspace.schema";
+
 import * as React from "react";
 
 type userContext = {
-  user: Omit<UserWithWorkspace, "hashed_password"> | undefined;
+  user: Omit<User, "hashed_password"> | undefined;
   slug: string | undefined;
-  discord: DiscordIntegration | undefined;
-  discourse: DiscourseIntegration | undefined;
-  github: GithubIntegration | undefined;
-  linkedin: LinkedInIntegration | undefined;
-  livestorm: LivestormIntegration | undefined;
-  slack: SlackIntegration | undefined;
-  members_preferences: MembersPreferences | undefined;
+  workspace: Workspace | null | undefined;
+  members_preferences: Preferences | undefined;
 };
 
 const UserContext = React.createContext<userContext>({} as userContext);
 
 type Props = {
-  user: Omit<UserWithWorkspace, "hashed_password"> | undefined;
+  user: Omit<User, "hashed_password"> | undefined;
+  workspace: Workspace | null | undefined;
   children: React.ReactNode;
 };
 
-export const UserProvider = ({ user, children }: Props) => {
-  const slug = user?.workspace.slug;
-
-  const discord = user?.workspace.integrations.find(
-    (integration) => integration.details.source === "DISCORD",
-  ) as DiscordIntegration | undefined;
-
-  const discourse = user?.workspace.integrations.find(
-    (integration) => integration.details.source === "DISCOURSE",
-  ) as DiscourseIntegration | undefined;
-
-  const linkedin = user?.workspace.integrations.find(
-    (integration) => integration.details.source === "LINKEDIN",
-  ) as LinkedInIntegration | undefined;
-
-  const livestorm = user?.workspace.integrations.find(
-    (integration) => integration.details.source === "LIVESTORM",
-  ) as LivestormIntegration | undefined;
-
-  const github = user?.workspace.integrations.find(
-    (integration) => integration.details.source === "GITHUB",
-  ) as GithubIntegration | undefined;
-
-  const slack = user?.workspace.integrations.find(
-    (integration) => integration.details.source === "SLACK",
-  ) as SlackIntegration | undefined;
-
-  const members_preferences = user?.workspace.members_preferences;
+export const UserProvider = ({ user, workspace, children }: Props) => {
+  const { members_preferences } = user ?? {};
+  const { slug } = workspace ?? {};
 
   return (
     <UserContext.Provider
       value={{
         user,
         slug,
-        discord,
-        discourse,
-        github,
-        linkedin,
-        livestorm,
-        slack,
+        workspace,
         members_preferences,
       }}
     >

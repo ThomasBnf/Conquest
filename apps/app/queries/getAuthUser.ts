@@ -10,7 +10,7 @@ export const getAuthUser = async (c: Context) => {
     throw new Error("Session not found!");
   }
 
-  const user = await prisma.users.findUnique({
+  const user = await prisma.user.findUnique({
     where: {
       id: session.user.id,
     },

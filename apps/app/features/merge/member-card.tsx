@@ -1,12 +1,12 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@conquest/ui/avatar";
 import { cn } from "@conquest/ui/cn";
-import type { MemberWithCompany } from "@conquest/zod/schemas/member.schema";
+import type { Member } from "@conquest/zod/schemas/member.schema";
 import { useMemo } from "react";
 import { FilteredEntries } from "./filtered-entries";
 
 type Props = {
-  member: MemberWithCompany | null;
-  leftMember?: MemberWithCompany | null;
+  member: Member | null;
+  leftMember?: Member | null;
   className?: string;
 };
 
@@ -16,14 +16,14 @@ export const MemberCard = ({ member, leftMember, className }: Props) => {
   const { first_name, last_name, avatar_url } = member;
 
   const getMergeValue = useMemo(() => {
-    return (member: MemberWithCompany, leftMember: MemberWithCompany) => {
+    return (member: Member, leftMember: Member) => {
       const isLeftOlder =
         leftMember.first_activity &&
         member.first_activity &&
         leftMember.first_activity < member.first_activity;
 
       const mergedEntries = Object.entries(leftMember).map(([key, value]) => {
-        const rightValue = member[key as keyof MemberWithCompany];
+        const rightValue = member[key as keyof Member];
 
         if (!value) {
           return [key, rightValue];

@@ -13,7 +13,7 @@ import { useState } from "react";
 type Props = {
   title: string;
   description: string;
-  onConfirm: () => Promise<string | number | undefined>;
+  onConfirm: () => Promise<void>;
   open: boolean;
   setOpen: (open: boolean) => void;
   buttonLabel?: string;

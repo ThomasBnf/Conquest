@@ -1,6 +1,6 @@
 "use client";
 
-import { updateMember } from "@/actions/members/updateMember";
+import { trpc } from "@/server/client";
 import { Button } from "@conquest/ui/button";
 import {
   DropdownMenu,
@@ -22,8 +22,10 @@ type Props = {
 export const EditablePhones = ({ member }: Props) => {
   const [open, setOpen] = useState(false);
   const [phones, setPhones] = useState<{ id: string; content: string }[]>(
-    member.phones.map((phone) => ({ id: cuid(), content: phone })),
+    member.phones.map((phone) => ({ id: cuid(), content: phone })) ?? [],
   );
+
+  const { mutateAsync: updateMember } = trpc.members.updateMember.useMutation();
 
   const onAddPhone = () => {
     setPhones([...phones, { id: cuid(), content: "" }]);
@@ -36,7 +38,7 @@ export const EditablePhones = ({ member }: Props) => {
       const newPhones = phones.filter((phone) => phone.id !== id);
       setPhones(newPhones);
       updateMember({
-        id: member.id,
+        id: member.id ?? null,
         data: {
           phones: newPhones.map((phone) => phone.content),
         },
@@ -49,7 +51,7 @@ export const EditablePhones = ({ member }: Props) => {
     );
     setPhones(updatedPhones);
     updateMember({
-      id: member.id,
+      id: member.id ?? null,
       data: {
         phones: updatedPhones.map((phone) => phone.content),
       },
@@ -60,7 +62,7 @@ export const EditablePhones = ({ member }: Props) => {
     const updatedPhones = phones.filter((phone) => phone.id !== id);
     setPhones(updatedPhones);
     updateMember({
-      id: member.id,
+      id: member.id ?? null,
       data: {
         phones: updatedPhones.map((phone) => phone.content),
       },

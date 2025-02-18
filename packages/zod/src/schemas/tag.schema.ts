@@ -1,4 +1,4 @@
-import type { tags as TagPrisma } from "@prisma/client";
+import type { tag as TagPrisma } from "@prisma/client";
 import { z } from "zod";
 import { SOURCE } from "../enum/source.enum";
 

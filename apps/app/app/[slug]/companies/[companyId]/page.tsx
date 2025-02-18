@@ -1,50 +1,60 @@
+"use client";
+
+import { Activities as ActivitiesIcon } from "@/components/icons/Activities";
 import { HeaderSubPage } from "@/components/layouts/header-subpage";
 import { PageLayout } from "@/components/layouts/page-layout";
-import { CompanyActivities } from "@/features/activities/company-activities";
+import { EmptyState } from "@/components/states/empty-state";
+import { IsLoading } from "@/components/states/is-loading";
+import { Activities } from "@/features/activities/activities";
 import { CompanySidebar } from "@/features/companies/company-sidebar";
-import { getCurrentUser } from "@/queries/getCurrentUser";
-import { listCompanyActivities } from "@conquest/db/queries/activities/listCompanyActivities";
-import { getCompanyWithMembers } from "@conquest/db/queries/companies/getCompany";
-import { listTags } from "@conquest/db/queries/tags/listTags";
+import { trpc } from "@/server/client";
 import { ScrollArea } from "@conquest/ui/scroll-area";
-import { redirect } from "next/navigation";
 
 type Props = {
   params: {
-    slug: string;
     companyId: string;
   };
 };
 
-export default async function Page({ params: { companyId, slug } }: Props) {
-  const user = await getCurrentUser();
-  const workspace_id = user.workspace_id;
-
-  const company = await getCompanyWithMembers({
-    company_id: companyId,
-    workspace_id,
+export default function Page({ params: { companyId } }: Props) {
+  const { data: company, isLoading } = trpc.companies.getCompany.useQuery({
+    id: companyId,
   });
 
-  if (!company) redirect(`/${slug}/companies`);
+  const {
+    data,
+    hasNextPage,
+    fetchNextPage,
+    isLoading: isLoadingActivities,
+  } = trpc.activities.getCompanyActivities.useInfiniteQuery(
+    { companyId, take: 10 },
+    { getNextPageParam: (lastPage) => lastPage[lastPage.length - 1]?.id },
+  );
 
-  const activities = await listCompanyActivities({
-    company_id: company.id,
-    workspace_id,
-    page: 1,
-  });
-  const tags = await listTags({ workspace_id });
+  const activities = data?.pages.flat() ?? [];
+
+  if (isLoading || isLoadingActivities) return <IsLoading />;
+  if (!company) return;
 
   return (
     <PageLayout className="m-1 rounded-lg border">
       <HeaderSubPage />
       <div className="flex h-full divide-x overflow-hidden">
         <ScrollArea className="flex-1">
-          <CompanyActivities
-            company_id={companyId}
-            initialActivities={activities}
-          />
+          <Activities
+            activities={activities}
+            hasNextPage={hasNextPage}
+            fetchNextPage={fetchNextPage}
+            isLoading={isLoadingActivities}
+          >
+            <EmptyState
+              icon={<ActivitiesIcon size={36} />}
+              title="No activities found"
+              description="This company has no activities"
+            />
+          </Activities>
         </ScrollArea>
-        <CompanySidebar company={company} tags={tags} />
+        <CompanySidebar company={company} />
       </div>
     </PageLayout>
   );

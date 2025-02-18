@@ -1,5 +1,65 @@
 import z from "zod";
 
+export const CategorySchema = z.object({
+  id: z.number(),
+  name: z.string(),
+  color: z.string(),
+  text_color: z.string(),
+  slug: z.string(),
+  topic_count: z.number(),
+  post_count: z.number(),
+  position: z.number(),
+  description: z.string().nullable(),
+  description_text: z.string().nullable(),
+  description_excerpt: z.string().nullable(),
+  topic_url: z.string(),
+  read_restricted: z.boolean(),
+  permission: z.number(),
+  parent_category_id: z.number().nullable().optional(),
+  notification_level: z.number(),
+  topic_template: z.string().nullable(),
+  has_children: z.boolean(),
+  subcategory_count: z.number().nullable(),
+  sort_order: z.string().nullable(),
+  sort_ascending: z.boolean().nullable(),
+  show_subcategory_list: z.boolean(),
+  num_featured_topics: z.number(),
+  default_view: z.string().nullable(),
+  subcategory_list_style: z.string(),
+  default_top_period: z.string(),
+  default_list_filter: z.string(),
+  minimum_required_tags: z.number(),
+  navigate_to_first_post_after_read: z.boolean(),
+  custom_fields: z.object({
+    has_chat_enabled: z.union([z.string(), z.boolean()]).nullable(),
+    sort_topics_by_event_start_date: z.string().nullable(),
+    disable_topic_resorting: z.string().nullable(),
+    redirect_url: z.string().nullable(),
+    location: z.string().nullable(),
+    location_enabled: z.string().nullable(),
+    location_topic_status: z.string().nullable(),
+    location_map_filter_closed: z.string().nullable(),
+    enable_accepted_answers: z.string().nullable(),
+  }),
+  allowed_tags: z.array(z.string()),
+  allowed_tag_groups: z.array(z.string()),
+  allow_global_tags: z.boolean(),
+  read_only_banner: z.string().nullable(),
+  form_template_ids: z.array(z.unknown()),
+  sort_topics_by_event_start_date: z.string().nullable(),
+  disable_topic_resorting: z.string().nullable(),
+  redirect_url: z.string().nullable(),
+  slug_path: z.array(z.string()),
+  uploaded_logo: z.string().nullable(),
+  uploaded_logo_dark: z.string().nullable(),
+  uploaded_background: z.string().nullable(),
+  uploaded_background_dark: z.string().nullable(),
+  required_tag_groups: z.array(z.unknown()),
+  can_edit: z.boolean(),
+});
+
+export type Category = z.infer<typeof CategorySchema>;
+
 export const AdminListUsersSchema = z.object({
   id: z.number(),
   username: z.string(),
@@ -42,7 +102,15 @@ export const DirectoryItemsSchema = z.object({
         username: z.string(),
         name: z.string(),
         avatar_template: z.string(),
-        user_fields: z.record(z.string(), z.string()).optional(),
+        user_fields: z
+          .record(
+            z.string(),
+            z.object({
+              value: z.array(z.string()),
+              searchable: z.boolean(),
+            }),
+          )
+          .optional(),
         geo_location: z.union([
           z.object({
             lat: z.string(),
@@ -71,49 +139,49 @@ export const DirectoryItemsSchema = z.object({
 
 export type DirectoryItems = z.infer<typeof DirectoryItemsSchema>;
 
-export type Category = {
-  id: number;
-  name: string;
-  color: string;
-  text_color: string;
-  slug: string;
-  topic_count: number;
-  post_count: number;
-  position: number;
-  description: string | null;
-  description_text: string | null;
-  description_excerpt: string | null;
-  topic_url: string | null;
-  read_restricted: boolean;
-  permission: number;
-  notification_level: number;
-  can_edit: boolean;
-  topic_template: string | null;
-  has_children: boolean;
-  subcategory_count: number | null;
-  sort_order: string | null;
-  sort_ascending: string | null;
-  show_subcategory_list: boolean;
-  num_featured_topics: number;
-  default_view: string | null;
-  subcategory_list_style: string;
-  default_top_period: string;
-  default_list_filter: string;
-  minimum_required_tags: number;
-  navigate_to_first_post_after_read: boolean;
-  topics_day: number;
-  topics_week: number;
-  topics_month: number;
-  topics_year: number;
-  topics_all_time: number;
-  is_uncategorized?: boolean | undefined;
-  subcategory_ids: unknown[];
-  subcategory_list?: Category[];
-  uploaded_logo: string | null;
-  uploaded_logo_dark: string | null;
-  uploaded_background: string | null;
-  uploaded_background_dark: string | null;
-};
+// export type Category = {
+//   id: number;
+//   name: string;
+//   color: string;
+//   text_color: string;
+//   slug: string;
+//   topic_count: number;
+//   post_count: number;
+//   position: number;
+//   description: string | null;
+//   description_text: string | null;
+//   description_excerpt: string | null;
+//   topic_url: string | null;
+//   read_restricted: boolean;
+//   permission: number;
+//   notification_level: number;
+//   can_edit: boolean;
+//   topic_template: string | null;
+//   has_children: boolean;
+//   subcategory_count: number | null;
+//   sort_order: string | null;
+//   sort_ascending: string | null;
+//   show_subcategory_list: boolean;
+//   num_featured_topics: number;
+//   default_view: string | null;
+//   subcategory_list_style: string;
+//   default_top_period: string;
+//   default_list_filter: string;
+//   minimum_required_tags: number;
+//   navigate_to_first_post_after_read: boolean;
+//   topics_day: number;
+//   topics_week: number;
+//   topics_month: number;
+//   topics_year: number;
+//   topics_all_time: number;
+//   is_uncategorized?: boolean | undefined;
+//   subcategory_ids: unknown[];
+//   subcategory_list?: Category[];
+//   uploaded_logo: string | null;
+//   uploaded_logo_dark: string | null;
+//   uploaded_background: string | null;
+//   uploaded_background_dark: string | null;
+// };
 
 export type ReponseListTopics = {
   users: {

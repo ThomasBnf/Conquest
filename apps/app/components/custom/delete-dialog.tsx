@@ -15,7 +15,7 @@ import { type HTMLAttributes, type ReactNode, useState } from "react";
 type Props = HTMLAttributes<HTMLButtonElement> & {
   title: string;
   description: string;
-  onConfirm: () => Promise<string | number | undefined>;
+  onConfirm: () => Promise<void>;
   children?: ReactNode;
 };
 

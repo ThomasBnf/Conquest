@@ -14,9 +14,9 @@ export const EmojiPicker = ({ value, onSelect }: Props) => {
   const [open, setOpen] = useState(false);
 
   return (
-    <Popover open={open} onOpenChange={setOpen} modal>
+    <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button variant="outline" size="md" className="w-10 text-xl">
+        <Button variant="outline" className="size-9 text-xl">
           {value}
         </Button>
       </PopoverTrigger>

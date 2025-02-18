@@ -1,6 +1,6 @@
 "use client";
 
-import { useListTopActivityTypes } from "@/client/dashboard/listTopActivityTypes";
+import { trpc } from "@/server/client";
 import { type ChartConfig, ChartContainer } from "@conquest/ui/chart";
 import { useRef } from "react";
 import {
@@ -27,7 +27,10 @@ const chartConfig = {
 export const TopActivityTypes = ({ from, to }: Props) => {
   const ref = useRef<HTMLDivElement>(null);
 
-  const { data: topActivityTypes } = useListTopActivityTypes({ from, to });
+  const { data } = trpc.dashboard.topActivityTypes.useQuery({
+    from,
+    to,
+  });
 
   return (
     <div className="flex-1 space-y-2 p-4">
@@ -36,7 +39,7 @@ export const TopActivityTypes = ({ from, to }: Props) => {
         <ChartContainer ref={ref} config={chartConfig}>
           <BarChart
             accessibilityLayer
-            data={topActivityTypes}
+            data={data?.activityTypes}
             layout="vertical"
           >
             <YAxis

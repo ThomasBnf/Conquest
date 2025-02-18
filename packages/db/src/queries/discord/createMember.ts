@@ -1,8 +1,8 @@
 import type { DiscordIntegration } from "@conquest/zod/schemas/integration.schema";
-import { MemberSchema } from "@conquest/zod/schemas/member.schema";
 import { type APIUser, Routes } from "discord-api-types/v10";
 import { discordClient } from "../../discord";
-import { upsertMember } from "../members/upsertMember";
+import { createMember as _createMember } from "../member/createMember";
+import { upsertProfile } from "../profile/upsertProfile";
 
 type Props = {
   discord: DiscordIntegration;
@@ -12,37 +12,41 @@ type Props = {
 export const createMember = async ({ discord, discord_id }: Props) => {
   const { workspace_id } = discord;
 
-  try {
-    const owner = (await discordClient.get(Routes.user(discord_id))) as APIUser;
+  const owner = (await discordClient.get(Routes.user(discord_id))) as APIUser;
 
-    if (!owner) return null;
+  if (!owner) return;
 
-    const { id, username, avatar, global_name } = owner;
+  const { id, username, avatar, global_name, bot } = owner;
 
-    const parsedGlobalName = global_name?.replace("deleted_user", "");
-    const firstName = parsedGlobalName?.split(" ")[0] ?? null;
-    const lastName = parsedGlobalName?.split(" ")[1] ?? null;
+  if (bot) return;
 
-    const avatarUrl = avatar
-      ? `https://cdn.discordapp.com/avatars/${id}/${avatar}.webp`
-      : null;
+  const parsedGlobalName = global_name?.replace("deleted_user", "");
+  const firstName = parsedGlobalName?.split(" ")[0] ?? null;
+  const lastName = parsedGlobalName?.split(" ")[1] ?? null;
 
-    const member = await upsertMember({
-      id,
-      data: {
-        first_name: firstName,
-        last_name: lastName,
-        discord_username: username,
-        avatar_url: avatarUrl,
-        created_at: new Date(),
-      },
+  const avatarUrl = avatar
+    ? `https://cdn.discordapp.com/avatars/${id}/${avatar}.webp`
+    : null;
+
+  const createdMember = await _createMember({
+    data: {
+      first_name: firstName,
+      last_name: lastName,
+      avatar_url: avatarUrl,
+    },
+    source: "DISCORD",
+    workspace_id,
+  });
+
+  await upsertProfile({
+    external_id: id,
+    attributes: {
       source: "DISCORD",
-      workspace_id,
-    });
+      username,
+    },
+    member_id: createdMember.id,
+    workspace_id,
+  });
 
-    return MemberSchema.parse(member);
-  } catch (error) {
-    console.error("Error creating member", error);
-    return null;
-  }
+  return createdMember;
 };

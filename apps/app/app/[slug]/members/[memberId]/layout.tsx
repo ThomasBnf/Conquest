@@ -1,34 +1,39 @@
+"use client";
+
 import { HeaderSubPage } from "@/components/layouts/header-subpage";
 import { PageLayout } from "@/components/layouts/page-layout";
+import { IsLoading } from "@/components/states/is-loading";
 import { CreateActivityDialog } from "@/features/activities/create-activity-dialog";
-import { MemberMenu } from "@/features/members/member-menu";
 import { MemberSidebar } from "@/features/members/member-sidebar";
+import { MenuMember } from "@/features/members/menu-member";
 import { Tabs } from "@/features/members/tabs";
-import { getCurrentUser } from "@/queries/getCurrentUser";
-import { getMember } from "@conquest/db/queries/members/getMember";
-import { listTags } from "@conquest/db/queries/tags/listTags";
+import { trpc } from "@/server/client";
 import { ScrollArea } from "@conquest/ui/scroll-area";
 import { redirect } from "next/navigation";
 import type { PropsWithChildren } from "react";
 
 type Props = {
   params: {
+    slug: string;
     memberId: string;
   };
 };
 
-export default async function Layout({
+export default function Layout({
   children,
-  params: { memberId },
+  params: { slug, memberId },
 }: PropsWithChildren<Props>) {
-  const user = await getCurrentUser();
-  const slug = user.workspace.slug;
-  const workspace_id = user.workspace_id;
+  const { data: member, isLoading } = trpc.members.getMember.useQuery({
+    id: memberId,
+  });
 
-  const member = await getMember({ id: memberId, workspace_id });
-  const tags = await listTags({ workspace_id });
+  const { data: profiles, isLoading: isLoadingProfiles } =
+    trpc.profiles.getAllProfiles.useQuery({
+      memberId: memberId,
+    });
 
-  if (!member) redirect(`/${slug}/members`);
+  if (isLoading || isLoadingProfiles) return <IsLoading />;
+  if (!member) return redirect(`/${slug}/members`);
 
   return (
     <div className="flex h-full w-full p-1">
@@ -36,7 +41,7 @@ export default async function Layout({
         <HeaderSubPage>
           <div className="flex items-center gap-2">
             <CreateActivityDialog member={member} />
-            <MemberMenu member={member} />
+            <MenuMember member={member} />
           </div>
         </HeaderSubPage>
         <div className="flex h-full divide-x overflow-hidden">
@@ -44,7 +49,7 @@ export default async function Layout({
             <Tabs />
             <ScrollArea className="h-full">{children}</ScrollArea>
           </div>
-          <MemberSidebar member={member} tags={tags} />
+          <MemberSidebar member={member} profiles={profiles} />
         </div>
       </PageLayout>
     </div>

@@ -1,9 +1,19 @@
-import { Loader } from "@conquest/ui/loader";
+import { cn } from "@conquest/ui/cn";
+import { Loader2 } from "lucide-react";
+type Props = {
+  isAbsolute?: boolean;
+};
 
-export const IsLoading = () => {
+export const IsLoading = ({ isAbsolute = false }: Props) => {
   return (
-    <div className="flex h-full items-center justify-center py-40">
-      <Loader />
+    <div
+      className={cn(
+        "flex h-full items-center justify-center gap-2 py-24",
+        isAbsolute && "absolute inset-0",
+      )}
+    >
+      <Loader2 className="animate-spin text-muted-foreground" size={16} />
+      <p>Loading...</p>
     </div>
   );
 };

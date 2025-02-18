@@ -1,5 +1,6 @@
 "use client";
 
+import { IconDoc } from "@/components/custom/icon-doc";
 import { EmptyStateChart } from "@/components/states/empty-state-chart";
 import {
   type ChartConfig,
@@ -7,7 +8,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@conquest/ui/chart";
-import type { MemberWithCompany } from "@conquest/zod/schemas/member.schema";
+import type { Member } from "@conquest/zod/schemas/member.schema";
 import { format } from "date-fns";
 import {
   Area,
@@ -25,7 +26,7 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 type Props = {
-  member: MemberWithCompany;
+  member: Member;
 };
 
 export const MemberPulseLogs = ({ member }: Props) => {
@@ -38,7 +39,13 @@ export const MemberPulseLogs = ({ member }: Props) => {
 
   return (
     <div className="relative">
-      <p className="mb-2 font-medium text-lg">Pulse Logs</p>
+      <div className="flex items-center gap-2">
+        <p className="font-medium text-lg">Pulse Logs</p>
+        <IconDoc url="https://docs.useconquest.com/pulse-score" />
+      </div>
+      <p className="mb-4 text-muted-foreground">
+        Pulse Score evolution over the past 365 days, logged weekly.
+      </p>
       {formattedLogs.length === 0 && <EmptyStateChart />}
       <ResponsiveContainer height={300} className="pr-1">
         <ChartContainer config={chartConfig}>
@@ -73,7 +80,7 @@ export const MemberPulseLogs = ({ member }: Props) => {
               </linearGradient>
             </defs>
             <Area
-              type="linear"
+              type="bump"
               dataKey="pulse"
               fill="url(#fill-pulse)"
               fillOpacity={0.4}

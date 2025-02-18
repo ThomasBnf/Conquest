@@ -1,8 +1,7 @@
 "use client";
 
-import { deleteActivity } from "@/actions/activities/deleteActivity";
-import { updateMemberMetrics } from "@/actions/members/updateMemberMetrics";
 import { AlertDialog } from "@/components/custom/alert-dialog";
+import { trpc } from "@/server/client";
 import { Button } from "@conquest/ui/button";
 import {
   DropdownMenu,
@@ -10,29 +9,34 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@conquest/ui/dropdown-menu";
-import type { Activity } from "@conquest/zod/schemas/activity.schema";
-import { useQueryClient } from "@tanstack/react-query";
+import type { ActivityWithType } from "@conquest/zod/schemas/activity.schema";
 import { MoreHorizontal, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+import { ActivityLink } from "./activity-link";
 
 type Props = {
-  activity: Activity;
+  activity: ActivityWithType;
+  href?: string | null | undefined;
 };
 
-export const Menu = ({ activity }: Props) => {
+export const ActivityMenu = ({ activity, href }: Props) => {
   const [open, setOpen] = useState(false);
-  const queryClient = useQueryClient();
+
+  const utils = trpc.useUtils();
+
+  const { mutateAsync } = trpc.activities.deleteActivity.useMutation({
+    onSuccess: () => {
+      toast.success("Activity deleted");
+      utils.activities.getMemberActivities.invalidate();
+    },
+    onError: (error) => {
+      toast.error(error.message);
+    },
+  });
 
   const onDelete = async () => {
-    const rActivity = await deleteActivity({ id: activity.id });
-    const error = rActivity?.serverError;
-
-    if (error) return toast.error(error);
-
-    await updateMemberMetrics({ member_id: activity.member_id });
-    queryClient.invalidateQueries({ queryKey: ["activities"] });
-    return toast.success("Activity deleted");
+    await mutateAsync({ id: activity.id });
   };
 
   return (
@@ -44,26 +48,25 @@ export const Menu = ({ activity }: Props) => {
         open={open}
         setOpen={setOpen}
       />
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button
-            variant="outline"
-            size="icon"
-            className="absolute top-3 right-3"
-          >
-            <MoreHorizontal size={16} />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="start">
-          <DropdownMenuItem
-            onClick={() => setOpen(true)}
-            className="text-destructive focus:text-destructive"
-          >
-            <Trash2 size={16} />
-            Delete
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+      <div className="flex items-center gap-2">
+        <ActivityLink href={href} />
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" size="icon">
+              <MoreHorizontal size={16} />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="start">
+            <DropdownMenuItem
+              onClick={() => setOpen(true)}
+              className="text-destructive focus:text-destructive"
+            >
+              <Trash2 size={16} />
+              Delete
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
     </>
   );
 };

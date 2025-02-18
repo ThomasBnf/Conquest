@@ -1,6 +1,6 @@
 "use client";
 
-import { createActivityType } from "@/actions/activity-types/createActivityType";
+import { trpc } from "@/server/client";
 import { Button } from "@conquest/ui/button";
 import {
   Dialog,
@@ -14,7 +14,6 @@ import {
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -28,41 +27,70 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@conquest/ui/select";
-import { SOURCE } from "@conquest/zod/enum/source.enum";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Plus } from "lucide-react";
+import cuid from "cuid";
+import { Plus, X } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { toast } from "sonner";
-import { type FormCreate, FormCreateSchema } from "./schema/form-create.schema";
+import { ConditionChannel } from "./condition-channel";
+import {
+  type FormActivityType,
+  FormActivityTypeSchema,
+} from "./schema/form.schema";
 
 export const CreateActivityTypeDialog = () => {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  const sources = Object.values(SOURCE.enum);
+  const utils = trpc.useUtils();
 
-  const form = useForm<FormCreate>({
-    resolver: zodResolver(FormCreateSchema),
-    defaultValues: {
-      source: "API",
-      key: "api:",
+  const { data: channels } = trpc.channels.getAllChannels.useQuery({});
+  const { mutateAsync } = trpc.activityTypes.createActivityType.useMutation({
+    onSuccess: () => {
+      utils.activityTypes.getAllActivityTypes.invalidate();
+      setOpen(false);
+      setLoading(false);
+      form.reset();
     },
   });
 
-  const onSubmit = form.handleSubmit(async (data) => {
-    setLoading(true);
-
-    const rActivityType = await createActivityType(data);
-    const error = rActivityType?.serverError;
-
-    if (error) {
-      toast.error(error);
-    }
-
-    setOpen(false);
-    setLoading(false);
-    form.reset();
+  const form = useForm<FormActivityType>({
+    resolver: zodResolver(FormActivityTypeSchema),
+    defaultValues: {
+      source: "MANUAL",
+      points: 3,
+      conditions: [],
+    },
   });
+
+  const filteredChannels = channels?.filter(
+    (channel) => channel.source === form.getValues("source"),
+  );
+
+  const onSubmit = async (data: FormActivityType) => {
+    setLoading(true);
+    await mutateAsync(data);
+  };
+
+  const addCondition = () => {
+    const conditions = form.getValues("conditions");
+
+    form.setValue("conditions", [
+      ...conditions,
+      {
+        id: cuid(),
+        channel_id: "",
+        points: 2,
+      },
+    ]);
+  };
+
+  const removeCondition = (index: number) => {
+    const conditions = form.getValues("conditions");
+    form.setValue(
+      "conditions",
+      conditions.filter((_, i) => i !== index),
+    );
+  };
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -77,7 +105,7 @@ export const CreateActivityTypeDialog = () => {
           <DialogTitle>Create Activity Type</DialogTitle>
         </DialogHeader>
         <Form {...form}>
-          <form onSubmit={onSubmit}>
+          <form onSubmit={form.handleSubmit(onSubmit)}>
             <DialogBody>
               <FormField
                 control={form.control}
@@ -88,20 +116,14 @@ export const CreateActivityTypeDialog = () => {
                     <FormControl>
                       <Select
                         value={field.value}
-                        onValueChange={(value) => {
-                          field.onChange(value);
-                          form.setValue("key", `${value.toLowerCase()}:`);
-                        }}
+                        onValueChange={(value) => field.onChange(value)}
                       >
                         <SelectTrigger>
                           <SelectValue placeholder="Select source" />
                         </SelectTrigger>
                         <SelectContent>
-                          {sources?.map((source) => (
-                            <SelectItem key={source} value={source}>
-                              {source}
-                            </SelectItem>
-                          ))}
+                          <SelectItem value="API">API</SelectItem>
+                          <SelectItem value="MANUAL">MANUAL</SelectItem>
                         </SelectContent>
                       </Select>
                     </FormControl>
@@ -121,7 +143,7 @@ export const CreateActivityTypeDialog = () => {
                         onBlur={() => {
                           form.setValue(
                             "key",
-                            `${form.getValues("source").toLowerCase()}:${field.value?.toLowerCase().replaceAll(" ", "_")}`,
+                            `${field.value?.toLowerCase().replaceAll(" ", "_")}`,
                           );
                         }}
                       />
@@ -137,34 +159,88 @@ export const CreateActivityTypeDialog = () => {
                   <FormItem>
                     <FormLabel>Key</FormLabel>
                     <FormControl>
-                      <Input {...field} />
+                      <div className="flex items-center overflow-hidden rounded-md border">
+                        <p className="h-[34px] w-fit shrink-0 place-content-center border-r bg-muted px-2">
+                          {form.getValues("source")} :
+                        </p>
+                        <Input
+                          {...field}
+                          variant="transparent"
+                          className="h-[34px]"
+                        />
+                      </div>
                     </FormControl>
-                    <FormDescription>
-                      source:type_of_activity (ex: api:post_message)
-                    </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
               />
               <FormField
                 control={form.control}
-                name="weight"
+                name="points"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Weight</FormLabel>
+                    <FormLabel>Points</FormLabel>
                     <FormControl>
-                      <Input type="number" {...field} />
+                      <Input {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
+              <div className="flex flex-col items-start gap-2">
+                <FormLabel>Conditions</FormLabel>
+                {form.watch("conditions").map((_, index) => (
+                  // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
+                  <div key={index} className="flex w-full gap-2">
+                    <ConditionChannel
+                      form={form}
+                      index={index}
+                      channels={filteredChannels}
+                    />
+                    <FormField
+                      control={form.control}
+                      name={`conditions.${index}.points`}
+                      render={({ field }) => (
+                        <FormItem className="w-full">
+                          <FormControl>
+                            <div className="flex h-[34px] items-center overflow-hidden rounded-md border">
+                              <p className="h-[34px] w-fit place-content-center border-r bg-muted px-2">
+                                +
+                              </p>
+                              <Input {...field} variant="transparent" />
+                              <p className="h-[34px] w-fit place-content-center border-l bg-muted px-2">
+                                Points
+                              </p>
+                            </div>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="icon"
+                      className="size-[34px] shrink-0"
+                      onClick={() => removeCondition(index)}
+                    >
+                      <X size={16} />
+                    </Button>
+                  </div>
+                ))}
+                <Button type="button" variant="outline" onClick={addCondition}>
+                  <Plus size={16} />
+                  Add Condition
+                </Button>
+              </div>
             </DialogBody>
             <DialogFooter>
               <DialogTrigger asChild>
-                <Button variant="outline">Cancel</Button>
+                <Button type="button" variant="outline" disabled={loading}>
+                  Cancel
+                </Button>
               </DialogTrigger>
-              <Button type="submit" loading={loading}>
+              <Button type="submit" loading={loading} disabled={loading}>
                 Create
               </Button>
             </DialogFooter>

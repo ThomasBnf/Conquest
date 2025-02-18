@@ -28,6 +28,11 @@ export const EditableInput = ({
   };
 
   const onKeyDown = (key: string) => {
+    if (key === "Escape") {
+      setIsFocus(false);
+      setValue(defaultValue ?? "");
+    }
+
     if (key === "Enter") {
       onUpdate(value ?? "");
       setIsFocus(false);

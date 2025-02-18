@@ -1,7 +1,8 @@
 import { LINKEDIN_SCOPES } from "@/constant";
 import { getCurrentUser } from "@/queries/getCurrentUser";
 import { prisma } from "@conquest/db/prisma";
-import { createIntegration } from "@conquest/db/queries/integrations/createIntegration";
+import { createIntegration } from "@conquest/db/queries/integration/createIntegration";
+import { getWorkspace } from "@conquest/db/queries/workspace/getWorkspace";
 import { env } from "@conquest/env";
 import { redirect } from "next/navigation";
 
@@ -13,7 +14,9 @@ type Props = {
 
 export default async function Page({ searchParams: { code } }: Props) {
   const user = await getCurrentUser();
-  const { slug, id: workspace_id } = user.workspace;
+  const { slug, id: workspace_id } = await getWorkspace({
+    id: user.workspace_id,
+  });
 
   const response = await fetch(
     "https://www.linkedin.com/oauth/v2/accessToken",
@@ -41,7 +44,7 @@ export default async function Page({ searchParams: { code } }: Props) {
   const data = await response.json();
   const { access_token } = data;
 
-  const integrations = await prisma.integrations.findMany({
+  const integrations = await prisma.integration.findMany({
     where: {
       details: {
         path: ["source"],
@@ -66,5 +69,5 @@ export default async function Page({ searchParams: { code } }: Props) {
     });
   }
 
-  redirect(`/${slug}/settings/integrations/linkedin`);
+  redirect("/settings/integrations/linkedin");
 }

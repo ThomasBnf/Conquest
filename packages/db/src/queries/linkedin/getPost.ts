@@ -6,7 +6,7 @@ type Props = {
   workspace_id: string;
 };
 export const getPost = async ({ urn, workspace_id }: Props) => {
-  const post = await prisma.posts.findUnique({
+  const post = await prisma.post.findUnique({
     where: {
       external_id_workspace_id: {
         external_id: urn,

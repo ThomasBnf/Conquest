@@ -1,6 +1,6 @@
 "use client";
 
-import { updateMember } from "@/actions/members/updateMember";
+import { trpc } from "@/server/client";
 import { Button } from "@conquest/ui/button";
 import {
   DropdownMenu,
@@ -22,6 +22,8 @@ type Props = {
 export const EditableEmails = ({ member }: Props) => {
   const [open, setOpen] = useState(false);
 
+  const { mutateAsync: updateMember } = trpc.members.updateMember.useMutation();
+
   const memberEmails = [
     member.primary_email,
     ...(member.secondary_emails ?? []),
@@ -42,7 +44,7 @@ export const EditableEmails = ({ member }: Props) => {
       const newEmails = emails.filter((email) => email.id !== id);
       setEmails(newEmails);
       updateMember({
-        id: member.id,
+        id: member.id ?? null,
         data: {
           primary_email: newEmails[0]?.content,
           secondary_emails: newEmails.slice(1).map((email) => email.content),
@@ -56,7 +58,7 @@ export const EditableEmails = ({ member }: Props) => {
     );
     setEmails(updatedEmails);
     updateMember({
-      id: member.id,
+      id: member.id ?? null,
       data: {
         primary_email: updatedEmails[0]?.content,
         secondary_emails: updatedEmails.slice(1).map((email) => email.content),
@@ -68,7 +70,7 @@ export const EditableEmails = ({ member }: Props) => {
     const updatedEmails = emails.filter((email) => email.id !== id);
     setEmails(updatedEmails);
     updateMember({
-      id: member.id,
+      id: member.id ?? null,
       data: {
         primary_email: updatedEmails[0]?.content,
         secondary_emails: updatedEmails.slice(1).map((email) => email.content),

@@ -1,7 +1,7 @@
 import { SLACK_SCOPES, SLACK_USER_SCOPES } from "@/constant";
 import { getCurrentUser } from "@/queries/getCurrentUser";
-import { createIntegration } from "@conquest/db/queries/integrations/createIntegration";
-import { getIntegration } from "@conquest/db/queries/integrations/getIntegration";
+import { createIntegration } from "@conquest/db/queries/integration/createIntegration";
+import { getIntegration } from "@conquest/db/queries/integration/getIntegration";
 import { env } from "@conquest/env";
 import { WebClient } from "@slack/web-api";
 import { redirect } from "next/navigation";
@@ -14,12 +14,9 @@ type Props = {
 };
 
 export default async function Page({ searchParams: { error, code } }: Props) {
-  const user = await getCurrentUser();
-  const { slug, id: workspace_id } = user.workspace;
+  const { id, workspace_id } = await getCurrentUser();
 
-  if (error) {
-    redirect(`/${slug}/settings/integrations/slack?error=access_denied`);
-  }
+  if (error) redirect("/settings/integrations/slack?error=access_denied");
 
   const response = await fetch("https://slack.com/api/oauth.v2.access", {
     method: "POST",
@@ -34,7 +31,7 @@ export default async function Page({ searchParams: { error, code } }: Props) {
   });
 
   if (!response.ok) {
-    return redirect(`/${slug}/settings/integrations/slack?error=invalid_code`);
+    return redirect("/settings/integrations/slack?error=invalid_code");
   }
 
   const data = await response.json();
@@ -44,7 +41,7 @@ export default async function Page({ searchParams: { error, code } }: Props) {
   const { team } = await web.team.info();
 
   if (!team?.id || !team?.name || !team?.url) {
-    return redirect(`/${slug}/settings/integrations/slack?error=invalid_code`);
+    return redirect("/settings/integrations/slack?error=invalid_code");
   }
 
   const integration = await getIntegration({
@@ -52,9 +49,7 @@ export default async function Page({ searchParams: { error, code } }: Props) {
   });
 
   if (integration) {
-    return redirect(
-      `/${slug}/settings/integrations/slack?error=already_connected`,
-    );
+    return redirect("/settings/integrations/slack?error=already_connected");
   }
 
   await createIntegration({
@@ -62,15 +57,15 @@ export default async function Page({ searchParams: { error, code } }: Props) {
     details: {
       source: "SLACK",
       name: team.name,
-      url: team.url,
+      url: team.url.slice(0, -1),
       token: access_token,
       slack_user_token: authed_user.access_token,
       scopes: SLACK_SCOPES,
       user_scopes: SLACK_USER_SCOPES,
     },
-    created_by: user.id,
+    created_by: id,
     workspace_id,
   });
 
-  redirect(`/${slug}/settings/integrations/slack`);
+  redirect("/settings/integrations/slack");
 }

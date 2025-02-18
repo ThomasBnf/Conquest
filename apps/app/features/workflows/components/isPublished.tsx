@@ -1,6 +1,5 @@
 "use client";
 
-import { updateWorkflow } from "@/actions/workflows/updateWorkflow";
 import { Switch } from "@conquest/ui/switch";
 import type { Workflow } from "@conquest/zod/schemas/workflow.schema";
 import { useQueryClient } from "@tanstack/react-query";
@@ -16,7 +15,7 @@ export const IsPublished = ({ workflow }: Props) => {
 
   const onTogglePublished = async () => {
     setIsPublished(!isPublished);
-    updateWorkflow({ id: workflow.id, published: !isPublished });
+    // updateWorkflow({ id: workflow.id, published: !isPublished });
   };
 
   return (

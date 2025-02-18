@@ -1,6 +1,8 @@
-import type { MemberWithCompany } from "@conquest/zod/schemas/member.schema";
+import type { Member } from "@conquest/zod/schemas/member.schema";
 import type { WebClient } from "@slack/web-api";
-import { createMember } from "../members/createMember";
+import ISO6391 from "iso-639-1";
+import { createMember } from "../member/createMember";
+import { upsertProfile } from "../profile/upsertProfile";
 
 type Props = {
   web: WebClient;
@@ -8,7 +10,7 @@ type Props = {
 };
 
 export const createListMembers = async ({ web, workspace_id }: Props) => {
-  const createdMembers: MemberWithCompany[] = [];
+  const createdMembers: Member[] = [];
   let cursor: string | undefined;
 
   do {
@@ -30,22 +32,36 @@ export const createListMembers = async ({ web, workspace_id }: Props) => {
 
         if (first_name === "slackbot" || !email) continue;
 
+        const language = locale
+          ? ISO6391.getName(locale.split("-")[0] ?? "")
+          : null;
+        const country = locale ? locale.split("-")[1] : null;
+
         const createdMember = await createMember({
           data: {
-            slack_id: id,
             first_name,
             last_name,
             primary_email: email,
             phones: phone ? [phone] : [],
             avatar_url: image_1024,
             job_title: title === "" ? null : title,
-            locale: locale ? locale.replace("-", "_") : null,
+            language,
+            country,
           },
           source: "SLACK",
           workspace_id,
         });
 
-        createdMembers?.push(createdMember);
+        await upsertProfile({
+          external_id: id,
+          attributes: {
+            source: "SLACK",
+          },
+          member_id: createdMember.id,
+          workspace_id,
+        });
+
+        createdMembers.push(createdMember);
       }
     }
 

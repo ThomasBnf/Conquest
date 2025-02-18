@@ -1,5 +1,5 @@
-import { deleteEvent } from "@/actions/events/deleteEvent";
 import { AlertDialog } from "@/components/custom/alert-dialog";
+import { trpc } from "@/server/client";
 import { Badge } from "@conquest/ui/badge";
 import { Button } from "@conquest/ui/button";
 import {
@@ -22,12 +22,17 @@ export const EventCard = ({ event }: Props) => {
   const [open, setOpen] = useState(false);
   const { id, title, started_at, ended_at } = event;
 
-  const onDelete = async () => {
-    const response = await deleteEvent({ id: id });
-    const error = response?.serverError;
+  const { mutateAsync } = trpc.events.deleteEvent.useMutation({
+    onSuccess: () => {
+      toast.success("Event deleted");
+    },
+    onError: (error) => {
+      toast.error(error.message);
+    },
+  });
 
-    if (error) return toast.error(error);
-    return toast.success("Event deleted");
+  const onDelete = async () => {
+    await mutateAsync({ id });
   };
 
   return (

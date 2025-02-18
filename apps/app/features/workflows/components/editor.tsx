@@ -1,7 +1,5 @@
 "use client";
 
-import { runWorkflow } from "@/actions/workflows/runWorkflow";
-import { updateWorkflow } from "@/actions/workflows/updateWorkflow";
 import { Button } from "@conquest/ui/button";
 import {
   type Node,
@@ -183,19 +181,19 @@ export const Editor = ({ workflow }: Props) => {
   );
 
   const onSave = async () => {
-    updateWorkflow({
-      id: workflow.id,
-      nodes: toObject().nodes.map((node) => {
-        const nodeData = NodeDataSchema.or(NodeDataLoopSchema).parse(node.data);
-        return {
-          id: node.id,
-          type: "custom",
-          position: node.position,
-          data: nodeData,
-        };
-      }) as Node[],
-      edges: toObject().edges,
-    });
+    // updateWorkflow({
+    //   id: workflow.id,
+    //   nodes: toObject().nodes.map((node) => {
+    //     const nodeData = NodeDataSchema.or(NodeDataLoopSchema).parse(node.data);
+    //     return {
+    //       id: node.id,
+    //       type: "custom",
+    //       position: node.position,
+    //       data: nodeData,
+    //     };
+    //   }) as Node[],
+    //   edges: toObject().edges,
+    // });
   };
 
   const hasEdges = useMemo(() => {
@@ -213,8 +211,8 @@ export const Editor = ({ workflow }: Props) => {
 
   const onRunWorkflow = async () => {
     setRunning(true);
-    const run = await runWorkflow({ workflow_id: workflow.id });
-    if (run) toast.success("Workflow successfully run");
+    // const run = await runWorkflow({ workflow_id: workflow.id });
+    // if (run) toast.success("Workflow successfully run");
     setRunning(false);
   };
 

@@ -2,7 +2,7 @@ import { PageLayout } from "@/components/layouts/page-layout";
 import { Editor } from "@/features/workflows/components/editor";
 import { Header } from "@/features/workflows/components/header";
 import { getCurrentUser } from "@/queries/getCurrentUser";
-import { getWorkflow } from "@conquest/db/queries/workflows/getWorkflow";
+import { getWorkflow } from "@conquest/db/queries/workflow/getWorkflow";
 import { ReactFlowProvider } from "@xyflow/react";
 import { redirect } from "next/navigation";
 

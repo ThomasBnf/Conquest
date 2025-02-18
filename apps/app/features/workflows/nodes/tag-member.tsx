@@ -1,6 +1,6 @@
-import { listTags } from "@/client/tags/listTags";
 import { TagBadge } from "@/features/tags/tag-badge";
 import { useSelected } from "@/features/workflows/hooks/useSelected";
+import { trpc } from "@/server/client";
 import { Button } from "@conquest/ui/button";
 import { Checkbox } from "@conquest/ui/checkbox";
 import { Label } from "@conquest/ui/label";
@@ -22,7 +22,7 @@ export const TagMember = () => {
   const { updateNodeData } = useReactFlow();
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
-  const { data: tags, isLoading } = listTags();
+  const { data: tags, isLoading } = trpc.tags.getAllTags.useQuery();
 
   const parsedData = NodeTagMemberSchema.parse(selected?.data);
 

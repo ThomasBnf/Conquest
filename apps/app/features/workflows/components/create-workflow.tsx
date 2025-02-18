@@ -1,6 +1,5 @@
 "use client";
 
-import { createWorkflow } from "@/actions/workflows/createWorkflow";
 import { useUser } from "@/context/userContext";
 import { Button } from "@conquest/ui/button";
 import { Plus } from "lucide-react";
@@ -14,18 +13,15 @@ export const CreateWorkflow = () => {
   const router = useRouter();
 
   const handleCreateWorkflow = async () => {
-    setLoading(true);
-
-    const rWorkflow = await createWorkflow();
-    const error = rWorkflow?.serverError;
-    const workflow = rWorkflow?.data;
-
-    if (error) {
-      setLoading(false);
-      return toast.error(error);
-    }
-
-    router.push(`/${slug}/workflows/${workflow?.id}`);
+    // setLoading(true);
+    // const rWorkflow = await createWorkflow();
+    // const error = rWorkflow?.serverError;
+    // const workflow = rWorkflow?.data;
+    // if (error) {
+    //   setLoading(false);
+    //   return toast.error(error);
+    // }
+    // router.push(`/${slug}/workflows/${workflow?.id}`);
   };
 
   return (

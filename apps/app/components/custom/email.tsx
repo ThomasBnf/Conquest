@@ -27,7 +27,7 @@ export const Email = ({
       ) : (
         <Input
           autoFocus
-          placeholder="email@example.com"
+          placeholder="Set Email"
           variant="transparent"
           className="h-8 px-0"
           value={value}

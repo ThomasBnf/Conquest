@@ -1,6 +1,9 @@
 "use client";
 
-import { listPotentialAmbassadors } from "@/client/dashboard/listPotentialAmbassadors";
+import { QueryInput } from "@/components/custom/query-input";
+import { useFilters } from "@/context/filtersContext";
+import { tableParsers } from "@/lib/searchParamsTable";
+import { trpc } from "@/server/client";
 import {
   Sheet,
   SheetContent,
@@ -11,10 +14,15 @@ import {
 } from "@conquest/ui/sheet";
 import { Skeleton } from "@conquest/ui/skeleton";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@conquest/ui/tooltip";
-import type { Filter } from "@conquest/zod/schemas/filters.schema";
 import { InfoCircledIcon } from "@radix-ui/react-icons";
+import { useQueryStates } from "nuqs";
 import { useState } from "react";
-import { MembersTable } from "../table/members-table";
+import { FiltersList } from "../filters/filters-list";
+import { ExportListMembers } from "../lists/export-list-members";
+import { ColumnVisibility } from "../table/column-visibility";
+import { DataTable } from "../table/data-table";
+import { useTable } from "../table/hooks/useTable";
+import { membersColumns } from "../table/members-columns";
 
 type Props = {
   from: Date;
@@ -22,14 +30,35 @@ type Props = {
 };
 
 export const PotentialAmbassadors = ({ from, to }: Props) => {
+  const { groupFilters } = useFilters();
   const [open, setOpen] = useState(false);
+  const [{ search, idMember, descMember, page, pageSize }, setParams] =
+    useQueryStates(tableParsers);
 
-  const [filters, setFilters] = useState<Filter[]>([]);
+  const { data, isLoading, failureReason } =
+    trpc.dashboard.potentialAmbassadors.useQuery({
+      search,
+      id: idMember,
+      desc: descMember,
+      page,
+      pageSize,
+      groupFilters,
+      from,
+      to,
+    });
 
-  const { members, count, isLoading } = listPotentialAmbassadors({
-    from,
-    to,
-    filters,
+  console.log(failureReason);
+
+  const { members, count } = data ?? {};
+
+  const { table } = useTable({
+    data: members ?? [],
+    columns: membersColumns,
+    count: count ?? 0,
+    left: ["full_name"],
+    id: idMember,
+    desc: descMember,
+    type: "members",
   });
 
   return (
@@ -69,15 +98,21 @@ export const PotentialAmbassadors = ({ from, to }: Props) => {
             Contributors members with activities in the selected period.
           </SheetDescription>
         </SheetHeader>
-        <MembersTable
-          members={members}
-          isLoading={isLoading}
-          count={count}
-          filters={filters}
-          setFilters={setFilters}
-          emptyDescription="No potential ambassadors found"
-          className="rounded-md border"
-        />
+        <div className="flex h-full flex-col divide-y overflow-hidden rounded-md border">
+          <div className="flex h-12 shrink-0 items-center gap-2 px-4">
+            <QueryInput
+              placeholder="Search..."
+              query={search}
+              setQuery={(value) => setParams({ search: value })}
+            />
+            <FiltersList />
+            <div className="ml-auto flex items-center gap-2">
+              <ExportListMembers members={members} />
+              <ColumnVisibility table={table} type="members" />
+            </div>
+          </div>
+          <DataTable table={table} isLoading={isLoading} count={count ?? 0} />
+        </div>
       </SheetContent>
     </Sheet>
   );

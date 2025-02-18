@@ -1,8 +1,8 @@
 "use client";
 
-import { updateUser } from "@/actions/users/updateUser";
 import { useUser } from "@/context/userContext";
 import { StepsIndicator } from "@/features/onboarding/steps-indicator";
+import { trpc } from "@/server/client";
 import { Button, buttonVariants } from "@conquest/ui/button";
 import {
   Card,
@@ -15,17 +15,31 @@ import { QuestionsStep } from "features/onboarding/questions/questions-step";
 import { WorkspaceStep } from "features/onboarding/workspace/workspace-step";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { toast } from "sonner";
 
 export default function Page() {
-  const { slug } = useUser();
+  const { user } = useUser();
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
+  const { mutateAsync } = trpc.users.updateUser.useMutation({
+    onError: (error) => {
+      setLoading(false);
+      toast.error(error.message);
+    },
+  });
+
   const onComplete = async () => {
+    if (!user) return;
+
     setLoading(true);
-    await updateUser({ onboarding: new Date() });
-    router.push(`/${slug}/settings/integrations`);
+    await mutateAsync({
+      id: user.id,
+      data: { onboarding: new Date() },
+    });
+
+    router.push("/settings/integrations");
   };
 
   if (step === 3) {

@@ -1,105 +1,57 @@
+import { useFilters } from "@/context/filtersContext";
 import { useOpenFilters } from "@/hooks/useOpenFilters";
 import { Button } from "@conquest/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@conquest/ui/dropdown-menu";
 import { Popover, PopoverContent, PopoverTrigger } from "@conquest/ui/popover";
-import type { Filter } from "@conquest/zod/schemas/filters.schema";
-import { MoreVertical, Trash2 } from "lucide-react";
-import type { Dispatch, SetStateAction } from "react";
+import { ListFilter } from "lucide-react";
 import { FilterActivity } from "./filter-activity";
 import { FilterButton } from "./filter-button";
 import { FilterPicker } from "./filter-picker";
 
 type Props = {
-  filters: Filter[];
-  setFilters: Dispatch<SetStateAction<Filter[]>>;
-  handleUpdate?: (filters: Filter[]) => void;
   align?: "start" | "end";
 };
 
-export const FiltersList = ({
-  filters,
-  setFilters,
-  handleUpdate,
-  align,
-}: Props) => {
+export const FiltersList = ({ align = "start" }: Props) => {
+  const { groupFilters, resetFilters } = useFilters();
   const { open, setOpen } = useOpenFilters();
-
-  const onClearFilters = async () => {
-    setFilters([]);
-    handleUpdate?.([]);
-    return 0;
-  };
+  const { filters } = groupFilters;
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
-      <div className="flex h-8 w-fit items-center divide-x overflow-hidden rounded-md border">
-        <PopoverTrigger asChild>
-          <Button variant="dropdown">
-            Filters{" "}
-            <span className="actions-secondary flex size-5 items-center justify-center rounded-md border bg-muted text-xs">
+      <PopoverTrigger asChild>
+        <Button variant="outline">
+          <ListFilter size={16} />
+          Filters
+          {filters.length > 0 && (
+            <span className="actions-secondary ml-1 flex size-5 items-center justify-center rounded-md border bg-muted text-xs">
               {filters.length}
             </span>
-          </Button>
-        </PopoverTrigger>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="dropdown">
-              <MoreVertical size={16} className="text-muted-foreground" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem
-              className="text-destructive focus:text-destructive"
-              onClick={onClearFilters}
-            >
-              <Trash2 size={16} />
-              Delete {filters.length > 1 ? "filters" : "filter"}
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
-      <PopoverContent align={align} className="min-w-96">
+          )}
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent align={align} className="space-y-3 p-4">
+        <p className="font-medium">Filters</p>
         {filters.length > 0 && (
-          <div className="mb-4 flex flex-col gap-1">
-            {filters.map((filter) => {
-              switch (filter.type) {
-                case "activity": {
-                  return (
-                    <FilterActivity
-                      key={filter.id}
-                      filter={filter}
-                      setFilters={setFilters}
-                      handleUpdate={handleUpdate}
-                    />
-                  );
-                }
-                default: {
-                  return (
-                    <FilterPicker
-                      key={filter.id}
-                      filter={filter}
-                      setFilters={setFilters}
-                      handleUpdate={handleUpdate}
-                    />
-                  );
-                }
-              }
-            })}
+          <div className="flex flex-col gap-2">
+            {filters.map((filter, index) =>
+              filter.type === "activity" ? (
+                <FilterActivity key={filter.id} index={index} filter={filter} />
+              ) : (
+                <FilterPicker key={filter.id} index={index} filter={filter} />
+              ),
+            )}
           </div>
         )}
-        <div className="flex items-center justify-between gap-2">
-          <FilterButton
-            filters={filters}
-            setFilters={setFilters}
-            handleUpdate={handleUpdate}
-          />
-          <Button variant="ghost" onClick={onClearFilters}>
-            Clear all filters
+        <div className="flex items-center gap-2">
+          <FilterButton />
+          <Button
+            variant="link"
+            onClick={() => {
+              resetFilters();
+              setOpen(false);
+            }}
+          >
+            Reset filters
           </Button>
         </div>
       </PopoverContent>

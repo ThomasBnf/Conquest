@@ -89,7 +89,7 @@ export const OptionsPanel = () => {
           </div>
         </ScrollArea>
       )}
-      {panel === "node" && !isTrigger && (
+      {/* {panel === "node" && !isTrigger && (
         <div className="flex shrink-0 justify-end p-4">
           <DeleteDialog
             title="Delete Workflow"
@@ -97,7 +97,7 @@ export const OptionsPanel = () => {
             onConfirm={onDelete}
           />
         </div>
-      )}
+      )} */}
     </div>
   );
 };

@@ -1,17 +1,10 @@
-import { updateIntegration } from "@/actions/integrations/updateIntegration";
-import { listOrganizations } from "@/client/linkedin/listOrganizations";
-import { useUser } from "@/context/userContext";
-import type { installLinkedin } from "@conquest/trigger/tasks/installLinkedin.trigger";
-import { Button } from "@conquest/ui/button";
-import { Label } from "@conquest/ui/label";
-import { RadioGroup, RadioGroupItem } from "@conquest/ui/radio-group";
+import { useIntegration } from "@/context/integrationContext";
+import type { installLinkedin } from "@conquest/trigger/tasks/installLinkedin";
 import { Separator } from "@conquest/ui/separator";
 import { useRealtimeTaskTrigger } from "@trigger.dev/react-hooks";
 import { useRouter } from "next/navigation";
 import { type Dispatch, type SetStateAction, useEffect, useState } from "react";
 import { toast } from "sonner";
-import { LoadingChannels } from "../integrations/loading-channels";
-import { LoadingMessage } from "../integrations/loading-message";
 
 type Props = {
   loading: boolean;
@@ -19,8 +12,8 @@ type Props = {
 };
 
 export const LinkedinForm = ({ loading, setLoading }: Props) => {
-  const { linkedin } = useUser();
-  const { organizations, user_id, isLoading } = listOrganizations();
+  const { linkedin } = useIntegration();
+  // const { organizations, user_id, isLoading } = listOrganizations();
   const router = useRouter();
 
   const [selectedOrg, setSelectedOrg] = useState({
@@ -34,24 +27,20 @@ export const LinkedinForm = ({ loading, setLoading }: Props) => {
   );
 
   const onStart = async () => {
-    if (!linkedin || !user_id) return;
-
-    setLoading(true);
-
-    await updateIntegration({
-      id: linkedin.id,
-      external_id: selectedOrg.organization_id,
-      details: {
-        ...linkedin.details,
-        name: selectedOrg.organization_name,
-        user_id,
-      },
-      status: "SYNCING",
-    });
-
-    submit({
-      linkedin,
-    });
+    // if (!linkedin || !user_id) return;
+    // setLoading(true);
+    // const response = await updateIntegration({
+    //   id: linkedin.id,
+    //   external_id: selectedOrg.organization_id,
+    //   details: {
+    //     ...linkedin.details,
+    //     name: selectedOrg.organization_name,
+    //     user_id,
+    //   },
+    //   status: "SYNCING",
+    // });
+    // const updatedLinkedin = LinkedInIntegrationSchema.parse(response?.data);
+    // submit({ linkedin: updatedLinkedin });
   };
 
   useEffect(() => {
@@ -61,9 +50,9 @@ export const LinkedinForm = ({ loading, setLoading }: Props) => {
     const isFailed = run.status === "FAILED";
 
     if (isFailed) {
-      setLoading(false);
       router.refresh();
       toast.error("Failed to install Linkedin", { duration: 5000 });
+      setLoading(false);
     }
 
     if (isCompleted) router.refresh();
@@ -74,7 +63,7 @@ export const LinkedinForm = ({ loading, setLoading }: Props) => {
       <Separator className="my-4" />
       <div className="space-y-4">
         <p className="font-medium text-base">Organizations</p>
-        {isLoading ? (
+        {/* {isLoading ? (
           <LoadingChannels />
         ) : (
           <RadioGroup
@@ -103,7 +92,7 @@ export const LinkedinForm = ({ loading, setLoading }: Props) => {
           <Button onClick={onStart} loading={loading} disabled={!selectedOrg}>
             Let's start!
           </Button>
-        )}
+        )} */}
       </div>
     </>
   );

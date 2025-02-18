@@ -1,4 +1,4 @@
-import type { workflows as WorkflowPrisma } from "@prisma/client";
+import type { workflow as WorkflowPrisma } from "@prisma/client";
 import { z } from "zod";
 import { EdgeSchema } from "./edge.schema";
 import { NodeSchema } from "./node.schema";

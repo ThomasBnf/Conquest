@@ -1,12 +1,11 @@
 import type { Event } from "@conquest/zod/schemas/event.schema";
 import type { LivestormIntegration } from "@conquest/zod/schemas/integration.schema";
-import type { MemberWithCompany } from "@conquest/zod/schemas/member.schema";
+import type { Member } from "@conquest/zod/schemas/member.schema";
 import type { Session } from "@conquest/zod/types/livestorm";
 import { wait } from "@trigger.dev/sdk/v3";
-import { getLocaleByAlpha2 } from "country-locale-map";
-import { createActivity } from "../../queries/activities/createActivity";
 import { listPeopleFromSession } from "../../queries/livestorm/listPeopleFromSession";
-import { upsertMember } from "../members/upsertMember";
+import { createActivity } from "../activity/createActivity";
+import { upsertMember } from "../member/upsertMember";
 
 type Props = {
   livestorm: LivestormIntegration;
@@ -23,7 +22,7 @@ export const createManyPeoples = async ({
   const { access_token } = details;
   const { title, ended_at } = event;
 
-  const createdMembers: MemberWithCompany[] = [];
+  const createdMembers: Member[] = [];
 
   await wait.for({ seconds: 0.5 });
 
@@ -49,7 +48,7 @@ export const createManyPeoples = async ({
 
     if (role === "team_member") continue;
 
-    const locale = getLocaleByAlpha2(ip_country_code) ?? null;
+    // const locale = getLocaleByAlpha2(ip_country_code) ?? null;
 
     const member = await upsertMember({
       id,
@@ -58,7 +57,7 @@ export const createManyPeoples = async ({
         last_name,
         primary_email: email,
         avatar_url: avatar_link,
-        locale,
+        // locale,
       },
       source: "LIVESTORM",
       workspace_id,
@@ -72,6 +71,7 @@ export const createManyPeoples = async ({
         member_id: member.id,
         event_id: event.id,
         created_at: ended_at,
+        source: "LIVESTORM",
         workspace_id,
       });
     }
@@ -84,6 +84,7 @@ export const createManyPeoples = async ({
         member_id: member.id,
         event_id: event.id,
         created_at: ended_at,
+        source: "LIVESTORM",
         workspace_id,
       });
     }
@@ -95,6 +96,7 @@ export const createManyPeoples = async ({
       member_id: member.id,
       event_id: event.id,
       created_at: new Date(created_at * 1000),
+      source: "LIVESTORM",
       workspace_id,
     });
 

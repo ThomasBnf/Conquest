@@ -1,3 +1,4 @@
+import { trpc } from "@/server/client";
 import { Button } from "@conquest/ui/button";
 import { Checkbox } from "@conquest/ui/checkbox";
 import { cn } from "@conquest/ui/cn";
@@ -19,12 +20,13 @@ import { TagBadge } from "./tag-badge";
 
 type Props = {
   record: Member | Company;
-  tags: Tag[] | undefined;
   onUpdate: (tags: string[]) => void;
   className?: string;
 };
 
-export const TagPicker = ({ record, tags, onUpdate, className }: Props) => {
+export const TagPicker = ({ record, onUpdate, className }: Props) => {
+  const { data: tags } = trpc.tags.getAllTags.useQuery();
+
   const [recordTags, setRecordTags] = useState(record?.tags ?? []);
 
   const handleTagToggle = async (tag: Tag) => {

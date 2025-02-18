@@ -28,7 +28,7 @@ export const tableParsers = {
     shallow: false,
     clearOnDefault: true,
   }),
-  page: parseAsInteger.withDefault(1).withOptions({
+  page: parseAsInteger.withDefault(0).withOptions({
     shallow: false,
     clearOnDefault: true,
   }),

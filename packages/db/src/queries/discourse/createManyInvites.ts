@@ -1,19 +1,20 @@
 import type { DiscourseIntegration } from "@conquest/zod/schemas/integration.schema";
-import type { Member } from "@conquest/zod/schemas/member.schema";
+import type { DiscourseProfile } from "@conquest/zod/schemas/profile.schema";
 import type { Invite } from "@conquest/zod/types/discourse";
 import { startOfDay, subDays } from "date-fns";
-import { createActivity } from "../activities/createActivity";
-import { getMember } from "../members/getMember";
+import { createActivity } from "../activity/createActivity";
+import { getProfile } from "../profile/getProfile";
 
 type Props = {
   discourse: DiscourseIntegration;
-  member: Member;
+  profile: DiscourseProfile;
 };
 
-export const createManyInvites = async ({ discourse, member }: Props) => {
+export const createManyInvites = async ({ discourse, profile }: Props) => {
   const { details, workspace_id } = discourse;
   const { community_url, api_key } = details;
-  const { discourse_username } = member;
+  const { member_id, attributes } = profile;
+  const { username } = attributes;
 
   const today = startOfDay(new Date());
   const last365Days = subDays(today, 365);
@@ -23,7 +24,7 @@ export const createManyInvites = async ({ discourse, member }: Props) => {
 
   while (hasMore) {
     const response = await fetch(
-      `${community_url}/u/${discourse_username}/invited.json?filter=redeemed${
+      `${community_url}/u/${username}/invited.json?filter=redeemed${
         offSet ? `&offset=${offSet}` : ""
       }`,
       {
@@ -55,26 +56,24 @@ export const createManyInvites = async ({ discourse, member }: Props) => {
     for (const invite of recentInvites) {
       const { redeemed_at, user } = invite;
 
-      const inviteTo = await getMember({
-        discourse_id: String(user.id),
+      const invitee = await getProfile({
+        external_id: String(user.id),
         workspace_id,
       });
 
-      if (!inviteTo) continue;
+      if (!invitee) continue;
 
       await createActivity({
-        external_id: null,
         activity_type_key: "discourse:invite",
-        message: `${inviteTo.discourse_username} accepted your invitation`,
-        invite_to: inviteTo.id,
-        member_id: member.id,
-        channel_id: null,
+        message: "",
+        invite_to: invitee.id,
+        member_id: member_id,
         created_at: new Date(redeemed_at),
         updated_at: new Date(redeemed_at),
+        source: "DISCOURSE",
         workspace_id,
       });
     }
-
     hasMore = invites.length === 40;
     offSet += 40;
   }

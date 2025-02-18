@@ -1,6 +1,6 @@
 import { EventSchema } from "@conquest/zod/schemas/event.schema";
 import type { LivestormIntegration } from "@conquest/zod/schemas/integration.schema";
-import type { MemberWithCompany } from "@conquest/zod/schemas/member.schema";
+import type { Member } from "@conquest/zod/schemas/member.schema";
 import type { Event, Session } from "@conquest/zod/types/livestorm";
 import { listEventSessions } from "../../queries/livestorm/listEventSessions";
 import { createEvent } from "../events/createEvent";
@@ -15,7 +15,7 @@ export const createManySessions = async ({ livestorm, event }: Props) => {
   const { workspace_id, details } = livestorm;
   const { access_token } = details;
 
-  const members: MemberWithCompany[] = [];
+  const members: Member[] = [];
 
   const { attributes } = event;
   const { title } = attributes;

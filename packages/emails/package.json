@@ -10,6 +10,7 @@
     "@react-email/tailwind": "^0.1.0"
   },
   "devDependencies": {
+    "@conquest/tsconfig": "workspace:*",
     "react-email": "^3.0.1"
   }
 }

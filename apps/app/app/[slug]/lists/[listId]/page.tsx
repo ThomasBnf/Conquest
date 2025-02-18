@@ -1,9 +1,14 @@
+"use client";
+
 import { Header } from "@/components/layouts/header";
 import { PageLayout } from "@/components/layouts/page-layout";
+import { IsLoading } from "@/components/states/is-loading";
+import { FiltersProvider } from "@/context/filtersContext";
+import { MembersProvider } from "@/context/membersContext";
 import { MenuList } from "@/features/lists/menu-list";
-import { Table } from "@/features/members/table";
-import { getCurrentUser } from "@/queries/getCurrentUser";
-import { getList } from "@conquest/db/queries/lists/getList";
+import { MembersPage } from "@/features/members/members-page";
+import { trpc } from "@/server/client";
+import { redirect } from "next/navigation";
 
 type Props = {
   params: {
@@ -11,18 +16,22 @@ type Props = {
   };
 };
 
-export default async function Page({ params: { listId } }: Props) {
-  const user = await getCurrentUser();
-  const { workspace_id } = user;
+export default function Page({ params: { listId } }: Props) {
+  const { data: list, isLoading } = trpc.lists.getList.useQuery({ id: listId });
 
-  const list = await getList({ workspace_id, list_id: listId });
+  if (isLoading) return <IsLoading />;
+  if (!list) redirect("/members");
 
   return (
     <PageLayout>
-      <Header title={list.name}>
-        <MenuList listId={listId} />
+      <Header title={`${list.emoji} ${list.name}`}>
+        <MenuList list={list} />
       </Header>
-      <Table initialFilters={list.filters} />
+      <FiltersProvider defaultGroupFilters={list.groupFilters}>
+        <MembersProvider>
+          <MembersPage />
+        </MembersProvider>
+      </FiltersProvider>
     </PageLayout>
   );
 }

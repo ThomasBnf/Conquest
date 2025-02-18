@@ -1,4 +1,4 @@
-import type { apikeys as APIKeyPrisma } from "@prisma/client";
+import type { api_key } from "@prisma/client";
 import { z } from "zod";
 
 export const APIKeySchema = z.object({
@@ -7,6 +7,6 @@ export const APIKeySchema = z.object({
   token: z.string(),
   workspace_id: z.string().cuid(),
   created_at: z.coerce.date(),
-}) satisfies z.ZodType<APIKeyPrisma>;
+}) satisfies z.ZodType<api_key>;
 
 export type APIKey = z.infer<typeof APIKeySchema>;

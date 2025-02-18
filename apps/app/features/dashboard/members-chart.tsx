@@ -1,8 +1,6 @@
 "use client";
 
-import { listActiveMembers } from "@/client/dashboard/listActiveMembers";
-import { listNewMembers } from "@/client/dashboard/listNewMembers";
-import { listTotalMembers } from "@/client/dashboard/listTotalMembers";
+import { trpc } from "@/server/client";
 import {
   type ChartConfig,
   ChartContainer,
@@ -20,15 +18,15 @@ import {
 } from "recharts";
 
 const chartConfig = {
-  total_members: {
+  totalMembers: {
     label: "Total members",
     color: "hsl(var(--chart-1))",
   },
-  new_members: {
+  newMembers: {
     label: "New members",
     color: "hsl(var(--chart-1))",
   },
-  active_members: {
+  activeMembers: {
     label: "Active members",
     color: "hsl(var(--chart-1))",
   },
@@ -41,39 +39,56 @@ type Props = {
 
 export const MembersChart = ({ from, to }: Props) => {
   const [activeChart, setActiveChart] =
-    useState<keyof typeof chartConfig>("total_members");
+    useState<keyof typeof chartConfig>("totalMembers");
 
-  const { totalMembers, totalMembersData, isLoading } = listTotalMembers({
+  const { data, isLoading } = trpc.dashboard.totalMembers.useQuery({
     from,
     to,
   });
 
-  const {
-    newMembers,
-    newMembersData,
-    isLoading: _isLoading,
-  } = listNewMembers({ from, to });
+  const { data: newData, isLoading: _isLoading } =
+    trpc.dashboard.newMembers.useQuery({
+      from,
+      to,
+    });
 
-  const {
-    activeMembers,
-    activeMembersData,
-    isLoading: __isLoading,
-  } = listActiveMembers({
-    from,
-    to,
-  });
+  const { data: activeData, isLoading: __isLoading } =
+    trpc.dashboard.activeMembers.useQuery({
+      from,
+      to,
+    });
+
+  const { totalMembers, membersData } = data ?? {};
+  const { newMembers, newMembersData } = newData ?? {};
+  const { activeMembers, activeMembersData } = activeData ?? {};
 
   const loading = isLoading || _isLoading || __isLoading;
 
   const chartData = useMemo(() => {
-    if (!totalMembersData || !newMembersData || !activeMembersData) return [];
-    return Object.entries(totalMembersData).map(([date]) => ({
+    const hasAllData =
+      totalMembers &&
+      membersData &&
+      newMembers &&
+      newMembersData &&
+      activeMembers &&
+      activeMembersData;
+
+    if (!hasAllData) return [];
+
+    return Object.keys(membersData).map((date) => ({
       date,
-      total_members: totalMembersData[date],
-      new_members: newMembersData[date],
-      active_members: activeMembersData[date],
+      totalMembers,
+      newMembers: newMembersData[date],
+      activeMembers: activeMembersData[date],
     }));
-  }, [totalMembersData, newMembersData, activeMembersData]);
+  }, [
+    totalMembers,
+    membersData,
+    newMembers,
+    newMembersData,
+    activeMembers,
+    activeMembersData,
+  ]);
 
   return (
     <div className="divide-y">
@@ -83,7 +98,7 @@ export const MembersChart = ({ from, to }: Props) => {
             key={key}
             type="button"
             data-active={activeChart === key}
-            className="flex flex-1 flex-col justify-center gap-1 p-6 data-[active=true]:bg-muted"
+            className="flex flex-1 flex-col justify-center gap-1 p-6 text-start data-[active=true]:bg-muted"
             onClick={() => setActiveChart(key as keyof typeof chartConfig)}
           >
             <span className="text-muted-foreground text-sm">
@@ -93,9 +108,9 @@ export const MembersChart = ({ from, to }: Props) => {
               <Skeleton className="h-[30px] w-12" />
             ) : (
               <span className="font-bold text-3xl leading-none">
-                {key === "total_members" && totalMembers}
-                {key === "new_members" && newMembers}
-                {key === "active_members" && activeMembers}
+                {key === "totalMembers" && totalMembers}
+                {key === "newMembers" && newMembers}
+                {key === "activeMembers" && activeMembers}
               </span>
             )}
           </button>

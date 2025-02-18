@@ -7,7 +7,7 @@ type Props = {
 };
 
 export const getActivityType = async ({ key, workspace_id }: Props) => {
-  const activityType = await prisma.activities_types.findFirst({
+  const activityType = await prisma.activity_type.findFirst({
     where: {
       workspace_id,
       key,

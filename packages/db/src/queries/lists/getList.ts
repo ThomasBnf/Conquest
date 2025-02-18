@@ -7,7 +7,7 @@ type Props = {
 };
 
 export const getList = async ({ workspace_id, list_id }: Props) => {
-  const list = await prisma.lists.findUnique({
+  const list = await prisma.list.findUnique({
     where: {
       id: list_id,
       workspace_id,

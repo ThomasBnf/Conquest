@@ -1,7 +1,7 @@
 "use client";
 
-import { deleteApiKey } from "@/actions/api-keys/actions/deleteApiKey";
 import { DeleteDialog } from "@/components/custom/delete-dialog";
+import { trpc } from "@/server/client";
 import { Button } from "@conquest/ui/button";
 import type { APIKey } from "@conquest/zod/schemas/apikey.schema";
 import { Check, Copy, Eye, EyeOff } from "lucide-react";
@@ -16,6 +16,12 @@ export const ApiKeyCard = ({ apiKey }: Props) => {
   const [isRevealed, setIsRevealed] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
 
+  const { mutateAsync } = trpc.apiKeys.deleteApiKey.useMutation({
+    onSuccess: () => {
+      toast.success("API key revoked");
+    },
+  });
+
   const onCopy = () => {
     if (isCopied) return;
     navigator.clipboard.writeText(apiKey.token);
@@ -27,11 +33,7 @@ export const ApiKeyCard = ({ apiKey }: Props) => {
   };
 
   const onDelete = async (id: string) => {
-    const result = await deleteApiKey({ id });
-    const error = result?.serverError;
-
-    if (error) return toast.error(error);
-    toast.success("API key revoked");
+    await mutateAsync({ id });
   };
 
   return (

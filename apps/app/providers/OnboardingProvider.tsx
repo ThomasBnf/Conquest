@@ -1,23 +1,33 @@
 "use client";
 
+import { IsLoading } from "@/components/states/is-loading";
 import { UserProvider } from "@/context/userContext";
 import { SignOut } from "@/features/onboarding/sign-out";
-import type { UserWithWorkspace } from "@conquest/zod/schemas/user.schema";
+import { trpc } from "@/server/client";
 
 type Props = {
-  user: Omit<UserWithWorkspace, "hashed_password">;
   children: React.ReactNode;
 };
 
-export const OnboardingProvider = ({ user, children }: Props) => {
+export const OnboardingProvider = ({ children }: Props) => {
+  const results = trpc.useQueries((user) => [
+    user.users.getCurrentUser(),
+    user.workspaces.getWorkspace(),
+  ]);
+
+  const [user, workspace] = results;
+  const { email } = user.data ?? {};
+
+  if (results.some((result) => result.isLoading)) return <IsLoading />;
+
   return (
-    <UserProvider user={user}>
+    <UserProvider user={user.data} workspace={workspace.data}>
       <div className="flex h-full flex-col justify-between bg-muted/30 p-4 lg:px-8">
         <div className="flex items-center justify-between">
           <SignOut />
           <div>
             <p className="text-muted-foreground text-xs">Logged in as:</p>
-            <p className="text-sm">{user?.email}</p>
+            <p className="text-sm">{email}</p>
           </div>
         </div>
         {children}

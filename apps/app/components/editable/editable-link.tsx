@@ -33,6 +33,12 @@ export const EditableLink = ({
   };
 
   const onKeyDown = (key: string) => {
+    if (key === "Escape") {
+      setIsHover(false);
+      setIsFocus(false);
+      setValue(defaultValue ?? "");
+    }
+
     if (key === "Enter") {
       setIsHover(false);
       setIsFocus(false);

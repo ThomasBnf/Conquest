@@ -1,3 +1,4 @@
+import { trpc } from "@/server/client";
 import { Button } from "@conquest/ui/button";
 import {
   DropdownMenu,
@@ -9,8 +10,6 @@ import type { Tag } from "@conquest/zod/schemas/tag.schema";
 import { AlertDialog } from "components/custom/alert-dialog";
 import { Edit2, MoreHorizontal, Trash2 } from "lucide-react";
 import { useState } from "react";
-import { toast } from "sonner";
-import { deleteTag } from "../../actions/tags/deleteTag";
 
 type Props = {
   tag: Tag;
@@ -20,10 +19,31 @@ type Props = {
 export const TagMenu = ({ tag, setIsEditing }: Props) => {
   const [open, setOpen] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
+  const utils = trpc.useUtils();
+
+  const { mutateAsync } = trpc.tags.deleteTag.useMutation({
+    async onMutate(newTag) {
+      setIsEditing(false);
+      await utils.tags.getAllTags.cancel();
+
+      const prevData = utils.tags.getAllTags.getData();
+
+      utils.tags.getAllTags.setData(undefined, (old) =>
+        old?.filter((tag) => tag.id !== newTag.id),
+      );
+
+      return { prevData };
+    },
+    onError: (_err, _newTag, context) => {
+      utils.tags.getAllTags.setData(undefined, context?.prevData);
+    },
+    onSettled: () => {
+      utils.tags.getAllTags.invalidate();
+    },
+  });
 
   const onDeleteTag = async () => {
-    const rTag = await deleteTag({ id: tag.id });
-    if (rTag?.serverError) return toast.error(rTag.serverError);
+    await mutateAsync({ id: tag.id });
   };
 
   return (

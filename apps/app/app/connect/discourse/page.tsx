@@ -1,22 +1,21 @@
 import { getCurrentUser } from "@/queries/getCurrentUser";
-import { createIntegration } from "@conquest/db/queries/integrations/createIntegration";
+import { createIntegration } from "@conquest/db/queries/integration/createIntegration";
 import { redirect } from "next/navigation";
 
 export default async function Page() {
-  const user = await getCurrentUser();
-  const { slug, id: workspace_id } = user.workspace;
+  const { id: userId, workspace_id } = await getCurrentUser();
 
   await createIntegration({
-    external_id: user.workspace_id,
+    external_id: workspace_id,
     details: {
       source: "DISCOURSE",
       community_url: "",
       api_key: "",
       user_fields: [],
     },
-    created_by: user.id,
+    created_by: userId,
     workspace_id,
   });
 
-  redirect(`/${slug}/settings/integrations/discourse`);
+  redirect("/settings/integrations/discourse");
 }

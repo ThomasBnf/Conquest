@@ -18,8 +18,6 @@ const buttonVariants = cva(
         secondary:
           "bg-secondary text-secondary-foreground hover:bg-secondary-hover",
         ghost: "hover:bg-secondary hover:text-accent-foreground",
-        dropdown:
-          "bg-background hover:bg-accent hover:text-accent-foreground rounded-none",
         link: "text-primary underline-offset-4 hover:underline",
         dark: "bg-background/15 hover:bg-background/20 border-foreground/10 actions-secondary",
         transparent: "",
@@ -77,7 +75,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       >
         <span
           className={cn(
-            "flex w-full items-center justify-center gap-1.5",
+            "flex w-full items-center justify-center gap-1.5 whitespace-nowrap",
             loading && "invisible",
             classNameSpan,
           )}

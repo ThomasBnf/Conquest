@@ -1,5 +1,5 @@
-import { getSlug } from "@/actions/workspaces/getSlug";
 import { useUser } from "@/context/userContext";
+import { trpc } from "@/server/client";
 import { cn } from "@conquest/ui/cn";
 import {
   FormControl,
@@ -20,18 +20,19 @@ type Props = {
 };
 
 export const WorkspaceFields = ({ form }: Props) => {
-  const { user } = useUser();
+  const { workspace } = useUser();
   const [isFocus, setFocus] = useState(false);
   const [isLoading, setLoading] = useState(false);
   const [debouncedValue, setValue] = useDebounce("", 500);
 
+  const { data: slugData } = trpc.workspaces.getSlug.useQuery({
+    slug: form.getValues("slug"),
+  });
+
   const checkSlug = async (slug: string) => {
     setLoading(true);
 
-    const rSlug = await getSlug({ slug });
-    const slugData = rSlug?.data;
-
-    if (slugData === 0 || user?.workspace?.slug === slug) {
+    if (slugData === 0 || workspace?.slug === slug) {
       form.clearErrors("slug");
       form.setValue("slug", slug);
       setFocus(false);

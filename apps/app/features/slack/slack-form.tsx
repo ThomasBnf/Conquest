@@ -1,62 +1,38 @@
-import { updateIntegration } from "@/actions/integrations/updateIntegration";
-import { listChannels } from "@/client/channels/listChannels";
-import { listSLackChannels } from "@/client/slack/listSlackChannels";
-import { useUser } from "@/context/userContext";
-import type { installSlack } from "@conquest/trigger/tasks/installSlack.trigger";
+import { useIntegration } from "@/context/integrationContext";
+import { trpc } from "@/server/client";
+import type { installSlack } from "@conquest/trigger/tasks/installSlack";
 import { Button } from "@conquest/ui/button";
-import { Checkbox } from "@conquest/ui/checkbox";
-import { cn } from "@conquest/ui/cn";
 import { Separator } from "@conquest/ui/separator";
 import { useRealtimeTaskTrigger } from "@trigger.dev/react-hooks";
-import { Hash } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { type Dispatch, type SetStateAction, useEffect, useState } from "react";
+import { useEffect } from "react";
 import { toast } from "sonner";
-import { LoadingChannels } from "../integrations/loading-channels";
+import { ActivityTypesList } from "../activities-types/activity-types-list";
 import { LoadingMessage } from "../integrations/loading-message";
+import { SlackChannels } from "./slack-channels";
 
-type Props = {
-  loading: boolean;
-  setLoading: Dispatch<SetStateAction<boolean>>;
-};
+export const SlackForm = () => {
+  const { slack, loading, setLoading, step, setStep } = useIntegration();
+  const utils = trpc.useUtils();
 
-export const SlackForm = ({ loading, setLoading }: Props) => {
-  const { slack } = useUser();
-  const [selectedChannels, setSelectedChannels] = useState<string[]>([]);
-  const router = useRouter();
+  const { mutateAsync } = trpc.integrations.updateIntegration.useMutation({
+    onSuccess: () => {
+      utils.integrations.getIntegrationBySource.invalidate({
+        source: "SLACK",
+      });
+    },
+  });
 
   const { submit, run, error } = useRealtimeTaskTrigger<typeof installSlack>(
     "install-slack",
     { accessToken: slack?.trigger_token },
   );
 
-  const { channels } = listChannels();
-  const { slackChannels, isLoading } = listSLackChannels();
-
-  const onSelect = (channel: string | undefined) => {
-    if (!channel) return;
-
-    setSelectedChannels((prev) =>
-      prev.includes(channel)
-        ? prev.filter((id) => id !== channel)
-        : [...prev, channel],
-    );
-  };
-
-  const onSelectAll = () => {
-    setSelectedChannels(
-      slackChannels?.map((channel) => channel.id ?? "") ?? [],
-    );
-  };
-
-  const onUnselectAll = () => setSelectedChannels([]);
-
   const onStart = async () => {
     if (!slack) return;
 
     setLoading(true);
-    await updateIntegration({ id: slack.id, status: "SYNCING" });
-    submit({ slack, channels: selectedChannels });
+    await mutateAsync({ id: slack.id, status: "SYNCING" });
+    submit({ slack });
   };
 
   useEffect(() => {
@@ -66,82 +42,53 @@ export const SlackForm = ({ loading, setLoading }: Props) => {
     const isFailed = run.status === "FAILED";
 
     if (isFailed || error) {
-      router.refresh();
+      setStep(0);
+      setLoading(false);
       toast.error("Failed to install Slack", { duration: 5000 });
     }
 
-    if (isCompleted) router.refresh();
+    if (isCompleted) {
+      utils.integrations.getIntegrationBySource.invalidate({
+        source: "SLACK",
+      });
+      utils.channels.getAllChannels.invalidate();
+      utils.slack.listChannels.invalidate();
+      setTimeout(() => setLoading(false), 1000);
+    }
   }, [run]);
+
+  useEffect(() => {
+    if (slack?.status === "SYNCING") {
+      setLoading(true);
+      setStep(1);
+    }
+  }, [slack]);
 
   return (
     <>
       <Separator className="my-4" />
-      <div className="space-y-4">
-        <div>
-          <p className="mb-2 font-medium text-base">Channels</p>
-          <Button
-            variant="outline"
-            size="xs"
-            disabled={loading}
-            onClick={
-              selectedChannels.length === slackChannels?.length
-                ? onUnselectAll
-                : onSelectAll
-            }
-          >
-            {selectedChannels.length === slackChannels?.length
-              ? "Unselect all"
-              : "Select all"}
+      {step === 0 && <SlackChannels />}
+      {step === 1 && (
+        <div className="space-y-2">
+          {loading ? (
+            <LoadingMessage />
+          ) : (
+            <>
+              <div>
+                <p className="font-medium text-base">Activity types</p>
+                <p className="text-muted-foreground">
+                  Customize points for each activity type and set
+                  channel-specific conditions now or later
+                </p>
+              </div>
+              <ActivityTypesList source="SLACK" disableHeader />
+            </>
+          )}
+          <Button onClick={onStart} loading={loading} disabled={loading}>
+            Let's start!
           </Button>
         </div>
-        {isLoading ? (
-          <LoadingChannels />
-        ) : (
-          <>
-            <div className="flex flex-col gap-1">
-              {slackChannels?.map((slackChannel) => {
-                const isSelected = selectedChannels.some(
-                  (channel) => channel === slackChannel.id,
-                );
-                const hasImported = channels?.some(
-                  (channel) => channel.external_id === slackChannel.id,
-                );
-
-                return (
-                  <button
-                    key={slackChannel.id}
-                    className={cn(
-                      "flex items-center gap-2",
-                      (hasImported || loading) && "opacity-50",
-                    )}
-                    type="button"
-                    onClick={() => onSelect(slackChannel.id)}
-                  >
-                    <Checkbox
-                      checked={isSelected || hasImported}
-                      disabled={hasImported || loading}
-                    />
-                    <div className="flex items-center gap-1">
-                      <Hash size={16} />
-                      <p>{slackChannel.name}</p>
-                    </div>
-                  </button>
-                );
-              })}
-            </div>
-            {loading ? (
-              <LoadingMessage />
-            ) : (
-              <Button
-                disabled={selectedChannels.length === 0}
-                onClick={onStart}
-              >
-                Let's start!
-              </Button>
-            )}
-          </>
-        )}
-      </div>
+      )}
     </>
   );
 };

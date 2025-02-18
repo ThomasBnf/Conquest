@@ -1,6 +1,5 @@
-import { createCompany } from "@/actions/companies/createCompany";
-import { listCompanies } from "@/client/companies/listCompanies";
 import { useUser } from "@/context/userContext";
+import { trpc } from "@/server/client";
 import { Button } from "@conquest/ui/button";
 import {
   Command,
@@ -13,56 +12,75 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from "@conquest/ui/popover";
 import { Skeleton } from "@conquest/ui/skeleton";
 import type { Company } from "@conquest/zod/schemas/company.schema";
-import type { MemberWithCompany } from "@conquest/zod/schemas/member.schema";
+import type { Member } from "@conquest/zod/schemas/member.schema";
 import { CommandLoading } from "cmdk";
 import { Plus, X } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { toast } from "sonner";
+import { useEffect, useState } from "react";
+import { useInView } from "react-intersection-observer";
+import { useDebounce } from "use-debounce";
 
 type Props = {
-  member: MemberWithCompany;
-  onUpdate: (value: string | null) => void;
+  member: Member;
+  onUpdate: (companyId: string | null) => void;
 };
 
 export const EditableCompany = ({ member, onUpdate }: Props) => {
   const { slug } = useUser();
-  const [memberCompany, setMemberCompany] = useState<string | null>(
-    member.company?.name ?? null,
-  );
-  const [search, setSearch] = useState("");
+  const [query, setQuery] = useState("");
+  const [search, setSearch] = useDebounce(query, 500);
   const [open, setOpen] = useState(false);
+  const { ref, inView } = useInView();
+
   const router = useRouter();
+  const utils = trpc.useUtils();
 
-  const { data: companies, isLoading } = listCompanies();
+  const { data: company } = trpc.companies.getCompany.useQuery({
+    id: member.company_id,
+  });
 
-  const onUpdateMemberCompany = (company: Company | null) => {
-    if (company?.name === memberCompany) return;
-    setMemberCompany(company?.name ?? null);
-    onUpdate(company?.id ?? null);
+  const { data, isLoading, fetchNextPage } =
+    trpc.companies.listCompanies.useInfiniteQuery(
+      { search, take: 25 },
+      { getNextPageParam: (lastPage) => lastPage[lastPage.length - 1]?.id },
+    );
+
+  const companies = data?.pages.flatMap((page) => page ?? []);
+
+  const { mutateAsync: createCompany } =
+    trpc.companies.createCompany.useMutation({
+      onSuccess: () => {
+        utils.companies.listCompanies.invalidate();
+        setOpen(false);
+        setQuery("");
+      },
+    });
+
+  const onUpdateMemberCompany = (newCompany: Company | null) => {
+    if (company?.id === newCompany?.id) return;
+
+    onUpdate(newCompany?.id ?? null);
+    setQuery("");
   };
 
   const onCreateCompany = async () => {
-    const response = await createCompany({ name: search });
+    const company = await createCompany({ name: search });
 
-    const error = response?.serverError;
-    if (error) {
-      return toast.error(error);
-    }
-
-    const newCompany = response?.data;
-
-    if (newCompany) {
-      setOpen(false);
-      setSearch("");
-      onUpdateMemberCompany(newCompany);
-    }
+    if (company) onUpdateMemberCompany(company);
   };
+
+  useEffect(() => {
+    if (inView) fetchNextPage();
+  }, [inView]);
+
+  useEffect(() => {
+    setSearch(query);
+  }, [query]);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild className="w-full cursor-pointer">
-        {memberCompany ? (
+        {company?.name ? (
           <div className="h-8 rounded-md p-1 hover:bg-muted">
             <Button
               variant="outline"
@@ -70,10 +88,10 @@ export const EditableCompany = ({ member, onUpdate }: Props) => {
               className="w-fit justify-start border-blue-200 text-blue-500 hover:bg-background hover:text-blue-500"
               onClick={(e) => {
                 e.stopPropagation();
-                router.push(`/${slug}/companies/${member.company_id}`);
+                router.push(`/${slug}/companies/${member?.company_id}`);
               }}
             >
-              {memberCompany}
+              {company.name}
               {open && (
                 // biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
                 <div
@@ -98,11 +116,11 @@ export const EditableCompany = ({ member, onUpdate }: Props) => {
         )}
       </PopoverTrigger>
       <PopoverContent align="start" className="w-[233px] p-0">
-        <Command loop>
+        <Command loop shouldFilter={false}>
           <CommandInput
+            value={query}
             placeholder="Search company..."
-            value={search}
-            onValueChange={(value) => setSearch(value)}
+            onValueChange={(value) => setQuery(value)}
           />
 
           {!search && <CommandEmpty>No companies found.</CommandEmpty>}
@@ -110,7 +128,7 @@ export const EditableCompany = ({ member, onUpdate }: Props) => {
             <CommandGroup>
               {isLoading ? (
                 <CommandLoading>
-                  <Skeleton className="h-6 w-full" />
+                  <Skeleton className="h-8 w-full" />
                 </CommandLoading>
               ) : (
                 companies?.map((company) => (
@@ -125,6 +143,7 @@ export const EditableCompany = ({ member, onUpdate }: Props) => {
                   </CommandItem>
                 ))
               )}
+              <div ref={ref} />
             </CommandGroup>
             {search && (
               <CommandGroup>

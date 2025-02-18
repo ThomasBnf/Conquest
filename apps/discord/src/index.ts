@@ -1,10 +1,18 @@
 import { prisma } from "@conquest/db/prisma";
-import { createActivity } from "@conquest/db/queries/activities/createActivity";
-import { getActivity } from "@conquest/db/queries/activities/getActivity";
-import { getChannel } from "@conquest/db/queries/channels/getChannel";
-import { getIntegration } from "@conquest/db/queries/integrations/getIntegration";
-import { getMember } from "@conquest/db/queries/members/getMember";
-import { upsertMember } from "@conquest/db/queries/members/upsertMember";
+import { createActivity } from "@conquest/db/queries/activity/createActivity";
+import { deleteActivity } from "@conquest/db/queries/activity/deleteActivity";
+import { getActivity } from "@conquest/db/queries/activity/getActivity";
+import { updateActivity } from "@conquest/db/queries/activity/updateActivity";
+import { createChannel } from "@conquest/db/queries/channel/createChannel";
+import { deleteChannel } from "@conquest/db/queries/channel/deleteChannel";
+import { getChannel } from "@conquest/db/queries/channel/getChannel";
+import { updateChannel } from "@conquest/db/queries/channel/updateChannel";
+import { getIntegration } from "@conquest/db/queries/integration/getIntegration";
+import { updateMember } from "@conquest/db/queries/member/updateMember";
+import { upsertMember } from "@conquest/db/queries/member/upsertMember";
+import { deleteProfile } from "@conquest/db/queries/profile/deleteProfile";
+import { getProfile } from "@conquest/db/queries/profile/getProfile";
+import { upsertProfile } from "@conquest/db/queries/profile/upsertProfile";
 import {
   ChannelType,
   Client,
@@ -16,7 +24,6 @@ import {
 import { config } from "dotenv";
 import express from "express";
 import { sleep } from "./helpers/sleep";
-import { createFiles } from "./queries/createFiles";
 
 config();
 
@@ -57,6 +64,7 @@ client.on(Events.GuildMemberAdd, async (member) => {
     external_id: guild.id,
     status: "CONNECTED",
   });
+
   if (!integration) return;
   const { workspace_id } = integration;
 
@@ -68,23 +76,24 @@ client.on(Events.GuildMemberAdd, async (member) => {
     : null;
 
   try {
-    const createdMember = await upsertMember({
+    const upsertedMember = await upsertMember({
       id,
       data: {
         first_name: firstName,
         last_name: lastName,
-        discord_username: username,
         avatar_url: avatarUrl,
       },
       source: "DISCORD",
       workspace_id,
     });
 
-    await createActivity({
+    await upsertProfile({
       external_id: id,
-      activity_type_key: "discord:join",
-      message: "Has joined the community",
-      member_id: createdMember.id,
+      attributes: {
+        username,
+        source: "DISCORD",
+      },
+      member_id: upsertedMember.id,
       workspace_id,
     });
   } catch (error) {
@@ -101,15 +110,14 @@ client.on(Events.GuildMemberRemove, async (member) => {
     external_id: guild.id,
     status: "CONNECTED",
   });
+
   if (!integration) return;
   const { workspace_id } = integration;
 
   try {
-    await prisma.members.deleteMany({
-      where: {
-        id,
-        workspace_id,
-      },
+    await deleteProfile({
+      external_id: id,
+      workspace_id,
     });
   } catch (error) {
     console.error("GuildMemberRemove", error);
@@ -128,16 +136,23 @@ client.on(Events.UserUpdate, async (user) => {
     : null;
 
   try {
-    await prisma.members.update({
-      where: {
-        id,
-      },
+    const updatedMember = await updateMember({
+      id,
       data: {
         first_name: firstName,
         last_name: lastName,
-        discord_username: username,
         avatar_url: avatarUrl,
       },
+    });
+
+    await upsertProfile({
+      external_id: id,
+      attributes: {
+        username: username ?? "",
+        source: "DISCORD",
+      },
+      member_id: updatedMember.id,
+      workspace_id: updatedMember.workspace_id,
     });
   } catch (error) {
     console.error("UserUpdate", error);
@@ -152,6 +167,7 @@ client.on(Events.ChannelCreate, async (channel) => {
     external_id: guildId,
     status: "CONNECTED",
   });
+
   if (!integration) return;
   const { workspace_id } = integration;
 
@@ -170,13 +186,11 @@ client.on(Events.ChannelCreate, async (channel) => {
     ].includes(type)
   ) {
     try {
-      await prisma.channels.create({
-        data: {
-          external_id: id,
-          name,
-          source: "DISCORD",
-          workspace_id,
-        },
+      await createChannel({
+        external_id: id,
+        name,
+        source: "DISCORD",
+        workspace_id,
       });
     } catch (error) {
       console.error("ChannelCreate", error);
@@ -192,18 +206,15 @@ client.on(Events.ChannelUpdate, async (channel) => {
     external_id: guildId,
     status: "CONNECTED",
   });
+
   if (!integration) return;
   const { workspace_id } = integration;
 
   try {
-    await prisma.channels.update({
-      where: {
-        external_id_workspace_id: {
-          external_id: id,
-          workspace_id,
-        },
-      },
-      data: { name },
+    await updateChannel({
+      external_id: id,
+      name,
+      workspace_id,
     });
   } catch (error) {
     console.error("ChannelUpdate", error);
@@ -218,17 +229,14 @@ client.on(Events.ChannelDelete, async (channel) => {
     external_id: guildId,
     status: "CONNECTED",
   });
+
   if (!integration) return;
   const { workspace_id } = integration;
 
   try {
-    await prisma.channels.delete({
-      where: {
-        external_id_workspace_id: {
-          external_id: id,
-          workspace_id,
-        },
-      },
+    await deleteChannel({
+      external_id: id,
+      workspace_id,
     });
   } catch (error) {
     console.error("ChannelDelete", error);
@@ -236,17 +244,9 @@ client.on(Events.ChannelDelete, async (channel) => {
 });
 
 client.on(Events.MessageCreate, async (message) => {
-  console.log("MessageCreate", message);
-  const {
-    id,
-    channelId,
-    guildId,
-    type,
-    content,
-    author,
-    reference,
-    attachments,
-  } = message;
+  console.dir(message, { depth: 100 });
+  const { id, channelId, guildId, type, content, author, reference, position } =
+    message;
   const { id: discord_id } = author;
 
   if (!guildId) return;
@@ -255,71 +255,68 @@ client.on(Events.MessageCreate, async (message) => {
     external_id: guildId,
     status: "CONNECTED",
   });
+
   if (!integration) return;
   const { workspace_id } = integration;
 
-  const member = await getMember({ discord_id, workspace_id });
-  if (!member) return;
+  const profile = await getProfile({
+    external_id: discord_id,
+    workspace_id,
+  });
+
+  if (!profile) return;
 
   const channel = await getChannel({ external_id: channelId, workspace_id });
 
   if (!channel) {
+    await sleep(1500);
+
     const activity = await getActivity({
       external_id: channelId,
       workspace_id,
     });
 
-    if (activity) {
+    if (activity && activity.message === "") {
       try {
-        const createdActivity = await createActivity({
-          external_id: id,
-          activity_type_key: "discord:reply",
+        return await updateActivity({
+          external_id: activity.external_id ?? "",
+          activity_type_key: "discord:thread",
           message: content,
-          reply_to: type === 19 ? reference?.messageId : activity.external_id,
-          thread_id: activity.external_id,
-          member_id: member.id,
-          channel_id: activity.channel_id,
           workspace_id,
         });
-
-        await sleep(1000);
-
-        await prisma.activities.update({
-          where: {
-            external_id_workspace_id: {
-              external_id: id,
-              workspace_id,
-            },
-          },
-          data: {
-            message: content,
-          },
-        });
-
-        await createFiles({
-          files: attachments,
-          activity_id: createdActivity?.id,
-        });
       } catch (error) {
-        console.error("ReplyToThread", error);
+        console.error("ThreadFirstMessage", error);
       }
+    }
+
+    console.log("activity", activity);
+
+    try {
+      await createActivity({
+        external_id: id,
+        activity_type_key: "discord:reply_thread",
+        message: content,
+        reply_to: channelId,
+        member_id: profile.member_id,
+        channel_id: activity?.channel_id,
+        source: "DISCORD",
+        workspace_id,
+      });
+    } catch (error) {
+      console.error("ThreadReply", error);
     }
   }
 
   if (type === 0 && channel) {
     try {
-      const createdActivity = await createActivity({
+      await createActivity({
         external_id: id,
-        activity_type_key: "discord:post",
+        activity_type_key: "discord:message",
         message: content,
-        member_id: member.id,
+        member_id: profile.member_id,
         channel_id: channel.id,
+        source: "DISCORD",
         workspace_id,
-      });
-
-      await createFiles({
-        files: attachments,
-        activity_id: createdActivity?.id,
       });
     } catch (error) {
       console.error("MessageCreate", type, error);
@@ -328,19 +325,15 @@ client.on(Events.MessageCreate, async (message) => {
 
   if (type === 19 && channel) {
     try {
-      const createdActivity = await createActivity({
+      await createActivity({
         external_id: id,
         activity_type_key: "discord:reply",
         message: content,
         reply_to: reference?.messageId,
-        member_id: member.id,
+        member_id: profile.member_id,
         channel_id: channel.id,
+        source: "DISCORD",
         workspace_id,
-      });
-
-      await createFiles({
-        files: attachments,
-        activity_id: createdActivity?.id,
       });
     } catch (error) {
       console.error("MessageCreate", type, error);
@@ -360,11 +353,12 @@ client.on(Events.MessageUpdate, async (message) => {
     external_id: guildId,
     status: "CONNECTED",
   });
+
   if (!integration) return;
   const { workspace_id } = integration;
 
   try {
-    await prisma.activities.update({
+    await prisma.activity.update({
       where: {
         external_id_workspace_id: {
           external_id: id,
@@ -391,27 +385,28 @@ client.on(Events.MessageDelete, async (message) => {
     external_id: guildId,
     status: "CONNECTED",
   });
+
   if (!integration) return;
   const { workspace_id } = integration;
 
   if (!discord_id) return;
 
-  const member = await getMember({ discord_id, workspace_id });
-  if (!member) return;
+  const profile = await getProfile({
+    external_id: discord_id,
+    workspace_id,
+  });
+
+  if (!profile) return;
 
   try {
-    await prisma.activities.delete({
-      where: {
-        external_id_workspace_id: {
-          external_id: id,
-          workspace_id,
-        },
-      },
+    await deleteActivity({
+      external_id: id,
+      workspace_id,
     });
 
-    await prisma.activities.deleteMany({
+    await prisma.activity.deleteMany({
       where: {
-        react_to: id,
+        OR: [{ react_to: id }, { reply_to: id }],
         workspace_id,
       },
     });
@@ -430,11 +425,15 @@ client.on(Events.ThreadCreate, async (thread) => {
     external_id: guildId,
     status: "CONNECTED",
   });
+
   if (!integration) return;
   const { workspace_id } = integration;
 
-  const member = await getMember({ discord_id: ownerId, workspace_id });
-  if (!member) return;
+  const profile = await getProfile({
+    external_id: ownerId,
+    workspace_id,
+  });
+  if (!profile) return;
 
   const channel = await getChannel({ external_id: parentId, workspace_id });
   if (!channel) return;
@@ -442,11 +441,12 @@ client.on(Events.ThreadCreate, async (thread) => {
   try {
     await createActivity({
       external_id: id,
-      activity_type_key: "discord:post",
+      activity_type_key: "discord:thread",
       title: name,
       message: "",
-      member_id: member.id,
+      member_id: profile.member_id,
       channel_id: channel.id,
+      source: "DISCORD",
       workspace_id,
     });
   } catch (error) {
@@ -462,26 +462,54 @@ client.on(Events.ThreadDelete, async (thread) => {
     external_id: guildId,
     status: "CONNECTED",
   });
+
   if (!integration) return;
   const { workspace_id } = integration;
 
-  const member = await getMember({ discord_id: ownerId, workspace_id });
-  if (!member) return;
+  const profile = await getProfile({
+    external_id: ownerId,
+    workspace_id,
+  });
+  if (!profile) return;
 
   try {
-    await prisma.activities.deleteMany({
+    const activities = await prisma.activity.findMany({
+      where: {
+        reply_to: id,
+        workspace_id,
+      },
+    });
+
+    for (const activity of activities) {
+      await prisma.activity.deleteMany({
+        where: {
+          OR: [
+            { react_to: activity.external_id },
+            { reply_to: activity.external_id },
+          ],
+          workspace_id,
+        },
+      });
+    }
+
+    await prisma.activity.deleteMany({
       where: {
         OR: [
           {
-            external_id: id,
+            react_to: id,
             workspace_id,
           },
           {
-            thread_id: id,
+            reply_to: id,
             workspace_id,
           },
         ],
       },
+    });
+
+    await deleteActivity({
+      external_id: id,
+      workspace_id,
     });
   } catch (error) {
     console.error("ThreadDelete", error);
@@ -497,11 +525,12 @@ client.on(Events.GuildRoleCreate, async (role) => {
     external_id: guildId,
     status: "CONNECTED",
   });
+
   if (!integration) return;
   const { workspace_id } = integration;
 
   try {
-    await prisma.tags.create({
+    await prisma.tag.create({
       data: {
         external_id: id,
         name,
@@ -524,6 +553,7 @@ client.on(Events.GuildRoleUpdate, async (_, role) => {
     external_id: guildId,
     status: "CONNECTED",
   });
+
   if (!integration) return;
   const { workspace_id } = integration;
 
@@ -531,7 +561,7 @@ client.on(Events.GuildRoleUpdate, async (_, role) => {
     color === 0 ? "#99AAB5" : `#${color.toString(16).padStart(6, "0")}`;
 
   try {
-    await prisma.tags.update({
+    await prisma.tag.update({
       where: {
         external_id_workspace_id: {
           external_id: id,
@@ -557,11 +587,12 @@ client.on(Events.GuildRoleDelete, async (role) => {
     external_id: guildId,
     status: "CONNECTED",
   });
+
   if (!integration) return;
   const { workspace_id } = integration;
 
   try {
-    const tag = await prisma.tags.findFirst({
+    const tag = await prisma.tag.findFirst({
       where: {
         external_id: id,
         workspace_id,
@@ -571,7 +602,7 @@ client.on(Events.GuildRoleDelete, async (role) => {
     if (!tag) return;
 
     await prisma.$transaction([
-      prisma.tags.delete({
+      prisma.tag.delete({
         where: {
           external_id_workspace_id: {
             external_id: id,
@@ -604,11 +635,15 @@ client.on(Events.MessageReactionAdd, async (reaction, user) => {
     external_id: guildId,
     status: "CONNECTED",
   });
+
   if (!integration) return;
   const { workspace_id } = integration;
 
-  const member = await getMember({ discord_id, workspace_id });
-  if (!member) return;
+  const profile = await getProfile({
+    external_id: discord_id,
+    workspace_id,
+  });
+  if (!profile) return;
 
   const channel = await getChannel({ external_id: channelId, workspace_id });
   if (!channel) return;
@@ -619,8 +654,9 @@ client.on(Events.MessageReactionAdd, async (reaction, user) => {
       activity_type_key: "discord:reaction",
       message: emoji.name ?? "",
       react_to: id,
-      member_id: member.id,
+      member_id: profile.member_id,
       channel_id: channel.id,
+      source: "DISCORD",
       workspace_id,
     });
   } catch (error) {
@@ -640,18 +676,22 @@ client.on(Events.MessageReactionRemove, async (reaction, user) => {
     external_id: guildId,
     status: "CONNECTED",
   });
+
   if (!integration) return;
   const { workspace_id } = integration;
 
-  const member = await getMember({ discord_id, workspace_id });
-  if (!member) return;
+  const profile = await getProfile({
+    external_id: discord_id,
+    workspace_id,
+  });
+  if (!profile) return;
 
   try {
-    await prisma.activities.deleteMany({
+    await prisma.activity.deleteMany({
       where: {
         message: emoji.name ?? "",
         react_to: messageId,
-        member_id: member.id,
+        member_id: profile.member_id,
         workspace_id,
       },
     });

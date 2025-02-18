@@ -1,39 +1,42 @@
-import { CountryBadge } from "@/components/badges/country-badge";
 import { SourceBadge } from "@/components/badges/source-badge";
+import { trpc } from "@/server/client";
 import { cn } from "@conquest/ui/cn";
 import type { Source } from "@conquest/zod/enum/source.enum";
-import type { MemberWithCompany } from "@conquest/zod/schemas/member.schema";
+import type { Member } from "@conquest/zod/schemas/member.schema";
 import { format } from "date-fns";
 
 type Props = {
-  member: MemberWithCompany;
+  member: Member;
 };
 
 export const FilteredEntries = ({ member }: Props) => {
   const entries = [
     ["primary_email", member.primary_email],
     ["job_title", member.job_title],
-    ["company", member.company?.name],
-    ["locale", member.locale],
+    ["company", member.company_id],
     ["source", member.source],
     ["first_activity", member.first_activity],
   ];
 
+  const { data: company } = trpc.companies.getCompany.useQuery({
+    id: member.company_id,
+  });
+
   return entries.map(([key, value]) => {
     switch (key) {
-      case "locale": {
+      case "company": {
         return (
           <div className="space-y-1">
-            <p className="text-muted-foreground text-xs capitalize">Locale</p>
+            <p className="text-muted-foreground text-xs capitalize">Company</p>
             {value ? (
-              <CountryBadge locale={value as string} />
+              <p>{company?.name}</p>
             ) : (
               <p className="text-muted-foreground">N/A</p>
             )}
           </div>
         );
       }
-      case "sources": {
+      case "source": {
         return (
           <div className="space-y-1">
             <p className="text-muted-foreground text-xs capitalize">Source</p>

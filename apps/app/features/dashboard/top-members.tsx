@@ -1,7 +1,7 @@
 "use client";
 
-import { useListTopMembers } from "@/client/dashboard/listTopMembers";
 import { useUser } from "@/context/userContext";
+import { trpc } from "@/server/client";
 import { type ChartConfig, ChartContainer } from "@conquest/ui/chart";
 import { useRouter } from "next/navigation";
 import { useRef } from "react";
@@ -31,7 +31,8 @@ export const TopMembers = ({ from, to }: Props) => {
   const router = useRouter();
   const ref = useRef<HTMLDivElement>(null);
 
-  const { data: topMembers } = useListTopMembers({ from, to });
+  const { data } = trpc.dashboard.topMembers.useQuery({ from, to });
+  const { topMembers } = data ?? {};
 
   const chartData = topMembers?.map((member) => ({
     ...member,

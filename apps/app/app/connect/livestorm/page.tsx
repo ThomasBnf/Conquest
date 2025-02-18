@@ -1,5 +1,6 @@
 import { getCurrentUser } from "@/queries/getCurrentUser";
-import { createIntegration } from "@conquest/db/queries/integrations/createIntegration";
+import { createIntegration } from "@conquest/db/queries/integration/createIntegration";
+import { getWorkspace } from "@conquest/db/queries/workspace/getWorkspace";
 import { env } from "@conquest/env";
 import { redirect } from "next/navigation";
 
@@ -11,7 +12,9 @@ type Props = {
 
 export default async function Page({ searchParams: { code } }: Props) {
   const user = await getCurrentUser();
-  const { slug, id: workspace_id } = user.workspace;
+  const { slug, id: workspace_id } = await getWorkspace({
+    id: user.workspace_id,
+  });
 
   const params = new URLSearchParams({
     code,
@@ -51,5 +54,5 @@ export default async function Page({ searchParams: { code } }: Props) {
     workspace_id,
   });
 
-  redirect(`/${slug}/settings/integrations/livestorm`);
+  redirect("/settings/integrations/livestorm");
 }

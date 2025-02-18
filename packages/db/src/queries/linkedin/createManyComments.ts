@@ -1,10 +1,9 @@
 import type { LinkedInIntegration } from "@conquest/zod/schemas/integration.schema";
-import type { MemberWithCompany } from "@conquest/zod/schemas/member.schema";
+import type { Member } from "@conquest/zod/schemas/member.schema";
 import type { Post } from "@conquest/zod/schemas/posts.schema";
 import type { SocialActions } from "@conquest/zod/types/linkedin";
-import { getLocaleByAlpha2 } from "country-locale-map";
-import { createActivity } from "../activities/createActivity";
-import { upsertMember } from "../members/upsertMember";
+import { createActivity } from "../activity/createActivity";
+import { upsertMember } from "../member/upsertMember";
 import { getPeople } from "./getPeople";
 
 type Props = {
@@ -19,7 +18,7 @@ export const createManyComments = async ({
   comments,
 }: Props) => {
   const { workspace_id } = linkedin;
-  const createdMembers: MemberWithCompany[] = [];
+  const createdMembers: Member[] = [];
 
   for (const comment of comments) {
     const actorId = comment.created.actor.split(":").pop();
@@ -39,7 +38,7 @@ export const createManyComments = async ({
     } = people;
 
     const countryCode = headline.preferredLocale.country;
-    const locale = getLocaleByAlpha2(countryCode) ?? null;
+    // const locale = getLocaleByAlpha2(countryCode) ?? null;
     const avatar_url = profilePicture["displayImage~"]?.elements?.find(
       (element) => element?.artifact?.includes("800_800"),
     )?.identifiers?.[0]?.identifier;
@@ -49,8 +48,8 @@ export const createManyComments = async ({
       data: {
         first_name: localizedFirstName,
         last_name: localizedLastName,
-        linkedin_url: `https://www.linkedin.com/in/${vanityName}`,
-        locale,
+        // linkedin_url: `https://www.linkedin.com/in/${vanityName}`,
+        // locale,
         avatar_url,
         job_title: localizedHeadline,
       },
@@ -64,6 +63,7 @@ export const createManyComments = async ({
       message: comment.message?.text ?? "",
       reply_to: post.id,
       member_id: member.id,
+      source: "LINKEDIN",
       workspace_id,
     });
 

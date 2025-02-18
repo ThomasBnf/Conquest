@@ -23,7 +23,7 @@ export const WorkspaceSchema = z.object({
   first_name: z.string().min(1),
   last_name: z.string().min(1),
   workspace_name: z.string().min(1),
-  slug: z.string().min(1).max(30),
+  slug: z.string(),
 });
 
 export const QuestionsSchema = z.object({

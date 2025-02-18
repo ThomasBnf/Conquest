@@ -1,6 +1,5 @@
 "use client";
 
-import { listEngagement } from "@/client/dashboard/listEngagement";
 import {
   type ChartConfig,
   ChartContainer,
@@ -29,13 +28,11 @@ type Props = {
 };
 
 export const EngagementChart = ({ from, to }: Props) => {
-  const { data: chartData } = listEngagement({ from, to });
-
   return (
     <ResponsiveContainer height={350}>
       <ChartContainer config={chartConfig}>
         <BarChart
-          data={chartData}
+          // data={chartData}
           margin={{ top: 24, left: 24, right: 24, bottom: 5 }}
         >
           <CartesianGrid vertical={false} />

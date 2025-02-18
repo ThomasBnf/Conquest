@@ -1,27 +1,29 @@
 import {
-  type Filter,
   FilterActivitySchema,
   FilterLevelSchema,
   FilterNumberSchema,
   FilterSchema,
   FilterSelectSchema,
   FilterTextSchema,
+  type GroupFilters,
 } from "@conquest/zod/schemas/filters.schema";
 import { Prisma } from "@prisma/client";
 import { operatorParser } from "./operatorParser";
 
 type Props = {
-  filters: Filter[];
+  groupFilters: GroupFilters;
 };
 
-export const getFilters = ({ filters }: Props) => {
-  return filters.map((filter) => {
+export const getFilters = ({ groupFilters }: Props) => {
+  return groupFilters.filters.map((filter) => {
     const parsedFilter = FilterSchema.parse(filter);
     const { field } = parsedFilter;
 
     if (field === "tags") {
       const { values, operator } = FilterSelectSchema.parse(filter);
       const fieldCondition = Prisma.raw(field);
+
+      if (!values.length) return Prisma.sql`TRUE`;
 
       if (operator === "empty") {
         return Prisma.sql`array_length(m.${fieldCondition}, 1) IS NULL OR array_length(m.${fieldCondition}, 1) = 0`;
@@ -41,10 +43,36 @@ export const getFilters = ({ filters }: Props) => {
       return Prisma.sql`(${Prisma.join(conditions, joinOperator)})`;
     }
 
+    if (field === "phones") {
+      const { value, operator } = FilterTextSchema.parse(filter);
+      const fieldCondition = Prisma.raw(field);
+
+      if (!value && operator !== "empty" && operator !== "not_empty") {
+        return Prisma.sql`TRUE`;
+      }
+
+      switch (operator) {
+        case "contains":
+          return Prisma.sql`EXISTS (SELECT 1 FROM unnest(m.${fieldCondition}) phone WHERE phone ILIKE ${`%${value}%`})`;
+        case "not_contains":
+          return Prisma.sql`NOT EXISTS (SELECT 1 FROM unnest(m.${fieldCondition}) phone WHERE phone ILIKE ${`%${value}%`})`;
+        case "empty":
+          return Prisma.sql`array_length(m.${fieldCondition}, 1) IS NULL OR array_length(m.${fieldCondition}, 1) = 0`;
+        case "not_empty":
+          return Prisma.sql`array_length(m.${fieldCondition}, 1) > 0`;
+        default:
+          return Prisma.sql`TRUE`;
+      }
+    }
+
     if (filter.type === "text") {
       const { value, operator, field } = FilterTextSchema.parse(filter);
       const fieldCondition = Prisma.raw(field);
       const likePattern = `%${value}%`;
+
+      if (!value && operator !== "empty" && operator !== "not_empty") {
+        return Prisma.sql`TRUE`;
+      }
 
       switch (operator) {
         case "contains":
@@ -64,29 +92,31 @@ export const getFilters = ({ filters }: Props) => {
       const { values, operator, field } = FilterSelectSchema.parse(filter);
       const fieldCondition = Prisma.raw(field);
 
+      if (field === "linked_profiles") {
+        if (operator === "empty") {
+          return Prisma.sql`NOT EXISTS (SELECT 1 FROM jsonb_array_elements_text(ps.sources))`;
+        }
+        if (operator === "not_empty") {
+          return Prisma.sql`EXISTS (SELECT 1 FROM jsonb_array_elements_text(ps.sources))`;
+        }
+
+        const conditions =
+          values.length === 0
+            ? [Prisma.sql`TRUE`]
+            : values.map((value) =>
+                operator === "contains"
+                  ? Prisma.sql`${value} = ANY (SELECT jsonb_array_elements_text(ps.sources))`
+                  : Prisma.sql`NOT (${value} = ANY (SELECT jsonb_array_elements_text(ps.sources)))`,
+              );
+
+        const joinOperator = operator === "contains" ? " OR " : " AND ";
+        return Prisma.sql`(${Prisma.join(conditions, joinOperator)})`;
+      }
+
       const conditions =
         values.length === 0
           ? [Prisma.sql`TRUE`]
           : values.map((value) => {
-              if (field === "language") {
-                return operator === "contains"
-                  ? Prisma.sql`split_part(m.locale::text, '_', 1) = ${value}`
-                  : Prisma.sql`split_part(m.locale::text, '_', 1) != ${value}`;
-              }
-
-              if (field === "country") {
-                return operator === "contains"
-                  ? Prisma.sql`m.locale = ${value}`
-                  : Prisma.sql`m.locale != ${value}`;
-              }
-
-              if (field === "linked_profiles") {
-                const profileField = `${value.toLowerCase()}_id`;
-                return operator === "contains"
-                  ? Prisma.sql`m.${Prisma.raw(profileField)} IS NOT NULL`
-                  : Prisma.sql`m.${Prisma.raw(profileField)} IS NULL`;
-              }
-
               const likePattern = `%${value}%`;
               return operator === "contains"
                 ? Prisma.sql`m.${fieldCondition}::text ILIKE ${likePattern}`
@@ -103,22 +133,23 @@ export const getFilters = ({ filters }: Props) => {
     }
 
     if (filter.type === "level") {
-      const { value, operator, field } = FilterLevelSchema.parse(filter);
-      const fieldCondition = Prisma.raw(field);
+      const { value, operator } = FilterLevelSchema.parse(filter);
+
+      if (!value) return Prisma.sql`TRUE`;
 
       switch (operator) {
-        case "greater":
-          return Prisma.sql`m.${fieldCondition} > ${value}`;
-        case "greater or equal":
-          return Prisma.sql`m.${fieldCondition} >= ${value}`;
+        case ">":
+          return Prisma.sql`l.number > ${value}`;
+        case ">=":
+          return Prisma.sql`l.number >= ${value}`;
         case "equal":
-          return Prisma.sql`m.${fieldCondition} = ${value}`;
+          return Prisma.sql`l.number = ${value}`;
         case "not equal":
-          return Prisma.sql`m.${fieldCondition} != ${value}`;
-        case "less":
-          return Prisma.sql`m.${fieldCondition} < ${value}`;
-        case "less or equal":
-          return Prisma.sql`m.${fieldCondition} <= ${value}`;
+          return Prisma.sql`l.number != ${value}`;
+        case "<":
+          return Prisma.sql`l.number < ${value}`;
+        case "<=":
+          return Prisma.sql`l.number <= ${value}`;
         default:
           return Prisma.sql`TRUE`;
       }
@@ -129,17 +160,17 @@ export const getFilters = ({ filters }: Props) => {
       const fieldCondition = Prisma.raw(field);
 
       switch (operator) {
-        case "greater":
+        case ">":
           return Prisma.sql`m.${fieldCondition} > ${value}`;
-        case "greater or equal":
+        case ">=":
           return Prisma.sql`m.${fieldCondition} >= ${value}`;
         case "equal":
           return Prisma.sql`m.${fieldCondition} = ${value}`;
         case "not equal":
           return Prisma.sql`m.${fieldCondition} != ${value}`;
-        case "less":
+        case "<":
           return Prisma.sql`m.${fieldCondition} < ${value}`;
-        case "less or equal":
+        case "<=":
           return Prisma.sql`m.${fieldCondition} <= ${value}`;
         default:
           return Prisma.sql`TRUE`;
@@ -164,11 +195,36 @@ export const getFilters = ({ filters }: Props) => {
       const operatorParsed = operatorParser(operator);
 
       if (display_count) {
+        if (who === "who_did_not") {
+          return Prisma.sql`(
+            SELECT COUNT(*)
+            FROM member m2
+            WHERE m2.id = m.id
+            AND NOT EXISTS (
+              SELECT 1
+              FROM activity a
+              JOIN activity_type at ON a.activity_type_id = at.id
+              WHERE a.member_id = m2.id
+              AND at.key = ANY(${Prisma.raw(
+                `ARRAY[${activityKeys.map((key) => `'${key}'`).join(",")}]`,
+              )})
+              ${display_date ? Prisma.sql`AND a.created_at >= NOW() - ${Prisma.raw(intervalStr)}` : Prisma.sql``}
+              ${
+                display_channel
+                  ? Prisma.sql`AND a.channel_id = ANY(${Prisma.raw(
+                      `ARRAY[${channels.map((channel) => `'${channel.id}'`).join(",")}]`,
+                    )})`
+                  : Prisma.sql``
+              }
+            )
+          ) ${Prisma.raw(operatorParsed)} ${count}`;
+        }
+
         return Prisma.sql`(
           SELECT COUNT(*)
-          FROM activities a
-          JOIN activities_types at ON a.activity_type_id = at.id
-          WHERE a.member_id ${who === "who_did_not" ? Prisma.sql`!=` : Prisma.sql`=`} m.id
+          FROM activity a
+          JOIN activity_type at ON a.activity_type_id = at.id
+          WHERE a.member_id = m.id
           AND at.key = ANY(${Prisma.raw(
             `ARRAY[${activityKeys.map((key) => `'${key}'`).join(",")}]`,
           )})
@@ -183,11 +239,31 @@ export const getFilters = ({ filters }: Props) => {
         ) ${Prisma.raw(operatorParsed)} ${count}`;
       }
 
+      if (who === "who_did_not") {
+        return Prisma.sql`NOT EXISTS (
+          SELECT 1
+          FROM activity a
+          JOIN activity_type at ON a.activity_type_id = at.id
+          WHERE a.member_id = m.id
+          AND at.key = ANY(${Prisma.raw(
+            `ARRAY[${activityKeys.map((key) => `'${key}'`).join(",")}]`,
+          )})
+          ${display_date ? Prisma.sql`AND a.created_at >= NOW() - ${Prisma.raw(intervalStr)}` : Prisma.sql``}
+          ${
+            display_channel
+              ? Prisma.sql`AND a.channel_id = ANY(${Prisma.raw(
+                  `ARRAY[${channels.map((channel) => `'${channel.id}'`).join(",")}]`,
+                )})`
+              : Prisma.sql``
+          }
+        )`;
+      }
+
       return Prisma.sql`EXISTS (
         SELECT 1
-        FROM activities a
-        JOIN activities_types at ON a.activity_type_id = at.id
-        WHERE a.member_id ${who === "who_did_not" ? Prisma.sql`!=` : Prisma.sql`=`} m.id
+        FROM activity a
+        JOIN activity_type at ON a.activity_type_id = at.id
+        WHERE a.member_id = m.id
         AND at.key = ANY(${Prisma.raw(
           `ARRAY[${activityKeys.map((key) => `'${key}'`).join(",")}]`,
         )})

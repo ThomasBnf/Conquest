@@ -1,4 +1,4 @@
-import type { integrations as IntegrationPrisma } from "@prisma/client";
+import type { integration as IntegrationPrisma } from "@prisma/client";
 import { z } from "zod";
 import { STATUS } from "../enum/status.enum";
 
@@ -64,8 +64,10 @@ const LivestormDetailsSchema = z.object({
 
 const GithubDetailsSchema = z.object({
   source: z.literal("GITHUB"),
+  name: z.string(),
   access_token: z.string(),
   scope: z.string(),
+  owner: z.string(),
 });
 
 export const IntegrationDetailsSchema = z.discriminatedUnion("source", [

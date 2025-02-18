@@ -1,3 +1,4 @@
+import { useIntegration } from "@/context/integrationContext";
 import { Button } from "@conquest/ui/button";
 import { Input } from "@conquest/ui/input";
 import { Trash } from "lucide-react";
@@ -11,15 +12,11 @@ type Props = {
     key: "external_id" | "name",
     value: string,
   ) => void;
-  disabled: boolean;
 };
 
-export const UserFields = ({
-  fields,
-  onRemoveField,
-  onChangeField,
-  disabled,
-}: Props) => {
+export const UserFields = ({ fields, onRemoveField, onChangeField }: Props) => {
+  const { loading } = useIntegration();
+
   return (
     <div className="space-y-2">
       {fields.map((field) => (
@@ -28,7 +25,7 @@ export const UserFields = ({
             h="sm"
             placeholder="Id"
             value={field.external_id}
-            disabled={disabled}
+            disabled={loading}
             onChange={(e) =>
               onChangeField(field.id, "external_id", e.target.value)
             }
@@ -37,12 +34,12 @@ export const UserFields = ({
             h="sm"
             placeholder="Name"
             value={field.name}
-            disabled={disabled}
+            disabled={loading}
             onChange={(e) => onChangeField(field.id, "name", e.target.value)}
           />
           <Button
             variant="outline"
-            disabled={disabled}
+            disabled={loading}
             onClick={() => onRemoveField(field.id)}
           >
             <Trash size={16} />

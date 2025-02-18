@@ -1,0 +1,168 @@
+import { useFilters } from "@/context/filtersContext";
+import { tableParsers } from "@/lib/searchParamsTable";
+import { trpc } from "@/server/client";
+import { Checkbox } from "@conquest/ui/checkbox";
+import { cn } from "@conquest/ui/cn";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@conquest/ui/command";
+import { Popover, PopoverContent, PopoverTrigger } from "@conquest/ui/popover";
+import { Separator } from "@conquest/ui/separator";
+import type { Member } from "@conquest/zod/schemas/member.schema";
+import type { Row } from "@tanstack/react-table";
+import { useQueryStates } from "nuqs";
+import { useState } from "react";
+import { TagBadge } from "../../tags/tag-badge";
+
+type Props = {
+  row: Row<Member>;
+};
+
+export const TagsCell = ({ row }: Props) => {
+  const { groupFilters } = useFilters();
+  const [{ search, idMember, descMember, page, pageSize }] =
+    useQueryStates(tableParsers);
+
+  const { data: allTags } = trpc.tags.getAllTags.useQuery();
+  const [open, setOpen] = useState(false);
+  const utils = trpc.useUtils();
+
+  const { mutateAsync: updateMember } = trpc.members.updateMember.useMutation({
+    async onMutate(newData) {
+      await utils.members.getAllMembers.cancel();
+
+      const prevData = utils.members.getAllMembers.getData();
+
+      utils.members.getAllMembers.setData(
+        {
+          search,
+          id: idMember,
+          desc: descMember,
+          page,
+          pageSize,
+          groupFilters,
+        },
+        (old) =>
+          old?.map((member) =>
+            member.id === newData.id
+              ? { ...member, tags: newData.data.tags ?? [] }
+              : member,
+          ),
+      );
+
+      return { prevData };
+    },
+    onError(_err, _newData, ctx) {
+      utils.members.getAllMembers.setData(
+        {
+          search,
+          id: idMember,
+          desc: descMember,
+          page,
+          pageSize,
+          groupFilters,
+        },
+        ctx?.prevData,
+      );
+    },
+    onSettled() {
+      utils.members.getAllMembers.invalidate();
+    },
+  });
+
+  const tagsIds = row.original.tags.map((tag) => tag);
+  const tagsToSelect = allTags?.filter((tag) => !tagsIds.includes(tag.id));
+  const filteredTags = allTags?.filter((tag) => tagsIds.includes(tag.id));
+  const sliceTags = filteredTags?.slice(0, 1);
+
+  const onSelect = async (tagId: string) => {
+    const hasTag = tagsIds.includes(tagId);
+
+    if (hasTag) {
+      await updateMember({
+        id: row.original.id,
+        data: {
+          tags: tagsIds.filter((id) => id !== tagId),
+        },
+      });
+    } else {
+      await updateMember({
+        id: row.original.id,
+        data: {
+          tags: [...tagsIds, tagId],
+        },
+      });
+    }
+  };
+
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger className="h-full flex-1">
+        <div
+          className={cn(
+            "flex h-full w-full flex-wrap items-center gap-1 p-2 hover:bg-muted",
+            open && "bg-muted",
+          )}
+        >
+          {sliceTags?.map((tag) => (
+            <TagBadge key={tag.id} tag={tag} />
+          ))}
+          {filteredTags && filteredTags?.length > 1 && (
+            <span className="text-muted-foreground text-xs">
+              +{filteredTags?.length - 1}
+            </span>
+          )}
+        </div>
+      </PopoverTrigger>
+      <PopoverContent
+        className="w-[251px] rounded-t-none p-0"
+        sideOffset={0}
+        alignOffset={-1}
+        align="start"
+      >
+        <Command loop>
+          <CommandInput placeholder="Search tags..." />
+          <CommandList>
+            <CommandEmpty>No tags found.</CommandEmpty>
+            {filteredTags && filteredTags?.length > 0 && (
+              <CommandGroup>
+                {filteredTags?.map((tag) => (
+                  <CommandItem
+                    key={tag.id}
+                    value={tag.name}
+                    onSelect={() => onSelect(tag.id)}
+                  >
+                    <Checkbox checked={true} className="mr-2" />
+                    <TagBadge tag={tag} />
+                  </CommandItem>
+                ))}
+              </CommandGroup>
+            )}
+            {tagsToSelect && tagsToSelect?.length > 0 && (
+              <>
+                {filteredTags && filteredTags?.length > 0 && <Separator />}
+                <CommandGroup>
+                  {tagsToSelect.map((tag) => (
+                    <CommandItem
+                      key={tag.id}
+                      value={tag.name}
+                      onSelect={() => onSelect(tag.id)}
+                    >
+                      <Checkbox checked={false} className="mr-2" />
+                      <TagBadge tag={tag} />
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+              </>
+            )}
+          </CommandList>
+        </Command>
+      </PopoverContent>
+    </Popover>
+  );
+};

@@ -1,3 +1,5 @@
+import { FiltersProvider } from "@/context/filtersContext";
+import { MembersProvider } from "@/context/membersContext";
 import { AtRiskMembers } from "./at-risk-members";
 import { MembersChart } from "./members-chart";
 import { MembersLevels } from "./members-levels";
@@ -15,8 +17,16 @@ export const MemberDashboard = ({ from, to }: Props) => {
       <p className="bg-muted p-4 font-medium text-lg">Members metrics</p>
       <MembersChart from={from} to={to} />
       <div className="flex flex-1 items-center gap-2 p-4">
-        <AtRiskMembers from={from} to={to} />
-        <PotentialAmbassadors from={from} to={to} />
+        <FiltersProvider>
+          <MembersProvider>
+            <AtRiskMembers from={from} to={to} />
+          </MembersProvider>
+        </FiltersProvider>
+        <FiltersProvider>
+          <MembersProvider>
+            <PotentialAmbassadors from={from} to={to} />
+          </MembersProvider>
+        </FiltersProvider>
       </div>
       <div className="flex divide-x">
         <TopMembers from={from} to={to} />

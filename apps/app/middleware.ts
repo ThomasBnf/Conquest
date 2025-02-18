@@ -9,12 +9,13 @@ export default middleware(async (request) => {
   const isAuthPage = nextUrl.pathname.startsWith("/auth");
   const isOnboardingPage = nextUrl.pathname.startsWith("/onboarding");
   const isApiRoute = nextUrl.pathname.startsWith("/api");
+  const isWebhookRoute = nextUrl.pathname.startsWith("/webhook");
 
-  if (!isLoggedIn && !isAuthPage && !isApiRoute) {
+  if (!isLoggedIn && !isAuthPage && !isApiRoute && !isWebhookRoute) {
     return NextResponse.redirect(new URL("/auth/login", nextUrl));
   }
 
-  if (!isLoggedIn && isOnboardingPage && !isApiRoute) {
+  if (!isLoggedIn && isOnboardingPage && !isApiRoute && !isWebhookRoute) {
     return NextResponse.redirect(new URL("/auth/login", nextUrl));
   }
 

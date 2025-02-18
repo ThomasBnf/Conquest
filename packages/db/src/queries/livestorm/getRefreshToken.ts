@@ -1,6 +1,6 @@
 import { env } from "@conquest/env";
 import type { LivestormIntegration } from "@conquest/zod/schemas/integration.schema";
-import { updateIntegration } from "../integrations/updateIntegration";
+import { updateIntegration } from "../integration/updateIntegration";
 
 export const getRefreshToken = async (integration: LivestormIntegration) => {
   const { id, details } = integration;

@@ -1,33 +1,39 @@
-import { FlagComponent } from "@/components/custom/phone-input";
 import { Badge } from "@conquest/ui/badge";
 import { cn } from "@conquest/ui/cn";
-import type { Country } from "react-phone-number-input";
+import { countries } from "country-data-list";
+import { CircleFlag } from "react-circle-flags";
+import type { Country } from "../editable/editable-country";
 
 type Props = {
-  locale: string | null;
-  variant?: "secondary" | "transparent";
+  country: string | null;
+  transparent?: boolean;
   className?: string;
 };
 
 export const CountryBadge = ({
-  locale,
-  variant = "secondary",
+  country,
+  transparent = false,
   className,
 }: Props) => {
-  const [_, country] = locale?.split("_") || [];
+  const allCountries = countries.all.filter(
+    (country: Country) =>
+      country.emoji && country.status !== "deleted" && country.ioc !== "PRK",
+  );
 
-  if (!country || !locale) return null;
+  const currentCountry = allCountries.find((c) => c.alpha2 === country);
 
-  const regionName = new Intl.DisplayNames(["en"], {
-    type: "region",
-  }).of(country);
-
-  if (!regionName) return null;
+  if (!currentCountry) return null;
 
   return (
-    <Badge variant={variant} className={cn("gap-2", className)}>
-      <FlagComponent country={country as Country} countryName={regionName} />
-      <p className="truncate font-medium">{regionName}</p>
+    <Badge
+      variant={transparent ? "transparent" : "secondary"}
+      className={cn("gap-2 truncate", className)}
+    >
+      <CircleFlag
+        className="size-3.5"
+        countryCode={currentCountry.alpha2.toLocaleLowerCase()}
+      />
+      <p className="truncate font-medium">{currentCountry?.name}</p>
     </Badge>
   );
 };

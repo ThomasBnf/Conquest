@@ -1,15 +1,15 @@
 "use client";
 
+import { IconDoc } from "@/components/custom/icon-doc";
 import { EmptyStateChart } from "@/components/states/empty-state-chart";
-import { getLevelLabel } from "@/helpers/getLevelLabel";
-import { getPresenceLabel } from "@/helpers/getPresenceLabel";
+import { trpc } from "@/server/client";
 import {
   type ChartConfig,
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
 } from "@conquest/ui/chart";
-import type { MemberWithCompany } from "@conquest/zod/schemas/member.schema";
+import type { Member } from "@conquest/zod/schemas/member.schema";
 import { format } from "date-fns";
 import {
   Area,
@@ -18,33 +18,40 @@ import {
   ResponsiveContainer,
   XAxis,
 } from "recharts";
-
 const chartConfig = {
-  level: {
+  levelNumber: {
     label: "Level",
     color: "hsl(var(--chart-1))",
   },
 } satisfies ChartConfig;
 
 type Props = {
-  member: MemberWithCompany;
+  member: Member;
 };
 
 export const MemberLevelLogs = ({ member }: Props) => {
   const logs = member.logs;
+  const { data: levels } = trpc.levels.getAllLevels.useQuery();
 
-  const formattedLogs = logs.map((log) => ({
-    date: format(log.date, "MMM d, yyyy"),
-    pulse: log.pulse,
-    presence: log.presence,
-    level: log.level,
-    max_weight: log.max_weight,
-    max_weight_activity: log.max_weight_activity,
-  }));
+  const formattedLogs = logs.map((log) => {
+    const level = levels?.find((level) => level.id === log.levelId);
+
+    return {
+      date: format(log.date, "MMM d, yyyy"),
+      levelNumber: level?.number ?? 0,
+      levelName: level?.name,
+    };
+  });
 
   return (
     <div className="relative">
-      <p className="mb-2 font-medium text-lg">Level Logs</p>
+      <div className="flex items-center gap-2">
+        <p className="font-medium text-lg">Level Logs</p>
+        <IconDoc url="https://docs.useconquest.com/member-level" />
+      </div>
+      <p className="mb-4 text-muted-foreground">
+        Member Level evolution over the past 365 days, logged weekly.
+      </p>
       {formattedLogs.length === 0 && <EmptyStateChart />}
       <ResponsiveContainer height={300} className="pr-1">
         <ChartContainer config={chartConfig}>
@@ -65,13 +72,8 @@ export const MemberLevelLogs = ({ member }: Props) => {
             />
             <ChartTooltip
               content={({ active, payload }) => {
-                const {
-                  date,
-                  max_weight,
-                  presence,
-                  level,
-                  max_weight_activity,
-                } = payload?.[0]?.payload ?? {};
+                const { date, levelNumber, levelName } =
+                  payload?.[0]?.payload ?? {};
 
                 return (
                   <ChartTooltipContent
@@ -82,28 +84,20 @@ export const MemberLevelLogs = ({ member }: Props) => {
                     formatter={() => (
                       <div className="flex w-full gap-2">
                         <div className="h-full w-1 shrink-0 rounded-[2px] bg-main-500" />
-                        <div className="flex items-end">
-                          <div className="grid gap-1.5 pr-4">
+                        <div className="flex items-end gap-2">
+                          <div className="grid gap-1.5">
                             <p className="font-medium leading-none">{date}</p>
-                            <div className="grid gap-1">
-                              <p>Level</p>
-                              <p className="text-muted-foreground">
-                                {max_weight > presence
-                                  ? "Max Weight"
-                                  : "Presence"}
-                              </p>
-                            </div>
+                            <p>Level</p>
                           </div>
-                          <div className="grid gap-1">
-                            <p className="font-medium">
-                              {getLevelLabel(level)}
-                            </p>
-                            <p className="text-muted-foreground">
-                              {max_weight > presence
-                                ? max_weight_activity
-                                : getPresenceLabel(presence)}
-                            </p>
-                          </div>
+                          <p>
+                            {levelNumber === 0 ? (
+                              <span className="text-muted-foreground">
+                                No Level
+                              </span>
+                            ) : (
+                              `${levelName} • ${levelNumber}`
+                            )}
+                          </p>
                         </div>
                       </div>
                     )}
@@ -112,7 +106,7 @@ export const MemberLevelLogs = ({ member }: Props) => {
               }}
             />
             <defs>
-              <linearGradient id="fill-level" x1="0" y1="0" x2="0" y2="1">
+              <linearGradient id="fill-levelNumber" x1="0" y1="0" x2="0" y2="1">
                 <stop
                   offset="5%"
                   stopColor="hsl(var(--chart-1))"
@@ -126,9 +120,9 @@ export const MemberLevelLogs = ({ member }: Props) => {
               </linearGradient>
             </defs>
             <Area
-              type="linear"
-              dataKey="level"
-              fill="url(#fill-level)"
+              type="bump"
+              dataKey="levelNumber"
+              fill="url(#fill-levelNumber)"
               fillOpacity={0.4}
               stroke="hsl(var(--chart-1))"
               strokeWidth={1.5}

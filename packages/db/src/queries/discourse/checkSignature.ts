@@ -1,17 +1,17 @@
-import { createHmac } from "node:crypto";
 import { env } from "@conquest/env";
 import { DiscourseIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
-import type { Context } from "hono";
+import type { NextRequest } from "next/server";
+import { createHmac } from "node:crypto";
 import { prisma } from "../../prisma";
 
 type Props = {
-  c: Context;
+  request: NextRequest;
 };
 
-export const checkSignature = async ({ c }: Props) => {
-  const signature = c.req.header("X-Discourse-Event-Signature");
-  const community_url = c.req.header("X-Discourse-Instance");
-  const rawBody = await c.req.text();
+export const checkSignature = async ({ request }: Props) => {
+  const signature = request.headers.get("X-Discourse-Event-Signature");
+  const community_url = request.headers.get("X-Discourse-Instance");
+  const rawBody = await request.text();
 
   if (!signature) return false;
 
@@ -25,7 +25,9 @@ export const checkSignature = async ({ c }: Props) => {
     return false;
   }
 
-  const integration = await prisma.integrations.findFirst({
+  if (!community_url) return false;
+
+  const integration = await prisma.integration.findFirst({
     where: {
       details: {
         path: ["community_url"],

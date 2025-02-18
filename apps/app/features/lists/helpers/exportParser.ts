@@ -1,6 +1,8 @@
-import type { MemberWithCompany } from "@conquest/zod/schemas/member.schema";
+//TO DO: Do this on server side go get tags, company
 
-export const exportParser = (member: MemberWithCompany) => {
+import type { Member } from "@conquest/zod/schemas/member.schema";
+
+export const exportParser = (member: Member) => {
   const transformed: Record<string, string> = {};
 
   const safeStringify = (value: unknown): string => {

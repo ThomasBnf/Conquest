@@ -1,10 +1,10 @@
 import { CountryBadge } from "@/components/badges/country-badge";
-import { LanguageBadge } from "@/components/badges/language-badge";
 import { SourceBadge } from "@/components/badges/source-badge";
-import { useUser } from "@/context/userContext";
-import { client } from "@/lib/rpc";
+import { useFilters } from "@/context/filtersContext";
+import { trpc } from "@/server/client";
 import { Button } from "@conquest/ui/button";
 import { Checkbox } from "@conquest/ui/checkbox";
+import { cn } from "@conquest/ui/cn";
 import {
   Command,
   CommandEmpty,
@@ -17,271 +17,259 @@ import { Popover, PopoverContent, PopoverTrigger } from "@conquest/ui/popover";
 import { Skeleton } from "@conquest/ui/skeleton";
 import type { Source } from "@conquest/zod/enum/source.enum";
 import {
-  type Filter,
   type FilterSelect,
   FilterSelectSchema,
 } from "@conquest/zod/schemas/filters.schema";
-import { type Tag, TagSchema } from "@conquest/zod/schemas/tag.schema";
-import { useQuery } from "@tanstack/react-query";
-import type { Dispatch, SetStateAction } from "react";
+import type { Tag } from "@conquest/zod/schemas/tag.schema";
+import { Check, ChevronDown } from "lucide-react";
 import { useState } from "react";
 import { TagBadge } from "../tags/tag-badge";
-import { useTab } from "./hooks/useTab";
 
 type Props = {
-  filter: FilterSelect | undefined;
-  setFilters: Dispatch<SetStateAction<Filter[]>>;
-  setOpenDropdown?: Dispatch<SetStateAction<boolean>>;
-  handleUpdate?: (filters: Filter[]) => void;
-  triggerButton?: boolean;
+  filter: FilterSelect;
 };
 
-export const SelectPicker = ({
-  filter,
-  setFilters,
-  setOpenDropdown,
-  triggerButton,
-  handleUpdate,
-}: Props) => {
-  const { user } = useUser();
-  const { setTab } = useTab();
+export const SelectPicker = ({ filter }: Props) => {
+  const { field, values } = filter;
   const [open, setOpen] = useState(false);
 
-  const { data: items, isLoading } = useQuery({
-    queryKey: ["items", filter?.id],
-    queryFn: async () => {
-      const selectFilter = FilterSelectSchema.parse(filter);
-      switch (selectFilter.field) {
-        case "language": {
-          const response = await client.api.members.locales.$get();
-          const allLocales = await response.json();
-
-          const uniqueLanguages = [
-            ...new Set(
-              allLocales
-                .filter((locale): locale is string => Boolean(locale))
-                .map((locale) => locale.split("_")[0]),
-            ),
-          ];
-          return uniqueLanguages;
-        }
-        case "country": {
-          const response = await client.api.members.locales.$get();
-
-          return await response.json();
-        }
-        case "source": {
-          const response = await client.api.activityTypes.sources.$get();
-
-          return await response.json();
-        }
-        case "tags": {
-          const response = await client.api.tags.$get();
-
-          return TagSchema.array().parse(await response.json());
-        }
-        case "linked_profiles": {
-          return user?.workspace.integrations.map((integration) => {
-            const { source } = integration.details;
-            return source.charAt(0) + source.slice(1).toLowerCase();
-          });
-        }
-        default:
-          return [];
-      }
-    },
-  });
-
-  const handleSelect = (item: string) => {
-    if (!item || !filter) return;
-
-    setOpenDropdown?.(false);
-    setTimeout(() => {
-      setOpen(false);
-      setFilters((prevFilters) => {
-        const exists = prevFilters.some((f) => f.id === filter.id);
-        const currentFilter = prevFilters.find((f) => f.id === filter.id);
-        const parsedFilter = currentFilter
-          ? FilterSelectSchema.parse(currentFilter)
-          : undefined;
-        const hasValue = parsedFilter?.values.includes(item);
-
-        const updatedFilter = {
-          ...filter,
-          values: hasValue
-            ? filter.values.filter((v) => v !== item)
-            : [...filter.values, item],
-        };
-
-        const updatedFilters = exists
-          ? prevFilters.map((f) => (f.id === filter.id ? updatedFilter : f))
-          : [...prevFilters, updatedFilter];
-
-        handleUpdate?.(updatedFilters);
-        setTab(undefined);
-        return updatedFilters;
-      });
-    }, 100);
-  };
-
-  const handleTagSelect = (tag: Tag) => {
-    if (!filter) return;
-
-    setOpenDropdown?.(false);
-    setTimeout(() => {
-      setOpen(false);
-      setFilters((prevFilters) => {
-        const exists = prevFilters.some((f) => f.id === filter.id);
-        const currentFilter = prevFilters.find((f) => f.id === filter.id);
-        const parsedFilter = currentFilter
-          ? FilterSelectSchema.parse(currentFilter)
-          : undefined;
-        const hasTag = parsedFilter?.values.includes(tag.id);
-
-        const updatedFilter = {
-          ...filter,
-          values: hasTag
-            ? filter.values.filter((v) => v !== tag.id)
-            : [...filter.values, tag.id],
-        };
-
-        const updatedFilters = exists
-          ? prevFilters.map((f) => (f.id === filter.id ? updatedFilter : f))
-          : [...prevFilters, updatedFilter];
-
-        handleUpdate?.(updatedFilters);
-        setTab(undefined);
-        return updatedFilters;
-      });
-    }, 100);
-  };
-
-  const commandContent = (
-    <Command>
-      <CommandInput autoFocus placeholder="Search value..." />
-      <CommandList>
-        {!isLoading && (
-          <CommandEmpty>
-            {filter?.field === "linked_profiles"
-              ? "No linked profiles found"
-              : filter?.field === "tags"
-                ? "No tags found"
-                : `No ${filter?.label.toLowerCase()}s found`}
-          </CommandEmpty>
-        )}
-        <CommandGroup>
-          {isLoading ? (
-            <Skeleton className="h-8 w-full" />
-          ) : (
-            items?.map((item) => {
-              if (!item) return null;
-
-              const parseItem = typeof item === "string" ? item : item.id;
-              const isSelected = filter?.values.includes(parseItem);
-
-              const renderBadge = () => {
-                switch (filter?.field) {
-                  case "country":
-                    return (
-                      <CountryBadge locale={parseItem} variant="transparent" />
-                    );
-                  case "source":
-                    return (
-                      <SourceBadge
-                        source={parseItem as Source}
-                        variant="transparent"
-                      />
-                    );
-                  case "language":
-                    return (
-                      <LanguageBadge locale={parseItem} variant="transparent" />
-                    );
-                  case "linked_profiles":
-                    return <p>{parseItem}</p>;
-                  default:
-                    return <TagBadge tag={item as Tag} />;
-                }
-              };
-
-              return (
-                <CommandItem
-                  key={parseItem}
-                  onSelect={() =>
-                    filter?.field === "tags"
-                      ? handleTagSelect(item as Tag)
-                      : handleSelect(parseItem)
-                  }
-                >
-                  <Checkbox checked={isSelected} className="mr-2" />
-                  {renderBadge()}
-                </CommandItem>
-              );
-            })
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <Button
+          variant="outline"
+          className={cn("w-full justify-between", field === "tags" && "p-1")}
+        >
+          {field === "country" && <ValueCountry filter={filter} />}
+          {field === "linked_profiles" && <LinkedProfiles filter={filter} />}
+          {field === "source" && <ValueSource filter={filter} />}
+          {field === "tags" && <ValueTag filter={filter} />}
+          {!values.length && (
+            <span className="text-muted-foreground">Select</span>
           )}
-        </CommandGroup>
-      </CommandList>
-    </Command>
+          <ChevronDown size={16} className="ml-auto text-muted-foreground" />
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent align="start" className="w-fit p-0">
+        <Command loop>
+          <CommandInput placeholder="Search..." />
+          {field === "country" && <CountryGroup filter={filter} />}
+          {field === "linked_profiles" && (
+            <LinkedProfilesGroup filter={filter} />
+          )}
+          {field === "source" && <SourcesGroup filter={filter} />}
+          {field === "tags" && <TagsGroup filter={filter} />}
+        </Command>
+      </PopoverContent>
+    </Popover>
   );
+};
 
-  if (triggerButton && filter) {
-    const selectedItems = filter.values
-      .map((value) =>
-        items?.find((i) =>
-          typeof i === "string" ? i === value : i?.id === value,
-        ),
-      )
-      .filter(Boolean);
+const ValueCountry = ({ filter }: { filter: FilterSelect }) => {
+  const { values } = filter;
+  const { data: countries } = trpc.members.getAllCountries.useQuery();
 
-    return (
-      <Popover open={open} onOpenChange={setOpen}>
-        <PopoverTrigger asChild>
-          <Button variant="dropdown">
-            {isLoading ? (
-              <Skeleton className="h-5 w-12" />
-            ) : selectedItems.length > 0 ? (
-              <div className="flex flex-wrap gap-1">
-                {selectedItems.length > 1 ? (
-                  <p className="lowercase">
-                    {filter.field === "linked_profiles"
-                      ? `${selectedItems.length} linked profiles`
-                      : filter.field === "tags"
-                        ? `${selectedItems.length} tags`
-                        : `${selectedItems.length} ${filter.label}s`}
-                  </p>
-                ) : (
-                  selectedItems.map((item) =>
-                    typeof item === "string" ? (
-                      <div key={item}>
-                        {filter.field === "country" ? (
-                          <CountryBadge locale={item} variant="transparent" />
-                        ) : filter.field === "language" ? (
-                          <LanguageBadge locale={item} variant="transparent" />
-                        ) : filter.field === "source" ? (
-                          <SourceBadge
-                            source={item as Source}
-                            variant="transparent"
-                          />
-                        ) : (
-                          item
-                        )}
-                      </div>
-                    ) : (
-                      item && <TagBadge key={item.id} tag={item} transparent />
-                    ),
-                  )
-                )}
-              </div>
-            ) : (
-              <p className="text-muted-foreground">Select</p>
-            )}
-          </Button>
-        </PopoverTrigger>
-        <PopoverContent align="start" className="p-0">
-          {commandContent}
-        </PopoverContent>
-      </Popover>
+  return (
+    <div className="flex max-w-64 items-center gap-1">
+      {values.slice(0, 1).map((value) => {
+        const country = countries?.find((country) => country === value);
+        return country ? (
+          <CountryBadge key={value} country={country} transparent />
+        ) : null;
+      })}
+      {values.length > 1 && (
+        <p className="ml-1 text-xs">+{values.length - 1}</p>
+      )}
+    </div>
+  );
+};
+
+const LinkedProfiles = ({ filter }: { filter: FilterSelect }) => {
+  const { values } = filter;
+
+  return values.map((value) => (
+    <SourceBadge key={value} source={value as Source} transparent />
+  ));
+};
+
+const ValueSource = ({ filter }: { filter: FilterSelect }) => {
+  const { values } = filter;
+
+  return <SourceBadge source={values[0] as Source} transparent />;
+};
+
+const ValueTag = ({ filter }: { filter: FilterSelect }) => {
+  const { values } = filter;
+  const { data: tags } = trpc.tags.getAllTags.useQuery();
+
+  return (
+    <div className="flex max-w-64 items-center gap-1">
+      {values.slice(0, 2).map((value) => {
+        const tag = tags?.find((tag) => tag.id === value);
+        return tag ? <TagBadge key={value} tag={tag} /> : null;
+      })}
+      {values.length > 2 && (
+        <p className="ml-1 text-xs">+{values.length - 2}</p>
+      )}
+    </div>
+  );
+};
+
+const CountryGroup = ({
+  filter,
+}: {
+  filter: FilterSelect;
+}) => {
+  const { values } = filter;
+  const { onUpdateFilter } = useFilters();
+
+  const { data: countries } = trpc.members.getAllCountries.useQuery();
+
+  const onSelect = (country: string) => {
+    const hasCountry = values.some((value) => value === country);
+
+    const newFilter = FilterSelectSchema.parse({
+      ...filter,
+      values: hasCountry
+        ? values.filter((value) => value !== country)
+        : [...values, country],
+    });
+
+    onUpdateFilter(newFilter);
+  };
+
+  return (
+    <CommandList>
+      <CommandEmpty>No countries found.</CommandEmpty>
+      <CommandGroup>
+        {countries?.map((country) => (
+          <CommandItem
+            key={country}
+            value={country}
+            onSelect={() => onSelect(country)}
+          >
+            <Checkbox checked={values.includes(country)} className="mr-2" />
+            <CountryBadge country={country} transparent />
+          </CommandItem>
+        ))}
+      </CommandGroup>
+    </CommandList>
+  );
+};
+
+const LinkedProfilesGroup = ({
+  filter,
+}: {
+  filter: FilterSelect;
+}) => {
+  const { onUpdateFilter } = useFilters();
+  const { values } = filter;
+  const { data: sources, isLoading } = trpc.sources.getAllSources.useQuery();
+
+  const onSelect = (source: string) => {
+    const hasSource = values.some((value) =>
+      sources?.includes(value as Source),
     );
-  }
 
-  return commandContent;
+    const newFilter = FilterSelectSchema.parse({
+      ...filter,
+      values: hasSource
+        ? values.filter((value) => !sources?.includes(value as Source))
+        : [...values, source],
+    });
+
+    onUpdateFilter(newFilter);
+  };
+  return (
+    <CommandList>
+      {!isLoading && <CommandEmpty>No sources found.</CommandEmpty>}
+      <CommandGroup>
+        {isLoading && <Skeleton className="h-8 w-full" />}
+        {sources?.map((source) => (
+          <CommandItem
+            key={source}
+            value={source}
+            onSelect={() => onSelect(source)}
+          >
+            <Checkbox checked={values.includes(source)} className="mr-2" />
+            <SourceBadge source={source} transparent />
+          </CommandItem>
+        ))}
+      </CommandGroup>
+    </CommandList>
+  );
+};
+
+const SourcesGroup = ({
+  filter,
+}: {
+  filter: FilterSelect;
+}) => {
+  const { values } = filter;
+  const { onUpdateFilter } = useFilters();
+  const { data: sources, isLoading } = trpc.sources.getAllSources.useQuery();
+
+  const onSelect = (source: string) => {
+    onUpdateFilter({ ...filter, values: [source] });
+  };
+  return (
+    <CommandList>
+      {!isLoading && <CommandEmpty>No sources found.</CommandEmpty>}
+      <CommandGroup>
+        {isLoading && <Skeleton className="h-8 w-full" />}
+        {sources?.map((source) => (
+          <CommandItem
+            key={source}
+            value={source}
+            onSelect={() => onSelect(source)}
+          >
+            <SourceBadge source={source} transparent />
+            {values.includes(source) && <Check size={16} className="ml-auto" />}
+          </CommandItem>
+        ))}
+      </CommandGroup>
+    </CommandList>
+  );
+};
+
+const TagsGroup = ({
+  filter,
+}: {
+  filter: FilterSelect;
+}) => {
+  const { onUpdateFilter } = useFilters();
+  const { values } = filter;
+  const { data: tags, isLoading } = trpc.tags.getAllTags.useQuery();
+
+  const onSelect = (tag: Tag) => {
+    const hasTag = values.some((value) => value === tag.id);
+
+    const newFilter = FilterSelectSchema.parse({
+      ...filter,
+      values: hasTag
+        ? values.filter((value) => value !== tag.id)
+        : [...values, tag.id],
+    });
+
+    onUpdateFilter(newFilter);
+  };
+
+  return (
+    <CommandList>
+      {!isLoading && <CommandEmpty>No tags found.</CommandEmpty>}
+      <CommandGroup>
+        {isLoading && <Skeleton className="h-8 w-full" />}
+        {tags?.map((tag) => (
+          <CommandItem
+            key={tag.id}
+            value={tag.id}
+            onSelect={() => onSelect(tag)}
+          >
+            <Checkbox checked={values.includes(tag.id)} className="mr-2" />
+            <TagBadge tag={tag} transparent />
+          </CommandItem>
+        ))}
+      </CommandGroup>
+    </CommandList>
+  );
 };

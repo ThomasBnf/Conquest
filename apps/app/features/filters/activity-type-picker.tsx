@@ -1,4 +1,5 @@
-import { listActivityTypes } from "@/client/activity-types/listActivityTypes";
+import { useFilters } from "@/context/filtersContext";
+import { trpc } from "@/server/client";
 import { Button } from "@conquest/ui/button";
 import { Checkbox } from "@conquest/ui/checkbox";
 import {
@@ -16,25 +17,18 @@ import {
   FilterActivitySchema,
 } from "@conquest/zod/schemas/filters.schema";
 import { CommandLoading } from "cmdk";
+import { ChevronDown } from "lucide-react";
 import { useState } from "react";
 
 type Props = {
   filter: FilterActivity;
-  handleUpdateActivityTypes: ({
-    key,
-    name,
-  }: {
-    key: string;
-    name: string;
-  }) => void;
 };
 
-export const ActivityTypePicker = ({
-  filter,
-  handleUpdateActivityTypes,
-}: Props) => {
-  const { data, isLoading } = listActivityTypes();
-  const [open, setOpen] = useState(filter.activity_types.length === 0);
+export const ActivityTypePicker = ({ filter }: Props) => {
+  const { onUpdateFilter } = useFilters();
+  const [open, setOpen] = useState(false);
+
+  const { data, isLoading } = trpc.activityTypes.getAllActivityTypes.useQuery();
 
   const filterActivity = FilterActivitySchema.parse(filter);
 
@@ -52,22 +46,38 @@ export const ActivityTypePicker = ({
 
   const activityTypesList = filterActivity.activity_types;
 
+  const onUpdateActivityTypes = (key: string, name: string) => {
+    const isAlreadySelected = filterActivity.activity_types.some(
+      (type) => type.key === key,
+    );
+
+    const updatedActivityTypes = isAlreadySelected
+      ? filterActivity.activity_types.filter((type) => type.key !== key)
+      : [...filterActivity.activity_types, { key, name }];
+
+    onUpdateFilter({
+      ...filter,
+      activity_types: updatedActivityTypes,
+    });
+  };
+
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button variant="dropdown" className="shrink-0">
-          {activityTypesList.length > 0 ? (
-            activityTypesList.length > 4 ? (
-              `${activityTypesList.length} activities`
-            ) : (
-              activityTypesList.map((type) => type.name).join(", ")
-            )
+        <Button variant="outline" classNameSpan="justify-between">
+          {activityTypesList.length === 0 ? (
+            <span className="text-muted-foreground">Select activity</span>
           ) : (
-            <p className="text-muted-foreground">Select</p>
+            <span>
+              {activityTypesList.length < 3
+                ? activityTypesList.map((type) => type.name).join(", ")
+                : `${activityTypesList.length} activities selected`}
+            </span>
           )}
+          <ChevronDown size={16} className="text-muted-foreground" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent align="start" className="max-w-2xl p-0">
+      <PopoverContent align="start" className="p-0">
         <Command>
           <CommandInput placeholder="Search..." />
           <CommandList>
@@ -89,7 +99,7 @@ export const ActivityTypePicker = ({
                   {Object.entries(types).map(([key, name]) => (
                     <CommandItem
                       key={key}
-                      onSelect={() => handleUpdateActivityTypes({ key, name })}
+                      onSelect={() => onUpdateActivityTypes(key, name)}
                     >
                       <Checkbox
                         checked={filterActivity.activity_types.some(

@@ -1,5 +1,4 @@
-import { useClickOutside } from "@/hooks/useClickOutside";
-import { useOpenFilters } from "@/hooks/useOpenFilters";
+import { useFilters } from "@/context/filtersContext";
 import { Button } from "@conquest/ui/button";
 import { cn } from "@conquest/ui/cn";
 import {
@@ -10,169 +9,65 @@ import {
   CommandList,
 } from "@conquest/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@conquest/ui/popover";
-import type {
-  Filter,
-  FilterActivity,
-  FilterLevel,
-  FilterNumber,
-  FilterSelect,
-  FilterText,
-} from "@conquest/zod/schemas/filters.schema";
+import type { Filter } from "@conquest/zod/schemas/filters.schema";
 import cuid from "cuid";
-import { ListFilter } from "lucide-react";
-import { type Dispatch, type SetStateAction, useRef, useState } from "react";
-import { useTab } from "./hooks/useTab";
-import { InputDialog } from "./input-dialog";
-import { LevelPicker } from "./level-picker";
-import { SelectPicker } from "./select-picker";
+import { Plus } from "lucide-react";
+import { useState } from "react";
 
-type Props = {
-  filters: Filter[];
-  setFilters: Dispatch<SetStateAction<Filter[]>>;
-  handleUpdate?: (filters: Filter[]) => void;
-};
-
-export const FilterButton = ({ filters, setFilters, handleUpdate }: Props) => {
-  const { tab, setTab } = useTab();
-  const { setOpen: setOpenFilters } = useOpenFilters();
+export const FilterButton = () => {
   const [open, setOpen] = useState(false);
-  const [filter, setFilter] = useState<Filter>();
-  const ref = useRef<HTMLDivElement>(null);
-  const refButton = useRef<HTMLButtonElement>(null);
+  const { groupFilters, onAddFilter } = useFilters();
 
-  useClickOutside(ref, () => {
-    if (refButton.current) {
-      return setTimeout(() => {
-        setFilter(undefined);
-        setTab(undefined);
-      }, 100);
-    }
+  const onSelectFilter = (filter: Filter) => {
+    const newFilter = {
+      ...filter,
+      id: cuid(),
+    };
     setOpen(false);
-    setTimeout(() => {
-      setFilter(undefined);
-      setTab(undefined);
-    }, 100);
-  });
-
-  const handleFilterSelect = (filter: Filter) => {
-    const filterWithId = { ...filter, id: cuid() };
-    setFilter(filterWithId);
-
-    switch (filter.type) {
-      case "text": {
-        setTab("input");
-        return;
-      }
-      case "number": {
-        setTab("input");
-        return;
-      }
-      case "select": {
-        setTab("select");
-        return;
-      }
-      case "level": {
-        setTab("level");
-        return;
-      }
-      case "activity": {
-        setOpen(false);
-        setTimeout(() => {
-          setFilters((filters) => [...filters, filterWithId]);
-          setOpenFilters(true);
-        }, 100);
-        return;
-      }
-    }
-  };
-
-  const handleApply = (query: string | number) => {
-    if (!filter) return;
-
-    setFilters((prev) => {
-      const filterExists = prev.some((f) => f.id === filter.id);
-      const value = filter.type === "text" ? query.toString() : Number(query);
-
-      const updatedFilter =
-        filter.type === "text"
-          ? { ...filter, value: value.toString() }
-          : { ...filter, value: Number(value) };
-
-      const newFilters = filterExists
-        ? prev.map((f) => (f.id === filter.id ? updatedFilter : f))
-        : [...prev, updatedFilter];
-
-      handleUpdate?.(newFilters);
-
-      return newFilters;
-    });
-
-    setOpen(false);
-    setTab(undefined);
+    onAddFilter(newFilter);
   };
 
   return (
     <>
-      <InputDialog
-        filter={filter as FilterText | FilterNumber | FilterActivity}
-        handleApply={handleApply}
-        type={filter?.type as "number" | "text"}
-      />
       <div
         className={cn(
           "flex flex-wrap items-center",
-          filters.length > 0 && "gap-1",
+          groupFilters.filters.length > 0 && "gap-1",
         )}
       >
         <Popover open={open} onOpenChange={setOpen} modal>
           <PopoverTrigger asChild>
-            <Button ref={refButton} variant="outline">
-              <ListFilter size={16} />
-              Filters
+            <Button variant="outline">
+              <Plus size={16} />
+              Add filter
             </Button>
           </PopoverTrigger>
-          <PopoverContent ref={ref} className="w-[200px] p-0" align="start">
-            {tab === "select" ? (
-              <SelectPicker
-                filter={filter as FilterSelect}
-                setFilters={setFilters}
-                setOpenDropdown={setOpen}
-                handleUpdate={handleUpdate}
-              />
-            ) : tab === "level" ? (
-              <LevelPicker
-                filter={filter as FilterLevel}
-                setFilters={setFilters}
-                handleUpdate={handleUpdate}
-                setOpenDropdown={setOpen}
-              />
-            ) : (
-              <Command>
-                <CommandInput placeholder="Search filter..." />
-                <CommandList className="max-h-[450px]">
-                  <CommandGroup heading="Activity">
-                    {filtersActivity.map((filter) => (
-                      <CommandItem
-                        key={filter.id}
-                        onSelect={() => handleFilterSelect(filter)}
-                      >
-                        {filter.label}
-                      </CommandItem>
-                    ))}
-                  </CommandGroup>
-                  <CommandGroup heading="Member">
-                    {filtersMember.map((filter) => (
-                      <CommandItem
-                        key={filter.id}
-                        onSelect={() => handleFilterSelect(filter)}
-                      >
-                        {filter.label}
-                      </CommandItem>
-                    ))}
-                  </CommandGroup>
-                </CommandList>
-              </Command>
-            )}
+          <PopoverContent className="p-0" align="start">
+            <Command>
+              <CommandInput placeholder="Search filter..." />
+              <CommandList className="max-h-[450px]">
+                <CommandGroup heading="Activity">
+                  {filtersActivity.map((filter) => (
+                    <CommandItem
+                      key={filter.id}
+                      onSelect={() => onSelectFilter(filter)}
+                    >
+                      {filter.label}
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+                <CommandGroup heading="Member">
+                  {filtersMember.map((filter) => (
+                    <CommandItem
+                      key={filter.id}
+                      onSelect={() => onSelectFilter(filter)}
+                    >
+                      {filter.label}
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+              </CommandList>
+            </Command>
           </PopoverContent>
         </Popover>
       </div>
@@ -210,7 +105,7 @@ const filtersMember: Filter[] = [
     label: "Level",
     type: "level",
     field: "level",
-    operator: "greater or equal",
+    operator: ">",
     value: 1,
   },
   {
@@ -242,7 +137,7 @@ const filtersMember: Filter[] = [
     label: "Pulse",
     type: "number",
     field: "pulse",
-    operator: "greater or equal",
+    operator: ">",
     value: 1,
   },
   {
@@ -271,7 +166,7 @@ const filtersActivity: Filter[] = [
     type: "activity",
     field: "activity_type",
     activity_types: [],
-    operator: "greater or equal",
+    operator: ">=",
     value: 1,
     channels: [],
     dynamic_date: "30 days",

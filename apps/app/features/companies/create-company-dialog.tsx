@@ -1,7 +1,7 @@
 "use client";
 
-import { createCompany } from "@/actions/companies/createCompany";
 import { useUser } from "@/context/userContext";
+import { trpc } from "@/server/client";
 import { Button } from "@conquest/ui/button";
 import {
   Dialog,
@@ -22,12 +22,10 @@ import {
 } from "@conquest/ui/form";
 import { Input } from "@conquest/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useQueryClient } from "@tanstack/react-query";
 import { Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { toast } from "sonner";
 import {
   type FormCreate,
   FormCreateSchema,
@@ -38,33 +36,25 @@ export const CreateCompanyDialog = () => {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
-  const queryClient = useQueryClient();
+
+  const { mutateAsync } = trpc.companies.createCompany.useMutation({
+    onSuccess: ({ id }) => {
+      router.push(`/${slug}/companies/${id}`);
+      setLoading(false);
+      setOpen(false);
+      form.reset();
+    },
+  });
 
   const form = useForm<FormCreate>({
     resolver: zodResolver(FormCreateSchema),
-    defaultValues: {
-      name: "",
-    },
   });
 
   const isDisabled = loading || !form.formState.isValid;
 
   const onSubmit = async ({ name }: FormCreate) => {
     setLoading(true);
-
-    const rCompany = await createCompany({ name });
-    const error = rCompany?.serverError;
-    const company = rCompany?.data;
-
-    if (error) toast.error(error);
-    if (company) {
-      queryClient.invalidateQueries({ queryKey: ["companies"] });
-      router.push(`/${slug}/companies/${company.id}`);
-    }
-
-    setLoading(false);
-    setOpen(false);
-    form.reset();
+    await mutateAsync({ name });
   };
 
   return (
@@ -92,7 +82,7 @@ export const CreateCompanyDialog = () => {
                   <FormItem>
                     <FormLabel>Name</FormLabel>
                     <FormControl>
-                      <Input placeholder="Acme" {...field} />
+                      <Input placeholder="Set Name" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

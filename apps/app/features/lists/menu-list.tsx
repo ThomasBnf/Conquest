@@ -1,7 +1,6 @@
-"use client";
-
-import { deleteList } from "@/actions/lists/deleteList";
 import { AlertDialog } from "@/components/custom/alert-dialog";
+import { useUser } from "@/context/userContext";
+import { trpc } from "@/server/client";
 import { Button } from "@conquest/ui/button";
 import {
   DropdownMenu,
@@ -9,29 +8,34 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@conquest/ui/dropdown-menu";
-import { useQueryClient } from "@tanstack/react-query";
-import { MoreHorizontal, Trash2 } from "lucide-react";
+import type { List } from "@conquest/zod/schemas/list.schema";
+import { MoreHorizontal, Pen, Trash2 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
+import { EditListDialog } from "./edit-list-dialog";
 
 type Props = {
-  listId: string;
+  list: List;
 };
 
-export const MenuList = ({ listId }: Props) => {
+export const MenuList = ({ list }: Props) => {
+  const { slug } = useUser();
   const [open, setOpen] = useState(false);
-  const queryClient = useQueryClient();
+  const [editOpen, setEditOpen] = useState(false);
+  const router = useRouter();
+  const utils = trpc.useUtils();
+
+  const { mutateAsync } = trpc.lists.deleteList.useMutation({
+    onSuccess: () => {
+      utils.lists.getAllLists.invalidate();
+      toast.success("List deleted");
+      router.push(`/${slug}/members`);
+    },
+  });
 
   const onDelete = async () => {
-    if (!listId) return;
-
-    const result = await deleteList({ id: listId });
-    const error = result?.serverError;
-
-    if (error) return toast.error(error);
-
-    queryClient.invalidateQueries({ queryKey: ["lists"] });
-    return toast.success("List deleted");
+    await mutateAsync({ id: list.id });
   };
 
   return (
@@ -43,6 +47,7 @@ export const MenuList = ({ listId }: Props) => {
         open={open}
         setOpen={setOpen}
       />
+      <EditListDialog list={list} open={editOpen} setOpen={setEditOpen} />
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="outline" size="icon_sm">
@@ -50,12 +55,16 @@ export const MenuList = ({ listId }: Props) => {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
+          <DropdownMenuItem onClick={() => setEditOpen(true)}>
+            <Pen size={16} />
+            Edit
+          </DropdownMenuItem>
           <DropdownMenuItem
             onClick={() => setOpen(true)}
             className="text-destructive focus:text-destructive"
           >
             <Trash2 size={16} />
-            Delete list
+            Delete
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

@@ -1,93 +1,145 @@
+import { useUser } from "@/context/userContext";
 import { tableParsers } from "@/lib/searchParamsTable";
-import { Button } from "@conquest/ui/button";
+import { trpc } from "@/server/client";
+import { buttonVariants } from "@conquest/ui/button";
 import { cn } from "@conquest/ui/cn";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@conquest/ui/dropdown-menu";
-import type { MemberWithActivities } from "@conquest/zod/schemas/activity.schema";
-import { CaretSortIcon } from "@radix-ui/react-icons";
-import { ArrowDownIcon, ArrowUpIcon } from "lucide-react";
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+} from "@conquest/ui/select";
+import type { Column, Table } from "@tanstack/react-table";
+import { ArrowDown, ArrowUp, ChevronsUpDown, EyeOff } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useQueryStates } from "nuqs";
-import type { Dispatch, SetStateAction } from "react";
 
-export type Column = {
-  id: string;
-  header: (args: {
-    members?: MemberWithActivities[];
-    rowSelected?: string[];
-    setRowSelected?: Dispatch<SetStateAction<string[]>>;
-  }) => React.ReactNode;
-  cell: (args: {
-    member: MemberWithActivities;
-    rowSelected?: string[];
-    setRowSelected?: Dispatch<SetStateAction<string[]>>;
-  }) => React.ReactNode;
-  width: number;
-};
-
-type Props = {
-  id: string;
+type Props<TData, TValue> = {
+  table: Table<TData>;
+  column: Column<TData, TValue>;
   title: string;
-  width: number;
-  className?: string;
-  isSorted?: "asc" | "desc" | false;
 };
 
-export const ColumnHeader = ({
-  id,
+export const ColumnHeader = <TData, TValue>({
+  table,
+  column,
   title,
-  width,
-  className,
-  isSorted,
-}: Props) => {
+}: Props<TData, TValue>) => {
+  const { user } = useUser();
   const pathname = usePathname();
-  const [_, setParams] = useQueryStates(tableParsers);
-  const isCompany = pathname.includes("companies");
+  const type = pathname.includes("companies") ? "companies" : "members";
+  const [, setParams] = useQueryStates(tableParsers);
+  const utils = trpc.useUtils();
 
-  const onSort = (desc: boolean) => {
-    setParams(
-      isCompany
-        ? { idCompany: id, descCompany: desc }
-        : { idMember: id, descMember: desc },
-    );
+  const { mutateAsync } = trpc.users.updateUser.useMutation({
+    onSuccess: () => utils.users.getCurrentUser.invalidate(),
+  });
+
+  if (!column.getCanSort()) return <div>{title}</div>;
+
+  const onValueChange = (value: string) => {
+    if (value === `${column.id}-hide`) {
+      if (!user?.id) return;
+
+      const isVisible = !column.getIsVisible();
+      column.toggleVisibility(isVisible);
+
+      const { members_preferences, companies_preferences } = user;
+      const currentVisibility =
+        type === "members"
+          ? (members_preferences?.columnVisibility ?? {})
+          : (companies_preferences?.columnVisibility ?? {});
+
+      mutateAsync({
+        id: user.id,
+        data: {
+          ...user,
+          ...(type === "members"
+            ? {
+                members_preferences: {
+                  ...members_preferences,
+                  columnVisibility: {
+                    ...currentVisibility,
+                    [column.id]: isVisible,
+                  },
+                },
+              }
+            : {
+                companies_preferences: {
+                  ...companies_preferences,
+                  columnVisibility: {
+                    ...currentVisibility,
+                    [column.id]: isVisible,
+                  },
+                },
+              }),
+        },
+      });
+    }
+
+    const isDescending = value === "desc";
+    column.toggleSorting(isDescending);
+
+    const params = {
+      page: 0,
+      [type === "companies" ? "idCompany" : "idMember"]: column.id,
+      [type === "companies" ? "descCompany" : "descMember"]: isDescending,
+    };
+
+    setParams(params);
+    table.setPageIndex(0);
   };
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button
-          variant="secondary"
-          className={cn("h-12 rounded-none", className)}
-          style={{ width }}
-        >
-          {title}
-          {isSorted === "desc" ? (
-            <ArrowDownIcon size={14} className="ml-auto" />
-          ) : isSorted === "asc" ? (
-            <ArrowUpIcon size={14} className="ml-auto" />
-          ) : (
-            <CaretSortIcon className="ml-auto size-4" />
-          )}
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent
-        align="start"
-        style={{ width: width - 5 }}
-        alignOffset={2}
+    <Select
+      value={
+        column.getIsSorted() === "desc"
+          ? "desc"
+          : column.getIsSorted() === "asc"
+            ? "asc"
+            : undefined
+      }
+      onValueChange={(value) => onValueChange(value)}
+    >
+      <SelectTrigger
+        className={cn(
+          buttonVariants({ variant: "transparent" }),
+          "h-11 justify-between rounded-none border-none shadow-none hover:bg-sidebar-accent focus:ring-0 focus-visible:outline-none [&>svg:last-child]:hidden",
+        )}
       >
-        <DropdownMenuItem onClick={() => onSort(false)}>
-          <ArrowUpIcon size={16} className="mr-2 text-muted-foreground" />
-          Asc
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => onSort(true)}>
-          <ArrowDownIcon size={16} className="mr-2 text-muted-foreground" />
-          Desc
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+        <span className="text-foreground">{title}</span>
+        {column.getCanSort() && column.getIsSorted() === "desc" ? (
+          <ArrowDown size={14} className="text-muted-foreground" />
+        ) : column.getIsSorted() === "asc" ? (
+          <ArrowUp size={14} className="text-muted-foreground" />
+        ) : (
+          <ChevronsUpDown size={13} />
+        )}
+      </SelectTrigger>
+      <SelectContent align="start">
+        {column.getCanSort() && (
+          <>
+            <SelectItem value="asc">
+              <span className="flex items-center">
+                <ArrowUp className="mr-2 size-3.5 text-muted-foreground/70" />
+                Asc
+              </span>
+            </SelectItem>
+            <SelectItem value="desc">
+              <span className="flex items-center">
+                <ArrowDown className="mr-2 size-3.5 text-muted-foreground/70" />
+                Desc
+              </span>
+            </SelectItem>
+          </>
+        )}
+        <SelectItem value={`${column.id}-hide`}>
+          <span className="flex items-center">
+            <EyeOff className="mr-2 size-3.5 text-muted-foreground/70" />
+            Hide
+          </span>
+        </SelectItem>
+      </SelectContent>
+    </Select>
   );
 };

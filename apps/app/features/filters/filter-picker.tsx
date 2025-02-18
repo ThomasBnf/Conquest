@@ -1,128 +1,52 @@
+import { useFilters } from "@/context/filtersContext";
 import { Button } from "@conquest/ui/button";
-import { Separator } from "@conquest/ui/separator";
-import {
-  type Filter,
-  FilterSchema,
-  type Operator,
-} from "@conquest/zod/schemas/filters.schema";
-import { X } from "lucide-react";
-import type { Dispatch, SetStateAction } from "react";
-import { InputDialog } from "./input-dialog";
+import type { Filter } from "@conquest/zod/schemas/filters.schema";
+import { ChevronDown, Trash2 } from "lucide-react";
+import { AndOrPicker } from "./and-or-picker";
 import { LevelPicker } from "./level-picker";
+import { NumberInput } from "./number-input";
 import { OperatorPicker } from "./operator-picker";
 import { SelectPicker } from "./select-picker";
+import { TextInput } from "./text-input";
 
 type Props = {
+  index: number;
   filter: Filter;
-  setFilters: Dispatch<SetStateAction<Filter[]>>;
-  handleUpdate?: (filters: Filter[]) => void;
 };
 
-export const FilterPicker = ({ filter, setFilters, handleUpdate }: Props) => {
-  if (!filter) return null;
+export const FilterPicker = ({ index, filter }: Props) => {
+  const { onDeleteFilter } = useFilters();
+  const { label, operator } = filter;
 
-  const handleDeleteFilter = () => {
-    setFilters((prevFilters) => {
-      const newFilters = prevFilters.filter((f) => f.id !== filter.id);
-
-      handleUpdate?.(newFilters);
-      return newFilters;
-    });
-  };
-
-  const handleUpdateOperator = (operator: Operator) => {
-    setFilters((prevFilters) => {
-      const newFilters = prevFilters.map((f) => {
-        if (f.id !== filter.id) return f;
-
-        const parsedFilter = FilterSchema.parse(f);
-
-        return {
-          ...parsedFilter,
-          operator,
-        };
-      });
-
-      const validatedFilters = FilterSchema.array().parse(newFilters);
-      handleUpdate?.(validatedFilters);
-      return validatedFilters;
-    });
-  };
-
-  const handleApply = (query: string | number) => {
-    if (filter.type === "text") {
-      setFilters((prevFilters) => {
-        const newFilters = prevFilters.map((f) =>
-          f.id === filter.id ? { ...filter, value: query.toString() } : f,
-        );
-
-        handleUpdate?.(newFilters);
-        return newFilters;
-      });
-    }
-
-    if (filter.type === "number") {
-      setFilters((prevFilters) => {
-        const newFilters = prevFilters.map((f) =>
-          f.id === filter.id ? { ...filter, value: Number(query) } : f,
-        );
-
-        handleUpdate?.(newFilters);
-        return newFilters;
-      });
-    }
-  };
+  const isEmpty = operator === "empty" || operator === "not_empty";
 
   return (
-    <div className="flex h-8 w-fit items-center overflow-hidden rounded-md border">
-      <p className="h-full place-content-center bg-muted px-1">
-        {filter.label}
+    <div className="flex items-center gap-1">
+      {index === 0 ? (
+        <p className="w-[70px] shrink-0 pl-1.5 text-muted-foreground">Where</p>
+      ) : (
+        <AndOrPicker />
+      )}
+      <p className="h-8 min-w-[115px] place-content-center text-nowrap rounded-md border bg-muted px-2">
+        {label}
       </p>
-      <Separator orientation="vertical" />
-      <OperatorPicker filter={filter} handleUpdate={handleUpdateOperator} />
-      <Separator orientation="vertical" />
-      {filter.operator !== "not_empty" && filter.operator !== "empty" && (
-        <>
-          {filter.type === "select" ? (
-            <SelectPicker
-              filter={filter}
-              setFilters={setFilters}
-              handleUpdate={handleUpdate}
-              triggerButton
-            />
-          ) : filter.type === "text" ? (
-            <InputDialog
-              filter={filter}
-              handleApply={handleApply}
-              type="text"
-              triggerButton
-            />
-          ) : filter.type === "number" ? (
-            <InputDialog
-              filter={filter}
-              handleApply={handleApply}
-              type="number"
-              triggerButton
-            />
-          ) : filter.type === "level" ? (
-            <LevelPicker
-              filter={filter}
-              setFilters={setFilters}
-              handleUpdate={handleUpdate}
-              triggerButton
-            />
-          ) : filter.type === "date" ? (
-            <p className="px-1">{filter.days}</p>
-          ) : null}
-          <Separator orientation="vertical" />
-        </>
+      <OperatorPicker filter={filter} />
+      {filter.type === "text" && !isEmpty && <TextInput filter={filter} />}
+      {filter.type === "select" && !isEmpty && <SelectPicker filter={filter} />}
+      {filter.type === "number" && !isEmpty && <NumberInput filter={filter} />}
+      {filter.type === "level" && !isEmpty && <LevelPicker filter={filter} />}
+      {isEmpty && (
+        <div className="flex h-8 w-full max-w-[180px] items-center justify-between rounded-md border px-3 opacity-40 shadow-sm">
+          <p>Select</p>
+          <ChevronDown size={16} />
+        </div>
       )}
       <Button
-        variant="ghost"
-        onClick={handleDeleteFilter}
-        className="h-full rounded-none px-1"
+        variant="outline"
+        className="size-8"
+        onClick={() => onDeleteFilter(filter)}
       >
-        <X size={16} />
+        <Trash2 size={16} />
       </Button>
     </div>
   );

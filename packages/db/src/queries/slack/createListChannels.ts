@@ -1,6 +1,6 @@
 import type { Channel } from "@conquest/zod/schemas/channel.schema";
 import type { WebClient } from "@slack/web-api";
-import { createChannel } from "../channels/createChannel";
+import { createChannel } from "../channel/createChannel";
 
 type Props = {
   web: WebClient;

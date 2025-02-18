@@ -1,8 +1,10 @@
 import type { DiscordIntegration } from "@conquest/zod/schemas/integration.schema";
+import type { Member } from "@conquest/zod/schemas/member.schema";
 import type { Tag } from "@conquest/zod/schemas/tag.schema";
 import { type APIGuildMember, Routes } from "discord-api-types/v10";
 import { discordClient } from "../../discord";
-import { upsertMember } from "../members/upsertMember";
+import { createMember } from "../member/createMember";
+import { upsertProfile } from "../profile/upsertProfile";
 
 type Props = {
   discord: DiscordIntegration;
@@ -11,6 +13,8 @@ type Props = {
 
 export const createManyMembers = async ({ discord, tags }: Props) => {
   const { external_id, workspace_id } = discord;
+
+  const createdMembers: Member[] = [];
 
   if (!external_id) return;
 
@@ -24,43 +28,51 @@ export const createManyMembers = async ({ discord, tags }: Props) => {
     )) as APIGuildMember[];
 
     for (const member of members) {
-      try {
-        const { user, joined_at, roles } = member;
-        const { id, username, avatar, global_name, bot } = user;
+      const { user, joined_at, roles } = member;
+      const { id, username, avatar, global_name, bot } = user;
 
-        if (bot) continue;
+      if (bot) continue;
 
-        const firstName = global_name?.split(" ")[0] ?? null;
-        const lastName = global_name?.split(" ")[1] ?? null;
+      const firstName = global_name?.split(" ")[0] ?? null;
+      const lastName = global_name?.split(" ")[1] ?? null;
 
-        const memberTags = tags
-          ?.filter((tag) => roles.includes(tag.external_id ?? ""))
-          .map((tag) => tag.id);
+      const memberTags = tags
+        ?.filter((tag) => roles.includes(tag.external_id ?? ""))
+        .map((tag) => tag.id);
 
-        const avatarUrl = avatar
-          ? `https://cdn.discordapp.com/avatars/${id}/${avatar}.webp`
-          : null;
+      const avatarUrl = avatar
+        ? `https://cdn.discordapp.com/avatars/${id}/${avatar}.webp`
+        : null;
 
-        await upsertMember({
-          id,
-          data: {
-            first_name: firstName,
-            last_name: lastName,
-            discord_username: username,
-            avatar_url: avatarUrl,
-            tags: memberTags,
-            created_at: new Date(joined_at),
-          },
+      const createdMember = await createMember({
+        data: {
+          first_name: firstName,
+          last_name: lastName,
+          avatar_url: avatarUrl,
+          tags: memberTags,
+          created_at: new Date(joined_at),
+        },
+        source: "DISCORD",
+        workspace_id,
+      });
+
+      await upsertProfile({
+        external_id: id,
+        attributes: {
           source: "DISCORD",
-          workspace_id,
-        });
-      } catch (error) {
-        console.error("Error creating member", error);
-      }
+          username,
+        },
+        member_id: createdMember.id,
+        workspace_id,
+      });
+
+      createdMembers.push(createdMember);
     }
 
     after = members.at(-1)?.user.id;
 
     if (members.length < 100) break;
   }
+
+  return createdMembers;
 };

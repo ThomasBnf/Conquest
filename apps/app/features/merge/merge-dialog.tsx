@@ -1,4 +1,5 @@
-import { mergeMembers } from "@/actions/members/mergeMembers";
+import { useUser } from "@/context/userContext";
+import { trpc } from "@/server/client";
 import { Button } from "@conquest/ui/button";
 import {
   Dialog,
@@ -9,32 +10,43 @@ import {
   DialogTitle,
 } from "@conquest/ui/dialog";
 import { Separator } from "@conquest/ui/separator";
-import type { MemberWithCompany } from "@conquest/zod/schemas/member.schema";
+import type { Member } from "@conquest/zod/schemas/member.schema";
 import { ArrowLeftRight, Equal } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 import { MemberCard } from "./member-card";
 import { MemberPicker } from "./member-picker";
+
 type Props = {
   open: boolean;
   setOpen: (open: boolean) => void;
-  member: MemberWithCompany;
+  member: Member;
 };
 
 export const MergeDialog = ({ open, setOpen, member }: Props) => {
-  const { first_name, last_name } = member;
-  const [leftMember, setLeftMember] = useState<MemberWithCompany | null>(null);
-  const [rightMember, setRightMember] = useState<MemberWithCompany>(member);
+  const { slug } = useUser();
+  const { first_name, last_name } = member ?? {};
+  const [leftMember, setLeftMember] = useState<Member | null>(null);
+  const [rightMember, setRightMember] = useState(member);
   const [loading, setLoading] = useState(false);
-  const router = useRouter();
 
-  const onSelectLeftMember = (member: MemberWithCompany) => {
-    setLeftMember(member);
-  };
+  const router = useRouter();
+  const utils = trpc.useUtils();
+
+  const { mutateAsync: mergeMembers } = trpc.members.mergeMembers.useMutation({
+    onSuccess: () => {
+      utils.members.getAllMembers.invalidate();
+      toast.success("Members merged");
+      onCancel();
+    },
+  });
+
+  const onSelectLeftMember = (member: Member) => setLeftMember(member);
 
   const onSwitchMembers = () => {
     if (!leftMember) return;
+    if (!rightMember) return;
 
     setLeftMember(rightMember);
     setRightMember(leftMember);
@@ -48,19 +60,11 @@ export const MergeDialog = ({ open, setOpen, member }: Props) => {
 
   const onMerge = async () => {
     if (!leftMember) return;
+    if (!rightMember) return;
 
     setLoading(true);
-
-    const response = await mergeMembers({ leftMember, rightMember });
-    const error = response?.serverError;
-
-    if (error) {
-      toast.error(error);
-    }
-
-    setOpen(false);
-    setLoading(false);
-    router.refresh();
+    await mergeMembers({ leftMember, rightMember });
+    router.replace(`/${slug}/members/${rightMember.id}/analytics`);
   };
 
   return (

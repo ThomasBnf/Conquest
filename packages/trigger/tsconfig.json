@@ -4,8 +4,14 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]
-    }
+    },
+    "jsx": "react-jsx"
   },
-  "include": ["src/**/*.ts", "../db/src/lib/resend.ts"],
+  "include": [
+    "src/**/*.ts",
+    "../db/src/lib/resend.ts",
+    "../db/src/queries/member/getMembersMetrics.ts",
+    "../db/src/helpers/getPulseScore.ts"
+  ],
   "exclude": ["node_modules"]
 }

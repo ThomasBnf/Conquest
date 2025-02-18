@@ -1,8 +1,11 @@
+import { tableParsers } from "@/lib/searchParamsTable";
 import { Button } from "@conquest/ui/button";
 import { cn } from "@conquest/ui/cn";
 import { Input } from "@conquest/ui/input";
 import { Search, X } from "lucide-react";
+import { useQueryStates } from "nuqs";
 import { useEffect, useRef, useState } from "react";
+import { useDebounce } from "use-debounce";
 
 type Props = {
   query: string;
@@ -17,25 +20,21 @@ export const QueryInput = ({
   placeholder = "Search",
   className,
 }: Props) => {
+  const [_, setParams] = useQueryStates(tableParsers);
+
   const [isFocus, setIsFocus] = useState(false);
-  const [value, setValue] = useState(query);
+  const [value] = useDebounce(query, 500);
   const ref = useRef<HTMLInputElement>(null);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newValue = e.target.value;
-    setValue(newValue);
-    setQuery(newValue);
-  };
-
   const handleClear = () => {
-    setValue("");
     setQuery("");
-    ref.current?.focus();
+    setParams({ search: "" });
+    ref.current?.focus;
   };
 
   useEffect(() => {
-    setValue(query);
-  }, [query]);
+    setParams({ search: value });
+  }, [value]);
 
   return (
     <div
@@ -54,8 +53,8 @@ export const QueryInput = ({
       />
       <Input
         ref={ref}
-        value={value}
-        onChange={handleInputChange}
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
         onFocus={() => setIsFocus(true)}
         onBlur={() => setIsFocus(false)}
         placeholder={placeholder}

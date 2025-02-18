@@ -4,7 +4,8 @@
   "type": "module",
   "scripts": {
     "trigger:dev": "dotenv -e ./.env -e ../../.env -- bunx trigger.dev dev",
-    "trigger:deploy": "dotenv -e ./.env -e ../../.env -- bunx trigger.dev@latest deploy"
+    "trigger:deploy": "dotenv -e ./.env -e ../../.env -- bunx trigger.dev@latest deploy",
+    "typecheck": "tsc --noEmit"
   },
   "exports": {
     "./*": "./src/*.ts"
@@ -13,13 +14,15 @@
     "@conquest/db": "workspace:*",
     "@conquest/emails": "workspace:*",
     "@conquest/zod": "workspace:*",
-    "@trigger.dev/react-hooks": "3.3.12",
-    "@trigger.dev/sdk": "3.3.12",
-    "trigger.dev": "^3.3.10",
-    "octokit": "^4.1.0"
+    "@trigger.dev/react-hooks": "3.3.16",
+    "@trigger.dev/sdk": "3.3.16",
+    "date-fns": "^4.1.0",
+    "octokit": "^4.1.0",
+    "trigger.dev": "^3.3.15"
   },
   "devDependencies": {
-    "@trigger.dev/build": "3.3.12",
+    "@conquest/tsconfig": "workspace:*",
+    "@trigger.dev/build": "3.3.16",
     "dotenv-cli": "8.0.0"
   }
 }
