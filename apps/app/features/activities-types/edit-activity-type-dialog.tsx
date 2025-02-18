@@ -259,7 +259,7 @@ export const EditActivityTypeDialog = ({
                 </Button>
               </DialogTrigger>
               <Button type="submit" loading={loading} disabled={loading}>
-                Create
+                Save
               </Button>
             </DialogFooter>
           </form>
