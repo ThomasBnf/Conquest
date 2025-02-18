@@ -2,7 +2,9 @@
 
 import { AppSidebar } from "@/components/layouts/app-sidebar";
 import { IsLoading } from "@/components/states/is-loading";
+import { FiltersProvider } from "@/context/filtersContext";
 import { UserProvider } from "@/context/userContext";
+import { CreateListDialog } from "@/features/lists/create-list-dialog";
 import { trpc } from "@/server/client";
 import { SidebarProvider } from "@conquest/ui/sidebar";
 
@@ -24,8 +26,11 @@ export const SlugProvider = ({ defaultOpen, children }: Props) => {
   return (
     <UserProvider user={user.data} workspace={workspace.data}>
       <SidebarProvider defaultOpen={defaultOpen}>
-        <AppSidebar workspace={workspace.data} />
-        <main className="h-dvh flex-1 overflow-hidden">{children}</main>
+        <FiltersProvider>
+          <CreateListDialog />
+          <AppSidebar workspace={workspace.data} />
+          <main className="h-dvh flex-1 overflow-hidden">{children}</main>
+        </FiltersProvider>
       </SidebarProvider>
     </UserProvider>
   );

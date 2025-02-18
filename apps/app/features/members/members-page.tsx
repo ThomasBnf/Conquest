@@ -8,8 +8,8 @@ import { tableParsers } from "@/lib/searchParamsTable";
 import { Button } from "@conquest/ui/button";
 import { useQueryStates } from "nuqs";
 import { FiltersList } from "../filters/filters-list";
-import { CreateListDialog } from "../lists/create-list-dialog";
 import { ExportListMembers } from "../lists/export-list-members";
+import { SaveList } from "../lists/save-list";
 import { ColumnVisibility } from "../table/column-visibility";
 import { DataTable } from "../table/data-table";
 import { useTable } from "../table/hooks/useTable";
@@ -41,7 +41,7 @@ export const MembersPage = () => {
         />
         <FiltersList />
         <div className="ml-auto flex items-center gap-2">
-          <CreateListDialog />
+          <SaveList />
           <ExportListMembers members={data} />
           <ColumnVisibility table={table} type="members" />
         </div>

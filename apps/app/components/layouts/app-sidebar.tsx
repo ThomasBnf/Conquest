@@ -14,7 +14,6 @@ import {
   SidebarContent,
   SidebarFooter,
   SidebarGroup,
-  SidebarGroupAction,
   SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
@@ -88,7 +87,6 @@ export const AppSidebar = ({ workspace }: Props) => {
 
   return (
     <>
-      {!isMemberPage && <CreateListDialog />}
       <Sidebar collapsible="offcanvas">
         <SidebarHeader>
           <WorkspaceMenu workspace={workspace} />
@@ -110,11 +108,11 @@ export const AppSidebar = ({ workspace }: Props) => {
           </SidebarGroup>
           <SidebarGroup>
             <SidebarGroupLabel>Lists</SidebarGroupLabel>
-            {lists && lists.length > 0 && (
+            {/* {lists && lists.length > 0 && (
               <SidebarGroupAction onClick={() => setOpen(true)}>
                 <Plus size={16} />
               </SidebarGroupAction>
-            )}
+            )} */}
             <SidebarMenu>
               {lists?.length === 0 && (
                 <SidebarMenuItem>

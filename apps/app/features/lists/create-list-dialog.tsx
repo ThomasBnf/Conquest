@@ -22,7 +22,6 @@ import {
 } from "@conquest/ui/form";
 import { Input } from "@conquest/ui/input";
 import { Label } from "@conquest/ui/label";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@conquest/ui/tooltip";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { usePathname, useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
@@ -57,6 +56,7 @@ export const CreateListDialog = () => {
   const onClearFilters = () => {
     resetFilters();
     setOpen(false);
+    form.reset();
   };
 
   const onSubmit = async ({ emoji, name }: FormList) => {
@@ -64,7 +64,6 @@ export const CreateListDialog = () => {
   };
 
   if (isListPage) return;
-  if (!groupFilters?.filters.length) return;
 
   if (open) {
     return (
@@ -123,31 +122,6 @@ export const CreateListDialog = () => {
           </Form>
         </DialogContent>
       </Dialog>
-    );
-  }
-
-  if (groupFilters.filters.length) {
-    return (
-      <div className="flex h-full items-center gap-1 border-r pr-2">
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button variant="outline" onClick={onClearFilters}>
-              Clear
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent side="bottom">
-            <p>Clear all filters</p>
-          </TooltipContent>
-        </Tooltip>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button onClick={() => setOpen(true)}>Save</Button>
-          </TooltipTrigger>
-          <TooltipContent side="bottom">
-            <p>Save new list</p>
-          </TooltipContent>
-        </Tooltip>
-      </div>
     );
   }
 };
