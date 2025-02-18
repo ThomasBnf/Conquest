@@ -1,5 +1,7 @@
 import { Discord } from "@/components/icons/Discord";
 import { Discourse } from "@/components/icons/Discourse";
+import { Github } from "@/components/icons/Github";
+import { Linkedin } from "@/components/icons/Linkedin";
 import { Livestorm } from "@/components/icons/Livestorm";
 import { Slack } from "@/components/icons/Slack";
 
@@ -33,13 +35,13 @@ export const categories = [
   {
     label: "Marketing",
     integrations: [
-      // {
-      //   href: "/settings/integrations/linkedin",
-      //   logo: <Linkedin />,
-      //   name: "Linkedin",
-      //   description: "Sync your Linkedin organization page",
-      //   soon: true,
-      // },
+      {
+        href: "/settings/integrations/linkedin",
+        logo: <Linkedin />,
+        name: "Linkedin",
+        description: "Sync your Linkedin organization page",
+        soon: true,
+      },
       {
         href: "/settings/integrations/livestorm",
         logo: <Livestorm />,
@@ -49,16 +51,16 @@ export const categories = [
       },
     ],
   },
-  // {
-  //   label: "Tech",
-  //   integrations: [
-  //     {
-  //       href: "/settings/integrations/github",
-  //       logo: <Github />,
-  //       name: "Github",
-  //       description: "Synchronize your members with Github",
-  //       soon: true,
-  //     },
-  //   ],
-  // },
+  {
+    label: "Tech",
+    integrations: [
+      {
+        href: "/settings/integrations/github",
+        logo: <Github />,
+        name: "Github",
+        description: "Synchronize your members with Github",
+        soon: true,
+      },
+    ],
+  },
 ];

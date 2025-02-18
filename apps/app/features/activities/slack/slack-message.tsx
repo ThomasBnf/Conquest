@@ -7,13 +7,30 @@ import type { ActivityWithType } from "@conquest/zod/schemas/activity.schema";
 import type { Channel } from "@conquest/zod/schemas/channel.schema";
 import type { Member } from "@conquest/zod/schemas/member.schema";
 import { format } from "date-fns";
+import React from "react";
 import ReactMarkdown from "react-markdown";
 import { ActivityMenu } from "../activity-menu";
+import { SlackMention } from "./slack-mention";
 
 type Props = {
   activity: ActivityWithType;
   member: Member | null | undefined;
   channel: Channel | null | undefined;
+};
+
+const transformMentions = (children: React.ReactNode) => {
+  const mentionRegex = /<@([A-Z0-9]+)>/g;
+
+  return React.Children.map(children, (child) => {
+    if (typeof child === "string") {
+      return child
+        .split(mentionRegex)
+        .map((part, index) =>
+          index % 2 === 1 ? <SlackMention key={part} slackId={part} /> : part,
+        );
+    }
+    return child; // Laisse intact tout ce qui est déjà un élément JSX
+  });
 };
 
 export const SlackMessage = ({ activity, member, channel }: Props) => {
@@ -56,7 +73,21 @@ export const SlackMessage = ({ activity, member, channel }: Props) => {
         <ActivityMenu activity={activity} href={permalink} />
       </div>
       <div className="mt-2 ml-7 rounded-md border p-3">
-        <ReactMarkdown className="whitespace-pre-wrap">
+        <ReactMarkdown
+          className="whitespace-pre-wrap"
+          components={{
+            p: ({ children }) => <p>{transformMentions(children)}</p>,
+            li: ({ children }) => <li>{transformMentions(children)}</li>,
+            a: ({ node, ...props }) => (
+              <a
+                {...props}
+                className=" text-[#1264a3] transition-colors hover:text-[#094C8C] hover:underline"
+              >
+                {props.children}
+              </a>
+            ),
+          }}
+        >
           {parseSlackMessage(message)}
         </ReactMarkdown>
       </div>

@@ -143,6 +143,7 @@ export const ActivityParser = ({ activity }: Props) => {
               </span>{" "}
               {message}
             </p>
+            <p> - {activity_type.name}</p>
             <SourceBadge source={source} />
             <p className="text-muted-foreground">
               {format(created_at, "HH:mm")}

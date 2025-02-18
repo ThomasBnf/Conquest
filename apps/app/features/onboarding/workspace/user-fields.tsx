@@ -17,7 +17,7 @@ export const UserFields = ({ form }: Props) => {
           <FormItem className="flex-1">
             <FormLabel>First Name</FormLabel>
             <FormControl>
-              <Input placeholder="Set First name" autoFocus {...field} />
+              <Input placeholder="Tom" autoFocus {...field} />
             </FormControl>
           </FormItem>
         )}
@@ -29,7 +29,7 @@ export const UserFields = ({ form }: Props) => {
           <FormItem className="flex-1">
             <FormLabel>Last Name</FormLabel>
             <FormControl>
-              <Input placeholder="Set Last name" {...field} />
+              <Input placeholder="Richard" {...field} />
             </FormControl>
           </FormItem>
         )}

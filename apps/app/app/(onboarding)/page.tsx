@@ -45,7 +45,7 @@ export default function Page() {
   if (step === 3) {
     return (
       <div className="flex h-screen flex-col items-center justify-center">
-        <img src="/logo.svg" alt="Conquest" className="mb-8 size-20" />
+        <img src="/logo.svg" alt="Conquest" className="size-44" />
         <h1 className="mb-4 font-bold text-5xl text-foreground">
           Welcome to Conquest
         </h1>
