@@ -3,10 +3,10 @@
 import { CountryBadge } from "@/components/badges/country-badge";
 import { LanguageBadge } from "@/components/badges/language-badge";
 import { SourceBadge } from "@/components/badges/source-badge";
+import { DateCell } from "@/features/table/cells/date-cell";
 import { Checkbox } from "@conquest/ui/checkbox";
 import type { Member } from "@conquest/zod/schemas/member.schema";
 import type { ColumnDef } from "@tanstack/react-table";
-import { format, formatDistanceToNow } from "date-fns";
 import { LevelBadge } from "../members/level-badge";
 import { PulseBadge } from "../members/pulse-badge";
 import { CompanyCell } from "./cells/company-cell";
@@ -126,11 +126,7 @@ export const membersColumns: ColumnDef<Member>[] = [
     ),
     cell: ({ row }) => {
       if (!row.original.first_activity) return;
-      return (
-        <p className="truncate p-2">
-          {formatDistanceToNow(row.original.first_activity)}
-        </p>
-      );
+      return <DateCell date={row.original.first_activity} />;
     },
     size: 250,
   },
@@ -141,11 +137,7 @@ export const membersColumns: ColumnDef<Member>[] = [
     ),
     cell: ({ row }) => {
       if (!row.original.last_activity) return;
-      return (
-        <p className="truncate p-2">
-          {formatDistanceToNow(row.original.last_activity)}
-        </p>
-      );
+      return <DateCell date={row.original.last_activity} />;
     },
     size: 250,
   },
@@ -166,9 +158,7 @@ export const membersColumns: ColumnDef<Member>[] = [
     header: ({ table, column }) => (
       <ColumnHeader table={table} column={column} title="Created at" />
     ),
-    cell: ({ row }) => (
-      <p className="truncate p-2">{format(row.original.created_at, "PP")}</p>
-    ),
+    cell: ({ row }) => <DateCell date={row.original.created_at} />,
     size: 250,
   },
 ];

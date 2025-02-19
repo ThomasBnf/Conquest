@@ -163,14 +163,14 @@ model event {
 }
 
 model integration {
-  id                       String    @id @default(cuid())
-  external_id              String?   @unique
-  connected_at             DateTime?
-  status                   STATUS
-  details                  Json
-  trigger_token            String
-  trigger_token_expires_at DateTime
-  created_by               String
+  id            String    @id @default(cuid())
+  external_id   String?   @unique
+  connected_at  DateTime?
+  status        STATUS
+  details       Json
+  trigger_token String
+  expires_at    DateTime
+  created_by    String
 
   workspace_id String
   workspace    workspace @relation(fields: [workspace_id], references: [id], onDelete: Cascade)

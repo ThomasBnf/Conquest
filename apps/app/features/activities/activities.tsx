@@ -3,12 +3,10 @@ import { EmptyState } from "@/components/states/empty-state";
 import { IsLoading } from "@/components/states/is-loading";
 import { IntegrationProvider } from "@/context/integrationContext";
 import { useUser } from "@/context/userContext";
-import { buttonVariants } from "@conquest/ui/button";
 import { cn } from "@conquest/ui/cn";
 import { Separator } from "@conquest/ui/separator";
 import type { ActivityWithType } from "@conquest/zod/schemas/activity.schema";
 import { format, isToday, isYesterday } from "date-fns";
-import Link from "next/link";
 import { type PropsWithChildren, useEffect, useMemo } from "react";
 import { useInView } from "react-intersection-observer";
 import { ActivityParser } from "./activity-parser";
@@ -56,15 +54,8 @@ export const Activities = ({
       <EmptyState
         icon={<ActivitiesIcon size={36} />}
         title="No activities found"
-        description="Connect your integrations to start collecting activities"
-      >
-        <Link
-          href={`/${slug}/settings/integrations`}
-          className={cn(buttonVariants())}
-        >
-          Connect integrations
-        </Link>
-      </EmptyState>
+        description="This member has not yet done any activities."
+      />
     );
 
   return (

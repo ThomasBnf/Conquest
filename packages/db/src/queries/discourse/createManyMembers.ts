@@ -12,8 +12,9 @@ import { wait } from "@trigger.dev/sdk/v3";
 import { getLocaleByAlpha2 } from "country-locale-map";
 import type DiscourseAPI from "discourse2";
 import ISO6391 from "iso-639-1";
+import { decrypt } from "../../lib/decrypt";
 import { createMember } from "../member/createMember";
-import { getMembersMetrics } from "../member/getMembersMetrics";
+import { getMemberMetrics } from "../member/getMemberMetrics";
 import { upsertProfile } from "../profile/upsertProfile";
 import { createManyActivities } from "./createManyActivities";
 import { createManyInvites } from "./createManyInvites";
@@ -30,8 +31,19 @@ export const createManyMembers = async ({
   tags: Tag[];
   levels: Level[];
 }) => {
-  const { workspace_id } = discourse;
-  const { community_url, api_key, user_fields } = discourse.details;
+  const { workspace_id, details } = discourse;
+  const { community_url, community_url_iv, api_key, api_key_iv, user_fields } =
+    details;
+
+  const decryptedCommunityUrl = await decrypt({
+    access_token: community_url,
+    iv: community_url_iv,
+  });
+
+  const decryptedApiKey = await decrypt({
+    access_token: api_key,
+    iv: api_key_iv,
+  });
 
   let members: AdminListUsers[] = [];
   const createdMembers: Member[] = [];
@@ -73,11 +85,11 @@ export const createManyMembers = async ({
       params.set("user_field_ids", fieldsIds.join("|"));
     }
 
-    const url = `${community_url}/directory_items.json?${params.toString()}`;
+    const url = `${decryptedCommunityUrl}/directory_items.json?${params.toString()}`;
 
     const response = await fetch(url, {
       headers: {
-        "Api-Key": api_key,
+        "Api-Key": decryptedApiKey,
         "Api-Username": "system",
       },
     });
@@ -105,7 +117,7 @@ export const createManyMembers = async ({
       }
 
       const [firstName, lastName] = name?.split(" ") ?? [];
-      const avatarUrl = `${community_url}/${avatar_template.replace(
+      const avatarUrl = `${decryptedCommunityUrl}/${avatar_template.replace(
         "{size}",
         "500",
       )}`;
@@ -179,9 +191,7 @@ export const createManyMembers = async ({
 
       await wait.for({ seconds: 0.5 });
 
-      await getMembersMetrics({ members: [member], levels });
-
-      createdMembers.push(member);
+      await getMemberMetrics({ memberId: member.id });
 
       await wait.for({ seconds: 2.5 });
     }

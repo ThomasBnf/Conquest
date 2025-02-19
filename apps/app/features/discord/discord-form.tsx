@@ -22,7 +22,7 @@ export const DiscordForm = () => {
     },
   });
 
-  const { submit, run, error } = useRealtimeTaskTrigger<typeof installDiscord>(
+  const { submit, run } = useRealtimeTaskTrigger<typeof installDiscord>(
     "install-discord",
     { accessToken: discord?.trigger_token },
   );
@@ -39,9 +39,8 @@ export const DiscordForm = () => {
     if (!run?.status) return;
 
     const isCompleted = run.status === "COMPLETED";
-    const isFailed = run.status === "FAILED";
 
-    if (isFailed || error) {
+    if (["FAILED", "CRASHED", "EXPIRED"].includes(run.status)) {
       setStep(0);
       setLoading(false);
       toast.error("Failed to install Discord", { duration: 5000 });

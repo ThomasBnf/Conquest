@@ -1,11 +1,8 @@
 "use client";
 
 import { QueryInput } from "@/components/custom/query-input";
-import { Members } from "@/components/icons/Members";
-import { useFilters } from "@/context/filtersContext";
 import { useMembers } from "@/context/membersContext";
 import { tableParsers } from "@/lib/searchParamsTable";
-import { Button } from "@conquest/ui/button";
 import { useQueryStates } from "nuqs";
 import { FiltersList } from "../filters/filters-list";
 import { ExportListMembers } from "../lists/export-list-members";
@@ -14,9 +11,9 @@ import { ColumnVisibility } from "../table/column-visibility";
 import { DataTable } from "../table/data-table";
 import { useTable } from "../table/hooks/useTable";
 import { membersColumns } from "../table/members-columns";
+import { EmptyTable } from "./empty-table";
 
 export const MembersPage = () => {
-  const { resetFilters } = useFilters();
   const [{ search, idMember, descMember }, setParams] =
     useQueryStates(tableParsers);
   const { data, count, isLoading } = useMembers();
@@ -47,25 +44,7 @@ export const MembersPage = () => {
         </div>
       </div>
       {data?.length === 0 ? (
-        <div className="flex h-full flex-col items-center justify-center text-center">
-          <Members />
-          <div className="mt-2 mb-4">
-            <p className="font-medium text-base">No members found</p>
-            <p className="text-muted-foreground text-sm">
-              Please check your filters or try a different search.
-            </p>
-          </div>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => {
-              resetFilters();
-              setParams({});
-            }}
-          >
-            Clear filters
-          </Button>
-        </div>
+        <EmptyTable />
       ) : (
         <DataTable table={table} isLoading={isLoading} count={count ?? 0} />
       )}

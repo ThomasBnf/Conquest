@@ -92,6 +92,9 @@ export const CreateActivityTypeDialog = () => {
     );
   };
 
+  const isManualOrApi = ["API", "MANUAL"].includes(form.getValues("source"));
+  const isInviteOrJoin = ["invite", "join"].includes(form.getValues("key"));
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
@@ -141,6 +144,7 @@ export const CreateActivityTypeDialog = () => {
                       <Input
                         {...field}
                         onBlur={() => {
+                          if (!field.value) return;
                           form.setValue(
                             "key",
                             `${field.value?.toLowerCase().replaceAll(" ", "_")}`,
@@ -161,7 +165,7 @@ export const CreateActivityTypeDialog = () => {
                     <FormControl>
                       <div className="flex items-center overflow-hidden rounded-md border">
                         <p className="h-[34px] w-fit shrink-0 place-content-center border-r bg-muted px-2">
-                          {form.getValues("source")} :
+                          {form.getValues("source").toLowerCase()}:
                         </p>
                         <Input
                           {...field}
@@ -187,52 +191,58 @@ export const CreateActivityTypeDialog = () => {
                   </FormItem>
                 )}
               />
-              <div className="flex flex-col items-start gap-2">
-                <FormLabel>Conditions</FormLabel>
-                {form.watch("conditions").map((_, index) => (
-                  // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
-                  <div key={index} className="flex w-full gap-2">
-                    <ConditionChannel
-                      form={form}
-                      index={index}
-                      channels={filteredChannels}
-                    />
-                    <FormField
-                      control={form.control}
-                      name={`conditions.${index}.points`}
-                      render={({ field }) => (
-                        <FormItem className="w-full">
-                          <FormControl>
-                            <div className="flex h-[34px] items-center overflow-hidden rounded-md border">
-                              <p className="h-[34px] w-fit place-content-center border-r bg-muted px-2">
-                                +
-                              </p>
-                              <Input {...field} variant="transparent" />
-                              <p className="h-[34px] w-fit place-content-center border-l bg-muted px-2">
-                                Points
-                              </p>
-                            </div>
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="icon"
-                      className="size-[34px] shrink-0"
-                      onClick={() => removeCondition(index)}
-                    >
-                      <X size={16} />
-                    </Button>
-                  </div>
-                ))}
-                <Button type="button" variant="outline" onClick={addCondition}>
-                  <Plus size={16} />
-                  Add Condition
-                </Button>
-              </div>
+              {!isManualOrApi && !isInviteOrJoin && (
+                <div className="flex flex-col items-start gap-2">
+                  <FormLabel>Conditions</FormLabel>
+                  {form.watch("conditions").map((_, index) => (
+                    // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
+                    <div key={index} className="flex w-full gap-2">
+                      <ConditionChannel
+                        form={form}
+                        index={index}
+                        channels={filteredChannels}
+                      />
+                      <FormField
+                        control={form.control}
+                        name={`conditions.${index}.points`}
+                        render={({ field }) => (
+                          <FormItem className="w-full">
+                            <FormControl>
+                              <div className="flex h-[34px] items-center overflow-hidden rounded-md border">
+                                <p className="h-[34px] w-fit place-content-center border-r bg-muted px-2">
+                                  +
+                                </p>
+                                <Input {...field} variant="transparent" />
+                                <p className="h-[34px] w-fit place-content-center border-l bg-muted px-2">
+                                  Points
+                                </p>
+                              </div>
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="icon"
+                        className="size-[34px] shrink-0"
+                        onClick={() => removeCondition(index)}
+                      >
+                        <X size={16} />
+                      </Button>
+                    </div>
+                  ))}
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={addCondition}
+                  >
+                    <Plus size={16} />
+                    Add Condition
+                  </Button>
+                </div>
+              )}
             </DialogBody>
             <DialogFooter>
               <DialogTrigger asChild>

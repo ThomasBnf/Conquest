@@ -118,15 +118,13 @@ export const CompanySidebar = ({ company }: Props) => {
         <div className="space-y-2 p-4">
           <FieldCard icon="CalendarCheck" label="Founded at">
             <EditableDate
-              defaultValue={founded_at ? format(founded_at, "PP p") : undefined}
+              defaultValue={founded_at ? format(founded_at, "PPp") : undefined}
               onUpdate={(value) => onUpdateCompany("founded_at", value)}
             />
           </FieldCard>
           <FieldCard icon="CalendarPlus" label="Created at">
             <p className="h-8 place-content-center pl-0.5">
-              <span className="px-[7px]">
-                {format(created_at, "PP, HH'h'mm")}
-              </span>
+              <span className="px-[7px]">{format(created_at, "PPp")}</span>
             </p>
           </FieldCard>
         </div>

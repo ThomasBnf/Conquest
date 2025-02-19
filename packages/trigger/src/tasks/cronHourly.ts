@@ -1,12 +1,14 @@
 import { prisma } from "@conquest/db/prisma";
+import { getMemberMetrics } from "@conquest/db/queries/member/getMemberMetrics";
 import { schedules } from "@trigger.dev/sdk/v3";
 import { endOfHour, startOfHour, subHours } from "date-fns";
-import { getMemberMetrics } from "./getMemberMetrics";
 
 export const cronHourly = schedules.task({
   id: "cron-hourly",
   cron: "0 * * * *",
-  run: async () => {
+  run: async (_, { ctx }) => {
+    if (ctx.environment.type === "DEVELOPMENT") return;
+
     const now = new Date();
     const startOfLastHour = startOfHour(subHours(now, 1));
     const endOfLastHour = endOfHour(subHours(now, 1));
@@ -21,8 +23,10 @@ export const cronHourly = schedules.task({
       },
     });
 
-    for (const member of members) {
-      await getMemberMetrics.trigger({ memberId: member.member_id });
-    }
+    await Promise.all(
+      members.map(async (member) => {
+        await getMemberMetrics({ memberId: member.member_id });
+      }),
+    );
   },
 });

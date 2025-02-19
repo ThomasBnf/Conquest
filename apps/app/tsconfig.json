@@ -14,6 +14,6 @@
     ".next/types/**/*.ts",
     "tailwind.config.ts",
     "../../packages/db/src/helpers/idParser.ts"
-, "trpc_server/activity-types"  ],
+, "trpc_server/activity-types", "../../packages/db/src/lib/decrypt.ts", "../../packages/db/src/lib/encrypt.ts"  ],
   "exclude": ["node_modules"]
 }

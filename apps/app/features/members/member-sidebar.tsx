@@ -166,7 +166,7 @@ export const MemberSidebar = ({ member, profiles }: Props) => {
             <FieldCard icon="Calendar" label="First activity">
               <p className="h-8 place-content-center pl-0.5">
                 <span className="px-[7px]">
-                  {format(first_activity, "PP, HH'h'mm")}
+                  {format(first_activity, "PPp")}
                 </span>
               </p>
             </FieldCard>
@@ -174,17 +174,13 @@ export const MemberSidebar = ({ member, profiles }: Props) => {
           {last_activity && (
             <FieldCard icon="CalendarSearch" label="Last activity">
               <p className="h-8 place-content-center pl-0.5">
-                <span className="px-[7px]">
-                  {format(last_activity, "PP, HH'h'mm")}
-                </span>
+                <span className="px-[7px]">{format(last_activity, "PPp")}</span>
               </p>
             </FieldCard>
           )}
           <FieldCard icon="CalendarPlus" label="Created at">
             <p className="h-8 place-content-center pl-0.5">
-              <span className="px-[7px]">
-                {format(created_at, "PP, HH'h'mm")}
-              </span>
+              <span className="px-[7px]">{format(created_at, "PPp")}</span>
             </p>
           </FieldCard>
         </div>

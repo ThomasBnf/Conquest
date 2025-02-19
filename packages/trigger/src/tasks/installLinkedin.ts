@@ -3,13 +3,13 @@ import { updateIntegration } from "@conquest/db/queries/integration/updateIntegr
 import { createManyComments } from "@conquest/db/queries/linkedin/createManyComments";
 import { listComments } from "@conquest/db/queries/linkedin/listComments";
 import { listPosts } from "@conquest/db/queries/linkedin/listPosts";
-import { webhookSubscription } from "@conquest/db/queries/linkedin/webhookSubscription";
 import { batchMergeMembers } from "@conquest/db/queries/member/batchMergeMembers";
 import { createPost } from "@conquest/db/queries/post/createPost";
 import { LinkedInIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
 import type { Member } from "@conquest/zod/schemas/member.schema";
-import { schemaTask, usage } from "@trigger.dev/sdk/v3";
+import { schemaTask } from "@trigger.dev/sdk/v3";
 import { z } from "zod";
+import { getAllMembersMetrics } from "./getAllMembersMetrics";
 import { integrationSuccessEmail } from "./integrationSuccessEmail";
 
 export const installLinkedin = schemaTask({
@@ -44,7 +44,7 @@ export const installLinkedin = schemaTask({
       createdMembers.push(...members);
     }
 
-    await webhookSubscription({ linkedin });
+    await getAllMembersMetrics.trigger({ workspace_id });
     await batchMergeMembers({ members: createdMembers });
     await integrationSuccessEmail.trigger({
       integration: linkedin,
@@ -52,8 +52,6 @@ export const installLinkedin = schemaTask({
     });
   },
   onSuccess: async ({ linkedin }) => {
-    console.log(usage.getCurrent());
-
     await updateIntegration({
       id: linkedin.id,
       connected_at: new Date(),

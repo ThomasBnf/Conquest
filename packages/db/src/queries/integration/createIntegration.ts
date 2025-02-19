@@ -29,55 +29,58 @@ export const createIntegration = async ({
           },
           workspace_id,
         },
-        external_id ? { external_id } : {},
+        ...(external_id ? [{ external_id }] : []),
       ],
     },
   });
 
-  if (integrationExist) {
-    const now = new Date();
+  if (!integrationExist) {
+    const expiresAt = addDays(new Date(), 30);
+    const source = details.source.toLowerCase();
 
-    if (integrationExist.trigger_token_expires_at < now) {
-      const source = details.source.toLowerCase();
-      const expiresAt = addDays(new Date(), 30);
+    const triggerToken = await auth.createTriggerPublicToken(
+      `install-${source}`,
+      { expirationTime: expiresAt },
+    );
 
-      const triggerToken = await auth.createTriggerPublicToken(
-        `install-${source}`,
-        { expirationTime: expiresAt },
-      );
+    const integration = await prisma.integration.create({
+      data: {
+        external_id,
+        status: "ENABLED",
+        details,
+        trigger_token: triggerToken,
+        expires_at: expiresAt,
+        created_by,
+        workspace_id,
+      },
+    });
 
-      const updatedIntegration = await prisma.integration.update({
-        where: { id: integrationExist.id },
-        data: {
-          external_id,
-          details,
-          trigger_token: triggerToken,
-          trigger_token_expires_at: expiresAt,
-        },
-      });
-
-      return IntegrationSchema.parse(updatedIntegration);
-    }
-
-    return IntegrationSchema.parse(integrationExist);
+    return IntegrationSchema.parse(integration);
   }
 
-  const expiresAt = addDays(new Date(), 30);
-  const triggerToken = await auth.createTriggerPublicToken(
-    `install-${details.source.toLowerCase()}`,
-  );
+  const now = new Date();
 
-  const integration = await prisma.integration.create({
-    data: {
-      external_id,
-      status: "ENABLED",
-      details,
-      trigger_token: triggerToken,
-      trigger_token_expires_at: expiresAt,
-      created_by,
-      workspace_id,
-    },
-  });
+  if (integrationExist.expires_at < now) {
+    const expiresAt = addDays(new Date(), 30);
+    const source = details.source.toLowerCase();
 
-  return IntegrationSchema.parse(integration);
+    const triggerToken = await auth.createTriggerPublicToken(
+      `install-${source}`,
+      { expirationTime: expiresAt },
+    );
+
+    const updatedIntegration = await prisma.integration.update({
+      where: { id: integrationExist.id },
+      data: {
+        external_id,
+        details,
+        trigger_token: triggerToken,
+        expires_at: expiresAt,
+      },
+    });
+
+    return IntegrationSchema.parse(updatedIntegration);
+  }
+
+  return IntegrationSchema.parse(integrationExist);
 };

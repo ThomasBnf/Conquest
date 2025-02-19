@@ -1,5 +1,6 @@
 import { SLACK_SCOPES, SLACK_USER_SCOPES } from "@/constant";
 import { getCurrentUser } from "@/queries/getCurrentUser";
+import { encrypt } from "@conquest/db/lib/encrypt";
 import { createIntegration } from "@conquest/db/queries/integration/createIntegration";
 import { getIntegration } from "@conquest/db/queries/integration/getIntegration";
 import { env } from "@conquest/env";
@@ -52,14 +53,19 @@ export default async function Page({ searchParams: { error, code } }: Props) {
     return redirect("/settings/integrations/slack?error=already_connected");
   }
 
+  const encryptedAccessToken = await encrypt(access_token);
+  const encryptedUserToken = await encrypt(authed_user.access_token);
+
   await createIntegration({
     external_id: team.id,
     details: {
       source: "SLACK",
       name: team.name,
       url: team.url.slice(0, -1),
-      token: access_token,
-      slack_user_token: authed_user.access_token,
+      access_token: encryptedAccessToken.token,
+      access_token_iv: encryptedAccessToken.iv,
+      user_token: encryptedUserToken.token,
+      user_token_iv: encryptedUserToken.iv,
       scopes: SLACK_SCOPES,
       user_scopes: SLACK_USER_SCOPES,
     },

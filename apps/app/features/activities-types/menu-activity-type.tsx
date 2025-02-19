@@ -23,8 +23,10 @@ export const MenuActivityType = ({ activityType }: Props) => {
   const [open, setOpen] = useState(false);
   const [openEdit, setOpenEdit] = useState(false);
 
+  const utils = trpc.useUtils();
   const { mutateAsync } = trpc.activityTypes.deleteActivityType.useMutation({
     onSuccess: () => {
+      utils.activityTypes.getAllActivityTypes.invalidate();
       toast.success("Activity type deleted");
       setOpen(false);
     },

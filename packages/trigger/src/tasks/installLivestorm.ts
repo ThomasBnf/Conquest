@@ -8,6 +8,7 @@ import { LivestormIntegrationSchema } from "@conquest/zod/schemas/integration.sc
 import { schemaTask } from "@trigger.dev/sdk/v3";
 import { z } from "zod";
 import { integrationSuccessEmail } from "./integrationSuccessEmail";
+import { getAllMembersMetrics } from "./getAllMembersMetrics";
 
 export const installLivestorm = schemaTask({
   id: "install-livestorm",
@@ -47,7 +48,7 @@ export const installLivestorm = schemaTask({
 
     const members = await createManyEvents({ livestorm });
 
-    // await calculateMembersLevel.trigger({ workspace_id });
+    await getAllMembersMetrics.trigger({ workspace_id });
     await batchMergeMembers({ members });
     await integrationSuccessEmail.trigger({
       integration: livestorm,

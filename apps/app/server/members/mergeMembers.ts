@@ -68,7 +68,7 @@ export const mergeMembers = protectedProcedure
 
     const { id, company_name, company, ...memberData } = mergedMember;
 
-    const updatedMember = await prisma.$transaction(async (tx) => {
+    await prisma.$transaction(async (tx) => {
       await tx.profile.updateMany({
         where: { member_id: leftMember.id },
         data: { member_id: mergedMember.id },
@@ -98,8 +98,6 @@ export const mergeMembers = protectedProcedure
         },
       });
     });
-
-    console.log("--- updatedMember", updatedMember);
 
     return getMemberMetrics.trigger({ memberId: mergedMember.id });
   });

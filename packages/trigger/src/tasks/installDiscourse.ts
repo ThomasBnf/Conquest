@@ -1,6 +1,8 @@
 import { discourseClient } from "@conquest/db/discourse";
+import { decrypt } from "@conquest/db/lib/decrypt";
 import { createManyMembers } from "@conquest/db/queries/discourse/createManyMembers";
 import { createManyTags } from "@conquest/db/queries/discourse/createManyTags";
+import { deleteIntegration } from "@conquest/db/queries/integration/deleteIntegration";
 import { updateIntegration } from "@conquest/db/queries/integration/updateIntegration";
 import { listLevels } from "@conquest/db/queries/levels/listLevels";
 import { batchMergeMembers } from "@conquest/db/queries/member/batchMergeMembers";
@@ -17,9 +19,23 @@ export const installDiscourse = schemaTask({
   }),
   run: async ({ discourse }) => {
     const { workspace_id, details } = discourse;
-    const { community_url, api_key } = details;
+    const { community_url, community_url_iv, api_key, api_key_iv } = details;
 
-    const client = discourseClient({ community_url, api_key });
+    const decryptedCommunityUrl = await decrypt({
+      access_token: community_url,
+      iv: community_url_iv,
+    });
+
+    const decryptedApiKey = await decrypt({
+      access_token: api_key,
+      iv: api_key_iv,
+    });
+
+    const client = discourseClient({
+      community_url: decryptedCommunityUrl,
+      api_key: decryptedApiKey,
+    });
+
     const levels = await listLevels({ workspace_id });
 
     const tags = await createManyTags({ client, workspace_id });
@@ -43,10 +59,10 @@ export const installDiscourse = schemaTask({
       status: "CONNECTED",
     });
   },
-  // onFailure: async ({ discourse }) => {
-  //   await deleteIntegration({
-  //     source: "DISCOURSE",
-  //     integration: discourse,
-  //   });
-  // },
+  onFailure: async ({ discourse }) => {
+    await deleteIntegration({
+      source: "DISCOURSE",
+      integration: discourse,
+    });
+  },
 });

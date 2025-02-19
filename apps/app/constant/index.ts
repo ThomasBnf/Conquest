@@ -176,14 +176,6 @@ export const DISCOURSE_ACTIVITY_TYPES = [
 
 export const DISCORD_ACTIVITY_TYPES = [
   {
-    name: "Invite",
-    source: "DISCORD" as const,
-    key: "discord:invite",
-    points: 7,
-    conditions: [],
-    deletable: false,
-  },
-  {
     name: "Create a thread",
     source: "DISCORD" as const,
     key: "discord:thread",
@@ -226,14 +218,6 @@ export const DISCORD_ACTIVITY_TYPES = [
 ];
 
 export const SLACK_ACTIVITY_TYPES = [
-  {
-    name: "Invite",
-    source: "SLACK" as const,
-    key: "slack:invite",
-    points: 7,
-    conditions: [],
-    deletable: false,
-  },
   {
     name: "Message",
     source: "SLACK" as const,

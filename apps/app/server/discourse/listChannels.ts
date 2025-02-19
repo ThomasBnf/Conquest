@@ -1,4 +1,5 @@
 import { discourseClient } from "@conquest/db/discourse";
+import { decrypt } from "@conquest/db/lib/decrypt";
 import { getIntegrationBySource } from "@conquest/db/queries/integration/getIntegrationBySource";
 import { DiscourseIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
 import { CategorySchema } from "@conquest/zod/types/discourse";
@@ -18,15 +19,24 @@ export const listChannels = protectedProcedure.query(
     if (!discourse) return [];
 
     const { details } = discourse;
-    const { community_url, api_key } = details;
+    const { community_url, community_url_iv, api_key, api_key_iv } = details;
 
-    const client = discourseClient({ community_url, api_key });
+    const decryptedCommunityUrl = await decrypt({
+      access_token: community_url,
+      iv: community_url_iv,
+    });
+
+    const decryptedApiKey = await decrypt({
+      access_token: api_key,
+      iv: api_key_iv,
+    });
+
+    const client = discourseClient({
+      community_url: decryptedCommunityUrl,
+      api_key: decryptedApiKey,
+    });
     const { categories } = await client.getSite();
 
-    const isOk = CategorySchema.array().safeParse(categories);
-
-    console.dir(isOk.error, { depth: 100 });
-
-    return isOk.data;
+    return CategorySchema.array().parse(categories);
   },
 );

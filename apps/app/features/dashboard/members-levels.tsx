@@ -29,7 +29,6 @@ const chartConfig = {
 
 export const MembersLevels = ({ from, to }: Props) => {
   const { data } = trpc.dashboard.membersLevels.useQuery({ from, to });
-  console.log(data);
 
   return (
     <div className="flex-1 space-y-2 p-4">

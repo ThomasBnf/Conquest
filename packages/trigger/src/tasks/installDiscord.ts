@@ -6,12 +6,11 @@ import { createManyThreads } from "@conquest/db/queries/discord/createManyThread
 import { listChannelMessages } from "@conquest/db/queries/discord/listChannelMessages";
 import { deleteIntegration } from "@conquest/db/queries/integration/deleteIntegration";
 import { updateIntegration } from "@conquest/db/queries/integration/updateIntegration";
-import { listLevels } from "@conquest/db/queries/levels/listLevels";
 import { batchMergeMembers } from "@conquest/db/queries/member/batchMergeMembers";
-import { getMembersMetrics } from "@conquest/db/queries/member/getMembersMetrics";
 import { DiscordIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
 import { schemaTask } from "@trigger.dev/sdk/v3";
 import { z } from "zod";
+import { getAllMembersMetrics } from "./getAllMembersMetrics";
 import { integrationSuccessEmail } from "./integrationSuccessEmail";
 
 export const installDiscord = schemaTask({
@@ -44,14 +43,12 @@ export const installDiscord = schemaTask({
       });
     }
 
+    await getAllMembersMetrics.trigger({ workspace_id });
+    await batchMergeMembers({ members });
     await integrationSuccessEmail.trigger({
       integration: discord,
       workspace_id,
     });
-
-    const levels = await listLevels({ workspace_id });
-    await getMembersMetrics({ members, levels });
-    await batchMergeMembers({ members });
   },
   onSuccess: async ({ discord }) => {
     await updateIntegration({

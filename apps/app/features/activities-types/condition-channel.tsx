@@ -56,7 +56,7 @@ export const ConditionChannel = ({ form, index, channels }: Props) => {
                   </div>
                 </>
               </PopoverTrigger>
-              <PopoverContent className="p-0">
+              <PopoverContent className="w-72 p-0" align="start">
                 <Command loop>
                   <CommandInput placeholder="Search..." />
                   <CommandList>
@@ -71,8 +71,11 @@ export const ConditionChannel = ({ form, index, channels }: Props) => {
                             setOpen(false);
                           }}
                         >
-                          <div className="flex items-center gap-1">
-                            <Hash className="h-4 w-4" />
+                          <div className="flex items-start gap-1">
+                            <Hash
+                              size={16}
+                              className="shrink-0 translate-y-0.5"
+                            />
                             {channel.name}
                           </div>
                         </CommandItem>

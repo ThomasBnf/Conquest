@@ -21,7 +21,6 @@ import {
   type NodeWebhook,
 } from "@conquest/zod/schemas/node.schema";
 import { WorkflowSchema } from "@conquest/zod/schemas/workflow.schema";
-import { WebClient } from "@slack/web-api";
 import { task, wait } from "@trigger.dev/sdk/v3";
 import { startOfDay, subDays } from "date-fns";
 import { z } from "zod";
@@ -246,12 +245,12 @@ export const slackMessage = async (
   if (!slack) throw new Error("No Slack integration found");
 
   const { details } = SlackIntegrationSchema.parse(slack);
-  const { slack_user_token } = details;
+  // const { slack_user_token } = details;
   const { message } = node;
 
-  if (!slack_user_token) throw new Error("No Slack user token found");
+  // if (!slack_user_token) throw new Error("No Slack user token found");
 
-  const web = new WebClient(slack_user_token);
+  // const web = new WebClient(slack_user_token);
 
   for (const member of members ?? []) {
     // if (!member.slack_id) throw new Error("No Slack ID found");

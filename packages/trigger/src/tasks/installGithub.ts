@@ -2,7 +2,7 @@ import { createManyStargazers } from "@conquest/db/queries/github/createManyStar
 import { deleteIntegration } from "@conquest/db/queries/integration/deleteIntegration";
 import { updateIntegration } from "@conquest/db/queries/integration/updateIntegration";
 import { GithubIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
-import { schemaTask, usage } from "@trigger.dev/sdk/v3";
+import { schemaTask } from "@trigger.dev/sdk/v3";
 import { z } from "zod";
 
 export const installGithub = schemaTask({
@@ -63,8 +63,6 @@ export const installGithub = schemaTask({
     // console.log(issues.length);
   },
   onSuccess: async ({ github }) => {
-    console.log(usage.getCurrent());
-
     await updateIntegration({
       id: github.id,
       connected_at: new Date(),
@@ -72,8 +70,6 @@ export const installGithub = schemaTask({
     });
   },
   onFailure: async ({ github }) => {
-    const { workspace_id } = github;
-
     await deleteIntegration({
       source: "GITHUB",
       integration: github,

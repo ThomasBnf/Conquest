@@ -35,19 +35,16 @@ export const PotentialAmbassadors = ({ from, to }: Props) => {
   const [{ search, idMember, descMember, page, pageSize }, setParams] =
     useQueryStates(tableParsers);
 
-  const { data, isLoading, failureReason } =
-    trpc.dashboard.potentialAmbassadors.useQuery({
-      search,
-      id: idMember,
-      desc: descMember,
-      page,
-      pageSize,
-      groupFilters,
-      from,
-      to,
-    });
-
-  console.log(failureReason);
+  const { data, isLoading } = trpc.dashboard.potentialAmbassadors.useQuery({
+    search,
+    id: idMember,
+    desc: descMember,
+    page,
+    pageSize,
+    groupFilters,
+    from,
+    to,
+  });
 
   const { members, count } = data ?? {};
 

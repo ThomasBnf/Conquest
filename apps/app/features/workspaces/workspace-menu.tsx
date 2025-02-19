@@ -5,7 +5,6 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@conquest/ui/dropdown-menu";
 import {
@@ -44,14 +43,7 @@ export const WorkspaceMenu = ({ workspace }: Props) => {
               <ChevronsUpDown className="!size-3.5" />
             </SidebarMenuButton>
           </DropdownMenuTrigger>
-          <DropdownMenuContent
-            className="w-[--radix-dropdown-menu-trigger-width]"
-            align="start"
-          >
-            <DropdownMenuItem>
-              <span className="font-medium">{name}</span>
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
+          <DropdownMenuContent className="w-40" align="start">
             <DropdownMenuItem onClick={() => router.push(`/${slug}/settings`)}>
               <Settings size={18} />
               Settings

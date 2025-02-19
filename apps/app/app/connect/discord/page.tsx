@@ -1,5 +1,6 @@
 import { DISCORD_PERMISSIONS, DISCORD_SCOPES } from "@/constant";
 import { getCurrentUser } from "@/queries/getCurrentUser";
+import { encrypt } from "@conquest/db/lib/encrypt";
 import { createIntegration } from "@conquest/db/queries/integration/createIntegration";
 import { getIntegration } from "@conquest/db/queries/integration/getIntegration";
 import { env } from "@conquest/env";
@@ -45,14 +46,19 @@ export default async function Page({ searchParams: { code, error } }: Props) {
     return redirect("settings/integrations/discord?error=already_connected");
   }
 
+  const encryptedAccessToken = await encrypt(access_token);
+  const encryptedRefreshToken = await encrypt(refresh_token);
+
   await createIntegration({
     external_id: id,
     details: {
       source: "DISCORD",
       name,
-      access_token,
+      access_token: encryptedAccessToken.token,
+      access_token_iv: encryptedAccessToken.iv,
+      refresh_token: encryptedRefreshToken.token,
+      refresh_token_iv: encryptedRefreshToken.iv,
       expires_in,
-      refresh_token,
       scopes: DISCORD_SCOPES,
       permissions: DISCORD_PERMISSIONS,
     },

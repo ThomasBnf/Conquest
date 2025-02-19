@@ -1,4 +1,5 @@
 import { getCurrentUser } from "@/queries/getCurrentUser";
+import { encrypt } from "@conquest/db/lib/encrypt";
 import { createIntegration } from "@conquest/db/queries/integration/createIntegration";
 import { getWorkspace } from "@conquest/db/queries/workspace/getWorkspace";
 import { env } from "@conquest/env";
@@ -34,13 +35,17 @@ export default async function Page({ searchParams: { code } }: Props) {
   }
 
   const data = await response.json();
+  console.log(data);
   const { access_token, scope } = data;
+
+  const encryptedAccessToken = await encrypt(access_token);
 
   await createIntegration({
     external_id: null,
     details: {
       source: "GITHUB",
-      access_token,
+      access_token: encryptedAccessToken.token,
+      iv: encryptedAccessToken.iv,
       scope,
       name: "",
       owner: "",

@@ -1,3 +1,4 @@
+import { decrypt } from "@conquest/db/lib/decrypt";
 import { prisma } from "@conquest/db/prisma";
 import { listSubscriptions } from "@conquest/db/queries/linkedin/listSubscriptions";
 import { removeWebhook } from "@conquest/db/queries/linkedin/removeWebhook";
@@ -8,7 +9,6 @@ import {
   IntegrationSchema,
   LinkedInIntegrationSchema,
   LivestormIntegrationSchema,
-  SlackIntegrationSchema,
 } from "@conquest/zod/schemas/integration.schema";
 import { WebClient } from "@slack/web-api";
 import { z } from "zod";
@@ -41,11 +41,17 @@ export const deleteIntegration = protectedProcedure
     }
 
     if (source === "SLACK") {
-      const slack = SlackIntegrationSchema.parse(integration);
-      const web = new WebClient(slack.details.token);
+      const { access_token, access_token_iv } = integration.details;
+
+      const token = await decrypt({
+        access_token,
+        iv: access_token_iv,
+      });
+
+      const web = new WebClient(token);
 
       await web.apps.uninstall({
-        token: slack.details.token,
+        token,
         client_id: env.NEXT_PUBLIC_SLACK_CLIENT_ID,
         client_secret: env.SLACK_CLIENT_SECRET,
       });

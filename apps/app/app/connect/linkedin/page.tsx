@@ -1,6 +1,6 @@
 import { LINKEDIN_SCOPES } from "@/constant";
 import { getCurrentUser } from "@/queries/getCurrentUser";
-import { prisma } from "@conquest/db/prisma";
+import { encrypt } from "@conquest/db/lib/encrypt";
 import { createIntegration } from "@conquest/db/queries/integration/createIntegration";
 import { getWorkspace } from "@conquest/db/queries/workspace/getWorkspace";
 import { env } from "@conquest/env";
@@ -14,6 +14,7 @@ type Props = {
 
 export default async function Page({ searchParams: { code } }: Props) {
   const user = await getCurrentUser();
+
   const { slug, id: workspace_id } = await getWorkspace({
     id: user.workspace_id,
   });
@@ -44,30 +45,21 @@ export default async function Page({ searchParams: { code } }: Props) {
   const data = await response.json();
   const { access_token } = data;
 
-  const integrations = await prisma.integration.findMany({
-    where: {
-      details: {
-        path: ["source"],
-        equals: "LINKEDIN",
-      },
-      workspace_id,
-    },
-  });
+  const encryptedAccessToken = await encrypt(access_token);
 
-  if (integrations.length === 0) {
-    await createIntegration({
-      external_id: user.workspace_id,
-      details: {
-        source: "LINKEDIN",
-        name: "",
-        access_token: access_token ?? "",
-        scopes: LINKEDIN_SCOPES,
-        user_id: "",
-      },
-      created_by: user.id,
-      workspace_id,
-    });
-  }
+  await createIntegration({
+    external_id: user.workspace_id,
+    details: {
+      source: "LINKEDIN",
+      name: "",
+      access_token: encryptedAccessToken.token,
+      iv: encryptedAccessToken.iv,
+      scopes: LINKEDIN_SCOPES,
+      user_id: "",
+    },
+    created_by: user.id,
+    workspace_id,
+  });
 
   redirect("/settings/integrations/linkedin");
 }

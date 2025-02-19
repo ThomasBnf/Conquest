@@ -7,8 +7,8 @@ const BaseSchema = z.object({
   external_id: z.string().nullable(),
   status: STATUS,
   trigger_token: z.string(),
-  trigger_token_expires_at: z.coerce.date(),
-  connected_at: z.coerce.date().nullable(),
+  expires_at: z.coerce.date(),
+  connected_at: z.date().nullable(),
   created_by: z.string().cuid(),
   workspace_id: z.string().cuid(),
   created_at: z.coerce.date(),
@@ -19,8 +19,10 @@ const SlackDetailsSchema = z.object({
   source: z.literal("SLACK"),
   name: z.string(),
   url: z.string(),
-  token: z.string(),
-  slack_user_token: z.string(),
+  access_token: z.string(),
+  access_token_iv: z.string(),
+  user_token: z.string(),
+  user_token_iv: z.string(),
   scopes: z.string(),
   user_scopes: z.string(),
 });
@@ -28,7 +30,9 @@ const SlackDetailsSchema = z.object({
 const DiscourseDetailsSchema = z.object({
   source: z.literal("DISCOURSE"),
   community_url: z.string(),
+  community_url_iv: z.string(),
   api_key: z.string(),
+  api_key_iv: z.string(),
   user_fields: z
     .array(z.object({ id: z.string(), name: z.string() }))
     .optional(),
@@ -38,8 +42,10 @@ const DiscordDetailsSchema = z.object({
   source: z.literal("DISCORD"),
   name: z.string(),
   access_token: z.string(),
+  access_token_iv: z.string(),
   expires_in: z.number(),
   refresh_token: z.string(),
+  refresh_token_iv: z.string(),
   scopes: z.string(),
   permissions: z.string(),
 });
@@ -48,6 +54,7 @@ const LinkedInDetailsSchema = z.object({
   source: z.literal("LINKEDIN"),
   name: z.string(),
   access_token: z.string(),
+  iv: z.string(),
   scopes: z.string(),
   user_id: z.string(),
 });
@@ -56,7 +63,9 @@ const LivestormDetailsSchema = z.object({
   source: z.literal("LIVESTORM"),
   name: z.string(),
   access_token: z.string(),
+  access_token_iv: z.string(),
   refresh_token: z.string(),
+  refresh_token_iv: z.string(),
   expires_in: z.number(),
   scope: z.string(),
   filter: z.string().optional(),
@@ -66,6 +75,7 @@ const GithubDetailsSchema = z.object({
   source: z.literal("GITHUB"),
   name: z.string(),
   access_token: z.string(),
+  iv: z.string(),
   scope: z.string(),
   owner: z.string(),
 });

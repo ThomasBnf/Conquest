@@ -2,6 +2,7 @@ import type { DiscourseIntegration } from "@conquest/zod/schemas/integration.sch
 import type { DiscourseProfile } from "@conquest/zod/schemas/profile.schema";
 import type { Invite } from "@conquest/zod/types/discourse";
 import { startOfDay, subDays } from "date-fns";
+import { decrypt } from "../../lib/decrypt";
 import { createActivity } from "../activity/createActivity";
 import { getProfile } from "../profile/getProfile";
 
@@ -12,9 +13,19 @@ type Props = {
 
 export const createManyInvites = async ({ discourse, profile }: Props) => {
   const { details, workspace_id } = discourse;
-  const { community_url, api_key } = details;
+  const { community_url, community_url_iv, api_key, api_key_iv } = details;
   const { member_id, attributes } = profile;
   const { username } = attributes;
+
+  const decryptedCommunityUrl = await decrypt({
+    access_token: community_url,
+    iv: community_url_iv,
+  });
+
+  const decryptedApiKey = await decrypt({
+    access_token: api_key,
+    iv: api_key_iv,
+  });
 
   const today = startOfDay(new Date());
   const last365Days = subDays(today, 365);
@@ -24,13 +35,13 @@ export const createManyInvites = async ({ discourse, profile }: Props) => {
 
   while (hasMore) {
     const response = await fetch(
-      `${community_url}/u/${username}/invited.json?filter=redeemed${
+      `${decryptedCommunityUrl}/u/${username}/invited.json?filter=redeemed${
         offSet ? `&offset=${offSet}` : ""
       }`,
       {
         method: "GET",
         headers: {
-          "Api-Key": api_key,
+          "Api-Key": decryptedApiKey,
           "Api-Username": "system",
         },
       },

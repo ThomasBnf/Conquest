@@ -43,7 +43,6 @@ export const createManyActivities = async ({ client, profile }: Props) => {
     }
 
     for (const action of recentActions) {
-      console.log(action);
       const {
         action_type,
         created_at,

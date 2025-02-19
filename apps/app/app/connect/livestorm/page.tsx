@@ -1,4 +1,5 @@
 import { getCurrentUser } from "@/queries/getCurrentUser";
+import { encrypt } from "@conquest/db/lib/encrypt";
 import { createIntegration } from "@conquest/db/queries/integration/createIntegration";
 import { getWorkspace } from "@conquest/db/queries/workspace/getWorkspace";
 import { env } from "@conquest/env";
@@ -40,13 +41,18 @@ export default async function Page({ searchParams: { code } }: Props) {
   const data = await response.json();
   const { access_token, expires_in, refresh_token, scope } = data;
 
+  const encryptedAccessToken = await encrypt(access_token);
+  const encryptedRefreshToken = await encrypt(refresh_token);
+
   await createIntegration({
     external_id: user.workspace_id,
     details: {
       source: "LIVESTORM",
       name: "",
-      access_token,
-      refresh_token,
+      access_token: encryptedAccessToken.token,
+      access_token_iv: encryptedAccessToken.iv,
+      refresh_token: encryptedRefreshToken.token,
+      refresh_token_iv: encryptedRefreshToken.iv,
       expires_in,
       scope,
     },

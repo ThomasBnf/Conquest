@@ -4,7 +4,6 @@ import { Companies } from "@/components/icons/Companies";
 import { Dashboard } from "@/components/icons/Dashboard";
 import { Members } from "@/components/icons/Members";
 import { useUser } from "@/context/userContext";
-import { CreateListDialog } from "@/features/lists/create-list-dialog";
 import { WorkspaceMenu } from "@/features/workspaces/workspace-menu";
 import { useOpenList } from "@/hooks/useOpenList";
 import { trpc } from "@/server/client";
@@ -108,11 +107,6 @@ export const AppSidebar = ({ workspace }: Props) => {
           </SidebarGroup>
           <SidebarGroup>
             <SidebarGroupLabel>Lists</SidebarGroupLabel>
-            {/* {lists && lists.length > 0 && (
-              <SidebarGroupAction onClick={() => setOpen(true)}>
-                <Plus size={16} />
-              </SidebarGroupAction>
-            )} */}
             <SidebarMenu>
               {lists?.length === 0 && (
                 <SidebarMenuItem>

@@ -39,9 +39,8 @@ export const SlackForm = () => {
     if (!run?.status) return;
 
     const isCompleted = run.status === "COMPLETED";
-    const isFailed = run.status === "FAILED";
 
-    if (isFailed || error) {
+    if (["FAILED", "CRASHED", "EXPIRED"].includes(run.status)) {
       setStep(0);
       setLoading(false);
       toast.error("Failed to install Slack", { duration: 5000 });

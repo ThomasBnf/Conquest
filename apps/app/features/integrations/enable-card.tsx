@@ -28,7 +28,7 @@ export const EnableCard = ({
   onDisconnect,
   children,
 }: PropsWithChildren<Props>) => {
-  const { status, trigger_token, trigger_token_expires_at } = integration ?? {};
+  const { status, trigger_token, expires_at } = integration ?? {};
   const pathname = usePathname();
   const source = pathname.split("/").pop();
   const router = useRouter();
@@ -36,11 +36,10 @@ export const EnableCard = ({
   const isEnabled = status === "ENABLED";
   const isSyncing = status === "SYNCING";
   const isConnected = status === "CONNECTED";
-  const isExpired =
-    trigger_token_expires_at && trigger_token_expires_at < new Date();
+  const isExpired = expires_at && expires_at < new Date();
 
   useEffect(() => {
-    if (trigger_token_expires_at && trigger_token_expires_at < new Date()) {
+    if (expires_at && expires_at < new Date()) {
       onDisconnect();
     }
 
@@ -61,7 +60,7 @@ export const EnableCard = ({
       }
       router.replace(`/settings/integrations/${source}`);
     }
-  }, [trigger_token_expires_at, error]);
+  }, [expires_at, error]);
 
   if (isConnected) return;
 

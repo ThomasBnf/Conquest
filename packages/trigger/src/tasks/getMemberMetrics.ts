@@ -14,22 +14,16 @@ export const getMemberMetrics = schemaTask({
   run: async ({ memberId }) => {
     const member = await getMember({ id: memberId });
 
-    console.log("member", member);
-
     if (!member) return;
 
     const activities = await listActivitiesIn90Days({ member });
-    console.log("activities", activities);
 
     const pulseScore = getPulseScore({ activities });
-    console.log("pulseScore", pulseScore);
 
     const level = await getLevel({
       pulse: pulseScore,
       workspace_id: member.workspace_id,
     });
-
-    console.log("level", level);
 
     await updateMember({
       id: member.id,

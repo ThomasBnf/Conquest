@@ -8,8 +8,8 @@ import { deleteChannel } from "@conquest/db/queries/channel/deleteChannel";
 import { getChannel } from "@conquest/db/queries/channel/getChannel";
 import { updateChannel } from "@conquest/db/queries/channel/updateChannel";
 import { getIntegration } from "@conquest/db/queries/integration/getIntegration";
+import { createMember } from "@conquest/db/queries/member/createMember";
 import { updateMember } from "@conquest/db/queries/member/updateMember";
-import { upsertMember } from "@conquest/db/queries/member/upsertMember";
 import { deleteProfile } from "@conquest/db/queries/profile/deleteProfile";
 import { getProfile } from "@conquest/db/queries/profile/getProfile";
 import { upsertProfile } from "@conquest/db/queries/profile/upsertProfile";
@@ -45,6 +45,7 @@ const client = new Client({
     GatewayIntentBits.GuildMembers,
     GatewayIntentBits.GuildMessageReactions,
     GatewayIntentBits.MessageContent,
+    GatewayIntentBits.GuildInvites,
   ],
   partials: [Partials.Message, Partials.Channel, Partials.Reaction],
 });
@@ -53,8 +54,12 @@ client.once(Events.ClientReady, (readyClient) => {
   console.log(`Ready! Logged in as ${readyClient.user.tag}`);
 });
 
+client.on(Events.InviteCreate, async (invite) => {
+  console.log("InviteCreate", invite);
+});
+
 client.on(Events.GuildMemberAdd, async (member) => {
-  console.log("GuildMemberAdd", member);
+  console.dir(member, { depth: 100 });
   const { user, guild } = member;
   const { id, bot, username, globalName, avatar } = user;
 
@@ -62,7 +67,6 @@ client.on(Events.GuildMemberAdd, async (member) => {
 
   const integration = await getIntegration({
     external_id: guild.id,
-    status: "CONNECTED",
   });
 
   if (!integration) return;
@@ -76,26 +80,32 @@ client.on(Events.GuildMemberAdd, async (member) => {
     : null;
 
   try {
-    const upsertedMember = await upsertMember({
-      id,
-      data: {
-        first_name: firstName,
-        last_name: lastName,
-        avatar_url: avatarUrl,
-      },
-      source: "DISCORD",
+    const existingProfile = await getProfile({
+      external_id: id,
       workspace_id,
     });
 
-    await upsertProfile({
-      external_id: id,
-      attributes: {
-        username,
+    if (!existingProfile) {
+      const createdMember = await createMember({
+        data: {
+          first_name: firstName,
+          last_name: lastName,
+          avatar_url: avatarUrl,
+        },
         source: "DISCORD",
-      },
-      member_id: upsertedMember.id,
-      workspace_id,
-    });
+        workspace_id,
+      });
+
+      await upsertProfile({
+        external_id: id,
+        attributes: {
+          username,
+          source: "DISCORD",
+        },
+        member_id: createdMember.id,
+        workspace_id,
+      });
+    }
   } catch (error) {
     console.error("GuildMemberAdd", error);
   }
@@ -108,7 +118,6 @@ client.on(Events.GuildMemberRemove, async (member) => {
 
   const integration = await getIntegration({
     external_id: guild.id,
-    status: "CONNECTED",
   });
 
   if (!integration) return;
@@ -165,7 +174,6 @@ client.on(Events.ChannelCreate, async (channel) => {
 
   const integration = await getIntegration({
     external_id: guildId,
-    status: "CONNECTED",
   });
 
   if (!integration) return;
@@ -204,7 +212,6 @@ client.on(Events.ChannelUpdate, async (channel) => {
 
   const integration = await getIntegration({
     external_id: guildId,
-    status: "CONNECTED",
   });
 
   if (!integration) return;
@@ -227,7 +234,6 @@ client.on(Events.ChannelDelete, async (channel) => {
 
   const integration = await getIntegration({
     external_id: guildId,
-    status: "CONNECTED",
   });
 
   if (!integration) return;
@@ -245,15 +251,13 @@ client.on(Events.ChannelDelete, async (channel) => {
 
 client.on(Events.MessageCreate, async (message) => {
   console.dir(message, { depth: 100 });
-  const { id, channelId, guildId, type, content, author, reference, position } =
-    message;
+  const { id, channelId, guildId, type, content, author, reference } = message;
   const { id: discord_id } = author;
 
-  if (!guildId) return;
+  if (!guildId || !content) return;
 
   const integration = await getIntegration({
     external_id: guildId,
-    status: "CONNECTED",
   });
 
   if (!integration) return;
@@ -351,7 +355,6 @@ client.on(Events.MessageUpdate, async (message) => {
 
   const integration = await getIntegration({
     external_id: guildId,
-    status: "CONNECTED",
   });
 
   if (!integration) return;
@@ -383,7 +386,6 @@ client.on(Events.MessageDelete, async (message) => {
 
   const integration = await getIntegration({
     external_id: guildId,
-    status: "CONNECTED",
   });
 
   if (!integration) return;
@@ -423,7 +425,6 @@ client.on(Events.ThreadCreate, async (thread) => {
 
   const integration = await getIntegration({
     external_id: guildId,
-    status: "CONNECTED",
   });
 
   if (!integration) return;
@@ -460,7 +461,6 @@ client.on(Events.ThreadDelete, async (thread) => {
 
   const integration = await getIntegration({
     external_id: guildId,
-    status: "CONNECTED",
   });
 
   if (!integration) return;
@@ -523,7 +523,6 @@ client.on(Events.GuildRoleCreate, async (role) => {
 
   const integration = await getIntegration({
     external_id: guildId,
-    status: "CONNECTED",
   });
 
   if (!integration) return;
@@ -551,7 +550,6 @@ client.on(Events.GuildRoleUpdate, async (_, role) => {
 
   const integration = await getIntegration({
     external_id: guildId,
-    status: "CONNECTED",
   });
 
   if (!integration) return;
@@ -585,7 +583,6 @@ client.on(Events.GuildRoleDelete, async (role) => {
 
   const integration = await getIntegration({
     external_id: guildId,
-    status: "CONNECTED",
   });
 
   if (!integration) return;
@@ -633,7 +630,6 @@ client.on(Events.MessageReactionAdd, async (reaction, user) => {
 
   const integration = await getIntegration({
     external_id: guildId,
-    status: "CONNECTED",
   });
 
   if (!integration) return;
@@ -645,8 +641,15 @@ client.on(Events.MessageReactionAdd, async (reaction, user) => {
   });
   if (!profile) return;
 
-  const channel = await getChannel({ external_id: channelId, workspace_id });
-  if (!channel) return;
+  const channel = await getChannel({
+    external_id: channelId,
+    workspace_id,
+  });
+
+  const thread = await getActivity({
+    external_id: channelId,
+    workspace_id,
+  });
 
   try {
     await createActivity({
@@ -655,7 +658,8 @@ client.on(Events.MessageReactionAdd, async (reaction, user) => {
       message: emoji.name ?? "",
       react_to: id,
       member_id: profile.member_id,
-      channel_id: channel.id,
+      //TO DO: Add thread channel NAME IN Activities
+      channel_id: thread?.channel_id ?? channel?.id,
       source: "DISCORD",
       workspace_id,
     });
@@ -674,7 +678,6 @@ client.on(Events.MessageReactionRemove, async (reaction, user) => {
 
   const integration = await getIntegration({
     external_id: guildId,
-    status: "CONNECTED",
   });
 
   if (!integration) return;

@@ -8,7 +8,7 @@ import { useEffect, useState } from "react";
 import { LoadingChannels } from "../integrations/loading-channels";
 
 export const SlackChannels = () => {
-  const { slack, setStep, channels } = useIntegration();
+  const { setStep, channels } = useIntegration();
   const [loading, setLoading] = useState(false);
   const [selectedChannels, setSelectedChannels] = useState<string[]>([]);
   const utils = trpc.useUtils();
@@ -31,9 +31,7 @@ export const SlackChannels = () => {
       },
     });
 
-  const { data: slackChannels, isLoading } = trpc.slack.listChannels.useQuery({
-    accessToken: slack?.details.token,
-  });
+  const { data: slackChannels, isLoading } = trpc.slack.listChannels.useQuery();
 
   const onSelect = (channel: string | undefined) => {
     if (!channel) return;

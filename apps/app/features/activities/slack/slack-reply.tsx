@@ -1,5 +1,4 @@
 import { SourceBadge } from "@/components/badges/source-badge";
-import { useIntegration } from "@/context/integrationContext";
 import { parseSlackMessage } from "@/helpers/parse-slack-message";
 import { trpc } from "@/server/client";
 import { Avatar, AvatarFallback, AvatarImage } from "@conquest/ui/avatar";
@@ -17,14 +16,12 @@ type Props = {
 };
 
 export const SlackReply = ({ activity, member, channel }: Props) => {
-  const { slack } = useIntegration();
   const { external_id, message, created_at } = activity;
   const { source } = activity.activity_type;
 
   const { avatar_url, first_name, last_name } = member ?? {};
 
   const { data: permalink } = trpc.slack.getPermaLink.useQuery({
-    slack,
     channel_id: channel?.external_id,
     message_ts: external_id,
   });

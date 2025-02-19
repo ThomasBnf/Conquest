@@ -35,6 +35,12 @@ const discourseEnv = {
   },
 };
 
+const encryptionEnv = {
+  server: {
+    ENCRYPTION_SECRET: z.string(),
+  },
+};
+
 const githubEnv = {
   server: {
     GITHUB_CLIENT_SECRET: z.string(),
@@ -125,6 +131,7 @@ export const env = createEnv({
     ...baseEnv.server,
     ...discordEnv.server,
     ...discourseEnv.server,
+    ...encryptionEnv.server,
     ...githubEnv.server,
     ...googleEnv.server,
     ...linkedinEnv.server,

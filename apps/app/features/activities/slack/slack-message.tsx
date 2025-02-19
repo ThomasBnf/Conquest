@@ -1,5 +1,4 @@
 import { SourceBadge } from "@/components/badges/source-badge";
-import { useIntegration } from "@/context/integrationContext";
 import { parseSlackMessage } from "@/helpers/parse-slack-message";
 import { trpc } from "@/server/client";
 import { Avatar, AvatarFallback, AvatarImage } from "@conquest/ui/avatar";
@@ -29,22 +28,22 @@ const transformMentions = (children: React.ReactNode) => {
           index % 2 === 1 ? <SlackMention key={part} slackId={part} /> : part,
         );
     }
-    return child; // Laisse intact tout ce qui est déjà un élément JSX
+    return child;
   });
 };
 
 export const SlackMessage = ({ activity, member, channel }: Props) => {
-  const { slack } = useIntegration();
   const { external_id, message, created_at } = activity;
   const { source } = activity.activity_type;
 
   const { avatar_url, first_name, last_name } = member ?? {};
 
-  const { data: permalink } = trpc.slack.getPermaLink.useQuery({
-    slack,
+  const { data: permalink, failureReason } = trpc.slack.getPermaLink.useQuery({
     channel_id: channel?.external_id,
     message_ts: external_id,
   });
+
+  console.log(failureReason);
 
   return (
     <div>

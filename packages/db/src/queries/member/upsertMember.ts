@@ -5,7 +5,6 @@ import {
 } from "@conquest/zod/schemas/company.schema";
 import { type Member, MemberSchema } from "@conquest/zod/schemas/member.schema";
 import { filteredDomain } from "../../helpers/filteredDomain";
-import { idParser } from "../../helpers/idParser";
 import { prisma } from "../../prisma";
 
 type Props = {
@@ -60,19 +59,10 @@ export const upsertMember = async ({
     }
   }
 
-  const parsedId = idParser({ id, source });
-
-  const existingProfile = await prisma.profile.findUnique({
-    where: {
-      id,
-    },
-  });
-
   const member = await prisma.member.upsert({
-    where: { id: existingProfile?.member_id },
+    where: { id },
     update: {
       ...data,
-      ...parsedId,
       primary_email: formattedEmail ?? null,
       phones: formattedPhones ?? [],
       company_id: company?.id ?? null,
@@ -80,7 +70,6 @@ export const upsertMember = async ({
     },
     create: {
       ...data,
-      ...parsedId,
       primary_email: formattedEmail ?? null,
       phones: formattedPhones ?? [],
       company_id: company?.id ?? null,
