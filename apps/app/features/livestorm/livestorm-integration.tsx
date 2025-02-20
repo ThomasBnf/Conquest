@@ -2,14 +2,11 @@
 
 import { Livestorm } from "@/components/icons/Livestorm";
 import { SkeletonIntegration } from "@/components/states/skeleton-integration";
-import { trpc } from "@/server/client";
+import { useIntegration } from "@/context/integrationContext";
 import { env } from "@conquest/env";
 import { Separator } from "@conquest/ui/separator";
 import type { Event } from "@conquest/zod/schemas/event.schema";
-import { LivestormIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { toast } from "sonner";
 import { ConnectedCard } from "../integrations/connected-card";
 import { EnableCard } from "../integrations/enable-card";
 import { IntegrationHeader } from "../integrations/integration-header";
@@ -22,29 +19,15 @@ type Props = {
 };
 
 export const LivestormIntegration = ({ error, events }: Props) => {
-  const { data, isLoading } = trpc.integrations.getIntegrationBySource.useQuery(
-    { source: "LIVESTORM" },
-  );
-  const livestorm = data ? LivestormIntegrationSchema.parse(data) : null;
-  const { status, details } = livestorm ?? {};
-  const { name } = details ?? {};
-
-  const [loading, setLoading] = useState(status === "SYNCING");
-
+  const {
+    livestorm,
+    loadingIntegration,
+    deleteIntegration,
+    loading,
+    setLoading,
+  } = useIntegration();
+  const { name } = livestorm?.details ?? {};
   const router = useRouter();
-  const utils = trpc.useUtils();
-
-  const { mutateAsync } = trpc.integrations.deleteIntegration.useMutation({
-    onSuccess: () => {
-      utils.integrations.getIntegrationBySource.invalidate({
-        source: "LIVESTORM",
-      });
-      toast.success("Livestorm disconnected");
-    },
-    onError: (error) => {
-      toast.error(error.message);
-    },
-  });
 
   const onEnable = () => {
     setLoading(true);
@@ -64,10 +47,10 @@ export const LivestormIntegration = ({ error, events }: Props) => {
 
   const onDisconnect = async () => {
     if (!livestorm) return;
-    await mutateAsync({ integration: livestorm });
+    await deleteIntegration({ integration: livestorm });
   };
 
-  if (isLoading) return <SkeletonIntegration />;
+  if (loadingIntegration) return <SkeletonIntegration />;
 
   return (
     <div className="mx-auto flex max-w-4xl flex-col gap-4 px-4 py-12 lg:py-24">
@@ -87,7 +70,7 @@ export const LivestormIntegration = ({ error, events }: Props) => {
         onEnable={onEnable}
         onDisconnect={onDisconnect}
       >
-        <LivestormForm loading={loading} setLoading={setLoading} />
+        <LivestormForm />
       </EnableCard>
       <ConnectedCard
         integration={livestorm}

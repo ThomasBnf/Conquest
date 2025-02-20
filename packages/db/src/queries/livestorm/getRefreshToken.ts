@@ -1,16 +1,22 @@
 import { env } from "@conquest/env";
 import type { LivestormIntegration } from "@conquest/zod/schemas/integration.schema";
+import { decrypt } from "../../lib/decrypt";
 import { updateIntegration } from "../integration/updateIntegration";
 
 export const getRefreshToken = async (integration: LivestormIntegration) => {
   const { id, details } = integration;
-  const { refresh_token } = details;
+  const { refresh_token, refresh_token_iv } = details;
+
+  const decryptedRefreshToken = await decrypt({
+    access_token: refresh_token,
+    iv: refresh_token_iv,
+  });
 
   const params = new URLSearchParams({
     client_id: env.NEXT_PUBLIC_LIVESTORM_CLIENT_ID,
     client_secret: env.LIVESTORM_CLIENT_SECRET,
     grant_type: "refresh_token",
-    refresh_token: refresh_token,
+    refresh_token: decryptedRefreshToken,
   });
 
   const response = await fetch(
@@ -18,7 +24,7 @@ export const getRefreshToken = async (integration: LivestormIntegration) => {
     {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${refresh_token}`,
+        Authorization: `Bearer ${decryptedRefreshToken}`,
       },
     },
   );

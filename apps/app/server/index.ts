@@ -11,6 +11,7 @@ import { eventsRouter } from "./events/router";
 import { integrationsRouter } from "./integrations/router";
 import { levelsRouter } from "./levels/router";
 import { listsRouter } from "./lists/router";
+import { livestormRouter } from "./livestorm/router";
 import { membersRouter } from "./members/router";
 import { profilesRouter } from "./profiles/router";
 import { slackRouter } from "./slack/router";
@@ -34,6 +35,7 @@ export const appRouter = router({
   integrations: integrationsRouter,
   levels: levelsRouter,
   lists: listsRouter,
+  livestorm: livestormRouter,
   members: membersRouter,
   profiles: profilesRouter,
   slack: slackRouter,

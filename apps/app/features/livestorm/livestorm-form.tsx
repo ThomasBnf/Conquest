@@ -1,115 +1,84 @@
 import { useIntegration } from "@/context/integrationContext";
+import { trpc } from "@/server/client";
 import type { installLivestorm } from "@conquest/trigger/tasks/installLivestorm";
 import { Button } from "@conquest/ui/button";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@conquest/ui/form";
-import { Input } from "@conquest/ui/input";
 import { Separator } from "@conquest/ui/separator";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { useRealtimeTaskTrigger } from "@trigger.dev/react-hooks";
-import { useRouter } from "next/navigation";
-import { type Dispatch, type SetStateAction, useEffect } from "react";
-import { useForm } from "react-hook-form";
+import { useEffect } from "react";
 import { toast } from "sonner";
+import { ActivityTypesList } from "../activities-types/activity-types-list";
 import { LoadingMessage } from "../integrations/loading-message";
-import { type FormCreate, FormCreateSchema } from "./schemas/form.schema";
+import { LivestormFilter } from "./livestorm-filter";
 
-type Props = {
-  loading: boolean;
-  setLoading: Dispatch<SetStateAction<boolean>>;
-};
+export const LivestormForm = () => {
+  const { livestorm, loading, setLoading, step, setStep } = useIntegration();
+  const utils = trpc.useUtils();
 
-export const LivestormForm = ({ loading, setLoading }: Props) => {
-  const { livestorm } = useIntegration();
-  const router = useRouter();
+  const { mutateAsync } = trpc.integrations.updateIntegration.useMutation({
+    onSuccess: () => {
+      utils.integrations.getIntegrationBySource.invalidate({
+        source: "LIVESTORM",
+      });
+    },
+  });
 
   const { submit, run } = useRealtimeTaskTrigger<typeof installLivestorm>(
     "install-livestorm",
     { accessToken: livestorm?.trigger_token },
   );
 
-  // const { organization } = listLivestormOrganization();
+  const onStart = async () => {
+    if (!livestorm) return;
 
-  const form = useForm<FormCreate>({
-    resolver: zodResolver(FormCreateSchema),
-  });
-
-  const onSubmit = async ({ filter }: FormCreate) => {
-    // if (!livestorm) return;
-    // const { included } = organization ?? {};
-    // const organization_id = included?.at(0)?.id ?? "";
-    // const organization_name = included?.at(0)?.attributes.name ?? "";
-    // setLoading(true);
-    // const response = await updateIntegration({
-    //   id: livestorm.id,
-    //   external_id: organization_id,
-    //   details: {
-    //     ...livestorm.details,
-    //     name: organization_name,
-    //     filter,
-    //   },
-    //   status: "SYNCING",
-    // });
-    // const updatedLivestorm = LivestormIntegrationSchema.parse(response?.data);
-    // submit({ livestorm: updatedLivestorm });
+    setLoading(true);
+    await mutateAsync({ id: livestorm.id, status: "SYNCING" });
+    submit({ livestorm });
   };
 
   useEffect(() => {
     if (!run?.status) return;
 
     const isCompleted = run.status === "COMPLETED";
-    const isFailed = run.status === "FAILED";
 
-    if (isFailed) {
-      router.refresh();
-      toast.error("Failed to install Livestorm", { duration: 5000 });
+    if (["FAILED", "CRASHED", "EXPIRED"].includes(run.status)) {
+      setStep(0);
       setLoading(false);
+      toast.error("Failed to install Livestorm", { duration: 5000 });
     }
 
-    if (isCompleted) router.refresh();
+    if (isCompleted) {
+      utils.integrations.getIntegrationBySource.invalidate({
+        source: "LIVESTORM",
+      });
+      setTimeout(() => setLoading(false), 1000);
+    }
   }, [run]);
 
   return (
     <>
       <Separator className="my-4" />
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-          <FormField
-            control={form.control}
-            name="filter"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Filter</FormLabel>
-                <FormControl>
-                  <Input
-                    {...field}
-                    placeholder="Community Event"
-                    disabled={loading}
-                  />
-                </FormControl>
-                <FormDescription>
-                  Filter your Livestorm events by title. eg: "Community Event"
-                </FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+      {step === 0 && <LivestormFilter />}
+      {step === 1 && (
+        <div className="space-y-2">
           {loading ? (
             <LoadingMessage />
           ) : (
-            <Button loading={loading} disabled={loading}>
-              Let's start!
-            </Button>
+            <>
+              <div>
+                <p className="font-medium text-base">Activity types</p>
+                <p className="text-muted-foreground">
+                  Customize points for each activity type and set
+                  channel-specific conditions now or later
+                </p>
+              </div>
+              <ActivityTypesList source="LIVESTORM" disableHeader />
+            </>
           )}
-        </form>
-      </Form>
+          <Button onClick={onStart} loading={loading} disabled={loading}>
+            Let's start!
+          </Button>
+        </div>
+      )}
     </>
   );
 };
