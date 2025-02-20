@@ -101,7 +101,9 @@ export const EditActivityTypeDialog = ({
     );
   };
 
-  const isManualOrApi = ["API", "MANUAL"].includes(form.getValues("source"));
+  const hasNoConditions = !["API", "MANUAL", "LIVESTORM"].includes(
+    form.getValues("source"),
+  );
   const isInviteOrJoin = ["invite", "join", "login"].some((key) =>
     form.getValues("key").includes(key),
   );
@@ -177,7 +179,7 @@ export const EditActivityTypeDialog = ({
                   <FormItem>
                     <FormLabel>Points</FormLabel>
                     <FormControl>
-                      {isManualOrApi || isInviteOrJoin ? (
+                      {hasNoConditions || isInviteOrJoin ? (
                         <Input {...field} />
                       ) : (
                         <div className="flex h-9 w-full items-center gap-2 overflow-hidden rounded-md border">
@@ -195,7 +197,7 @@ export const EditActivityTypeDialog = ({
                   </FormItem>
                 )}
               />
-              {!isManualOrApi && !isInviteOrJoin && (
+              {hasNoConditions && !isInviteOrJoin && (
                 <div className="flex flex-col items-start gap-2">
                   <FormLabel>Conditions</FormLabel>
                   {form.watch("conditions").map((_, index) => (

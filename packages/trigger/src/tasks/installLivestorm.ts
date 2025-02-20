@@ -1,3 +1,4 @@
+import { decrypt } from "@conquest/db/lib/decrypt";
 import { deleteIntegration } from "@conquest/db/queries/integration/deleteIntegration";
 import { updateIntegration } from "@conquest/db/queries/integration/updateIntegration";
 import { createManyEvents } from "@conquest/db/queries/livestorm/createManyEvents";
@@ -7,8 +8,8 @@ import { batchMergeMembers } from "@conquest/db/queries/member/batchMergeMembers
 import { LivestormIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
 import { schemaTask } from "@trigger.dev/sdk/v3";
 import { z } from "zod";
-import { integrationSuccessEmail } from "./integrationSuccessEmail";
 import { getAllMembersMetrics } from "./getAllMembersMetrics";
+import { integrationSuccessEmail } from "./integrationSuccessEmail";
 
 export const installLivestorm = schemaTask({
   id: "install-livestorm",
@@ -17,12 +18,17 @@ export const installLivestorm = schemaTask({
     livestorm: LivestormIntegrationSchema,
   }),
   run: async ({ livestorm }) => {
-    const { id, details, workspace_id } = livestorm;
-    const { access_token, expires_in } = details;
+    const { details, workspace_id } = livestorm;
+    const { access_token, access_token_iv, expires_in, filter } = details;
 
     const isExpired = new Date(Date.now() + expires_in * 1000) < new Date();
 
-    let accessToken = access_token;
+    const decryptedAccessToken = await decrypt({
+      access_token: access_token,
+      iv: access_token_iv,
+    });
+
+    let accessToken = decryptedAccessToken;
     if (isExpired) accessToken = await getRefreshToken(livestorm);
 
     const webhookEvents = [
@@ -38,15 +44,11 @@ export const installLivestorm = schemaTask({
       });
     }
 
-    await updateIntegration({
-      id,
-      details: {
-        ...details,
-        access_token: accessToken,
-      },
+    const members = await createManyEvents({
+      filter,
+      access_token,
+      workspace_id,
     });
-
-    const members = await createManyEvents({ livestorm });
 
     await getAllMembersMetrics.trigger({ workspace_id });
     await batchMergeMembers({ members });

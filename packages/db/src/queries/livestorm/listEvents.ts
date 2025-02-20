@@ -1,9 +1,9 @@
 import { ListEventsSchema } from "@conquest/zod/types/livestorm";
 
 type Props = {
-  access_token?: string;
-  page: number;
   filter?: string;
+  page: number;
+  access_token?: string;
 };
 
 export const listEvents = async ({ access_token, page, filter }: Props) => {
