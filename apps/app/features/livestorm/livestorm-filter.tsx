@@ -12,11 +12,12 @@ import {
 } from "@conquest/ui/form";
 import { Input } from "@conquest/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { type FormCreate, FormCreateSchema } from "./schemas/form.schema";
 
 export const LivestormFilter = () => {
-  const { livestorm, setLoading, loading } = useIntegration();
+  const { livestorm, setLoading, loading, setStep } = useIntegration();
   const utils = trpc.useUtils();
 
   const { data: organization } = trpc.livestorm.getOrganization.useQuery();
@@ -51,6 +52,11 @@ export const LivestormFilter = () => {
       status: "SYNCING",
     });
   };
+
+  useEffect(() => {
+    if (livestorm?.details.name) setStep(1);
+  }, [livestorm]);
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
