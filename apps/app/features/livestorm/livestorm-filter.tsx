@@ -49,7 +49,6 @@ export const LivestormFilter = () => {
         name: organization_name,
         filter,
       },
-      status: "SYNCING",
     });
   };
 
@@ -80,7 +79,7 @@ export const LivestormFilter = () => {
             </FormItem>
           )}
         />
-        <Button loading={loading} disabled={loading}>
+        <Button type="submit" loading={loading} disabled={loading}>
           Next
         </Button>
       </form>
