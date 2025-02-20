@@ -118,6 +118,14 @@ export const PeopleRegisteredSchema = z.object({
 
 export const ListEventsSchema = z.object({
   data: z.array(EventSchema),
+  meta: z.object({
+    current_page: z.number(),
+    previous_page: z.number().nullable(),
+    next_page: z.number().nullable(),
+    record_count: z.number(),
+    page_count: z.number(),
+    items_per_page: z.number(),
+  }),
 });
 
 export const SessionSchema = z.object({

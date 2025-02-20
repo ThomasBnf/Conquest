@@ -14,9 +14,11 @@ export const createManyEvents = async ({
   access_token,
   workspace_id,
 }: Props) => {
-  const members: Member[] = [];
+  console.log("createManyEvents", filter, access_token, workspace_id);
 
+  const members: Member[] = [];
   const events: Event[] = [];
+
   let page = 0;
 
   while (true) {
@@ -25,6 +27,7 @@ export const createManyEvents = async ({
       page,
       access_token,
     });
+
     if (!listOfEvents?.length) break;
 
     events.push(...listOfEvents);

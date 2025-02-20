@@ -30,6 +30,8 @@ export const listEventSessions = async ({
     },
   );
 
-  const { data } = ListEventSessionsSchema.parse(await response.json());
-  return data;
+  const json = await response.json();
+  console.log("listEventSessions", json);
+  const result = ListEventSessionsSchema.parse(json);
+  return result.data;
 };
