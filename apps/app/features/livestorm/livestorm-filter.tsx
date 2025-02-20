@@ -64,6 +64,7 @@ export const LivestormFilter = () => {
     });
 
     await createManyActivityTypes({ activity_types: LIVESTORM_ACTIVITY_TYPES });
+    setStep(1);
   };
 
   useEffect(() => {

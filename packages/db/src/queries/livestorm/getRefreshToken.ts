@@ -13,6 +13,8 @@ export const getRefreshToken = async (integration: LivestormIntegration) => {
     iv: refresh_token_iv,
   });
 
+  console.log("decryptedRefreshToken", decryptedRefreshToken);
+
   const params = new URLSearchParams({
     client_id: env.NEXT_PUBLIC_LIVESTORM_CLIENT_ID,
     client_secret: env.LIVESTORM_CLIENT_SECRET,

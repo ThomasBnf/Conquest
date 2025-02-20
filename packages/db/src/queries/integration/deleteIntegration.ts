@@ -6,6 +6,7 @@ import {
   SlackIntegrationSchema,
 } from "@conquest/zod/schemas/integration.schema";
 import { WebClient } from "@slack/web-api";
+import { decrypt } from "../../lib/decrypt";
 import type { SOURCE } from "../../prisma";
 import { prisma } from "../../prisma";
 import { listSubscriptions } from "../linkedin/listSubscriptions";
@@ -23,16 +24,24 @@ export const deleteIntegration = async ({ source, integration }: Props) => {
 
   if (source === "LIVESTORM") {
     const livestorm = LivestormIntegrationSchema.parse(integration);
-    const { access_token } = livestorm.details;
+    const { access_token, access_token_iv } = livestorm.details;
+
+    const decryptedAccessToken = await decrypt({
+      access_token: access_token,
+      iv: access_token_iv,
+    });
 
     await prisma.event.deleteMany({
       where: { source: "LIVESTORM", workspace_id },
     });
 
-    const webhooks = await listWebhooks({ accessToken: access_token });
+    const webhooks = await listWebhooks({ accessToken: decryptedAccessToken });
 
     for (const webhook of webhooks) {
-      await deleteWebhook({ accessToken: access_token, id: webhook.id });
+      await deleteWebhook({
+        accessToken: decryptedAccessToken,
+        id: webhook.id,
+      });
     }
   }
 
