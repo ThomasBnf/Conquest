@@ -55,7 +55,7 @@ export const installLivestorm = schemaTask({
 
     const members = await createManyEvents({
       filter,
-      access_token,
+      access_token: accessToken,
       workspace_id,
     });
 
