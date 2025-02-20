@@ -27,16 +27,21 @@ export const deleteIntegration = protectedProcedure
 
     if (source === "LIVESTORM") {
       const livestorm = LivestormIntegrationSchema.parse(integration);
-      const { access_token } = livestorm.details;
+      const { access_token, access_token_iv } = livestorm.details;
+
+      const decryptedToken = await decrypt({
+        access_token,
+        iv: access_token_iv,
+      });
 
       await prisma.event.deleteMany({
         where: { source: "LIVESTORM", workspace_id },
       });
 
-      const webhooks = await listWebhooks({ accessToken: access_token });
+      const webhooks = await listWebhooks({ accessToken: decryptedToken });
 
       for (const webhook of webhooks) {
-        await deleteWebhook({ accessToken: access_token, id: webhook.id });
+        await deleteWebhook({ accessToken: decryptedToken, id: webhook.id });
       }
     }
 
