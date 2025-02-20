@@ -217,6 +217,55 @@ export const DISCORD_ACTIVITY_TYPES = [
   },
 ];
 
+export const GITHUB_ACTIVITY_TYPES = [
+  {
+    name: "Starred a repository",
+    source: "GITHUB" as const,
+    key: "github:star",
+    points: 2,
+    conditions: [],
+    deletable: false,
+  },
+];
+
+export const LIVESTORM_ACTIVITY_TYPES = [
+  {
+    name: "Co-host a webinar",
+    source: "LIVESTORM" as const,
+    key: "livestorm:co-host",
+    points: 10,
+    conditions: [],
+    deletable: false,
+  },
+  {
+    name: "Attend a webinar",
+    source: "LIVESTORM" as const,
+    key: "livestorm:attend",
+    points: 8,
+    conditions: [],
+    deletable: false,
+  },
+  {
+    name: "Register for a webinar",
+    source: "LIVESTORM" as const,
+    key: "livestorm:register",
+    points: 5,
+    conditions: [],
+    deletable: false,
+  },
+];
+
+export const LINKEDIN_ACTIVITY_TYPES = [
+  {
+    name: "Comment a post",
+    source: "LINKEDIN" as const,
+    key: "linkedin:comment",
+    points: 1,
+    conditions: [],
+    deletable: false,
+  },
+];
+
 export const SLACK_ACTIVITY_TYPES = [
   {
     name: "Message",

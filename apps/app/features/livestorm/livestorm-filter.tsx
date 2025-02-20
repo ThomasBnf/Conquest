@@ -1,3 +1,4 @@
+import { LIVESTORM_ACTIVITY_TYPES } from "@/constant";
 import { useIntegration } from "@/context/integrationContext";
 import { trpc } from "@/server/client";
 import { Button } from "@conquest/ui/button";
@@ -29,7 +30,16 @@ export const LivestormFilter = () => {
     },
   });
 
-  console.log("organization", organization);
+  const { mutateAsync: createManyActivityTypes } =
+    trpc.activityTypes.createManyActivityTypes.useMutation({
+      onSuccess: () => {
+        utils.activityTypes.getAllActivityTypes.invalidate();
+        setTimeout(() => {
+          setLoading(false);
+          setStep(1);
+        }, 300);
+      },
+    });
 
   const form = useForm<FormCreate>({
     resolver: zodResolver(FormCreateSchema),
@@ -53,8 +63,7 @@ export const LivestormFilter = () => {
       },
     });
 
-    setStep(1);
-    setLoading(false);
+    await createManyActivityTypes({ activity_types: LIVESTORM_ACTIVITY_TYPES });
   };
 
   useEffect(() => {
