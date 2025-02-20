@@ -1,6 +1,7 @@
 import { env } from "@conquest/env";
 import type { LivestormIntegration } from "@conquest/zod/schemas/integration.schema";
 import { decrypt } from "../../lib/decrypt";
+import { encrypt } from "../../lib/encrypt";
 import { updateIntegration } from "../integration/updateIntegration";
 
 export const getRefreshToken = async (integration: LivestormIntegration) => {
@@ -31,12 +32,17 @@ export const getRefreshToken = async (integration: LivestormIntegration) => {
 
   const data = await response.json();
 
+  const encryptedAccessToken = await encrypt(data.access_token);
+  const encryptedRefreshToken = await encrypt(data.refresh_token);
+
   await updateIntegration({
     id,
     details: {
       ...details,
-      access_token: data.access_token,
-      refresh_token: data.refresh_token,
+      access_token: encryptedAccessToken.token,
+      access_token_iv: encryptedAccessToken.iv,
+      refresh_token: encryptedRefreshToken.token,
+      refresh_token_iv: encryptedRefreshToken.iv,
       expires_in: data.expires_in,
       scope: data.scope,
     },

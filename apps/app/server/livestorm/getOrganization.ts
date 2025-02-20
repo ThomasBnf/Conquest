@@ -30,6 +30,8 @@ export const getOrganization = protectedProcedure.query(
       accessToken = await getRefreshToken(livestorm);
     }
 
+    console.log(accessToken);
+
     const response = await fetch(
       "https://api.livestorm.co/v1/organization?include=organization",
       {

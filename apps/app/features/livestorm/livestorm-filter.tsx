@@ -29,6 +29,8 @@ export const LivestormFilter = () => {
     },
   });
 
+  console.log("organization", organization);
+
   const form = useForm<FormCreate>({
     resolver: zodResolver(FormCreateSchema),
   });
@@ -50,6 +52,9 @@ export const LivestormFilter = () => {
         filter,
       },
     });
+
+    setStep(1);
+    setLoading(false);
   };
 
   useEffect(() => {
