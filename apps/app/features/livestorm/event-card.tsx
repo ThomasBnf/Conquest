@@ -45,7 +45,7 @@ export const EventCard = ({ event }: Props) => {
         open={open}
         setOpen={setOpen}
       />
-      <div key={id} className="flex items-start justify-between">
+      <div key={id} className="mt-2 flex items-start justify-between">
         <div className="space-y-0.5">
           <div className="flex items-center gap-2">
             <p className="font-medium">{title}</p>
