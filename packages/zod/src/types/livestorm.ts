@@ -22,45 +22,6 @@ export const FieldSchema = z.object({
   required: z.boolean(),
 });
 
-export const EventSchema = z.object({
-  id: z.string(),
-  type: z.literal("events"),
-  attributes: z.object({
-    title: z.string(),
-    slug: z.string(),
-    registration_link: z.string().url(),
-    estimated_duration: z.number().int().positive(),
-    registration_page_enabled: z.boolean(),
-    everyone_can_speak: z.boolean(),
-    description: z.string().nullable(),
-    status: z.string(),
-    light_registration_page_enabled: z.boolean(),
-    recording_enabled: z.boolean(),
-    recording_public: z.boolean(),
-    show_in_company_page: z.boolean(),
-    chat_enabled: z.boolean(),
-    polls_enabled: z.boolean(),
-    questions_enabled: z.boolean(),
-    language: z.string().length(2),
-    published_at: z.number().int(),
-    scheduling_status: z.enum([
-      "live",
-      "upcoming",
-      "on_demand",
-      "ended",
-      "not_started",
-      "draft",
-      "cancelled",
-      "not_scheduled",
-    ]),
-    created_at: z.number().int(),
-    updated_at: z.number().int(),
-    owner: OwnerSchema,
-    sessions_count: z.number().int().min(0),
-    fields: z.array(FieldSchema),
-  }),
-});
-
 export const PeopleRegisteredSchema = z.object({
   role: z.string(),
   created_at: z.number().int(),
@@ -114,6 +75,45 @@ export const PeopleRegisteredSchema = z.object({
   votes_count: z.number(),
   up_votes_count: z.number(),
   replay_view_detail: z.unknown().nullable(),
+});
+
+export const EventSchema = z.object({
+  id: z.string(),
+  type: z.literal("events"),
+  attributes: z.object({
+    title: z.string(),
+    slug: z.string(),
+    registration_link: z.string().url(),
+    estimated_duration: z.number().int().positive(),
+    registration_page_enabled: z.boolean(),
+    everyone_can_speak: z.boolean(),
+    description: z.string().nullable(),
+    status: z.string(),
+    light_registration_page_enabled: z.boolean(),
+    recording_enabled: z.boolean(),
+    recording_public: z.boolean(),
+    show_in_company_page: z.boolean(),
+    chat_enabled: z.boolean(),
+    polls_enabled: z.boolean(),
+    questions_enabled: z.boolean(),
+    language: z.string().length(2),
+    published_at: z.number().int(),
+    scheduling_status: z.enum([
+      "live",
+      "upcoming",
+      "on_demand",
+      "ended",
+      "not_started",
+      "draft",
+      "cancelled",
+      "not_scheduled",
+    ]),
+    created_at: z.number().int(),
+    updated_at: z.number().int(),
+    owner: OwnerSchema,
+    sessions_count: z.number().int().min(0),
+    fields: z.array(FieldSchema),
+  }),
 });
 
 export const ListEventsSchema = z.object({
