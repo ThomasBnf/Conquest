@@ -41,6 +41,8 @@ export default async function Page({ searchParams: { code } }: Props) {
   const data = await response.json();
   const { access_token, expires_in, refresh_token, scope } = data;
 
+  console.log("access_token", access_token);
+
   const encryptedAccessToken = await encrypt(access_token);
   const encryptedRefreshToken = await encrypt(refresh_token);
 
