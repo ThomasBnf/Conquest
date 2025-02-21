@@ -13,6 +13,8 @@ export const getOrganization = protectedProcedure.query(
       workspace_id,
     });
 
+    console.log("integration", integration);
+
     const livestorm = LivestormIntegrationSchema.parse(integration);
 
     const { details } = livestorm;
@@ -41,6 +43,10 @@ export const getOrganization = protectedProcedure.query(
         },
       },
     );
+
+    if (!response.ok) {
+      throw new Error(`Erreur API Livestorm: ${response.statusText}`);
+    }
 
     console.log("response", response);
     const data = await response.json();
