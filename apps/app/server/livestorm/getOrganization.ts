@@ -42,6 +42,9 @@ export const getOrganization = protectedProcedure.query(
       },
     );
 
-    return await response.json();
+    console.log("response", response);
+    const data = await response.json();
+    console.log("data", data);
+    return data;
   },
 );
