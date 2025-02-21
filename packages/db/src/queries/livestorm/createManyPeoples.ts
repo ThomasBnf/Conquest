@@ -5,6 +5,7 @@ import { wait } from "@trigger.dev/sdk/v3";
 import { listPeopleFromSession } from "../../queries/livestorm/listPeopleFromSession";
 import { createActivity } from "../activity/createActivity";
 import { upsertMember } from "../member/upsertMember";
+import { upsertProfile } from "../profile/upsertProfile";
 
 type Props = {
   event: Event;
@@ -33,6 +34,7 @@ export const createManyPeoples = async ({
   await wait.for({ seconds: 0.5 });
 
   for (const people of peoples) {
+    console.log(people);
     const { id, attributes } = people;
     const {
       email,
@@ -59,6 +61,15 @@ export const createManyPeoples = async ({
         // locale,
       },
       source: "LIVESTORM",
+      workspace_id,
+    });
+
+    await upsertProfile({
+      external_id: id,
+      attributes: {
+        source: "LIVESTORM",
+      },
+      member_id: member.id,
       workspace_id,
     });
 
