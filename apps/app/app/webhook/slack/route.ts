@@ -38,6 +38,10 @@ const WebhookSchema = z.object({
 export async function POST(req: NextRequest) {
   const body = await req.json();
 
+  if (body.challenge) {
+    return NextResponse.json({ challenge: body.challenge });
+  }
+
   const isParsed = WebhookSchema.safeParse(body);
 
   if (!isParsed.success) return NextResponse.json({ status: 200 });
