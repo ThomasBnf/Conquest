@@ -82,7 +82,7 @@ export const LivestormIntegration = ({ error }: Props) => {
           <Separator className="my-4" />
           <div>
             <p className="mb-2 font-medium">Events</p>
-            <div className="divide-y">
+            <div className="space-y-2 divide-y">
               {events?.map((event) => (
                 <EventCard key={event.id} event={event} />
               ))}
