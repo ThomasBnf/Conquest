@@ -47,6 +47,7 @@ export const LivestormIntegration = ({ error, events }: Props) => {
 
   const onDisconnect = async () => {
     if (!livestorm) return;
+    console.log("onDisconnect", livestorm);
     await deleteIntegration({ integration: livestorm });
   };
 

@@ -5,6 +5,7 @@ type Props = {
 };
 
 export const listWebhooks = async ({ accessToken }: Props) => {
+  console.log("listWebhooks", accessToken);
   const response = await fetch("https://api.livestorm.co/v1/webhooks", {
     method: "GET",
     headers: {
