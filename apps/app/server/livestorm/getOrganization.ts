@@ -8,7 +8,7 @@ export const getOrganization = protectedProcedure.query(
   async ({ ctx: { user } }) => {
     const { workspace_id } = user;
 
-    const integration = getIntegrationBySource({
+    const integration = await getIntegrationBySource({
       source: "LIVESTORM",
       workspace_id,
     });
