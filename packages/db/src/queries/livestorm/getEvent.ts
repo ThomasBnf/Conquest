@@ -1,4 +1,4 @@
-import { EventSchema } from "@conquest/zod/types/livestorm";
+import { getEventSchema } from "@conquest/zod/types/livestorm";
 
 type Props = {
   accessToken: string;
@@ -13,6 +13,6 @@ export const getEvent = async ({ accessToken, id }: Props) => {
     },
   });
 
-  const { data } = EventSchema.parse(await response.json());
+  const { data } = getEventSchema.parse(await response.json());
   return data;
 };

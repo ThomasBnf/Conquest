@@ -116,6 +116,10 @@ export const EventSchema = z.object({
   }),
 });
 
+export const getEventSchema = z.object({
+  data: EventSchema,
+});
+
 export const ListEventsSchema = z.object({
   data: z.array(EventSchema),
   meta: z.object({

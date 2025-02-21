@@ -18,8 +18,7 @@ export const createManySessions = async ({
 }: Props) => {
   const members: Member[] = [];
 
-  const { data } = event;
-  const { id, attributes } = data;
+  const { id, attributes } = event;
   const { title } = attributes;
 
   let sessionPage = 0;
