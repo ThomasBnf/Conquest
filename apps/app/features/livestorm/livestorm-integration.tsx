@@ -3,6 +3,7 @@
 import { Livestorm } from "@/components/icons/Livestorm";
 import { SkeletonIntegration } from "@/components/states/skeleton-integration";
 import { useIntegration } from "@/context/integrationContext";
+import { trpc } from "@/server/client";
 import { env } from "@conquest/env";
 import { Separator } from "@conquest/ui/separator";
 import { useRouter } from "next/navigation";
@@ -10,7 +11,6 @@ import { ConnectedCard } from "../integrations/connected-card";
 import { EnableCard } from "../integrations/enable-card";
 import { IntegrationHeader } from "../integrations/integration-header";
 import { LivestormForm } from "../livestorm/livestorm-form";
-import { trpc } from "@/server/client";
 import { EventCard } from "./event-card";
 
 type Props = {
@@ -83,7 +83,7 @@ export const LivestormIntegration = ({ error }: Props) => {
           <Separator className="my-4" />
           <div>
             <p className="mb-2 font-medium">Events</p>
-            <div className="space-y-1">
+            <div className="divide-y">
               {events?.map((event) => (
                 <EventCard key={event.id} event={event} />
               ))}
