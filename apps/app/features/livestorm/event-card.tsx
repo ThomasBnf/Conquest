@@ -21,6 +21,7 @@ type Props = {
 export const EventCard = ({ event }: Props) => {
   const [open, setOpen] = useState(false);
   const { id, title, started_at, ended_at } = event;
+  const today = new Date();
 
   const { mutateAsync } = trpc.events.deleteEvent.useMutation({
     onSuccess: () => {
@@ -44,7 +45,7 @@ export const EventCard = ({ event }: Props) => {
         <div className="space-y-0.5">
           <div className="flex items-center gap-2">
             <p className="font-medium">{title}</p>
-            {!ended_at && <Badge variant="info">Upcoming</Badge>}
+            {started_at > today && <Badge variant="info">Upcoming</Badge>}
           </div>
           <p className="text-muted-foreground">
             {format(started_at, "PP, HH'h'mm")}

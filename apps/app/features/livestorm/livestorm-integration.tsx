@@ -5,20 +5,19 @@ import { SkeletonIntegration } from "@/components/states/skeleton-integration";
 import { useIntegration } from "@/context/integrationContext";
 import { env } from "@conquest/env";
 import { Separator } from "@conquest/ui/separator";
-import type { Event } from "@conquest/zod/schemas/event.schema";
 import { useRouter } from "next/navigation";
 import { ConnectedCard } from "../integrations/connected-card";
 import { EnableCard } from "../integrations/enable-card";
 import { IntegrationHeader } from "../integrations/integration-header";
-import { EventCard } from "../livestorm/event-card";
 import { LivestormForm } from "../livestorm/livestorm-form";
+import { trpc } from "@/server/client";
+import { EventCard } from "./event-card";
 
 type Props = {
   error: string;
-  events: Event[];
 };
 
-export const LivestormIntegration = ({ error, events }: Props) => {
+export const LivestormIntegration = ({ error }: Props) => {
   const {
     livestorm,
     loadingIntegration,
@@ -28,6 +27,8 @@ export const LivestormIntegration = ({ error, events }: Props) => {
   } = useIntegration();
   const { name } = livestorm?.details ?? {};
   const router = useRouter();
+
+  const { data: events } = trpc.events.listEvents.useQuery();
 
   const onEnable = () => {
     setLoading(true);
@@ -81,9 +82,9 @@ export const LivestormIntegration = ({ error, events }: Props) => {
         <>
           <Separator className="my-4" />
           <div>
-            <p className="mb-2 font-medium">Channels</p>
+            <p className="mb-2 font-medium">Events</p>
             <div className="space-y-1">
-              {events.map((event) => (
+              {events?.map((event) => (
                 <EventCard key={event.id} event={event} />
               ))}
             </div>
