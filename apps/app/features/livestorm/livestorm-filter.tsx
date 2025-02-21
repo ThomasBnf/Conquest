@@ -13,12 +13,13 @@ import {
 } from "@conquest/ui/form";
 import { Input } from "@conquest/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { type FormCreate, FormCreateSchema } from "./schemas/form.schema";
 
 export const LivestormFilter = () => {
-  const { livestorm, setLoading, loading, setStep } = useIntegration();
+  const { livestorm, setStep } = useIntegration();
+  const [loading, setLoading] = useState(false);
   const utils = trpc.useUtils();
 
   const { data: organization } = trpc.livestorm.getOrganization.useQuery();
