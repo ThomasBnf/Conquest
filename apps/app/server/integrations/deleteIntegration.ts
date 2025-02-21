@@ -27,15 +27,12 @@ export const deleteIntegration = protectedProcedure
 
     if (source === "LIVESTORM") {
       const livestorm = LivestormIntegrationSchema.parse(integration);
-      console.log("deleteIntegration", livestorm);
       const { access_token, access_token_iv } = livestorm.details;
 
       const decryptedToken = await decrypt({
         access_token,
         iv: access_token_iv,
       });
-
-      console.log("deleteIntegration decryptedToken", decryptedToken);
 
       await prisma.event.deleteMany({
         where: { source: "LIVESTORM", workspace_id },

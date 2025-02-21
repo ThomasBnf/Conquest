@@ -2,6 +2,8 @@ import type { Event } from "@conquest/zod/schemas/event.schema";
 import type { Member } from "@conquest/zod/schemas/member.schema";
 import type { Session } from "@conquest/zod/types/livestorm";
 import { wait } from "@trigger.dev/sdk/v3";
+import { getLocaleByAlpha2 } from "country-locale-map";
+import ISO6391 from "iso-639-1";
 import { listPeopleFromSession } from "../../queries/livestorm/listPeopleFromSession";
 import { createActivity } from "../activity/createActivity";
 import { upsertMember } from "../member/upsertMember";
@@ -49,7 +51,9 @@ export const createManyPeoples = async ({
 
     if (role === "team_member") continue;
 
-    // const locale = getLocaleByAlpha2(ip_country_code) ?? null;
+    const locale = getLocaleByAlpha2(ip_country_code);
+    const languageCode = locale?.split("_")[0] ?? "";
+    const language = languageCode ? ISO6391.getName(languageCode) : null;
 
     const member = await upsertMember({
       id,
@@ -58,7 +62,8 @@ export const createManyPeoples = async ({
         last_name,
         primary_email: email,
         avatar_url: avatar_link,
-        // locale,
+        language,
+        country: ip_country_code,
       },
       source: "LIVESTORM",
       workspace_id,

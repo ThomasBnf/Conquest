@@ -13,8 +13,6 @@ export const getOrganization = protectedProcedure.query(
       workspace_id,
     });
 
-    console.log("integration", integration);
-
     const livestorm = LivestormIntegrationSchema.parse(integration);
 
     const { details } = livestorm;
@@ -32,8 +30,6 @@ export const getOrganization = protectedProcedure.query(
       accessToken = await getRefreshToken(livestorm);
     }
 
-    console.log(accessToken);
-
     const response = await fetch(
       "https://api.livestorm.co/v1/organization?include=organization",
       {
@@ -44,13 +40,6 @@ export const getOrganization = protectedProcedure.query(
       },
     );
 
-    if (!response.ok) {
-      throw new Error(`Erreur API Livestorm: ${response.statusText}`);
-    }
-
-    console.log("response", response);
-    const data = await response.json();
-    console.log("data", data);
-    return data;
+    return await response.json();
   },
 );

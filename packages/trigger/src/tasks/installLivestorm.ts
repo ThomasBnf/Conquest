@@ -21,11 +21,6 @@ export const installLivestorm = schemaTask({
     const { details, workspace_id } = livestorm;
     const { access_token, access_token_iv, expires_in, filter } = details;
 
-    console.log("access_token", access_token);
-    console.log("access_token_iv", access_token_iv);
-    console.log("expires_in", expires_in);
-    console.log("filter", filter);
-
     const isExpired = new Date(Date.now() + expires_in * 1000) < new Date();
 
     const decryptedAccessToken = await decrypt({
@@ -33,12 +28,8 @@ export const installLivestorm = schemaTask({
       iv: access_token_iv,
     });
 
-    console.log("decryptedAccessToken", decryptedAccessToken);
-
     let accessToken = decryptedAccessToken;
     if (isExpired) accessToken = await getRefreshToken(livestorm);
-
-    console.log("accessToken", accessToken);
 
     const webhookEvents = [
       "session.created",

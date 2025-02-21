@@ -21,8 +21,7 @@ export const LivestormFilter = () => {
   const { livestorm, setLoading, loading, setStep } = useIntegration();
   const utils = trpc.useUtils();
 
-  const { data: organization, failureReason } =
-    trpc.livestorm.getOrganization.useQuery();
+  const { data: organization } = trpc.livestorm.getOrganization.useQuery();
   const { mutateAsync } = trpc.integrations.updateIntegration.useMutation({
     onSuccess: () => {
       utils.integrations.getIntegrationBySource.invalidate({
@@ -30,8 +29,6 @@ export const LivestormFilter = () => {
       });
     },
   });
-
-  console.log("failureReason", failureReason);
 
   const { mutateAsync: createManyActivityTypes } =
     trpc.activityTypes.createManyActivityTypes.useMutation({

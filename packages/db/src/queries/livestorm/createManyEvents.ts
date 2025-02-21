@@ -14,8 +14,6 @@ export const createManyEvents = async ({
   access_token,
   workspace_id,
 }: Props) => {
-  console.log("createManyEvents", filter, access_token, workspace_id);
-
   const members: Member[] = [];
   const events: Event[] = [];
 
