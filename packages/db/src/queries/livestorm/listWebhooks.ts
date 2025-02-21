@@ -13,8 +13,12 @@ export const listWebhooks = async ({ accessToken }: Props) => {
     },
   });
 
+  const json = await response.json();
+
+  console.log(json);
+
   if (!response.ok) throw new Error("Failed to list webhooks");
 
-  const { data } = WebhookSchema.parse(await response.json());
+  const { data } = WebhookSchema.parse(json);
   return data;
 };
