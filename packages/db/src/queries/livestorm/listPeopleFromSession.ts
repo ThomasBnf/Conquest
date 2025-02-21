@@ -15,7 +15,6 @@ export const listPeopleFromSession = async ({ access_token, id }: Props) => {
     },
   );
 
-  const { data } = await response.json();
-
-  return PeopleSchema.array().parse(data);
+  const { data } = PeopleSchema.parse(await response.json());
+  return data;
 };

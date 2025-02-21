@@ -18,7 +18,8 @@ export const createManySessions = async ({
 }: Props) => {
   const members: Member[] = [];
 
-  const { attributes } = event;
+  const { data } = event;
+  const { id, attributes } = data;
   const { title } = attributes;
 
   let sessionPage = 0;
@@ -27,7 +28,7 @@ export const createManySessions = async ({
   while (true) {
     const listOfSessions = await listEventSessions({
       access_token,
-      event_id: event.id,
+      event_id: id,
       page: sessionPage,
     });
 

@@ -4,13 +4,15 @@ type Props = {
 };
 
 export const deleteWebhook = async ({ accessToken, id }: Props) => {
-  await fetch(`https://api.livestorm.co/v1/webhooks/${id}`, {
+  const response = await fetch(`https://api.livestorm.co/v1/webhooks/${id}`, {
     method: "DELETE",
     headers: {
       Authorization: `Bearer ${accessToken}`,
       accept: "application/json",
     },
   });
+
+  if (!response.ok) throw new Error("Failed to delete webhook");
 
   return { success: true };
 };

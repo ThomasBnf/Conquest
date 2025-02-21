@@ -13,6 +13,6 @@ export const getEvent = async ({ accessToken, id }: Props) => {
     },
   });
 
-  const { data } = await response.json();
-  return EventSchema.parse(data);
+  const { data } = EventSchema.parse(await response.json());
+  return data;
 };
