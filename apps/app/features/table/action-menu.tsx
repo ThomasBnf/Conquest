@@ -25,8 +25,8 @@ export const ActionMenu = <TData,>({ table }: Props<TData>) => {
   const { mutateAsync: deleteMembers } =
     trpc.members.deleteManyMembers.useMutation({
       onSuccess: () => {
-        utils.members.getAllMembers.invalidate();
-        utils.members.countMembers.invalidate();
+        utils.members.list.invalidate();
+        utils.members.count.invalidate();
         toast.success(` ${hasMultipleRows ? "members" : "member"} deleted`);
         table.setRowSelection({});
       },
@@ -35,7 +35,7 @@ export const ActionMenu = <TData,>({ table }: Props<TData>) => {
   const { mutateAsync: deleteCompanies } =
     trpc.companies.deleteManyCompanies.useMutation({
       onSuccess: () => {
-        utils.companies.getAllCompanies.invalidate();
+        utils.companies.list.invalidate();
         utils.companies.countCompanies.invalidate();
         toast.success(` ${hasMultipleRows ? "companies" : "company"} deleted`);
         table.setRowSelection({});

@@ -37,8 +37,9 @@ export const CreateCompanyDialog = () => {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
-  const { mutateAsync } = trpc.companies.createCompany.useMutation({
-    onSuccess: ({ id }) => {
+  const { mutateAsync } = trpc.companies.post.useMutation({
+    onSuccess: (data) => {
+      const { id } = data ?? {};
       router.push(`/${slug}/companies/${id}`);
       setLoading(false);
       setOpen(false);

@@ -30,9 +30,9 @@ type Props = {
 
 export const MemberSidebar = ({ member, profiles }: Props) => {
   const utils = trpc.useUtils();
-  const { mutateAsync: updateMember } = trpc.members.updateMember.useMutation({
+  const { mutateAsync: updateMember } = trpc.members.update.useMutation({
     onSuccess: () => {
-      utils.members.getMember.invalidate();
+      utils.members.get.invalidate();
     },
   });
 

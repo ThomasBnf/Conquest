@@ -13,24 +13,20 @@ import { useQueryStates } from "nuqs";
 export const DateRangePicker = () => {
   const [{ from, to }, setDateParams] = useQueryStates(dateParser);
 
-  const isYesterday =
-    isEqual(from, subDays(startOfDay(new Date()), 1)) &&
-    isEqual(to, endOfDay(new Date()));
-
   const isLast7Days =
-    isEqual(from, subDays(startOfDay(new Date()), 7)) &&
+    isEqual(from, subDays(startOfDay(new Date()), 6)) &&
     isEqual(to, endOfDay(new Date()));
 
   const isLast30Days =
-    isEqual(from, subDays(startOfDay(new Date()), 30)) &&
+    isEqual(from, subDays(startOfDay(new Date()), 29)) &&
     isEqual(to, endOfDay(new Date()));
 
   const isLast90Days =
-    isEqual(from, subDays(startOfDay(new Date()), 90)) &&
+    isEqual(from, subDays(startOfDay(new Date()), 89)) &&
     isEqual(to, endOfDay(new Date()));
 
   const isLast365Days =
-    isEqual(from, subDays(startOfDay(new Date()), 365)) &&
+    isEqual(from, subDays(startOfDay(new Date()), 364)) &&
     isEqual(to, endOfDay(new Date()));
 
   const isYearToDate =
@@ -71,23 +67,11 @@ export const DateRangePicker = () => {
         </PopoverContent>
       </Popover>
       <Button
-        variant={isYesterday ? "default" : "outline"}
-        className="justify-start"
-        onClick={() =>
-          onUpdateDateRange(
-            subDays(startOfDay(new Date()), 1),
-            endOfDay(new Date()),
-          )
-        }
-      >
-        Yesterday
-      </Button>
-      <Button
         variant={isLast7Days ? "default" : "outline"}
         className="justify-start"
         onClick={() =>
           onUpdateDateRange(
-            subDays(startOfDay(new Date()), 7),
+            subDays(startOfDay(new Date()), 6),
             endOfDay(new Date()),
           )
         }
@@ -99,8 +83,8 @@ export const DateRangePicker = () => {
         className="justify-start"
         onClick={() =>
           onUpdateDateRange(
-            subDays(startOfDay(new Date()), 30),
-            endOfDay(new Date()),
+            subDays(startOfDay(new Date()), 29),
+            startOfDay(new Date()),
           )
         }
       >
@@ -111,7 +95,7 @@ export const DateRangePicker = () => {
         className="justify-start"
         onClick={() =>
           onUpdateDateRange(
-            subDays(startOfDay(new Date()), 90),
+            subDays(startOfDay(new Date()), 89),
             endOfDay(new Date()),
           )
         }
@@ -123,7 +107,7 @@ export const DateRangePicker = () => {
         className="justify-start"
         onClick={() =>
           onUpdateDateRange(
-            subDays(startOfDay(new Date()), 365),
+            subDays(startOfDay(new Date()), 364),
             endOfDay(new Date()),
           )
         }

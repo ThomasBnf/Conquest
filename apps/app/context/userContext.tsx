@@ -1,34 +1,41 @@
-import type { Preferences, User } from "@conquest/zod/schemas/user.schema";
+"use client";
+
+import { IsLoading } from "@/components/states/is-loading";
+import { trpc } from "@/server/client";
+import type { User } from "@conquest/zod/schemas/user.schema";
 import type { Workspace } from "@conquest/zod/schemas/workspace.schema";
 
 import * as React from "react";
 
 type userContext = {
-  user: Omit<User, "hashed_password"> | undefined;
+  user: User | undefined;
+  workspace: Workspace | undefined;
   slug: string | undefined;
-  workspace: Workspace | null | undefined;
-  members_preferences: Preferences | undefined;
 };
 
 const UserContext = React.createContext<userContext>({} as userContext);
 
 type Props = {
-  user: Omit<User, "hashed_password"> | undefined;
-  workspace: Workspace | null | undefined;
   children: React.ReactNode;
 };
 
-export const UserProvider = ({ user, workspace, children }: Props) => {
-  const { members_preferences } = user ?? {};
-  const { slug } = workspace ?? {};
+export const UserProvider = ({ children }: Props) => {
+  const results = trpc.useQueries((user) => [
+    user.users.getCurrentUser(),
+    user.workspaces.get(),
+  ]);
+
+  const [user, workspace] = results;
+  const { slug } = workspace.data ?? {};
+
+  if (results.some((result) => result.isLoading)) return <IsLoading />;
 
   return (
     <UserContext.Provider
       value={{
-        user,
+        user: user.data,
+        workspace: workspace.data,
         slug,
-        workspace,
-        members_preferences,
       }}
     >
       {children}

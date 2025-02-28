@@ -23,9 +23,9 @@ export const MenuLevel = ({ level }: Props) => {
   const [showAlert, setShowAlert] = useState(false);
   const utils = trpc.useUtils();
 
-  const { mutateAsync } = trpc.levels.deleteLevel.useMutation({
+  const { mutateAsync } = trpc.levels.delete.useMutation({
     onSuccess: () => {
-      utils.levels.getAllLevels.invalidate();
+      utils.levels.list.invalidate();
     },
   });
 

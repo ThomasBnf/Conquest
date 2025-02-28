@@ -9,7 +9,7 @@ import {
   DropdownMenuTrigger,
 } from "@conquest/ui/dropdown-menu";
 import type { Member } from "@conquest/zod/schemas/member.schema";
-import cuid from "cuid";
+import { v4 as uuid } from "uuid";
 import { Plus } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -22,13 +22,13 @@ type Props = {
 export const EditablePhones = ({ member }: Props) => {
   const [open, setOpen] = useState(false);
   const [phones, setPhones] = useState<{ id: string; content: string }[]>(
-    member.phones.map((phone) => ({ id: cuid(), content: phone })) ?? [],
+    member.phones.map((phone) => ({ id: uuid(), content: phone })) ?? [],
   );
 
-  const { mutateAsync: updateMember } = trpc.members.updateMember.useMutation();
+  const { mutateAsync: updateMember } = trpc.members.update.useMutation();
 
   const onAddPhone = () => {
-    setPhones([...phones, { id: cuid(), content: "" }]);
+    setPhones([...phones, { id: uuid(), content: "" }]);
   };
 
   const onChangePhone = (id: string, newPhone: string) => {

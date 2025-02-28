@@ -9,7 +9,7 @@ import { useForm } from "react-hook-form";
 import { type FormCreate, FormCreateSchema } from "./schema/form-create.schema";
 
 export const FormAPIKey = () => {
-  const { mutateAsync } = trpc.apiKeys.createApiKey.useMutation();
+  const { mutateAsync } = trpc.apiKeys.post.useMutation();
 
   const form = useForm<FormCreate>({
     resolver: zodResolver(FormCreateSchema),

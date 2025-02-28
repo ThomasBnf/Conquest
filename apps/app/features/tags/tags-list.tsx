@@ -16,7 +16,7 @@ type Tag = {
 };
 
 export const TagsList = () => {
-  const { data: tags, isLoading } = trpc.tags.getAllTags.useQuery();
+  const { data: tags, isLoading } = trpc.tags.list.useQuery();
   const [isVisible, setIsVisible] = useState(false);
   const [query, setQuery] = useDebounce("", 500);
 

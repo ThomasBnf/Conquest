@@ -1,5 +1,4 @@
-import { prisma } from "@conquest/db/prisma";
-import { ListSchema } from "@conquest/zod/schemas/list.schema";
+import { getList as _getList } from "@conquest/clickhouse/lists/getList";
 import { z } from "zod";
 import { protectedProcedure } from "../trpc";
 
@@ -9,16 +8,8 @@ export const getList = protectedProcedure
       id: z.string(),
     }),
   )
-  .query(async ({ ctx: { user }, input }) => {
-    const { workspace_id } = user;
+  .query(async ({ input }) => {
     const { id } = input;
 
-    const list = await prisma.list.findUnique({
-      where: {
-        id,
-        workspace_id,
-      },
-    });
-
-    return ListSchema.parse(list);
+    return _getList({ id });
   });

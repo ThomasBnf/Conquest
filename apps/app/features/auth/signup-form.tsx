@@ -23,20 +23,17 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowRightIcon } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
 export const SignupForm = () => {
-  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
-  const { mutateAsync } = trpc.auth.signup.useMutation({
+  const { mutateAsync, isPending } = trpc.auth.signup.useMutation({
     onSuccess: () => {
       router.push("/");
     },
     onError: (error) => {
-      setLoading(false);
       toast.error(error.message);
     },
   });
@@ -46,8 +43,7 @@ export const SignupForm = () => {
   });
 
   const onSubmit = async ({ email, password }: SignupSchema) => {
-    setLoading(true);
-    await mutateAsync({ email: email.toLowerCase().trim(), password });
+    await mutateAsync({ email, password });
   };
 
   return (
@@ -90,7 +86,7 @@ export const SignupForm = () => {
             />
           </CardContent>
           <CardFooter className="flex-col">
-            <Button type="submit" loading={loading} className="w-full">
+            <Button type="submit" loading={isPending} className="w-full">
               Signup
               <ArrowRightIcon size={16} />
             </Button>

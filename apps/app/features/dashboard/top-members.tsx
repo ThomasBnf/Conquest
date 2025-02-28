@@ -34,10 +34,10 @@ export const TopMembers = ({ from, to }: Props) => {
   const { data } = trpc.dashboard.topMembers.useQuery({ from, to });
   const { topMembers } = data ?? {};
 
-  const chartData = topMembers?.map((member) => ({
-    ...member,
-    full_name: `${member.first_name ?? ""} ${member.last_name ?? ""}`.trim(),
-  }));
+  // const chartData = topMembers?.map((member) => ({
+  //   ...member,
+  //   full_name: `${member.first_name ?? ""} ${member.last_name ?? ""}`.trim(),
+  // }));
 
   return (
     <div className="flex-1 p-4">
@@ -48,7 +48,7 @@ export const TopMembers = ({ from, to }: Props) => {
       </div>
       <ResponsiveContainer height={350} width="100%">
         <ChartContainer ref={ref} config={chartConfig}>
-          <BarChart accessibilityLayer data={chartData} layout="vertical">
+          <BarChart accessibilityLayer data={[]} layout="vertical">
             <YAxis
               dataKey="full_name"
               type="category"

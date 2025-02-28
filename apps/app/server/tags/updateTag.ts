@@ -1,6 +1,5 @@
 import { FormTagSchema } from "@/features/tags/schema/form.schema";
-import { prisma } from "@conquest/db/prisma";
-import { TagSchema } from "@conquest/zod/schemas/tag.schema";
+import { updateTag as _updateTag } from "@conquest/clickhouse/tags/updateTag";
 import { z } from "zod";
 import { protectedProcedure } from "../trpc";
 
@@ -11,17 +10,8 @@ export const updateTag = protectedProcedure
       data: FormTagSchema,
     }),
   )
-  .mutation(async ({ ctx: { user }, input }) => {
-    const { workspace_id } = user;
+  .mutation(async ({ input }) => {
     const { id, data } = input;
 
-    const tag = await prisma.tag.update({
-      where: {
-        id,
-        workspace_id,
-      },
-      data,
-    });
-
-    return TagSchema.parse(tag);
+    return _updateTag({ id, ...data });
   });

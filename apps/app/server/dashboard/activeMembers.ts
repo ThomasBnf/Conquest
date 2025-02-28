@@ -1,5 +1,5 @@
-import { prisma } from "@conquest/db/prisma";
-import { eachDayOfInterval, format } from "date-fns";
+import { client } from "@conquest/clickhouse/client";
+import { format } from "date-fns";
 import { z } from "zod";
 import { protectedProcedure } from "../trpc";
 
@@ -10,58 +10,56 @@ export const activeMembers = protectedProcedure
       to: z.coerce.date(),
     }),
   )
-  .query(async ({ ctx: { user }, input }) => {
+  .query(async ({ input }) => {
     const { from, to } = input;
-    const { workspace_id } = user;
 
-    const allDates = eachDayOfInterval({ start: from, end: to });
+    const formatedFrom = format(from, "yyyy-MM-dd");
+    const formatedTo = format(to, "yyyy-MM-dd");
 
-    const activeMembersByDay = await Promise.all(
-      allDates.map(async (date) => {
-        const nextDay = new Date(date);
-        nextDay.setDate(date.getDate() + 1);
-
-        const activeMembers = await prisma.member.count({
-          where: {
-            workspace_id,
-            activities: {
-              some: {
-                created_at: {
-                  gte: date,
-                  lt: nextDay,
-                },
-              },
-            },
-          },
-        });
-
-        return {
-          date: format(date, "PP"),
-          count: activeMembers,
-        };
-      }),
-    );
-
-    const membersData = Object.fromEntries(
-      activeMembersByDay.map(({ date, count }) => [date, count]),
-    );
-
-    const totalActiveMembers = await prisma.member.count({
-      where: {
-        workspace_id,
-        activities: {
-          some: {
-            created_at: {
-              gte: from,
-              lte: to,
-            },
-          },
-        },
-      },
+    const result = await client.query({
+      query: `
+          WITH date_series AS ( 
+              SELECT formatDateTime(date_trunc('day', addDays(toDate('${formatedFrom}'), number)), '%b %d') AS date 
+              FROM numbers(toUInt32(toDate('${formatedTo}') - toDate('${formatedFrom}') + 1)) 
+          ), 
+          active_members AS ( 
+              SELECT 
+                  formatDateTime(date_trunc('day', created_at), '%b %d') AS date, 
+                  COUNT(DISTINCT member_id) AS active_members 
+              FROM 
+                  activities 
+              WHERE 
+                  created_at >= toDateTime('${formatedFrom}') AND created_at < toDateTime('${formatedTo}') + INTERVAL 1 DAY 
+              GROUP BY 
+                  formatDateTime(date_trunc('day', created_at), '%b %d')
+          ) 
+          SELECT 
+              ds.date AS date, 
+              COALESCE(am.active_members, 0) AS active_members 
+          FROM 
+              date_series ds 
+          LEFT JOIN 
+              active_members am ON ds.date = am.date 
+          ORDER BY 
+              ds.date ASC;
+      `,
     });
 
+    const { data } = await result.json();
+
+    const resultActiveMembers = await client.query({
+      query: `
+        SELECT COUNT(DISTINCT member_id) AS total 
+        FROM activities 
+        WHERE created_at >= toDateTime('${formatedFrom}') AND created_at < toDateTime('${formatedTo}') + INTERVAL 1 DAY 
+      `,
+    });
+
+    const { data: dateCount } = await resultActiveMembers.json();
+    const count = dateCount as Array<{ total: number }>;
+
     return {
-      activeMembers: totalActiveMembers,
-      activeMembersData: membersData,
+      activeMembers: Number(count[0]?.total),
+      activeMembersData: data,
     };
   });

@@ -1,23 +1,23 @@
 import { sleep } from "@/helpers/sleep";
-import { discourseClient } from "@conquest/db/discourse";
-import { prisma } from "@conquest/db/prisma";
-import { createActivity } from "@conquest/db/queries/activity/createActivity";
-import { deleteActivity } from "@conquest/db/queries/activity/deleteActivity";
-import { updateActivity } from "@conquest/db/queries/activity/updateActivity";
-import { upsertActivity } from "@conquest/db/queries/activity/upsertActivity";
-import { createChannel } from "@conquest/db/queries/channel/createChannel";
-import { deleteChannel } from "@conquest/db/queries/channel/deleteChannel";
-import { getChannel } from "@conquest/db/queries/channel/getChannel";
-import { updateChannel } from "@conquest/db/queries/channel/updateChannel";
-import { checkSignature } from "@conquest/db/queries/discourse/checkSignature";
-import { getMember } from "@conquest/db/queries/member/getMember";
-import { updateMember } from "@conquest/db/queries/member/updateMember";
-import { upsertMember } from "@conquest/db/queries/member/upsertMember";
-import { deleteProfile } from "@conquest/db/queries/profile/deleteProfile";
-import { getProfile } from "@conquest/db/queries/profile/getProfile";
-import { upsertProfile } from "@conquest/db/queries/profile/upsertProfile";
-import { createTag } from "@conquest/db/queries/tag/createTag";
-import { listTags } from "@conquest/db/queries/tag/listTags";
+import { createActivity } from "@conquest/clickhouse/activities/createActivity";
+import { deleteActivity } from "@conquest/clickhouse/activities/deleteActivity";
+import { updateActivity } from "@conquest/clickhouse/activities/updateActivity";
+import { upsertActivity } from "@conquest/clickhouse/activities/upsertActivity";
+import { createChannel } from "@conquest/clickhouse/channels/createChannel";
+import { deleteChannel } from "@conquest/clickhouse/channels/deleteChannel";
+import { getChannel } from "@conquest/clickhouse/channels/getChannel";
+import { updateChannel } from "@conquest/clickhouse/channels/updateChannel";
+import { client } from "@conquest/clickhouse/client";
+import { checkSignature } from "@conquest/clickhouse/discourse/checkSignature";
+import { createMember } from "@conquest/clickhouse/members/createMember";
+import { getMember } from "@conquest/clickhouse/members/getMember";
+import { updateMember } from "@conquest/clickhouse/members/updateMember";
+import { deleteProfile } from "@conquest/clickhouse/profiles/deleteProfile";
+import { getProfile } from "@conquest/clickhouse/profiles/getProfile";
+import { upsertProfile } from "@conquest/clickhouse/profiles/upsertProfile";
+import { createTag } from "@conquest/clickhouse/tags/createTag";
+import { listTags } from "@conquest/clickhouse/tags/listTags";
+import { discourseClient } from "@conquest/clickhouse/discourse";
 import type { DiscourseWebhook } from "@conquest/zod/types/discourse";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
@@ -62,7 +62,7 @@ export async function POST(request: NextRequest) {
       message: "",
       member_id: profile.member_id,
       channel_id: channel.id,
-      source: "DISCOURSE",
+      source: "Discourse",
       workspace_id,
     });
   }
@@ -88,21 +88,12 @@ export async function POST(request: NextRequest) {
       workspace_id,
     });
 
-    await prisma.activity.deleteMany({
-      where: {
-        OR: [
-          {
-            react_to: {
-              contains: `t-${id}`,
-            },
-          },
-          {
-            reply_to: {
-              contains: `t-${id}`,
-            },
-          },
-        ],
-      },
+    await client.query({
+      query: `
+        DELETE FROM activities
+        WHERE react_to LIKE 't-${id}'
+        OR reply_to LIKE 't-${id}'
+      `,
     });
   }
 
@@ -155,7 +146,7 @@ export async function POST(request: NextRequest) {
         reply_to: `t/${topic_id}/${reply_to_post_number}`,
         member_id: profile.member_id,
         channel_id: channel.id,
-        source: "DISCOURSE",
+        source: "Discourse",
         workspace_id,
       });
 
@@ -169,7 +160,7 @@ export async function POST(request: NextRequest) {
       message: post.cooked,
       member_id: profile.member_id,
       channel_id: channel.id,
-      source: "DISCOURSE",
+      source: "Discourse",
       workspace_id,
     });
   }
@@ -206,7 +197,7 @@ export async function POST(request: NextRequest) {
 
   if (like && event === "post_liked") {
     const { post, user } = like;
-    const { id, category_id, topic_id, post_number } = post;
+    const { category_id, topic_id, post_number } = post;
     const { username } = user;
 
     const profile = await getProfile({
@@ -224,13 +215,12 @@ export async function POST(request: NextRequest) {
     if (!channel) return NextResponse.json({ status: 200 });
 
     await createActivity({
-      external_id: null,
       activity_type_key: "discourse:reaction",
       message: "like",
       react_to: `t/${topic_id}/${post_number}`,
       member_id: profile.member_id,
       channel_id: channel.id,
-      source: "DISCOURSE",
+      source: "Discourse",
       workspace_id,
     });
   }
@@ -241,24 +231,21 @@ export async function POST(request: NextRequest) {
     const [first_name, last_name] = name.split(" ");
     const avatar_url = avatar_template.replace("{size}", "500");
 
-    const upsertedMember = await upsertMember({
-      id: String(id),
-      data: {
-        first_name,
-        last_name,
-        primary_email: email,
-        avatar_url,
-        created_at: new Date(),
-      },
-      source: "DISCOURSE",
+    const member = await createMember({
+      first_name,
+      last_name,
+      primary_email: email,
+      avatar_url,
+      created_at: new Date(),
+      source: "Discourse",
       workspace_id,
     });
 
     await upsertProfile({
       external_id: String(id),
-      member_id: upsertedMember.id,
+      member_id: member.id,
       attributes: {
-        source: "DISCOURSE",
+        source: "Discourse",
         username,
       },
       workspace_id,
@@ -276,7 +263,7 @@ export async function POST(request: NextRequest) {
       activity_type_key: "discourse:invite",
       message: "",
       member_id: inviter.id,
-      source: "DISCOURSE",
+      source: "Discourse",
       workspace_id,
     });
   }
@@ -295,27 +282,24 @@ export async function POST(request: NextRequest) {
     const [first_name, last_name] = name.split(" ");
     const avatar_url = avatar_template.replace("{size}", "500");
 
-    const upsertedMember = await upsertMember({
-      id: String(id),
-      data: {
-        first_name,
-        last_name,
-        primary_email: email,
-        secondary_emails,
-        avatar_url,
-        job_title: title,
-        created_at: new Date(),
-      },
-      source: "DISCOURSE",
+    const member = await createMember({
+      first_name,
+      last_name,
+      primary_email: email,
+      secondary_emails,
+      avatar_url,
+      job_title: title ?? "",
+      created_at: new Date(),
+      source: "Discourse",
       workspace_id,
     });
 
     await upsertProfile({
       external_id: String(id),
-      member_id: upsertedMember.id,
+      member_id: member.id,
       attributes: {
         username,
-        source: "DISCOURSE",
+        source: "Discourse",
       },
       workspace_id,
     });
@@ -343,13 +327,13 @@ export async function POST(request: NextRequest) {
       activity_type_key: "discourse:login",
       message: "",
       member_id: profile.member_id,
-      source: "DISCOURSE",
+      source: "Discourse",
       workspace_id,
     });
   }
 
   if (category && event === "category_created") {
-    const { id, name, slug, parent_category_id } = category;
+    const { id, name, parent_category_id } = category;
 
     let channel_name = name;
 
@@ -365,14 +349,13 @@ export async function POST(request: NextRequest) {
     await createChannel({
       external_id: String(id),
       name: channel_name,
-      slug,
-      source: "DISCOURSE",
+      source: "Discourse",
       workspace_id,
     });
   }
 
   if (category && event === "category_updated") {
-    const { id, name, slug, parent_category_id } = category;
+    const { id, name, parent_category_id } = category;
 
     let channel_name = name;
 
@@ -387,8 +370,9 @@ export async function POST(request: NextRequest) {
 
     await updateChannel({
       external_id: String(id),
-      name: channel_name,
-      slug,
+      data: {
+        name: channel_name,
+      },
       workspace_id,
     });
   }
@@ -412,20 +396,22 @@ export async function POST(request: NextRequest) {
 
     if (!profile) return NextResponse.json({ status: 200 });
 
+    const member = await getMember({
+      id: profile.member_id,
+    });
+
+    if (!member) return NextResponse.json({ status: 200 });
+
     const tags = await listTags({ workspace_id });
     const existingTag = tags.find(
       (tag) => tag.external_id === String(badge_id),
     );
 
     if (existingTag) {
-      await prisma.member.update({
-        where: {
-          id: profile.member_id,
-        },
+      await updateMember({
+        id: profile.member_id,
         data: {
-          tags: {
-            push: existingTag.id,
-          },
+          tags: [...(member.tags ?? []), existingTag.id],
         },
       });
 
@@ -446,18 +432,14 @@ export async function POST(request: NextRequest) {
       external_id: String(badgeId),
       name,
       color: String(badge_type_id),
-      source: "DISCOURSE",
+      source: "Discourse",
       workspace_id,
     });
 
-    await prisma.member.update({
-      where: {
-        id: profile.member_id,
-      },
+    await updateMember({
+      id: profile.member_id,
       data: {
-        tags: {
-          push: newTag.id,
-        },
+        tags: [...(member?.tags ?? []), newTag.id],
       },
     });
   }

@@ -1,20 +1,16 @@
-import { decrypt } from "@conquest/db/lib/decrypt";
-import { prisma } from "@conquest/db/prisma";
-import { createActivity } from "@conquest/db/queries/activity/createActivity";
-import { deleteActivity } from "@conquest/db/queries/activity/deleteActivity";
-import { updateActivity } from "@conquest/db/queries/activity/updateActivity";
-import { createChannel } from "@conquest/db/queries/channel/createChannel";
-import { deleteChannel } from "@conquest/db/queries/channel/deleteChannel";
-import { getChannel } from "@conquest/db/queries/channel/getChannel";
-import { updateChannel } from "@conquest/db/queries/channel/updateChannel";
-import { getIntegration } from "@conquest/db/queries/integration/getIntegration";
-import { updateIntegration } from "@conquest/db/queries/integration/updateIntegration";
-import { createMember } from "@conquest/db/queries/member/createMember";
-import { deleteMember } from "@conquest/db/queries/member/deleteMember";
-import { upsertMember } from "@conquest/db/queries/member/upsertMember";
-import { getProfile } from "@conquest/db/queries/profile/getProfile";
-import { upsertProfile } from "@conquest/db/queries/profile/upsertProfile";
-import { deleteListReactions } from "@conquest/db/queries/slack/deleteListReactions";
+import { createActivity } from "@conquest/clickhouse/activities/createActivity";
+import { deleteActivity } from "@conquest/clickhouse/activities/deleteActivity";
+import { deleteManyActivities } from "@conquest/clickhouse/activities/deleteManyActivities";
+import { updateActivity } from "@conquest/clickhouse/activities/updateActivity";
+import { createChannel } from "@conquest/clickhouse/channels/createChannel";
+import { deleteChannel } from "@conquest/clickhouse/channels/deleteChannel";
+import { getChannel } from "@conquest/clickhouse/channels/getChannel";
+import { updateChannel } from "@conquest/clickhouse/channels/updateChannel";
+import { updateIntegration } from "@conquest/clickhouse/integrations//updateIntegration";
+import { getIntegration } from "@conquest/clickhouse/integrations/getIntegration";
+import { deleteMember } from "@conquest/clickhouse/members/deleteMember";
+import { getProfile } from "@conquest/clickhouse/profiles/getProfile";
+import { decrypt } from "@conquest/clickhouse/utils/decrypt";
 import { env } from "@conquest/env";
 import { SlackIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
 import {
@@ -65,10 +61,9 @@ export async function POST(req: NextRequest) {
 
   if (!integration) return NextResponse.json({ status: 200 });
 
-  const slackIntegration = SlackIntegrationSchema.parse(integration);
-
-  const { workspace_id } = slackIntegration;
-  const { access_token, access_token_iv } = slackIntegration.details;
+  const slack = SlackIntegrationSchema.parse(integration);
+  const { workspace_id } = slack;
+  const { access_token, access_token_iv } = slack.details;
 
   const token = await decrypt({
     access_token,
@@ -94,7 +89,7 @@ export async function POST(req: NextRequest) {
       await createChannel({
         name,
         external_id: id,
-        source: "SLACK",
+        source: "Slack",
         workspace_id,
       });
 
@@ -105,13 +100,13 @@ export async function POST(req: NextRequest) {
 
     case "channel_rename": {
       const { name, id } = event.channel;
-      await updateChannel({ external_id: id, name, workspace_id });
+      await updateChannel({ id, data: { name, workspace_id } });
       break;
     }
 
     case "channel_deleted": {
       const { channel } = event;
-      await deleteChannel({ external_id: channel, workspace_id });
+      await deleteChannel({ id: channel });
 
       return NextResponse.json({ status: 200 });
     }
@@ -140,7 +135,7 @@ export async function POST(req: NextRequest) {
         react_to: ts,
         member_id: profile.member_id,
         channel_id: channel.id,
-        source: "SLACK",
+        source: "Slack",
         workspace_id,
       });
 
@@ -165,20 +160,20 @@ export async function POST(req: NextRequest) {
 
       if (!channel) return NextResponse.json({ status: 200 });
 
-      await prisma.activity.deleteMany({
-        where: {
-          member_id: profile.member_id,
-          channel_id: channel.id,
-          AND: [
-            {
-              react_to: ts,
-            },
-            {
-              message: reaction,
-            },
-          ],
-        },
-      });
+      // await prisma.activity.deleteMany({
+      //   where: {
+      //     member_id: profile.member_id,
+      //     channel_id: channel.id,
+      //     AND: [
+      //       {
+      //         react_to: ts,
+      //       },
+      //       {
+      //         message: reaction,
+      //       },
+      //     ],
+      //   },
+      // });
 
       return NextResponse.json({ status: 200 });
     }
@@ -207,21 +202,21 @@ export async function POST(req: NextRequest) {
       const language = user?.locale?.split("-")[0];
       const country = user?.locale?.split("-")[1];
 
-      await upsertMember({
-        id,
-        data: {
-          first_name,
-          last_name,
-          primary_email: email,
-          phones: phone ? [phone] : [],
-          avatar_url: image_1024,
-          country,
-          language,
-          job_title: title,
-        },
-        source: "SLACK",
-        workspace_id,
-      });
+      // await upsertMember({
+      //   id,
+      //   data: {
+      //     first_name,
+      //     last_name,
+      //     primary_email: email,
+      //     phones: phone ? [phone] : [],
+      //     avatar_url: image_1024,
+      //     country,
+      //     language,
+      //     job_title: title,
+      //   },
+      //   source: "Slack",
+      //   workspace_id,
+      // });
 
       return NextResponse.json({ status: 200 });
     }
@@ -250,29 +245,28 @@ export async function POST(req: NextRequest) {
       });
 
       if (!existingProfile) {
-        const createdMember = await createMember({
-          data: {
-            first_name,
-            last_name,
-            primary_email: email,
-            phones: phone ? [phone] : [],
-            avatar_url: image_1024,
-            job_title: title === "" ? null : title,
-            language,
-            country,
-          },
-          source: "SLACK",
-          workspace_id,
-        });
-
-        await upsertProfile({
-          external_id: id,
-          attributes: {
-            source: "SLACK",
-          },
-          member_id: createdMember.id,
-          workspace_id,
-        });
+        // const createdMember = await createMember({
+        //   data: {
+        //     first_name,
+        //     last_name,
+        //     primary_email: email,
+        //     phones: phone ? [phone] : [],
+        //     avatar_url: image_1024,
+        //     job_title: title === "" ? null : title,
+        //     language,
+        //     country,
+        //   },
+        //   source: "Slack",
+        //   workspace_id,
+        // });
+        // await upsertProfile({
+        //   external_id: id,
+        //   attributes: {
+        //     source: "Slack",
+        //   },
+        //   member_id: createdMember.id,
+        //   workspace_id,
+        // });
       }
 
       return NextResponse.json({ status: 200 });
@@ -298,7 +292,7 @@ export async function POST(req: NextRequest) {
               external_id: ts,
               activity_type_key: thread_ts ? "slack:reply" : "slack:message",
               message: text ?? "",
-              reply_to: thread_ts ?? null,
+              reply_to: thread_ts ?? "",
               workspace_id,
             });
 
@@ -315,7 +309,7 @@ export async function POST(req: NextRequest) {
 
             if (!channel) return NextResponse.json({ status: 200 });
 
-            await deleteListReactions({
+            await deleteManyActivities({
               channel_id: channel.id,
               react_to: deleted_ts,
             });
@@ -351,10 +345,10 @@ export async function POST(req: NextRequest) {
         external_id: ts,
         activity_type_key: thread_ts ? "slack:reply" : "slack:message",
         message: text ?? "",
-        reply_to: thread_ts ?? null,
+        reply_to: thread_ts ?? "",
         member_id: profile.member_id,
         channel_id: channel.id,
-        source: "SLACK",
+        source: "Slack",
         workspace_id,
       });
 

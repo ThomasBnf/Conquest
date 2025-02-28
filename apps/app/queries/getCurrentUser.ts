@@ -1,5 +1,5 @@
 import { auth } from "@/auth";
-import { prisma } from "@conquest/db/prisma";
+import { getUserById } from "@conquest/clickhouse/users/getUserById";
 import { UserSchema } from "@conquest/zod/schemas/user.schema";
 import { redirect } from "next/navigation";
 
@@ -8,18 +8,9 @@ export const getCurrentUser = async () => {
 
   if (!session?.user?.id) redirect("/auth/login");
 
-  const user = await prisma.user.findUnique({
-    where: {
-      id: session.user.id,
-    },
-    omit: {
-      hashed_password: true,
-    },
-  });
+  const user = await getUserById({ id: session.user.id });
 
   if (!user) redirect("/auth/login");
 
-  return UserSchema.omit({
-    hashed_password: true,
-  }).parse(user);
+  return UserSchema.parse(user);
 };

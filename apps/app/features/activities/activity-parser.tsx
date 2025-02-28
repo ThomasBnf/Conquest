@@ -3,7 +3,6 @@ import { trpc } from "@/server/client";
 import { Avatar, AvatarFallback, AvatarImage } from "@conquest/ui/avatar";
 import type { ActivityWithType } from "@conquest/zod/schemas/activity.schema";
 import { format } from "date-fns";
-import { ActivityInvite } from "./activity-invite";
 import { ActivityMenu } from "./activity-menu";
 import { DiscordMessage } from "./discord/discord-message";
 import { DiscordReaction } from "./discord/discord-reaction";
@@ -14,6 +13,8 @@ import { DiscourseReaction } from "./discourse/discourse-reaction";
 import { DiscourseReply } from "./discourse/discourse-reply";
 import { DiscourseSolved } from "./discourse/discourse-solved";
 import { DiscourseTopic } from "./discourse/discourse-topic";
+import { GithubComment } from "./github/github-comment";
+import { GithubIssue } from "./github/github-issue";
 import { SlackMessage } from "./slack/slack-message";
 import { SlackReaction } from "./slack/slack-reaction";
 import { SlackReply } from "./slack/slack-reply";
@@ -26,29 +27,31 @@ export const ActivityParser = ({ activity }: Props) => {
   const { member_id, channel_id, invite_to } = activity;
   const { key } = activity.activity_type;
 
-  const { data: member } = trpc.members.getMember.useQuery({
+  const { data: member } = trpc.members.get.useQuery({
     id: member_id,
   });
 
-  const { data: channel } = trpc.channels.getChannel.useQuery(
-    { id: channel_id ?? "" },
+  const { data: channel } = trpc.channels.get.useQuery(
+    { id: channel_id },
     { enabled: !!channel_id },
   );
 
-  const { data: inviter } = trpc.members.getMember.useQuery(
-    { id: invite_to ?? "" },
-    { enabled: !!invite_to },
-  );
+  // const { data: inviter, failureReason } = trpc.members.get.useQuery(
+  //   { id: invite_to },
+  //   { enabled: !!invite_to },
+  // );
+
+  // console.log(failureReason);
 
   const { first_name, last_name, avatar_url } = member ?? {};
   const { activity_type, message, created_at } = activity;
   const { source } = activity_type;
 
   switch (key) {
-    case "discord:invite":
-      return (
-        <ActivityInvite activity={activity} member={member} inviter={inviter} />
-      );
+    // case "discord:invite":
+    //   return (
+    //     <ActivityInvite activity={activity} member={member} inviter={inviter} />
+    //   );
     case "discord:thread":
       return (
         <DiscordThread activity={activity} member={member} channel={channel} />
@@ -78,11 +81,10 @@ export const ActivityParser = ({ activity }: Props) => {
           channel={channel}
         />
       );
-
-    case "discourse:invite":
-      return (
-        <ActivityInvite activity={activity} member={member} inviter={inviter} />
-      );
+    // case "discourse:invite":
+    //   return (
+    //     <ActivityInvite activity={activity} member={member} inviter={inviter} />
+    //   );
     case "discourse:solved":
       return (
         <DiscourseSolved
@@ -110,10 +112,16 @@ export const ActivityParser = ({ activity }: Props) => {
     case "discourse:login": {
       return <DiscourseLogin activity={activity} member={member} />;
     }
-    case "slack:invite":
-      return (
-        <ActivityInvite activity={activity} member={member} inviter={inviter} />
-      );
+    case "github:issue": {
+      return <GithubIssue activity={activity} member={member} />;
+    }
+    case "github:comment": {
+      return <GithubComment activity={activity} member={member} />;
+    }
+    // case "slack:invite":
+    //   return (
+    //     <ActivityInvite activity={activity} member={member} inviter={inviter} />
+    //   );
     case "slack:message":
       return (
         <SlackMessage activity={activity} member={member} channel={channel} />

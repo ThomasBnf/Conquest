@@ -31,7 +31,7 @@ export const ConditionChannel = ({ form, index, channels }: Props) => {
   return (
     <FormField
       control={form.control}
-      name={`conditions.${index}.channel_id`}
+      name={`conditions.rules.${index}.channel_id`}
       render={({ field }) => (
         <FormItem className="w-full">
           <FormControl>

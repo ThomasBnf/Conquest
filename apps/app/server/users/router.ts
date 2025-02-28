@@ -4,5 +4,5 @@ import { updateUser } from "./updateUser";
 
 export const usersRouter = router({
   getCurrentUser,
-  updateUser,
+  update: updateUser,
 });

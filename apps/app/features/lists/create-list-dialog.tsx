@@ -1,3 +1,5 @@
+"use client";
+
 import { EmojiPicker } from "@/components/custom/emoji-picker";
 import { useFilters } from "@/context/filtersContext";
 import { useUser } from "@/context/userContext";
@@ -37,9 +39,10 @@ export const CreateListDialog = () => {
   const isListPage = pathname.includes("lists");
   const utils = trpc.useUtils();
 
-  const { mutateAsync, isPending } = trpc.lists.createList.useMutation({
-    onSuccess: ({ id }) => {
-      utils.lists.getAllLists.invalidate();
+  const { mutateAsync, isPending } = trpc.lists.post.useMutation({
+    onSuccess: (data) => {
+      const { id } = data ?? {};
+      utils.lists.list.invalidate();
       router.push(`/${slug}/lists/${id}`);
       onClearFilters();
     },

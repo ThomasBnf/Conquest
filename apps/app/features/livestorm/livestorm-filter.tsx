@@ -23,18 +23,18 @@ export const LivestormFilter = () => {
   const utils = trpc.useUtils();
 
   const { data: organization } = trpc.livestorm.getOrganization.useQuery();
-  const { mutateAsync } = trpc.integrations.updateIntegration.useMutation({
+  const { mutateAsync } = trpc.integrations.update.useMutation({
     onSuccess: () => {
-      utils.integrations.getIntegrationBySource.invalidate({
-        source: "LIVESTORM",
+      utils.integrations.bySource.invalidate({
+        source: "Livestorm",
       });
     },
   });
 
   const { mutateAsync: createManyActivityTypes } =
-    trpc.activityTypes.createManyActivityTypes.useMutation({
+    trpc.activityTypes.postMany.useMutation({
       onSuccess: () => {
-        utils.activityTypes.getAllActivityTypes.invalidate();
+        utils.activityTypes.list.invalidate();
         setTimeout(() => {
           setLoading(false);
           setStep(1);

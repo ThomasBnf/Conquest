@@ -1,4 +1,5 @@
-import { prisma } from "@conquest/db/prisma";
+import { client } from "@conquest/clickhouse/client";
+import { MemberSchema } from "@conquest/zod/schemas/member.schema";
 import { eachDayOfInterval, format } from "date-fns";
 import { z } from "zod";
 import { protectedProcedure } from "../trpc";
@@ -14,18 +15,18 @@ export const newMembers = protectedProcedure
     const { from, to } = input;
     const { workspace_id } = user;
 
-    const members = await prisma.member.findMany({
-      where: {
-        workspace_id,
-        created_at: {
-          gte: from,
-          lte: to,
-        },
-      },
-      orderBy: {
-        created_at: "asc",
-      },
+    const resultCount = await client.query({
+      query: `
+        SELECT *
+        FROM members
+        WHERE workspace_id = '${workspace_id}'
+        AND created_at >= '${from}'
+        AND created_at <= '${to}'
+      `,
     });
+
+    const { data, rows } = await resultCount.json();
+    const members = MemberSchema.array().parse(data);
 
     const allDates = eachDayOfInterval({ start: from, end: to }).map((date) =>
       format(date, "PP"),
@@ -49,7 +50,7 @@ export const newMembers = protectedProcedure
     );
 
     return {
-      newMembers: members.length,
+      newMembers: rows,
       newMembersData: membersData,
     };
   });

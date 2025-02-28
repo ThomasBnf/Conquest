@@ -20,12 +20,13 @@ import { toast } from "sonner";
 export default function Page() {
   const { user } = useUser();
   const [step, setStep] = useState(1);
-  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
-  const { mutateAsync } = trpc.users.updateUser.useMutation({
+  const { mutateAsync, isPending } = trpc.users.update.useMutation({
+    onSuccess: () => {
+      router.push("/settings/integrations");
+    },
     onError: (error) => {
-      setLoading(false);
       toast.error(error.message);
     },
   });
@@ -33,13 +34,10 @@ export default function Page() {
   const onComplete = async () => {
     if (!user) return;
 
-    setLoading(true);
     await mutateAsync({
       id: user.id,
       data: { onboarding: new Date() },
     });
-
-    router.push("/settings/integrations");
   };
 
   if (step === 3) {
@@ -55,8 +53,8 @@ export default function Page() {
         </p>
         <Button
           onClick={onComplete}
-          loading={loading}
-          disabled={loading}
+          loading={isPending}
+          disabled={isPending}
           className={cn(buttonVariants({ size: "lg" }), "min-w-64")}
         >
           Get Started

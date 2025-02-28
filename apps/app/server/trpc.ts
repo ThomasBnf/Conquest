@@ -1,4 +1,4 @@
-import { prisma } from "@conquest/db/prisma";
+import { getUserById } from "@conquest/clickhouse/users/getUserById";
 import { UserSchema } from "@conquest/zod/schemas/user.schema";
 import { TRPCError, initTRPC } from "@trpc/server";
 import superjson from "superjson";
@@ -23,22 +23,13 @@ export const { createCallerFactory, router } = t;
 export const publicProcedure = t.procedure;
 
 export const protectedProcedure = t.procedure.use(async ({ ctx, next }) => {
-  if (!ctx.session?.user) throw new TRPCError({ code: "UNAUTHORIZED" });
+  if (!ctx.session?.user?.id) throw new TRPCError({ code: "UNAUTHORIZED" });
 
-  const user = await prisma.user.findUnique({
-    where: {
-      id: ctx.session.user.id,
-    },
-    omit: {
-      hashed_password: true,
-    },
-  });
+  const user = await getUserById({ id: ctx.session.user.id });
 
   return next({
     ctx: {
-      user: UserSchema.omit({
-        hashed_password: true,
-      }).parse(user),
+      user: UserSchema.parse(user),
     },
   });
 });

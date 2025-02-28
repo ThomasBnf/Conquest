@@ -23,16 +23,9 @@ type Props = {
 export const MemberHeatmap = ({ memberId }: Props) => {
   const calendar = generateCalendarGrid();
 
-  const { data, isLoading } = trpc.activities.getMemberActivitiesCount.useQuery(
-    {
-      memberId: memberId,
-    },
-  );
-
-  const activitiesCount = data?.reduce(
-    (acc, activity) => acc + activity.activities.length,
-    0,
-  );
+  const { data, isLoading } = trpc.activities.list.useQuery({
+    member_id: memberId,
+  });
 
   return (
     <div>
@@ -44,7 +37,7 @@ export const MemberHeatmap = ({ memberId }: Props) => {
         {isLoading ? (
           <Skeleton className="h-4 w-6" />
         ) : (
-          <span>{activitiesCount}</span>
+          <span>{data?.length}</span>
         )}{" "}
         activities in the last 365 days
       </p>
@@ -65,9 +58,9 @@ export const MemberHeatmap = ({ memberId }: Props) => {
                 >
                   {week.map((day) => {
                     const dateStr = format(day, "yyyy-MM-dd");
-                    const dayActivities = data?.find(
-                      (a) => format(a.date, "yyyy-MM-dd") === dateStr,
-                    )?.activities;
+                    const dayActivities = data?.filter(
+                      (a) => format(a.created_at, "yyyy-MM-dd") === dateStr,
+                    );
 
                     return (
                       <DayCell

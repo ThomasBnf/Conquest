@@ -28,18 +28,18 @@ export const TagsCellCompany = ({ row }: Props) => {
   const [{ search, idCompany, descCompany, page, pageSize }] =
     useQueryStates(tableParsers);
 
-  const { data: allTags } = trpc.tags.getAllTags.useQuery();
+  const { data: allTags } = trpc.tags.list.useQuery();
   const [open, setOpen] = useState(false);
   const utils = trpc.useUtils();
 
   const { mutateAsync: updateCompany } =
     trpc.companies.updateCompany.useMutation({
       async onMutate(newData) {
-        await utils.companies.getAllCompanies.cancel();
+        await utils.companies.list.cancel();
 
-        const prevData = utils.companies.getAllCompanies.getData();
+        const prevData = utils.companies.list.getData();
 
-        utils.companies.getAllCompanies.setData(
+        utils.companies.list.setData(
           {
             search,
             id: idCompany,
@@ -59,7 +59,7 @@ export const TagsCellCompany = ({ row }: Props) => {
         return { prevData };
       },
       onError(_err, _newData, ctx) {
-        utils.companies.getAllCompanies.setData(
+        utils.companies.list.setData(
           {
             search,
             id: idCompany,
@@ -72,7 +72,7 @@ export const TagsCellCompany = ({ row }: Props) => {
         );
       },
       onSettled() {
-        utils.companies.getAllCompanies.invalidate();
+        utils.companies.list.invalidate();
       },
     });
 

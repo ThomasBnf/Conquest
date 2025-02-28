@@ -15,7 +15,7 @@ type Props = {
 };
 
 export default function Page({ params: { slug, memberId } }: Props) {
-  const { data: member, isLoading } = trpc.members.getMember.useQuery({
+  const { data: member, isLoading } = trpc.members.get.useQuery({
     id: memberId,
   });
 

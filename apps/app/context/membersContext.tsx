@@ -26,20 +26,19 @@ export const MembersProvider = ({ children }: Props) => {
   const [{ search, idMember, descMember, page, pageSize }] =
     useQueryStates(tableParsers);
 
-  trpc.levels.getAllLevels.useQuery();
-  trpc.tags.getAllTags.useQuery();
+  trpc.levels.list.useQuery();
+  trpc.tags.list.useQuery();
 
-  const { data, isLoading, failureReason } =
-    trpc.members.getAllMembers.useQuery({
-      search,
-      desc: descMember,
-      id: idMember,
-      page,
-      pageSize,
-      groupFilters,
-    });
+  const { data, isLoading } = trpc.members.list.useQuery({
+    search,
+    desc: descMember,
+    id: idMember,
+    page,
+    pageSize,
+    groupFilters,
+  });
 
-  const { data: count } = trpc.members.countMembers.useQuery({
+  const { data: count, failureReason } = trpc.members.count.useQuery({
     search,
     groupFilters,
   });

@@ -21,13 +21,13 @@ export const PulseBadge = ({
 }: Props) => {
   const { pulse } = member ?? {};
 
-  const { data: levels } = trpc.levels.getAllLevels.useQuery();
+  const { data: levels } = trpc.levels.list.useQuery();
   const level = levels?.find((level) => level.id === member?.level_id);
   const { from, to } = level ?? {};
 
-  const { data: channels } = trpc.channels.getAllChannels.useQuery({});
-  const { data: activities } = trpc.activities.getMemberActivities.useQuery({
-    memberId: member?.id ?? null,
+  const { data: channels } = trpc.channels.list.useQuery({});
+  const { data: activities } = trpc.activities.list.useQuery({
+    member_id: member?.id,
   });
 
   const today = new Date();

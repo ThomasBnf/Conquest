@@ -14,10 +14,10 @@ export const LivestormForm = () => {
   const { livestorm, loading, setLoading, step, setStep } = useIntegration();
   const utils = trpc.useUtils();
 
-  const { mutateAsync } = trpc.integrations.updateIntegration.useMutation({
+  const { mutateAsync } = trpc.integrations.update.useMutation({
     onSuccess: () => {
-      utils.integrations.getIntegrationBySource.invalidate({
-        source: "LIVESTORM",
+      utils.integrations.bySource.invalidate({
+        source: "Livestorm",
       });
     },
   });
@@ -47,8 +47,8 @@ export const LivestormForm = () => {
     }
 
     if (isCompleted) {
-      utils.integrations.getIntegrationBySource.invalidate({
-        source: "LIVESTORM",
+      utils.integrations.bySource.invalidate({
+        source: "Livestorm",
       });
       utils.events.listEvents.invalidate();
       setTimeout(() => setLoading(false), 1000);
@@ -72,7 +72,7 @@ export const LivestormForm = () => {
                   channel-specific conditions now or later
                 </p>
               </div>
-              <ActivityTypesList source="LIVESTORM" disableHeader />
+              <ActivityTypesList source="Livestorm" disableHeader />
             </>
           )}
           <Button onClick={onStart} loading={loading} disabled={loading}>

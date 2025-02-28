@@ -1,17 +1,17 @@
 import { trpc } from "@/server/client";
 import type {
   ActivityType,
-  ActivityTypeCondition,
+  ActivityTypeRule,
 } from "@conquest/zod/schemas/activity-type.schema";
 
 type Props = {
   activityType: ActivityType;
-  condition: ActivityTypeCondition;
+  condition: ActivityTypeRule;
 };
 
 export const ConditionCard = ({ activityType, condition }: Props) => {
   const { channel_id, points } = condition;
-  const { data: channels } = trpc.channels.getAllChannels.useQuery({});
+  const { data: channels } = trpc.channels.list.useQuery({});
 
   const channel = channels?.find((c) => c.id === channel_id);
   return (

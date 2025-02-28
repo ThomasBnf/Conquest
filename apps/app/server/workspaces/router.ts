@@ -4,7 +4,7 @@ import { getWorkspace } from "./getWorkspace";
 import { updateWorkspace } from "./updateWorkspace";
 
 export const workspacesRouter = router({
-  getWorkspace,
+  get: getWorkspace,
+  update: updateWorkspace,
   getSlug,
-  updateWorkspace,
 });

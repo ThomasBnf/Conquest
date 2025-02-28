@@ -23,13 +23,13 @@ export default function Layout({
   children,
   params: { slug, memberId },
 }: PropsWithChildren<Props>) {
-  const { data: member, isLoading } = trpc.members.getMember.useQuery({
+  const { data: member, isLoading } = trpc.members.get.useQuery({
     id: memberId,
   });
 
   const { data: profiles, isLoading: isLoadingProfiles } =
-    trpc.profiles.getAllProfiles.useQuery({
-      memberId: memberId,
+    trpc.profiles.list.useQuery({
+      member_id: memberId,
     });
 
   if (isLoading || isLoadingProfiles) return <IsLoading />;

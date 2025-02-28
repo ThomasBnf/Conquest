@@ -1,25 +1,24 @@
-import type { activity as ActivityPrisma } from "@prisma/client";
 import { z } from "zod";
 import { SOURCE } from "../enum/source.enum";
 import { ActivityTypeSchema } from "./activity-type.schema";
 
 export const ActivitySchema = z.object({
-  id: z.string().cuid(),
-  external_id: z.string().nullable(),
-  title: z.string().nullable(),
+  id: z.string().uuid(),
+  external_id: z.string(),
+  title: z.string(),
   message: z.string(),
-  reply_to: z.string().nullable(),
-  react_to: z.string().nullable(),
-  invite_to: z.string().nullable(),
+  reply_to: z.string(),
+  react_to: z.string(),
+  invite_to: z.string(),
   source: SOURCE,
-  activity_type_id: z.string().cuid(),
-  channel_id: z.string().cuid().nullable(),
-  event_id: z.string().cuid().nullable(),
-  member_id: z.string().cuid(),
-  workspace_id: z.string().cuid(),
+  activity_type_id: z.string(),
+  channel_id: z.string(),
+  event_id: z.string(),
+  member_id: z.string(),
+  workspace_id: z.string(),
   created_at: z.coerce.date(),
   updated_at: z.coerce.date(),
-}) satisfies z.ZodType<ActivityPrisma>;
+});
 
 export const ActivityWithTypeSchema = ActivitySchema.extend({
   activity_type: ActivityTypeSchema,

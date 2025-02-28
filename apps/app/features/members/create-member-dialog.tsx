@@ -32,10 +32,10 @@ export const CreateMemberDialog = () => {
   const [loading, setLoading] = useState(false);
   const utils = trpc.useUtils();
 
-  const { mutateAsync } = trpc.members.createMember.useMutation({
+  const { mutateAsync } = trpc.members.post.useMutation({
     onSuccess: () => {
-      utils.members.getAllMembers.invalidate();
-      utils.members.countMembers.invalidate();
+      utils.members.list.invalidate();
+      utils.members.count.invalidate();
       toast.success("Member created");
       form.reset();
     },

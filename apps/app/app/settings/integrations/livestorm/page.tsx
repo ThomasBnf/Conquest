@@ -11,7 +11,7 @@ type Props = {
 export default function Page({ searchParams: { error } }: Props) {
   return (
     <ScrollArea className="h-full">
-      <IntegrationProvider source="LIVESTORM">
+      <IntegrationProvider source="Livestorm">
         <LivestormIntegration error={error} />
       </IntegrationProvider>
     </ScrollArea>

@@ -1,8 +1,7 @@
 import { LINKEDIN_SCOPES } from "@/constant";
 import { getCurrentUser } from "@/queries/getCurrentUser";
-import { encrypt } from "@conquest/db/lib/encrypt";
-import { createIntegration } from "@conquest/db/queries/integration/createIntegration";
-import { getWorkspace } from "@conquest/db/queries/workspace/getWorkspace";
+import { createIntegration } from "@conquest/clickhouse/integrations/createIntegration";
+import { encrypt } from "@conquest/clickhouse/utils/encrypt";
 import { env } from "@conquest/env";
 import { redirect } from "next/navigation";
 
@@ -13,11 +12,7 @@ type Props = {
 };
 
 export default async function Page({ searchParams: { code } }: Props) {
-  const user = await getCurrentUser();
-
-  const { slug, id: workspace_id } = await getWorkspace({
-    id: user.workspace_id,
-  });
+  const { id: userId, workspace_id } = await getCurrentUser();
 
   const response = await fetch(
     "https://www.linkedin.com/oauth/v2/accessToken",
@@ -37,9 +32,7 @@ export default async function Page({ searchParams: { code } }: Props) {
   );
 
   if (!response.ok) {
-    return redirect(
-      `/${slug}/settings/integrations/linkedin?error=invalid_code`,
-    );
+    return redirect("settings/integrations/linkedin?error=invalid_code");
   }
 
   const data = await response.json();
@@ -48,16 +41,16 @@ export default async function Page({ searchParams: { code } }: Props) {
   const encryptedAccessToken = await encrypt(access_token);
 
   await createIntegration({
-    external_id: user.workspace_id,
+    external_id: workspace_id,
     details: {
-      source: "LINKEDIN",
+      source: "Linkedin",
       name: "",
       access_token: encryptedAccessToken.token,
       iv: encryptedAccessToken.iv,
       scopes: LINKEDIN_SCOPES,
       user_id: "",
     },
-    created_by: user.id,
+    created_by: userId,
     workspace_id,
   });
 

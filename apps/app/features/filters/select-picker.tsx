@@ -70,7 +70,7 @@ export const SelectPicker = ({ filter }: Props) => {
 
 const ValueCountry = ({ filter }: { filter: FilterSelect }) => {
   const { values } = filter;
-  const { data: countries } = trpc.members.getAllCountries.useQuery();
+  const { data: countries } = trpc.members.listCountries.useQuery();
 
   return (
     <div className="flex max-w-64 items-center gap-1">
@@ -89,7 +89,7 @@ const ValueCountry = ({ filter }: { filter: FilterSelect }) => {
 
 const ValueLanguage = ({ filter }: { filter: FilterSelect }) => {
   const { values } = filter;
-  const { data: languages } = trpc.members.getAllLanguages.useQuery();
+  const { data: languages } = trpc.members.listLanguages.useQuery();
 
   return (
     <div className="flex max-w-64 items-center gap-1">
@@ -122,7 +122,7 @@ const ValueSource = ({ filter }: { filter: FilterSelect }) => {
 
 const ValueTag = ({ filter }: { filter: FilterSelect }) => {
   const { values } = filter;
-  const { data: tags } = trpc.tags.getAllTags.useQuery();
+  const { data: tags } = trpc.tags.list.useQuery();
 
   return (
     <div className="flex max-w-64 items-center gap-1">
@@ -145,8 +145,7 @@ const CountryGroup = ({
   const { values } = filter;
   const { onUpdateFilter } = useFilters();
 
-  const { data: countries, isLoading } =
-    trpc.members.getAllCountries.useQuery();
+  const { data: countries, isLoading } = trpc.members.listCountries.useQuery();
 
   const onSelect = (country: string) => {
     const hasCountry = values.some((value) => value === country);
@@ -189,8 +188,7 @@ const LanguageGroup = ({
   const { values } = filter;
   const { onUpdateFilter } = useFilters();
 
-  const { data: languages, isLoading } =
-    trpc.members.getAllLanguages.useQuery();
+  const { data: languages, isLoading } = trpc.members.listLanguages.useQuery();
 
   const onSelect = (language: string) => {
     const hasLanguage = values.some((value) => value === language);
@@ -232,7 +230,7 @@ const LinkedProfilesGroup = ({
 }) => {
   const { onUpdateFilter } = useFilters();
   const { values } = filter;
-  const { data: sources, isLoading } = trpc.sources.getAllSources.useQuery();
+  const { data: sources, isLoading } = trpc.members.listSources.useQuery();
 
   const onSelect = (source: string) => {
     const hasSource = values.some((value) =>
@@ -275,7 +273,7 @@ const SourcesGroup = ({
 }) => {
   const { values } = filter;
   const { onUpdateFilter } = useFilters();
-  const { data: sources, isLoading } = trpc.sources.getAllSources.useQuery();
+  const { data: sources, isLoading } = trpc.members.listSources.useQuery();
 
   const onSelect = (source: string) => {
     onUpdateFilter({ ...filter, values: [source] });
@@ -307,7 +305,7 @@ const TagsGroup = ({
 }) => {
   const { onUpdateFilter } = useFilters();
   const { values } = filter;
-  const { data: tags, isLoading } = trpc.tags.getAllTags.useQuery();
+  const { data: tags, isLoading } = trpc.tags.list.useQuery();
 
   const onSelect = (tag: Tag) => {
     const hasTag = values.some((value) => value === tag.id);

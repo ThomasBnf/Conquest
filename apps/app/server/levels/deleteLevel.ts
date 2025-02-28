@@ -1,21 +1,15 @@
-import { prisma } from "@conquest/db/prisma";
+import { deleteLevel as _deleteLevel } from "@conquest/clickhouse/levels/deleteLevel";
 import { z } from "zod";
 import { protectedProcedure } from "../trpc";
 
 export const deleteLevel = protectedProcedure
   .input(
     z.object({
-      id: z.string().cuid(),
+      id: z.string().uuid(),
     }),
   )
-  .mutation(async ({ ctx: { user }, input }) => {
-    const { workspace_id } = user;
+  .mutation(async ({ input }) => {
     const { id } = input;
 
-    return await prisma.level.delete({
-      where: {
-        id,
-        workspace_id,
-      },
-    });
+    return _deleteLevel({ id });
   });

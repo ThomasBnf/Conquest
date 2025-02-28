@@ -15,7 +15,7 @@ export const RepeatOnSchema = z.enum([
 // NODES
 
 export const NodeBaseSchema = z.object({
-  id: z.string().cuid(),
+  id: z.string().uuid(),
   type: z.literal("custom"),
   position: z.object({
     x: z.number(),

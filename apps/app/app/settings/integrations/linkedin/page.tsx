@@ -11,7 +11,7 @@ type Props = {
 export default function Page({ searchParams: { error } }: Props) {
   return (
     <ScrollArea className="h-full">
-      <IntegrationProvider source="LINKEDIN">
+      <IntegrationProvider source="Linkedin">
         <LinkedInIntegration error={error} />
       </IntegrationProvider>
     </ScrollArea>

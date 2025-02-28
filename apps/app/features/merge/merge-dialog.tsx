@@ -36,7 +36,7 @@ export const MergeDialog = ({ open, setOpen, member }: Props) => {
 
   const { mutateAsync: mergeMembers } = trpc.members.mergeMembers.useMutation({
     onSuccess: () => {
-      utils.members.getAllMembers.invalidate();
+      utils.members.list.invalidate();
       toast.success("Members merged");
       onCancel();
     },

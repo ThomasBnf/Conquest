@@ -36,7 +36,7 @@ export const MembersLevels = ({ from, to }: Props) => {
       <ResponsiveContainer height={380} width="100%">
         <ChartContainer config={chartConfig}>
           <BarChart
-            data={data}
+            data={[]}
             barGap={0}
             barCategoryGap={8}
             margin={{ left: 0, right: 16 }}

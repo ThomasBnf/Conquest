@@ -14,10 +14,10 @@ export const DiscordForm = () => {
   const { discord, loading, setLoading, step, setStep } = useIntegration();
   const utils = trpc.useUtils();
 
-  const { mutateAsync } = trpc.integrations.updateIntegration.useMutation({
+  const { mutateAsync } = trpc.integrations.update.useMutation({
     onSuccess: () => {
-      utils.integrations.getIntegrationBySource.invalidate({
-        source: "DISCORD",
+      utils.integrations.bySource.invalidate({
+        source: "Discord",
       });
     },
   });
@@ -47,10 +47,10 @@ export const DiscordForm = () => {
     }
 
     if (isCompleted) {
-      utils.integrations.getIntegrationBySource.invalidate({
-        source: "DISCORD",
+      utils.integrations.bySource.invalidate({
+        source: "Discord",
       });
-      utils.channels.getAllChannels.invalidate();
+      utils.channels.list.invalidate();
       utils.discord.listChannels.invalidate();
       setTimeout(() => setLoading(false), 1000);
     }
@@ -80,7 +80,7 @@ export const DiscordForm = () => {
                   channel-specific conditions now or later
                 </p>
               </div>
-              <ActivityTypesList source="DISCORD" disableHeader />
+              <ActivityTypesList source="Discord" disableHeader />
             </>
           )}
           <Button onClick={onStart} loading={loading} disabled={loading}>

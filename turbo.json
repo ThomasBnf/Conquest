@@ -9,7 +9,6 @@
     },
     "dev": {
       "inputs": ["$TURBO_DEFAULT$", ".env"],
-      "dependsOn": ["^db:generate"],
       "persistent": true
     },
     "build": {
@@ -27,25 +26,12 @@
     "clean": {
       "cache": false
     },
-    "jobs": {
-      "persistent": true,
-      "cache": false
-    },
     "lint": {
       "dependsOn": ["^topo"]
     },
     "typecheck": {
       "dependsOn": ["^topo"],
       "outputs": ["node_modules/.cache/tsbuildinfo.json"]
-    },
-    "db:generate": {
-      "cache": false
-    },
-    "db:push": {
-      "cache": false
-    },
-    "db:deploy": {
-      "cache": false
     }
   }
 }

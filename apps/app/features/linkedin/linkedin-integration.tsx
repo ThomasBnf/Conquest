@@ -1,50 +1,28 @@
 "use client";
 
 import { Linkedin } from "@/components/icons/Linkedin";
-import { SkeletonIntegration } from "@/components/states/skeleton-integration";
 import { LINKEDIN_SCOPES } from "@/constant/index";
-import { trpc } from "@/server/client";
+import { useIntegration } from "@/context/integrationContext";
 import { env } from "@conquest/env";
-import { LinkedInIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { toast } from "sonner";
-import { LinkedinForm } from "../linkedin/linkedin-form";
 import { ConnectedCard } from "../integrations/connected-card";
 import { EnableCard } from "../integrations/enable-card";
 import { IntegrationHeader } from "../integrations/integration-header";
+import { LinkedinForm } from "../linkedin/linkedin-form";
 
 type Props = {
   error: string;
 };
 
 export const LinkedInIntegration = ({ error }: Props) => {
-  const { data, isLoading } = trpc.integrations.getIntegrationBySource.useQuery(
-    { source: "LINKEDIN" },
-  );
-  const linkedin = data ? LinkedInIntegrationSchema.parse(data) : null;
-  const { status, details } = linkedin ?? {};
-  const { name } = details ?? {};
-
-  const [loading, setLoading] = useState(status === "SYNCING");
+  const { linkedin, setLoading } = useIntegration();
+  const { name } = linkedin?.details ?? {};
 
   const router = useRouter();
-  const utils = trpc.useUtils();
-
-  const { mutateAsync } = trpc.integrations.deleteIntegration.useMutation({
-    onSuccess: () => {
-      utils.integrations.getIntegrationBySource.invalidate({
-        source: "LINKEDIN",
-      });
-      toast.success("LinkedIn disconnected");
-    },
-    onError: (error) => {
-      toast.error(error.message);
-    },
-  });
 
   const onEnable = () => {
     setLoading(true);
+
     const params = new URLSearchParams({
       response_type: "code",
       client_id: env.NEXT_PUBLIC_LINKEDIN_CLIENT_ID,
@@ -56,13 +34,6 @@ export const LinkedInIntegration = ({ error }: Props) => {
       `https://www.linkedin.com/oauth/v2/authorization?${params.toString()}`,
     );
   };
-
-  const onDisconnect = async () => {
-    if (!linkedin) return;
-    await mutateAsync({ integration: linkedin });
-  };
-
-  if (isLoading) return <SkeletonIntegration />;
 
   return (
     <div className="mx-auto flex max-w-4xl flex-col gap-4 px-4 py-12 lg:py-24">
@@ -78,17 +49,12 @@ export const LinkedInIntegration = ({ error }: Props) => {
         integration={linkedin}
         docUrl="https://docs.useconquest.com/integrations/linkedin"
         description="Connect your LinkedIn organization page to sync and track members who engage with your posts."
-        loading={loading}
+        source="Linkedin"
         onEnable={onEnable}
-        onDisconnect={onDisconnect}
       >
-        <LinkedinForm loading={loading} setLoading={setLoading} />
+        <LinkedinForm />
       </EnableCard>
-      <ConnectedCard
-        integration={linkedin}
-        name={name}
-        onDisconnect={onDisconnect}
-      />
+      <ConnectedCard integration={linkedin} name={name} source="Linkedin" />
     </div>
   );
 };

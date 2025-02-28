@@ -1,21 +1,22 @@
-import { decrypt } from "@conquest/db/lib/decrypt";
-import { getIntegrationBySource } from "@conquest/db/queries/integration/getIntegrationBySource";
+import { getIntegrationBySource } from "@conquest/clickhouse/integrations/getIntegrationBySource";
+import { decrypt } from "@conquest/clickhouse/utils/decrypt";
 import { SlackIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
 import { WebClient } from "@slack/web-api";
 import { protectedProcedure } from "../trpc";
 
 export const listChannels = protectedProcedure.query(
-  async ({ ctx: { user }, input }) => {
+  async ({ ctx: { user } }) => {
     const { workspace_id } = user;
 
     const slack = SlackIntegrationSchema.parse(
       await getIntegrationBySource({
-        source: "SLACK",
+        source: "Slack",
         workspace_id,
       }),
     );
 
-    const { access_token, access_token_iv } = slack.details;
+    const { details } = slack;
+    const { access_token, access_token_iv } = details;
 
     const token = await decrypt({
       access_token: access_token,

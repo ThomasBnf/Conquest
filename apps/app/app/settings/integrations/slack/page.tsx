@@ -11,7 +11,7 @@ type Props = {
 export default function Page({ searchParams: { error } }: Props) {
   return (
     <ScrollArea className="h-dvh">
-      <IntegrationProvider source="SLACK">
+      <IntegrationProvider source="Slack">
         <SlackIntegration error={error} />
       </IntegrationProvider>
     </ScrollArea>

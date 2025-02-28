@@ -1,4 +1,3 @@
-import { prisma } from "@conquest/db/prisma";
 import { getMemberMetrics } from "@conquest/trigger/tasks/getMemberMetrics";
 import { MemberSchema } from "@conquest/zod/schemas/member.schema";
 import { z } from "zod";
@@ -68,36 +67,36 @@ export const mergeMembers = protectedProcedure
 
     const { id, company_name, company, ...memberData } = mergedMember;
 
-    await prisma.$transaction(async (tx) => {
-      await tx.profile.updateMany({
-        where: { member_id: leftMember.id },
-        data: { member_id: mergedMember.id },
-      });
+    // await prisma.$transaction(async (tx) => {
+    //   await tx.profile.updateMany({
+    //     where: { member_id: leftMember.id },
+    //     data: { member_id: mergedMember.id },
+    //   });
 
-      await tx.activity.updateMany({
-        where: { member_id: leftMember.id },
-        data: { member_id: mergedMember.id },
-      });
+    //   await tx.activity.updateMany({
+    //     where: { member_id: leftMember.id },
+    //     data: { member_id: mergedMember.id },
+    //   });
 
-      await tx.activity.updateMany({
-        where: { invite_to: leftMember.id },
-        data: { invite_to: mergedMember.id },
-      });
+    //   await tx.activity.updateMany({
+    //     where: { invite_to: leftMember.id },
+    //     data: { invite_to: mergedMember.id },
+    //   });
 
-      await tx.member.delete({
-        where: { id: leftMember.id },
-      });
+    //   await tx.member.delete({
+    //     where: { id: leftMember.id },
+    //   });
 
-      return await tx.member.update({
-        where: { id: mergedMember.id },
-        data: {
-          ...memberData,
-          pulse: 0,
-          level_id: null,
-          logs: [],
-        },
-      });
-    });
+    //   return await tx.member.update({
+    //     where: { id: mergedMember.id },
+    //     data: {
+    //       ...memberData,
+    //       pulse: 0,
+    //       level_id: null,
+    //       logs: [],
+    //     },
+    //   });
+    // });
 
     return getMemberMetrics.trigger({ memberId: mergedMember.id });
   });

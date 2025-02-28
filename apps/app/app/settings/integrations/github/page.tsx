@@ -11,7 +11,7 @@ type Props = {
 export default async function Page({ searchParams: { error } }: Props) {
   return (
     <ScrollArea className="h-dvh">
-      <IntegrationProvider source="GITHUB">
+      <IntegrationProvider source="Github">
         <GithubIntegration error={error} />
       </IntegrationProvider>
     </ScrollArea>

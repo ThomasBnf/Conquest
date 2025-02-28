@@ -1,10 +1,9 @@
-import { decrypt } from "@conquest/db/lib/decrypt";
-import { listChannels } from "@conquest/db/queries/channel/listChannels";
-import { deleteIntegration } from "@conquest/db/queries/integration/deleteIntegration";
-import { updateIntegration } from "@conquest/db/queries/integration/updateIntegration";
-import { batchMergeMembers } from "@conquest/db/queries/member/batchMergeMembers";
-import { createListMembers } from "@conquest/db/queries/slack/createListMembers";
-import { listMessages } from "@conquest/db/queries/slack/listMessages";
+import { listChannels } from "@conquest/clickhouse/channels/listChannels";
+import { deleteIntegration } from "@conquest/clickhouse/integrations/deleteIntegration";
+import { updateIntegration } from "@conquest/clickhouse/integrations/updateIntegration";
+import { createListMembers } from "@conquest/clickhouse/slack/createListMembers";
+import { listMessages } from "@conquest/clickhouse/slack/listMessages";
+import { decrypt } from "@conquest/clickhouse/utils/decrypt";
 import { SlackIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
 import { WebClient } from "@slack/web-api";
 import { schemaTask } from "@trigger.dev/sdk/v3";
@@ -31,7 +30,7 @@ export const installSlack = schemaTask({
 
     const web = new WebClient(token);
 
-    const channels = await listChannels({ workspace_id, source: "SLACK" });
+    const channels = await listChannels({ source: "Slack", workspace_id });
     const members = await createListMembers({ web, workspace_id });
 
     for (const channel of channels) {
@@ -40,7 +39,7 @@ export const installSlack = schemaTask({
     }
 
     await getAllMembersMetrics.trigger({ workspace_id });
-    await batchMergeMembers({ members });
+    // await batchMergeMembers({ members });
     await integrationSuccessEmail.trigger({ integration: slack, workspace_id });
   },
   onSuccess: async ({ slack }) => {
@@ -51,9 +50,6 @@ export const installSlack = schemaTask({
     });
   },
   onFailure: async ({ slack }) => {
-    await deleteIntegration({
-      source: "SLACK",
-      integration: slack,
-    });
+    await deleteIntegration({ integration: slack });
   },
 });

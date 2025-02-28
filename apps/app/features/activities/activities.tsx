@@ -2,7 +2,6 @@ import { Activities as ActivitiesIcon } from "@/components/icons/Activities";
 import { EmptyState } from "@/components/states/empty-state";
 import { IsLoading } from "@/components/states/is-loading";
 import { IntegrationProvider } from "@/context/integrationContext";
-import { useUser } from "@/context/userContext";
 import { cn } from "@conquest/ui/cn";
 import { Separator } from "@conquest/ui/separator";
 import type { ActivityWithType } from "@conquest/zod/schemas/activity.schema";
@@ -27,9 +26,7 @@ export const Activities = ({
   fetchNextPage,
   isLoading,
   className,
-  children,
 }: PropsWithChildren<Props>) => {
-  const { slug } = useUser();
   const { ref, inView } = useInView();
 
   const groupedActivities = useMemo(() => {

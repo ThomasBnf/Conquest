@@ -8,7 +8,7 @@ type Props = {
 };
 
 export const CompanyCell = ({ row }: Props) => {
-  const { data, isLoading } = trpc.companies.getCompany.useQuery({
+  const { data, isLoading } = trpc.companies.get.useQuery({
     id: row.original.company_id,
   });
 

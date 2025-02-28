@@ -1,14 +1,14 @@
 import { router } from "@/server/trpc";
 import { createLevel } from "./createLevel";
 import { deleteLevel } from "./deleteLevel";
-import { getAllLevels } from "./getAllLevels";
 import { getLevel } from "./getLevel";
+import { listLevels } from "./listLevels";
 import { updateLevel } from "./updateLevel";
 
 export const levelsRouter = router({
-  getAllLevels,
-  createLevel,
-  getLevel,
-  updateLevel,
-  deleteLevel,
+  list: listLevels,
+  post: createLevel,
+  get: getLevel,
+  update: updateLevel,
+  delete: deleteLevel,
 });

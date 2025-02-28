@@ -9,9 +9,12 @@ type Props = {
 export const SlackMention = ({ slackId }: Props) => {
   const { slug } = useUser();
 
-  const { data: member } = trpc.members.getMember.useQuery({
-    id: slackId,
-    source: "SLACK",
+  const { data: profile } = trpc.profiles.get.useQuery({
+    external_id: slackId,
+  });
+
+  const { data: member } = trpc.members.get.useQuery({
+    id: profile?.member_id ?? "",
   });
 
   const { first_name, last_name } = member ?? {};

@@ -15,7 +15,7 @@ type Props = {
 };
 
 export default function Page({ params: { slug, memberId } }: Props) {
-  const { data: member, isLoading } = trpc.members.getMember.useQuery({
+  const { data: member, isLoading } = trpc.members.get.useQuery({
     id: memberId,
   });
 
@@ -24,8 +24,8 @@ export default function Page({ params: { slug, memberId } }: Props) {
     hasNextPage,
     fetchNextPage,
     isLoading: isLoadingActivities,
-  } = trpc.activities.getMemberActivities.useInfiniteQuery(
-    { memberId, take: 10 },
+  } = trpc.activities.list.useInfiniteQuery(
+    { member_id: memberId, take: 10 },
     { getNextPageParam: (lastPage) => lastPage[lastPage.length - 1]?.id },
   );
 

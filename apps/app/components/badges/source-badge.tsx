@@ -21,14 +21,14 @@ type SourceConfig = {
 };
 
 const sourceConfigs: Record<Source, SourceConfig> = {
-  SLACK: { label: "Slack", Icon: Slack },
-  MANUAL: { label: "Manual" },
-  API: { label: "API" },
-  DISCOURSE: { label: "Discourse", Icon: Discourse },
-  DISCORD: { label: "Discord", Icon: Discord },
-  GITHUB: { label: "Github", Icon: Github },
-  LINKEDIN: { label: "Linkedin", Icon: Linkedin },
-  LIVESTORM: { label: "Livestorm", Icon: Livestorm },
+  Slack: { label: "Slack", Icon: Slack },
+  Manual: { label: "Manual" },
+  Api: { label: "API" },
+  Discourse: { label: "Discourse", Icon: Discourse },
+  Discord: { label: "Discord", Icon: Discord },
+  Github: { label: "Github", Icon: Github },
+  Linkedin: { label: "Linkedin", Icon: Linkedin },
+  Livestorm: { label: "Livestorm", Icon: Livestorm },
 } as const;
 
 export const SourceBadge = ({

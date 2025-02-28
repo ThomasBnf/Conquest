@@ -1,15 +1,9 @@
-import { prisma } from "@conquest/db/prisma";
-import { WorkspaceSchema } from "@conquest/zod/schemas/workspace.schema";
+import { getWorkspace as _getWorkspace } from "@conquest/clickhouse/workspaces/getWorkspace";
 import { protectedProcedure } from "../trpc";
 
 export const getWorkspace = protectedProcedure.query(
   async ({ ctx: { user } }) => {
     const { workspace_id } = user;
-
-    const workspace = await prisma.workspace.findUnique({
-      where: { id: workspace_id },
-    });
-
-    return WorkspaceSchema.parse(workspace);
+    return await _getWorkspace({ id: workspace_id });
   },
 );

@@ -1,5 +1,4 @@
-import { prisma } from "@conquest/db/prisma";
-import { ProfileSchema } from "@conquest/zod/schemas/profile.schema";
+import { getProfile as _getProfile } from "@conquest/clickhouse/profiles/getProfile";
 import { z } from "zod";
 import { protectedProcedure } from "../trpc";
 
@@ -13,14 +12,5 @@ export const getProfile = protectedProcedure
     const { external_id } = input;
     const { workspace_id } = user;
 
-    const profile = await prisma.profile.findUnique({
-      where: {
-        external_id_workspace_id: {
-          external_id,
-          workspace_id,
-        },
-      },
-    });
-
-    return ProfileSchema.parse(profile);
+    return await _getProfile({ external_id, workspace_id });
   });

@@ -35,26 +35,25 @@ export const EditableCompany = ({ member, onUpdate }: Props) => {
   const router = useRouter();
   const utils = trpc.useUtils();
 
-  const { data: company } = trpc.companies.getCompany.useQuery({
+  const { data: company } = trpc.companies.get.useQuery({
     id: member.company_id,
   });
 
   const { data, isLoading, fetchNextPage } =
-    trpc.companies.listCompanies.useInfiniteQuery(
-      { search, take: 25 },
-      { getNextPageParam: (lastPage) => lastPage[lastPage.length - 1]?.id },
-    );
+    trpc.companies.getAllCompanies.useInfiniteQuery({
+      search,
+      take: 25,
+    });
 
   const companies = data?.pages.flatMap((page) => page ?? []);
 
-  const { mutateAsync: createCompany } =
-    trpc.companies.createCompany.useMutation({
-      onSuccess: () => {
-        utils.companies.listCompanies.invalidate();
-        setOpen(false);
-        setQuery("");
-      },
-    });
+  const { mutateAsync: createCompany } = trpc.companies.post.useMutation({
+    onSuccess: () => {
+      utils.companies.list.invalidate();
+      setOpen(false);
+      setQuery("");
+    },
+  });
 
   const onUpdateMemberCompany = (newCompany: Company | null) => {
     if (company?.id === newCompany?.id) return;

@@ -18,7 +18,7 @@ export default function Page() {
             <div className="grid grid-cols-2 gap-4">
               {category.integrations.map((integration) => (
                 <IntegrationCard
-                  key={integration.name}
+                  key={integration.source}
                   integration={integration}
                 />
               ))}

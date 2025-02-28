@@ -41,19 +41,17 @@ export const CreateActivityDialog = ({ member }: Props) => {
   const [open, setOpen] = useState(false);
   const utils = trpc.useUtils();
 
-  const { data } = trpc.activityTypes.getAllActivityTypes.useQuery();
-  const { mutateAsync, isPending } = trpc.activities.createActivity.useMutation(
-    {
-      onSuccess: () => {
-        utils.activities.getMemberActivities.invalidate();
-        setOpen(false);
-        form.reset();
-      },
+  const { data } = trpc.activityTypes.list.useQuery();
+  const { mutateAsync, isPending } = trpc.activities.post.useMutation({
+    onSuccess: () => {
+      utils.activities.list.invalidate();
+      setOpen(false);
+      form.reset();
     },
-  );
+  });
 
   const activityTypes = data?.filter(
-    (activityType) => activityType.source === "MANUAL",
+    (activityType) => activityType.source === "Manual",
   );
 
   const form = useForm<FormCreate>({

@@ -30,15 +30,14 @@ export const EditableMembers = ({ company }: Props) => {
   const [search, setSearch] = useState("");
   const router = useRouter();
 
-  const { data: companyMembers } = trpc.companies.getCompanyMembers.useQuery({
+  const { data: companyMembers } = trpc.companies.listCompanyMembers.useQuery({
     companyId: company.id,
   });
 
-  const { mutateAsync: updateMemberCompany } =
-    trpc.members.updateMember.useMutation();
+  const { mutateAsync: updateMember } = trpc.members.update.useMutation();
 
   const { data, hasNextPage, fetchNextPage, isLoading } =
-    trpc.members.listMembers.useInfiniteQuery(
+    trpc.members.getAllMembers.useInfiniteQuery(
       { search, companyId: company.id, take: 25 },
       { getNextPageParam: (lastPage) => lastPage[lastPage.length - 1]?.id },
     );
@@ -46,21 +45,19 @@ export const EditableMembers = ({ company }: Props) => {
   const members = data?.pages.flat();
 
   const onUpdate = async (memberId: string) => {
-    const isMemberInCompany = companyMembers?.some(
+    const isInCompany = companyMembers?.some(
       (member) => member.id === memberId,
     );
 
-    await updateMemberCompany({
+    await updateMember({
       id: memberId,
       data: {
-        company_id: isMemberInCompany ? null : company.id,
+        company_id: isInCompany ? "" : company.id,
       },
     });
 
     toast.success(
-      isMemberInCompany
-        ? "Member removed from company"
-        : "Member added to company",
+      isInCompany ? "Member removed from company" : "Member added to company",
     );
   };
 

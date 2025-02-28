@@ -3,16 +3,11 @@ import type { installLinkedin } from "@conquest/trigger/tasks/installLinkedin";
 import { Separator } from "@conquest/ui/separator";
 import { useRealtimeTaskTrigger } from "@trigger.dev/react-hooks";
 import { useRouter } from "next/navigation";
-import { type Dispatch, type SetStateAction, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
-type Props = {
-  loading: boolean;
-  setLoading: Dispatch<SetStateAction<boolean>>;
-};
-
-export const LinkedinForm = ({ loading, setLoading }: Props) => {
-  const { linkedin } = useIntegration();
+export const LinkedinForm = () => {
+  const { linkedin, setLoading } = useIntegration();
   // const { organizations, user_id, isLoading } = listOrganizations();
   const router = useRouter();
 
@@ -28,7 +23,8 @@ export const LinkedinForm = ({ loading, setLoading }: Props) => {
 
   const onStart = async () => {
     // if (!linkedin || !user_id) return;
-    // setLoading(true);
+
+    setLoading(true);
     // const response = await updateIntegration({
     //   id: linkedin.id,
     //   external_id: selectedOrg.organization_id,
@@ -52,7 +48,7 @@ export const LinkedinForm = ({ loading, setLoading }: Props) => {
     if (isFailed) {
       router.refresh();
       toast.error("Failed to install Linkedin", { duration: 5000 });
-      setLoading(false);
+      // setLoading(false);
     }
 
     if (isCompleted) router.refresh();

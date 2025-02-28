@@ -14,11 +14,9 @@ export const SlackForm = () => {
   const { slack, loading, setLoading, step, setStep } = useIntegration();
   const utils = trpc.useUtils();
 
-  const { mutateAsync } = trpc.integrations.updateIntegration.useMutation({
+  const { mutateAsync } = trpc.integrations.update.useMutation({
     onSuccess: () => {
-      utils.integrations.getIntegrationBySource.invalidate({
-        source: "SLACK",
-      });
+      utils.integrations.bySource.invalidate({ source: "Slack" });
     },
   });
 
@@ -41,16 +39,14 @@ export const SlackForm = () => {
     const isCompleted = run.status === "COMPLETED";
 
     if (["FAILED", "CRASHED", "EXPIRED"].includes(run.status)) {
+      toast.error("Failed to install Slack", { duration: 5000 });
       setStep(0);
       setLoading(false);
-      toast.error("Failed to install Slack", { duration: 5000 });
     }
 
     if (isCompleted) {
-      utils.integrations.getIntegrationBySource.invalidate({
-        source: "SLACK",
-      });
-      utils.channels.getAllChannels.invalidate();
+      utils.integrations.bySource.invalidate({ source: "Slack" });
+      utils.channels.list.invalidate({ source: "Slack" });
       utils.slack.listChannels.invalidate();
       setTimeout(() => setLoading(false), 1000);
     }
@@ -80,12 +76,14 @@ export const SlackForm = () => {
                   channel-specific conditions now or later
                 </p>
               </div>
-              <ActivityTypesList source="SLACK" disableHeader />
+              <ActivityTypesList source="Slack" disableHeader />
             </>
           )}
-          <Button onClick={onStart} loading={loading} disabled={loading}>
-            Let's start!
-          </Button>
+          {!loading && (
+            <Button onClick={onStart} loading={loading} disabled={loading}>
+              Let's start!
+            </Button>
+          )}
         </div>
       )}
     </>

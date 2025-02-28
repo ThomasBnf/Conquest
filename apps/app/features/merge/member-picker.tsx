@@ -31,7 +31,7 @@ export const MemberPicker = ({ currentMember, onSelect }: Props) => {
   const [search, setSearch] = useDebounce(query, 500);
 
   const { data, isLoading, fetchNextPage, hasNextPage } =
-    trpc.members.listMembers.useInfiniteQuery(
+    trpc.members.getAllMembers.useInfiniteQuery(
       { search, take: 10 },
       { getNextPageParam: (lastPage) => lastPage[lastPage.length - 1]?.id },
     );

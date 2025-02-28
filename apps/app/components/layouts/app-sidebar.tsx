@@ -38,9 +38,7 @@ export const AppSidebar = ({ workspace }: Props) => {
   const { setOpen } = useOpenList();
   const pathname = usePathname();
 
-  const isMemberPage = pathname.startsWith(`/${slug}/members`);
-
-  const { data: lists } = trpc.lists.getAllLists.useQuery();
+  const { data: lists } = trpc.lists.list.useQuery();
 
   const routes = [
     {

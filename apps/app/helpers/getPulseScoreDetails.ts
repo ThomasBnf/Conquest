@@ -1,3 +1,4 @@
+import { ActivityTypeRuleSchema } from "@conquest/zod/schemas/activity-type.schema";
 import type { ActivityWithType } from "@conquest/zod/schemas/activity.schema";
 import type { Channel } from "@conquest/zod/schemas/channel.schema";
 
@@ -30,7 +31,10 @@ export const getPulseScoreDetails = ({ activities, channels }: Props) => {
       const { activity_type } = activity;
       const { source, name, points } = activity_type;
 
-      const condition = activity.activity_type.conditions.find(
+      const parsedConditions = ActivityTypeRuleSchema.array().parse(
+        activity_type.conditions.rules,
+      );
+      const condition = parsedConditions.find(
         (condition) => condition.channel_id === activity.channel_id,
       );
 

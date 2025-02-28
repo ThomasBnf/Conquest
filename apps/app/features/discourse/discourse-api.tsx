@@ -14,7 +14,7 @@ import {
 import { Input } from "@conquest/ui/input";
 import { Label } from "@conquest/ui/label";
 import { zodResolver } from "@hookform/resolvers/zod";
-import cuid from "cuid";
+import { v4 as uuid } from "uuid";
 import { ArrowRight, Plus } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -57,7 +57,7 @@ export const DiscourseApi = () => {
   ]);
 
   const { mutateAsync: updateIntegration } =
-    trpc.integrations.updateIntegration.useMutation({
+    trpc.integrations.update.useMutation({
       onSuccess: () => {
         setStep(1);
         setLoading(false);
@@ -88,9 +88,8 @@ export const DiscourseApi = () => {
       id: discourse.id,
       details: {
         ...discourse.details,
-        source: "DISCOURSE",
-        community_url: formattedCommunityUrl,
         api_key,
+        community_url: formattedCommunityUrl,
         user_fields: fields.map((field) => ({
           id: field.external_id,
           name: field.name,
@@ -100,7 +99,7 @@ export const DiscourseApi = () => {
   };
 
   const onAddField = () => {
-    const newField = { id: cuid(), external_id: "", name: "" };
+    const newField = { id: uuid(), external_id: "", name: "" };
     setFields((prev) => [...prev, newField]);
   };
 
@@ -121,7 +120,7 @@ export const DiscourseApi = () => {
   };
 
   useEffect(() => {
-    if (discourse?.details.community_url) setStep(1);
+    if (discourse?.details?.community_url) setStep(1);
   }, [discourse]);
 
   return (

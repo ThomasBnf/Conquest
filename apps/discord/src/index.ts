@@ -92,7 +92,7 @@ client.on(Events.GuildMemberAdd, async (member) => {
           last_name: lastName,
           avatar_url: avatarUrl,
         },
-        source: "DISCORD",
+        source: "Discord",
         workspace_id,
       });
 
@@ -100,7 +100,7 @@ client.on(Events.GuildMemberAdd, async (member) => {
         external_id: id,
         attributes: {
           username,
-          source: "DISCORD",
+          source: "Discord",
         },
         member_id: createdMember.id,
         workspace_id,
@@ -158,7 +158,7 @@ client.on(Events.UserUpdate, async (user) => {
       external_id: id,
       attributes: {
         username: username ?? "",
-        source: "DISCORD",
+        source: "Discord",
       },
       member_id: updatedMember.id,
       workspace_id: updatedMember.workspace_id,
@@ -197,7 +197,7 @@ client.on(Events.ChannelCreate, async (channel) => {
       await createChannel({
         external_id: id,
         name,
-        source: "DISCORD",
+        source: "Discord",
         workspace_id,
       });
     } catch (error) {
@@ -303,7 +303,7 @@ client.on(Events.MessageCreate, async (message) => {
         reply_to: channelId,
         member_id: profile.member_id,
         channel_id: activity?.channel_id,
-        source: "DISCORD",
+        source: "Discord",
         workspace_id,
       });
     } catch (error) {
@@ -319,7 +319,7 @@ client.on(Events.MessageCreate, async (message) => {
         message: content,
         member_id: profile.member_id,
         channel_id: channel.id,
-        source: "DISCORD",
+        source: "Discord",
         workspace_id,
       });
     } catch (error) {
@@ -336,7 +336,7 @@ client.on(Events.MessageCreate, async (message) => {
         reply_to: reference?.messageId,
         member_id: profile.member_id,
         channel_id: channel.id,
-        source: "DISCORD",
+        source: "Discord",
         workspace_id,
       });
     } catch (error) {
@@ -447,7 +447,7 @@ client.on(Events.ThreadCreate, async (thread) => {
       message: "",
       member_id: profile.member_id,
       channel_id: channel.id,
-      source: "DISCORD",
+      source: "Discord",
       workspace_id,
     });
   } catch (error) {
@@ -534,7 +534,7 @@ client.on(Events.GuildRoleCreate, async (role) => {
         external_id: id,
         name,
         color: "#99AAB5",
-        source: "DISCORD",
+        source: "Discord",
         workspace_id,
       },
     });
@@ -660,7 +660,7 @@ client.on(Events.MessageReactionAdd, async (reaction, user) => {
       member_id: profile.member_id,
       //TO DO: Add thread channel NAME IN Activities
       channel_id: thread?.channel_id ?? channel?.id,
-      source: "DISCORD",
+      source: "Discord",
       workspace_id,
     });
   } catch (error) {

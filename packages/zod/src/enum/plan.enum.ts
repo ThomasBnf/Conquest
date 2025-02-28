@@ -1,6 +1,5 @@
-import { PLAN as PLAN_ENUM } from "@prisma/client";
 import { z } from "zod";
 
-export const PLAN = z.nativeEnum(PLAN_ENUM);
+export const PLAN = z.enum(["BASIC", "PREMIUM", "PRO"]);
 
 export type Plan = z.infer<typeof PLAN>;

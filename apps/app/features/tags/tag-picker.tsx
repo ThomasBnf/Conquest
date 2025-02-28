@@ -25,7 +25,7 @@ type Props = {
 };
 
 export const TagPicker = ({ record, onUpdate, className }: Props) => {
-  const { data: tags } = trpc.tags.getAllTags.useQuery();
+  const { data: tags } = trpc.tags.list.useQuery();
 
   const [recordTags, setRecordTags] = useState(record?.tags ?? []);
 

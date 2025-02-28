@@ -9,11 +9,11 @@ import {
   DropdownMenuTrigger,
 } from "@conquest/ui/dropdown-menu";
 import type { Member } from "@conquest/zod/schemas/member.schema";
-import cuid from "cuid";
 import { Plus } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Email } from "../custom/email";
+import { v4 as uuid } from "uuid";
 
 type Props = {
   member: Member;
@@ -22,7 +22,7 @@ type Props = {
 export const EditableEmails = ({ member }: Props) => {
   const [open, setOpen] = useState(false);
 
-  const { mutateAsync: updateMember } = trpc.members.updateMember.useMutation();
+  const { mutateAsync: updateMember } = trpc.members.update.useMutation();
 
   const memberEmails = [
     member.primary_email,
@@ -30,11 +30,11 @@ export const EditableEmails = ({ member }: Props) => {
   ].filter((email): email is string => email !== null);
 
   const [emails, setEmails] = useState<{ id: string; content: string }[]>(
-    memberEmails.map((email) => ({ id: cuid(), content: email })),
+    memberEmails.map((email) => ({ id: uuid(), content: email })),
   );
 
   const onAddEmail = () => {
-    setEmails([...emails, { id: cuid(), content: "" }]);
+    setEmails([...emails, { id: uuid(), content: "" }]);
   };
 
   const onChangeEmail = (id: string, newEmail: string) => {

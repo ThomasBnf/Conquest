@@ -37,7 +37,7 @@ export const FiltersProvider = ({ defaultGroupFilters, children }: Props) => {
   );
   const utils = trpc.useUtils();
 
-  const { mutateAsync } = trpc.users.updateUser.useMutation({
+  const { mutateAsync } = trpc.users.update.useMutation({
     onSuccess: () => {
       utils.users.getCurrentUser.invalidate();
     },
@@ -142,15 +142,15 @@ export const FiltersProvider = ({ defaultGroupFilters, children }: Props) => {
         operator,
       });
 
-      mutateAsync({
-        id: user?.id,
-        data: {
-          members_preferences: {
-            ...user.members_preferences,
-            groupFilters: newGroupFilters,
-          },
-        },
-      });
+      // mutateAsync({
+      //   id: user?.id,
+      //   data: {
+      //     members_preferences: {
+      //       ...user.members_preferences,
+      //       groupFilters: newGroupFilters,
+      //     },
+      //   },
+      // });
 
       return newGroupFilters;
     });

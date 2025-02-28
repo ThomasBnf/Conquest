@@ -15,10 +15,10 @@ export const DiscourseForm = () => {
   const { discourse, loading, setLoading, step, setStep } = useIntegration();
   const utils = trpc.useUtils();
 
-  const { mutateAsync } = trpc.integrations.updateIntegration.useMutation({
+  const { mutateAsync } = trpc.integrations.update.useMutation({
     onSuccess: () => {
-      utils.integrations.getIntegrationBySource.invalidate({
-        source: "DISCOURSE",
+      utils.integrations.bySource.invalidate({
+        source: "Discourse",
       });
     },
   });
@@ -48,10 +48,10 @@ export const DiscourseForm = () => {
     }
 
     if (isCompleted) {
-      utils.integrations.getIntegrationBySource.invalidate({
-        source: "DISCOURSE",
+      utils.integrations.bySource.invalidate({
+        source: "Discourse",
       });
-      utils.channels.getAllChannels.invalidate();
+      utils.channels.list.invalidate();
       utils.discourse.listChannels.invalidate();
       setTimeout(() => setLoading(false), 1000);
     }
@@ -82,7 +82,7 @@ export const DiscourseForm = () => {
                   channel-specific conditions now or later
                 </p>
               </div>
-              <ActivityTypesList source="DISCOURSE" disableHeader />
+              <ActivityTypesList source="Discourse" disableHeader />
             </>
           )}
           <Button onClick={onStart} loading={loading} disabled={loading}>

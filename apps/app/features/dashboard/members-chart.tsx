@@ -8,7 +8,8 @@ import {
   ChartTooltipContent,
 } from "@conquest/ui/chart";
 import { Skeleton } from "@conquest/ui/skeleton";
-import { useMemo, useState } from "react";
+import { format } from "date-fns";
+import { useState } from "react";
 import {
   Bar,
   BarChart,
@@ -18,15 +19,15 @@ import {
 } from "recharts";
 
 const chartConfig = {
-  totalMembers: {
+  total_members: {
     label: "Total members",
     color: "hsl(var(--chart-1))",
   },
-  newMembers: {
-    label: "New members",
-    color: "hsl(var(--chart-1))",
-  },
-  activeMembers: {
+  // newMembers: {
+  //   label: "New members",
+  //   color: "hsl(var(--chart-1))",
+  // },
+  active_members: {
     label: "Active members",
     color: "hsl(var(--chart-1))",
   },
@@ -39,18 +40,16 @@ type Props = {
 
 export const MembersChart = ({ from, to }: Props) => {
   const [activeChart, setActiveChart] =
-    useState<keyof typeof chartConfig>("totalMembers");
+    useState<keyof typeof chartConfig>("total_members");
 
-  const { data, isLoading } = trpc.dashboard.totalMembers.useQuery({
+  const {
+    data: totalData,
+    isLoading,
+    failureReason,
+  } = trpc.dashboard.totalMembers.useQuery({
     from,
     to,
   });
-
-  const { data: newData, isLoading: _isLoading } =
-    trpc.dashboard.newMembers.useQuery({
-      from,
-      to,
-    });
 
   const { data: activeData, isLoading: __isLoading } =
     trpc.dashboard.activeMembers.useQuery({
@@ -58,37 +57,12 @@ export const MembersChart = ({ from, to }: Props) => {
       to,
     });
 
-  const { totalMembers, membersData } = data ?? {};
-  const { newMembers, newMembersData } = newData ?? {};
+  const loading = isLoading || __isLoading;
+
   const { activeMembers, activeMembersData } = activeData ?? {};
+  const { totalMembers, totalMembersData } = totalData ?? {};
 
-  const loading = isLoading || _isLoading || __isLoading;
-
-  const chartData = useMemo(() => {
-    const hasAllData =
-      totalMembers &&
-      membersData &&
-      newMembers &&
-      newMembersData &&
-      activeMembers &&
-      activeMembersData;
-
-    if (!hasAllData) return [];
-
-    return Object.keys(membersData).map((date) => ({
-      date,
-      totalMembers,
-      newMembers: newMembersData[date],
-      activeMembers: activeMembersData[date],
-    }));
-  }, [
-    totalMembers,
-    membersData,
-    newMembers,
-    newMembersData,
-    activeMembers,
-    activeMembersData,
-  ]);
+  console.log(activeMembersData);
 
   return (
     <div className="divide-y">
@@ -108,9 +82,9 @@ export const MembersChart = ({ from, to }: Props) => {
               <Skeleton className="h-[30px] w-12" />
             ) : (
               <span className="font-bold text-3xl leading-none">
-                {key === "totalMembers" && totalMembers}
-                {key === "newMembers" && newMembers}
-                {key === "activeMembers" && activeMembers}
+                {key === "total_members" && totalMembers}
+                {/* {key === "newMembers" && newMembers} */}
+                {key === "active_members" && activeMembers}
               </span>
             )}
           </button>
@@ -119,7 +93,7 @@ export const MembersChart = ({ from, to }: Props) => {
       <ResponsiveContainer height={350}>
         <ChartContainer config={chartConfig}>
           <BarChart
-            data={chartData}
+            data={activeMembersData}
             margin={{ top: 24, left: 24, right: 24, bottom: 5 }}
           >
             <CartesianGrid vertical={false} />
@@ -130,10 +104,7 @@ export const MembersChart = ({ from, to }: Props) => {
               tickMargin={8}
               tickFormatter={(value) => {
                 const date = new Date(value);
-                return date.toLocaleDateString("en-US", {
-                  month: "short",
-                  day: "numeric",
-                });
+                return format(date, "MMM d");
               }}
             />
             <ChartTooltip

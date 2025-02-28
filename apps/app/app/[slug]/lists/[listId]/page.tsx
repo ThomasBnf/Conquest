@@ -17,7 +17,7 @@ type Props = {
 };
 
 export default function Page({ params: { listId } }: Props) {
-  const { data: list, isLoading } = trpc.lists.getList.useQuery({ id: listId });
+  const { data: list, isLoading } = trpc.lists.get.useQuery({ id: listId });
 
   if (isLoading) return <IsLoading />;
   if (!list) redirect("/members");

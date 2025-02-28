@@ -1,6 +1,5 @@
-import { prisma } from "@conquest/db/prisma";
+import { getIntegrationBySource as _getIntegrationBySource } from "@conquest/clickhouse/integrations/getIntegrationBySource";
 import { SOURCE } from "@conquest/zod/enum/source.enum";
-import { IntegrationSchema } from "@conquest/zod/schemas/integration.schema";
 import { z } from "zod";
 import { protectedProcedure } from "../trpc";
 
@@ -14,16 +13,8 @@ export const getIntegrationBySource = protectedProcedure
     const { workspace_id } = user;
     const { source } = input;
 
-    const integration = await prisma.integration.findFirst({
-      where: {
-        details: {
-          path: ["source"],
-          equals: source,
-        },
-        workspace_id,
-      },
+    return await _getIntegrationBySource({
+      source,
+      workspace_id,
     });
-
-    if (!integration) return null;
-    return IntegrationSchema.parse(integration);
   });

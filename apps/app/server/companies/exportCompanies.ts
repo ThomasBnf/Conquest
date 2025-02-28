@@ -1,4 +1,4 @@
-import { listTags } from "@conquest/db/queries/tag/listTags";
+import { listTags } from "@conquest/clickhouse/tags/listTags";
 import { CompanySchema } from "@conquest/zod/schemas/company.schema";
 import { z } from "zod";
 import { protectedProcedure } from "../trpc";

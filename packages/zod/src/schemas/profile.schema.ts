@@ -1,4 +1,3 @@
-import type { profile as ProfilePrisma } from "@prisma/client";
 import { z } from "zod";
 
 export const CustomFieldSchema = z.object({
@@ -7,27 +6,27 @@ export const CustomFieldSchema = z.object({
 });
 
 export const BaseProfileSchema = z.object({
-  id: z.string().cuid(),
+  id: z.string().uuid(),
   external_id: z.string().nullable(),
-  member_id: z.string().cuid(),
-  workspace_id: z.string().cuid(),
+  member_id: z.string().uuid(),
+  workspace_id: z.string().uuid(),
   created_at: z.coerce.date(),
   updated_at: z.coerce.date(),
 });
 
 export const DiscordAttributesSchema = z.object({
-  source: z.literal("DISCORD"),
+  source: z.literal("Discord"),
   username: z.string(),
 });
 
 export const DiscourseAttributesSchema = z.object({
-  source: z.literal("DISCOURSE"),
+  source: z.literal("Discourse"),
   username: z.string(),
   custom_fields: z.array(CustomFieldSchema).optional(),
 });
 
 export const GithubAttributesSchema = z.object({
-  source: z.literal("GITHUB"),
+  source: z.literal("Github"),
   username: z.string(),
   bio: z.string().nullable(),
   blog: z.string().nullable(),
@@ -36,15 +35,15 @@ export const GithubAttributesSchema = z.object({
 });
 
 export const LinkedInAttributesSchema = z.object({
-  source: z.literal("LINKEDIN"),
+  source: z.literal("Linkedin"),
 });
 
 export const LivestormAttributesSchema = z.object({
-  source: z.literal("LIVESTORM"),
+  source: z.literal("Livestorm"),
 });
 
 export const SlackAttributesSchema = z.object({
-  source: z.literal("SLACK"),
+  source: z.literal("Slack"),
 });
 
 export const XAttributesSchema = z.object({
@@ -98,7 +97,7 @@ export const ProfileSchema = z.union([
   LivestormProfileSchema,
   SlackProfileSchema,
   XProfileSchema,
-]) satisfies z.ZodType<ProfilePrisma>;
+]);
 
 export type Profile = z.infer<typeof ProfileSchema>;
 export type ProfileAttributes = z.infer<typeof ProfileAttributesSchema>;

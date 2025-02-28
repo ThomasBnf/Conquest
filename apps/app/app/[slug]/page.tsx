@@ -1,8 +1,5 @@
 import { DateRangePicker } from "@/components/custom/date-range-picker";
 import { Header } from "@/components/layouts/header";
-import { EngagementDashboard } from "@/features/dashboard/engagement-dashboard";
-import { MemberDashboard } from "@/features/dashboard/member-dashboard";
-import { ScrollArea } from "@conquest/ui/scroll-area";
 import { searchParamsDate } from "lib/searchParamsDate";
 
 type Props = {
@@ -17,10 +14,10 @@ export default function Page({ searchParams }: Props) {
       <Header title="Dashboard">
         <DateRangePicker />
       </Header>
-      <ScrollArea>
+      {/* <ScrollArea>
         <MemberDashboard from={from} to={to} />
         <EngagementDashboard from={from} to={to} />
-      </ScrollArea>
+      </ScrollArea> */}
     </div>
   );
 }

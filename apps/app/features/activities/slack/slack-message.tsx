@@ -38,12 +38,10 @@ export const SlackMessage = ({ activity, member, channel }: Props) => {
 
   const { avatar_url, first_name, last_name } = member ?? {};
 
-  const { data: permalink, failureReason } = trpc.slack.getPermaLink.useQuery({
+  const { data: permalink } = trpc.slack.getPermaLink.useQuery({
     channel_id: channel?.external_id,
     message_ts: external_id,
   });
-
-  console.log(failureReason);
 
   return (
     <div>

@@ -10,6 +10,5 @@ export const authRouter = router({
 });
 
 const createCaller = createCallerFactory(authRouter);
-export const caller = createCaller({
-  session: null,
-});
+
+export const caller = createCaller({ session: null });

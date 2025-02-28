@@ -1,4 +1,4 @@
-import { prisma } from "@conquest/db/prisma";
+import { updateMember as _updateMember } from "@conquest/clickhouse/members/updateMember";
 import { MemberSchema } from "@conquest/zod/schemas/member.schema";
 import { z } from "zod";
 import { protectedProcedure } from "../trpc";
@@ -6,27 +6,12 @@ import { protectedProcedure } from "../trpc";
 export const updateMember = protectedProcedure
   .input(
     z.object({
-      id: z.string().nullable(),
+      id: z.string(),
       data: MemberSchema.partial(),
     }),
   )
-  .mutation(async ({ ctx: { user }, input }) => {
-    const { workspace_id } = user;
+  .mutation(async ({ input }) => {
     const { id, data } = input;
-    const { tags } = data;
 
-    if (!id) return null;
-
-    const member = await prisma.member.update({
-      where: {
-        id,
-        workspace_id,
-      },
-      data: {
-        ...data,
-        tags: tags ? { set: tags } : undefined,
-      },
-    });
-
-    return MemberSchema.parse(member);
+    return _updateMember({ id, data });
   });

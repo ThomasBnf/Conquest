@@ -6,7 +6,7 @@ import { Checkbox } from "@conquest/ui/checkbox";
 import type { Category } from "@conquest/zod/types/discourse";
 import { ArrowRight } from "lucide-react";
 import { useEffect, useState } from "react";
-import { LoadingChannels } from "../integrations/loading-channels";
+import { LoadingChannels } from "@/components/states/loading-channels";
 import { groupChannels } from "./helpers/groupChannels";
 import { parseChannelName } from "./helpers/parseChannelName";
 
@@ -17,12 +17,12 @@ export const DiscourseChannels = () => {
   const utils = trpc.useUtils();
 
   const { mutateAsync: createManyActivityTypes } =
-    trpc.activityTypes.createManyActivityTypes.useMutation({
+    trpc.activityTypes.postMany.useMutation({
       onSuccess: () => {
-        utils.integrations.getIntegrationBySource.invalidate({
-          source: "DISCOURSE",
+        utils.integrations.bySource.invalidate({
+          source: "Discourse",
         });
-        utils.activityTypes.getAllActivityTypes.invalidate();
+        utils.activityTypes.list.invalidate();
         setTimeout(() => {
           setLoading(false);
           setStep(2);
@@ -31,9 +31,9 @@ export const DiscourseChannels = () => {
     });
 
   const { mutateAsync: createManyChannels } =
-    trpc.channels.createManyChannels.useMutation({
+    trpc.channels.postMany.useMutation({
       onSuccess: () => {
-        utils.channels.getAllChannels.invalidate({ source: "DISCOURSE" });
+        utils.channels.list.invalidate({ source: "Discourse" });
       },
     });
 
@@ -118,7 +118,7 @@ export const DiscourseChannels = () => {
       external_id: channel.id.toString(),
       name: parseChannelName(channel, discourseChannels ?? []),
       slug: channel.slug ?? "",
-      source: "DISCOURSE" as const,
+      source: "Discourse" as const,
     }));
 
     await createManyChannels({ channels });

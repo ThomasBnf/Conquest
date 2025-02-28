@@ -10,7 +10,7 @@ type Props = {
 
 export const DiscourseSection = ({ profiles }: Props) => {
   const profile = profiles?.find(
-    (profile) => profile.attributes.source === "DISCOURSE",
+    (profile) => profile.attributes.source === "Discourse",
   );
 
   if (!profile) return null;

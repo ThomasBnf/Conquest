@@ -1,5 +1,4 @@
-import { prisma } from "@conquest/db/prisma";
-import { CompanySchema } from "@conquest/zod/schemas/company.schema";
+import { createCompany as _createCompany } from "@conquest/clickhouse/companies/createCompany";
 import { z } from "zod";
 import { protectedProcedure } from "../trpc";
 
@@ -13,13 +12,5 @@ export const createCompany = protectedProcedure
     const { workspace_id } = user;
     const { name } = input;
 
-    const company = await prisma.company.create({
-      data: {
-        name,
-        source: "MANUAL",
-        workspace_id,
-      },
-    });
-
-    return CompanySchema.parse(company);
+    return await _createCompany({ name, workspace_id });
   });

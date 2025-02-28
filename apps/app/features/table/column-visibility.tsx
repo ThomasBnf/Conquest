@@ -23,7 +23,7 @@ export const ColumnVisibility = <TData,>({ table, type }: Props<TData>) => {
   const [open, setOpen] = useState(false);
   const utils = trpc.useUtils();
 
-  const { mutateAsync } = trpc.users.updateUser.useMutation({
+  const { mutateAsync } = trpc.users.update.useMutation({
     onSuccess: () => utils.users.getCurrentUser.invalidate(),
   });
 
@@ -42,7 +42,6 @@ export const ColumnVisibility = <TData,>({ table, type }: Props<TData>) => {
     mutateAsync({
       id: user.id,
       data: {
-        ...user,
         ...(type === "members"
           ? {
               members_preferences: {

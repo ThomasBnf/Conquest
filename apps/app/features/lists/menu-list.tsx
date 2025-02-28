@@ -26,9 +26,9 @@ export const MenuList = ({ list }: Props) => {
   const router = useRouter();
   const utils = trpc.useUtils();
 
-  const { mutateAsync } = trpc.lists.deleteList.useMutation({
+  const { mutateAsync } = trpc.lists.delete.useMutation({
     onSuccess: () => {
-      utils.lists.getAllLists.invalidate();
+      utils.lists.list.invalidate();
       toast.success("List deleted");
       router.push(`/${slug}/members`);
     },

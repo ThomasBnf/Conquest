@@ -24,17 +24,16 @@ export const QuestionsStep = ({ setStep }: Props) => {
   const [loading, setLoading] = useState(false);
 
   const utils = trpc.useUtils();
-  const { mutateAsync: mutateWorkspace } =
-    trpc.workspaces.updateWorkspace.useMutation({
-      onSuccess: () => {
-        utils.workspaces.getWorkspace.invalidate();
-        setStep(3);
-      },
-      onError: (error) => {
-        setLoading(false);
-        toast.error(error.message);
-      },
-    });
+  const { mutateAsync: mutateWorkspace } = trpc.workspaces.update.useMutation({
+    onSuccess: () => {
+      utils.workspaces.get.invalidate();
+      setStep(3);
+    },
+    onError: (error) => {
+      setLoading(false);
+      toast.error(error.message);
+    },
+  });
 
   const form = useForm<Questions>({
     resolver: zodResolver(QuestionsSchema),

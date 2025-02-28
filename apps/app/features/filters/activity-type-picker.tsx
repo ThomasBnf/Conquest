@@ -28,7 +28,7 @@ export const ActivityTypePicker = ({ filter }: Props) => {
   const { onUpdateFilter } = useFilters();
   const [open, setOpen] = useState(false);
 
-  const { data, isLoading } = trpc.activityTypes.getAllActivityTypes.useQuery();
+  const { data, isLoading } = trpc.activityTypes.list.useQuery();
 
   const filterActivity = FilterActivitySchema.parse(filter);
 

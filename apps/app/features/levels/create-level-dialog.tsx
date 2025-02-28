@@ -29,9 +29,9 @@ export const CreateLevelDialog = () => {
   const [loading, setLoading] = useState(false);
   const utils = trpc.useUtils();
 
-  const { mutateAsync } = trpc.levels.createLevel.useMutation({
+  const { mutateAsync } = trpc.levels.post.useMutation({
     onSuccess: () => {
-      utils.levels.getAllLevels.invalidate();
+      utils.levels.list.invalidate();
       setOpen(false);
       setLoading(false);
       form.reset();

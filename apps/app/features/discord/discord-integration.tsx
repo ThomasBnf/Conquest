@@ -1,7 +1,6 @@
 "use client";
 
 import { Discord } from "@/components/icons/Discord";
-import { SkeletonIntegration } from "@/components/states/skeleton-integration";
 import { DISCORD_PERMISSIONS, DISCORD_SCOPES } from "@/constant";
 import { useIntegration } from "@/context/integrationContext";
 import { env } from "@conquest/env";
@@ -18,14 +17,7 @@ type Props = {
 };
 
 export const DiscordIntegration = ({ error }: Props) => {
-  const {
-    discord,
-    loadingIntegration,
-    channels,
-    deleteIntegration,
-    loading,
-    setLoading,
-  } = useIntegration();
+  const { discord, channels, setLoading } = useIntegration();
   const { name } = discord?.details ?? {};
   const router = useRouter();
 
@@ -43,13 +35,6 @@ export const DiscordIntegration = ({ error }: Props) => {
     router.push(`https://discord.com/oauth2/authorize?${params.toString()}`);
   };
 
-  const onDisconnect = async () => {
-    if (!discord) return;
-    await deleteIntegration({ integration: discord });
-  };
-
-  if (loadingIntegration) return <SkeletonIntegration />;
-
   return (
     <div className="mx-auto flex max-w-4xl flex-col gap-4 px-4 py-12 lg:py-24">
       <IntegrationHeader />
@@ -64,17 +49,12 @@ export const DiscordIntegration = ({ error }: Props) => {
         integration={discord}
         docUrl="https://docs.useconquest.com/integrations/discord"
         description="Connect your Discord community to get a complete overview of your members and community activity."
-        loading={loading}
+        source="Discord"
         onEnable={onEnable}
-        onDisconnect={onDisconnect}
       >
         <DiscordForm />
       </EnableCard>
-      <ConnectedCard
-        integration={discord}
-        name={name}
-        onDisconnect={onDisconnect}
-      >
+      <ConnectedCard integration={discord} name={name} source="Discord">
         <>
           <Separator className="my-4" />
           <div>

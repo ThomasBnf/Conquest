@@ -1,3 +1,4 @@
+import { LoadingChannels } from "@/components/states/loading-channels";
 import { DISCORD_ACTIVITY_TYPES } from "@/constant";
 import { useIntegration } from "@/context/integrationContext";
 import { trpc } from "@/server/client";
@@ -7,7 +8,6 @@ import { cn } from "@conquest/ui/cn";
 import type { APIGuildCategoryChannel } from "discord-api-types/v10";
 import { ArrowRight, Hash } from "lucide-react";
 import { useEffect, useState } from "react";
-import { LoadingChannels } from "../integrations/loading-channels";
 
 export const DiscordChannels = () => {
   const { setStep, channels } = useIntegration();
@@ -18,9 +18,9 @@ export const DiscordChannels = () => {
   const utils = trpc.useUtils();
 
   const { mutateAsync: createManyActivityTypes } =
-    trpc.activityTypes.createManyActivityTypes.useMutation({
+    trpc.activityTypes.postMany.useMutation({
       onSuccess: () => {
-        utils.activityTypes.getAllActivityTypes.invalidate();
+        utils.activityTypes.list.invalidate();
         setTimeout(() => {
           setLoading(false);
           setStep(1);
@@ -29,7 +29,7 @@ export const DiscordChannels = () => {
     });
 
   const { mutateAsync: createManyChannels } =
-    trpc.channels.createManyChannels.useMutation({});
+    trpc.channels.postMany.useMutation({});
 
   const { data: discordChannels, isLoading } =
     trpc.discord.listChannels.useQuery();
@@ -61,7 +61,7 @@ export const DiscordChannels = () => {
     const channelsData = selectedChannels?.map(({ id, name }) => ({
       external_id: id ?? "",
       name: name ?? "",
-      source: "DISCORD" as const,
+      source: "Discord" as const,
     }));
 
     if (!channelsData) return;

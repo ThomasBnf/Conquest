@@ -26,17 +26,16 @@ export const CompaniesProvider = ({ children }: Props) => {
   const [{ search, idCompany, descCompany, page, pageSize }] =
     useQueryStates(tableParsers);
 
-  trpc.tags.getAllTags.useQuery();
+  trpc.tags.list.useQuery();
 
-  const { data, isLoading, failureReason } =
-    trpc.companies.getAllCompanies.useQuery({
-      search,
-      desc: descCompany,
-      id: idCompany,
-      page,
-      pageSize,
-      groupFilters,
-    });
+  const { data, isLoading } = trpc.companies.list.useQuery({
+    search,
+    desc: descCompany,
+    id: idCompany,
+    page,
+    pageSize,
+    groupFilters,
+  });
 
   const { data: count } = trpc.companies.countCompanies.useQuery({
     search,

@@ -1,6 +1,6 @@
-import { getUser } from "@conquest/db/queries/user/getUser";
-import { getWorkspace } from "@conquest/db/queries/workspace/getWorkspace";
-import { resend } from "@conquest/db/resend";
+import { resend } from "@conquest/clickhouse/resend";
+import { getUserById } from "@conquest/clickhouse/users/getUserById";
+import { getWorkspace } from "@conquest/clickhouse/workspaces/getWorkspace";
 import { SuccessIntegrationEmail } from "@conquest/emails/SuccessIntegrationEmail";
 import { env } from "@conquest/env";
 import { IntegrationSchema } from "@conquest/zod/schemas/integration.schema";
@@ -19,22 +19,19 @@ export const integrationSuccessEmail = schemaTask({
     const { created_by, details } = integration;
     const { source } = details;
 
-    const sourceFormatted =
-      source.charAt(0).toUpperCase() + source.slice(1).toLowerCase();
-
-    const user = await getUser({ id: created_by });
-    const { email } = user;
+    const user = await getUserById({ id: created_by });
+    const { email } = user ?? {};
 
     const workspace = await getWorkspace({ id: workspace_id });
-    const { slug } = workspace;
+    const { slug } = workspace ?? {};
 
     const url = `${env.NEXT_PUBLIC_BASE_URL}/${slug}/settings/integrations/${source?.toLowerCase()}`;
 
     await resend.emails.send({
       from: "Conquest <noreply@useconquest.com>",
-      to: email,
-      subject: `Your ${sourceFormatted} integration is ready`,
-      react: SuccessIntegrationEmail({ source: sourceFormatted, url }),
+      to: email ?? "",
+      subject: `Your ${source} integration is ready`,
+      react: SuccessIntegrationEmail({ source, url }),
     });
   },
 });

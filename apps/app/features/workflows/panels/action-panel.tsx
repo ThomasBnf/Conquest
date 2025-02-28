@@ -3,7 +3,7 @@ import { Button } from "@conquest/ui/button";
 import { Label } from "@conquest/ui/label";
 import { useReactFlow } from "@xyflow/react";
 import { Icon } from "components/icons/Icon";
-import cuid from "cuid";
+import { v4 as uuid } from "uuid";
 import type { icons } from "lucide-react";
 import { usePanel } from "../hooks/usePanel";
 import { useSelected } from "../hooks/useSelected";
@@ -25,7 +25,7 @@ export const ActionPanel = () => {
     addNodes([
       {
         ...node,
-        id: cuid(),
+        id: uuid(),
         position: {
           x: selected?.position.x ?? 0,
           y: (selected?.position.y ?? 0) + 200,
@@ -94,7 +94,7 @@ export const nodes: {
       label: "Records",
       nodes: [
         {
-          id: cuid(),
+          id: uuid(),
           type: "custom",
           position: { x: 0, y: 0 },
           data: {
@@ -112,7 +112,7 @@ export const nodes: {
       label: "Mutations",
       nodes: [
         {
-          id: cuid(),
+          id: uuid(),
           type: "custom",
           position: { x: 0, y: 0 },
           data: {
@@ -125,7 +125,7 @@ export const nodes: {
           },
         },
         {
-          id: cuid(),
+          id: uuid(),
           type: "custom",
           position: { x: 0, y: 0 },
           data: {
@@ -143,7 +143,7 @@ export const nodes: {
       label: "Communications",
       nodes: [
         {
-          id: cuid(),
+          id: uuid(),
           type: "custom",
           position: { x: 0, y: 0 },
           data: {
@@ -161,7 +161,7 @@ export const nodes: {
       label: "Utilities",
       nodes: [
         {
-          id: cuid(),
+          id: uuid(),
           type: "custom",
           position: { x: 0, y: 0 },
           data: {
@@ -175,7 +175,7 @@ export const nodes: {
           },
         },
         {
-          id: cuid(),
+          id: uuid(),
           type: "custom",
           position: { x: 0, y: 0 },
           data: {
@@ -188,7 +188,7 @@ export const nodes: {
           },
         },
         {
-          id: cuid(),
+          id: uuid(),
           type: "custom",
           position: { x: 0, y: 0 },
           data: {

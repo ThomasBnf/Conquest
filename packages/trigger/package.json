@@ -11,8 +11,8 @@
     "./*": "./src/*.ts"
   },
   "dependencies": {
-    "@conquest/db": "workspace:*",
     "@conquest/emails": "workspace:*",
+    "@conquest/clickhouse": "workspace:*",
     "@conquest/zod": "workspace:*",
     "@trigger.dev/react-hooks": "3.3.16",
     "@trigger.dev/sdk": "3.3.16",

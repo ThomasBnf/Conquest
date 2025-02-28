@@ -1,4 +1,4 @@
-import { prisma } from "@conquest/db/prisma";
+import { deleteActivityType as _deleteActivityType } from "@conquest/clickhouse/activity-types/deleteActivityType";
 import { z } from "zod";
 import { protectedProcedure } from "../trpc";
 
@@ -8,14 +8,8 @@ export const deleteActivityType = protectedProcedure
       id: z.string(),
     }),
   )
-  .mutation(async ({ ctx: { user }, input }) => {
-    const { workspace_id } = user;
+  .mutation(async ({ input }) => {
     const { id } = input;
 
-    return await prisma.activity_type.delete({
-      where: {
-        id,
-        workspace_id,
-      },
-    });
+    return await _deleteActivityType({ id });
   });

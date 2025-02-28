@@ -27,7 +27,7 @@ import {
 } from "@conquest/ui/select";
 import type { ActivityType } from "@conquest/zod/schemas/activity-type.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import cuid from "cuid";
+import { v4 as uuid } from "uuid";
 import { Plus, X } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -51,10 +51,10 @@ export const EditActivityTypeDialog = ({
   const [loading, setLoading] = useState(false);
   const utils = trpc.useUtils();
 
-  const { data: channels } = trpc.channels.getAllChannels.useQuery({});
-  const { mutateAsync } = trpc.activityTypes.updateActivityType.useMutation({
+  const { data: channels } = trpc.channels.list.useQuery({});
+  const { mutateAsync } = trpc.activityTypes.update.useMutation({
     onSuccess: () => {
-      utils.activityTypes.getAllActivityTypes.invalidate();
+      utils.activityTypes.list.invalidate();
       setOpen(false);
       setLoading(false);
     },
@@ -62,46 +62,42 @@ export const EditActivityTypeDialog = ({
 
   const form = useForm<FormActivityType>({
     resolver: zodResolver(FormActivityTypeSchema),
-    defaultValues: {
-      ...activityType,
-    },
+    defaultValues: { ...activityType },
   });
 
   const filteredChannels = channels?.filter(
     (channel) => channel.source === form.getValues("source"),
   );
 
-  const onSubmit = async (values: FormActivityType) => {
+  const onSubmit = async (data: FormActivityType) => {
     setLoading(true);
-    const data = {
-      ...values,
-      key: `${values.source.toLowerCase()}:${values.key}`,
-    };
     await mutateAsync({ id: activityType.id, data });
   };
 
   const addCondition = () => {
     const conditions = form.getValues("conditions");
 
-    form.setValue("conditions", [
+    form.setValue("conditions", {
       ...conditions,
-      {
-        id: cuid(),
-        channel_id: "",
-        points: 2,
-      },
-    ]);
+      rules: [
+        ...conditions.rules,
+        {
+          id: uuid(),
+          channel_id: "",
+          points: 2,
+        },
+      ],
+    });
   };
 
   const removeCondition = (index: number) => {
     const conditions = form.getValues("conditions");
-    form.setValue(
-      "conditions",
-      conditions.filter((_, i) => i !== index),
-    );
+    form.setValue("conditions", {
+      rules: conditions.rules.filter((_, i) => i !== index),
+    });
   };
 
-  const hasNoConditions = !["API", "MANUAL", "LIVESTORM"].includes(
+  const hasNoConditions = !["API", "MANUAL", "Livestorm"].includes(
     form.getValues("source"),
   );
   const isInviteOrJoin = ["invite", "join", "login"].some((key) =>
@@ -134,11 +130,11 @@ export const EditActivityTypeDialog = ({
                         <SelectContent>
                           <SelectItem value="API">API</SelectItem>
                           <SelectItem value="MANUAL">MANUAL</SelectItem>
-                          <SelectItem value="DISCORD">DISCORD</SelectItem>
-                          <SelectItem value="DISCOURSE">DISCOURSE</SelectItem>
-                          <SelectItem value="GITHUB">GITHUB</SelectItem>
-                          <SelectItem value="LIVESTORM">LIVESTORM</SelectItem>
-                          <SelectItem value="SLACK">SLACK</SelectItem>
+                          <SelectItem value="Discord">Discord</SelectItem>
+                          <SelectItem value="Discourse">Discourse</SelectItem>
+                          <SelectItem value="Github">Github</SelectItem>
+                          <SelectItem value="Livestorm">Livestorm</SelectItem>
+                          <SelectItem value="Slack">Slack</SelectItem>
                         </SelectContent>
                       </Select>
                     </FormControl>
@@ -200,7 +196,7 @@ export const EditActivityTypeDialog = ({
               {hasNoConditions && !isInviteOrJoin && (
                 <div className="flex flex-col items-start gap-2">
                   <FormLabel>Conditions</FormLabel>
-                  {form.watch("conditions").map((_, index) => (
+                  {form.watch("conditions").rules.map((_, index) => (
                     // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
                     <div key={index} className="flex w-full gap-2">
                       <ConditionChannel
@@ -210,7 +206,7 @@ export const EditActivityTypeDialog = ({
                       />
                       <FormField
                         control={form.control}
-                        name={`conditions.${index}.points`}
+                        name={`conditions.rules.${index}.points`}
                         render={({ field }) => (
                           <FormItem className="w-full">
                             <FormControl>

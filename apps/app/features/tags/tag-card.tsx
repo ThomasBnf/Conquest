@@ -17,7 +17,7 @@ export const TagCard = ({ tag }: Props) => {
   };
 
   const tagColor =
-    tag.source === "DISCOURSE"
+    tag.source === "Discourse"
       ? colorMap[tag.color as keyof typeof colorMap]
       : tag.color;
 

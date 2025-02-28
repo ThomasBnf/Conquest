@@ -1,7 +1,6 @@
 import { getCurrentUser } from "@/queries/getCurrentUser";
-import { encrypt } from "@conquest/db/lib/encrypt";
-import { createIntegration } from "@conquest/db/queries/integration/createIntegration";
-import { getWorkspace } from "@conquest/db/queries/workspace/getWorkspace";
+import { createIntegration } from "@conquest/clickhouse/integrations/createIntegration";
+import { encrypt } from "@conquest/clickhouse/utils/encrypt";
 import { env } from "@conquest/env";
 import { redirect } from "next/navigation";
 
@@ -12,10 +11,7 @@ type Props = {
 };
 
 export default async function Page({ searchParams: { code } }: Props) {
-  const user = await getCurrentUser();
-  const { slug, id: workspace_id } = await getWorkspace({
-    id: user.workspace_id,
-  });
+  const { id: userId, workspace_id } = await getCurrentUser();
 
   const response = await fetch("https://github.com/login/oauth/access_token", {
     method: "POST",
@@ -31,11 +27,10 @@ export default async function Page({ searchParams: { code } }: Props) {
   });
 
   if (!response.ok) {
-    return redirect(`/${slug}/settings/integrations/github?error=invalid_code`);
+    return redirect("/settings/integrations/github?error=invalid_code");
   }
 
   const data = await response.json();
-  console.log(data);
   const { access_token, scope } = data;
 
   const encryptedAccessToken = await encrypt(access_token);
@@ -43,14 +38,14 @@ export default async function Page({ searchParams: { code } }: Props) {
   await createIntegration({
     external_id: null,
     details: {
-      source: "GITHUB",
+      source: "Github",
       access_token: encryptedAccessToken.token,
       iv: encryptedAccessToken.iv,
       scope,
       name: "",
       owner: "",
     },
-    created_by: user.id,
+    created_by: userId,
     workspace_id,
   });
 

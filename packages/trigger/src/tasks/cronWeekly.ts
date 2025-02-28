@@ -1,5 +1,6 @@
-import { prisma } from "@conquest/db/prisma";
-import type { Log } from "@conquest/zod/schemas/member.schema";
+import { createLog } from "@conquest/clickhouse/logs/createLog";
+import { batchMembers } from "@conquest/clickhouse/members/batchMembers";
+import type { Log } from "@conquest/zod/schemas/logs.schema";
 import { schedules } from "@trigger.dev/sdk/v3";
 
 export const cronWeekly = schedules.task({
@@ -13,13 +14,9 @@ export const cronWeekly = schedules.task({
     let cursor: string | undefined;
 
     while (true) {
-      const batch = await prisma.member.findMany({
-        take: BATCH_SIZE,
-        skip: cursor ? 1 : 0,
-        cursor: cursor ? { id: cursor } : undefined,
-        orderBy: {
-          id: "asc",
-        },
+      const batch = await batchMembers({
+        limit: BATCH_SIZE,
+        offset: cursor ? 1 : 0,
       });
 
       if (batch.length === 0) break;
@@ -28,20 +25,14 @@ export const cronWeekly = schedules.task({
         batch.map(async (member) => {
           const { level_id, pulse } = member;
 
-          const newLogs: Log = {
-            date: new Date().toISOString(),
+          const log: Omit<Log, "id"> = {
+            date: new Date(),
             pulse,
-            levelId: level_id,
+            level_id: level_id ?? "",
+            member_id: member.id,
           };
 
-          await prisma.member.update({
-            where: { id: member.id },
-            data: {
-              logs: {
-                push: newLogs,
-              },
-            },
-          });
+          await createLog({ log });
         }),
       );
 

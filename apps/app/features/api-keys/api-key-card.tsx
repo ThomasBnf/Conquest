@@ -16,7 +16,7 @@ export const ApiKeyCard = ({ apiKey }: Props) => {
   const [isRevealed, setIsRevealed] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
 
-  const { mutateAsync } = trpc.apiKeys.deleteApiKey.useMutation({
+  const { mutateAsync } = trpc.apiKeys.delete.useMutation({
     onSuccess: () => {
       toast.success("API key revoked");
     },

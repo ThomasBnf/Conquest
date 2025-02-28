@@ -34,9 +34,9 @@ export const EditLevelDialog = ({ level, open, setOpen }: Props) => {
   const [loading, setLoading] = useState(false);
   const utils = trpc.useUtils();
 
-  const { mutateAsync } = trpc.levels.updateLevel.useMutation({
+  const { mutateAsync } = trpc.levels.update.useMutation({
     onSuccess: () => {
-      utils.levels.getAllLevels.invalidate();
+      utils.levels.list.invalidate();
       setOpen(false);
       setLoading(false);
       form.reset();

@@ -28,17 +28,17 @@ export const TagsCell = ({ row }: Props) => {
   const [{ search, idMember, descMember, page, pageSize }] =
     useQueryStates(tableParsers);
 
-  const { data: allTags } = trpc.tags.getAllTags.useQuery();
+  const { data: allTags } = trpc.tags.list.useQuery();
   const [open, setOpen] = useState(false);
   const utils = trpc.useUtils();
 
-  const { mutateAsync: updateMember } = trpc.members.updateMember.useMutation({
+  const { mutateAsync: updateMember } = trpc.members.update.useMutation({
     async onMutate(newData) {
-      await utils.members.getAllMembers.cancel();
+      await utils.members.list.cancel();
 
-      const prevData = utils.members.getAllMembers.getData();
+      const prevData = utils.members.list.getData();
 
-      utils.members.getAllMembers.setData(
+      utils.members.list.setData(
         {
           search,
           id: idMember,
@@ -58,7 +58,7 @@ export const TagsCell = ({ row }: Props) => {
       return { prevData };
     },
     onError(_err, _newData, ctx) {
-      utils.members.getAllMembers.setData(
+      utils.members.list.setData(
         {
           search,
           id: idMember,
@@ -71,7 +71,7 @@ export const TagsCell = ({ row }: Props) => {
       );
     },
     onSettled() {
-      utils.members.getAllMembers.invalidate();
+      utils.members.list.invalidate();
     },
   });
 

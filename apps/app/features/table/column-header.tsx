@@ -31,7 +31,7 @@ export const ColumnHeader = <TData, TValue>({
   const [, setParams] = useQueryStates(tableParsers);
   const utils = trpc.useUtils();
 
-  const { mutateAsync } = trpc.users.updateUser.useMutation({
+  const { mutateAsync } = trpc.users.update.useMutation({
     onSuccess: () => utils.users.getCurrentUser.invalidate(),
   });
 

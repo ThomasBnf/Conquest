@@ -29,7 +29,7 @@ type Props<TData> = {
 };
 
 export const RemoveTagDialog = <TData,>({ table }: Props<TData>) => {
-  const { data: tags } = trpc.tags.getAllTags.useQuery();
+  const { data: tags } = trpc.tags.list.useQuery();
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
@@ -43,7 +43,7 @@ export const RemoveTagDialog = <TData,>({ table }: Props<TData>) => {
   const { mutateAsync: updateManyMembers } =
     trpc.members.updateManyMembers.useMutation({
       onSuccess: () => {
-        utils.members.getAllMembers.invalidate();
+        utils.members.list.invalidate();
         setSelectedTags([]);
         setOpen(false);
         setLoading(false);
@@ -54,7 +54,7 @@ export const RemoveTagDialog = <TData,>({ table }: Props<TData>) => {
   const { mutateAsync: updateManyCompanies } =
     trpc.companies.updateManyCompanies.useMutation({
       onSuccess: () => {
-        utils.companies.getAllCompanies.invalidate();
+        utils.companies.list.invalidate();
         setSelectedTags([]);
         setOpen(false);
         setLoading(false);

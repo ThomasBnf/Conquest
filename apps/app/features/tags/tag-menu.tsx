@@ -21,24 +21,24 @@ export const TagMenu = ({ tag, setIsEditing }: Props) => {
   const [showAlert, setShowAlert] = useState(false);
   const utils = trpc.useUtils();
 
-  const { mutateAsync } = trpc.tags.deleteTag.useMutation({
+  const { mutateAsync } = trpc.tags.delete.useMutation({
     async onMutate(newTag) {
       setIsEditing(false);
-      await utils.tags.getAllTags.cancel();
+      await utils.tags.list.cancel();
 
-      const prevData = utils.tags.getAllTags.getData();
+      const prevData = utils.tags.list.getData();
 
-      utils.tags.getAllTags.setData(undefined, (old) =>
+      utils.tags.list.setData(undefined, (old) =>
         old?.filter((tag) => tag.id !== newTag.id),
       );
 
       return { prevData };
     },
     onError: (_err, _newTag, context) => {
-      utils.tags.getAllTags.setData(undefined, context?.prevData);
+      utils.tags.list.setData(undefined, context?.prevData);
     },
     onSettled: () => {
-      utils.tags.getAllTags.invalidate();
+      utils.tags.list.invalidate();
     },
   });
 

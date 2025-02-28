@@ -1,7 +1,6 @@
 "use client";
 
 import { Livestorm } from "@/components/icons/Livestorm";
-import { SkeletonIntegration } from "@/components/states/skeleton-integration";
 import { useIntegration } from "@/context/integrationContext";
 import { trpc } from "@/server/client";
 import { env } from "@conquest/env";
@@ -18,13 +17,7 @@ type Props = {
 };
 
 export const LivestormIntegration = ({ error }: Props) => {
-  const {
-    livestorm,
-    loadingIntegration,
-    deleteIntegration,
-    loading,
-    setLoading,
-  } = useIntegration();
+  const { livestorm, setLoading } = useIntegration();
   const { name } = livestorm?.details ?? {};
   const router = useRouter();
 
@@ -46,13 +39,6 @@ export const LivestormIntegration = ({ error }: Props) => {
     );
   };
 
-  const onDisconnect = async () => {
-    if (!livestorm) return;
-    await deleteIntegration({ integration: livestorm });
-  };
-
-  if (loadingIntegration) return <SkeletonIntegration />;
-
   return (
     <div className="mx-auto flex max-w-4xl flex-col gap-4 px-4 py-12 lg:py-24">
       <IntegrationHeader />
@@ -67,17 +53,12 @@ export const LivestormIntegration = ({ error }: Props) => {
         integration={livestorm}
         docUrl="https://docs.useconquest.com/integrations/livestorm"
         description="Connect your Livestorm workspace to access all your webinar sessions and participant data."
-        loading={loading}
+        source="Livestorm"
         onEnable={onEnable}
-        onDisconnect={onDisconnect}
       >
         <LivestormForm />
       </EnableCard>
-      <ConnectedCard
-        integration={livestorm}
-        name={name}
-        onDisconnect={onDisconnect}
-      >
+      <ConnectedCard integration={livestorm} name={name} source="Livestorm">
         <>
           <Separator className="my-4" />
           <div>

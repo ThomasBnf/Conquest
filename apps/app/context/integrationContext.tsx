@@ -1,5 +1,6 @@
 "use client";
 
+import { SkeletonIntegration } from "@/components/states/skeleton-integration";
 import { trpc } from "@/server/client";
 import type { Source } from "@conquest/zod/enum/source.enum";
 import type { Channel } from "@conquest/zod/schemas/channel.schema";
@@ -22,14 +23,13 @@ import { createContext, useContext, useState } from "react";
 import { toast } from "sonner";
 
 type integrationContext = {
-  discord: DiscordIntegration | null;
-  discourse: DiscourseIntegration | null;
-  github: GithubIntegration | null;
-  linkedin: LinkedInIntegration | null;
-  livestorm: LivestormIntegration | null;
-  slack: SlackIntegration | null;
+  discord: DiscordIntegration | undefined;
+  discourse: DiscourseIntegration | undefined;
+  github: GithubIntegration | undefined;
+  linkedin: LinkedInIntegration | undefined;
+  livestorm: LivestormIntegration | undefined;
+  slack: SlackIntegration | undefined;
   channels: Channel[] | undefined;
-  loadingIntegration: boolean;
   deleteIntegration: (integration: {
     integration: Integration;
   }) => Promise<void>;
@@ -53,56 +53,53 @@ export const IntegrationProvider = ({ source, children }: Props) => {
   const [loading, setLoading] = useState(false);
   const utils = trpc.useUtils();
 
-  let discord: DiscordIntegration | null = null;
-  let discourse: DiscourseIntegration | null = null;
-  let github: GithubIntegration | null = null;
-  let linkedin: LinkedInIntegration | null = null;
-  let livestorm: LivestormIntegration | null = null;
-  let slack: SlackIntegration | null = null;
+  let discord: DiscordIntegration | undefined;
+  let discourse: DiscourseIntegration | undefined;
+  let github: GithubIntegration | undefined;
+  let linkedin: LinkedInIntegration | undefined;
+  let livestorm: LivestormIntegration | undefined;
+  let slack: SlackIntegration | undefined;
 
-  const { data, isLoading: loadingIntegration } =
-    trpc.integrations.getIntegrationBySource.useQuery({
-      source,
-    });
+  const { data, isLoading } = trpc.integrations.bySource.useQuery({ source });
 
   if (data) {
     switch (source) {
-      case "DISCORD":
+      case "Discord":
         discord = DiscordIntegrationSchema.parse(data);
         break;
-      case "DISCOURSE":
+      case "Discourse":
         discourse = DiscourseIntegrationSchema.parse(data);
         break;
-      case "GITHUB":
+      case "Github":
         github = GithubIntegrationSchema.parse(data);
         break;
-      case "LINKEDIN":
+      case "Linkedin":
         linkedin = LinkedInIntegrationSchema.parse(data);
         break;
-      case "LIVESTORM":
+      case "Livestorm":
         livestorm = LivestormIntegrationSchema.parse(data);
         break;
-      case "SLACK":
+      case "Slack":
         slack = SlackIntegrationSchema.parse(data);
         break;
     }
   }
 
-  const { data: channels } = trpc.channels.getAllChannels.useQuery({ source });
+  const { data: channels } = trpc.channels.list.useQuery({ source });
 
   const { mutateAsync: deleteIntegration } =
-    trpc.integrations.deleteIntegration.useMutation({
+    trpc.integrations.delete.useMutation({
       onSuccess: () => {
-        utils.integrations.getIntegrationBySource.invalidate();
-        utils.channels.getAllChannels.invalidate({ source });
-        toast.success(
-          `${source.charAt(0).toUpperCase() + source.slice(1).toLowerCase()} disconnected`,
-        );
+        toast.success(`${source} disconnected`);
+        utils.channels.list.invalidate({ source });
+        utils.integrations.bySource.invalidate({ source });
       },
       onError: (error) => {
         toast.error(error.message);
       },
     });
+
+  if (isLoading) return <SkeletonIntegration />;
 
   return (
     <IntegrationContext.Provider
@@ -113,7 +110,6 @@ export const IntegrationProvider = ({ source, children }: Props) => {
         linkedin,
         livestorm,
         slack,
-        loadingIntegration,
         channels,
         deleteIntegration,
         loading,

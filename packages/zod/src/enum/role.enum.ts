@@ -1,6 +1,4 @@
-import { ROLE as ROLE_ENUM } from "@prisma/client";
 import { z } from "zod";
 
-export const ROLE = z.nativeEnum(ROLE_ENUM);
-
+export const ROLE = z.enum(["STAFF", "ADMIN"]);
 export type Role = z.infer<typeof ROLE>;

@@ -1,4 +1,4 @@
-import { prisma } from "@conquest/db/prisma";
+import { deleteEvent as _deleteEvent } from "@conquest/clickhouse/events/deleteEvent";
 import { z } from "zod";
 import { protectedProcedure } from "../trpc";
 
@@ -8,11 +8,8 @@ export const deleteEvent = protectedProcedure
       id: z.string(),
     }),
   )
-  .mutation(async ({ ctx: { user }, input }) => {
+  .mutation(async ({ input }) => {
     const { id } = input;
-    const { workspace_id } = user;
 
-    return await prisma.event.delete({
-      where: { id, workspace_id },
-    });
+    return await _deleteEvent({ id });
   });

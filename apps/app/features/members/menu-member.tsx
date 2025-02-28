@@ -32,7 +32,7 @@ export const MenuMember = ({ member }: Props) => {
 
   const { mutateAsync: deleteMember } = trpc.members.deleteMember.useMutation({
     onSuccess: () => {
-      utils.members.getAllMembers.invalidate();
+      utils.members.list.invalidate();
       toast.success("Member deleted");
     },
   });

@@ -1,4 +1,4 @@
-import { prisma } from "@conquest/db/prisma";
+import { updateCompany } from "@conquest/clickhouse/companies/updateCompany";
 import { CompanySchema } from "@conquest/zod/schemas/company.schema";
 import { z } from "zod";
 import { protectedProcedure } from "../trpc";
@@ -9,17 +9,12 @@ export const updateManyCompanies = protectedProcedure
       companies: CompanySchema.array(),
     }),
   )
-  .mutation(async ({ ctx: { user }, input }) => {
-    const { workspace_id } = user;
+  .mutation(async ({ input }) => {
     const { companies } = input;
 
     for (const company of companies) {
-      await prisma.company.update({
-        where: {
-          id: company.id,
-          workspace_id,
-        },
-        data: company,
-      });
+      if (!company.id) return;
+      const { id, workspace_id, created_at, updated_at, ...data } = company;
+      await updateCompany({ id, data });
     }
   });

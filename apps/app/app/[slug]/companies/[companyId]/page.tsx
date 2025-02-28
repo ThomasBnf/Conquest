@@ -17,7 +17,7 @@ type Props = {
 };
 
 export default function Page({ params: { companyId } }: Props) {
-  const { data: company, isLoading } = trpc.companies.getCompany.useQuery({
+  const { data: company, isLoading } = trpc.companies.get.useQuery({
     id: companyId,
   });
 
@@ -26,8 +26,8 @@ export default function Page({ params: { companyId } }: Props) {
     hasNextPage,
     fetchNextPage,
     isLoading: isLoadingActivities,
-  } = trpc.activities.getCompanyActivities.useInfiniteQuery(
-    { companyId, take: 10 },
+  } = trpc.activities.list.useInfiniteQuery(
+    { company_id: companyId, take: 10 },
     { getNextPageParam: (lastPage) => lastPage[lastPage.length - 1]?.id },
   );
 

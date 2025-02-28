@@ -1,6 +1,6 @@
-import { prisma } from "@conquest/db/prisma";
-import { getCompany } from "@conquest/db/queries/company/getCompany";
-import { listTags } from "@conquest/db/queries/tag/listTags";
+import { getCompany } from "@conquest/clickhouse/companies/getCompany";
+import { getLevelById } from "@conquest/clickhouse/levels/getLevelById";
+import { listTags } from "@conquest/clickhouse/tags/listTags";
 import { type Member, MemberSchema } from "@conquest/zod/schemas/member.schema";
 import { z } from "zod";
 import { protectedProcedure } from "../trpc";
@@ -29,12 +29,7 @@ export const exportMembers = protectedProcedure
             continue;
           }
 
-          const level = await prisma.level.findUnique({
-            where: {
-              id: value as string,
-              workspace_id,
-            },
-          });
+          const level = await getLevelById({ id: value as string });
 
           if (!level) {
             transformed[key] = "";
@@ -51,10 +46,7 @@ export const exportMembers = protectedProcedure
             continue;
           }
 
-          const company = await getCompany({
-            company_id: member.company_id,
-            workspace_id,
-          });
+          const company = await getCompany({ id: member.company_id });
 
           transformed[key] = company?.name ?? "";
           continue;

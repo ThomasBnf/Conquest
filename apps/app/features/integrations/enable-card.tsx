@@ -1,21 +1,23 @@
+import { useIntegration } from "@/context/integrationContext";
 import { Button, buttonVariants } from "@conquest/ui/button";
 import { Card, CardContent, CardHeader } from "@conquest/ui/card";
 import { cn } from "@conquest/ui/cn";
+import type { Source } from "@conquest/zod/enum/source.enum";
 import type { Integration } from "@conquest/zod/schemas/integration.schema";
 import { CirclePlus, ExternalLink } from "lucide-react";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { type PropsWithChildren, useEffect } from "react";
 import { toast } from "sonner";
+import { DisconnectButton } from "./disconnect-button";
 
 type Props = {
   error: string;
-  integration: Integration | null;
+  integration: Integration | undefined;
   description: string;
   docUrl: string;
-  loading: boolean;
+  source: Source;
   onEnable: () => void;
-  onDisconnect: () => void;
 };
 
 export const EnableCard = ({
@@ -23,14 +25,12 @@ export const EnableCard = ({
   integration,
   docUrl,
   description,
-  loading,
+  source,
   onEnable,
-  onDisconnect,
   children,
 }: PropsWithChildren<Props>) => {
+  const { loading } = useIntegration();
   const { status, trigger_token, expires_at } = integration ?? {};
-  const pathname = usePathname();
-  const source = pathname.split("/").pop();
   const router = useRouter();
 
   const isEnabled = status === "ENABLED";
@@ -39,10 +39,6 @@ export const EnableCard = ({
   const isExpired = expires_at && expires_at < new Date();
 
   useEffect(() => {
-    if (expires_at && expires_at < new Date()) {
-      onDisconnect();
-    }
-
     if (error) {
       switch (error) {
         case "access_denied":
@@ -58,7 +54,7 @@ export const EnableCard = ({
           );
           break;
       }
-      router.replace(`/settings/integrations/${source}`);
+      router.replace(`/settings/integrations/${source.toLowerCase()}`);
     }
   }, [expires_at, error]);
 
@@ -87,9 +83,7 @@ export const EnableCard = ({
           </Button>
         )}
         {isEnabled && !loading && !isExpired && (
-          <Button variant="destructive" onClick={onDisconnect}>
-            Disconnect
-          </Button>
+          <DisconnectButton source={source} integration={integration} />
         )}
       </CardHeader>
       <CardContent className="mb-0.5">

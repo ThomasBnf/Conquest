@@ -8,14 +8,15 @@ import { dashboardRouter } from "./dashboard/router";
 import { discordRouter } from "./discord/router";
 import { discourseRouter } from "./discourse/router";
 import { eventsRouter } from "./events/router";
+import { githubRouter } from "./github/router";
 import { integrationsRouter } from "./integrations/router";
 import { levelsRouter } from "./levels/router";
 import { listsRouter } from "./lists/router";
 import { livestormRouter } from "./livestorm/router";
+import { logsRouter } from "./logs/router";
 import { membersRouter } from "./members/router";
 import { profilesRouter } from "./profiles/router";
 import { slackRouter } from "./slack/router";
-import { sourceRouter } from "./source/router";
 import { tagsRouter } from "./tags/router";
 import { router } from "./trpc";
 import { usersRouter } from "./users/router";
@@ -32,14 +33,15 @@ export const appRouter = router({
   discord: discordRouter,
   discourse: discourseRouter,
   events: eventsRouter,
+  github: githubRouter,
   integrations: integrationsRouter,
   levels: levelsRouter,
   lists: listsRouter,
   livestorm: livestormRouter,
+  logs: logsRouter,
   members: membersRouter,
   profiles: profilesRouter,
   slack: slackRouter,
-  sources: sourceRouter,
   tags: tagsRouter,
   users: usersRouter,
   workspaces: workspacesRouter,

@@ -23,23 +23,22 @@ export const WorkspaceStep = ({ setStep }: Props) => {
   const { user } = useUser();
   const [loading, setLoading] = useState(false);
 
-  const { mutateAsync } = trpc.users.updateUser.useMutation({
+  const { mutateAsync } = trpc.users.update.useMutation({
     onError: (error) => {
       setLoading(false);
       toast.error(error.message);
     },
   });
 
-  const { mutateAsync: mutateWorkspace } =
-    trpc.workspaces.updateWorkspace.useMutation({
-      onSuccess: () => {
-        setStep(2);
-      },
-      onError: (error) => {
-        setLoading(false);
-        toast.error(error.message);
-      },
-    });
+  const { mutateAsync: mutateWorkspace } = trpc.workspaces.update.useMutation({
+    onSuccess: () => {
+      setStep(2);
+    },
+    onError: (error) => {
+      setLoading(false);
+      toast.error(error.message);
+    },
+  });
 
   const form = useForm<Workspace>({
     resolver: zodResolver(WorkspaceSchema),

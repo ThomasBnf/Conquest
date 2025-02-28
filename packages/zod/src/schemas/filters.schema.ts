@@ -34,7 +34,7 @@ export const DynamicDateSchema = z.enum([
 ]);
 
 export const FilterBaseSchema = z.object({
-  id: z.string().cuid(),
+  id: z.string().uuid(),
   label: z.string(),
 });
 

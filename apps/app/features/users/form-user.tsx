@@ -21,7 +21,7 @@ export const FormUser = () => {
   const { data: user } = trpc.users.getCurrentUser.useQuery();
   const [loading, setLoading] = useState(false);
 
-  const { mutateAsync } = trpc.users.updateUser.useMutation({
+  const { mutateAsync } = trpc.users.update.useMutation({
     onSuccess: () => {
       toast.success("Profile updated");
     },
