@@ -20,20 +20,23 @@ import {
 import { Input } from "@conquest/ui/input";
 import { SignupSchema } from "@conquest/zod/schemas/auth.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ArrowRightIcon } from "lucide-react";
+import { ArrowRightIcon, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
 export const SignupForm = () => {
   const router = useRouter();
+  const [loading, setLoading] = useState(false);
 
-  const { mutateAsync, isPending } = trpc.auth.signup.useMutation({
+  const { mutateAsync } = trpc.auth.signup.useMutation({
     onSuccess: () => {
       router.push("/");
     },
     onError: (error) => {
+      setLoading(false);
       toast.error(error.message);
     },
   });
@@ -43,6 +46,7 @@ export const SignupForm = () => {
   });
 
   const onSubmit = async ({ email, password }: SignupSchema) => {
+    setLoading(true);
     await mutateAsync({ email, password });
   };
 
@@ -86,9 +90,15 @@ export const SignupForm = () => {
             />
           </CardContent>
           <CardFooter className="flex-col">
-            <Button type="submit" loading={isPending} className="w-full">
-              Signup
-              <ArrowRightIcon size={16} />
+            <Button type="submit" disabled={loading} className="w-full">
+              {loading ? (
+                <Loader2 className="size-4 animate-spin" />
+              ) : (
+                <>
+                  Signup
+                  <ArrowRightIcon size={16} />
+                </>
+              )}
             </Button>
             <div className="mt-2 flex w-full items-center justify-start text-xs">
               <p className="text-muted-foreground">Have an account?</p>

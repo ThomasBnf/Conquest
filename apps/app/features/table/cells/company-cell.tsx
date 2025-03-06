@@ -8,13 +8,14 @@ type Props = {
 };
 
 export const CompanyCell = ({ row }: Props) => {
-  const { data, isLoading } = trpc.companies.get.useQuery({
-    id: row.original.company_id,
-  });
+  const { data, isLoading } = trpc.companies.getAllCompanies.useQuery({});
+  const company = data?.find(
+    (company) => company.id === row.original.company_id,
+  );
 
   return (
     <p className="truncate p-2">
-      {isLoading ? <Skeleton className="h-4 w-24" /> : data?.name}
+      {isLoading ? <Skeleton className="h-4 w-24" /> : company?.name}
     </p>
   );
 };

@@ -6,7 +6,7 @@ import Image from "next/image";
 export const CommunityCRM = () => {
   return (
     <Section>
-      <span className="font-mono text-main-500 text-xs uppercase">
+      <span className="font-mono text-main-400 text-xs uppercase">
         [Powerful Community CRM]
       </span>
       <h2 className="font-semibold text-3xl">Demonstrate your community ROI</h2>

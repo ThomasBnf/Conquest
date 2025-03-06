@@ -4,7 +4,6 @@ import { client } from "../client";
 type Props =
   | {
       external_id: string;
-      workspace_id: string;
     }
   | {
       username: string;
@@ -16,11 +15,10 @@ export const getProfile = async (props: Props) => {
   let where = "";
 
   if ("external_id" in props) {
-    const { external_id, workspace_id } = props;
+    const { external_id } = props;
     params.external_id = external_id;
-    params.workspace_id = workspace_id;
 
-    where = `external_id = '${external_id}' AND workspace_id = '${workspace_id}'`;
+    where = `external_id = '${external_id}'`;
   } else {
     const { username, workspace_id } = props;
     params.username = username;
@@ -32,7 +30,7 @@ export const getProfile = async (props: Props) => {
   const result = await client.query({
     query: `
       SELECT *
-      FROM profiles
+      FROM profile
       WHERE ${where}
     `,
     format: "JSON",

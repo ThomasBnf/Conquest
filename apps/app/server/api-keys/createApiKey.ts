@@ -1,5 +1,5 @@
 import { FormCreateSchema } from "@/features/api-keys/schema/form-create.schema";
-import { createApiKey as _createApiKey } from "@conquest/clickhouse/api-keys/createApiKey";
+import { createApiKey as _createApiKey } from "@conquest/db/api-keys/createApiKey";
 import { protectedProcedure } from "../trpc";
 
 export const createApiKey = protectedProcedure

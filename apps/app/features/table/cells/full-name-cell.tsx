@@ -25,7 +25,7 @@ export const FullNameCell = ({ row }: Props) => {
           {first_name?.charAt(0).toUpperCase()}
         </AvatarFallback>
       </Avatar>
-      <p className="ml-2 truncate font-medium">
+      <p className="truncate font-medium">
         {first_name} {last_name}
       </p>
     </Link>

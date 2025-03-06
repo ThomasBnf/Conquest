@@ -4,7 +4,7 @@ import { useIntegration } from "@/context/integrationContext";
 import { trpc } from "@/server/client";
 import { Button } from "@conquest/ui/button";
 import { Checkbox } from "@conquest/ui/checkbox";
-import { ArrowRight, Hash } from "lucide-react";
+import { ArrowRight, Hash, Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 
 export const SlackChannels = () => {
@@ -115,12 +115,17 @@ export const SlackChannels = () => {
         })}
       </div>
       <Button
-        loading={loading}
         disabled={selectedChannels.length === 0 || loading}
         onClick={onClick}
       >
-        Next
-        <ArrowRight size={16} />
+        {loading ? (
+          <Loader2 className="size-4 animate-spin" />
+        ) : (
+          <>
+            Next
+            <ArrowRight size={16} />
+          </>
+        )}
       </Button>
     </div>
   );

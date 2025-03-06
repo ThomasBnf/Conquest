@@ -9,8 +9,8 @@ export const deleteManyCompanies = async ({ ids }: Props) => {
 
   return await client.query({
     query: `
-      DELETE FROM companies
-      WHERE id IN (${parsedIds})
+      ALTER TABLE company
+      DELETE WHERE id IN (${parsedIds})
     `,
   });
 };

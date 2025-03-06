@@ -10,7 +10,7 @@ export const createLog = async ({ log }: Props) => {
   const id = uuid();
 
   await client.insert({
-    table: "logs",
+    table: "log",
     values: {
       id,
       ...log,

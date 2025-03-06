@@ -27,11 +27,9 @@ export const getMemberMetrics = async ({ memberId }: Props) => {
   });
 
   await updateMember({
-    id: member.id,
-    data: {
-      pulse: pulseScore,
-      level_id: level?.id,
-      last_activity: activities?.at(-1)?.created_at,
-    },
+    ...member,
+    pulse: pulseScore,
+    level_id: level?.id ?? null,
+    last_activity: activities?.at(-1)?.created_at ?? null,
   });
 };

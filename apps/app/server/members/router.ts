@@ -10,9 +10,9 @@ import { listCountries } from "./listCountries";
 import { listLanguages } from "./listLanguages";
 import { listMembers } from "./listMembers";
 import { listSources } from "./listSources";
-import { mergeMembers } from "./mergeMembers";
 import { updateManyMembers } from "./updateManyMembers";
 import { updateMember } from "./updateMember";
+import { mergeMembers } from "./mergeMembers";
 
 export const membersRouter = router({
   list: listMembers,
@@ -23,9 +23,9 @@ export const membersRouter = router({
   update: updateMember,
   updateManyMembers,
   deleteManyMembers,
-  deleteMember,
-  mergeMembers,
-  exportMembers,
+  delete: deleteMember,
+  export: exportMembers,
+  merge: mergeMembers,
   listLanguages,
   listCountries,
   listSources,

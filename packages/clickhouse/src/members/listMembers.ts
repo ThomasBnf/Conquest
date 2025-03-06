@@ -10,7 +10,7 @@ export const listMembers = async ({ workspace_id, company_id }: Props) => {
   const result = await client.query({
     query: `
       SELECT * 
-      FROM members
+      FROM member
       WHERE workspace_id = '${workspace_id}'
       ${company_id ? `AND company_id = '${company_id}'` : ""}
     `,

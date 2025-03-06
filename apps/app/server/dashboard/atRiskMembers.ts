@@ -1,89 +1,34 @@
-import { getFilters } from "@conquest/clickhouse/helpers/getFilters";
-import { orderByParser } from "@conquest/clickhouse/helpers/orderByParser";
-import { GroupFiltersSchema } from "@conquest/zod/schemas/filters.schema";
+import { client } from "@conquest/clickhouse/client";
+import { MemberSchema } from "@conquest/zod/schemas/member.schema";
+import { format } from "date-fns";
 import { z } from "zod";
 import { protectedProcedure } from "../trpc";
 
 export const atRiskMembers = protectedProcedure
   .input(
     z.object({
-      search: z.string(),
-      id: z.string(),
-      desc: z.boolean(),
-      page: z.number(),
-      pageSize: z.number(),
-      groupFilters: GroupFiltersSchema,
       from: z.date(),
       to: z.date(),
     }),
   )
-  .query(async ({ ctx: { user }, input }) => {
-    const { workspace_id } = user;
-    const { search, id, desc, page, pageSize, groupFilters, from, to } = input;
-    const { operator } = groupFilters;
+  .query(async ({ input }) => {
+    const { from, to } = input;
 
-    const searchParsed = search.toLowerCase().trim();
-    const orderBy = orderByParser({ id, desc, type: "members" });
-    const filterBy = getFilters({ groupFilters });
+    const formattedFrom = format(from, "yyyy-MM-dd HH:mm:ss");
+    const formattedTo = format(to, "yyyy-MM-dd HH:mm:ss");
 
-    // const count = await prisma.$queryRaw<[{ count: bigint }]>`
-    //     SELECT COUNT(DISTINCT m.id) as count
-    //     FROM member m
-    //     LEFT JOIN level l ON m.level_id = l.id
-    //     WHERE
-    //     (
-    //       LOWER(COALESCE(m.first_name, '') || ' ' || COALESCE(m.last_name, '')) LIKE '%' || ${searchParsed} || '%'
-    //       OR LOWER(COALESCE(m.last_name, '') || ' ' || COALESCE(m.first_name, '')) LIKE '%' || ${searchParsed} || '%'
-    //       OR LOWER(m.primary_email) LIKE '%' || ${searchParsed} || '%'
-    //     )
-    //     AND m.workspace_id = ${workspace_id}
-    //     AND l.number >= 3
-    //     AND NOT EXISTS (
-    //       SELECT 1
-    //       FROM activity a
-    //       WHERE a.member_id = m.id
-    //       AND a.created_at >= ${from}
-    //       AND a.created_at <= ${to}
-    //       )
-    //       ${
-    //         filterBy.length > 0
-    //           ? Prisma.sql`AND (${Prisma.join(filterBy, " AND ")})`
-    //           : Prisma.sql``
-    //       }
-    //   `;
+    const result = await client.query({
+      query: `
+        SELECT 
+          m.*,
+        FROM member m
+        LEFT JOIN level l ON m.level_id = l.id
+        WHERE l.number > 3
+        AND m.last_activity <= '${formattedFrom}'
+      `,
+      format: "JSON",
+    });
 
-    // const members = await prisma.$queryRaw`
-    //     SELECT m.*
-    //     FROM member m
-    //     LEFT JOIN level l ON m.level_id = l.id
-    //     WHERE
-    //     (
-    //       LOWER(COALESCE(m.first_name, '') || ' ' || COALESCE(m.last_name, '')) LIKE '%' || ${searchParsed} || '%'
-    //       OR LOWER(COALESCE(m.last_name, '') || ' ' || COALESCE(m.first_name, '')) LIKE '%' || ${searchParsed} || '%'
-    //       OR LOWER(m.primary_email) LIKE '%' || ${searchParsed} || '%'
-    //     )
-    //     AND m.workspace_id = ${workspace_id}
-    //       AND l.number >= 3
-    //       AND NOT EXISTS (
-    //         SELECT 1
-    //         FROM activity a
-    //         WHERE a.member_id = m.id
-    //           AND a.created_at >= ${from}
-    //           AND a.created_at <= ${to}
-    //       )
-    //       ${
-    //         filterBy.length > 0
-    //           ? Prisma.sql`AND (${Prisma.join(filterBy, operator === "OR" ? " OR " : " AND ")})`
-    //           : Prisma.sql``
-    //       }
-    //     GROUP BY m.id, l.number
-    //     ${Prisma.sql([orderBy])}
-    //     LIMIT ${pageSize}
-    //     OFFSET ${page * pageSize}
-    //   `;
-
-    return {
-      members: [],
-      count: 0,
-    };
+    const { data } = await result.json();
+    return MemberSchema.array().parse(data);
   });

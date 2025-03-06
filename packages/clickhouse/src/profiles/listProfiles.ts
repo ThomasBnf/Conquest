@@ -9,7 +9,7 @@ export const listProfiles = async ({ member_id }: Props) => {
   const result = await client.query({
     query: `
       SELECT *
-      FROM profiles 
+      FROM profile
       WHERE member_id = '${member_id}'
     `,
   });

@@ -1,23 +1,25 @@
 import { sleep } from "@/helpers/sleep";
 import { createActivity } from "@conquest/clickhouse/activities/createActivity";
 import { deleteActivity } from "@conquest/clickhouse/activities/deleteActivity";
+import { getActivity } from "@conquest/clickhouse/activities/getActivity";
 import { updateActivity } from "@conquest/clickhouse/activities/updateActivity";
 import { upsertActivity } from "@conquest/clickhouse/activities/upsertActivity";
-import { createChannel } from "@conquest/clickhouse/channels/createChannel";
-import { deleteChannel } from "@conquest/clickhouse/channels/deleteChannel";
-import { getChannel } from "@conquest/clickhouse/channels/getChannel";
-import { updateChannel } from "@conquest/clickhouse/channels/updateChannel";
+import { getActivityTypeByKey } from "@conquest/clickhouse/activity-types/getActivityTypeByKey";
+import { createChannel } from "@conquest/db/channels/createChannel";
+import { deleteChannel } from "@conquest/db/channels/deleteChannel";
+import { getChannel } from "@conquest/db/channels/getChannel";
+import { updateChannel } from "@conquest/db/channels/updateChannel";
 import { client } from "@conquest/clickhouse/client";
-import { checkSignature } from "@conquest/clickhouse/discourse/checkSignature";
+import { discourseClient } from "@conquest/db/discourse";
+import { checkSignature } from "@conquest/db/discourse/checkSignature";
 import { createMember } from "@conquest/clickhouse/members/createMember";
 import { getMember } from "@conquest/clickhouse/members/getMember";
 import { updateMember } from "@conquest/clickhouse/members/updateMember";
 import { deleteProfile } from "@conquest/clickhouse/profiles/deleteProfile";
 import { getProfile } from "@conquest/clickhouse/profiles/getProfile";
-import { upsertProfile } from "@conquest/clickhouse/profiles/upsertProfile";
-import { createTag } from "@conquest/clickhouse/tags/createTag";
-import { listTags } from "@conquest/clickhouse/tags/listTags";
-import { discourseClient } from "@conquest/clickhouse/discourse";
+import { createProfile } from "@conquest/clickhouse/profiles/createProfile";
+import { createTag } from "@conquest/db/tags/createTag";
+import { listTags } from "@conquest/db/tags/listTags";
 import type { DiscourseWebhook } from "@conquest/zod/types/discourse";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
@@ -71,11 +73,24 @@ export async function POST(request: NextRequest) {
     await sleep(1000);
     const { id, title } = topic;
 
-    await updateActivity({
+    const activity = await getActivity({
       external_id: `t-${id}`,
-      activity_type_key: "discourse:topic",
-      title,
       workspace_id,
+    });
+
+    if (!activity) return NextResponse.json({ status: 200 });
+
+    const activityType = await getActivityTypeByKey({
+      key: "discourse:topic",
+      workspace_id,
+    });
+
+    if (!activityType) return NextResponse.json({ status: 200 });
+
+    await updateActivity({
+      ...activity,
+      activity_type_id: activityType.id,
+      title,
     });
   }
 
@@ -128,11 +143,24 @@ export async function POST(request: NextRequest) {
     if (!channel) return NextResponse.json({ status: 200 });
 
     if (post_number === 1) {
-      await updateActivity({
-        external_id: `t-${topic_id}`,
-        message: post.cooked,
-        activity_type_key: "discourse:topic",
+      const activity = await getActivity({
+        external_id: `t-${id}`,
         workspace_id,
+      });
+
+      if (!activity) return NextResponse.json({ status: 200 });
+
+      const activityType = await getActivityTypeByKey({
+        key: "discourse:topic",
+        workspace_id,
+      });
+
+      if (!activityType) return NextResponse.json({ status: 200 });
+
+      await updateActivity({
+        ...activity,
+        activity_type_id: activityType.id,
+        message: post.cooked,
       });
 
       return NextResponse.json({ status: 200 });
@@ -169,12 +197,24 @@ export async function POST(request: NextRequest) {
     await sleep(1000);
     const { id, post_number, topic_id } = post;
 
-    await updateActivity({
-      external_id: post_number === 1 ? `t-${topic_id}` : `p-${id}`,
-      activity_type_key:
-        post_number === 1 ? "discourse:topic" : "discourse:reply",
-      message: post.cooked,
+    const activity = await getActivity({
+      external_id: `t-${id}`,
       workspace_id,
+    });
+
+    if (!activity) return NextResponse.json({ status: 200 });
+
+    const activityType = await getActivityTypeByKey({
+      key: post_number === 1 ? "discourse:topic" : "discourse:reply",
+      workspace_id,
+    });
+
+    if (!activityType) return NextResponse.json({ status: 200 });
+
+    await updateActivity({
+      ...activity,
+      activity_type_id: activityType.id,
+      message: post.cooked,
     });
   }
 
@@ -241,7 +281,7 @@ export async function POST(request: NextRequest) {
       workspace_id,
     });
 
-    await upsertProfile({
+    await createProfile({
       external_id: String(id),
       member_id: member.id,
       attributes: {
@@ -294,7 +334,7 @@ export async function POST(request: NextRequest) {
       workspace_id,
     });
 
-    await upsertProfile({
+    await createProfile({
       external_id: String(id),
       member_id: member.id,
       attributes: {
@@ -359,6 +399,13 @@ export async function POST(request: NextRequest) {
 
     let channel_name = name;
 
+    const channel = await getChannel({
+      external_id: String(id),
+      workspace_id,
+    });
+
+    if (!channel) return NextResponse.json({ status: 200 });
+
     if (parent_category_id) {
       const parent = await getChannel({
         external_id: String(parent_category_id),
@@ -369,11 +416,8 @@ export async function POST(request: NextRequest) {
     }
 
     await updateChannel({
-      external_id: String(id),
-      data: {
-        name: channel_name,
-      },
-      workspace_id,
+      ...channel,
+      name: channel_name,
     });
   }
 
@@ -409,10 +453,8 @@ export async function POST(request: NextRequest) {
 
     if (existingTag) {
       await updateMember({
-        id: profile.member_id,
-        data: {
-          tags: [...(member.tags ?? []), existingTag.id],
-        },
+        ...member,
+        tags: [...(member.tags ?? []), existingTag.id],
       });
 
       return NextResponse.json({ status: 200 });
@@ -437,10 +479,8 @@ export async function POST(request: NextRequest) {
     });
 
     await updateMember({
-      id: profile.member_id,
-      data: {
-        tags: [...(member?.tags ?? []), newTag.id],
-      },
+      ...member,
+      tags: [...(member?.tags ?? []), newTag.id],
     });
   }
 
@@ -465,10 +505,8 @@ export async function POST(request: NextRequest) {
     const userTags = member.tags.filter((tag) => tag !== currentTag?.id);
 
     await updateMember({
-      id: profile.member_id,
-      data: {
-        tags: userTags,
-      },
+      ...member,
+      tags: userTags,
     });
   }
 
@@ -492,11 +530,24 @@ export async function POST(request: NextRequest) {
 
     if (!channel) return NextResponse.json({ status: 200 });
 
-    await updateActivity({
-      external_id: `p-${id}`,
-      activity_type_key:
+    const activity = await getActivity({
+      external_id: `t-${id}`,
+      workspace_id,
+    });
+
+    if (!activity) return NextResponse.json({ status: 200 });
+
+    const activityType = await getActivityTypeByKey({
+      key:
         event === "accepted_solution" ? "discourse:solved" : "discourse:reply",
       workspace_id,
+    });
+
+    if (!activityType) return NextResponse.json({ status: 200 });
+
+    await updateActivity({
+      ...activity,
+      activity_type_id: activityType.id,
     });
   }
 }

@@ -21,19 +21,11 @@ export default function Page({ params: { companyId } }: Props) {
     id: companyId,
   });
 
-  const {
-    data,
-    hasNextPage,
-    fetchNextPage,
-    isLoading: isLoadingActivities,
-  } = trpc.activities.list.useInfiniteQuery(
-    { company_id: companyId, take: 10 },
-    { getNextPageParam: (lastPage) => lastPage[lastPage.length - 1]?.id },
-  );
+  const { data, isLoading: _isLoading } = trpc.activities.list.useQuery({
+    company_id: companyId,
+  });
 
-  const activities = data?.pages.flat() ?? [];
-
-  if (isLoading || isLoadingActivities) return <IsLoading />;
+  if (isLoading || _isLoading) return <IsLoading />;
   if (!company) return;
 
   return (
@@ -41,12 +33,7 @@ export default function Page({ params: { companyId } }: Props) {
       <HeaderSubPage />
       <div className="flex h-full divide-x overflow-hidden">
         <ScrollArea className="flex-1">
-          <Activities
-            activities={activities}
-            hasNextPage={hasNextPage}
-            fetchNextPage={fetchNextPage}
-            isLoading={isLoadingActivities}
-          >
+          <Activities activities={data} isLoading={_isLoading}>
             <EmptyState
               icon={<ActivitiesIcon size={36} />}
               title="No activities found"

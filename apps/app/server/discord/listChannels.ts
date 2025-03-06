@@ -1,6 +1,6 @@
-import { discordClient } from "@conquest/clickhouse/discord";
-import { getRefreshToken } from "@conquest/clickhouse/discord/getRefreshToken";
-import { getIntegrationBySource } from "@conquest/clickhouse/integrations/getIntegrationBySource";
+import { discordClient } from "@conquest/db/discord";
+import { getRefreshToken } from "@conquest/db/discord/getRefreshToken";
+import { getIntegrationBySource } from "@conquest/db/integrations/getIntegrationBySource";
 import { DiscordIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
 import {
   type APIGuildCategoryChannel,

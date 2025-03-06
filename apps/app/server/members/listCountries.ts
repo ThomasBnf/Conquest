@@ -8,7 +8,7 @@ export const listCountries = protectedProcedure.query(
     const result = await client.query({
       query: `
         SELECT DISTINCT country
-        FROM members
+        FROM member
         WHERE workspace_id = '${workspace_id}'
         AND country IS NOT NULL; 
       `,

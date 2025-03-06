@@ -9,10 +9,10 @@ import {
   DropdownMenuTrigger,
 } from "@conquest/ui/dropdown-menu";
 import type { Member } from "@conquest/zod/schemas/member.schema";
-import { v4 as uuid } from "uuid";
 import { Plus } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+import { v4 as uuid } from "uuid";
 import { Phone } from "../custom/phone";
 
 type Props = {
@@ -38,10 +38,8 @@ export const EditablePhones = ({ member }: Props) => {
       const newPhones = phones.filter((phone) => phone.id !== id);
       setPhones(newPhones);
       updateMember({
-        id: member.id ?? null,
-        data: {
-          phones: newPhones.map((phone) => phone.content),
-        },
+        ...member,
+        phones: newPhones.map((phone) => phone.content),
       });
       return toast.error("invalid phone number");
     }
@@ -51,10 +49,8 @@ export const EditablePhones = ({ member }: Props) => {
     );
     setPhones(updatedPhones);
     updateMember({
-      id: member.id ?? null,
-      data: {
-        phones: updatedPhones.map((phone) => phone.content),
-      },
+      ...member,
+      phones: updatedPhones.map((phone) => phone.content),
     });
   };
 
@@ -62,10 +58,8 @@ export const EditablePhones = ({ member }: Props) => {
     const updatedPhones = phones.filter((phone) => phone.id !== id);
     setPhones(updatedPhones);
     updateMember({
-      id: member.id ?? null,
-      data: {
-        phones: updatedPhones.map((phone) => phone.content),
-      },
+      ...member,
+      phones: updatedPhones.map((phone) => phone.content),
     });
   };
 
@@ -81,7 +75,7 @@ export const EditablePhones = ({ member }: Props) => {
                   key={phone.id}
                   variant="outline"
                   size="xs"
-                  className="w-fit justify-start border-blue-200 text-blue-500 hover:bg-background hover:text-blue-500"
+                  className="w-fit justify-start border-main-200 text-main-400 hover:bg-background hover:text-main-400"
                   onClick={() => setOpen(true)}
                 >
                   {phone.content}
@@ -92,8 +86,7 @@ export const EditablePhones = ({ member }: Props) => {
         ) : (
           <Button
             variant="ghost"
-            className="text-muted-foreground"
-            classNameSpan="justify-start"
+            className="justify-start text-muted-foreground"
             onClick={() => {
               setOpen(true);
               if (phones.length === 0) {
@@ -126,12 +119,7 @@ export const EditablePhones = ({ member }: Props) => {
             </>
           )}
         </div>
-        <Button
-          variant="ghost"
-          className="w-full"
-          classNameSpan="justify-start"
-          onClick={onAddPhone}
-        >
+        <Button variant="ghost" className="w-full" onClick={onAddPhone}>
           <Plus size={16} />
           Add phone
         </Button>

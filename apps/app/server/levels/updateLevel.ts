@@ -1,5 +1,5 @@
 import { FormLevelSchema } from "@/features/levels/schema/form.schema";
-import { updateLevel as _updateLevel } from "@conquest/clickhouse/levels/updatLevel";
+import { updateLevel as _updateLevel } from "@conquest/clickhouse/levels/updateLevel";
 import { z } from "zod";
 import { protectedProcedure } from "../trpc";
 
@@ -10,8 +10,7 @@ export const updateLevel = protectedProcedure
       data: FormLevelSchema,
     }),
   )
-  .mutation(async ({ ctx: { user }, input }) => {
-    const { workspace_id } = user;
+  .mutation(async ({ input }) => {
     const { id, data } = input;
     const { name, number, from, to } = data;
 

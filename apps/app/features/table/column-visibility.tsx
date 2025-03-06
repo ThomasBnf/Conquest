@@ -21,11 +21,8 @@ type Props<TData> = {
 export const ColumnVisibility = <TData,>({ table, type }: Props<TData>) => {
   const { user } = useUser();
   const [open, setOpen] = useState(false);
-  const utils = trpc.useUtils();
 
-  const { mutateAsync } = trpc.users.update.useMutation({
-    onSuccess: () => utils.users.getCurrentUser.invalidate(),
-  });
+  const { mutateAsync } = trpc.users.update.useMutation();
 
   const onClick = (column: Column<TData>) => {
     if (!user?.id) return;
@@ -40,28 +37,26 @@ export const ColumnVisibility = <TData,>({ table, type }: Props<TData>) => {
         : (companies_preferences?.columnVisibility ?? {});
 
     mutateAsync({
-      id: user.id,
-      data: {
-        ...(type === "members"
-          ? {
-              members_preferences: {
-                ...members_preferences,
-                columnVisibility: {
-                  ...currentVisibility,
-                  [column.id]: isVisible,
-                },
+      ...user,
+      ...(type === "members"
+        ? {
+            members_preferences: {
+              ...members_preferences,
+              columnVisibility: {
+                ...currentVisibility,
+                [column.id]: isVisible,
               },
-            }
-          : {
-              companies_preferences: {
-                ...companies_preferences,
-                columnVisibility: {
-                  ...currentVisibility,
-                  [column.id]: isVisible,
-                },
+            },
+          }
+        : {
+            companies_preferences: {
+              ...companies_preferences,
+              columnVisibility: {
+                ...currentVisibility,
+                [column.id]: isVisible,
               },
-            }),
-      },
+            },
+          }),
     });
   };
 

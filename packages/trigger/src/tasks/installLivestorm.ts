@@ -1,5 +1,5 @@
-import { deleteIntegration } from "@conquest/clickhouse/integrations/deleteIntegration";
-import { updateIntegration } from "@conquest/clickhouse/integrations/updateIntegration";
+import { deleteIntegration } from "@conquest/db/integrations/deleteIntegration";
+import { updateIntegration } from "@conquest/db/integrations/updateIntegration";
 import { LivestormIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
 import { schemaTask } from "@trigger.dev/sdk/v3";
 import { z } from "zod";
@@ -44,10 +44,13 @@ export const installLivestorm = schemaTask({
     // });
   },
   onSuccess: async ({ livestorm }) => {
+    const { id, workspace_id } = livestorm;
+
     await updateIntegration({
-      id: livestorm.id,
+      id,
       connected_at: new Date(),
       status: "CONNECTED",
+      workspace_id,
     });
   },
   onFailure: async ({ livestorm }) => {

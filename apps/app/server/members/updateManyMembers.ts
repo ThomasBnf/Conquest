@@ -6,7 +6,7 @@ import { protectedProcedure } from "../trpc";
 export const updateManyMembers = protectedProcedure
   .input(
     z.object({
-      members: MemberSchema.partial().array(),
+      members: MemberSchema.array(),
     }),
   )
   .mutation(async ({ input }) => {
@@ -14,7 +14,7 @@ export const updateManyMembers = protectedProcedure
 
     for (const member of members) {
       if (!member.id) return;
-      const { id, workspace_id, created_at, updated_at, ...data } = member;
-      await updateMember({ id, data });
+
+      await updateMember({ ...member });
     }
   });

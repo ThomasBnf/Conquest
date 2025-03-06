@@ -1,0 +1,22 @@
+import type { Source } from "@conquest/zod/enum/source.enum";
+import { ChannelSchema } from "@conquest/zod/schemas/channel.schema";
+import { prisma } from "../prisma";
+
+type Props = {
+  source?: Source;
+  workspace_id: string;
+};
+
+export const listChannels = async ({ source, workspace_id }: Props) => {
+  const channels = await prisma.channel.findMany({
+    where: {
+      workspace_id,
+      source,
+    },
+    orderBy: {
+      created_at: "desc",
+    },
+  });
+
+  return ChannelSchema.array().parse(channels);
+};

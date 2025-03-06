@@ -20,7 +20,7 @@ import {
 import { Input } from "@conquest/ui/input";
 import { type Login, LoginSchema } from "@conquest/zod/schemas/auth.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ArrowRightIcon } from "lucide-react";
+import { ArrowRightIcon, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -90,9 +90,15 @@ export const LoginForm = () => {
             />
           </CardContent>
           <CardFooter className="flex flex-col">
-            <Button type="submit" loading={loading} className="w-full">
-              Login
-              <ArrowRightIcon size={16} />
+            <Button type="submit" className="w-full">
+              {loading ? (
+                <Loader2 className="size-4 animate-spin" />
+              ) : (
+                <>
+                  Login
+                  <ArrowRightIcon size={16} />
+                </>
+              )}
             </Button>
             <div className="mt-2 flex w-full items-center justify-start text-xs">
               <p className="text-muted-foreground">

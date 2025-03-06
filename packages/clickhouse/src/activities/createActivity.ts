@@ -22,7 +22,7 @@ export const createActivity = async (props: Props) => {
   const id = randomUUID();
 
   await client.insert({
-    table: "activities",
+    table: "activity",
     values: [
       {
         ...rest,

@@ -13,16 +13,17 @@
   "dependencies": {
     "@conquest/emails": "workspace:*",
     "@conquest/clickhouse": "workspace:*",
+    "@conquest/db": "workspace:*",
     "@conquest/zod": "workspace:*",
-    "@trigger.dev/react-hooks": "3.3.16",
-    "@trigger.dev/sdk": "3.3.16",
+    "@trigger.dev/react-hooks": "3.3.17",
+    "@trigger.dev/sdk": "3.3.17",
     "date-fns": "^4.1.0",
     "octokit": "^4.1.0",
     "trigger.dev": "^3.3.15"
   },
   "devDependencies": {
     "@conquest/tsconfig": "workspace:*",
-    "@trigger.dev/build": "3.3.16",
+    "@trigger.dev/build": "3.3.17",
     "dotenv-cli": "8.0.0"
   }
 }

@@ -11,7 +11,7 @@ import {
 } from "@conquest/ui/dialog";
 import { Separator } from "@conquest/ui/separator";
 import type { Member } from "@conquest/zod/schemas/member.schema";
-import { ArrowLeftRight, Equal } from "lucide-react";
+import { ArrowLeftRight, Equal, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -34,7 +34,7 @@ export const MergeDialog = ({ open, setOpen, member }: Props) => {
   const router = useRouter();
   const utils = trpc.useUtils();
 
-  const { mutateAsync: mergeMembers } = trpc.members.mergeMembers.useMutation({
+  const { mutateAsync: mergeMembers } = trpc.members.merge.useMutation({
     onSuccess: () => {
       utils.members.list.invalidate();
       toast.success("Members merged");
@@ -137,12 +137,8 @@ export const MergeDialog = ({ open, setOpen, member }: Props) => {
           <Button variant="outline" onClick={onCancel}>
             Cancel
           </Button>
-          <Button
-            loading={loading}
-            disabled={loading || !leftMember}
-            onClick={onMerge}
-          >
-            Merge
+          <Button disabled={loading || !leftMember} onClick={onMerge}>
+            {loading ? <Loader2 className="size-4 animate-spin" /> : "Merge"}
           </Button>
         </DialogFooter>
       </DialogContent>

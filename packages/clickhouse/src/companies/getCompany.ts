@@ -9,7 +9,7 @@ export const getCompany = async ({ id }: Props) => {
   const result = await client.query({
     query: `
       SELECT *
-      FROM companies
+      FROM company
       WHERE id = '${id}'
     `,
   });

@@ -1,6 +1,8 @@
 export const filteredDomain = (
-  domain: string,
-): { companyName: string; domain: string } | undefined => {
+  domain: string | undefined,
+): string | undefined => {
+  if (!domain) return;
+
   if (domain.includes("gmail")) return;
   if (domain.includes("orange")) return;
   if (domain.includes("yahoo")) return;
@@ -18,5 +20,5 @@ export const filteredDomain = (
 
   const companyName = domain.split(".")[0] ?? "";
 
-  return { companyName, domain };
+  return companyName.charAt(0).toUpperCase() + companyName.slice(1);
 };

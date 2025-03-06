@@ -7,7 +7,7 @@ type Props = {
 
 export const createManyLogs = async ({ logs }: Props) => {
   await client.insert({
-    table: "logs",
+    table: "log",
     values: [logs],
     format: "JSON",
   });

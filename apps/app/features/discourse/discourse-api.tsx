@@ -14,10 +14,10 @@ import {
 import { Input } from "@conquest/ui/input";
 import { Label } from "@conquest/ui/label";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { v4 as uuid } from "uuid";
-import { ArrowRight, Plus } from "lucide-react";
+import { ArrowRight, Loader2, Plus } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import { v4 as uuid } from "uuid";
 import { DiscourseInstruction } from "./discourse-instruction";
 import {
   type Field,
@@ -293,9 +293,15 @@ export const DiscourseApi = () => {
             />
           </div>
         </div>
-        <Button loading={loading} disabled={loading} className="w-fit">
-          Next
-          <ArrowRight size={16} />
+        <Button disabled={loading} className="w-fit">
+          {loading ? (
+            <Loader2 className="size-4 animate-spin" />
+          ) : (
+            <>
+              Next
+              <ArrowRight size={16} />
+            </>
+          )}
         </Button>
       </form>
     </Form>

@@ -10,6 +10,7 @@ export const FormActivityTypeSchema = z.object({
   conditions: z.object({
     rules: ActivityTypeRuleSchema.array(),
   }),
+  deletable: z.boolean().optional(),
 });
 
 export type FormActivityType = z.infer<typeof FormActivityTypeSchema>;

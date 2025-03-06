@@ -1,5 +1,5 @@
-import { getIntegrationBySource } from "@conquest/clickhouse/integrations/getIntegrationBySource";
-import { decrypt } from "@conquest/clickhouse/utils/decrypt";
+import { getIntegrationBySource } from "@conquest/db/integrations/getIntegrationBySource";
+import { decrypt } from "@conquest/db/utils/decrypt";
 import { SlackIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
 import { WebClient } from "@slack/web-api";
 import { protectedProcedure } from "../trpc";

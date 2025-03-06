@@ -1,7 +1,7 @@
 import { UserProvider } from "@/context/userContext";
 import { SignOut } from "@/features/onboarding/sign-out";
 import { getCurrentUser } from "@/queries/getCurrentUser";
-import { getWorkspace } from "@conquest/clickhouse/workspaces/getWorkspace";
+import { getWorkspace } from "@conquest/db/workspaces/getWorkspace";
 import { redirect } from "next/navigation";
 import type { PropsWithChildren } from "react";
 

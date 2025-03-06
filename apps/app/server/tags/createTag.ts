@@ -1,5 +1,5 @@
 import { FormTagSchema } from "@/features/tags/schema/form.schema";
-import { createTag as _createTag } from "@conquest/clickhouse/tags/createTag";
+import { createTag as _createTag } from "@conquest/db/tags/createTag";
 import { protectedProcedure } from "../trpc";
 
 export const createTag = protectedProcedure

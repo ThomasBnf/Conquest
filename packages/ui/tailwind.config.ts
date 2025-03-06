@@ -50,7 +50,6 @@ const config = {
           foreground: "hsl(var(--accent-foreground))",
         },
         main: {
-          "50": "hsl(var(--main-50))",
           "100": "hsl(var(--main-100))",
           "200": "hsl(var(--main-200))",
           "300": "hsl(var(--main-300))",
@@ -60,7 +59,7 @@ const config = {
           "700": "hsl(var(--main-700))",
           "800": "hsl(var(--main-800))",
           "900": "hsl(var(--main-900))",
-          "950": "hsl(var(--main-950))",
+          "1000": "hsl(var(--main-1000))",
         },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",

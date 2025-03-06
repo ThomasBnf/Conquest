@@ -19,28 +19,15 @@ export default function Page({ params: { slug, memberId } }: Props) {
     id: memberId,
   });
 
-  const {
-    data,
-    hasNextPage,
-    fetchNextPage,
-    isLoading: isLoadingActivities,
-  } = trpc.activities.list.useInfiniteQuery(
-    { member_id: memberId, take: 10 },
-    { getNextPageParam: (lastPage) => lastPage[lastPage.length - 1]?.id },
-  );
+  const { data, isLoading: _isLoading } = trpc.activities.list.useQuery({
+    member_id: memberId,
+  });
 
-  const activities = data?.pages.flat() ?? [];
-
-  if (isLoading || isLoadingActivities) return <IsLoading />;
+  if (isLoading || _isLoading) return <IsLoading />;
   if (!member) return redirect(`/${slug}/members`);
 
   return (
-    <Activities
-      activities={activities}
-      hasNextPage={hasNextPage}
-      fetchNextPage={fetchNextPage}
-      isLoading={isLoadingActivities}
-    >
+    <Activities activities={data} isLoading={_isLoading}>
       <EmptyState
         icon={<Activity size={36} />}
         title="No activities found"

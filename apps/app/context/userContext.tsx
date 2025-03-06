@@ -20,21 +20,17 @@ type Props = {
 };
 
 export const UserProvider = ({ children }: Props) => {
-  const results = trpc.useQueries((user) => [
-    user.users.getCurrentUser(),
-    user.workspaces.get(),
-  ]);
+  const { data: user, isLoading } = trpc.users.getCurrentUser.useQuery();
+  const { data: workspace } = trpc.workspaces.get.useQuery();
+  const { slug } = workspace ?? {};
 
-  const [user, workspace] = results;
-  const { slug } = workspace.data ?? {};
-
-  if (results.some((result) => result.isLoading)) return <IsLoading />;
+  if (isLoading) return <IsLoading />;
 
   return (
     <UserContext.Provider
       value={{
-        user: user.data,
-        workspace: workspace.data,
+        user,
+        workspace,
         slug,
       }}
     >

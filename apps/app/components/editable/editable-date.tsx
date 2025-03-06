@@ -42,20 +42,11 @@ export const EditableDate = ({ defaultValue, onUpdate }: Props) => {
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild className="w-full cursor-pointer">
         {date ? (
-          <Button
-            variant="ghost"
-            className="w-full justify-start"
-            classNameSpan="justify-start"
-          >
+          <Button variant="ghost" className="w-full justify-start">
             {format(date, "PPP")}
           </Button>
         ) : (
-          <Button
-            variant="ghost"
-            className="h-8"
-            classNameSpan="text-muted-foreground justify-start"
-            onClick={() => setOpen(true)}
-          >
+          <Button variant="ghost" className="h-8" onClick={() => setOpen(true)}>
             Set date
           </Button>
         )}

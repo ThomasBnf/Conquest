@@ -1,4 +1,4 @@
-import { getIntegrationBySource } from "@conquest/clickhouse/integrations/getIntegrationBySource";
+import { getIntegrationBySource } from "@conquest/db/integrations/getIntegrationBySource";
 import { ActivitySchema } from "@conquest/zod/schemas/activity.schema";
 import { GithubIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
 import { z } from "zod";

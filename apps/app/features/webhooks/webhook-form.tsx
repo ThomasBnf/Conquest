@@ -26,6 +26,7 @@ import {
   SelectValue,
 } from "@conquest/ui/select";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Loader2 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { type FormWebhook, FormWebhookSchema } from "./schema/form.schema";
 
@@ -127,8 +128,12 @@ export const WebhookForm = () => {
               <DialogTrigger asChild>
                 <Button variant="outline">Cancel</Button>
               </DialogTrigger>
-              <Button type="submit" loading={loading} disabled={disabled}>
-                Create Webhook
+              <Button type="submit" disabled={disabled}>
+                {loading ? (
+                  <Loader2 className="size-4 animate-spin" />
+                ) : (
+                  "Create Webhook"
+                )}
               </Button>
             </DialogFooter>
           </DialogContent>

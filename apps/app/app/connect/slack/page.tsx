@@ -1,8 +1,8 @@
 import { SLACK_SCOPES, SLACK_USER_SCOPES } from "@/constant";
 import { getCurrentUser } from "@/queries/getCurrentUser";
-import { createIntegration } from "@conquest/clickhouse/integrations/createIntegration";
-import { getIntegration } from "@conquest/clickhouse/integrations/getIntegration";
-import { encrypt } from "@conquest/clickhouse/utils/encrypt";
+import { createIntegration } from "@conquest/db/integrations/createIntegration";
+import { getIntegration } from "@conquest/db/integrations/getIntegration";
+import { encrypt } from "@conquest/db/utils/encrypt";
 import { env } from "@conquest/env";
 import { WebClient } from "@slack/web-api";
 import { redirect } from "next/navigation";

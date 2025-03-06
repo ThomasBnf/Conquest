@@ -9,7 +9,7 @@ export const getActivityType = async ({ id }: Props) => {
   const result = await client.query({
     query: `
       SELECT * 
-      FROM activity_types
+      FROM activity_type
       WHERE id = '${id}'
     `,
   });

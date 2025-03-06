@@ -87,7 +87,7 @@ export const MemberLevelLogs = ({ member }: Props) => {
                     indicator="line"
                     formatter={() => (
                       <div className="flex w-full gap-2">
-                        <div className="h-full w-1 shrink-0 rounded-[2px] bg-main-500" />
+                        <div className="h-full w-1 shrink-0 rounded-[2px] bg-main-400" />
                         <div className="flex items-end gap-2">
                           <div className="grid gap-1.5">
                             <p className="font-medium leading-none">{date}</p>

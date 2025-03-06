@@ -1,8 +1,8 @@
-import type { Company } from "@conquest/zod/schemas/company.schema";
 import { type Member, MemberSchema } from "@conquest/zod/schemas/member.schema";
 import { v4 as uuid } from "uuid";
 import { client } from "../client";
 import { createCompany } from "../companies/createCompany";
+import { getCompanyByDomain } from "../companies/getCompanyByDomain";
 import { filteredDomain } from "../helpers/filteredDomain";
 
 type Props = Partial<Member>;
@@ -10,33 +10,29 @@ type Props = Partial<Member>;
 export const createMember = async (props: Props) => {
   const id = uuid();
 
-  const { primary_email, phones } = props;
+  const { primary_email, phones, source, workspace_id } = props;
 
   const formattedEmail = primary_email?.toLowerCase().trim();
   const formattedPhones = phones?.map((phone) => phone.toLowerCase().trim());
-  const formattedDomain = formattedEmail?.split("@")[1];
+  const domain = formattedEmail?.split("@")[1];
 
-  let company: Company | undefined;
+  let company = await getCompanyByDomain({ domain: `https://${domain}` });
 
-  if (formattedDomain) {
-    const { companyName, domain } = filteredDomain(formattedDomain) ?? {};
+  if (!company) {
+    const companyName = filteredDomain(domain);
 
-    if (companyName && domain) {
-      const formattedCompanyName =
-        companyName.charAt(0).toUpperCase() + companyName.slice(1);
-      const formattedDomain = `https://${domain}`;
-
+    if (companyName) {
       company = await createCompany({
-        name: formattedCompanyName,
-        domain: formattedDomain,
-        source: props.source,
-        workspace_id: props.workspace_id,
+        name: companyName,
+        domain: `https://${domain}`,
+        source,
+        workspace_id,
       });
     }
   }
 
   await client.insert({
-    table: "members",
+    table: "member",
     values: [
       {
         ...props,
@@ -54,7 +50,7 @@ export const createMember = async (props: Props) => {
   const result = await client.query({
     query: `
         SELECT * 
-        FROM members 
+        FROM member
         WHERE id = '${id}'`,
   });
 

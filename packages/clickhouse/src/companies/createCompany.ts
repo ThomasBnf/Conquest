@@ -8,7 +8,7 @@ export const createCompany = async (props: Props) => {
   const id = uuid();
 
   await client.insert({
-    table: "companies",
+    table: "company",
     values: [
       {
         id,

@@ -23,6 +23,7 @@ import type { List } from "@conquest/zod/schemas/list.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { type FormEdit, FormEditSchema } from "./schemas/form-edit.schema";
+import { Loader2 } from "lucide-react";
 
 type Props = {
   list: List;
@@ -103,8 +104,12 @@ export const EditListDialog = ({ list, open, setOpen }: Props) => {
                     Cancel
                   </Button>
                 </DialogTrigger>
-                <Button type="submit" loading={isPending} disabled={isPending}>
-                  Save
+                <Button type="submit" disabled={isPending}>
+                  {isPending ? (
+                    <Loader2 className="size-4 animate-spin" />
+                  ) : (
+                    "Save"
+                  )}
                 </Button>
               </DialogFooter>
             </form>

@@ -17,9 +17,10 @@ import { EditListDialog } from "./edit-list-dialog";
 
 type Props = {
   list: List;
+  transparent?: boolean;
 };
 
-export const MenuList = ({ list }: Props) => {
+export const MenuList = ({ list, transparent = false }: Props) => {
   const { slug } = useUser();
   const [open, setOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
@@ -28,9 +29,9 @@ export const MenuList = ({ list }: Props) => {
 
   const { mutateAsync } = trpc.lists.delete.useMutation({
     onSuccess: () => {
-      utils.lists.list.invalidate();
-      toast.success("List deleted");
       router.push(`/${slug}/members`);
+      toast.success("List deleted");
+      utils.lists.list.invalidate();
     },
   });
 
@@ -50,7 +51,10 @@ export const MenuList = ({ list }: Props) => {
       <EditListDialog list={list} open={editOpen} setOpen={setEditOpen} />
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="outline" size="icon_sm">
+          <Button
+            variant={transparent ? "ghost" : "outline"}
+            size={transparent ? "icon" : "icon_sm"}
+          >
             <MoreHorizontal size={16} />
           </Button>
         </DropdownMenuTrigger>

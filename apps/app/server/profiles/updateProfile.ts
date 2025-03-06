@@ -13,5 +13,5 @@ export const updateProfile = protectedProcedure
   .mutation(async ({ input }) => {
     const { id, attributes } = input;
 
-    return await _updateProfile({ id, attributes });
+    return await _updateProfile({ id, ...attributes });
   });

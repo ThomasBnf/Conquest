@@ -22,7 +22,7 @@ import {
 } from "@conquest/ui/form";
 import { Input } from "@conquest/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Plus } from "lucide-react";
+import { Loader2, Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -49,13 +49,16 @@ export const CreateCompanyDialog = () => {
 
   const form = useForm<FormCreate>({
     resolver: zodResolver(FormCreateSchema),
+    defaultValues: {
+      source: "Manual",
+    },
   });
 
   const isDisabled = loading || !form.formState.isValid;
 
-  const onSubmit = async ({ name }: FormCreate) => {
+  const onSubmit = async (data: FormCreate) => {
     setLoading(true);
-    await mutateAsync({ name });
+    await mutateAsync(data);
   };
 
   return (
@@ -96,8 +99,12 @@ export const CreateCompanyDialog = () => {
                   Cancel
                 </Button>
               </DialogTrigger>
-              <Button type="submit" loading={loading} disabled={isDisabled}>
-                Add Company
+              <Button type="submit" disabled={isDisabled}>
+                {loading ? (
+                  <Loader2 className="size-4 animate-spin" />
+                ) : (
+                  "Add Company"
+                )}
               </Button>
             </DialogFooter>
           </form>

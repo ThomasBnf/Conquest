@@ -3,7 +3,7 @@ import { FiltersProvider } from "@/context/filtersContext";
 import { UserProvider } from "@/context/userContext";
 import { CreateListDialog } from "@/features/lists/create-list-dialog";
 import { getCurrentUser } from "@/queries/getCurrentUser";
-import { getWorkspace } from "@conquest/clickhouse/workspaces/getWorkspace";
+import { getWorkspace } from "@conquest/db/workspaces/getWorkspace";
 import { SidebarProvider } from "@conquest/ui/sidebar";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";

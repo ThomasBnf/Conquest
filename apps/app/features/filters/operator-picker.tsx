@@ -17,7 +17,7 @@ import {
   NumberOperatorSchema,
   type Operator,
 } from "@conquest/zod/schemas/filters.schema";
-import { ChevronDown } from "lucide-react";
+import { Check, ChevronDown } from "lucide-react";
 import { useState } from "react";
 
 type Props = {
@@ -40,7 +40,7 @@ export const OperatorPicker = ({ filter }: Props) => {
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button variant="outline" className="w-[122px]">
+        <Button variant="outline" className="w-fit">
           {filter.operator.replaceAll("_", " ")}
           <ChevronDown size={16} className="ml-auto text-muted-foreground" />
         </Button>
@@ -72,6 +72,9 @@ export const OperatorPicker = ({ filter }: Props) => {
                   }}
                 >
                   {operator.replaceAll("_", " ")}
+                  {operator === filter.operator && (
+                    <Check size={16} className="ml-auto" />
+                  )}
                 </CommandItem>
               ))}
             </CommandGroup>

@@ -1,4 +1,4 @@
-import { client } from "@conquest/clickhouse/client";
+import { prisma } from "@conquest/db/prisma";
 import { z } from "zod";
 import { protectedProcedure } from "../trpc";
 
@@ -11,15 +11,11 @@ export const getSlug = protectedProcedure
   .query(async ({ input }) => {
     const { slug } = input;
 
-    const result = await client.query({
-      query: `
-        SELECT *
-        FROM workspaces 
-        WHERE slug = '${slug}'
-      `,
-      format: "JSON",
+    const count = await prisma.workspace.count({
+      where: {
+        slug,
+      },
     });
 
-    const { rows } = await result.json();
-    return rows;
+    return count;
   });

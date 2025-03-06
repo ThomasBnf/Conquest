@@ -1,3 +1,5 @@
+"use client";
+
 import { FormUser } from "@/features/users/form-user";
 import { Separator } from "@conquest/ui/separator";
 

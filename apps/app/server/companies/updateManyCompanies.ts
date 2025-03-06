@@ -13,8 +13,6 @@ export const updateManyCompanies = protectedProcedure
     const { companies } = input;
 
     for (const company of companies) {
-      if (!company.id) return;
-      const { id, workspace_id, created_at, updated_at, ...data } = company;
-      await updateCompany({ id, data });
+      await updateCompany(company);
     }
   });

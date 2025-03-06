@@ -1,5 +1,5 @@
 import { getCurrentUser } from "@/queries/getCurrentUser";
-import { createIntegration } from "@conquest/clickhouse/integrations/createIntegration";
+import { createIntegration } from "@conquest/db/integrations/createIntegration";
 
 import { redirect } from "next/navigation";
 

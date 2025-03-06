@@ -3,8 +3,8 @@ import { Label } from "@conquest/ui/label";
 import { ScrollArea } from "@conquest/ui/scroll-area";
 import { useReactFlow } from "@xyflow/react";
 import { Icon } from "components/icons/Icon";
-import { v4 as uuid } from "uuid";
 import type { icons } from "lucide-react";
+import { v4 as uuid } from "uuid";
 import { usePanel } from "../hooks/usePanel";
 import { useSelected } from "../hooks/useSelected";
 import type { WorkflowNode } from "./schemas/workflow-node.type";
@@ -52,7 +52,6 @@ export const TriggerPanel = () => {
                       variant="outline"
                       size="default"
                       className="px-2"
-                      classNameSpan="justify-start"
                       onClick={() => onClick(node)}
                     >
                       <div className="rounded-md border p-1">

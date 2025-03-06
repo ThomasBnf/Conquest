@@ -28,6 +28,7 @@ const discordEnv = {
   server: {
     DISCORD_CLIENT_SECRET: z.string(),
     DISCORD_BOT_TOKEN: z.string(),
+    DISCORD_PORT: z.string(),
   },
   client: {
     NEXT_PUBLIC_DISCORD_CLIENT_ID: z.string(),

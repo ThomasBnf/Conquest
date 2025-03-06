@@ -1,6 +1,6 @@
-import { resend } from "@conquest/clickhouse/resend";
-import { getUserById } from "@conquest/clickhouse/users/getUserById";
-import { getWorkspace } from "@conquest/clickhouse/workspaces/getWorkspace";
+import { resend } from "@conquest/db/resend";
+import { getUserById } from "@conquest/db/users/getUserById";
+import { getWorkspace } from "@conquest/db/workspaces/getWorkspace";
 import { SuccessIntegrationEmail } from "@conquest/emails/SuccessIntegrationEmail";
 import { env } from "@conquest/env";
 import { IntegrationSchema } from "@conquest/zod/schemas/integration.schema";

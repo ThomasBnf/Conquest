@@ -1,6 +1,6 @@
-import { getIntegrationBySource } from "@conquest/clickhouse/integrations/getIntegrationBySource";
-import { getRefreshToken } from "@conquest/clickhouse/livestorm/getRefreshToken";
-import { decrypt } from "@conquest/clickhouse/utils/decrypt";
+import { getIntegrationBySource } from "@conquest/db/integrations/getIntegrationBySource";
+import { getRefreshToken } from "@conquest/db/livestorm/getRefreshToken";
+import { decrypt } from "@conquest/db/utils/decrypt";
 import { LivestormIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
 import { protectedProcedure } from "../trpc";
 

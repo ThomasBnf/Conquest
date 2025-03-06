@@ -6,7 +6,6 @@ import { Button } from "@conquest/ui/button";
 import { QueryInput } from "components/custom/query-input";
 import { Plus } from "lucide-react";
 import { Suspense, useState } from "react";
-import { useDebounce } from "use-debounce";
 import { TagCard } from "./tag-card";
 import { TagForm } from "./tag-form";
 
@@ -18,7 +17,7 @@ type Tag = {
 export const TagsList = () => {
   const { data: tags, isLoading } = trpc.tags.list.useQuery();
   const [isVisible, setIsVisible] = useState(false);
-  const [query, setQuery] = useDebounce("", 500);
+  const [query, setQuery] = useState("");
 
   const filteredTags =
     tags?.filter((tag) =>
@@ -29,7 +28,7 @@ export const TagsList = () => {
 
   return (
     <div className="flex flex-col gap-4">
-      {filteredTags.length > 0 && (
+      {tags && tags.length > 0 && (
         <div className="flex items-center justify-between">
           <QueryInput query={query} setQuery={setQuery} />
           <Button disabled={isVisible} onClick={() => setIsVisible(true)}>

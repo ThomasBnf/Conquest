@@ -9,7 +9,7 @@ export const listSources = protectedProcedure.query(
     const result = await client.query({
       query: `
         SELECT DISTINCT source
-        FROM activity_types
+        FROM activity_type
         WHERE workspace_id = '${workspace_id}'
       `,
     });

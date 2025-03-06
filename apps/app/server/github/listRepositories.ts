@@ -1,5 +1,5 @@
-import { getIntegrationBySource } from "@conquest/clickhouse/integrations/getIntegrationBySource";
-import { decrypt } from "@conquest/clickhouse/utils/decrypt";
+import { getIntegrationBySource } from "@conquest/db/integrations/getIntegrationBySource";
+import { decrypt } from "@conquest/db/utils/decrypt";
 import { GithubIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
 import { Octokit } from "octokit";
 import { protectedProcedure } from "../trpc";

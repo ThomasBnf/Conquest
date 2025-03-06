@@ -1,65 +1,60 @@
 import { client } from "@conquest/clickhouse/client";
-import { format } from "date-fns";
+import { differenceInDays, endOfDay, format, subDays } from "date-fns";
 import { z } from "zod";
 import { protectedProcedure } from "../trpc";
 
 export const activeMembers = protectedProcedure
   .input(
     z.object({
-      from: z.coerce.date(),
-      to: z.coerce.date(),
+      from: z.date(),
+      to: z.date(),
     }),
   )
   .query(async ({ input }) => {
     const { from, to } = input;
 
-    const formatedFrom = format(from, "yyyy-MM-dd");
-    const formatedTo = format(to, "yyyy-MM-dd");
+    const previousPeriodLength = differenceInDays(to, from);
+    const previousFrom = subDays(from, previousPeriodLength);
+    const previousTo = subDays(to, previousPeriodLength);
+
+    const formattedFrom = format(from, "yyyy-MM-dd HH:mm:ss");
+    const formattedTo = format(endOfDay(to), "yyyy-MM-dd HH:mm:ss");
+    const formattedPreviousFrom = format(previousFrom, "yyyy-MM-dd HH:mm:ss");
+    const formattedPreviousTo = format(
+      endOfDay(previousTo),
+      "yyyy-MM-dd HH:mm:ss",
+    );
 
     const result = await client.query({
       query: `
-          WITH date_series AS ( 
-              SELECT formatDateTime(date_trunc('day', addDays(toDate('${formatedFrom}'), number)), '%b %d') AS date 
-              FROM numbers(toUInt32(toDate('${formatedTo}') - toDate('${formatedFrom}') + 1)) 
-          ), 
-          active_members AS ( 
-              SELECT 
-                  formatDateTime(date_trunc('day', created_at), '%b %d') AS date, 
-                  COUNT(DISTINCT member_id) AS active_members 
-              FROM 
-                  activities 
-              WHERE 
-                  created_at >= toDateTime('${formatedFrom}') AND created_at < toDateTime('${formatedTo}') + INTERVAL 1 DAY 
-              GROUP BY 
-                  formatDateTime(date_trunc('day', created_at), '%b %d')
-          ) 
-          SELECT 
-              ds.date AS date, 
-              COALESCE(am.active_members, 0) AS active_members 
-          FROM 
-              date_series ds 
-          LEFT JOIN 
-              active_members am ON ds.date = am.date 
-          ORDER BY 
-              ds.date ASC;
+        WITH 
+          (
+            SELECT count(DISTINCT member_id)
+            FROM activity
+            WHERE created_at >= '${formattedFrom}' 
+            AND created_at <= '${formattedTo}'
+          ) as current_count,
+          (
+            SELECT count(DISTINCT member_id)
+            FROM activity
+            WHERE created_at >= '${formattedPreviousFrom}' 
+            AND created_at <= '${formattedPreviousTo}'
+          ) as previous_count
+        SELECT 
+          current_count as current,
+          previous_count as previous,
+          if(previous_count = 0, 0, ((current_count - previous_count) / previous_count) * 100) as variation
       `,
+      format: "JSON",
     });
 
-    const { data } = await result.json();
-
-    const resultActiveMembers = await client.query({
-      query: `
-        SELECT COUNT(DISTINCT member_id) AS total 
-        FROM activities 
-        WHERE created_at >= toDateTime('${formatedFrom}') AND created_at < toDateTime('${formatedTo}') + INTERVAL 1 DAY 
-      `,
-    });
-
-    const { data: dateCount } = await resultActiveMembers.json();
-    const count = dateCount as Array<{ total: number }>;
+    const { data } = (await result.json()) as {
+      data: Array<{ current: number; previous: number; variation: number }>;
+    };
 
     return {
-      activeMembers: Number(count[0]?.total),
-      activeMembersData: data,
+      current: data[0]?.current ?? 0,
+      previous: data[0]?.previous ?? 0,
+      variation: data[0]?.variation ?? 0,
     };
   });

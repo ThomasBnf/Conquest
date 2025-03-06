@@ -1,4 +1,4 @@
-import { getUserById } from "@conquest/clickhouse/users/getUserById";
+import { getUserById } from "@conquest/db/users/getUserById";
 import { UserSchema } from "@conquest/zod/schemas/user.schema";
 import { TRPCError, initTRPC } from "@trpc/server";
 import superjson from "superjson";

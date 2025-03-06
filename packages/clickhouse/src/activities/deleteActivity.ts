@@ -27,9 +27,8 @@ export const deleteActivity = async (props: Props) => {
 
   await client.query({
     query: `
-      DELETE 
-      FROM activities
-      WHERE ${where}
+      ALTER TABLE activity
+      DELETE WHERE ${where}
     `,
   });
 };

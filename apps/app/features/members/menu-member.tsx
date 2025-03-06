@@ -30,7 +30,7 @@ export const MenuMember = ({ member }: Props) => {
     toast.success("Member ID copied to clipboard");
   };
 
-  const { mutateAsync: deleteMember } = trpc.members.deleteMember.useMutation({
+  const { mutateAsync: deleteMember } = trpc.members.delete.useMutation({
     onSuccess: () => {
       utils.members.list.invalidate();
       toast.success("Member deleted");

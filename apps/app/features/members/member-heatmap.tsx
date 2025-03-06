@@ -39,7 +39,7 @@ export const MemberHeatmap = ({ memberId }: Props) => {
         ) : (
           <span>{data?.length}</span>
         )}{" "}
-        activities in the last 365 days
+        {data?.length === 1 ? "activity" : "activities"} in the last 365 days
       </p>
       <ScrollArea className="pb-4">
         <div className="flex flex-col">

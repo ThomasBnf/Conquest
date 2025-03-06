@@ -3,11 +3,11 @@ import { SOURCE } from "../enum/source.enum";
 
 export const TagSchema = z.object({
   id: z.string().uuid(),
-  external_id: z.string(),
+  external_id: z.string().nullable(),
   name: z.string(),
   color: z.string(),
   source: SOURCE,
-  workspace_id: z.string(),
+  workspace_id: z.string().uuid(),
   created_at: z.coerce.date(),
   updated_at: z.coerce.date(),
 });

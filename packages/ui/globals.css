@@ -18,7 +18,7 @@
     --accent-foreground: 0 0% 9%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
-    --border: 240 3% 88%;
+    --border: 0 0% 87%;
     --input: 240 3% 88%;
     --ring: 248 20% 92%;
     --radius: 0.5rem;
@@ -29,24 +29,23 @@
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
 
-    --sidebar-background: 0 0% 95%;
+    --sidebar-background: 30, 33%, 98%;
     --sidebar-foreground: 240 6% 10%;
     --sidebar-accent: 0 0% 90%;
     --sidebar-accent-foreground: 240 6% 10%;
     --sidebar-border: 240 3% 90%;
     --sidebar-ring: 248 20% 92%;
 
-    --main-50: 240 18% 96%;
-    --main-100: 248 20% 92%;
-    --main-200: 247 21% 84%;
-    --main-300: 248 23% 74%;
-    --main-400: 247 25% 62%;
-    --main-500: 257 80% 32%;
-    --main-600: 257 81% 30%;
-    --main-700: 257 80% 27%;
-    --main-800: 257 80% 24%;
-    --main-900: 257 79% 19%;
-    --main-950: 257 81% 14%;
+    --main-100: 14 100% 95%;
+    --main-200: 14 100% 89%;
+    --main-300: 14 100% 83%;
+    --main-400: 228 60% 57%;
+    --main-500: 229 48% 45%;
+    --main-600: 13 78% 41%;
+    --main-700: 14 77% 35%;
+    --main-800: 14 78% 28%;
+    --main-900: 13 77% 22%;
+    --main-1000: 13 77% 17%;
 
     --slack: 294 54% 27%;
     --livestorm: 226 94% 32%;
@@ -102,7 +101,7 @@
 }
 
 .actions-primary {
-  box-shadow: inset 0 8px 16px 0 hsla(0, 0%, 100%, 0.16), inset 0 2px 0 0
+  box-shadow: inset 0 8px 16px 0 hsla(0, 0%, 100%, 0.16), inset 0 1px 0 0
     hsla(0, 7%, 3%, 0.1), 0 1px 2px 0.05px hsla(240, 6%, 10%, 0.24);
 }
 

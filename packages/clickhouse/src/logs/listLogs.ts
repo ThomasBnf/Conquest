@@ -9,8 +9,9 @@ export const listLogs = async ({ member_id }: Props) => {
   const result = await client.query({
     query: `
       SELECT * 
-      FROM logs
+      FROM log
       WHERE member_id = '${member_id}'
+      ORDER BY date ASC
     `,
   });
 

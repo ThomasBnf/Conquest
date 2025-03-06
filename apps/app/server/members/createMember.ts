@@ -4,8 +4,8 @@ import { protectedProcedure } from "../trpc";
 
 export const createMember = protectedProcedure
   .input(MemberFormSchema)
-  .mutation(async ({ input }) => {
-    const { email, ...data } = input;
+  .mutation(async ({ ctx: { user }, input }) => {
+    const { workspace_id } = user;
 
-    return _createMember({ ...data });
+    return _createMember({ ...input, workspace_id });
   });

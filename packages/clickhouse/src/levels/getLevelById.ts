@@ -9,7 +9,7 @@ export const getLevelById = async ({ id }: Props) => {
   const result = await client.query({
     query: `
       SELECT * 
-      FROM levels 
+      FROM level
       WHERE id = '${id}'
     `,
   });

@@ -1,6 +1,6 @@
-import { discourseClient } from "@conquest/clickhouse/discourse";
-import { getIntegrationBySource } from "@conquest/clickhouse/integrations/getIntegrationBySource";
-import { decrypt } from "@conquest/clickhouse/utils/decrypt";
+import { discourseClient } from "@conquest/db/discourse";
+import { getIntegrationBySource } from "@conquest/db/integrations/getIntegrationBySource";
+import { decrypt } from "@conquest/db/utils/decrypt";
 import { DiscourseIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
 import { CategorySchema } from "@conquest/zod/types/discourse";
 import { protectedProcedure } from "../trpc";
@@ -33,6 +33,7 @@ export const listChannels = protectedProcedure.query(
       community_url: decryptedCommunityUrl,
       api_key: decryptedApiKey,
     });
+
     const { categories } = await client.getSite();
 
     return CategorySchema.array().parse(categories);

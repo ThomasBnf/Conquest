@@ -13,6 +13,7 @@
     "@auth/core": "^0.37.4",
     "@clickhouse/client-web": "^1.10.1",
     "@conquest/clickhouse": "workspace:*",
+    "@conquest/db": "workspace:*",
     "@conquest/emails": "workspace:*",
     "@conquest/env": "workspace:*",
     "@conquest/trigger": "workspace:*",

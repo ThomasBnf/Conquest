@@ -1,5 +1,5 @@
 import { FormListSchema } from "@/features/lists/schemas/form-create.schema";
-import { createList as _createList } from "@conquest/clickhouse/lists/createList";
+import { createList as _createList } from "@conquest/db/lists/createList";
 import { protectedProcedure } from "../trpc";
 
 export const createList = protectedProcedure

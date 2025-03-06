@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader } from "@conquest/ui/card";
 import { cn } from "@conquest/ui/cn";
 import type { Source } from "@conquest/zod/enum/source.enum";
 import type { Integration } from "@conquest/zod/schemas/integration.schema";
-import { CirclePlus, ExternalLink } from "lucide-react";
+import { CirclePlus, ExternalLink, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { type PropsWithChildren, useEffect } from "react";
@@ -77,9 +77,15 @@ export const EnableCard = ({
           </Link>
         </div>
         {(!trigger_token || isExpired) && (
-          <Button onClick={onEnable} loading={loading} disabled={loading}>
-            <CirclePlus size={16} />
-            Enable
+          <Button onClick={onEnable} disabled={loading}>
+            {loading ? (
+              <Loader2 className="size-4 animate-spin" />
+            ) : (
+              <>
+                <CirclePlus size={16} />
+                Enable
+              </>
+            )}
           </Button>
         )}
         {isEnabled && !loading && !isExpired && (

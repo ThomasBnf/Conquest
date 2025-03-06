@@ -1,11 +1,6 @@
 "use client";
 
 import { Button } from "@conquest/ui/button";
-import {
-  type Node,
-  NodeDataLoopSchema,
-  NodeDataSchema,
-} from "@conquest/zod/schemas/node.schema";
 import type { Workflow } from "@conquest/zod/schemas/workflow.schema";
 import {
   Background,
@@ -24,9 +19,8 @@ import {
   useReactFlow,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
-import { MousePointerClick } from "lucide-react";
+import { Loader2, MousePointerClick } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { toast } from "sonner";
 import { usePanel } from "../hooks/usePanel";
 import { useSelected } from "../hooks/useSelected";
 import { CustomEdge } from "../nodes/custom-edge";
@@ -253,10 +247,15 @@ export const Editor = ({ workflow }: Props) => {
           <Button
             onClick={onRunWorkflow}
             className="absolute top-4 right-4 z-50 cursor-pointer"
-            loading={running}
           >
-            <MousePointerClick size={16} />
-            Run workflow
+            {running ? (
+              <Loader2 className="size-4 animate-spin" />
+            ) : (
+              <>
+                <MousePointerClick size={16} />
+                Run workflow
+              </>
+            )}
           </Button>
         )}
       </ReactFlow>

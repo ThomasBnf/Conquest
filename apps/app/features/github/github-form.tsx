@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import { ActivityTypesList } from "../activities-types/activity-types-list";
 import { LoadingMessage } from "../integrations/loading-message";
 import { GithubRepo } from "./github-repo";
+import { Loader2 } from "lucide-react";
 
 export const GithubForm = () => {
   const { github, loading, setLoading, step } = useIntegration();
@@ -63,7 +64,7 @@ export const GithubForm = () => {
       {step === 1 && (
         <div className="space-y-2">
           {loading ? (
-            <LoadingMessage />
+            <LoadingMessage progress={Number(run?.metadata?.progress)} />
           ) : (
             <>
               <div>
@@ -76,8 +77,12 @@ export const GithubForm = () => {
               <ActivityTypesList source="Github" disableHeader />
             </>
           )}
-          <Button onClick={onStart} loading={loading} disabled={loading}>
-            Let's start!
+          <Button onClick={onStart} disabled={loading}>
+            {loading ? (
+              <Loader2 className="size-4 animate-spin" />
+            ) : (
+              "Let's start!"
+            )}
           </Button>
         </div>
       )}

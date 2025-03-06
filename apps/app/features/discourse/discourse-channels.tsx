@@ -1,12 +1,12 @@
+import { LoadingChannels } from "@/components/states/loading-channels";
 import { DISCOURSE_ACTIVITY_TYPES } from "@/constant";
 import { useIntegration } from "@/context/integrationContext";
 import { trpc } from "@/server/client";
 import { Button } from "@conquest/ui/button";
 import { Checkbox } from "@conquest/ui/checkbox";
 import type { Category } from "@conquest/zod/types/discourse";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { LoadingChannels } from "@/components/states/loading-channels";
 import { groupChannels } from "./helpers/groupChannels";
 import { parseChannelName } from "./helpers/parseChannelName";
 
@@ -90,19 +90,16 @@ export const DiscourseChannels = () => {
       .filter((channel) => !channel.read_restricted)
       .reduce((acc: Category[], channel) => {
         if (!channel.parent_category_id) {
-          // Trouver les enfants directs
           const directChildren = discourseChannels.filter(
             (ch) => ch.parent_category_id === channel.id,
           );
 
-          // Trouver les petits-enfants
           const grandChildren = directChildren.flatMap((child) =>
             discourseChannels.filter(
               (ch) => ch.parent_category_id === child.id,
             ),
           );
 
-          // Ajouter le canal parent et tous ses descendants
           return [...(acc ?? []), channel, ...directChildren, ...grandChildren];
         }
         return acc;
@@ -235,7 +232,7 @@ export const DiscourseChannels = () => {
                             {children.children.map((grandchild) => (
                               <div
                                 key={grandchild.id}
-                                className="ml-4 flex items-center gap-2 text-foreground/80"
+                                className="ml-4 flex items-center gap-2"
                               >
                                 <Checkbox
                                   checked={selectedChannels.some(
@@ -260,12 +257,17 @@ export const DiscourseChannels = () => {
         ))}
       </div>
       <Button
-        loading={loading}
         disabled={selectedChannels.length === 0 || loading}
         onClick={onClick}
       >
-        Next
-        <ArrowRight size={16} />
+        {loading ? (
+          <Loader2 className="size-4 animate-spin" />
+        ) : (
+          <>
+            Next
+            <ArrowRight size={16} />
+          </>
+        )}
       </Button>
     </div>
   );

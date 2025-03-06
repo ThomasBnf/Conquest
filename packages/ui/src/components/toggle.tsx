@@ -11,7 +11,7 @@ const toggleVariants = cva(
     variants: {
       variant: {
         default:
-          "bg-main-500 border border-main-500 text-primary-foreground hover:bg-main-700 hover:border-main-700 actions-primary active:bg-main-900 active:border-main-900",
+          "bg-main-400 border border-main-400 text-primary-foreground hover:bg-main-500 hover:border-main-500 actions-primary active:bg-main-600 active:border-main-600",
         outline:
           "border bg-background hover:bg-accent hover:text-accent-foreground actions-secondary",
       },

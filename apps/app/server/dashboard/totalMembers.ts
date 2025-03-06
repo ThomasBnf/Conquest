@@ -1,40 +1,64 @@
 import { client } from "@conquest/clickhouse/client";
-import { format } from "date-fns";
+import { differenceInDays, endOfDay, format, subDays } from "date-fns";
 import { z } from "zod";
 import { protectedProcedure } from "../trpc";
 
 export const totalMembers = protectedProcedure
   .input(
     z.object({
-      from: z.coerce.date(),
-      to: z.coerce.date(),
+      from: z.date(),
+      to: z.date(),
     }),
   )
-  .query(async ({ ctx: { user }, input }) => {
+  .query(async ({ input }) => {
     const { from, to } = input;
-    const { workspace_id } = user;
 
-    const formatedFrom = format(from, "yyyy-MM-dd");
-    const formatedTo = format(to, "yyyy-MM-dd");
+    const previousPeriodLength = differenceInDays(to, from);
+    const previousFrom = subDays(from, previousPeriodLength);
+    const previousTo = subDays(to, previousPeriodLength);
 
-    console.log(formatedFrom, formatedTo);
+    const formattedFrom = format(from, "yyyy-MM-dd HH:mm:ss");
+    const formattedTo = format(endOfDay(to), "yyyy-MM-dd HH:mm:ss");
+    const formattedPreviousFrom = format(previousFrom, "yyyy-MM-dd HH:mm:ss");
+    const formattedPreviousTo = format(
+      endOfDay(previousTo),
+      "yyyy-MM-dd HH:mm:ss",
+    );
 
     const result = await client.query({
       query: `
-        SELECT COUNT(*) as total
-        FROM members
-        WHERE workspace_id = '${workspace_id}'
-        AND created_at >= '${formatedFrom}' AND created_at <= '${formatedTo}'
+        WITH 
+          (
+            SELECT count()
+            FROM member
+            WHERE created_at >= '${formattedFrom}' 
+            AND created_at <= '${formattedTo}'
+          ) as current_count,
+          (
+            SELECT count()
+            FROM member
+            WHERE created_at >= '${formattedPreviousFrom}' 
+            AND created_at <= '${formattedPreviousTo}'
+          ) as previous_count
+        SELECT 
+          current_count as current,
+          previous_count as previous,
+          CASE
+            WHEN previous_count = 0 AND current_count > 0 THEN 100
+            WHEN previous_count = 0 THEN 0
+            ELSE ((current_count - previous_count) / previous_count) * 100
+          END as variation
       `,
+      format: "JSON",
     });
 
-    const { data } = await result.json();
-    const count = data as Array<{ total: number }>;
-
-    console.log(data);
+    const { data } = (await result.json()) as {
+      data: Array<{ current: number; previous: number; variation: number }>;
+    };
 
     return {
-      totalMembers: Number(count[0]?.total),
-      totalMembersData: [],
+      current: data[0]?.current ?? 0,
+      previous: data[0]?.previous ?? 0,
+      variation: data[0]?.variation ?? 0,
     };
   });

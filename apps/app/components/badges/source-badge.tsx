@@ -37,7 +37,7 @@ export const SourceBadge = ({
   onlyIcon = false,
   className,
 }: Props) => {
-  const config = sourceConfigs[source];
+  const config = sourceConfigs[source] ?? { label: source, Icon: null };
   const { Icon, label } = config;
 
   return (
@@ -45,7 +45,7 @@ export const SourceBadge = ({
       variant={transparent ? "transparent" : "secondary"}
       className={cn("gap-2", className)}
     >
-      {Icon && <Icon className="size-3.5" />}
+      {Icon ? <Icon className="size-3.5" /> : null}
       {!onlyIcon && <span className="font-medium text-sm">{label}</span>}
     </Badge>
   );

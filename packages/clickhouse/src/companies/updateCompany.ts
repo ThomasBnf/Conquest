@@ -1,30 +1,18 @@
 import type { Company } from "@conquest/zod/schemas/company.schema";
 import { client } from "../client";
 
-type Props = {
-  id: string;
-  data: Omit<Partial<Company>, "updated_at">;
-};
+type Props = Company;
 
-export const updateCompany = async ({ id, data }: Props) => {
+export const updateCompany = async (props: Props) => {
+  const { id, workspace_id, updated_at, ...data } = props;
   const values = Object.entries(data)
-    .map(([key, value]) => {
-      if (["secondary_emails", "phones", "tags"].includes(key)) {
-        if (Array.isArray(value) && value.length === 0) {
-          return `${key} = []`;
-        }
-        return `${key} = ['${(value as string[]).join("','")}']`;
-      }
-      return `${key} = '${value}'`;
-    })
-    .join(",");
+    .map(([key, value]) => `${key} = '${value}'`)
+    .join(", ");
 
   await client.query({
     query: `
-      ALTER TABLE companies
-      UPDATE
-        ${values},
-        updated_at = now()
+      ALTER TABLE company
+      UPDATE ${values}, updated_at = now()
       WHERE id = '${id}'
     `,
   });

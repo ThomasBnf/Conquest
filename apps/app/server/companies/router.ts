@@ -16,9 +16,9 @@ export const companiesRouter = router({
   listCompanyMembers,
   list: listCompanies,
   post: createCompany,
-  updateCompany,
+  update: updateCompany,
   updateManyCompanies,
   deleteManyCompanies,
   countCompanies,
-  exportCompanies,
+  export: exportCompanies,
 });

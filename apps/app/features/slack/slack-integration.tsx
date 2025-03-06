@@ -10,6 +10,7 @@ import { useRouter } from "next/navigation";
 import { ConnectedCard } from "../integrations/connected-card";
 import { EnableCard } from "../integrations/enable-card";
 import { IntegrationHeader } from "../integrations/integration-header";
+import { LoadingChannels } from "@/components/states/loading-channels";
 import { SlackForm } from "./slack-form";
 
 type Props = {
@@ -18,8 +19,7 @@ type Props = {
 
 export const SlackIntegration = ({ error }: Props) => {
   const { slack, channels, setLoading } = useIntegration();
-  const { details } = slack ?? {};
-  const { name, source } = details ?? {};
+  const { name, source } = slack?.details ?? {};
   const router = useRouter();
 
   const onEnable = () => {
@@ -61,12 +61,16 @@ export const SlackIntegration = ({ error }: Props) => {
           <div>
             <p className="mb-2 font-medium">Channels</p>
             <div className="space-y-1">
-              {channels?.map((channel) => (
-                <div key={channel.id} className="flex items-center gap-1">
-                  <Hash size={16} />
-                  <p>{channel.name}</p>
-                </div>
-              ))}
+              {!channels?.length ? (
+                <LoadingChannels />
+              ) : (
+                channels?.map((channel) => (
+                  <div key={channel.id} className="flex items-center gap-1">
+                    <Hash size={16} />
+                    <p>{channel.name}</p>
+                  </div>
+                ))
+              )}
             </div>
           </div>
         </>

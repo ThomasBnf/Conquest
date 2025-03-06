@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { ActivityTypesList } from "../activities-types/activity-types-list";
 import { LoadingMessage } from "../integrations/loading-message";
 import { LivestormFilter } from "./livestorm-filter";
+import { Loader2 } from "lucide-react";
 
 export const LivestormForm = () => {
   const { livestorm, loading, setLoading, step, setStep } = useIntegration();
@@ -62,7 +63,7 @@ export const LivestormForm = () => {
       {step === 1 && (
         <div className="space-y-2">
           {loading ? (
-            <LoadingMessage />
+            <LoadingMessage progress={Number(run?.metadata?.progress)} />
           ) : (
             <>
               <div>
@@ -75,8 +76,12 @@ export const LivestormForm = () => {
               <ActivityTypesList source="Livestorm" disableHeader />
             </>
           )}
-          <Button onClick={onStart} loading={loading} disabled={loading}>
-            Let's start!
+          <Button onClick={onStart} disabled={loading}>
+            {loading ? (
+              <Loader2 className="size-4 animate-spin" />
+            ) : (
+              "Let's start!"
+            )}
           </Button>
         </div>
       )}

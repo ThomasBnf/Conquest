@@ -13,8 +13,8 @@ export const createManyLevels = async ({ levels, workspace_id }: Props) => {
   }));
 
   await client.insert({
-    table: "levels",
+    table: "level",
     values,
-    format: "JSONEachRow",
+    format: "JSON",
   });
 };

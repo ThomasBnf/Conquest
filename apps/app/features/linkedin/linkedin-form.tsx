@@ -85,8 +85,12 @@ export const LinkedinForm = () => {
         {loading ? (
           <LoadingMessage />
         ) : (
-          <Button onClick={onStart} loading={loading} disabled={!selectedOrg}>
-            Let's start!
+          <Button onClick={onStart} disabled={!selectedOrg}>
+            {loading ? (
+              <Loader2 className="size-4 animate-spin" />
+            ) : (
+              "Let's start!"
+            )}
           </Button>
         )} */}
       </div>

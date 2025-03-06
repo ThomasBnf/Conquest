@@ -21,9 +21,9 @@ export const countMembers = protectedProcedure
     const result = await client.query({
       query: `
         SELECT count(*) as total
-        FROM members AS m
-        LEFT JOIN levels AS l ON m.level_id = l.id
-        LEFT JOIN companies AS c ON m.company_id = c.id
+        FROM member AS m
+        LEFT JOIN level AS l ON m.level_id = l.id
+        LEFT JOIN company AS c ON m.company_id = c.id
         WHERE (
           ${
             searchParsed

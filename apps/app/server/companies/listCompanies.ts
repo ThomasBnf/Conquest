@@ -29,7 +29,7 @@ export const listCompanies = protectedProcedure
     const result = await client.query({
       query: `
         SELECT *
-        FROM companies c
+        FROM company c
         WHERE (
           ${searchParsed ? `positionCaseInsensitive(c.name, '${searchParsed}') > 0` : "true"}
         )

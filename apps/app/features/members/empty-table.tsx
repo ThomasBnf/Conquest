@@ -11,25 +11,26 @@ export const EmptyTable = () => {
   const router = useRouter();
 
   if (groupFilters.filters.length > 0) {
-    <div className="flex h-full flex-col items-center justify-center text-center">
-      <Members />
-      <div className="mt-2 mb-4">
-        <p className="font-medium text-base">No members found</p>
-        <p className="text-muted-foreground text-sm">
-          Please check your filters or try a different search.
-        </p>
+    return (
+      <div className="flex h-full flex-col items-center justify-center text-center">
+        <Members />
+        <div className="mt-2 mb-4">
+          <p className="font-medium text-base">No members found</p>
+          <p className="text-muted-foreground text-sm">
+            Please check your filters or try a different search.
+          </p>
+        </div>
+        <Button
+          size="sm"
+          onClick={() => {
+            resetFilters();
+            setParams({});
+          }}
+        >
+          Clear filters
+        </Button>
       </div>
-      <Button
-        variant="outline"
-        size="sm"
-        onClick={() => {
-          resetFilters();
-          setParams({});
-        }}
-      >
-        Clear filters
-      </Button>
-    </div>;
+    );
   }
 
   return (

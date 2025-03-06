@@ -1,4 +1,4 @@
-import { deleteList as _deleteList } from "@conquest/clickhouse/lists/deleteList";
+import { deleteList as _deleteList } from "@conquest/db/lists/deleteList";
 import { z } from "zod";
 import { protectedProcedure } from "../trpc";
 

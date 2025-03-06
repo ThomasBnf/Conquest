@@ -2,13 +2,13 @@ import { z } from "zod";
 import { SOURCE } from "../enum/source.enum";
 
 export const CompanySchema = z.object({
-  id: z.string(),
+  id: z.string().uuid(),
   name: z.string(),
   industry: z.string(),
   address: z.string(),
   domain: z.string(),
   employees: z.coerce.number(),
-  founded_at: z.coerce.date(),
+  founded_at: z.coerce.date().nullable(),
   logo_url: z.string(),
   tags: z.array(z.string()),
   source: SOURCE,

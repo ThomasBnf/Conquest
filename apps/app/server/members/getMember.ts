@@ -12,8 +12,5 @@ export const getMember = protectedProcedure
   .query(async ({ input }) => {
     const { id, source } = input;
 
-    if (source) {
-    }
-
     return await _getMember({ id });
   });

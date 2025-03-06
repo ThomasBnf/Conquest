@@ -93,16 +93,12 @@ export const getAllMembersMetrics = schemaTask({
 
         const { pulse, level_id } = logs.at(-1) ?? {};
 
-        console.log(logs.at(-1));
-
         await updateMember({
-          id: member.id,
-          data: {
-            first_activity: activities?.at(0)?.created_at ?? null,
-            last_activity: activities?.at(-1)?.created_at ?? null,
-            pulse,
-            level_id: level_id ?? null,
-          },
+          ...member,
+          first_activity: activities?.at(0)?.created_at ?? null,
+          last_activity: activities?.at(-1)?.created_at ?? null,
+          pulse: pulse ?? 0,
+          level_id: level_id ?? null,
         });
       }) ?? [],
     );

@@ -28,10 +28,10 @@ import {
   SelectValue,
 } from "@conquest/ui/select";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { v4 as uuid } from "uuid";
-import { Plus, X } from "lucide-react";
+import { Loader2, Plus, X } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { v4 as uuid } from "uuid";
 import { ConditionChannel } from "./condition-channel";
 import {
   type FormActivityType,
@@ -61,6 +61,7 @@ export const CreateActivityTypeDialog = () => {
       conditions: {
         rules: [],
       },
+      deletable: true,
     },
   });
 
@@ -96,7 +97,7 @@ export const CreateActivityTypeDialog = () => {
     });
   };
 
-  const isManualOrApi = ["API", "MANUAL"].includes(form.getValues("source"));
+  const isManualOrApi = ["Api", "Manual"].includes(form.getValues("source"));
   const isInviteOrJoin = ["invite", "join"].includes(form.getValues("key"));
 
   return (
@@ -129,8 +130,8 @@ export const CreateActivityTypeDialog = () => {
                           <SelectValue placeholder="Select source" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="API">API</SelectItem>
-                          <SelectItem value="MANUAL">MANUAL</SelectItem>
+                          <SelectItem value="Api">Api</SelectItem>
+                          <SelectItem value="Manual">Manual</SelectItem>
                         </SelectContent>
                       </Select>
                     </FormControl>
@@ -254,8 +255,12 @@ export const CreateActivityTypeDialog = () => {
                   Cancel
                 </Button>
               </DialogTrigger>
-              <Button type="submit" loading={loading} disabled={loading}>
-                Create
+              <Button type="submit" disabled={loading}>
+                {loading ? (
+                  <Loader2 className="size-4 animate-spin" />
+                ) : (
+                  "Create"
+                )}
               </Button>
             </DialogFooter>
           </form>

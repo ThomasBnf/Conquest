@@ -55,7 +55,7 @@ export const MemberSidebar = ({ member, profiles }: Props) => {
     field: keyof Member,
     value: string | null | string[],
   ) => {
-    await updateMember({ id, data: { [field]: value } });
+    await updateMember({ ...member, [field]: value });
   };
 
   return (
@@ -99,7 +99,7 @@ export const MemberSidebar = ({ member, profiles }: Props) => {
           <DiscourseSection profiles={profiles} />
           <SlackSection profiles={profiles} />
         </div>
-        <Separator />
+        {profiles && profiles?.length > 0 && <Separator />}
         <div className="space-y-2 p-4">
           <FieldCard icon="User" label="First name">
             <EditableInput

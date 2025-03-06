@@ -6,7 +6,7 @@ import { IsLoading } from "@/components/states/is-loading";
 import { CreateActivityDialog } from "@/features/activities/create-activity-dialog";
 import { MemberSidebar } from "@/features/members/member-sidebar";
 import { MenuMember } from "@/features/members/menu-member";
-import { Tabs } from "@/features/members/tabs";
+import { TabsMember } from "@/features/members/tabs-member";
 import { trpc } from "@/server/client";
 import { ScrollArea } from "@conquest/ui/scroll-area";
 import { redirect } from "next/navigation";
@@ -46,7 +46,7 @@ export default function Layout({
         </HeaderSubPage>
         <div className="flex h-full divide-x overflow-hidden">
           <div className="flex flex-1 flex-col divide-y overflow-hidden">
-            <Tabs />
+            <TabsMember />
             <ScrollArea className="h-full">{children}</ScrollArea>
           </div>
           <MemberSidebar member={member} profiles={profiles} />

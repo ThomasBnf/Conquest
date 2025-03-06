@@ -11,6 +11,7 @@ import { ColumnVisibility } from "../table/column-visibility";
 import { companiesColumns } from "../table/companies-columns";
 import { DataTable } from "../table/data-table";
 import { useTable } from "../table/hooks/useTable";
+import { ExportListCompanies } from "./export-list-companies";
 
 export const CompaniesPage = () => {
   const { resetFilters } = useFilters();
@@ -36,7 +37,10 @@ export const CompaniesPage = () => {
           query={search}
           setQuery={(value) => setParams({ search: value })}
         />
-        <ColumnVisibility table={table} type="companies" />
+        <div className="flex items-center gap-2">
+          <ExportListCompanies companies={data} />
+          <ColumnVisibility table={table} type="companies" />
+        </div>
       </div>
       {data?.length === 0 ? (
         <div className="flex h-full flex-col items-center justify-center text-center">

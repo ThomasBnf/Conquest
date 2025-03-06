@@ -12,6 +12,7 @@ import {
 } from "@conquest/ui/form";
 import { Input } from "@conquest/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Loader2 } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -42,11 +43,11 @@ export const FormUser = () => {
     },
   });
 
-  const onSubmit = async (values: FormUserSchema) => {
+  const onSubmit = async (data: FormUserSchema) => {
     if (!user) return;
 
     setLoading(true);
-    await mutateAsync({ id: user.id, data: values });
+    await mutateAsync({ ...user, ...data });
   };
 
   return (
@@ -91,8 +92,8 @@ export const FormUser = () => {
             </FormItem>
           )}
         />
-        <Button type="submit" loading={loading} disabled={loading}>
-          Save
+        <Button type="submit" disabled={loading}>
+          {loading ? <Loader2 className="size-4 animate-spin" /> : "Save"}
         </Button>
       </form>
     </Form>

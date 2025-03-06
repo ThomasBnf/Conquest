@@ -17,7 +17,6 @@ import { CommandLoading } from "cmdk";
 import { Plus, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { useInView } from "react-intersection-observer";
 import { useDebounce } from "use-debounce";
 
 type Props = {
@@ -30,22 +29,19 @@ export const EditableCompany = ({ member, onUpdate }: Props) => {
   const [query, setQuery] = useState("");
   const [search, setSearch] = useDebounce(query, 500);
   const [open, setOpen] = useState(false);
-  const { ref, inView } = useInView();
 
   const router = useRouter();
   const utils = trpc.useUtils();
 
-  const { data: company } = trpc.companies.get.useQuery({
-    id: member.company_id,
-  });
+  const { data: company } = trpc.companies.get.useQuery(
+    { id: member.company_id ?? "" },
+    { enabled: !!member.company_id },
+  );
 
-  const { data, isLoading, fetchNextPage } =
-    trpc.companies.getAllCompanies.useInfiniteQuery({
+  const { data: companies, isLoading } =
+    trpc.companies.getAllCompanies.useQuery({
       search,
-      take: 25,
     });
-
-  const companies = data?.pages.flatMap((page) => page ?? []);
 
   const { mutateAsync: createCompany } = trpc.companies.post.useMutation({
     onSuccess: () => {
@@ -63,14 +59,10 @@ export const EditableCompany = ({ member, onUpdate }: Props) => {
   };
 
   const onCreateCompany = async () => {
-    const company = await createCompany({ name: search });
+    const company = await createCompany({ name: search, source: "Manual" });
 
     if (company) onUpdateMemberCompany(company);
   };
-
-  useEffect(() => {
-    if (inView) fetchNextPage();
-  }, [inView]);
 
   useEffect(() => {
     setSearch(query);
@@ -84,7 +76,7 @@ export const EditableCompany = ({ member, onUpdate }: Props) => {
             <Button
               variant="outline"
               size="xs"
-              className="w-fit justify-start border-blue-200 text-blue-500 hover:bg-background hover:text-blue-500"
+              className="w-fit justify-start border-main-200 text-main-400 hover:bg-background hover:text-main-400"
               onClick={(e) => {
                 e.stopPropagation();
                 router.push(`/${slug}/companies/${member?.company_id}`);
@@ -107,7 +99,7 @@ export const EditableCompany = ({ member, onUpdate }: Props) => {
         ) : (
           <Button
             variant="ghost"
-            classNameSpan="text-muted-foreground justify-start"
+            className="justify-start text-muted-foreground"
             onClick={() => setOpen(true)}
           >
             Set company
@@ -142,7 +134,6 @@ export const EditableCompany = ({ member, onUpdate }: Props) => {
                   </CommandItem>
                 ))
               )}
-              <div ref={ref} />
             </CommandGroup>
             {search && (
               <CommandGroup>

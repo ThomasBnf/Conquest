@@ -13,7 +13,6 @@ import {
 } from "@conquest/ui/table";
 import { Infinity as InfinityIcon } from "lucide-react";
 import { useState } from "react";
-import { CreateLevelDialog } from "./create-level-dialog";
 import { EmptyLevels } from "./empty-levels";
 import { MenuLevel } from "./menu-level";
 
@@ -31,10 +30,7 @@ export const LevelsList = () => {
 
   return (
     <div className="flex flex-col gap-2">
-      <div className="flex items-center justify-between">
-        <QueryInput query={query} setQuery={setQuery} />
-        <CreateLevelDialog />
-      </div>
+      <QueryInput query={query} setQuery={setQuery} />
       <div className="flex flex-col overflow-hidden rounded-md border">
         <Table>
           <TableHeader className="border-b bg-muted">

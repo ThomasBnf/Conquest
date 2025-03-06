@@ -1,21 +1,21 @@
-import type { ProfileAttributes } from "@conquest/zod/schemas/profile.schema";
+import type { Profile } from "@conquest/zod/schemas/profile.schema";
 import { client } from "../client";
 
-type Props = {
-  id: string;
-  attributes?: Partial<ProfileAttributes>;
-};
+type Props = { id: string } & Partial<Profile>;
 
-export const updateProfile = async ({ id, attributes }: Props) => {
-  if (!attributes) return;
+export const updateProfile = async (props: Props) => {
+  await client.insert({
+    table: "profile",
+    values: [
+      {
+        ...props,
+        updated_at: new Date(),
+      },
+    ],
+    format: "JSON",
+  });
 
   await client.query({
-    query: `
-      ALTER TABLE profiles
-      UPDATE
-        attributes = '${JSON.stringify(attributes)}',
-        updated_at = now()
-      WHERE id = '${id}'
-    `,
+    query: "OPTIMIZE TABLE profile FINAL;",
   });
 };

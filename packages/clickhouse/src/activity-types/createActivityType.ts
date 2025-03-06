@@ -5,7 +5,7 @@ type Props = Partial<ActivityType>;
 
 export const createActivityType = async (props: Props) => {
   return await client.insert({
-    table: "activity_types",
+    table: "activity_type",
     values: props,
     format: "JSON",
   });

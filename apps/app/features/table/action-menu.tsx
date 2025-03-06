@@ -71,8 +71,8 @@ export const ActionMenu = <TData,>({ table }: Props<TData>) => {
           <AddTagDialog table={table} />
           <RemoveTagDialog table={table} />
           <DeleteDialog
-            title="Delete Members"
-            description="Are you sure you want to delete these members?"
+            title={`Delete ${hasMultipleRows ? "members" : "member"}`}
+            description={`Are you sure you want to delete ${hasMultipleRows ? "these members" : "this member"}?`}
             onConfirm={onDelete}
           />
           <Button variant="ghost" size="icon" onClick={onClearSelection}>

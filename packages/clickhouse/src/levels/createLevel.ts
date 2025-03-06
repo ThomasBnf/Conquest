@@ -4,7 +4,7 @@ type Props = {
   name: string;
   number: number;
   from: number;
-  to?: number;
+  to?: number | null;
   workspace_id: string;
 };
 
@@ -16,7 +16,7 @@ export const createLevel = async ({
   workspace_id,
 }: Props) => {
   await client.insert({
-    table: "levels",
+    table: "level",
     values: {
       name,
       number,
@@ -24,6 +24,6 @@ export const createLevel = async ({
       to,
       workspace_id,
     },
-    format: "JSONEachRow",
+    format: "JSON",
   });
 };

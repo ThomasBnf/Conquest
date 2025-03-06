@@ -38,7 +38,7 @@ export const ChannelsPicker = ({ filter }: Props) => {
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button variant="outline" classNameSpan="justify-between">
+        <Button variant="outline">
           {filter.channels.length === 2 ? (
             "2 channels"
           ) : filter.channels.length ? (

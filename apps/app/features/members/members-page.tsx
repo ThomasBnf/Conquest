@@ -5,13 +5,13 @@ import { useMembers } from "@/context/membersContext";
 import { tableParsers } from "@/lib/searchParamsTable";
 import { useQueryStates } from "nuqs";
 import { FiltersList } from "../filters/filters-list";
-import { ExportListMembers } from "../lists/export-list-members";
 import { SaveList } from "../lists/save-list";
 import { ColumnVisibility } from "../table/column-visibility";
 import { DataTable } from "../table/data-table";
 import { useTable } from "../table/hooks/useTable";
 import { membersColumns } from "../table/members-columns";
 import { EmptyTable } from "./empty-table";
+import { ExportListMembers } from "./export-list-members";
 
 export const MembersPage = () => {
   const [{ search, idMember, descMember }, setParams] =
@@ -29,8 +29,8 @@ export const MembersPage = () => {
   });
 
   return (
-    <div className="flex h-full flex-col divide-y overflow-hidden">
-      <div className="flex h-12 shrink-0 items-center gap-2 px-4">
+    <div className="flex flex-col divide-y overflow-hidden">
+      <div className="flex h-12 shrink-0 items-center gap-2 px-3">
         <QueryInput
           placeholder="Search..."
           query={search}

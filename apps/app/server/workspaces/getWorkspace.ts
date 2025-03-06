@@ -1,4 +1,4 @@
-import { getWorkspace as _getWorkspace } from "@conquest/clickhouse/workspaces/getWorkspace";
+import { getWorkspace as _getWorkspace } from "@conquest/db/workspaces/getWorkspace";
 import { protectedProcedure } from "../trpc";
 
 export const getWorkspace = protectedProcedure.query(

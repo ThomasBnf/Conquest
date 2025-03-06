@@ -1,5 +1,5 @@
 import { auth } from "@/auth";
-import { getUserById } from "@conquest/clickhouse/users/getUserById";
+import { getUserById } from "@conquest/db/users/getUserById";
 import { UserSchema } from "@conquest/zod/schemas/user.schema";
 import { redirect } from "next/navigation";
 

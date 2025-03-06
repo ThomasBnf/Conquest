@@ -57,7 +57,6 @@ export const ActionPanel = () => {
                       variant="outline"
                       size="default"
                       className="px-2"
-                      classNameSpan="justify-start"
                       onClick={() => onSelect(node)}
                     >
                       <div className="rounded-md border p-1">

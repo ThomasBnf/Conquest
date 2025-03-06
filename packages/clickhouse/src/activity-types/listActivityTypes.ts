@@ -9,7 +9,7 @@ export const listActivityTypes = async ({ workspace_id }: Props) => {
   const result = await client.query({
     query: `
       SELECT * 
-      FROM activity_types
+      FROM activity_type
       WHERE workspace_id = '${workspace_id}'
       ORDER BY points DESC
     `,

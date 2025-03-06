@@ -1,30 +1,32 @@
 import type { Member } from "@conquest/zod/schemas/member.schema";
+import { format } from "date-fns";
 import { client } from "../client";
 
-type Props = {
-  id: string;
-  data: Omit<Partial<Member>, "updated_at">;
-};
+type Props = Member;
 
-export const updateMember = async ({ id, data }: Props) => {
+export const updateMember = async (props: Props) => {
+  const { id, workspace_id, updated_at, ...data } = props;
+
+  const escapeValue = (value: string) =>
+    value.replace(/'/g, "\\'").replace(/"/g, '\\"');
+
   const values = Object.entries(data)
+    .filter(([_, value]) => value !== undefined)
     .map(([key, value]) => {
-      if (["secondary_emails", "phones", "tags"].includes(key)) {
-        if (Array.isArray(value) && value.length === 0) {
-          return `${key} = []`;
-        }
-        return `${key} = ['${(value as string[]).join("','")}']`;
+      if (Array.isArray(value)) {
+        return `${key} = [${value.map((v) => `'${escapeValue(String(v))}'`).join(",")}]`;
       }
-      return `${key} = '${value}'`;
+      if (value instanceof Date) {
+        return `${key} = '${format(value, "yyyy-MM-dd HH:mm:ss")}'`;
+      }
+      return `${key} = '${escapeValue(String(value))}'`;
     })
-    .join(",");
+    .join(", ");
 
   await client.query({
     query: `
-      ALTER TABLE members
-      UPDATE
-        ${values},
-        updated_at = now()
+      ALTER TABLE member
+      UPDATE ${values}, updated_at = now()
       WHERE id = '${id}'
     `,
   });

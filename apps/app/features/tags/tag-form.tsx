@@ -50,7 +50,8 @@ export const TagForm = ({ tag, setIsVisible, setIsEditing }: Props) => {
     if (tag) {
       return await updateTag({
         id: tag.id,
-        data: { name, color },
+        name,
+        color,
       });
     }
 

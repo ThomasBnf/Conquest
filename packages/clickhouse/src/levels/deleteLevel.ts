@@ -7,9 +7,8 @@ type Props = {
 export const deleteLevel = async ({ id }: Props) => {
   await client.query({
     query: `
-      DELETE 
-      FROM levels
-      WHERE id = '${id}'
+      ALTER TABLE level
+      DELETE WHERE id = '${id}'
     `,
   });
 };

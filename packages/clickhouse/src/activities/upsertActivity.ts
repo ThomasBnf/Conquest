@@ -25,27 +25,24 @@ export const upsertActivity = async (props: Props) => {
     ...data
   } = props;
 
-  const activityType = await getActivityTypeByKey({
-    key: activity_type_key,
-    workspace_id,
-  });
-
-  if (!activityType) {
-    throw new Error(`Activity type ${activity_type_key} not found`);
-  }
-
   const activity = await getActivity({
     external_id,
     workspace_id,
   });
 
   if (activity) {
-    await updateActivity({
-      external_id,
-      activity_type_id: activityType.id,
-      activity_type_key,
+    const activityType = await getActivityTypeByKey({
+      key: activity_type_key,
       workspace_id,
-      ...data,
+    });
+
+    if (!activityType) {
+      throw new Error(`Activity type ${activity_type_key} not found`);
+    }
+
+    await updateActivity({
+      ...activity,
+      activity_type_id: activityType.id,
     });
   } else {
     await createActivity({

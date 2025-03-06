@@ -19,7 +19,7 @@ export const getAllMembers = protectedProcedure
     const result = await client.query({
       query: `
         SELECT *
-        FROM members
+        FROM member
         WHERE (
           lower(first_name) LIKE lower('%${search}%')
           OR lower(last_name) LIKE lower('%${search}%')

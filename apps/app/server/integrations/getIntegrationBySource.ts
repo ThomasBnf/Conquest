@@ -1,4 +1,4 @@
-import { getIntegrationBySource as _getIntegrationBySource } from "@conquest/clickhouse/integrations/getIntegrationBySource";
+import { getIntegrationBySource as _getIntegrationBySource } from "@conquest/db/integrations/getIntegrationBySource";
 import { SOURCE } from "@conquest/zod/enum/source.enum";
 import { z } from "zod";
 import { protectedProcedure } from "../trpc";

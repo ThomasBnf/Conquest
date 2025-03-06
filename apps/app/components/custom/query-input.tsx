@@ -40,7 +40,7 @@ export const QueryInput = ({
     <div
       className={cn(
         "actions-secondary relative flex w-full max-w-64 items-center rounded-md border pr-1 pl-2",
-        isFocus && "border-main-400 ring-2 ring-ring",
+        isFocus && "border ring-2 ring-ring",
         className,
       )}
     >
@@ -48,7 +48,7 @@ export const QueryInput = ({
         size={16}
         className={cn(
           "shrink-0 text-muted-foreground",
-          isFocus && "text-main-500",
+          isFocus && "text-main-400",
         )}
       />
       <Input

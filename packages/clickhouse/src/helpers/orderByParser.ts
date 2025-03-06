@@ -12,15 +12,15 @@ export const orderByParser = ({ id, desc, type }: Props) => {
       case "full_name":
         return `ORDER BY m.first_name ${direction}, m.last_name ${direction}`;
       case "company":
-        return `ORDER BY c.name ${direction} NULLS LAST`;
+        return `ORDER BY c.name ${direction}`;
       case "tags":
-        return `ORDER BY m.tags ${direction} NULLS LAST`;
+        return `ORDER BY m.tags ${direction}`;
       case "level":
-        return `ORDER BY l.number ${direction} NULLS LAST, m.pulse ${direction}`;
+        return `ORDER BY l.number ${direction}, pulse ${direction}`;
       case "pulse":
-        return `ORDER BY l.number ${direction} NULLS LAST, m.pulse ${direction}`;
+        return `ORDER BY l.number ${direction}, m.pulse ${direction}`;
       case "job_title":
-        return `ORDER BY m.job_title ${direction} NULLS LAST`;
+        return `ORDER BY m.job_title ${direction}`;
       case "emails":
         return `ORDER BY m.primary_email ${direction}`;
       case "first_activity":

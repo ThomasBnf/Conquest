@@ -6,27 +6,23 @@ import { protectedProcedure } from "../trpc";
 export const getAllCompanies = protectedProcedure
   .input(
     z.object({
-      search: z.string(),
-      cursor: z.string().nullish(),
-      take: z.number(),
+      search: z.string().optional(),
     }),
   )
   .query(async ({ ctx: { user }, input }) => {
     const { workspace_id } = user;
-    const { search, cursor, take } = input;
+    const { search } = input;
 
     const companies = await client.query({
       query: `
         SELECT *
-        FROM companies
+        FROM company
         WHERE workspace_id = '${workspace_id}'
-          AND name ILIKE '%${search}%'
-          ${cursor ? `AND id > '${cursor}'` : ""}
+        ${search ? `AND name ILIKE '%${search}%'` : ""}
         ORDER BY name ASC
-        LIMIT ${take}
       `,
     });
 
-    const results = await companies.json();
-    return CompanySchema.array().parse(results);
+    const { data } = await companies.json();
+    return CompanySchema.array().parse(data);
   });

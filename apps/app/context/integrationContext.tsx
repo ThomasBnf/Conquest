@@ -32,7 +32,7 @@ type integrationContext = {
   channels: Channel[] | undefined;
   deleteIntegration: (integration: {
     integration: Integration;
-  }) => Promise<void>;
+  }) => Promise<{ success: boolean }>;
   loading: boolean;
   setLoading: (loading: boolean) => void;
   step: number;
@@ -45,10 +45,15 @@ const IntegrationContext = createContext<integrationContext>(
 
 type Props = {
   source: Source;
+  loader?: boolean;
   children: React.ReactNode;
 };
 
-export const IntegrationProvider = ({ source, children }: Props) => {
+export const IntegrationProvider = ({
+  source,
+  loader = true,
+  children,
+}: Props) => {
   const [step, setStep] = useState(0);
   const [loading, setLoading] = useState(false);
   const utils = trpc.useUtils();
@@ -99,7 +104,7 @@ export const IntegrationProvider = ({ source, children }: Props) => {
       },
     });
 
-  if (isLoading) return <SkeletonIntegration />;
+  if (isLoading && loader) return <SkeletonIntegration />;
 
   return (
     <IntegrationContext.Provider

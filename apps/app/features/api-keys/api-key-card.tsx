@@ -15,9 +15,11 @@ type Props = {
 export const ApiKeyCard = ({ apiKey }: Props) => {
   const [isRevealed, setIsRevealed] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
+  const utils = trpc.useUtils();
 
   const { mutateAsync } = trpc.apiKeys.delete.useMutation({
     onSuccess: () => {
+      utils.apiKeys.list.invalidate();
       toast.success("API key revoked");
     },
   });

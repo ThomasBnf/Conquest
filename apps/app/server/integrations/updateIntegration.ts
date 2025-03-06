@@ -1,5 +1,5 @@
-import { updateIntegration as _updateIntegration } from "@conquest/clickhouse/integrations/updateIntegration";
-import { encrypt } from "@conquest/clickhouse/utils/encrypt";
+import { updateIntegration as _updateIntegration } from "@conquest/db/integrations/updateIntegration";
+import { encrypt } from "@conquest/db/utils/encrypt";
 import { STATUS } from "@conquest/zod/enum/status.enum";
 import { IntegrationDetailsSchema } from "@conquest/zod/schemas/integration.schema";
 import { z } from "zod";
@@ -18,7 +18,9 @@ export const updateIntegration = protectedProcedure
       created_by: z.string().optional(),
     }),
   )
-  .mutation(async ({ input }) => {
+  .mutation(async ({ ctx: { user }, input }) => {
+    const { workspace_id } = user;
+
     const {
       id,
       external_id,
@@ -51,5 +53,6 @@ export const updateIntegration = protectedProcedure
       trigger_token,
       expires_at,
       created_by,
+      workspace_id,
     });
   });

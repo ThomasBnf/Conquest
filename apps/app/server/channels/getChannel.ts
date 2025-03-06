@@ -1,4 +1,4 @@
-import { getChannel as _getChannel } from "@conquest/clickhouse/channels/getChannel";
+import { getChannel as _getChannel } from "@conquest/db/channels/getChannel";
 import { z } from "zod";
 import { protectedProcedure } from "../trpc";
 

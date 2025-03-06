@@ -1,4 +1,4 @@
-import { deleteTag as _deleteTag } from "@conquest/clickhouse/tags/deleteTag";
+import { deleteTag as _deleteTag } from "@conquest/db/tags/deleteTag";
 import { z } from "zod";
 import { protectedProcedure } from "../trpc";
 

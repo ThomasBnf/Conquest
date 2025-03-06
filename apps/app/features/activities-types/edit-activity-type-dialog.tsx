@@ -27,10 +27,10 @@ import {
 } from "@conquest/ui/select";
 import type { ActivityType } from "@conquest/zod/schemas/activity-type.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { v4 as uuid } from "uuid";
-import { Plus, X } from "lucide-react";
+import { Loader2, Plus, X } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { v4 as uuid } from "uuid";
 import { ConditionChannel } from "./condition-channel";
 import {
   type FormActivityType,
@@ -71,7 +71,7 @@ export const EditActivityTypeDialog = ({
 
   const onSubmit = async (data: FormActivityType) => {
     setLoading(true);
-    await mutateAsync({ id: activityType.id, data });
+    await mutateAsync({ ...activityType, ...data });
   };
 
   const addCondition = () => {
@@ -97,7 +97,7 @@ export const EditActivityTypeDialog = ({
     });
   };
 
-  const hasNoConditions = !["API", "MANUAL", "Livestorm"].includes(
+  const hasNoConditions = !["Api", "Manual", "Livestorm"].includes(
     form.getValues("source"),
   );
   const isInviteOrJoin = ["invite", "join", "login"].some((key) =>
@@ -128,8 +128,8 @@ export const EditActivityTypeDialog = ({
                           <SelectValue placeholder="Select source" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="API">API</SelectItem>
-                          <SelectItem value="MANUAL">MANUAL</SelectItem>
+                          <SelectItem value="Api">Api</SelectItem>
+                          <SelectItem value="Manual">Manual</SelectItem>
                           <SelectItem value="Discord">Discord</SelectItem>
                           <SelectItem value="Discourse">Discourse</SelectItem>
                           <SelectItem value="Github">Github</SelectItem>
@@ -175,7 +175,7 @@ export const EditActivityTypeDialog = ({
                   <FormItem>
                     <FormLabel>Points</FormLabel>
                     <FormControl>
-                      {hasNoConditions || isInviteOrJoin ? (
+                      {!hasNoConditions || isInviteOrJoin ? (
                         <Input {...field} />
                       ) : (
                         <div className="flex h-9 w-full items-center gap-2 overflow-hidden rounded-md border">
@@ -252,8 +252,8 @@ export const EditActivityTypeDialog = ({
                   Cancel
                 </Button>
               </DialogTrigger>
-              <Button type="submit" loading={loading} disabled={loading}>
-                Save
+              <Button type="submit" disabled={loading}>
+                {loading ? <Loader2 className="size-4 animate-spin" /> : "Save"}
               </Button>
             </DialogFooter>
           </form>

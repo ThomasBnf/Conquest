@@ -4,6 +4,7 @@ import type { installDiscourse } from "@conquest/trigger/tasks/installDiscourse"
 import { Button } from "@conquest/ui/button";
 import { Separator } from "@conquest/ui/separator";
 import { useRealtimeTaskTrigger } from "@trigger.dev/react-hooks";
+import { Loader2 } from "lucide-react";
 import { useEffect } from "react";
 import { toast } from "sonner";
 import { ActivityTypesList } from "../activities-types/activity-types-list";
@@ -25,7 +26,9 @@ export const DiscourseForm = () => {
 
   const { submit, run, error } = useRealtimeTaskTrigger<
     typeof installDiscourse
-  >("install-discourse", { accessToken: discourse?.trigger_token });
+  >("install-discourse", {
+    accessToken: discourse?.trigger_token,
+  });
 
   const onStart = async () => {
     if (!discourse) return;
@@ -72,7 +75,7 @@ export const DiscourseForm = () => {
       {step === 2 && (
         <div className="space-y-2">
           {loading ? (
-            <LoadingMessage />
+            <LoadingMessage progress={Number(run?.metadata?.progress)} />
           ) : (
             <>
               <div>
@@ -85,9 +88,15 @@ export const DiscourseForm = () => {
               <ActivityTypesList source="Discourse" disableHeader />
             </>
           )}
-          <Button onClick={onStart} loading={loading} disabled={loading}>
-            Let's start!
-          </Button>
+          {!loading && (
+            <Button onClick={onStart} disabled={loading}>
+              {loading ? (
+                <Loader2 className="size-4 animate-spin" />
+              ) : (
+                "Let's start!"
+              )}
+            </Button>
+          )}
         </div>
       )}
     </>

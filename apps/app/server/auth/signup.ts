@@ -1,8 +1,8 @@
 import { LEVELS } from "@/constant";
 import { createManyLevels } from "@conquest/clickhouse/levels/createManyLevels";
-import { createUser } from "@conquest/clickhouse/users/createUser";
-import { getUser } from "@conquest/clickhouse/users/getUser";
-import { createWorkspace } from "@conquest/clickhouse/workspaces/createWorkspace";
+import { createUser } from "@conquest/db/users/createUser";
+import { getUser } from "@conquest/db/users/getUser";
+import { createWorkspace } from "@conquest/db/workspaces/createWorkspace";
 import { SignupSchema } from "@conquest/zod/schemas/auth.schema";
 import { TRPCError } from "@trpc/server";
 import { hash } from "bcryptjs";
@@ -24,11 +24,11 @@ export const signup = publicProcedure
     if (existingUser) {
       throw new TRPCError({
         code: "FORBIDDEN",
-        message: "User already exists",
+        message: "Invalid signup request",
       });
     }
 
-    const workspace = await createWorkspace({ slug: uuid() });
+    const workspace = await createWorkspace({ name: "", slug: uuid() });
 
     if (!workspace) {
       throw new TRPCError({
@@ -47,24 +47,6 @@ export const signup = publicProcedure
     await createUser({
       email,
       hashed_password,
-      role: "ADMIN",
-      last_seen: new Date(),
-      members_preferences: {
-        id: "full_name",
-        desc: true,
-        pageSize: 50,
-        groupFilters: { filters: [], operator: "AND" },
-        columnVisibility: {},
-        columnOrder: [],
-      },
-      companies_preferences: {
-        id: "name",
-        desc: true,
-        pageSize: 50,
-        groupFilters: { filters: [], operator: "AND" },
-        columnVisibility: {},
-        columnOrder: [],
-      },
       workspace_id: workspace.id,
     });
 

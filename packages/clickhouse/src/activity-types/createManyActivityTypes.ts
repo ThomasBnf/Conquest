@@ -29,7 +29,7 @@ export const createManyActivityTypes = async (props: Props) => {
   }));
 
   return await client.insert({
-    table: "activity_types",
+    table: "activity_type",
     values,
     format: "JSON",
   });

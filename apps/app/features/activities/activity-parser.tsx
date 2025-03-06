@@ -36,12 +36,10 @@ export const ActivityParser = ({ activity }: Props) => {
     { enabled: !!channel_id },
   );
 
-  // const { data: inviter, failureReason } = trpc.members.get.useQuery(
+  // const { data: inviter } = trpc.members.get.useQuery(
   //   { id: invite_to },
   //   { enabled: !!invite_to },
   // );
-
-  // console.log(failureReason);
 
   const { first_name, last_name, avatar_url } = member ?? {};
   const { activity_type, message, created_at } = activity;

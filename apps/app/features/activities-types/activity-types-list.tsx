@@ -27,11 +27,9 @@ type Props = {
 
 export const ActivityTypesList = ({ source, disableHeader = false }: Props) => {
   const [query, setQuery] = useState("");
-  const { data, isLoading, failureReason } = trpc.activityTypes.list.useQuery();
+  const { data, isLoading } = trpc.activityTypes.list.useQuery();
 
-  console.log(failureReason);
-
-  if (isLoading) return <Skeleton className="h-44 w-full" />;
+  if (isLoading) return <Skeleton className="h-[174.5px] w-full" />;
   if (!data?.length) return <EmptyActivityTypes />;
 
   const filteredActivityTypes = data.filter((activityType) => {

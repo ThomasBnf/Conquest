@@ -45,15 +45,14 @@ export const EditableMembers = ({ company }: Props) => {
   const members = data?.pages.flat();
 
   const onUpdate = async (memberId: string) => {
-    const isInCompany = companyMembers?.some(
-      (member) => member.id === memberId,
-    );
+    const member = companyMembers?.find((member) => member.id === memberId);
+    const isInCompany = member?.company_id === company.id;
+
+    if (!isInCompany) return;
 
     await updateMember({
-      id: memberId,
-      data: {
-        company_id: isInCompany ? "" : company.id,
-      },
+      ...member,
+      company_id: isInCompany ? "" : company.id,
     });
 
     toast.success(
@@ -105,7 +104,6 @@ export const EditableMembers = ({ company }: Props) => {
             variant="ghost"
             size="xs"
             className="h-8 px-[7px]"
-            classNameSpan="text-muted-foreground justify-start"
             onClick={() => setOpen(true)}
           >
             Set members

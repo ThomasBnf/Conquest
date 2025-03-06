@@ -21,6 +21,7 @@ import {
 import { CompanySchema } from "@conquest/zod/schemas/company.schema";
 import { MemberSchema } from "@conquest/zod/schemas/member.schema";
 import type { Table } from "@tanstack/react-table";
+import { Loader2 } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 
@@ -139,10 +140,13 @@ export const AddTagDialog = <TData,>({ table }: Props<TData>) => {
           </DialogTrigger>
           <Button
             onClick={onConfirm}
-            loading={loading}
             disabled={selectedTags.length === 0 || loading}
           >
-            Add tag{selectedTags.length > 1 ? "s" : ""}
+            {loading ? (
+              <Loader2 className="size-4 animate-spin" />
+            ) : (
+              <>Add tag{selectedTags.length > 1 ? "s" : ""}</>
+            )}
           </Button>
         </DialogFooter>
       </DialogContent>

@@ -7,7 +7,7 @@ import { cn } from "@conquest/ui/cn";
 import { Label } from "@conquest/ui/label";
 import { RadioGroup, RadioGroupItem } from "@conquest/ui/radio-group";
 import type { Endpoints } from "@octokit/types";
-import { ArrowRight, Star } from "lucide-react";
+import { ArrowRight, Loader2, Star } from "lucide-react";
 import { useEffect, useState } from "react";
 
 type Repository = Endpoints["GET /user/repos"]["response"]["data"][number];
@@ -106,12 +106,17 @@ export const GithubRepo = () => {
       </RadioGroup>
       <Button
         onClick={onClick}
-        loading={loading}
         disabled={!repository || loading}
         className="mt-2"
       >
-        Next
-        <ArrowRight size={16} />
+        {loading ? (
+          <Loader2 className="size-4 animate-spin" />
+        ) : (
+          <>
+            Next
+            <ArrowRight size={16} />
+          </>
+        )}
       </Button>
     </>
   );

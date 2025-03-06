@@ -1,17 +1,16 @@
-import { FormTagSchema } from "@/features/tags/schema/form.schema";
-import { updateTag as _updateTag } from "@conquest/clickhouse/tags/updateTag";
+import { updateTag as _updateTag } from "@conquest/db/tags/updateTag";
+import { TagSchema } from "@conquest/zod/schemas/tag.schema";
 import { z } from "zod";
 import { protectedProcedure } from "../trpc";
 
 export const updateTag = protectedProcedure
   .input(
-    z.object({
-      id: z.string(),
-      data: FormTagSchema,
-    }),
+    z
+      .object({
+        id: z.string(),
+      })
+      .and(TagSchema.partial()),
   )
   .mutation(async ({ input }) => {
-    const { id, data } = input;
-
-    return _updateTag({ id, ...data });
+    return _updateTag(input);
   });

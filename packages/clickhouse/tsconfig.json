@@ -6,6 +6,6 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["src/**/*.tsx", "src/**/*.ts"],
+  "include": ["src/**/*.tsx", "src/**/*.ts", "../db/src/events/deleteEvent.ts", "../db/src/events/listEvents.ts", "../db/src/discord.ts", "../db/src/discourse.ts"],
   "exclude": ["node_modules"]
 }

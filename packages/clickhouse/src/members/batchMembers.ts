@@ -10,7 +10,7 @@ export const batchMembers = async ({ limit, offset }: Props) => {
   const result = await client.query({
     query: `
       SELECT * 
-      FROM members
+      FROM member
       ORDER BY id ASC
       LIMIT ${limit}
       OFFSET ${offset}

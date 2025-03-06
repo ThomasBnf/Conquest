@@ -9,7 +9,7 @@ import {
   AlertDialogTrigger,
 } from "@conquest/ui/alert-dialog";
 import { Button } from "@conquest/ui/button";
-import { Trash2 } from "lucide-react";
+import { Loader2, Trash2 } from "lucide-react";
 import { type HTMLAttributes, type ReactNode, useState } from "react";
 
 type Props = HTMLAttributes<HTMLButtonElement> & {
@@ -55,12 +55,16 @@ export const DeleteDialog = ({
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <Button variant="destructive" loading={loading} onClick={onClick}>
-            {children ?? (
-              <>
-                <Trash2 size={16} />
-                Delete
-              </>
+          <Button variant="destructive" onClick={onClick}>
+            {loading ? (
+              <Loader2 className="size-4 animate-spin" />
+            ) : (
+              (children ?? (
+                <>
+                  <Trash2 size={16} />
+                  Delete
+                </>
+              ))
             )}
           </Button>
         </AlertDialogFooter>

@@ -13,6 +13,7 @@ import {
 import { cn } from "@conquest/ui/cn";
 import { QuestionsStep } from "features/onboarding/questions/questions-step";
 import { WorkspaceStep } from "features/onboarding/workspace/workspace-step";
+import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -20,24 +21,26 @@ import { toast } from "sonner";
 export default function Page() {
   const { user } = useUser();
   const [step, setStep] = useState(1);
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const utils = trpc.useUtils();
 
-  const { mutateAsync, isPending } = trpc.users.update.useMutation({
+  const { mutateAsync } = trpc.users.update.useMutation({
     onSuccess: () => {
+      utils.users.getCurrentUser.invalidate();
       router.push("/settings/integrations");
     },
     onError: (error) => {
       toast.error(error.message);
+      setLoading(false);
     },
   });
 
   const onComplete = async () => {
     if (!user) return;
 
-    await mutateAsync({
-      id: user.id,
-      data: { onboarding: new Date() },
-    });
+    setLoading(true);
+    await mutateAsync({ ...user, onboarding: new Date() });
   };
 
   if (step === 3) {
@@ -53,11 +56,14 @@ export default function Page() {
         </p>
         <Button
           onClick={onComplete}
-          loading={isPending}
-          disabled={isPending}
+          disabled={loading}
           className={cn(buttonVariants({ size: "lg" }), "min-w-64")}
         >
-          Get Started
+          {loading ? (
+            <Loader2 className="size-4 animate-spin" />
+          ) : (
+            "Get Started"
+          )}
         </Button>
       </div>
     );

@@ -21,7 +21,7 @@ import {
 } from "@conquest/ui/form";
 import { Input } from "@conquest/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Plus } from "lucide-react";
+import { Loader2, Plus } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -50,11 +50,14 @@ export const CreateMemberDialog = () => {
 
   const form = useForm<MemberForm>({
     resolver: zodResolver(MemberFormSchema),
+    defaultValues: {
+      source: "Manual",
+    },
   });
 
-  const onSubmit = async (values: MemberForm) => {
+  const onSubmit = async (data: MemberForm) => {
     setLoading(true);
-    await mutateAsync(values);
+    await mutateAsync(data);
   };
 
   return (
@@ -82,7 +85,7 @@ export const CreateMemberDialog = () => {
                   <FormItem>
                     <FormLabel>First Name</FormLabel>
                     <FormControl>
-                      <Input placeholder="Set First name" {...field} />
+                      <Input placeholder="Thomas" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -95,7 +98,7 @@ export const CreateMemberDialog = () => {
                   <FormItem>
                     <FormLabel>Last Name</FormLabel>
                     <FormControl>
-                      <Input placeholder="Set Last name" {...field} />
+                      <Input placeholder="Bonfils" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -103,12 +106,12 @@ export const CreateMemberDialog = () => {
               />
               <FormField
                 control={form.control}
-                name="email"
+                name="primary_email"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Email</FormLabel>
                     <FormControl>
-                      <Input placeholder="Set Email" {...field} />
+                      <Input placeholder="thomas@useconquest.com" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -121,8 +124,12 @@ export const CreateMemberDialog = () => {
                   Cancel
                 </Button>
               </DialogTrigger>
-              <Button type="submit" loading={loading} disabled={loading}>
-                Add Member
+              <Button type="submit" disabled={loading}>
+                {loading ? (
+                  <Loader2 className="size-4 animate-spin" />
+                ) : (
+                  "Add Member"
+                )}
               </Button>
             </DialogFooter>
           </form>

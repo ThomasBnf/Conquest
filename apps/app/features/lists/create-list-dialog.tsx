@@ -28,6 +28,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { usePathname, useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { type FormList, FormListSchema } from "./schemas/form-create.schema";
+import { Loader2 } from "lucide-react";
 
 export const CreateListDialog = () => {
   const { groupFilters, resetFilters } = useFilters();
@@ -117,8 +118,12 @@ export const CreateListDialog = () => {
                     Cancel
                   </Button>
                 </DialogTrigger>
-                <Button type="submit" loading={isPending} disabled={isPending}>
-                  Save
+                <Button type="submit" disabled={isPending}>
+                  {isPending ? (
+                    <Loader2 className="size-4 animate-spin" />
+                  ) : (
+                    "Save"
+                  )}
                 </Button>
               </DialogFooter>
             </form>

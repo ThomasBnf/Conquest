@@ -9,7 +9,7 @@ type Props = {
 export const getLevel = async ({ pulse, workspace_id }: Props) => {
   const result = await client.query({
     query: `
-      SELECT * FROM levels 
+      SELECT * FROM level
       WHERE ${pulse} >= from AND ${pulse} <= to
       AND workspace_id = '${workspace_id}'
     `,

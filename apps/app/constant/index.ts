@@ -63,7 +63,7 @@ export const ACTIVITY_COLORS = {
   1: "bg-main-200",
   2: "bg-main-400",
   3: "bg-main-600",
-  4: "bg-main-900",
+  4: "bg-main-800",
 } as const;
 
 export const EUROPEAN_COUNTRIES = [

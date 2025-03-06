@@ -1,6 +1,7 @@
 import { Card, CardContent, CardHeader } from "@conquest/ui/card";
 import { Separator } from "@conquest/ui/separator";
 import { Skeleton } from "@conquest/ui/skeleton";
+import { LoadingChannels } from "./loading-channels";
 
 export const SkeletonIntegration = () => {
   return (
@@ -20,7 +21,7 @@ export const SkeletonIntegration = () => {
           <Skeleton className="h-6 w-24" />
           <Skeleton className="mt-1 h-4 w-48" />
           <Separator className="my-4" />
-          <Skeleton className="h-20 w-full" />
+          <LoadingChannels />
         </CardContent>
       </Card>
     </div>

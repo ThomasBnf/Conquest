@@ -3,19 +3,21 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "tsx src/index.ts --watch",
-    "build": "tsup src/index.ts",
-    "start": "node dist/index.cjs",
+    "dev": "dotenv -e ./.env -e ../../.env -- tsx src/index.ts --watch",
+    "build": "dotenv -e ./.env -e ../../.env -- tsup src/index.ts",
+    "start": "dotenv -e ./.env -e ../../.env -- node dist/index.cjs",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@conquest/env": "workspace:*",
+    "@conquest/clickhouse": "workspace:*",
+    "@conquest/db": "workspace:*",
     "@types/express": "^5.0.0",
     "discord-api-types": "^0.37.118",
     "discord.js": "^14.14.1",
     "express": "^4.21.2",
     "tsup": "^8.3.6",
-    "tsx": "^4.19.2",
-    "zod": "^3.22.4"
+    "tsx": "^4.19.2"
   },
   "devDependencies": {
     "@conquest/tsconfig": "workspace:*",

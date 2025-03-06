@@ -12,8 +12,8 @@ import type { Member } from "@conquest/zod/schemas/member.schema";
 import { Plus } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
-import { Email } from "../custom/email";
 import { v4 as uuid } from "uuid";
+import { Email } from "../custom/email";
 
 type Props = {
   member: Member;
@@ -44,11 +44,9 @@ export const EditableEmails = ({ member }: Props) => {
       const newEmails = emails.filter((email) => email.id !== id);
       setEmails(newEmails);
       updateMember({
-        id: member.id ?? null,
-        data: {
-          primary_email: newEmails[0]?.content,
-          secondary_emails: newEmails.slice(1).map((email) => email.content),
-        },
+        ...member,
+        primary_email: newEmails[0]?.content ?? "",
+        secondary_emails: newEmails.slice(1).map((email) => email.content),
       });
       return toast.error("Invalid email format");
     }
@@ -58,11 +56,9 @@ export const EditableEmails = ({ member }: Props) => {
     );
     setEmails(updatedEmails);
     updateMember({
-      id: member.id ?? null,
-      data: {
-        primary_email: updatedEmails[0]?.content,
-        secondary_emails: updatedEmails.slice(1).map((email) => email.content),
-      },
+      ...member,
+      primary_email: updatedEmails[0]?.content ?? "",
+      secondary_emails: updatedEmails.slice(1).map((email) => email.content),
     });
   };
 
@@ -70,11 +66,9 @@ export const EditableEmails = ({ member }: Props) => {
     const updatedEmails = emails.filter((email) => email.id !== id);
     setEmails(updatedEmails);
     updateMember({
-      id: member.id ?? null,
-      data: {
-        primary_email: updatedEmails[0]?.content,
-        secondary_emails: updatedEmails.slice(1).map((email) => email.content),
-      },
+      ...member,
+      primary_email: updatedEmails[0]?.content ?? "",
+      secondary_emails: updatedEmails.slice(1).map((email) => email.content),
     });
   };
 
@@ -88,7 +82,7 @@ export const EditableEmails = ({ member }: Props) => {
               return (
                 <p
                   key={email.id}
-                  className="h-6 w-fit max-w-[225px] place-content-center truncate rounded-md border border-blue-200 bg-background px-1.5 text-blue-500 hover:text-blue-500"
+                  className="h-6 w-fit max-w-[225px] place-content-center truncate rounded-md border border-main-200 bg-background px-1.5 text-main-400 hover:text-main-400"
                 >
                   {email.content}
                 </p>
@@ -96,12 +90,7 @@ export const EditableEmails = ({ member }: Props) => {
             })}
           </div>
         ) : (
-          <Button
-            variant="ghost"
-            classNameSpan="text-muted-foreground justify-start"
-          >
-            Set emails
-          </Button>
+          <Button variant="ghost">Set emails</Button>
         )}
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" className="w-[233px]">
@@ -124,12 +113,7 @@ export const EditableEmails = ({ member }: Props) => {
             <DropdownMenuSeparator />
           </>
         )}
-        <Button
-          variant="ghost"
-          className="w-full"
-          classNameSpan="justify-start"
-          onClick={onAddEmail}
-        >
+        <Button variant="ghost" className="w-full" onClick={onAddEmail}>
           <Plus size={16} />
           Add email
         </Button>

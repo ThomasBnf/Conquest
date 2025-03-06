@@ -8,9 +8,8 @@ type Props = {
 export const deleteManyActivities = async ({ channel_id, react_to }: Props) => {
   await client.query({
     query: `
-      DELETE 
-      FROM activities
-      WHERE channel_id = '${channel_id}'
+      ALTER TABLE activity
+      DELETE WHERE channel_id = '${channel_id}'
       AND react_to = '${react_to}'
     `,
   });

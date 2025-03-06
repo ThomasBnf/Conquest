@@ -4,8 +4,6 @@ import { client } from "../client";
 
 type Props = {
   period?: number;
-  cursor?: string;
-  take?: number;
   member_id?: string;
   company_id?: string;
   workspace_id: string;
@@ -13,8 +11,6 @@ type Props = {
 
 export const listActivities = async ({
   period,
-  cursor,
-  take,
   member_id,
   company_id,
   workspace_id,
@@ -24,18 +20,17 @@ export const listActivities = async ({
 
   const result = await client.query({
     query: `
-     SELECT 
-     a.*,
-     activity_type.*
-    FROM activities a
-    LEFT JOIN activity_types activity_type ON a.activity_type_id = activity_type.id
-    ${company_id ? "LEFT JOIN companies c ON a.company_id = c.id" : ""}
-    WHERE a.workspace_id = '${workspace_id}'
-    ${member_id ? `AND a.member_id = '${member_id}'` : ""}
-    ${company_id ? `AND c.id = '${company_id}'` : ""}
-    ${period ? `AND a.created_at BETWEEN '${format(to, "yyyy-MM-dd HH:mm:ss")}' AND '${format(today, "yyyy-MM-dd HH:mm:ss")}'` : ""}
-    ${cursor ? `AND a.id > '${cursor}'` : ""}
-    ${take ? `LIMIT ${take}` : ""}
+      SELECT 
+        a.*,
+        activity_type.*
+      FROM activity a
+      LEFT JOIN activity_type ON a.activity_type_id = activity_type.id
+      ${company_id ? "LEFT JOIN member m ON a.member_id = m.id" : ""}
+      WHERE a.workspace_id = '${workspace_id}'
+      ${member_id ? `AND a.member_id = '${member_id}'` : ""}
+      ${company_id ? `AND m.company_id = '${company_id}'` : ""}
+      ${period ? `AND a.created_at BETWEEN '${format(to, "yyyy-MM-dd HH:mm:ss")}' AND '${format(today, "yyyy-MM-dd HH:mm:ss")}'` : ""}
+      ORDER BY a.created_at DESC
     `,
   });
 
@@ -52,6 +47,8 @@ export const listActivities = async ({
         ["name", "key", "points", "conditions", "deletable"].includes(key)
       ) {
         activityType[key] = value;
+      } else if (key.startsWith("a.")) {
+        result[key.substring(2)] = value;
       } else {
         result[key] = value;
       }

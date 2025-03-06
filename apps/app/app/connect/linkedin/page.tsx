@@ -1,7 +1,7 @@
 import { LINKEDIN_SCOPES } from "@/constant";
 import { getCurrentUser } from "@/queries/getCurrentUser";
-import { createIntegration } from "@conquest/clickhouse/integrations/createIntegration";
-import { encrypt } from "@conquest/clickhouse/utils/encrypt";
+import { createIntegration } from "@conquest/db/integrations/createIntegration";
+import { encrypt } from "@conquest/db/utils/encrypt";
 import { env } from "@conquest/env";
 import { redirect } from "next/navigation";
 

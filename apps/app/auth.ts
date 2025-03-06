@@ -1,6 +1,6 @@
 import { createClient } from "@clickhouse/client-web";
+import { getUser } from "@conquest/db/users/getUser";
 import { LoginSchema } from "@conquest/zod/schemas/auth.schema";
-import { UserSchema } from "@conquest/zod/schemas/user.schema";
 import { compare } from "bcryptjs";
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
@@ -22,16 +22,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         if (validatedFields.success) {
           const { email, password } = validatedFields.data;
 
-          const result = await client.query({
-            query: `
-              SELECT * FROM users
-              WHERE email = '${email}'
-            `,
-            format: "JSON",
-          });
-
-          const { data } = await result.json();
-          const user = UserSchema.parse(data.at(0));
+          const user = await getUser({ email });
 
           if (!user || !user.hashed_password) return null;
 

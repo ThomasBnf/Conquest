@@ -30,15 +30,19 @@ export const getActivity = async (props: Props) => {
       SELECT 
       a.*,
       activity_type.*
-      FROM activities a
-      LEFT JOIN activity_types activity_type ON a.activity_type_id = activity_type.id
+      FROM activity a
+      LEFT JOIN activity_type ON a.activity_type_id = activity_type.id
       WHERE ${where}
     `,
   });
 
   const { data } = await result.json();
 
+  if (!data?.length) return undefined;
+
   const transformFlatActivity = (row: Record<string, unknown>) => {
+    if (!row || typeof row !== "object") return undefined;
+
     const result: Record<string, unknown> = {};
     const activityType: Record<string, unknown> = {};
 
@@ -58,10 +62,14 @@ export const getActivity = async (props: Props) => {
     return result;
   };
 
+  const firstRow = data[0];
+  if (!firstRow) return undefined;
+
   const parsedActivity = transformFlatActivity(
-    data[0] as Record<string, unknown>,
+    firstRow as Record<string, unknown>,
   );
 
-  if (!data.length) return undefined;
+  if (!parsedActivity) return undefined;
+
   return ActivityWithTypeSchema.parse(parsedActivity);
 };

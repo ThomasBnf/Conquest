@@ -9,8 +9,9 @@ export const listLevels = async ({ workspace_id }: Props) => {
   const result = await client.query({
     query: `
       SELECT * 
-      FROM levels
+      FROM level
       WHERE workspace_id = '${workspace_id}'
+      ORDER BY number DESC
     `,
   });
 

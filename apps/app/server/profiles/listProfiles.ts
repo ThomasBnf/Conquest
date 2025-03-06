@@ -10,5 +10,6 @@ export const listProfiles = protectedProcedure
   )
   .query(async ({ input }) => {
     const { member_id } = input;
+
     return await _listProfiles({ member_id });
   });

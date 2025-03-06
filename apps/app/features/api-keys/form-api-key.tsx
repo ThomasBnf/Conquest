@@ -7,9 +7,13 @@ import { Input } from "@conquest/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { type FormCreate, FormCreateSchema } from "./schema/form-create.schema";
+import { Loader2 } from "lucide-react";
 
 export const FormAPIKey = () => {
-  const { mutateAsync } = trpc.apiKeys.post.useMutation();
+  const utils = trpc.useUtils();
+  const { mutateAsync } = trpc.apiKeys.post.useMutation({
+    onSuccess: () => utils.apiKeys.list.invalidate(),
+  });
 
   const form = useForm<FormCreate>({
     resolver: zodResolver(FormCreateSchema),
@@ -47,8 +51,12 @@ export const FormAPIKey = () => {
             </FormItem>
           )}
         />
-        <Button type="submit" loading={loading} disabled={disabled}>
-          New API{" "}
+        <Button type="submit" disabled={disabled}>
+          {loading ? (
+            <Loader2 className="size-4 animate-spin" />
+          ) : (
+            "New API Key"
+          )}
         </Button>
       </form>
     </Form>

@@ -9,6 +9,7 @@ type Props = {
   external_id: string;
   attributes: ProfileAttributes;
   member_id: string;
+  created_at?: Date;
   workspace_id: string;
 };
 
@@ -16,18 +17,20 @@ export const createProfile = async ({
   external_id,
   attributes,
   member_id,
+  created_at,
   workspace_id,
 }: Props) => {
   const id = uuid();
 
   await client.insert({
-    table: "profiles",
+    table: "profile",
     values: [
       {
         id,
         external_id,
         attributes,
         member_id,
+        created_at,
         workspace_id,
       },
     ],
@@ -37,7 +40,7 @@ export const createProfile = async ({
   const result = await client.query({
     query: `
       SELECT *
-      FROM profiles
+      FROM profile
       WHERE id = '${id}'
     `,
   });

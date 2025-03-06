@@ -1,4 +1,4 @@
-import { listEvents as _listEvents } from "@conquest/clickhouse/events/listEvents";
+import { listEvents as _listEvents } from "@conquest/db/events/listEvents";
 import { protectedProcedure } from "../trpc";
 
 export const listEvents = protectedProcedure.query(

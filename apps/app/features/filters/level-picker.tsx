@@ -40,7 +40,6 @@ export const LevelPicker = ({ filter }: Props) => {
           variant="outline"
           aria-expanded={open}
           className="min-w-[180px] justify-between"
-          classNameSpan="text-start justify-between text-nowrap"
         >
           {currentLevel ? (
             <span>

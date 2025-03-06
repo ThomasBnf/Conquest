@@ -50,7 +50,7 @@ export const TagsCell = ({ row }: Props) => {
         (old) =>
           old?.map((member) =>
             member.id === newData.id
-              ? { ...member, tags: newData.data.tags ?? [] }
+              ? { ...member, tags: newData.tags ?? [] }
               : member,
           ),
       );
@@ -85,17 +85,13 @@ export const TagsCell = ({ row }: Props) => {
 
     if (hasTag) {
       await updateMember({
-        id: row.original.id,
-        data: {
-          tags: tagsIds.filter((id) => id !== tagId),
-        },
+        ...row.original,
+        tags: tagsIds.filter((id) => id !== tagId),
       });
     } else {
       await updateMember({
-        id: row.original.id,
-        data: {
-          tags: [...tagsIds, tagId],
-        },
+        ...row.original,
+        tags: [...tagsIds, tagId],
       });
     }
   };
