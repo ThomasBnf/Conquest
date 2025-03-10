@@ -17,8 +17,8 @@
       "inputs": ["$TURBO_DEFAULT$", ".env"],
       "dependsOn": [
         "^db:generate",
-        "^clickhouse:migrate",
         "^db:deploy",
+        "^clickhouse:migrate",
         "^build"
       ],
       "outputs": [".next/**", "!.next/cache/**", "dist/**", "next-env.d.ts"]
