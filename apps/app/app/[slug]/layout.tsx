@@ -30,6 +30,7 @@ export default async function Layout({
   if (slug !== workspace.slug) redirect(`/${workspace.slug}`);
 
   const cookieStore = await cookies();
+
   const sidebarState = cookieStore.get("sidebar:state");
   const defaultOpen = sidebarState ? sidebarState.value === "true" : true;
 
