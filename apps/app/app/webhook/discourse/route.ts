@@ -555,7 +555,7 @@ export async function POST(request: NextRequest) {
   }
 }
 
-export const checkSignature = async (request: NextRequest) => {
+const checkSignature = async (request: NextRequest) => {
   const signature = request.headers.get("X-Discourse-Event-Signature");
   const community_url = request.headers.get("X-Discourse-Instance");
   const rawBody = await request.text();
