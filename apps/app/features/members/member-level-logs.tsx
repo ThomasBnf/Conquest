@@ -18,6 +18,7 @@ import {
   ResponsiveContainer,
   XAxis,
 } from "recharts";
+
 const chartConfig = {
   levelNumber: {
     label: "Level",
@@ -30,11 +31,14 @@ type Props = {
 };
 
 export const MemberLevelLogs = ({ member }: Props) => {
-  const logs = member.logs;
-  const { data: levels } = trpc.levels.getAllLevels.useQuery();
+  const { data: logs } = trpc.logs.list.useQuery({
+    member_id: member.id,
+  });
 
-  const formattedLogs = logs.map((log) => {
-    const level = levels?.find((level) => level.id === log.levelId);
+  const { data: levels } = trpc.levels.list.useQuery();
+
+  const formattedLogs = logs?.map((log) => {
+    const level = levels?.find((level) => level.id === log.level_id);
 
     return {
       date: format(log.date, "MMM d, yyyy"),
@@ -52,7 +56,7 @@ export const MemberLevelLogs = ({ member }: Props) => {
       <p className="mb-4 text-muted-foreground">
         Member Level evolution over the past 365 days, logged weekly.
       </p>
-      {formattedLogs.length === 0 && <EmptyStateChart />}
+      {logs?.length === 0 && <EmptyStateChart />}
       <ResponsiveContainer height={300} className="pr-1">
         <ChartContainer config={chartConfig}>
           <AreaChart data={formattedLogs}>
@@ -83,7 +87,7 @@ export const MemberLevelLogs = ({ member }: Props) => {
                     indicator="line"
                     formatter={() => (
                       <div className="flex w-full gap-2">
-                        <div className="h-full w-1 shrink-0 rounded-[2px] bg-main-500" />
+                        <div className="h-full w-1 shrink-0 rounded-[2px] bg-main-400" />
                         <div className="flex items-end gap-2">
                           <div className="grid gap-1.5">
                             <p className="font-medium leading-none">{date}</p>
@@ -124,7 +128,7 @@ export const MemberLevelLogs = ({ member }: Props) => {
               dataKey="levelNumber"
               fill="url(#fill-levelNumber)"
               fillOpacity={0.4}
-              stroke="hsl(var(--chart-1))"
+              stroke="hsl(var(--main-300))"
               strokeWidth={1.5}
             />
           </AreaChart>

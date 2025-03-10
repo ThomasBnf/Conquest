@@ -1,6 +1,4 @@
-import { useUser } from "@/context/userContext";
-import { tableParsers } from "@/lib/searchParamsTable";
-import { trpc } from "@/server/client";
+import { tableParams } from "@/lib/searchParamsTable";
 import { buttonVariants } from "@conquest/ui/button";
 import { cn } from "@conquest/ui/cn";
 import {
@@ -10,7 +8,7 @@ import {
   SelectTrigger,
 } from "@conquest/ui/select";
 import type { Column, Table } from "@tanstack/react-table";
-import { ArrowDown, ArrowUp, ChevronsUpDown, EyeOff } from "lucide-react";
+import { ArrowDown, ArrowUp, ChevronsUpDown } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useQueryStates } from "nuqs";
 
@@ -25,58 +23,13 @@ export const ColumnHeader = <TData, TValue>({
   column,
   title,
 }: Props<TData, TValue>) => {
-  const { user } = useUser();
   const pathname = usePathname();
   const type = pathname.includes("companies") ? "companies" : "members";
-  const [, setParams] = useQueryStates(tableParsers);
-  const utils = trpc.useUtils();
-
-  const { mutateAsync } = trpc.users.updateUser.useMutation({
-    onSuccess: () => utils.users.getCurrentUser.invalidate(),
-  });
+  const [, setParams] = useQueryStates(tableParams);
 
   if (!column.getCanSort()) return <div>{title}</div>;
 
   const onValueChange = (value: string) => {
-    if (value === `${column.id}-hide`) {
-      if (!user?.id) return;
-
-      const isVisible = !column.getIsVisible();
-      column.toggleVisibility(isVisible);
-
-      const { members_preferences, companies_preferences } = user;
-      const currentVisibility =
-        type === "members"
-          ? (members_preferences?.columnVisibility ?? {})
-          : (companies_preferences?.columnVisibility ?? {});
-
-      mutateAsync({
-        id: user.id,
-        data: {
-          ...user,
-          ...(type === "members"
-            ? {
-                members_preferences: {
-                  ...members_preferences,
-                  columnVisibility: {
-                    ...currentVisibility,
-                    [column.id]: isVisible,
-                  },
-                },
-              }
-            : {
-                companies_preferences: {
-                  ...companies_preferences,
-                  columnVisibility: {
-                    ...currentVisibility,
-                    [column.id]: isVisible,
-                  },
-                },
-              }),
-        },
-      });
-    }
-
     const isDescending = value === "desc";
     column.toggleSorting(isDescending);
 
@@ -103,8 +56,8 @@ export const ColumnHeader = <TData, TValue>({
     >
       <SelectTrigger
         className={cn(
-          buttonVariants({ variant: "transparent" }),
-          "h-11 justify-between rounded-none border-none shadow-none hover:bg-sidebar-accent focus:ring-0 focus-visible:outline-none [&>svg:last-child]:hidden",
+          buttonVariants({ variant: "ghost" }),
+          "h-11 justify-between rounded-none border-none shadow-none hover:bg-muted-hover focus:ring-0 focus-visible:outline-none [&>svg:last-child]:hidden",
         )}
       >
         <span className="text-foreground">{title}</span>
@@ -133,12 +86,6 @@ export const ColumnHeader = <TData, TValue>({
             </SelectItem>
           </>
         )}
-        <SelectItem value={`${column.id}-hide`}>
-          <span className="flex items-center">
-            <EyeOff className="mr-2 size-3.5 text-muted-foreground/70" />
-            Hide
-          </span>
-        </SelectItem>
       </SelectContent>
     </Select>
   );

@@ -1,5 +1,4 @@
-import { prisma } from "@conquest/db/prisma";
-import { ActivityWithTypeSchema } from "@conquest/zod/schemas/activity.schema";
+import { getActivity as _getActivity } from "@conquest/clickhouse/activities/getActivity";
 import { z } from "zod";
 import { protectedProcedure } from "../trpc";
 
@@ -15,17 +14,5 @@ export const getActivity = protectedProcedure
 
     if (!external_id) return null;
 
-    const activity = await prisma.activity.findUnique({
-      where: {
-        external_id_workspace_id: {
-          external_id,
-          workspace_id,
-        },
-      },
-      include: {
-        activity_type: true,
-      },
-    });
-
-    return ActivityWithTypeSchema.parse(activity);
+    return await _getActivity({ external_id, workspace_id });
   });

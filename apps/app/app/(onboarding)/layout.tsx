@@ -1,15 +1,31 @@
-import { OnboardingProvider } from "@/providers/OnboardingProvider";
-import { getCurrentUser } from "@/queries/getCurrentUser";
-import { getWorkspace } from "@conquest/db/queries/workspace/getWorkspace";
+import { auth } from "@/auth";
+import { UserProvider } from "@/context/userContext";
+import { SignOut } from "@/features/onboarding/sign-out";
+import { getWorkspace } from "@conquest/db/workspaces/getWorkspace";
 import { redirect } from "next/navigation";
 import type { PropsWithChildren } from "react";
 
 export default async function Layout({ children }: PropsWithChildren) {
-  const user = await getCurrentUser();
-  const workspace = await getWorkspace({ id: user?.workspace_id });
+  const session = await auth();
+  if (!session) redirect("/auth/login");
 
-  if (!user) redirect("/");
+  const { user } = session;
+  const workspace = await getWorkspace({ id: user.workspace_id });
   if (user?.onboarding) redirect(`/${workspace.slug}`);
 
-  return <OnboardingProvider>{children}</OnboardingProvider>;
+  return (
+    <UserProvider initialUser={user} initialWorkspace={workspace}>
+      <div className="flex h-full flex-col justify-between bg-muted/30 p-4 lg:px-8">
+        <div className="flex items-center justify-between">
+          <SignOut />
+          <div>
+            <p className="text-muted-foreground text-xs">Logged in as:</p>
+            <p className="text-sm">{user.email}</p>
+          </div>
+        </div>
+        {children}
+        <div />
+      </div>
+    </UserProvider>
+  );
 }

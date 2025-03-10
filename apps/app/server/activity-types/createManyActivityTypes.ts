@@ -1,6 +1,6 @@
-import { prisma } from "@conquest/db/prisma";
+import { createManyActivityTypes as _createManyActivityTypes } from "@conquest/clickhouse/activity-types/createManyActivityTypes";
 import { SOURCE } from "@conquest/zod/enum/source.enum";
-import { ActivityTypeConditionSchema } from "@conquest/zod/schemas/activity-type.schema";
+import { ActivityTypeRuleSchema } from "@conquest/zod/schemas/activity-type.schema";
 import { z } from "zod";
 import { protectedProcedure } from "../trpc";
 
@@ -13,8 +13,10 @@ export const createManyActivityTypes = protectedProcedure
           source: SOURCE,
           key: z.string(),
           points: z.number(),
-          conditions: z.array(ActivityTypeConditionSchema),
-          deletable: z.boolean().optional(),
+          conditions: z.object({
+            rules: ActivityTypeRuleSchema.array(),
+          }),
+          deletable: z.boolean(),
         }),
       ),
     }),
@@ -23,12 +25,8 @@ export const createManyActivityTypes = protectedProcedure
     const { workspace_id } = user;
     const { activity_types } = input;
 
-    for (const activity_type of activity_types) {
-      await prisma.activity_type.create({
-        data: {
-          ...activity_type,
-          workspace_id,
-        },
-      });
-    }
+    await _createManyActivityTypes({
+      activity_types,
+      workspace_id,
+    });
   });

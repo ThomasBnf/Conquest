@@ -8,6 +8,7 @@ import {
   AlertDialog as CustomAlertDialog,
 } from "@conquest/ui/alert-dialog";
 import { Button } from "@conquest/ui/button";
+import { Loader2 } from "lucide-react";
 import { useState } from "react";
 
 type Props = {
@@ -47,8 +48,12 @@ export const AlertDialog = ({
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <Button variant="destructive" loading={loading} onClick={onClick}>
-            {buttonLabel}
+          <Button variant="destructive" disabled={loading} onClick={onClick}>
+            {loading ? (
+              <Loader2 className="size-4 animate-spin" />
+            ) : (
+              buttonLabel
+            )}
           </Button>
         </AlertDialogFooter>
       </AlertDialogContent>

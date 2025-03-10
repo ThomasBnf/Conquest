@@ -1,10 +1,13 @@
 "use client";
 
+import { IsLoading } from "@/components/states/is-loading";
 import { trpc } from "@/server/client";
 import { ApiKeyCard } from "./api-key-card";
 
 export const ApiKeysList = () => {
-  const { data } = trpc.apiKeys.getAll.useQuery();
+  const { data, isLoading } = trpc.apiKeys.list.useQuery();
+
+  if (isLoading) return <IsLoading />;
 
   return (
     <>

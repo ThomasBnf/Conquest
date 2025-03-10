@@ -1,37 +1,13 @@
-"use client";
-
-import { Header } from "@/components/layouts/header";
-import { PageLayout } from "@/components/layouts/page-layout";
-import { IsLoading } from "@/components/states/is-loading";
-import { FiltersProvider } from "@/context/filtersContext";
-import { MembersProvider } from "@/context/membersContext";
-import { MenuList } from "@/features/lists/menu-list";
-import { MembersPage } from "@/features/members/members-page";
-import { trpc } from "@/server/client";
-import { redirect } from "next/navigation";
+import { PageList } from "@/features/lists/page-list";
 
 type Props = {
-  params: {
+  params: Promise<{
     listId: string;
-  };
+  }>;
 };
 
-export default function Page({ params: { listId } }: Props) {
-  const { data: list, isLoading } = trpc.lists.getList.useQuery({ id: listId });
+export default async function Page({ params }: Props) {
+  const { listId } = await params;
 
-  if (isLoading) return <IsLoading />;
-  if (!list) redirect("/members");
-
-  return (
-    <PageLayout>
-      <Header title={`${list.emoji} ${list.name}`}>
-        <MenuList list={list} />
-      </Header>
-      <FiltersProvider defaultGroupFilters={list.groupFilters}>
-        <MembersProvider>
-          <MembersPage />
-        </MembersProvider>
-      </FiltersProvider>
-    </PageLayout>
-  );
+  return <PageList listId={listId} />;
 }

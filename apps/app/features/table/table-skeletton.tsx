@@ -1,28 +1,28 @@
 import { Skeleton } from "@conquest/ui/skeleton";
-import cuid from "cuid";
+import { v4 as uuid } from "uuid";
 
 export const TableSkeleton = () => {
   return (
     <div className="flex flex-col divide-y overflow-hidden">
       <div className="h-full overflow-hidden">
-        <div className="flex border-b bg-muted">
+        <div className="flex border-b bg-sidebar">
           <div className="flex h-11 w-[285px] shrink-0 items-center gap-2 border-r px-3">
-            <Skeleton className="size-4 bg-border" />
-            <Skeleton className="mx-2 h-4 w-32 bg-border" />
+            <Skeleton className="size-4" />
+            <Skeleton className="mx-2 h-4 w-32" />
           </div>
           <div className="flex divide-x">
             {Array.from({ length: 6 }, () => (
               <div
-                key={cuid()}
+                key={uuid()}
                 className="flex h-11 w-[250px] shrink-0 items-center px-2"
               >
-                <Skeleton className="h-4 w-24 bg-border" />
+                <Skeleton className="h-4 w-24" />
               </div>
             ))}
           </div>
         </div>
         {Array.from({ length: 50 }, () => (
-          <div key={cuid()} className="flex border-b">
+          <div key={uuid()} className="flex border-b">
             <div className="flex h-11 w-[285px] shrink-0 items-center gap-4 border-r">
               <div className="flex items-center gap-4 px-3">
                 <Skeleton className="size-4" />
@@ -35,7 +35,7 @@ export const TableSkeleton = () => {
             <div className="flex divide-x">
               {Array.from({ length: 6 }, () => (
                 <div
-                  key={cuid()}
+                  key={uuid()}
                   className="flex h-11 w-[250px] items-center px-3"
                 >
                   <Skeleton className="h-4 w-24" />

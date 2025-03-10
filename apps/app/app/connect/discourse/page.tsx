@@ -1,5 +1,5 @@
 import { getCurrentUser } from "@/queries/getCurrentUser";
-import { createIntegration } from "@conquest/db/queries/integration/createIntegration";
+import { createIntegration } from "@conquest/db/integrations/createIntegration";
 import { redirect } from "next/navigation";
 
 export default async function Page() {
@@ -8,7 +8,7 @@ export default async function Page() {
   await createIntegration({
     external_id: workspace_id,
     details: {
-      source: "DISCOURSE",
+      source: "Discourse",
       community_url: "",
       community_url_iv: "",
       api_key: "",

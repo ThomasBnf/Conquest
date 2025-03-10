@@ -1,7 +1,7 @@
 "use client";
 
 import { Slack } from "@/components/icons/Slack";
-import { SkeletonIntegration } from "@/components/states/skeleton-integration";
+import { LoadingChannels } from "@/components/states/loading-channels";
 import { SLACK_SCOPES, SLACK_USER_SCOPES } from "@/constant";
 import { useIntegration } from "@/context/integrationContext";
 import { env } from "@conquest/env";
@@ -18,19 +18,13 @@ type Props = {
 };
 
 export const SlackIntegration = ({ error }: Props) => {
-  const {
-    slack,
-    loadingIntegration,
-    channels,
-    deleteIntegration,
-    loading,
-    setLoading,
-  } = useIntegration();
-  const { name } = slack?.details ?? {};
+  const { slack, channels, setLoading } = useIntegration();
+  const { name, source } = slack?.details ?? {};
   const router = useRouter();
 
   const onEnable = () => {
     setLoading(true);
+
     const params = new URLSearchParams({
       response_type: "code",
       client_id: env.NEXT_PUBLIC_SLACK_CLIENT_ID,
@@ -41,13 +35,6 @@ export const SlackIntegration = ({ error }: Props) => {
 
     router.push(`https://slack.com/oauth/v2/authorize?${params.toString()}`);
   };
-
-  const onDisconnect = async () => {
-    if (!slack) return;
-    await deleteIntegration({ integration: slack });
-  };
-
-  if (loadingIntegration) return <SkeletonIntegration />;
 
   return (
     <div className="mx-auto flex max-w-4xl flex-col gap-4 px-4 py-12 lg:py-24">
@@ -63,28 +50,27 @@ export const SlackIntegration = ({ error }: Props) => {
         integration={slack}
         docUrl="https://docs.useconquest.com/integrations/slack"
         description="Connect your Slack community to get a complete overview of your members and community activity."
-        loading={loading}
+        source="Slack"
         onEnable={onEnable}
-        onDisconnect={onDisconnect}
       >
         <SlackForm />
       </EnableCard>
-      <ConnectedCard
-        integration={slack}
-        name={name}
-        onDisconnect={onDisconnect}
-      >
+      <ConnectedCard integration={slack} name={name} source={source}>
         <>
           <Separator className="my-4" />
           <div>
             <p className="mb-2 font-medium">Channels</p>
             <div className="space-y-1">
-              {channels?.map((channel) => (
-                <div key={channel.id} className="flex items-center gap-1">
-                  <Hash size={16} />
-                  <p>{channel.name}</p>
-                </div>
-              ))}
+              {!channels?.length ? (
+                <LoadingChannels />
+              ) : (
+                channels?.map((channel) => (
+                  <div key={channel.id} className="flex items-center gap-1">
+                    <Hash size={16} />
+                    <p>{channel.name}</p>
+                  </div>
+                ))
+              )}
             </div>
           </div>
         </>

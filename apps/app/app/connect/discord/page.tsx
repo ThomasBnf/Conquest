@@ -1,19 +1,20 @@
 import { DISCORD_PERMISSIONS, DISCORD_SCOPES } from "@/constant";
 import { getCurrentUser } from "@/queries/getCurrentUser";
-import { encrypt } from "@conquest/db/lib/encrypt";
-import { createIntegration } from "@conquest/db/queries/integration/createIntegration";
-import { getIntegration } from "@conquest/db/queries/integration/getIntegration";
+import { createIntegration } from "@conquest/db/integrations/createIntegration";
+import { getIntegration } from "@conquest/db/integrations/getIntegration";
+import { encrypt } from "@conquest/db/utils/encrypt";
 import { env } from "@conquest/env";
 import { redirect } from "next/navigation";
 
 type Props = {
-  searchParams: {
+  searchParams: Promise<{
     error?: string;
     code: string;
-  };
+  }>;
 };
 
-export default async function Page({ searchParams: { code, error } }: Props) {
+export default async function Page({ searchParams }: Props) {
+  const { code, error } = await searchParams;
   const { id: userId, workspace_id } = await getCurrentUser();
 
   if (error) redirect("/settings/integrations/discord?error=access_denied");
@@ -40,6 +41,7 @@ export default async function Page({ searchParams: { code, error } }: Props) {
 
   const integration = await getIntegration({
     external_id: id,
+    workspace_id,
   });
 
   if (integration) {
@@ -52,7 +54,7 @@ export default async function Page({ searchParams: { code, error } }: Props) {
   await createIntegration({
     external_id: id,
     details: {
-      source: "DISCORD",
+      source: "Discord",
       name,
       access_token: encryptedAccessToken.token,
       access_token_iv: encryptedAccessToken.iv,

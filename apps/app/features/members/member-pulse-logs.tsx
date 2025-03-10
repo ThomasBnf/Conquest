@@ -2,6 +2,7 @@
 
 import { IconDoc } from "@/components/custom/icon-doc";
 import { EmptyStateChart } from "@/components/states/empty-state-chart";
+import { trpc } from "@/server/client";
 import {
   type ChartConfig,
   ChartContainer,
@@ -17,7 +18,6 @@ import {
   ResponsiveContainer,
   XAxis,
 } from "recharts";
-
 const chartConfig = {
   pulse: {
     label: "Pulse",
@@ -30,9 +30,11 @@ type Props = {
 };
 
 export const MemberPulseLogs = ({ member }: Props) => {
-  const logs = member.logs;
+  const { data: logs, failureReason } = trpc.logs.list.useQuery({
+    member_id: member.id,
+  });
 
-  const formattedLogs = logs.map((log) => ({
+  const formattedLogs = logs?.map((log) => ({
     date: format(log.date, "MMM d, yyyy"),
     pulse: log.pulse,
   }));
@@ -46,7 +48,7 @@ export const MemberPulseLogs = ({ member }: Props) => {
       <p className="mb-4 text-muted-foreground">
         Pulse Score evolution over the past 365 days, logged weekly.
       </p>
-      {formattedLogs.length === 0 && <EmptyStateChart />}
+      {logs?.length === 0 && <EmptyStateChart />}
       <ResponsiveContainer height={300} className="pr-1">
         <ChartContainer config={chartConfig}>
           <AreaChart data={formattedLogs}>
@@ -84,7 +86,7 @@ export const MemberPulseLogs = ({ member }: Props) => {
               dataKey="pulse"
               fill="url(#fill-pulse)"
               fillOpacity={0.4}
-              stroke="hsl(var(--chart-1))"
+              stroke="hsl(var(--main-300))"
               strokeWidth={1.5}
             />
           </AreaChart>

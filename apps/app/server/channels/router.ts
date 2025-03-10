@@ -1,10 +1,10 @@
 import { router } from "../trpc";
 import { createManyChannels } from "./createManyChannels";
-import { getAllChannels } from "./getAllChannels";
 import { getChannel } from "./getChannel";
+import { listChannels } from "./listChannels";
 
 export const channelsRouter = router({
-  createManyChannels,
-  getAllChannels,
-  getChannel,
+  list: listChannels,
+  postMany: createManyChannels,
+  get: getChannel,
 });

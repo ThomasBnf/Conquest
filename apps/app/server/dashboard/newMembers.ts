@@ -1,55 +1,64 @@
-import { prisma } from "@conquest/db/prisma";
-import { eachDayOfInterval, format } from "date-fns";
+import { client } from "@conquest/clickhouse/client";
+import { differenceInDays, endOfDay, format, subDays } from "date-fns";
 import { z } from "zod";
 import { protectedProcedure } from "../trpc";
 
 export const newMembers = protectedProcedure
   .input(
     z.object({
-      from: z.coerce.date(),
-      to: z.coerce.date(),
+      from: z.date(),
+      to: z.date(),
     }),
   )
-  .query(async ({ ctx: { user }, input }) => {
+  .query(async ({ input }) => {
     const { from, to } = input;
-    const { workspace_id } = user;
 
-    const members = await prisma.member.findMany({
-      where: {
-        workspace_id,
-        created_at: {
-          gte: from,
-          lte: to,
-        },
-      },
-      orderBy: {
-        created_at: "asc",
-      },
+    const previousPeriodLength = differenceInDays(to, from);
+    const previousFrom = subDays(from, previousPeriodLength);
+    const previousTo = subDays(to, previousPeriodLength);
+
+    const formattedFrom = format(from, "yyyy-MM-dd HH:mm:ss");
+    const formattedTo = format(endOfDay(to), "yyyy-MM-dd HH:mm:ss");
+    const formattedPreviousFrom = format(previousFrom, "yyyy-MM-dd HH:mm:ss");
+    const formattedPreviousTo = format(
+      endOfDay(previousTo),
+      "yyyy-MM-dd HH:mm:ss",
+    );
+
+    const result = await client.query({
+      query: `
+        WITH 
+          (
+            SELECT count()
+            FROM member
+            WHERE created_at >= '${formattedFrom}' 
+            AND created_at <= '${formattedTo}'
+          ) as current_count,
+          (
+            SELECT count()
+            FROM member
+            WHERE created_at >= '${formattedPreviousFrom}' 
+            AND created_at <= '${formattedPreviousTo}'
+          ) as previous_count
+        SELECT 
+          current_count as current,
+          previous_count as previous,
+          CASE
+            WHEN previous_count = 0 AND current_count > 0 THEN 100
+            WHEN previous_count = 0 THEN 0
+            ELSE ((current_count - previous_count) / previous_count) * 100
+          END as variation
+      `,
+      format: "JSON",
     });
 
-    const allDates = eachDayOfInterval({ start: from, end: to }).map((date) =>
-      format(date, "PP"),
-    );
-
-    const membersData = members.reduce<Record<string, number>>(
-      (acc, member) => {
-        const date = format(member.created_at, "PP");
-        const previousDates = Object.keys(acc);
-        const lastDate = previousDates[previousDates.length - 1];
-        const previousTotal = lastDate ? acc[lastDate] : 0;
-
-        acc[date] = (acc[date] ?? previousTotal ?? 0) + 1;
-        return acc;
-      },
-      Object.fromEntries(
-        allDates.map((date) => {
-          return [date, 0];
-        }),
-      ),
-    );
+    const { data } = (await result.json()) as {
+      data: Array<{ current: number; previous: number; variation: number }>;
+    };
 
     return {
-      newMembers: members.length,
-      newMembersData: membersData,
+      current: data[0]?.current ?? 0,
+      previous: data[0]?.previous ?? 0,
+      variation: data[0]?.variation ?? 0,
     };
   });

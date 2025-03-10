@@ -1,3 +1,5 @@
+"use client";
+
 import { EmojiPicker } from "@/components/custom/emoji-picker";
 import { useFilters } from "@/context/filtersContext";
 import { useUser } from "@/context/userContext";
@@ -26,6 +28,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { usePathname, useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { type FormList, FormListSchema } from "./schemas/form-create.schema";
+import { Loader2 } from "lucide-react";
 
 export const CreateListDialog = () => {
   const { groupFilters, resetFilters } = useFilters();
@@ -37,9 +40,10 @@ export const CreateListDialog = () => {
   const isListPage = pathname.includes("lists");
   const utils = trpc.useUtils();
 
-  const { mutateAsync, isPending } = trpc.lists.createList.useMutation({
-    onSuccess: ({ id }) => {
-      utils.lists.getAllLists.invalidate();
+  const { mutateAsync, isPending } = trpc.lists.post.useMutation({
+    onSuccess: (data) => {
+      const { id } = data ?? {};
+      utils.lists.list.invalidate();
       router.push(`/${slug}/lists/${id}`);
       onClearFilters();
     },
@@ -114,8 +118,12 @@ export const CreateListDialog = () => {
                     Cancel
                   </Button>
                 </DialogTrigger>
-                <Button type="submit" loading={isPending} disabled={isPending}>
-                  Save
+                <Button type="submit" disabled={isPending}>
+                  {isPending ? (
+                    <Loader2 className="size-4 animate-spin" />
+                  ) : (
+                    "Save"
+                  )}
                 </Button>
               </DialogFooter>
             </form>

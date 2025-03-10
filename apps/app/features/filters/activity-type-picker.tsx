@@ -28,7 +28,7 @@ export const ActivityTypePicker = ({ filter }: Props) => {
   const { onUpdateFilter } = useFilters();
   const [open, setOpen] = useState(false);
 
-  const { data, isLoading } = trpc.activityTypes.getAllActivityTypes.useQuery();
+  const { data, isLoading } = trpc.activityTypes.list.useQuery();
 
   const filterActivity = FilterActivitySchema.parse(filter);
 
@@ -64,7 +64,7 @@ export const ActivityTypePicker = ({ filter }: Props) => {
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button variant="outline" classNameSpan="justify-between">
+        <Button variant="outline">
           {activityTypesList.length === 0 ? (
             <span className="text-muted-foreground">Select activity</span>
           ) : (

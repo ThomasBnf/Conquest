@@ -1,10 +1,10 @@
 import { router } from "../trpc";
-import { getAllProfiles } from "./getAllProfiles";
 import { getProfile } from "./getProfile";
+import { listProfiles } from "./listProfiles";
 import { updateProfile } from "./updateProfile";
 
 export const profilesRouter = router({
-  getAllProfiles,
-  getProfile,
-  updateProfile,
+  list: listProfiles,
+  get: getProfile,
+  update: updateProfile,
 });

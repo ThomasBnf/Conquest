@@ -1,10 +1,10 @@
 import { router } from "@/server/trpc";
 import { createApiKey } from "./createApiKey";
 import { deleteApiKey } from "./deleteApiKey";
-import { getAll } from "./getAll";
+import { listApiKeys } from "./listApiKeys";
 
 export const apiKeysRouter = router({
-  getAll,
-  createApiKey,
-  deleteApiKey,
+  list: listApiKeys,
+  post: createApiKey,
+  delete: deleteApiKey,
 });

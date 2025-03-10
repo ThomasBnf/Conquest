@@ -12,7 +12,7 @@ type Props = {
 
 export const LivestormSection = ({ profiles }: Props) => {
   const profile = profiles?.find(
-    (profile) => profile.attributes.source === "LIVESTORM",
+    (profile) => profile.attributes.source === "Livestorm",
   );
 
   if (!profile) return null;

@@ -1,5 +1,5 @@
 import { useFilters } from "@/context/filtersContext";
-import { tableParsers } from "@/lib/searchParamsTable";
+import { tableParams } from "@/lib/searchParamsTable";
 import { trpc } from "@/server/client";
 import { Checkbox } from "@conquest/ui/checkbox";
 import { cn } from "@conquest/ui/cn";
@@ -26,55 +26,54 @@ type Props = {
 export const TagsCellCompany = ({ row }: Props) => {
   const { groupFilters } = useFilters();
   const [{ search, idCompany, descCompany, page, pageSize }] =
-    useQueryStates(tableParsers);
+    useQueryStates(tableParams);
 
-  const { data: allTags } = trpc.tags.getAllTags.useQuery();
+  const { data: allTags } = trpc.tags.list.useQuery();
   const [open, setOpen] = useState(false);
   const utils = trpc.useUtils();
 
-  const { mutateAsync: updateCompany } =
-    trpc.companies.updateCompany.useMutation({
-      async onMutate(newData) {
-        await utils.companies.getAllCompanies.cancel();
+  const { mutateAsync: updateCompany } = trpc.companies.update.useMutation({
+    async onMutate(newData) {
+      await utils.companies.list.cancel();
 
-        const prevData = utils.companies.getAllCompanies.getData();
+      const prevData = utils.companies.list.getData();
 
-        utils.companies.getAllCompanies.setData(
-          {
-            search,
-            id: idCompany,
-            desc: descCompany,
-            page,
-            pageSize,
-            groupFilters,
-          },
-          (old) =>
-            old?.map((company) =>
-              company.id === newData.id
-                ? { ...company, tags: newData.data.tags ?? [] }
-                : company,
-            ),
-        );
+      utils.companies.list.setData(
+        {
+          search,
+          id: idCompany,
+          desc: descCompany,
+          page,
+          pageSize,
+          groupFilters,
+        },
+        (old) =>
+          old?.map((company) =>
+            company.id === newData.id
+              ? { ...company, tags: newData.tags ?? [] }
+              : company,
+          ),
+      );
 
-        return { prevData };
-      },
-      onError(_err, _newData, ctx) {
-        utils.companies.getAllCompanies.setData(
-          {
-            search,
-            id: idCompany,
-            desc: descCompany,
-            page,
-            pageSize,
-            groupFilters,
-          },
-          ctx?.prevData,
-        );
-      },
-      onSettled() {
-        utils.companies.getAllCompanies.invalidate();
-      },
-    });
+      return { prevData };
+    },
+    onError(error, newData, ctx) {
+      utils.companies.list.setData(
+        {
+          search,
+          id: idCompany,
+          desc: descCompany,
+          page,
+          pageSize,
+          groupFilters,
+        },
+        ctx?.prevData,
+      );
+    },
+    onSettled() {
+      utils.companies.list.invalidate();
+    },
+  });
 
   const tagsIds = row.original.tags.map((tag) => tag);
   const tagsToSelect = allTags?.filter((tag) => !tagsIds.includes(tag.id));
@@ -86,17 +85,13 @@ export const TagsCellCompany = ({ row }: Props) => {
 
     if (hasTag) {
       await updateCompany({
-        id: row.original.id,
-        data: {
-          tags: tagsIds.filter((id) => id !== tagId),
-        },
+        ...row.original,
+        tags: tagsIds.filter((id) => id !== tagId),
       });
     } else {
       await updateCompany({
-        id: row.original.id,
-        data: {
-          tags: [...tagsIds, tagId],
-        },
+        ...row.original,
+        tags: [...tagsIds, tagId],
       });
     }
   };

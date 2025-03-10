@@ -2,13 +2,13 @@ import { router } from "@/server/trpc";
 import { createActivityType } from "./createActivityType";
 import { createManyActivityTypes } from "./createManyActivityTypes";
 import { deleteActivityType } from "./deleteActivityType";
-import { getAllActivityTypes } from "./getAllActivityTypes";
+import { listActivityTypes } from "./listActivityTypes";
 import { updateActivityType } from "./updateActivityType";
 
 export const activityTypesRouter = router({
-  getAllActivityTypes,
-  createActivityType,
-  createManyActivityTypes,
-  updateActivityType,
-  deleteActivityType,
+  list: listActivityTypes,
+  post: createActivityType,
+  postMany: createManyActivityTypes,
+  update: updateActivityType,
+  delete: deleteActivityType,
 });

@@ -1,14 +1,14 @@
 import { router } from "../trpc";
 import { createList } from "./createList";
 import { deleteList } from "./deleteList";
-import { getAllLists } from "./getAllLists";
 import { getList } from "./getList";
+import { listLists } from "./listLists";
 import { updateList } from "./updateList";
 
 export const listsRouter = router({
-  getAllLists,
-  createList,
-  updateList,
-  getList,
-  deleteList,
+  list: listLists,
+  post: createList,
+  put: updateList,
+  get: getList,
+  delete: deleteList,
 });

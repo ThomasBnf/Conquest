@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const FormEditSchema = z.object({
-  id: z.string().cuid(),
+  id: z.string().uuid(),
   emoji: z.string(),
   name: z.string().min(1),
 });

@@ -1,6 +1,6 @@
-import { decrypt } from "@conquest/db/lib/decrypt";
-import { getIntegrationBySource } from "@conquest/db/queries/integration/getIntegrationBySource";
-import { getRefreshToken } from "@conquest/db/queries/livestorm/getRefreshToken";
+import { getIntegrationBySource } from "@conquest/db/integrations/getIntegrationBySource";
+import { getRefreshToken } from "@conquest/db/livestorm/getRefreshToken";
+import { decrypt } from "@conquest/db/utils/decrypt";
 import { LivestormIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
 import { protectedProcedure } from "../trpc";
 
@@ -9,7 +9,7 @@ export const getOrganization = protectedProcedure.query(
     const { workspace_id } = user;
 
     const integration = await getIntegrationBySource({
-      source: "LIVESTORM",
+      source: "Livestorm",
       workspace_id,
     });
 
@@ -27,7 +27,7 @@ export const getOrganization = protectedProcedure.query(
     let accessToken = decryptedAccessToken;
 
     if (isExpired) {
-      accessToken = await getRefreshToken(livestorm);
+      accessToken = await getRefreshToken({ livestorm });
     }
 
     const response = await fetch(

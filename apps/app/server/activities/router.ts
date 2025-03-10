@@ -2,17 +2,13 @@ import { router } from "../trpc";
 import { createActivity } from "./createActivity";
 import { deleteActivity } from "./deleteActivity";
 import { getActivity } from "./getActivity";
-import { getAllActivities } from "./getAllActivities";
-import { getCompanyActivities } from "./getCompanyActivities";
-import { getMemberActivities } from "./getMemberActivities";
-import { getMemberActivitiesCount } from "./getMemberActivitiesCount";
+import { listActivities } from "./listActivities";
+import { listDayActivities } from "./listDayActivities";
 
 export const activitiesRouter = router({
-  createActivity,
-  getAllActivities,
-  getMemberActivities,
-  getCompanyActivities,
-  getMemberActivitiesCount,
-  getActivity,
-  deleteActivity,
+  list: listActivities,
+  post: createActivity,
+  get: getActivity,
+  delete: deleteActivity,
+  listDayActivities: listDayActivities,
 });

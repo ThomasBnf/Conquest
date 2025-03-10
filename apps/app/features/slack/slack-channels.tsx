@@ -1,11 +1,11 @@
+import { LoadingChannels } from "@/components/states/loading-channels";
 import { SLACK_ACTIVITY_TYPES } from "@/constant";
 import { useIntegration } from "@/context/integrationContext";
 import { trpc } from "@/server/client";
 import { Button } from "@conquest/ui/button";
 import { Checkbox } from "@conquest/ui/checkbox";
-import { ArrowRight, Hash } from "lucide-react";
+import { ArrowRight, Hash, Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { LoadingChannels } from "../integrations/loading-channels";
 
 export const SlackChannels = () => {
   const { setStep, channels } = useIntegration();
@@ -14,9 +14,9 @@ export const SlackChannels = () => {
   const utils = trpc.useUtils();
 
   const { mutateAsync: createManyActivityTypes } =
-    trpc.activityTypes.createManyActivityTypes.useMutation({
+    trpc.activityTypes.postMany.useMutation({
       onSuccess: () => {
-        utils.activityTypes.getAllActivityTypes.invalidate();
+        utils.activityTypes.list.invalidate();
         setTimeout(() => {
           setLoading(false);
           setStep(1);
@@ -25,9 +25,9 @@ export const SlackChannels = () => {
     });
 
   const { mutateAsync: createManyChannels } =
-    trpc.channels.createManyChannels.useMutation({
+    trpc.channels.postMany.useMutation({
       onSuccess: () => {
-        utils.channels.getAllChannels.invalidate({ source: "SLACK" });
+        utils.channels.list.invalidate({ source: "Slack" });
       },
     });
 
@@ -58,7 +58,7 @@ export const SlackChannels = () => {
     const channelsData = filteredChannels?.map(({ id, name }) => ({
       external_id: id ?? "",
       name: name ?? "",
-      source: "SLACK" as const,
+      source: "Slack" as const,
     }));
 
     if (!channelsData) return;
@@ -99,10 +99,9 @@ export const SlackChannels = () => {
           );
 
           return (
-            <button
+            <div
               key={slackChannel.id}
               className="flex items-center gap-2"
-              type="button"
               onClick={() => onSelect(slackChannel.id)}
             >
               <Checkbox checked={isSelected} disabled={loading} />
@@ -110,17 +109,22 @@ export const SlackChannels = () => {
                 <Hash size={16} />
                 <p>{slackChannel.name}</p>
               </div>
-            </button>
+            </div>
           );
         })}
       </div>
       <Button
-        loading={loading}
         disabled={selectedChannels.length === 0 || loading}
         onClick={onClick}
       >
-        Next
-        <ArrowRight size={16} />
+        {loading ? (
+          <Loader2 className="size-4 animate-spin" />
+        ) : (
+          <>
+            Next
+            <ArrowRight size={16} />
+          </>
+        )}
       </Button>
     </div>
   );

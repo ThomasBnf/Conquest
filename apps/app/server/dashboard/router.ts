@@ -1,22 +1,32 @@
-import { router } from "@/server/trpc";
+import { router } from "../trpc";
 import { activeMembers } from "./activeMembers";
+import { activeMembersTable } from "./activeMembersTable";
 import { atRiskMembers } from "./atRiskMembers";
-import { membersLevels } from "./membersLevels";
+import { atRiskMembersTable } from "./atRiskMembersTable";
+import { churnRate } from "./churnRate";
+import { engagementRate } from "./engagementRate";
+import { heatmap } from "./heatmap";
 import { newMembers } from "./newMembers";
+import { newMembersTable } from "./newMembersTable";
 import { potentialAmbassadors } from "./potentialAmbassadors";
-import { topActivityTypes } from "./topActivityTypes";
+import { potentialAmbassadorsTable } from "./potentialAmbassadorsTable";
+import { topActivityType } from "./topActivityType";
 import { topChannels } from "./topChannels";
-import { topMembers } from "./topMembers";
 import { totalMembers } from "./totalMembers";
 
 export const dashboardRouter = router({
-  activeMembers,
-  atRiskMembers,
-  membersLevels,
-  newMembers,
-  potentialAmbassadors,
-  topActivityTypes,
-  topChannels,
-  topMembers,
   totalMembers,
+  newMembers,
+  newMembersTable,
+  activeMembers,
+  activeMembersTable,
+  engagementRate,
+  atRiskMembers,
+  atRiskMembersTable,
+  potentialAmbassadors,
+  potentialAmbassadorsTable,
+  churnRate,
+  topActivityType,
+  topChannels,
+  heatmap,
 });

@@ -21,6 +21,7 @@ import { Input } from "@conquest/ui/input";
 import { Label } from "@conquest/ui/label";
 import type { List } from "@conquest/zod/schemas/list.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Loader2 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { type FormEdit, FormEditSchema } from "./schemas/form-edit.schema";
 
@@ -33,10 +34,10 @@ type Props = {
 export const EditListDialog = ({ list, open, setOpen }: Props) => {
   const utils = trpc.useUtils();
 
-  const { mutateAsync, isPending } = trpc.lists.updateList.useMutation({
+  const { mutateAsync, isPending } = trpc.lists.put.useMutation({
     onSuccess: () => {
-      utils.lists.getList.invalidate({ id: list.id });
-      utils.lists.getAllLists.invalidate();
+      utils.lists.get.invalidate({ id: list.id });
+      utils.lists.list.invalidate();
     },
   });
 
@@ -88,7 +89,7 @@ export const EditListDialog = ({ list, open, setOpen }: Props) => {
                       render={({ field }) => (
                         <FormItem className="flex-1">
                           <FormControl>
-                            <Input autoFocus {...field} />
+                            <Input {...field} autoFocus />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -103,8 +104,12 @@ export const EditListDialog = ({ list, open, setOpen }: Props) => {
                     Cancel
                   </Button>
                 </DialogTrigger>
-                <Button type="submit" loading={isPending} disabled={isPending}>
-                  Save
+                <Button type="submit" disabled={isPending}>
+                  {isPending ? (
+                    <Loader2 className="size-4 animate-spin" />
+                  ) : (
+                    "Save"
+                  )}
                 </Button>
               </DialogFooter>
             </form>

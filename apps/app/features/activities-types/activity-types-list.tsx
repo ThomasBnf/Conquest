@@ -2,9 +2,9 @@
 
 import { SourceBadge } from "@/components/badges/source-badge";
 import { QueryInput } from "@/components/custom/query-input";
-import { IsLoading } from "@/components/states/is-loading";
 import { trpc } from "@/server/client";
 import { Label } from "@conquest/ui/label";
+import { Skeleton } from "@conquest/ui/skeleton";
 import {
   Table,
   TableBody,
@@ -27,9 +27,9 @@ type Props = {
 
 export const ActivityTypesList = ({ source, disableHeader = false }: Props) => {
   const [query, setQuery] = useState("");
-  const { data, isLoading } = trpc.activityTypes.getAllActivityTypes.useQuery();
+  const { data, isLoading } = trpc.activityTypes.list.useQuery();
 
-  if (isLoading) return <IsLoading />;
+  if (isLoading) return <Skeleton className="h-[174.5px] w-full" />;
   if (!data?.length) return <EmptyActivityTypes />;
 
   const filteredActivityTypes = data.filter((activityType) => {
@@ -41,7 +41,7 @@ export const ActivityTypesList = ({ source, disableHeader = false }: Props) => {
   });
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-2">
       {!disableHeader && (
         <div className="flex items-center justify-between">
           <QueryInput query={query} setQuery={setQuery} />
@@ -81,11 +81,11 @@ export const ActivityTypesList = ({ source, disableHeader = false }: Props) => {
                     </TableCell>
                   </TableRow>
                   <TableRow className="border-b hover:bg-transparent">
-                    {conditions.length > 0 && (
+                    {conditions.rules.length > 0 && (
                       <TableCell colSpan={5} className="pb-4">
                         <div className="flex flex-col gap-2">
                           <Label>Conditions</Label>
-                          {activityType.conditions.map((condition, index) => (
+                          {conditions.rules.map((condition) => (
                             <ConditionCard
                               key={condition.channel_id}
                               activityType={activityType}

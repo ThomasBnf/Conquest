@@ -10,7 +10,7 @@ export const CustomHandle = ({ type, position }: Props) => {
     <Handle
       type={type}
       position={position}
-      className="!size-3 !border !border-main-500 !bg-background"
+      className="!size-3 !border !border-main-400 !bg-background"
     />
   );
 };

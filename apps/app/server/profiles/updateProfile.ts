@@ -1,4 +1,4 @@
-import { prisma } from "@conquest/db/prisma";
+import { updateProfile as _updateProfile } from "@conquest/clickhouse/profiles/updateProfile";
 import { ProfileAttributesSchema } from "@conquest/zod/schemas/profile.schema";
 import { z } from "zod";
 import { protectedProcedure } from "../trpc";
@@ -10,17 +10,8 @@ export const updateProfile = protectedProcedure
       attributes: ProfileAttributesSchema,
     }),
   )
-  .mutation(async ({ ctx: { user }, input }) => {
-    const { workspace_id } = user;
+  .mutation(async ({ input }) => {
     const { id, attributes } = input;
 
-    await prisma.profile.update({
-      where: {
-        id,
-        workspace_id,
-      },
-      data: {
-        attributes,
-      },
-    });
+    return await _updateProfile({ id, ...attributes });
   });

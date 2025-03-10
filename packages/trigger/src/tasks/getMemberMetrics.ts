@@ -1,8 +1,8 @@
-import { getPulseScore } from "@conquest/db/helpers/getPulseScore";
-import { listActivitiesIn90Days } from "@conquest/db/queries/activity/listActivitiesIn90Days";
-import { getLevel } from "@conquest/db/queries/levels/getLelvel";
-import { getMember } from "@conquest/db/queries/member/getMember";
-import { updateMember } from "@conquest/db/queries/member/updateMember";
+import { listActivities } from "@conquest/clickhouse/activities/listActivities";
+import { getPulseScore } from "@conquest/clickhouse/helpers/getPulseScore";
+import { getLevel } from "@conquest/clickhouse/levels/getLevel";
+import { getMember } from "@conquest/clickhouse/members/getMember";
+import { updateMember } from "@conquest/clickhouse/members/updateMember";
 import { schemaTask } from "@trigger.dev/sdk/v3";
 import { z } from "zod";
 
@@ -16,7 +16,11 @@ export const getMemberMetrics = schemaTask({
 
     if (!member) return;
 
-    const activities = await listActivitiesIn90Days({ member });
+    const activities = await listActivities({
+      member_id: member.id,
+      period: 90,
+      workspace_id: member.workspace_id,
+    });
 
     const pulseScore = getPulseScore({ activities });
 
@@ -26,12 +30,10 @@ export const getMemberMetrics = schemaTask({
     });
 
     await updateMember({
-      id: member.id,
-      data: {
-        pulse: pulseScore,
-        level_id: level.id,
-        last_activity: activities?.at(-1)?.created_at,
-      },
+      ...member,
+      pulse: pulseScore,
+      level_id: level?.id ?? null,
+      last_activity: activities?.at(-1)?.created_at ?? null,
     });
   },
 });

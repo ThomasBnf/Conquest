@@ -45,10 +45,10 @@ export const EditableInput = ({
         variant="ghost"
         onClick={() => setIsFocus(true)}
         className={cn(
+          "w-full justify-start overflow-hidden",
+          !value && "text-muted-foreground",
           className,
-          "w-full overflow-hidden text-muted-foreground",
         )}
-        classNameSpan={cn("justify-start", value && "text-foreground")}
       >
         <span className="truncate">
           {value === "" || value === null ? placeholder : value}

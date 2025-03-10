@@ -22,7 +22,7 @@ export const TagMember = () => {
   const { updateNodeData } = useReactFlow();
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
-  const { data: tags, isLoading } = trpc.tags.getAllTags.useQuery();
+  const { data: tags, isLoading } = trpc.tags.list.useQuery();
 
   const parsedData = NodeTagMemberSchema.parse(selected?.data);
 

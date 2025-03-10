@@ -1,9 +1,11 @@
 "use client";
 
 import { QueryInput } from "@/components/custom/query-input";
-import { useFilters } from "@/context/filtersContext";
-import { tableParsers } from "@/lib/searchParamsTable";
+import { dateParams } from "@/lib/searchParamsDate";
+import { tableParams } from "@/lib/searchParamsTable";
 import { trpc } from "@/server/client";
+import { Button } from "@conquest/ui/button";
+import { Separator } from "@conquest/ui/separator";
 import {
   Sheet,
   SheetContent,
@@ -14,42 +16,93 @@ import {
 } from "@conquest/ui/sheet";
 import { Skeleton } from "@conquest/ui/skeleton";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@conquest/ui/tooltip";
-import { AlertTriangle } from "lucide-react";
+import { PanelRight, TriangleAlert } from "lucide-react";
 import { useQueryStates } from "nuqs";
 import { useState } from "react";
-import { FiltersList } from "../filters/filters-list";
-import { ExportListMembers } from "../lists/export-list-members";
+import { ExportListMembers } from "../members/export-list-members";
 import { ColumnVisibility } from "../table/column-visibility";
 import { DataTable } from "../table/data-table";
 import { useTable } from "../table/hooks/useTable";
 import { membersColumns } from "../table/members-columns";
+import { Percentage } from "./percentage";
+import { PeriodFormatter } from "./period-formatter";
 
-type Props = {
-  from: Date;
-  to: Date;
-};
-
-export const AtRiskMembers = ({ from, to }: Props) => {
-  const { groupFilters } = useFilters();
-  const [open, setOpen] = useState(false);
-  const [{ search, idMember, descMember, page, pageSize }, setParams] =
-    useQueryStates(tableParsers);
+export const AtRiskMembers = () => {
+  const [{ from, to }] = useQueryStates(dateParams);
 
   const { data, isLoading } = trpc.dashboard.atRiskMembers.useQuery({
-    search,
-    id: idMember,
-    desc: descMember,
-    page,
-    pageSize,
-    groupFilters,
     from,
     to,
   });
 
-  const { members, count } = data ?? {};
+  const { current, previous, variation } = data ?? {
+    current: 0,
+    previous: 0,
+    variation: 0,
+  };
+
+  return (
+    <div className="mb-0.5 flex flex-col overflow-hidden rounded-md border shadow-sm">
+      <div className="flex h-[48px] items-center justify-between bg-sidebar p-3">
+        <div className="flex items-center gap-2">
+          <div className="flex size-6 items-center justify-center rounded-md border border-red-200 bg-red-100">
+            <TriangleAlert className="size-4 text-red-500" />
+          </div>
+          <p className="font-medium text-base">At risk members</p>
+        </div>
+        <AtRiskMembersSheet count={current} loading={isLoading} />
+      </div>
+      <Separator />
+      <div className="flex flex-1 flex-col items-center justify-center gap-2 py-4">
+        {isLoading ? (
+          <Skeleton className="h-10 w-16" />
+        ) : (
+          <p className="font-bold text-4xl">{current}</p>
+        )}
+        <Tooltip>
+          <TooltipTrigger>
+            <Percentage variation={variation} isLoading={isLoading} />
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>
+              {previous} at risk member{previous > 1 ? "s" : ""} in the previous
+              period
+            </p>
+          </TooltipContent>
+        </Tooltip>
+        <PeriodFormatter />
+      </div>
+    </div>
+  );
+};
+
+const AtRiskMembersSheet = ({
+  count,
+  loading,
+}: {
+  count: number;
+  loading: boolean;
+}) => {
+  const [open, setOpen] = useState(false);
+  const [{ from, to }] = useQueryStates(dateParams);
+  const [{ search, idMember, descMember }, setParams] =
+    useQueryStates(tableParams);
+
+  const { data, isLoading } = trpc.dashboard.atRiskMembersTable.useQuery(
+    {
+      from,
+      to,
+      search,
+      id: idMember,
+      desc: descMember,
+    },
+    {
+      enabled: open,
+    },
+  );
 
   const { table } = useTable({
-    data: members ?? [],
+    data: data ?? [],
     columns: membersColumns,
     count: count ?? 0,
     left: ["full_name"],
@@ -60,49 +113,32 @@ export const AtRiskMembers = ({ from, to }: Props) => {
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
-      <SheetTrigger className="flex-1" asChild>
-        <Tooltip>
-          <TooltipTrigger className="flex-1" asChild>
-            <button
-              type="button"
-              className="flex flex-1 flex-col items-start rounded-md border p-6 transition-colors hover:bg-muted"
-              onClick={() => setOpen(true)}
-            >
-              <div className=" rounded-md border border-red-200 bg-red-100 p-2">
-                <AlertTriangle className="size-4 text-red-500" />
-              </div>
-              <p className="mt-4 text-muted-foreground">At Risk Members</p>
-              <div className="mt-1">
-                {isLoading ? (
-                  <Skeleton className="h-[30px] w-12" />
-                ) : (
-                  <p className="font-bold text-3xl leading-none">{count}</p>
-                )}
-              </div>
-            </button>
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>Click to view at-risk members</p>
-          </TooltipContent>
-        </Tooltip>
+      <SheetTrigger asChild>
+        <Button
+          variant="outline"
+          size="icon"
+          disabled={loading}
+          onClick={() => setOpen(true)}
+        >
+          <PanelRight size={16} />
+        </Button>
       </SheetTrigger>
-      <SheetContent className="flex h-full w-[90vw] flex-col overflow-hidden sm:max-w-[90vw]">
+      <SheetContent className="flex h-full w-[90vw] flex-col sm:max-w-[90vw]">
         <SheetHeader>
-          <SheetTitle>At Risk Members</SheetTitle>
+          <SheetTitle>At risk members</SheetTitle>
           <SheetDescription>
             Active members with no activities in the selected period.
           </SheetDescription>
         </SheetHeader>
         <div className="flex h-full flex-col divide-y overflow-hidden rounded-md border">
-          <div className="flex h-12 shrink-0 items-center gap-2 px-4">
+          <div className="flex h-12 shrink-0 items-center gap-2 px-3">
             <QueryInput
               placeholder="Search..."
               query={search}
               setQuery={(value) => setParams({ search: value })}
             />
-            <FiltersList />
             <div className="ml-auto flex items-center gap-2">
-              <ExportListMembers members={members} />
+              <ExportListMembers members={data} />
               <ColumnVisibility table={table} type="members" />
             </div>
           </div>

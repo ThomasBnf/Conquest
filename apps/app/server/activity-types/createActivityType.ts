@@ -1,20 +1,17 @@
 import { FormActivityTypeSchema } from "@/features/activities-types/schema/form.schema";
-import { prisma } from "@conquest/db/prisma";
-import { ActivityTypeSchema } from "@conquest/zod/schemas/activity-type.schema";
+import { createActivityType as _createActivityType } from "@conquest/clickhouse/activity-types/createActivityType";
 import { protectedProcedure } from "../trpc";
 
 export const createActivityType = protectedProcedure
   .input(FormActivityTypeSchema)
   .mutation(async ({ ctx: { user }, input }) => {
     const { workspace_id } = user;
+    const { source, key, conditions } = input;
 
-    const createdActivityType = await prisma.activity_type.create({
-      data: {
-        ...input,
-        key: `${input.source.toLowerCase()}:${input.key}`,
-        workspace_id,
-      },
+    return await _createActivityType({
+      ...input,
+      key: `${source.toLowerCase()}:${key}`,
+      conditions: { rules: conditions.rules },
+      workspace_id,
     });
-
-    return ActivityTypeSchema.parse(createdActivityType);
   });

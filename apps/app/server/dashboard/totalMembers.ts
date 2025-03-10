@@ -1,59 +1,64 @@
-import { prisma } from "@conquest/db/prisma";
-import { eachDayOfInterval, format } from "date-fns";
+import { client } from "@conquest/clickhouse/client";
+import { differenceInDays, endOfDay, format, subDays } from "date-fns";
 import { z } from "zod";
 import { protectedProcedure } from "../trpc";
 
 export const totalMembers = protectedProcedure
   .input(
     z.object({
-      from: z.coerce.date(),
-      to: z.coerce.date(),
+      from: z.date(),
+      to: z.date(),
     }),
   )
-  .query(async ({ ctx: { user }, input }) => {
+  .query(async ({ input }) => {
     const { from, to } = input;
-    const { workspace_id } = user;
 
-    const countMembers = await prisma.member.count({
-      where: {
-        created_at: {
-          lt: from,
-        },
-        workspace_id,
-      },
-    });
+    const previousPeriodLength = differenceInDays(to, from);
+    const previousFrom = subDays(from, previousPeriodLength);
+    const previousTo = subDays(to, previousPeriodLength);
 
-    const members = await prisma.member.findMany({
-      where: {
-        created_at: {
-          gte: from,
-          lte: to,
-        },
-        workspace_id,
-      },
-      orderBy: {
-        created_at: "asc",
-      },
-    });
-
-    const allDates = eachDayOfInterval({ start: from, end: to }).map((date) =>
-      format(date, "PP"),
+    const formattedFrom = format(from, "yyyy-MM-dd HH:mm:ss");
+    const formattedTo = format(endOfDay(to), "yyyy-MM-dd HH:mm:ss");
+    const formattedPreviousFrom = format(previousFrom, "yyyy-MM-dd HH:mm:ss");
+    const formattedPreviousTo = format(
+      endOfDay(previousTo),
+      "yyyy-MM-dd HH:mm:ss",
     );
 
-    const membersData = allDates.reduce<Record<string, number>>((acc, date) => {
-      const membersOnDate = members.filter(
-        (member) => format(member.created_at, "PP") === date,
-      ).length;
+    const result = await client.query({
+      query: `
+        WITH 
+          (
+            SELECT count()
+            FROM member
+            WHERE created_at >= '${formattedFrom}' 
+            AND created_at <= '${formattedTo}'
+          ) as current_count,
+          (
+            SELECT count()
+            FROM member
+            WHERE created_at >= '${formattedPreviousFrom}' 
+            AND created_at <= '${formattedPreviousTo}'
+          ) as previous_count
+        SELECT 
+          current_count as current,
+          previous_count as previous,
+          CASE
+            WHEN previous_count = 0 AND current_count > 0 THEN 100
+            WHEN previous_count = 0 THEN 0
+            ELSE ((current_count - previous_count) / previous_count) * 100
+          END as variation
+      `,
+      format: "JSON",
+    });
 
-      const previousDate = allDates[allDates.indexOf(date) - 1];
-      const previousTotal = previousDate ? acc[previousDate] : countMembers;
-
-      acc[date] = (previousTotal ?? 0) + membersOnDate;
-      return acc;
-    }, {});
+    const { data } = (await result.json()) as {
+      data: Array<{ current: number; previous: number; variation: number }>;
+    };
 
     return {
-      totalMembers: countMembers + members.length,
-      membersData,
+      current: data[0]?.current ?? 0,
+      previous: data[0]?.previous ?? 0,
+      variation: data[0]?.variation ?? 0,
     };
   });

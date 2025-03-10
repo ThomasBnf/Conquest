@@ -1,13 +1,13 @@
 import { FilterSchema } from "@conquest/zod/schemas/filters.schema";
 import {
+  createLoader,
   parseAsArrayOf,
   parseAsBoolean,
   parseAsInteger,
   parseAsString,
-} from "nuqs";
-import { createSearchParamsCache } from "nuqs/server";
+} from "nuqs/server";
 
-export const tableParsers = {
+export const tableParams = {
   search: parseAsString.withDefault("").withOptions({
     shallow: false,
     clearOnDefault: true,
@@ -42,4 +42,4 @@ export const tableParsers = {
   }),
 };
 
-export const searchParamsTable = createSearchParamsCache(tableParsers);
+export const loaderTable = createLoader(tableParams);

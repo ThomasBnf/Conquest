@@ -19,7 +19,7 @@ type Props = {
 };
 
 export const CompanySidebar = ({ company }: Props) => {
-  const { mutateAsync } = trpc.companies.updateCompany.useMutation();
+  const { mutateAsync } = trpc.companies.update.useMutation();
 
   const {
     id,
@@ -44,7 +44,7 @@ export const CompanySidebar = ({ company }: Props) => {
       | "founded_at",
     value: string | Date | string[] | null,
   ) => {
-    await mutateAsync({ id, data: { [field]: value } });
+    await mutateAsync({ ...company, [field]: value });
   };
 
   return (

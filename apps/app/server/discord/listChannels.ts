@@ -1,6 +1,6 @@
 import { discordClient } from "@conquest/db/discord";
-import { prisma } from "@conquest/db/prisma";
-import { getRefreshToken } from "@conquest/db/queries/discord/getRefreshToken";
+import { getRefreshToken } from "@conquest/db/discord/getRefreshToken";
+import { getIntegrationBySource } from "@conquest/db/integrations/getIntegrationBySource";
 import { DiscordIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
 import {
   type APIGuildCategoryChannel,
@@ -20,14 +20,9 @@ export const listChannels = protectedProcedure.query(
     const { workspace_id } = user;
 
     const discord = DiscordIntegrationSchema.parse(
-      await prisma.integration.findFirst({
-        where: {
-          workspace_id,
-          details: {
-            path: ["source"],
-            equals: "DISCORD",
-          },
-        },
+      await getIntegrationBySource({
+        source: "Discord",
+        workspace_id,
       }),
     );
 
@@ -35,7 +30,7 @@ export const listChannels = protectedProcedure.query(
     const { expires_in } = details;
 
     const isExpired = new Date(Date.now() + expires_in * 1000) < new Date();
-    if (isExpired) await getRefreshToken(discord);
+    if (isExpired) await getRefreshToken({ discord });
 
     if (!external_id) return [];
 

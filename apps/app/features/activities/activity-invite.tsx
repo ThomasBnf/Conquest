@@ -35,7 +35,7 @@ export const ActivityInvite = ({ activity, member, inviter }: Props) => {
           <span className="font-medium text-foreground">
             {inviter?.first_name} {inviter?.last_name}
           </span>{" "}
-          to join the {source === "DISCORD" ? "server" : "workspace"}
+          to join the {source === "Discord" ? "server" : "workspace"}
         </p>
         <SourceBadge source={source} transparent onlyIcon />
         <p className="text-muted-foreground">{format(created_at, "HH:mm")}</p>

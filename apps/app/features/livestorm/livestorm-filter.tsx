@@ -16,6 +16,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { type FormCreate, FormCreateSchema } from "./schemas/form.schema";
+import { Loader2 } from "lucide-react";
 
 export const LivestormFilter = () => {
   const { livestorm, setStep } = useIntegration();
@@ -23,18 +24,18 @@ export const LivestormFilter = () => {
   const utils = trpc.useUtils();
 
   const { data: organization } = trpc.livestorm.getOrganization.useQuery();
-  const { mutateAsync } = trpc.integrations.updateIntegration.useMutation({
+  const { mutateAsync } = trpc.integrations.update.useMutation({
     onSuccess: () => {
-      utils.integrations.getIntegrationBySource.invalidate({
-        source: "LIVESTORM",
+      utils.integrations.bySource.invalidate({
+        source: "Livestorm",
       });
     },
   });
 
   const { mutateAsync: createManyActivityTypes } =
-    trpc.activityTypes.createManyActivityTypes.useMutation({
+    trpc.activityTypes.postMany.useMutation({
       onSuccess: () => {
-        utils.activityTypes.getAllActivityTypes.invalidate();
+        utils.activityTypes.list.invalidate();
         setTimeout(() => {
           setLoading(false);
           setStep(1);
@@ -94,8 +95,8 @@ export const LivestormFilter = () => {
             </FormItem>
           )}
         />
-        <Button type="submit" loading={loading} disabled={loading}>
-          Next
+        <Button type="submit" disabled={loading}>
+          {loading ? <Loader2 className="size-4 animate-spin" /> : "Next"}
         </Button>
       </form>
     </Form>

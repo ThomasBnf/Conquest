@@ -28,10 +28,10 @@ import {
   SelectValue,
 } from "@conquest/ui/select";
 import { zodResolver } from "@hookform/resolvers/zod";
-import cuid from "cuid";
-import { Plus, X } from "lucide-react";
+import { Loader2, Plus, X } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { v4 as uuid } from "uuid";
 import { ConditionChannel } from "./condition-channel";
 import {
   type FormActivityType,
@@ -43,10 +43,10 @@ export const CreateActivityTypeDialog = () => {
   const [loading, setLoading] = useState(false);
   const utils = trpc.useUtils();
 
-  const { data: channels } = trpc.channels.getAllChannels.useQuery({});
-  const { mutateAsync } = trpc.activityTypes.createActivityType.useMutation({
+  const { data: channels } = trpc.channels.list.useQuery({});
+  const { mutateAsync } = trpc.activityTypes.post.useMutation({
     onSuccess: () => {
-      utils.activityTypes.getAllActivityTypes.invalidate();
+      utils.activityTypes.list.invalidate();
       setOpen(false);
       setLoading(false);
       form.reset();
@@ -56,9 +56,12 @@ export const CreateActivityTypeDialog = () => {
   const form = useForm<FormActivityType>({
     resolver: zodResolver(FormActivityTypeSchema),
     defaultValues: {
-      source: "MANUAL",
+      source: "Manual",
       points: 3,
-      conditions: [],
+      conditions: {
+        rules: [],
+      },
+      deletable: true,
     },
   });
 
@@ -74,25 +77,27 @@ export const CreateActivityTypeDialog = () => {
   const addCondition = () => {
     const conditions = form.getValues("conditions");
 
-    form.setValue("conditions", [
+    form.setValue("conditions", {
       ...conditions,
-      {
-        id: cuid(),
-        channel_id: "",
-        points: 2,
-      },
-    ]);
+      rules: [
+        ...conditions.rules,
+        {
+          id: uuid(),
+          channel_id: "",
+          points: 2,
+        },
+      ],
+    });
   };
 
   const removeCondition = (index: number) => {
     const conditions = form.getValues("conditions");
-    form.setValue(
-      "conditions",
-      conditions.filter((_, i) => i !== index),
-    );
+    form.setValue("conditions", {
+      rules: conditions.rules.filter((_, i) => i !== index),
+    });
   };
 
-  const isManualOrApi = ["API", "MANUAL"].includes(form.getValues("source"));
+  const isManualOrApi = ["Api", "Manual"].includes(form.getValues("source"));
   const isInviteOrJoin = ["invite", "join"].includes(form.getValues("key"));
 
   return (
@@ -125,8 +130,8 @@ export const CreateActivityTypeDialog = () => {
                           <SelectValue placeholder="Select source" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="API">API</SelectItem>
-                          <SelectItem value="MANUAL">MANUAL</SelectItem>
+                          <SelectItem value="Api">Api</SelectItem>
+                          <SelectItem value="Manual">Manual</SelectItem>
                         </SelectContent>
                       </Select>
                     </FormControl>
@@ -194,7 +199,7 @@ export const CreateActivityTypeDialog = () => {
               {!isManualOrApi && !isInviteOrJoin && (
                 <div className="flex flex-col items-start gap-2">
                   <FormLabel>Conditions</FormLabel>
-                  {form.watch("conditions").map((_, index) => (
+                  {form.watch("conditions").rules.map((_, index) => (
                     // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
                     <div key={index} className="flex w-full gap-2">
                       <ConditionChannel
@@ -204,7 +209,7 @@ export const CreateActivityTypeDialog = () => {
                       />
                       <FormField
                         control={form.control}
-                        name={`conditions.${index}.points`}
+                        name={`conditions.rules.${index}.points`}
                         render={({ field }) => (
                           <FormItem className="w-full">
                             <FormControl>
@@ -250,8 +255,12 @@ export const CreateActivityTypeDialog = () => {
                   Cancel
                 </Button>
               </DialogTrigger>
-              <Button type="submit" loading={loading} disabled={loading}>
-                Create
+              <Button type="submit" disabled={loading}>
+                {loading ? (
+                  <Loader2 className="size-4 animate-spin" />
+                ) : (
+                  "Create"
+                )}
               </Button>
             </DialogFooter>
           </form>

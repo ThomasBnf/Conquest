@@ -7,6 +7,7 @@ import { Github } from "../icons/Github";
 import { Linkedin } from "../icons/Linkedin";
 import { Livestorm } from "../icons/Livestorm";
 import { Slack } from "../icons/Slack";
+import { Twitter } from "../icons/Twitter";
 
 type Props = {
   source: Source;
@@ -21,14 +22,15 @@ type SourceConfig = {
 };
 
 const sourceConfigs: Record<Source, SourceConfig> = {
-  SLACK: { label: "Slack", Icon: Slack },
-  MANUAL: { label: "Manual" },
-  API: { label: "API" },
-  DISCOURSE: { label: "Discourse", Icon: Discourse },
-  DISCORD: { label: "Discord", Icon: Discord },
-  GITHUB: { label: "Github", Icon: Github },
-  LINKEDIN: { label: "Linkedin", Icon: Linkedin },
-  LIVESTORM: { label: "Livestorm", Icon: Livestorm },
+  Slack: { label: "Slack", Icon: Slack },
+  Manual: { label: "Manual" },
+  Api: { label: "API" },
+  Discourse: { label: "Discourse", Icon: Discourse },
+  Discord: { label: "Discord", Icon: Discord },
+  Github: { label: "Github", Icon: Github },
+  Linkedin: { label: "Linkedin", Icon: Linkedin },
+  Livestorm: { label: "Livestorm", Icon: Livestorm },
+  Twitter: { label: "Twitter", Icon: Twitter },
 } as const;
 
 export const SourceBadge = ({
@@ -37,7 +39,7 @@ export const SourceBadge = ({
   onlyIcon = false,
   className,
 }: Props) => {
-  const config = sourceConfigs[source];
+  const config = sourceConfigs[source] ?? { label: source, Icon: null };
   const { Icon, label } = config;
 
   return (
@@ -45,7 +47,7 @@ export const SourceBadge = ({
       variant={transparent ? "transparent" : "secondary"}
       className={cn("gap-2", className)}
     >
-      {Icon && <Icon className="size-3.5" />}
+      {Icon ? <Icon className="size-3.5" /> : null}
       {!onlyIcon && <span className="font-medium text-sm">{label}</span>}
     </Badge>
   );

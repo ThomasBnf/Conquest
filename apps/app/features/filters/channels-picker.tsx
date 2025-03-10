@@ -21,7 +21,7 @@ type Props = {
 export const ChannelsPicker = ({ filter }: Props) => {
   const { onUpdateFilter } = useFilters();
   const [open, setOpen] = useState(false);
-  const { data } = trpc.channels.getAllChannels.useQuery({});
+  const { data } = trpc.channels.list.useQuery({});
 
   const onSelect = (channel: Channel) => {
     const hasChannel = filter.channels.some((c) => c.id === channel.id);
@@ -38,7 +38,7 @@ export const ChannelsPicker = ({ filter }: Props) => {
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button variant="outline" classNameSpan="justify-between">
+        <Button variant="outline">
           {filter.channels.length === 2 ? (
             "2 channels"
           ) : filter.channels.length ? (

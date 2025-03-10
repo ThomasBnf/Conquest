@@ -2,6 +2,7 @@ import type {
   Operator,
   WhoOptions,
 } from "@conquest/zod/schemas/filters.schema";
+import type { LEVEL } from "@conquest/zod/schemas/level.schema";
 import type { RepeatOn } from "@conquest/zod/schemas/node.schema";
 
 export const COLORS = [
@@ -60,9 +61,9 @@ export const MONTHS = [
 export const ACTIVITY_COLORS = {
   0: "bg-gray-100",
   1: "bg-main-200",
-  2: "bg-main-400",
-  3: "bg-main-600",
-  4: "bg-main-900",
+  2: "bg-main-500",
+  3: "bg-main-700",
+  4: "bg-black",
 } as const;
 
 export const EUROPEAN_COUNTRIES = [
@@ -108,7 +109,7 @@ export const SLACK_SCOPES =
   "channels:history,channels:join,channels:read,files:read,links:read,reactions:read,team:read,users.profile:read,users:read,users:read.email";
 export const SLACK_USER_SCOPES = "chat:write,im:write,channels:write";
 
-export const LEVELS = [
+export const LEVELS: LEVEL[] = [
   { number: 1, name: "Explorer III", from: 1, to: 4 },
   { number: 2, name: "Explorer II", from: 5, to: 9 },
   { number: 3, name: "Explorer I", from: 10, to: 19 },
@@ -126,50 +127,50 @@ export const LEVELS = [
 export const DISCOURSE_ACTIVITY_TYPES = [
   {
     name: "Invite",
-    source: "DISCOURSE" as const,
+    source: "Discourse" as const,
     key: "discourse:invite",
     points: 7,
-    conditions: [],
+    conditions: { rules: [] },
     deletable: false,
   },
   {
     name: "Post marked as solved",
-    source: "DISCOURSE" as const,
+    source: "Discourse" as const,
     key: "discourse:solved",
     points: 7,
-    conditions: [],
+    conditions: { rules: [] },
     deletable: false,
   },
   {
     name: "Write a topic",
-    source: "DISCOURSE" as const,
+    source: "Discourse" as const,
     key: "discourse:topic",
     points: 6,
-    conditions: [],
+    conditions: { rules: [] },
     deletable: false,
   },
   {
     name: "Reply to topic",
-    source: "DISCOURSE" as const,
+    source: "Discourse" as const,
     key: "discourse:reply",
     points: 5,
-    conditions: [],
+    conditions: { rules: [] },
     deletable: false,
   },
   {
     name: "Add reaction",
-    source: "DISCOURSE" as const,
+    source: "Discourse" as const,
     key: "discourse:reaction",
     points: 1,
-    conditions: [],
+    conditions: { rules: [] },
     deletable: false,
   },
   {
     name: "Login",
-    source: "DISCOURSE" as const,
+    source: "Discourse" as const,
     key: "discourse:login",
     points: 0,
-    conditions: [],
+    conditions: { rules: [] },
     deletable: false,
   },
 ];
@@ -177,53 +178,77 @@ export const DISCOURSE_ACTIVITY_TYPES = [
 export const DISCORD_ACTIVITY_TYPES = [
   {
     name: "Create a thread",
-    source: "DISCORD" as const,
+    source: "Discord" as const,
     key: "discord:thread",
     points: 6,
-    conditions: [],
+    conditions: { rules: [] },
     deletable: false,
   },
   {
     name: "Reply to a thread",
-    source: "DISCORD" as const,
+    source: "Discord" as const,
     key: "discord:reply_thread",
     points: 6,
-    conditions: [],
+    conditions: { rules: [] },
     deletable: false,
   },
   {
     name: "Write a message",
-    source: "DISCORD" as const,
+    source: "Discord" as const,
     key: "discord:message",
     points: 5,
-    conditions: [],
+    conditions: { rules: [] },
     deletable: false,
   },
   {
     name: "Reply to message",
-    source: "DISCORD" as const,
+    source: "Discord" as const,
     key: "discord:reply",
     points: 5,
-    conditions: [],
+    conditions: { rules: [] },
     deletable: false,
   },
   {
     name: "Add reaction",
-    source: "DISCORD" as const,
+    source: "Discord" as const,
     key: "discord:reaction",
     points: 1,
-    conditions: [],
+    conditions: { rules: [] },
     deletable: false,
   },
 ];
 
 export const GITHUB_ACTIVITY_TYPES = [
   {
+    name: "Create a pull request",
+    source: "Github" as const,
+    key: "github:pr",
+    points: 9,
+    conditions: { rules: [] },
+    deletable: false,
+  },
+  {
+    name: "Create an issue",
+    source: "Github" as const,
+    key: "github:issue",
+    points: 4,
+    conditions: { rules: [] },
+    deletable: false,
+  },
+  {
+    name: "Create a comment",
+    source: "Github" as const,
+    key: "github:comment",
+    points: 4,
+    conditions: { rules: [] },
+    deletable: false,
+  },
+  {
     name: "Starred a repository",
-    source: "GITHUB" as const,
+    source: "Github" as const,
     key: "github:star",
     points: 2,
-    conditions: [],
+    conditions: { rules: [] },
     deletable: false,
   },
 ];
@@ -231,26 +256,26 @@ export const GITHUB_ACTIVITY_TYPES = [
 export const LIVESTORM_ACTIVITY_TYPES = [
   {
     name: "Co-host a webinar",
-    source: "LIVESTORM" as const,
+    source: "Livestorm" as const,
     key: "livestorm:co-host",
     points: 10,
-    conditions: [],
+    conditions: { rules: [] },
     deletable: false,
   },
   {
     name: "Attend a webinar",
-    source: "LIVESTORM" as const,
+    source: "Livestorm" as const,
     key: "livestorm:attend",
     points: 8,
-    conditions: [],
+    conditions: { rules: [] },
     deletable: false,
   },
   {
     name: "Register for a webinar",
-    source: "LIVESTORM" as const,
+    source: "Livestorm" as const,
     key: "livestorm:register",
     points: 5,
-    conditions: [],
+    conditions: { rules: [] },
     deletable: false,
   },
 ];
@@ -258,10 +283,10 @@ export const LIVESTORM_ACTIVITY_TYPES = [
 export const LINKEDIN_ACTIVITY_TYPES = [
   {
     name: "Comment a post",
-    source: "LINKEDIN" as const,
+    source: "Linkedin" as const,
     key: "linkedin:comment",
     points: 1,
-    conditions: [],
+    conditions: { rules: [] },
     deletable: false,
   },
 ];
@@ -269,26 +294,26 @@ export const LINKEDIN_ACTIVITY_TYPES = [
 export const SLACK_ACTIVITY_TYPES = [
   {
     name: "Message",
-    source: "SLACK" as const,
+    source: "Slack" as const,
     key: "slack:message",
     points: 6,
-    conditions: [],
+    conditions: { rules: [] },
     deletable: false,
   },
   {
     name: "Reply",
-    source: "SLACK" as const,
+    source: "Slack" as const,
     key: "slack:reply",
     points: 5,
-    conditions: [],
+    conditions: { rules: [] },
     deletable: false,
   },
   {
     name: "Reaction",
-    source: "SLACK" as const,
+    source: "Slack" as const,
     key: "slack:reaction",
     points: 1,
-    conditions: [],
+    conditions: { rules: [] },
     deletable: false,
   },
 ];

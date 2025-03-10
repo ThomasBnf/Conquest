@@ -4,7 +4,7 @@ import { Button } from "@conquest/ui/button";
 import { CardContent, CardFooter } from "@conquest/ui/card";
 import { Form } from "@conquest/ui/form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ArrowRightIcon } from "lucide-react";
+import { ArrowRightIcon, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -20,33 +20,33 @@ type Props = {
 };
 
 export const QuestionsStep = ({ setStep }: Props) => {
-  const { user } = useUser();
+  const { workspace } = useUser();
   const [loading, setLoading] = useState(false);
-
   const utils = trpc.useUtils();
-  const { mutateAsync: mutateWorkspace } =
-    trpc.workspaces.updateWorkspace.useMutation({
-      onSuccess: () => {
-        utils.workspaces.getWorkspace.invalidate();
-        setStep(3);
-      },
-      onError: (error) => {
-        setLoading(false);
-        toast.error(error.message);
-      },
-    });
+
+  const { mutateAsync: mutateWorkspace } = trpc.workspaces.update.useMutation({
+    onSuccess: () => {
+      utils.workspaces.get.invalidate();
+      setStep(3);
+    },
+    onError: (error) => {
+      setLoading(false);
+      toast.error(error.message);
+    },
+  });
 
   const form = useForm<Questions>({
     resolver: zodResolver(QuestionsSchema),
   });
 
   const onSubmit = async ({ company_size, source }: Questions) => {
-    if (!user) return;
+    if (!workspace) return;
 
     setLoading(true);
     await mutateWorkspace({
-      id: user.workspace_id,
-      data: { company_size, source },
+      id: workspace.id,
+      company_size,
+      source,
     });
   };
 
@@ -60,12 +60,17 @@ export const QuestionsStep = ({ setStep }: Props) => {
         <CardFooter>
           <Button
             type="submit"
-            loading={loading}
             disabled={!form.formState.isValid || loading}
             className="w-full"
           >
-            Continue
-            <ArrowRightIcon size={16} />
+            {loading ? (
+              <Loader2 className="size-4 animate-spin" />
+            ) : (
+              <>
+                Continue
+                <ArrowRightIcon size={16} />
+              </>
+            )}
           </Button>
         </CardFooter>
       </form>

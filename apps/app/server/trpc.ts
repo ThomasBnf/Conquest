@@ -23,22 +23,17 @@ export const { createCallerFactory, router } = t;
 export const publicProcedure = t.procedure;
 
 export const protectedProcedure = t.procedure.use(async ({ ctx, next }) => {
-  if (!ctx.session?.user) throw new TRPCError({ code: "UNAUTHORIZED" });
+  if (!ctx.session?.user?.id) throw new TRPCError({ code: "UNAUTHORIZED" });
 
   const user = await prisma.user.findUnique({
     where: {
       id: ctx.session.user.id,
     },
-    omit: {
-      hashed_password: true,
-    },
   });
 
   return next({
     ctx: {
-      user: UserSchema.omit({
-        hashed_password: true,
-      }).parse(user),
+      user: UserSchema.parse(user),
     },
   });
 });

@@ -1,7 +1,6 @@
-import { getFilters } from "@conquest/db/helpers/getFilters";
-import { prisma } from "@conquest/db/prisma";
+import { client } from "@conquest/clickhouse/client";
+import { getFilters } from "@conquest/clickhouse/helpers/getFilters";
 import { GroupFiltersSchema } from "@conquest/zod/schemas/filters.schema";
-import { Prisma } from "@prisma/client";
 import { z } from "zod";
 import { protectedProcedure } from "../trpc";
 export const countCompanies = protectedProcedure
@@ -19,18 +18,18 @@ export const countCompanies = protectedProcedure
     const searchParsed = search.toLowerCase().trim();
     const filterBy = getFilters({ groupFilters });
 
-    const [{ count }] = await prisma.$queryRaw<[{ count: bigint }]>`
-    SELECT COUNT(*) as count
-    FROM company c
-    WHERE 
-      (LOWER(c.name) LIKE '%' || ${searchParsed} || '%')
-      AND c.workspace_id = ${workspace_id}
-      ${
-        filterBy.length > 0
-          ? Prisma.sql`AND (${Prisma.join(filterBy, operator === "OR" ? " OR " : " AND ")})`
-          : Prisma.sql``
-      }
-    `;
+    const result = await client.query({
+      query: `
+        SELECT count(*) as total
+        FROM company AS c
+        WHERE (
+          ${searchParsed ? `positionCaseInsensitive(c.name, '${searchParsed}') > 0` : "true"}
+        )
+        AND c.workspace_id = '${workspace_id}'
+      `,
+    });
 
-    return Number(count);
+    const { data } = await result.json();
+    const count = data as Array<{ total: number }>;
+    return Number(count[0]?.total);
   });

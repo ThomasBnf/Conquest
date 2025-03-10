@@ -1,6 +1,6 @@
 "use client";
 
-import { tableParsers } from "@/lib/searchParamsTable";
+import { tableParams } from "@/lib/searchParamsTable";
 import { trpc } from "@/server/client";
 import type { Member } from "@conquest/zod/schemas/member.schema";
 import { useQueryStates } from "nuqs";
@@ -24,22 +24,22 @@ type Props = {
 export const MembersProvider = ({ children }: Props) => {
   const { groupFilters } = useFilters();
   const [{ search, idMember, descMember, page, pageSize }] =
-    useQueryStates(tableParsers);
+    useQueryStates(tableParams);
 
-  trpc.levels.getAllLevels.useQuery();
-  trpc.tags.getAllTags.useQuery();
+  trpc.levels.list.useQuery();
+  trpc.tags.list.useQuery();
+  trpc.companies.getAllCompanies.useQuery({});
 
-  const { data, isLoading, failureReason } =
-    trpc.members.getAllMembers.useQuery({
-      search,
-      desc: descMember,
-      id: idMember,
-      page,
-      pageSize,
-      groupFilters,
-    });
+  const { data, isFetching } = trpc.members.list.useQuery({
+    search,
+    desc: descMember,
+    id: idMember,
+    page,
+    pageSize,
+    groupFilters,
+  });
 
-  const { data: count } = trpc.members.countMembers.useQuery({
+  const { data: count } = trpc.members.count.useQuery({
     search,
     groupFilters,
   });
@@ -49,7 +49,7 @@ export const MembersProvider = ({ children }: Props) => {
       value={{
         data,
         count,
-        isLoading,
+        isLoading: isFetching,
       }}
     >
       {children}

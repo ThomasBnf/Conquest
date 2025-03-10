@@ -139,622 +139,595 @@ export const DirectoryItemsSchema = z.object({
 
 export type DirectoryItems = z.infer<typeof DirectoryItemsSchema>;
 
-// export type Category = {
-//   id: number;
-//   name: string;
-//   color: string;
-//   text_color: string;
-//   slug: string;
-//   topic_count: number;
-//   post_count: number;
-//   position: number;
-//   description: string | null;
-//   description_text: string | null;
-//   description_excerpt: string | null;
-//   topic_url: string | null;
-//   read_restricted: boolean;
-//   permission: number;
-//   notification_level: number;
-//   can_edit: boolean;
-//   topic_template: string | null;
-//   has_children: boolean;
-//   subcategory_count: number | null;
-//   sort_order: string | null;
-//   sort_ascending: string | null;
-//   show_subcategory_list: boolean;
-//   num_featured_topics: number;
-//   default_view: string | null;
-//   subcategory_list_style: string;
-//   default_top_period: string;
-//   default_list_filter: string;
-//   minimum_required_tags: number;
-//   navigate_to_first_post_after_read: boolean;
-//   topics_day: number;
-//   topics_week: number;
-//   topics_month: number;
-//   topics_year: number;
-//   topics_all_time: number;
-//   is_uncategorized?: boolean | undefined;
-//   subcategory_ids: unknown[];
-//   subcategory_list?: Category[];
-//   uploaded_logo: string | null;
-//   uploaded_logo_dark: string | null;
-//   uploaded_background: string | null;
-//   uploaded_background_dark: string | null;
-// };
+export const ResponseListTopicsSchema = z.object({
+  users: z.array(
+    z.object({
+      id: z.number(),
+      username: z.string(),
+      name: z.string(),
+      avatar_template: z.string(),
+    }),
+  ),
+  primary_group: z.object({
+    id: z.number(),
+    name: z.string(),
+    avatar_template: z.string(),
+  }),
+  topic_list: z.object({
+    can_create_topic: z.boolean(),
+    more_topics_url: z.string().nullable().optional(),
+    per_page: z.number(),
+    top_tags: z.array(z.string()),
+    topics: z.array(
+      z.object({
+        id: z.number(),
+        title: z.string(),
+        fancy_title: z.string(),
+        slug: z.string(),
+        posts_count: z.number(),
+        reply_count: z.number(),
+        highest_post_number: z.number(),
+        image_url: z.string().nullable(),
+        created_at: z.string(),
+        last_posted_at: z.string(),
+        bumped: z.boolean(),
+        bumped_at: z.string(),
+        archetype: z.string(),
+        unseen: z.boolean(),
+        pinned: z.boolean(),
+        unpinned: z.string().nullable(),
+        excerpt: z.string(),
+        visible: z.boolean(),
+        closed: z.boolean(),
+        archived: z.boolean(),
+        bookmarked: z.string().nullable(),
+        liked: z.string().nullable(),
+        views: z.number(),
+        like_count: z.number(),
+        has_summary: z.boolean(),
+        last_poster_username: z.string(),
+        category_id: z.number(),
+        pinned_globally: z.boolean(),
+        featured_link: z.string().nullable(),
+        posters: z.array(
+          z.object({
+            extras: z.string(),
+            description: z.string(),
+            user_id: z.number(),
+            primary_group_id: z.number().nullable(),
+          }),
+        ),
+      }),
+    ),
+  }),
+});
 
-export type ReponseListTopics = {
-  users: {
-    id: number;
-    username: string;
-    name: string;
-    avatar_template: string;
-  }[];
-  primary_group: {
-    id: number;
-    name: string;
-    avatar_template: string;
-  };
-  topic_list: {
-    can_create_topic: boolean;
-    more_topics_url?: string | null;
-    per_page: number;
-    top_tags: string[];
-    topics: Topic[];
-  };
-};
+export const ReactionUserSchema = z.object({
+  id: z.number(),
+  username: z.string(),
+  name: z.string(),
+  avatar_template: z.string(),
+  title: z.string().nullable(),
+  primary_group_name: z.string().nullable(),
+});
 
-export type Topic = {
-  id: number;
-  title: string;
-  fancy_title: string;
-  slug: string;
-  posts_count: number;
-  reply_count: number;
-  highest_post_number: number;
-  image_url: string | null;
-  created_at: string;
-  last_posted_at: string;
-  bumped: boolean;
-  bumped_at: string;
-  archetype: string;
-  unseen: boolean;
-  pinned: boolean;
-  unpinned: string | null;
-  excerpt: string;
-  visible: boolean;
-  closed: boolean;
-  archived: boolean;
-  bookmarked: string | null;
-  liked: string | null;
-  views: number;
-  like_count: number;
-  has_summary: boolean;
-  last_poster_username: string;
-  category_id: number;
-  pinned_globally: boolean;
-  featured_link: string | null;
-  posters: Array<{
-    extras: string;
-    description: string;
-    user_id: number;
-    primary_group_id: number | null;
-  }>;
-};
+export const ReactionTopicSchema = z.object({
+  id: z.number(),
+  title: z.string(),
+  fancy_title: z.string(),
+  slug: z.string(),
+  posts_count: z.number(),
+});
 
-export type Reaction = {
-  id: number;
-  user_id: number;
-  post_id: number;
-  created_at: string;
-  user: {
-    id: number;
-    username: string;
-    name: string;
-    avatar_template: string;
-    title: string;
-    primary_group_name: string | null;
-  };
-  post: {
-    excerpt: string;
-    truncated: boolean;
-    id: number;
-    created_at: string;
-    title: string;
-    url: string;
-    category_id: number;
-    post_number: number;
-    topic_id: number;
-    post_type: number;
-    user: {
-      id: number;
-      username: string;
-      name: string;
-      avatar_template: string;
-      title: string;
-      primary_group_name: string | null;
-    };
-    topic: {
-      id: number;
-      title: string;
-      fancy_title: string;
-      slug: string;
-      posts_count: number;
-    };
-  };
-  reaction: {
-    id: number;
-    post_id: number;
-    reaction_type: string;
-    reaction_value: string;
-    reaction_users_count: number;
-    created_at: string;
-  };
-};
+export const ReactionPostSchema = z.object({
+  excerpt: z.string(),
+  truncated: z.boolean().optional(),
+  id: z.number(),
+  created_at: z.string(),
+  title: z.string().optional(),
+  url: z.string(),
+  category_id: z.number().nullable(),
+  post_number: z.number(),
+  topic_id: z.number(),
+  post_type: z.number(),
+  user: z.object({
+    id: z.number(),
+    username: z.string(),
+    name: z.string(),
+    avatar_template: z.string(),
+    title: z.string().nullable().optional(),
+  }),
+  topic: ReactionTopicSchema,
+});
 
-export type Invite = {
-  id: number;
-  redeemed_at: string;
-  user: {
-    id: number;
-    username: string;
-    name: string;
-    avatar_template: string;
-    topics_entered: number;
-    posts_read_count: number;
-    last_seen_at: string;
-    time_read: number;
-    days_visited: number;
-    days_since_created: number;
-  };
-  invite_source: string;
-};
+export const ReactionDetailsSchema = z.object({
+  id: z.number(),
+  post_id: z.number(),
+  reaction_type: z.string(),
+  reaction_value: z.string(),
+  reaction_users_count: z.number(),
+  created_at: z.string(),
+});
 
-export type DiscourseWebhook = {
-  category?: CategoryWebhook;
-  topic?: TopicWebhook;
-  post?: PostWebhook;
-  user?: UserWebhook;
-  like?: PostLikedWebhook;
-  user_badge?: UserBadgeWebhook;
-  solved?: SolvedWebhook;
-};
+export const ReactionSchema = z.object({
+  id: z.number(),
+  user_id: z.number(),
+  post_id: z.number(),
+  created_at: z.string(),
+  user: ReactionUserSchema,
+  post: ReactionPostSchema,
+  reaction: ReactionDetailsSchema,
+});
 
-export type CategoryWebhook = {
-  id: number;
-  name: string;
-  color: string;
-  text_color: string;
-  slug: string;
-  topic_count: number;
-  post_count: number;
-  position: number;
-  description: string | null;
-  description_text: string | null;
-  description_excerpt: string | null;
-  topic_url: string;
-  read_restricted: boolean;
-  permission: string | null;
-  parent_category_id?: number;
-  topic_template: string | null;
-  has_children: boolean | null;
-  subcategory_count: number | null;
-  sort_order: string | null;
-  sort_ascending: boolean | null;
-  show_subcategory_list: boolean;
-  num_featured_topics: number;
-  default_view: string | null;
-  subcategory_list_style: string;
-  default_top_period: string;
-  default_list_filter: string;
-  minimum_required_tags: number;
-  navigate_to_first_post_after_read: boolean;
-  custom_fields: Record<string, unknown>;
-  allowed_tags: string[];
-  allowed_tag_groups: string[];
-  allow_global_tags: boolean;
-  read_only_banner: string | null;
-  form_template_ids: number[];
-  auto_close_hours: number | null;
-  auto_close_based_on_last_post: boolean;
-  group_permissions: unknown[];
-  email_in: string | null;
-  email_in_allow_strangers: boolean;
-  mailinglist_mirror: boolean;
-  all_topics_wiki: boolean;
-  allow_unlimited_owner_edits_on_first_post: boolean;
-  can_delete: boolean;
-  allow_badges: boolean;
-  topic_featured_link_allowed: boolean;
-  search_priority: number;
-  default_slow_mode_seconds: number | null;
-  uploaded_logo: string | null;
-  uploaded_logo_dark: string | null;
-  uploaded_background: string | null;
-  uploaded_background_dark: string | null;
-  required_tag_groups: string[];
-  category_setting: {
-    auto_bump_cooldown_days: number;
-    num_auto_bump_daily: number;
-    require_reply_approval: boolean;
-    require_topic_approval: boolean;
-  };
-};
+export const InviteSchema = z.object({
+  id: z.number(),
+  redeemed_at: z.string(),
+  user: z.object({
+    id: z.number(),
+    username: z.string(),
+    name: z.string(),
+    avatar_template: z.string(),
+    topics_entered: z.number(),
+    posts_read_count: z.number(),
+    last_seen_at: z.string().nullable(),
+    time_read: z.number(),
+    days_visited: z.number(),
+    days_since_created: z.number(),
+  }),
+  invite_source: z.string(),
+});
 
-export type TopicWebhook = {
-  tags: string[];
-  tags_descriptions: Record<string, string>;
-  id: number;
-  title: string;
-  fancy_title: string;
-  posts_count: number;
-  created_at: string;
-  views: number;
-  reply_count: number;
-  like_count: number;
-  last_posted_at: string;
-  visible: boolean;
-  closed: boolean;
-  archived: boolean;
-  archetype: string;
-  slug: string;
-  category_id: number;
-  word_count: number;
-  deleted_at: string | null;
-  user_id: number;
-  featured_link: string | null;
-  pinned_globally: boolean;
-  pinned_at: string | null;
-  pinned_until: string | null;
-  unpinned: string | null;
-  pinned: boolean;
-  highest_post_number: number;
-  deleted_by: string | null;
-  has_deleted: boolean;
-  bookmarked: boolean;
-  participant_count: number;
-  queued_posts_count: number;
-  thumbnails: string | null;
-  created_by: {
-    id: number;
-    username: string;
-    name: string;
-    avatar_template: string;
-  };
-  last_poster: {
-    id: number;
-    username: string;
-    name: string;
-    avatar_template: string;
-  };
-  tags_disable_ads: boolean;
-  related_topics: unknown[];
-  summarizable: boolean;
-  discourse_zendesk_plugin_zendesk_id: string | null;
-  discourse_zendesk_plugin_zendesk_url: string;
-  pending_posts: unknown[];
-};
+export const DiscourseWebhookSchema = z.object({
+  category: z
+    .object({
+      id: z.number(),
+      name: z.string(),
+      color: z.string(),
+      text_color: z.string(),
+      slug: z.string(),
+      topic_count: z.number(),
+      post_count: z.number(),
+      position: z.number(),
+      description: z.string().nullable(),
+      description_text: z.string().nullable(),
+      description_excerpt: z.string().nullable(),
+      topic_url: z.string(),
+      read_restricted: z.boolean(),
+      permission: z.string().nullable(),
+      parent_category_id: z.number().optional(),
+      topic_template: z.string().nullable(),
+      has_children: z.boolean().nullable(),
+      subcategory_count: z.number().nullable(),
+      sort_order: z.string().nullable(),
+      sort_ascending: z.boolean().nullable(),
+      show_subcategory_list: z.boolean(),
+      num_featured_topics: z.number(),
+      default_view: z.string().nullable(),
+      subcategory_list_style: z.string(),
+      default_top_period: z.string(),
+      default_list_filter: z.string(),
+      minimum_required_tags: z.number(),
+      navigate_to_first_post_after_read: z.boolean(),
+      custom_fields: z.record(z.unknown()),
+      allowed_tags: z.array(z.string()),
+      allowed_tag_groups: z.array(z.string()),
+      allow_global_tags: z.boolean(),
+      read_only_banner: z.string().nullable(),
+      form_template_ids: z.array(z.number()),
+      auto_close_hours: z.number().nullable(),
+      auto_close_based_on_last_post: z.boolean(),
+      group_permissions: z.array(z.unknown()),
+      email_in: z.string().nullable(),
+      email_in_allow_strangers: z.boolean(),
+      mailinglist_mirror: z.boolean(),
+      all_topics_wiki: z.boolean(),
+      allow_unlimited_owner_edits_on_first_post: z.boolean(),
+      can_delete: z.boolean(),
+      allow_badges: z.boolean(),
+      topic_featured_link_allowed: z.boolean(),
+      search_priority: z.number(),
+      default_slow_mode_seconds: z.number().nullable(),
+      uploaded_logo: z.string().nullable(),
+      uploaded_logo_dark: z.string().nullable(),
+      uploaded_background: z.string().nullable(),
+      uploaded_background_dark: z.string().nullable(),
+      required_tag_groups: z.array(z.string()),
+      category_setting: z.object({
+        auto_bump_cooldown_days: z.number(),
+        num_auto_bump_daily: z.number(),
+        require_reply_approval: z.boolean(),
+        require_topic_approval: z.boolean(),
+      }),
+    })
+    .optional(),
+  topic: z
+    .object({
+      tags: z.array(z.string()),
+      tags_descriptions: z.record(z.string()),
+      id: z.number(),
+      title: z.string(),
+      fancy_title: z.string(),
+      posts_count: z.number(),
+      created_at: z.string(),
+      views: z.number(),
+      reply_count: z.number(),
+      like_count: z.number(),
+      last_posted_at: z.string(),
+      visible: z.boolean(),
+      closed: z.boolean(),
+      archived: z.boolean(),
+      archetype: z.string(),
+      slug: z.string(),
+      category_id: z.number(),
+      word_count: z.number(),
+      deleted_at: z.string().nullable(),
+      user_id: z.number(),
+      featured_link: z.string().nullable(),
+      pinned_globally: z.boolean(),
+      pinned_at: z.string().nullable(),
+      pinned_until: z.string().nullable(),
+      unpinned: z.string().nullable(),
+      pinned: z.boolean(),
+      highest_post_number: z.number(),
+      deleted_by: z.string().nullable(),
+      has_deleted: z.boolean(),
+      bookmarked: z.boolean(),
+      participant_count: z.number(),
+      queued_posts_count: z.number(),
+      thumbnails: z.string().nullable(),
+      created_by: z.object({
+        id: z.number(),
+        username: z.string(),
+        name: z.string(),
+        avatar_template: z.string(),
+      }),
+      last_poster: z.object({
+        id: z.number(),
+        username: z.string(),
+        name: z.string(),
+        avatar_template: z.string(),
+      }),
+      tags_disable_ads: z.boolean(),
+      related_topics: z.array(z.unknown()),
+      summarizable: z.boolean(),
+      discourse_zendesk_plugin_zendesk_id: z.string().nullable(),
+      discourse_zendesk_plugin_zendesk_url: z.string(),
+      pending_posts: z.array(z.unknown()),
+    })
+    .optional(),
+  post: z
+    .object({
+      id: z.number(),
+      name: z.string(),
+      username: z.string(),
+      avatar_template: z.string(),
+      created_at: z.string(),
+      cooked: z.string(),
+      post_number: z.number(),
+      post_type: z.number(),
+      updated_at: z.string(),
+      reply_count: z.number(),
+      reply_to_post_number: z.number().nullable(),
+      quote_count: z.number(),
+      incoming_link_count: z.number(),
+      reads: z.number(),
+      score: z.number(),
+      topic_id: z.number(),
+      topic_slug: z.string(),
+      topic_title: z.string(),
+      category_id: z.number(),
+      display_username: z.string(),
+      primary_group_name: z.string().nullable(),
+      flair_name: z.string().nullable(),
+      flair_group_id: z.string().nullable(),
+      version: z.number(),
+      user_title: z.string().nullable(),
+      reply_to_user: z
+        .object({
+          username: z.string(),
+          name: z.string(),
+          avatar_template: z.string(),
+        })
+        .optional(),
+      bookmarked: z.boolean(),
+      raw: z.string(),
+      moderator: z.boolean(),
+      admin: z.boolean(),
+      staff: z.boolean(),
+      user_id: z.number(),
+      hidden: z.boolean(),
+      trust_level: z.number(),
+      deleted_at: z.string().nullable(),
+      user_deleted: z.boolean(),
+      edit_reason: z.string().nullable(),
+      wiki: z.boolean(),
+      reviewable_id: z.number().nullable(),
+      reviewable_score_count: z.number(),
+      reviewable_score_pending_count: z.number(),
+      topic_posts_count: z.number(),
+      topic_filtered_posts_count: z.number(),
+      topic_archetype: z.string(),
+      category_slug: z.string(),
+      akismet_state: z.string().nullable(),
+      user_cakedate: z.string(),
+      can_accept_answer: z.boolean(),
+      can_unaccept_answer: z.boolean(),
+      accepted_answer: z.boolean(),
+      topic_accepted_answer: z.boolean(),
+    })
+    .optional(),
+  user: z
+    .object({
+      id: z.number(),
+      username: z.string(),
+      name: z.string(),
+      avatar_template: z.string(),
+      email: z.string(),
+      secondary_emails: z.array(z.string()),
+      last_posted_at: z.string().nullable(),
+      last_seen_at: z.string().nullable(),
+      created_at: z.string(),
+      muted: z.boolean(),
+      trust_level: z.number(),
+      moderator: z.boolean(),
+      admin: z.boolean(),
+      title: z.string().nullable(),
+      badge_count: z.number(),
+      time_read: z.number(),
+      recent_time_read: z.number(),
+      primary_group_id: z.number().nullable(),
+      primary_group_name: z.string().nullable(),
+      flair_group_id: z.string().nullable(),
+      flair_name: z.string().nullable(),
+      flair_url: z.string().nullable(),
+      flair_bg_color: z.string().nullable(),
+      flair_color: z.string().nullable(),
+      featured_topic: z.unknown().nullable(),
+      bio_excerpt: z.string().nullable(),
+      staged: z.boolean(),
+      bio_cooked: z.string().nullable(),
+      pending_count: z.number(),
+      profile_view_count: z.number(),
+      second_factor_enabled: z.boolean(),
+      can_upload_profile_header: z.boolean(),
+      can_upload_user_card_background: z.boolean(),
+      post_count: z.number(),
+      locale: z.string().nullable(),
+      muted_category_ids: z.array(z.number()),
+      regular_category_ids: z.array(z.number()),
+      watched_tags: z.array(z.string()),
+      watching_first_post_tags: z.array(z.string()),
+      tracked_tags: z.array(z.string()),
+      muted_tags: z.array(z.string()),
+      tracked_category_ids: z.array(z.number()),
+      watched_category_ids: z.array(z.number()),
+      watched_first_post_category_ids: z.array(z.number()),
+      system_avatar_template: z.string(),
+      muted_usernames: z.array(z.string()),
+      can_mute_users: z.boolean(),
+      ignored_usernames: z.array(z.string()),
+      can_ignore_users: z.boolean(),
+      allowed_pm_usernames: z.array(z.string()),
+      mailing_list_posts_per_day: z.number(),
+      user_notification_schedule: z.object({
+        enabled: z.boolean(),
+        day_0_start_time: z.number(),
+        day_0_end_time: z.number(),
+        day_1_start_time: z.number(),
+        day_1_end_time: z.number(),
+        day_2_start_time: z.number(),
+        day_2_end_time: z.number(),
+        day_3_start_time: z.number(),
+        day_3_end_time: z.number(),
+        day_4_start_time: z.number(),
+        day_4_end_time: z.number(),
+        day_5_start_time: z.number(),
+        day_5_end_time: z.number(),
+        day_6_start_time: z.number(),
+        day_6_end_time: z.number(),
+      }),
+      can_chat_user: z.boolean(),
+      cakedate: z.string(),
+      birthdate: z.string().nullable(),
+      accepted_answers: z.number(),
+      featured_user_badge_ids: z.array(z.number()),
+      invited_by: z.object({
+        id: z.number(),
+        username: z.string(),
+        name: z.string(),
+        avatar_template: z.string(),
+      }),
+      groups: z.array(z.unknown()),
+      user_option: z.object({
+        user_id: z.number(),
+        mailing_list_mode: z.boolean(),
+        mailing_list_mode_frequency: z.number(),
+        email_digests: z.boolean(),
+        email_level: z.number(),
+        email_messages_level: z.number(),
+        external_links_in_new_tab: z.boolean(),
+        color_scheme_id: z.number().nullable(),
+        dark_scheme_id: z.number().nullable(),
+        dynamic_favicon: z.boolean(),
+        enable_quoting: z.boolean(),
+        enable_smart_lists: z.boolean(),
+        enable_defer: z.boolean(),
+        digest_after_minutes: z.number(),
+        automatically_unpin_topics: z.boolean(),
+        auto_track_topics_after_msecs: z.number(),
+        notification_level_when_replying: z.number(),
+        new_topic_duration_minutes: z.number(),
+        email_previous_replies: z.number(),
+        email_in_reply_to: z.boolean(),
+        like_notification_frequency: z.number(),
+        include_tl0_in_digests: z.boolean(),
+        theme_ids: z.array(z.number()),
+        theme_key_seq: z.number(),
+        allow_private_messages: z.boolean(),
+        enable_allowed_pm_users: z.boolean(),
+        homepage_id: z.number().nullable(),
+        hide_profile_and_presence: z.boolean(),
+        hide_profile: z.boolean(),
+        hide_presence: z.boolean(),
+        text_size: z.string(),
+        text_size_seq: z.number(),
+        title_count_mode: z.string(),
+        bookmark_auto_delete_preference: z.number(),
+        timezone: z.string().nullable(),
+        skip_new_user_tips: z.boolean(),
+        default_calendar: z.string(),
+        oldest_search_log_date: z.string().nullable(),
+        seen_popups: z.unknown().nullable(),
+        sidebar_link_to_filtered_list: z.boolean(),
+        sidebar_show_count_of_new_items: z.boolean(),
+        watched_precedence_over_muted: z.boolean().nullable(),
+        topics_unread_when_closed: z.boolean(),
+        chat_enabled: z.boolean(),
+        only_chat_push_notifications: z.boolean().nullable(),
+        ignore_channel_wide_mention: z.boolean().nullable(),
+        show_thread_title_prompts: z.boolean(),
+        chat_email_frequency: z.string(),
+        chat_header_indicator_preference: z.string(),
+        chat_separate_sidebar_mode: z.string(),
+      }),
+    })
+    .optional(),
+  like: z
+    .object({
+      post: z.object({
+        id: z.number(),
+        name: z.string(),
+        username: z.string(),
+        avatar_template: z.string(),
+        created_at: z.string(),
+        cooked: z.string(),
+        post_number: z.number(),
+        post_type: z.number(),
+        updated_at: z.string(),
+        reply_count: z.number(),
+        reply_to_post_number: z.number().nullable(),
+        quote_count: z.number(),
+        incoming_link_count: z.number(),
+        reads: z.number(),
+        score: z.number(),
+        topic_id: z.number(),
+        topic_slug: z.string(),
+        topic_title: z.string(),
+        category_id: z.number(),
+        display_username: z.string(),
+        primary_group_name: z.string().nullable(),
+        flair_name: z.string().nullable(),
+        flair_group_id: z.number().nullable(),
+        version: z.number(),
+        user_title: z.string().nullable(),
+        bookmarked: z.boolean(),
+        raw: z.string(),
+        moderator: z.boolean(),
+        admin: z.boolean(),
+        staff: z.boolean(),
+        user_id: z.number(),
+        hidden: z.boolean(),
+        trust_level: z.number(),
+        deleted_at: z.string().nullable(),
+        user_deleted: z.boolean(),
+        edit_reason: z.string().nullable(),
+        wiki: z.boolean(),
+        reviewable_id: z.number().nullable(),
+        reviewable_score_count: z.number(),
+        reviewable_score_pending_count: z.number(),
+        topic_posts_count: z.number(),
+        topic_filtered_posts_count: z.number(),
+        topic_archetype: z.string(),
+        category_slug: z.string(),
+        akismet_state: z.string().nullable(),
+        user_cakedate: z.string(),
+        can_accept_answer: z.boolean(),
+        can_unaccept_answer: z.boolean(),
+        accepted_answer: z.boolean(),
+        topic_accepted_answer: z.boolean(),
+      }),
+      user: z.object({
+        id: z.number(),
+        username: z.string(),
+        name: z.string(),
+        avatar_template: z.string(),
+      }),
+    })
+    .optional(),
+  user_badge: z
+    .object({
+      id: z.number(),
+      granted_at: z.string(),
+      created_at: z.string(),
+      post_id: z.number(),
+      post_number: z.number(),
+      badge_id: z.number(),
+      user_id: z.number(),
+      granted_by_id: z.number(),
+      topic_id: z.number(),
+    })
+    .optional(),
+  solved: z
+    .object({
+      id: z.number(),
+      name: z.string(),
+      username: z.string(),
+      avatar_template: z.string(),
+      created_at: z.string(),
+      cooked: z.string(),
+      post_number: z.number(),
+      post_type: z.number(),
+      updated_at: z.string(),
+      reply_count: z.number(),
+      reply_to_post_number: z.number().nullable(),
+      quote_count: z.number(),
+      incoming_link_count: z.number(),
+      reads: z.number(),
+      score: z.number(),
+      topic_id: z.number(),
+      topic_slug: z.string(),
+      topic_title: z.string(),
+      category_id: z.number(),
+      display_username: z.string(),
+      primary_group_name: z.string().nullable(),
+      flair_name: z.string().nullable(),
+      flair_group_id: z.number().nullable(),
+      version: z.number(),
+      user_title: z.string(),
+      title_is_group: z.boolean(),
+      bookmarked: z.boolean(),
+      raw: z.string(),
+      moderator: z.boolean(),
+      admin: z.boolean(),
+      staff: z.boolean(),
+      user_id: z.number(),
+      hidden: z.boolean(),
+      trust_level: z.number(),
+      deleted_at: z.string().nullable(),
+      user_deleted: z.boolean(),
+      edit_reason: z.string().nullable(),
+      wiki: z.boolean(),
+      reviewable_id: z.number().nullable(),
+      reviewable_score_count: z.number(),
+      reviewable_score_pending_count: z.number(),
+      topic_posts_count: z.number(),
+      topic_filtered_posts_count: z.number(),
+      topic_archetype: z.string(),
+      category_slug: z.string(),
+      akismet_state: z.string().nullable(),
+      user_cakedate: z.string(),
+      reactions: z.array(z.unknown()),
+      current_user_reaction: z.string().nullable(),
+      reaction_users_count: z.number(),
+      current_user_used_main_reaction: z.boolean(),
+      can_accept_answer: z.boolean(),
+      can_unaccept_answer: z.boolean(),
+      accepted_answer: z.boolean(),
+      topic_accepted_answer: z.boolean(),
+    })
+    .optional(),
+});
 
-export type PostWebhook = {
-  id: number;
-  name: string;
-  username: string;
-  avatar_template: string;
-  created_at: string;
-  cooked: string;
-  post_number: number;
-  post_type: number;
-  updated_at: string;
-  reply_count: number;
-  reply_to_post_number: number | null;
-  quote_count: number;
-  incoming_link_count: number;
-  reads: number;
-  score: number;
-  topic_id: number;
-  topic_slug: string;
-  topic_title: string;
-  category_id: number;
-  display_username: string;
-  primary_group_name: string | null;
-  flair_name: string | null;
-  flair_group_id: string | null;
-  version: number;
-  user_title: string | null;
-  reply_to_user?: {
-    username: string;
-    name: string;
-    avatar_template: string;
-  };
-  bookmarked: boolean;
-  raw: string;
-  moderator: boolean;
-  admin: boolean;
-  staff: boolean;
-  user_id: number;
-  hidden: boolean;
-  trust_level: number;
-  deleted_at: string | null;
-  user_deleted: boolean;
-  edit_reason: string | null;
-  wiki: boolean;
-  reviewable_id: number | null;
-  reviewable_score_count: number;
-  reviewable_score_pending_count: number;
-  topic_posts_count: number;
-  topic_filtered_posts_count: number;
-  topic_archetype: string;
-  category_slug: string;
-  akismet_state: string | null;
-  user_cakedate: string;
-  can_accept_answer: boolean;
-  can_unaccept_answer: boolean;
-  accepted_answer: boolean;
-  topic_accepted_answer: boolean;
-};
-
-export type UserWebhook = {
-  id: number;
-  username: string;
-  name: string;
-  avatar_template: string;
-  email: string;
-  secondary_emails: string[];
-  last_posted_at: string | null;
-  last_seen_at: string | null;
-  created_at: string;
-  muted: boolean;
-  trust_level: number;
-  moderator: boolean;
-  admin: boolean;
-  title: string | null;
-  badge_count: number;
-  time_read: number;
-  recent_time_read: number;
-  primary_group_id: number | null;
-  primary_group_name: string | null;
-  flair_group_id: string | null;
-  flair_name: string | null;
-  flair_url: string | null;
-  flair_bg_color: string | null;
-  flair_color: string | null;
-  featured_topic: unknown | null;
-  bio_excerpt: string | null;
-  staged: boolean;
-  bio_cooked: string | null;
-  pending_count: number;
-  profile_view_count: number;
-  second_factor_enabled: boolean;
-  can_upload_profile_header: boolean;
-  can_upload_user_card_background: boolean;
-  post_count: number;
-  locale: string | null;
-  muted_category_ids: number[];
-  regular_category_ids: number[];
-  watched_tags: string[];
-  watching_first_post_tags: string[];
-  tracked_tags: string[];
-  muted_tags: string[];
-  tracked_category_ids: number[];
-  watched_category_ids: number[];
-  watched_first_post_category_ids: number[];
-  system_avatar_template: string;
-  muted_usernames: string[];
-  can_mute_users: boolean;
-  ignored_usernames: string[];
-  can_ignore_users: boolean;
-  allowed_pm_usernames: string[];
-  mailing_list_posts_per_day: number;
-  user_notification_schedule: {
-    enabled: boolean;
-    day_0_start_time: number;
-    day_0_end_time: number;
-    day_1_start_time: number;
-    day_1_end_time: number;
-    day_2_start_time: number;
-    day_2_end_time: number;
-    day_3_start_time: number;
-    day_3_end_time: number;
-    day_4_start_time: number;
-    day_4_end_time: number;
-    day_5_start_time: number;
-    day_5_end_time: number;
-    day_6_start_time: number;
-    day_6_end_time: number;
-  };
-  can_chat_user: boolean;
-  cakedate: string;
-  birthdate: string | null;
-  accepted_answers: number;
-  featured_user_badge_ids: number[];
-  invited_by: {
-    id: number;
-    username: string;
-    name: string;
-    avatar_template: string;
-  };
-  groups: unknown[];
-  user_option: {
-    user_id: number;
-    mailing_list_mode: boolean;
-    mailing_list_mode_frequency: number;
-    email_digests: boolean;
-    email_level: number;
-    email_messages_level: number;
-    external_links_in_new_tab: boolean;
-    color_scheme_id: number | null;
-    dark_scheme_id: number | null;
-    dynamic_favicon: boolean;
-    enable_quoting: boolean;
-    enable_smart_lists: boolean;
-    enable_defer: boolean;
-    digest_after_minutes: number;
-    automatically_unpin_topics: boolean;
-    auto_track_topics_after_msecs: number;
-    notification_level_when_replying: number;
-    new_topic_duration_minutes: number;
-    email_previous_replies: number;
-    email_in_reply_to: boolean;
-    like_notification_frequency: number;
-    include_tl0_in_digests: boolean;
-    theme_ids: number[];
-    theme_key_seq: number;
-    allow_private_messages: boolean;
-    enable_allowed_pm_users: boolean;
-    homepage_id: number | null;
-    hide_profile_and_presence: boolean;
-    hide_profile: boolean;
-    hide_presence: boolean;
-    text_size: string;
-    text_size_seq: number;
-    title_count_mode: string;
-    bookmark_auto_delete_preference: number;
-    timezone: string | null;
-    skip_new_user_tips: boolean;
-    default_calendar: string;
-    oldest_search_log_date: string | null;
-    seen_popups: unknown | null;
-    sidebar_link_to_filtered_list: boolean;
-    sidebar_show_count_of_new_items: boolean;
-    watched_precedence_over_muted: boolean | null;
-    topics_unread_when_closed: boolean;
-    chat_enabled: boolean;
-    only_chat_push_notifications: boolean | null;
-    ignore_channel_wide_mention: boolean | null;
-    show_thread_title_prompts: boolean;
-    chat_email_frequency: string;
-    chat_header_indicator_preference: string;
-    chat_separate_sidebar_mode: string;
-  };
-};
-
-export type PostLikedWebhook = {
-  post: {
-    id: number;
-    name: string;
-    username: string;
-    avatar_template: string;
-    created_at: string;
-    cooked: string;
-    post_number: number;
-    post_type: number;
-    updated_at: string;
-    reply_count: number;
-    reply_to_post_number: number | null;
-    quote_count: number;
-    incoming_link_count: number;
-    reads: number;
-    score: number;
-    topic_id: number;
-    topic_slug: string;
-    topic_title: string;
-    category_id: number;
-    display_username: string;
-    primary_group_name: string | null;
-    flair_name: string | null;
-    flair_group_id: number | null;
-    version: number;
-    user_title: string | null;
-    bookmarked: boolean;
-    raw: string;
-    moderator: boolean;
-    admin: boolean;
-    staff: boolean;
-    user_id: number;
-    hidden: boolean;
-    trust_level: number;
-    deleted_at: string | null;
-    user_deleted: boolean;
-    edit_reason: string | null;
-    wiki: boolean;
-    reviewable_id: number | null;
-    reviewable_score_count: number;
-    reviewable_score_pending_count: number;
-    topic_posts_count: number;
-    topic_filtered_posts_count: number;
-    topic_archetype: string;
-    category_slug: string;
-    akismet_state: string | null;
-    user_cakedate: string;
-    can_accept_answer: boolean;
-    can_unaccept_answer: boolean;
-    accepted_answer: boolean;
-    topic_accepted_answer: boolean;
-  };
-  user: {
-    id: number;
-    username: string;
-    name: string;
-    avatar_template: string;
-  };
-};
-
-export type UserBadgeWebhook = {
-  id: number;
-  granted_at: string;
-  created_at: string;
-  post_id: number;
-  post_number: number;
-  badge_id: number;
-  user_id: number;
-  granted_by_id: number;
-  topic_id: number;
-};
-
-export type SolvedWebhook = {
-  id: number;
-  name: string;
-  username: string;
-  avatar_template: string;
-  created_at: string;
-  cooked: string;
-  post_number: number;
-  post_type: number;
-  updated_at: string;
-  reply_count: number;
-  reply_to_post_number: number | null;
-  quote_count: number;
-  incoming_link_count: number;
-  reads: number;
-  score: number;
-  topic_id: number;
-  topic_slug: string;
-  topic_title: string;
-  category_id: number;
-  display_username: string;
-  primary_group_name: string | null;
-  flair_name: string | null;
-  flair_group_id: number | null;
-  version: number;
-  user_title: string;
-  title_is_group: boolean;
-  bookmarked: boolean;
-  raw: string;
-  moderator: boolean;
-  admin: boolean;
-  staff: boolean;
-  user_id: number;
-  hidden: boolean;
-  trust_level: number;
-  deleted_at: string | null;
-  user_deleted: boolean;
-  edit_reason: string | null;
-  wiki: boolean;
-  reviewable_id: number | null;
-  reviewable_score_count: number;
-  reviewable_score_pending_count: number;
-  topic_posts_count: number;
-  topic_filtered_posts_count: number;
-  topic_archetype: string;
-  category_slug: string;
-  akismet_state: string | null;
-  user_cakedate: string;
-  reactions: unknown[];
-  current_user_reaction: string | null;
-  reaction_users_count: number;
-  current_user_used_main_reaction: boolean;
-  can_accept_answer: boolean;
-  can_unaccept_answer: boolean;
-  accepted_answer: boolean;
-  topic_accepted_answer: boolean;
-};
+export type Reaction = z.infer<typeof ReactionSchema>;
+export type Invite = z.infer<typeof InviteSchema>;
+export type DiscourseWebhook = z.infer<typeof DiscourseWebhookSchema>;

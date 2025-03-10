@@ -1,5 +1,5 @@
 import { useFilters } from "@/context/filtersContext";
-import { tableParsers } from "@/lib/searchParamsTable";
+import { tableParams } from "@/lib/searchParamsTable";
 import { trpc } from "@/server/client";
 import { Checkbox } from "@conquest/ui/checkbox";
 import { cn } from "@conquest/ui/cn";
@@ -26,19 +26,19 @@ type Props = {
 export const TagsCell = ({ row }: Props) => {
   const { groupFilters } = useFilters();
   const [{ search, idMember, descMember, page, pageSize }] =
-    useQueryStates(tableParsers);
+    useQueryStates(tableParams);
 
-  const { data: allTags } = trpc.tags.getAllTags.useQuery();
+  const { data: allTags } = trpc.tags.list.useQuery();
   const [open, setOpen] = useState(false);
   const utils = trpc.useUtils();
 
-  const { mutateAsync: updateMember } = trpc.members.updateMember.useMutation({
+  const { mutateAsync: updateMember } = trpc.members.update.useMutation({
     async onMutate(newData) {
-      await utils.members.getAllMembers.cancel();
+      await utils.members.list.cancel();
 
-      const prevData = utils.members.getAllMembers.getData();
+      const prevData = utils.members.list.getData();
 
-      utils.members.getAllMembers.setData(
+      utils.members.list.setData(
         {
           search,
           id: idMember,
@@ -50,7 +50,7 @@ export const TagsCell = ({ row }: Props) => {
         (old) =>
           old?.map((member) =>
             member.id === newData.id
-              ? { ...member, tags: newData.data.tags ?? [] }
+              ? { ...member, tags: newData.tags ?? [] }
               : member,
           ),
       );
@@ -58,7 +58,7 @@ export const TagsCell = ({ row }: Props) => {
       return { prevData };
     },
     onError(_err, _newData, ctx) {
-      utils.members.getAllMembers.setData(
+      utils.members.list.setData(
         {
           search,
           id: idMember,
@@ -71,7 +71,7 @@ export const TagsCell = ({ row }: Props) => {
       );
     },
     onSettled() {
-      utils.members.getAllMembers.invalidate();
+      utils.members.list.invalidate();
     },
   });
 
@@ -85,17 +85,13 @@ export const TagsCell = ({ row }: Props) => {
 
     if (hasTag) {
       await updateMember({
-        id: row.original.id,
-        data: {
-          tags: tagsIds.filter((id) => id !== tagId),
-        },
+        ...row.original,
+        tags: tagsIds.filter((id) => id !== tagId),
       });
     } else {
       await updateMember({
-        id: row.original.id,
-        data: {
-          tags: [...tagsIds, tagId],
-        },
+        ...row.original,
+        tags: [...tagsIds, tagId],
       });
     }
   };

@@ -1,5 +1,4 @@
-import { prisma } from "@conquest/db/prisma";
-
+import { createChannel } from "@conquest/clickhouse/channels/createChannel";
 import { SOURCE } from "@conquest/zod/enum/source.enum";
 import { z } from "zod";
 import { protectedProcedure } from "../trpc";
@@ -21,10 +20,10 @@ export const createManyChannels = protectedProcedure
     const { workspace_id } = user;
     const { channels } = input;
 
-    return await prisma.channel.createMany({
-      data: channels.map((channel) => ({
+    for (const channel of channels) {
+      await createChannel({
         ...channel,
         workspace_id,
-      })),
-    });
+      });
+    }
   });

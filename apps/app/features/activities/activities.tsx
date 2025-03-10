@@ -2,36 +2,26 @@ import { Activities as ActivitiesIcon } from "@/components/icons/Activities";
 import { EmptyState } from "@/components/states/empty-state";
 import { IsLoading } from "@/components/states/is-loading";
 import { IntegrationProvider } from "@/context/integrationContext";
-import { useUser } from "@/context/userContext";
 import { cn } from "@conquest/ui/cn";
 import { Separator } from "@conquest/ui/separator";
 import type { ActivityWithType } from "@conquest/zod/schemas/activity.schema";
 import { format, isToday, isYesterday } from "date-fns";
-import { type PropsWithChildren, useEffect, useMemo } from "react";
-import { useInView } from "react-intersection-observer";
+import { type PropsWithChildren, useMemo } from "react";
 import { ActivityParser } from "./activity-parser";
 
 type Activities = Record<string, ActivityWithType[]>;
 
 type Props = {
-  activities: ActivityWithType[];
-  hasNextPage: boolean;
-  fetchNextPage: () => void;
+  activities: ActivityWithType[] | undefined;
   isLoading: boolean;
   className?: string;
 };
 
 export const Activities = ({
   activities,
-  hasNextPage,
-  fetchNextPage,
   isLoading,
   className,
-  children,
 }: PropsWithChildren<Props>) => {
-  const { slug } = useUser();
-  const { ref, inView } = useInView();
-
   const groupedActivities = useMemo(() => {
     if (!activities) return {};
 
@@ -42,10 +32,6 @@ export const Activities = ({
       return acc;
     }, {});
   }, [activities]);
-
-  useEffect(() => {
-    if (inView && hasNextPage) fetchNextPage();
-  }, [inView]);
 
   if (isLoading) return <IsLoading />;
 
@@ -79,7 +65,7 @@ export const Activities = ({
               const { source } = activity_type;
 
               return (
-                <IntegrationProvider key={id} source={source}>
+                <IntegrationProvider key={id} source={source} loader={false}>
                   <ActivityParser key={id} activity={activity} />
                 </IntegrationProvider>
               );
@@ -87,7 +73,6 @@ export const Activities = ({
           </div>
         </div>
       ))}
-      {!isLoading && <div ref={ref} />}
     </div>
   );
 };

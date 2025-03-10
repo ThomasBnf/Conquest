@@ -1,9 +1,10 @@
-import { getPulseScore } from "@conquest/db/helpers/getPulseScore";
-import { prisma } from "@conquest/db/prisma";
-import { listActivitiesIn365Days } from "@conquest/db/queries/activity/listActivitiesIn365Days";
-import { listLevels } from "@conquest/db/queries/levels/listLevels";
-import { listMembers } from "@conquest/db/queries/member/listMembers";
-import type { Log } from "@conquest/zod/schemas/member.schema";
+import { listActivities } from "@conquest/clickhouse/activities/listActivities";
+import { getPulseScore } from "@conquest/clickhouse/helpers/getPulseScore";
+import { listLevels } from "@conquest/clickhouse/levels/listLevels";
+import { createManyLogs } from "@conquest/clickhouse/logs/createManyLogs";
+import { listMembers } from "@conquest/clickhouse/members/listMembers";
+import { updateMember } from "@conquest/clickhouse/members/updateMember";
+import type { Log } from "@conquest/zod/schemas/logs.schema";
 import { runs, schemaTask } from "@trigger.dev/sdk/v3";
 import {
   eachWeekOfInterval,
@@ -12,6 +13,7 @@ import {
   subDays,
   subWeeks,
 } from "date-fns";
+import { randomUUID } from "node:crypto";
 import { z } from "zod";
 
 export const getAllMembersMetrics = schemaTask({
@@ -52,7 +54,11 @@ export const getAllMembersMetrics = schemaTask({
 
     await Promise.all(
       members?.map(async (member) => {
-        const activities = await listActivitiesIn365Days({ member });
+        const activities = await listActivities({
+          member_id: member.id,
+          period: 365,
+          workspace_id,
+        });
 
         const logs: Log[] = [];
 
@@ -75,25 +81,25 @@ export const getAllMembersMetrics = schemaTask({
           );
 
           logs.push({
-            date: interval.toString(),
+            id: randomUUID(),
+            date: interval,
             pulse: pulseScore,
-            levelId: level?.id ?? null,
+            level_id: level?.id ?? null,
+            member_id: member.id,
+            workspace_id: member.workspace_id,
           });
         }
 
-        const { pulse, levelId } = logs.at(-1) ?? {};
+        await createManyLogs({ logs });
 
-        await prisma.member.update({
-          where: {
-            id: member.id,
-          },
-          data: {
-            pulse,
-            level_id: levelId,
-            logs,
-            first_activity: activities?.at(0)?.created_at,
-            last_activity: activities?.at(-1)?.created_at,
-          },
+        const { pulse, level_id } = logs.at(-1) ?? {};
+
+        await updateMember({
+          ...member,
+          first_activity: activities?.at(-1)?.created_at ?? null,
+          last_activity: activities?.at(0)?.created_at ?? null,
+          pulse: pulse ?? 0,
+          level_id: level_id ?? null,
         });
       }) ?? [],
     );

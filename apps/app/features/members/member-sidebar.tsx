@@ -30,9 +30,9 @@ type Props = {
 
 export const MemberSidebar = ({ member, profiles }: Props) => {
   const utils = trpc.useUtils();
-  const { mutateAsync: updateMember } = trpc.members.updateMember.useMutation({
+  const { mutateAsync: updateMember } = trpc.members.update.useMutation({
     onSuccess: () => {
-      utils.members.getMember.invalidate();
+      utils.members.get.invalidate();
     },
   });
 
@@ -55,11 +55,11 @@ export const MemberSidebar = ({ member, profiles }: Props) => {
     field: keyof Member,
     value: string | null | string[],
   ) => {
-    await updateMember({ id, data: { [field]: value } });
+    await updateMember({ ...member, [field]: value });
   };
 
   return (
-    <div className="flex h-full max-w-sm flex-1 shrink-0 flex-col">
+    <div className="flex h-full max-w-sm flex-1 shrink-0 flex-col bg-sidebar">
       <ScrollArea className="flex-1">
         <div className="space-y-4 p-4">
           <div className="flex items-center gap-2">
@@ -99,7 +99,7 @@ export const MemberSidebar = ({ member, profiles }: Props) => {
           <DiscourseSection profiles={profiles} />
           <SlackSection profiles={profiles} />
         </div>
-        <Separator />
+        {profiles && profiles?.length > 0 && <Separator />}
         <div className="space-y-2 p-4">
           <FieldCard icon="User" label="First name">
             <EditableInput
@@ -137,7 +137,7 @@ export const MemberSidebar = ({ member, profiles }: Props) => {
           <FieldCard icon="Linkedin" label="LinkedIn">
             <EditableInput
               defaultValue={linkedin_url}
-              placeholder="Set LinkedIn URL"
+              placeholder="Set linkedIn URL"
               onUpdate={(value) => onUpdateMember("linkedin_url", value)}
             />
           </FieldCard>

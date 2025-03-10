@@ -1,22 +1,21 @@
-import type { integration as IntegrationPrisma } from "@prisma/client";
 import { z } from "zod";
 import { STATUS } from "../enum/status.enum";
 
 const BaseSchema = z.object({
-  id: z.string().cuid(),
+  id: z.string().uuid(),
   external_id: z.string().nullable(),
   status: STATUS,
   trigger_token: z.string(),
   expires_at: z.coerce.date(),
-  connected_at: z.date().nullable(),
-  created_by: z.string().cuid(),
-  workspace_id: z.string().cuid(),
+  connected_at: z.coerce.date().nullable(),
+  created_by: z.string(),
+  workspace_id: z.string().uuid(),
   created_at: z.coerce.date(),
   updated_at: z.coerce.date(),
 });
 
 const SlackDetailsSchema = z.object({
-  source: z.literal("SLACK"),
+  source: z.literal("Slack"),
   name: z.string(),
   url: z.string(),
   access_token: z.string(),
@@ -28,7 +27,7 @@ const SlackDetailsSchema = z.object({
 });
 
 const DiscourseDetailsSchema = z.object({
-  source: z.literal("DISCOURSE"),
+  source: z.literal("Discourse"),
   community_url: z.string(),
   community_url_iv: z.string(),
   api_key: z.string(),
@@ -39,7 +38,7 @@ const DiscourseDetailsSchema = z.object({
 });
 
 const DiscordDetailsSchema = z.object({
-  source: z.literal("DISCORD"),
+  source: z.literal("Discord"),
   name: z.string(),
   access_token: z.string(),
   access_token_iv: z.string(),
@@ -51,7 +50,7 @@ const DiscordDetailsSchema = z.object({
 });
 
 const LinkedInDetailsSchema = z.object({
-  source: z.literal("LINKEDIN"),
+  source: z.literal("Linkedin"),
   name: z.string(),
   access_token: z.string(),
   iv: z.string(),
@@ -60,7 +59,7 @@ const LinkedInDetailsSchema = z.object({
 });
 
 const LivestormDetailsSchema = z.object({
-  source: z.literal("LIVESTORM"),
+  source: z.literal("Livestorm"),
   name: z.string(),
   access_token: z.string(),
   access_token_iv: z.string(),
@@ -72,7 +71,7 @@ const LivestormDetailsSchema = z.object({
 });
 
 const GithubDetailsSchema = z.object({
-  source: z.literal("GITHUB"),
+  source: z.literal("Github"),
   name: z.string(),
   access_token: z.string(),
   iv: z.string(),
@@ -120,7 +119,7 @@ export const IntegrationSchema = z.union([
   LinkedInIntegrationSchema,
   LivestormIntegrationSchema,
   GithubIntegrationSchema,
-]) satisfies z.ZodType<IntegrationPrisma>;
+]);
 
 export type Integration = z.infer<typeof IntegrationSchema>;
 export type IntegrationDetails = z.infer<typeof IntegrationDetailsSchema>;

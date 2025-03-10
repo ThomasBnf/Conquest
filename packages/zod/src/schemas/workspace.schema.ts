@@ -1,10 +1,9 @@
 import type { workspace as WorkspacePrisma } from "@prisma/client";
 import { z } from "zod";
 import { PLAN } from "../enum/plan.enum";
-import { GroupFiltersSchema } from "./filters.schema";
 
 export const WorkspaceSchema = z.object({
-  id: z.string().cuid(),
+  id: z.string().uuid(),
   name: z.string(),
   slug: z.string(),
   source: z.string().nullable(),

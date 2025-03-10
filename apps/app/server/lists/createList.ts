@@ -1,6 +1,5 @@
 import { FormListSchema } from "@/features/lists/schemas/form-create.schema";
-import { prisma } from "@conquest/db/prisma";
-import { ListSchema } from "@conquest/zod/schemas/list.schema";
+import { createList as _createList } from "@conquest/db/lists/createList";
 import { protectedProcedure } from "../trpc";
 
 export const createList = protectedProcedure
@@ -8,12 +7,5 @@ export const createList = protectedProcedure
   .mutation(async ({ ctx: { user }, input }) => {
     const { workspace_id } = user;
 
-    const list = await prisma.list.create({
-      data: {
-        ...input,
-        workspace_id,
-      },
-    });
-
-    return ListSchema.parse(list);
+    return _createList({ ...input, workspace_id });
   });

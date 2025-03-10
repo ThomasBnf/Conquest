@@ -23,6 +23,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { type FormLevel, FormLevelSchema } from "./schema/form.schema";
+import { Loader2 } from "lucide-react";
 
 type Props = {
   level: Level;
@@ -34,9 +35,9 @@ export const EditLevelDialog = ({ level, open, setOpen }: Props) => {
   const [loading, setLoading] = useState(false);
   const utils = trpc.useUtils();
 
-  const { mutateAsync } = trpc.levels.updateLevel.useMutation({
+  const { mutateAsync } = trpc.levels.update.useMutation({
     onSuccess: () => {
-      utils.levels.getAllLevels.invalidate();
+      utils.levels.list.invalidate();
       setOpen(false);
       setLoading(false);
       form.reset();
@@ -106,21 +107,23 @@ export const EditLevelDialog = ({ level, open, setOpen }: Props) => {
                   </FormItem>
                 )}
               />
-              <FormField
-                control={form.control}
-                name="to"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>To (optional)</FormLabel>
-                    <FormControl>
-                      <Input {...field} placeholder="1200" />
-                    </FormControl>
-                    <FormDescription>
-                      The maximum pulse score required for this level
-                    </FormDescription>
-                  </FormItem>
-                )}
-              />
+              {level.number < 12 && (
+                <FormField
+                  control={form.control}
+                  name="to"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>To</FormLabel>
+                      <FormControl>
+                        <Input {...field} placeholder="1200" />
+                      </FormControl>
+                      <FormDescription>
+                        The maximum pulse score required for this level
+                      </FormDescription>
+                    </FormItem>
+                  )}
+                />
+              )}
             </DialogBody>
             <DialogFooter>
               <DialogTrigger asChild>
@@ -128,8 +131,8 @@ export const EditLevelDialog = ({ level, open, setOpen }: Props) => {
                   Cancel
                 </Button>
               </DialogTrigger>
-              <Button type="submit" loading={loading} disabled={loading}>
-                Save
+              <Button type="submit" disabled={loading}>
+                {loading ? <Loader2 className="size-4 animate-spin" /> : "Save"}
               </Button>
             </DialogFooter>
           </form>

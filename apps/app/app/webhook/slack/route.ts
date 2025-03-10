@@ -1,20 +1,23 @@
-import { decrypt } from "@conquest/db/lib/decrypt";
-import { prisma } from "@conquest/db/prisma";
-import { createActivity } from "@conquest/db/queries/activity/createActivity";
-import { deleteActivity } from "@conquest/db/queries/activity/deleteActivity";
-import { updateActivity } from "@conquest/db/queries/activity/updateActivity";
-import { createChannel } from "@conquest/db/queries/channel/createChannel";
-import { deleteChannel } from "@conquest/db/queries/channel/deleteChannel";
-import { getChannel } from "@conquest/db/queries/channel/getChannel";
-import { updateChannel } from "@conquest/db/queries/channel/updateChannel";
-import { getIntegration } from "@conquest/db/queries/integration/getIntegration";
-import { updateIntegration } from "@conquest/db/queries/integration/updateIntegration";
-import { createMember } from "@conquest/db/queries/member/createMember";
-import { deleteMember } from "@conquest/db/queries/member/deleteMember";
-import { upsertMember } from "@conquest/db/queries/member/upsertMember";
-import { getProfile } from "@conquest/db/queries/profile/getProfile";
-import { upsertProfile } from "@conquest/db/queries/profile/upsertProfile";
-import { deleteListReactions } from "@conquest/db/queries/slack/deleteListReactions";
+import { createActivity } from "@conquest/clickhouse/activities/createActivity";
+import { deleteActivity } from "@conquest/clickhouse/activities/deleteActivity";
+import { deleteManyActivities } from "@conquest/clickhouse/activities/deleteManyActivities";
+import { getActivity } from "@conquest/clickhouse/activities/getActivity";
+import { updateActivity } from "@conquest/clickhouse/activities/updateActivity";
+import { getActivityTypeByKey } from "@conquest/clickhouse/activity-types/getActivityTypeByKey";
+import { createChannel } from "@conquest/clickhouse/channels/createChannel";
+import { deleteChannel } from "@conquest/clickhouse/channels/deleteChannel";
+import { getChannel } from "@conquest/clickhouse/channels/getChannel";
+import { updateChannel } from "@conquest/clickhouse/channels/updateChannel";
+import { client } from "@conquest/clickhouse/client";
+import { createMember } from "@conquest/clickhouse/members/createMember";
+import { deleteMember } from "@conquest/clickhouse/members/deleteMember";
+import { getMember } from "@conquest/clickhouse/members/getMember";
+import { updateMember } from "@conquest/clickhouse/members/updateMember";
+import { createProfile } from "@conquest/clickhouse/profiles/createProfile";
+import { getProfile } from "@conquest/clickhouse/profiles/getProfile";
+import { getIntegration } from "@conquest/db/integrations/getIntegration";
+import { updateIntegration } from "@conquest/db/integrations/updateIntegration";
+import { decrypt } from "@conquest/db/utils/decrypt";
 import { env } from "@conquest/env";
 import { SlackIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
 import {
@@ -65,10 +68,9 @@ export async function POST(req: NextRequest) {
 
   if (!integration) return NextResponse.json({ status: 200 });
 
-  const slackIntegration = SlackIntegrationSchema.parse(integration);
-
-  const { workspace_id } = slackIntegration;
-  const { access_token, access_token_iv } = slackIntegration.details;
+  const slack = SlackIntegrationSchema.parse(integration);
+  const { workspace_id } = slack;
+  const { access_token, access_token_iv } = slack.details;
 
   const token = await decrypt({
     access_token,
@@ -84,6 +86,7 @@ export async function POST(req: NextRequest) {
       await updateIntegration({
         id: integration.id,
         status: "DISCONNECTED",
+        workspace_id,
       });
 
       return NextResponse.json({ status: 200 });
@@ -92,9 +95,9 @@ export async function POST(req: NextRequest) {
     case "channel_created": {
       const { name, id } = event.channel;
       await createChannel({
-        name,
         external_id: id,
-        source: "SLACK",
+        name,
+        source: "Slack",
         workspace_id,
       });
 
@@ -105,13 +108,20 @@ export async function POST(req: NextRequest) {
 
     case "channel_rename": {
       const { name, id } = event.channel;
-      await updateChannel({ external_id: id, name, workspace_id });
+      const channel = await getChannel({
+        external_id: id,
+        workspace_id,
+      });
+
+      if (!channel) return NextResponse.json({ status: 200 });
+
+      await updateChannel({ id: channel.id, name });
       break;
     }
 
     case "channel_deleted": {
       const { channel } = event;
-      await deleteChannel({ external_id: channel, workspace_id });
+      await deleteChannel({ id: channel });
 
       return NextResponse.json({ status: 200 });
     }
@@ -140,7 +150,7 @@ export async function POST(req: NextRequest) {
         react_to: ts,
         member_id: profile.member_id,
         channel_id: channel.id,
-        source: "SLACK",
+        source: "Slack",
         workspace_id,
       });
 
@@ -165,29 +175,25 @@ export async function POST(req: NextRequest) {
 
       if (!channel) return NextResponse.json({ status: 200 });
 
-      await prisma.activity.deleteMany({
-        where: {
-          member_id: profile.member_id,
-          channel_id: channel.id,
-          AND: [
-            {
-              react_to: ts,
-            },
-            {
-              message: reaction,
-            },
-          ],
-        },
+      await client.query({
+        query: `
+          ALTER TABLE activity
+          DELETE WHERE member_id = '${profile.member_id}'
+          AND channel_id = '${channel.id}' 
+          AND react_to = '${ts}' 
+          AND message = '${reaction}'
+          AND workspace_id = '${workspace_id}'
+        `,
       });
 
       return NextResponse.json({ status: 200 });
     }
 
     case "user_change": {
-      const { id, deleted } = event.user;
+      const { id: external_id, deleted } = event.user;
 
       const profile = await getProfile({
-        external_id: id,
+        external_id,
         workspace_id,
       });
 
@@ -198,29 +204,29 @@ export async function POST(req: NextRequest) {
         break;
       }
 
-      const { user } = await web.users.info({ user: id });
+      const member = await getMember({ id: profile.member_id });
+
+      if (!member) return NextResponse.json({ status: 200 });
+
+      const { user } = await web.users.info({ user: external_id });
       const { first_name, last_name, email, phone, image_1024, title } =
         user?.profile ?? {};
 
       if (!email) return NextResponse.json({ status: 200 });
 
-      const language = user?.locale?.split("-")[0];
-      const country = user?.locale?.split("-")[1];
+      const language = user?.locale?.split("-")[0] ?? "";
+      const country = user?.locale?.split("-")[1] ?? "";
 
-      await upsertMember({
-        id,
-        data: {
-          first_name,
-          last_name,
-          primary_email: email,
-          phones: phone ? [phone] : [],
-          avatar_url: image_1024,
-          country,
-          language,
-          job_title: title,
-        },
-        source: "SLACK",
-        workspace_id,
+      await updateMember({
+        ...member,
+        first_name: first_name ?? member.first_name,
+        last_name: last_name ?? member.last_name,
+        primary_email: email,
+        phones: phone ? [phone] : member.phones,
+        avatar_url: image_1024 ?? member.avatar_url,
+        job_title: title ?? member.job_title,
+        country,
+        language,
       });
 
       return NextResponse.json({ status: 200 });
@@ -241,8 +247,8 @@ export async function POST(req: NextRequest) {
 
       const language = locale
         ? ISO6391.getName(locale.split("-")[0] ?? "")
-        : null;
-      const country = locale ? locale.split("-")[1] : null;
+        : "";
+      const country = locale ? locale.split("-")[1] : "";
 
       const existingProfile = await getProfile({
         external_id: id,
@@ -251,24 +257,22 @@ export async function POST(req: NextRequest) {
 
       if (!existingProfile) {
         const createdMember = await createMember({
-          data: {
-            first_name,
-            last_name,
-            primary_email: email,
-            phones: phone ? [phone] : [],
-            avatar_url: image_1024,
-            job_title: title === "" ? null : title,
-            language,
-            country,
-          },
-          source: "SLACK",
+          first_name,
+          last_name,
+          primary_email: email,
+          phones: phone ? [phone] : [],
+          avatar_url: image_1024,
+          job_title: title,
+          language,
+          country,
+          source: "Slack",
           workspace_id,
         });
 
-        await upsertProfile({
+        await createProfile({
           external_id: id,
           attributes: {
-            source: "SLACK",
+            source: "Slack",
           },
           member_id: createdMember.id,
           workspace_id,
@@ -294,12 +298,27 @@ export async function POST(req: NextRequest) {
             const { message } = event as MessageChangedEvent;
             const { ts, thread_ts, text } = message as GenericMessageEvent;
 
-            await updateActivity({
+            const activityWithType = await getActivity({
               external_id: ts,
-              activity_type_key: thread_ts ? "slack:reply" : "slack:message",
-              message: text ?? "",
-              reply_to: thread_ts ?? null,
               workspace_id,
+            });
+
+            if (!activityWithType) return NextResponse.json({ status: 200 });
+
+            const activityType = await getActivityTypeByKey({
+              key: thread_ts ? "slack:reply" : "slack:message",
+              workspace_id,
+            });
+
+            if (!activityType) return NextResponse.json({ status: 200 });
+
+            const { activity_type, ...activity } = activityWithType;
+
+            await updateActivity({
+              ...activity,
+              activity_type_id: activityType.id,
+              message: text ?? "",
+              reply_to: thread_ts ?? "",
             });
 
             return NextResponse.json({ status: 200 });
@@ -315,7 +334,7 @@ export async function POST(req: NextRequest) {
 
             if (!channel) return NextResponse.json({ status: 200 });
 
-            await deleteListReactions({
+            await deleteManyActivities({
               channel_id: channel.id,
               react_to: deleted_ts,
             });
@@ -351,10 +370,10 @@ export async function POST(req: NextRequest) {
         external_id: ts,
         activity_type_key: thread_ts ? "slack:reply" : "slack:message",
         message: text ?? "",
-        reply_to: thread_ts ?? null,
+        reply_to: thread_ts ?? "",
         member_id: profile.member_id,
         channel_id: channel.id,
-        source: "SLACK",
+        source: "Slack",
         workspace_id,
       });
 

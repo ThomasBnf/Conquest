@@ -25,7 +25,7 @@ export const LevelPicker = ({ filter }: Props) => {
   const { value } = filter;
   const [open, setOpen] = useState(false);
 
-  const { data: levels, isLoading } = trpc.levels.getAllLevels.useQuery();
+  const { data: levels, isLoading } = trpc.levels.list.useQuery();
   const currentLevel = levels?.find((level) => level.number === value);
 
   const onSelect = (level: Level) => {
@@ -40,7 +40,6 @@ export const LevelPicker = ({ filter }: Props) => {
           variant="outline"
           aria-expanded={open}
           className="min-w-[180px] justify-between"
-          classNameSpan="text-start justify-between text-nowrap"
         >
           {currentLevel ? (
             <span>

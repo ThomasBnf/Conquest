@@ -1,4 +1,4 @@
-import { prisma } from "@conquest/db/prisma";
+import { deleteApiKey as _deleteApiKey } from "@conquest/db/api-keys/deleteApiKey";
 import { z } from "zod";
 import { protectedProcedure } from "../trpc";
 
@@ -8,14 +8,8 @@ export const deleteApiKey = protectedProcedure
       id: z.string(),
     }),
   )
-  .mutation(async ({ ctx: { user }, input }) => {
+  .mutation(async ({ input }) => {
     const { id } = input;
-    const { workspace_id } = user;
 
-    return await prisma.api_key.delete({
-      where: {
-        id,
-        workspace_id,
-      },
-    });
+    return await _deleteApiKey({ id });
   });

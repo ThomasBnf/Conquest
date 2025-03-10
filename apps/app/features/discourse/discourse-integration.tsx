@@ -1,7 +1,6 @@
 "use client";
 
 import { Discourse } from "@/components/icons/Discourse";
-import { SkeletonIntegration } from "@/components/states/skeleton-integration";
 import { useIntegration } from "@/context/integrationContext";
 import { Separator } from "@conquest/ui/separator";
 import { Hash } from "lucide-react";
@@ -16,27 +15,13 @@ type Props = {
 };
 
 export const DiscourseIntegration = ({ error }: Props) => {
-  const {
-    discourse,
-    loadingIntegration,
-    loading,
-    setLoading,
-    deleteIntegration,
-    channels,
-  } = useIntegration();
+  const { discourse, setLoading, channels } = useIntegration();
   const router = useRouter();
 
   const onEnable = async () => {
     setLoading(true);
     router.push("/connect/discourse");
   };
-
-  const onDisconnect = async () => {
-    if (!discourse) return;
-    await deleteIntegration({ integration: discourse });
-  };
-
-  if (loadingIntegration) return <SkeletonIntegration />;
 
   return (
     <div className="mx-auto flex max-w-4xl flex-col gap-4 px-4 py-12 lg:py-24">
@@ -52,16 +37,15 @@ export const DiscourseIntegration = ({ error }: Props) => {
         integration={discourse}
         docUrl="https://docs.useconquest.com/integrations/discourse"
         description="Connect your Discourse community to get a complete overview of your members and community activity."
-        loading={loading}
+        source="Discourse"
         onEnable={onEnable}
-        onDisconnect={onDisconnect}
       >
         <DiscourseForm />
       </EnableCard>
       <ConnectedCard
         integration={discourse}
         name="Discourse"
-        onDisconnect={onDisconnect}
+        source="Discourse"
       >
         <>
           <Separator className="my-4" />

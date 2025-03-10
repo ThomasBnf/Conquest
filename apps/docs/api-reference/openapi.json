@@ -1183,7 +1183,7 @@
               "properties": {
                 "id": {
                   "type": "string",
-                  "format": "cuid",
+                  "format": "uuid",
                   "example": "cm5fkwwup0006dntb34yzw7dd"
                 },
                 "external_id": {
@@ -1222,29 +1222,29 @@
                 },
                 "activity_type_id": {
                   "type": "string",
-                  "format": "cuid",
+                  "format": "uuid",
                   "example": "cm5fkwwup0006dntb34yzw7dd"
                 },
                 "channel_id": {
                   "type": "string",
-                  "format": "cuid",
+                  "format": "uuid",
                   "nullable": true,
                   "example": "cm5fkwwup0006dntb34yzw7dd"
                 },
                 "event_id": {
                   "type": "string",
-                  "format": "cuid",
+                  "format": "uuid",
                   "nullable": true,
                   "example": "cm5fkwwup0006dntb34yzw7dd"
                 },
                 "member_id": {
                   "type": "string",
-                  "format": "cuid",
+                  "format": "uuid",
                   "example": "cm5fkwwup0006dntb34yzw7dd"
                 },
                 "workspace_id": {
                   "type": "string",
-                  "format": "cuid",
+                  "format": "uuid",
                   "example": "cm5fkwwup0006dntb34yzw7dd"
                 },
                 "created_at": {
@@ -1270,7 +1270,7 @@
             "properties": {
               "id": {
                 "type": "string",
-                "format": "cuid",
+                "format": "uuid",
                 "example": "cm5fkwwup0006dntb34yzw7dd"
               },
               "external_id": {
@@ -1309,29 +1309,29 @@
               },
               "activity_type_id": {
                 "type": "string",
-                "format": "cuid",
+                "format": "uuid",
                 "example": "cm5fkwwup0006dntb34yzw7dd"
               },
               "channel_id": {
                 "type": "string",
-                "format": "cuid",
+                "format": "uuid",
                 "nullable": true,
                 "example": "cm5fkwwup0006dntb34yzw7dd"
               },
               "event_id": {
                 "type": "string",
-                "format": "cuid",
+                "format": "uuid",
                 "nullable": true,
                 "example": "cm5fkwwup0006dntb34yzw7dd"
               },
               "member_id": {
                 "type": "string",
-                "format": "cuid",
+                "format": "uuid",
                 "example": "cm5fkwwup0006dntb34yzw7dd"
               },
               "workspace_id": {
                 "type": "string",
-                "format": "cuid",
+                "format": "uuid",
                 "example": "cm5fkwwup0006dntb34yzw7dd"
               },
               "created_at": {
@@ -1361,7 +1361,7 @@
               "properties": {
                 "id": {
                   "type": "string",
-                  "format": "cuid",
+                  "format": "uuid",
                   "example": "cm5fkwwup0006dntb34yzw7dd"
                 },
                 "discord_id": {
@@ -1458,7 +1458,7 @@
                 "level": { "type": "number", "example": 6 },
                 "pulse": { "type": "number", "example": 203 },
                 "presence": { "type": "number", "example": 6 },
-                "source": { "type": "string", "example": "SLACK" },
+                "source": { "type": "string", "example": "Slack" },
                 "logs": {
                   "type": "array",
                   "items": {
@@ -1487,13 +1487,13 @@
                 },
                 "company_id": {
                   "type": "string",
-                  "format": "cuid",
+                  "format": "uuid",
                   "nullable": true,
                   "example": "cm5fkwwup0006dntb34yzw7dd"
                 },
                 "workspace_id": {
                   "type": "string",
-                  "format": "cuid",
+                  "format": "uuid",
                   "example": "cm5fkwwup0006dntb34yzw7dd"
                 },
                 "first_activity": {
@@ -1531,7 +1531,7 @@
             "properties": {
               "id": {
                 "type": "string",
-                "format": "cuid",
+                "format": "uuid",
                 "example": "cm5fkwwup0006dntb34yzw7dd"
               },
               "discord_id": {
@@ -1628,7 +1628,7 @@
               "level": { "type": "number", "example": 6 },
               "pulse": { "type": "number", "example": 203 },
               "presence": { "type": "number", "example": 6 },
-              "source": { "type": "string", "example": "SLACK" },
+              "source": { "type": "string", "example": "Slack" },
               "logs": {
                 "type": "array",
                 "items": {
@@ -1657,13 +1657,13 @@
               },
               "company_id": {
                 "type": "string",
-                "format": "cuid",
+                "format": "uuid",
                 "nullable": true,
                 "example": "cm5fkwwup0006dntb34yzw7dd"
               },
               "workspace_id": {
                 "type": "string",
-                "format": "cuid",
+                "format": "uuid",
                 "example": "cm5fkwwup0006dntb34yzw7dd"
               },
               "first_activity": {
@@ -1705,7 +1705,7 @@
               "properties": {
                 "id": {
                   "type": "string",
-                  "format": "cuid",
+                  "format": "uuid",
                   "example": "cm5fkwwup0006dntb34yzw7dd"
                 },
                 "external_id": {
@@ -1724,11 +1724,11 @@
                 },
                 "source": {
                   "type": "string",
-                  "example": "SLACK"
+                  "example": "Slack"
                 },
                 "workspace_id": {
                   "type": "string",
-                  "format": "cuid",
+                  "format": "uuid",
                   "example": "cm5fkwwup0006dntb34yzw7dd"
                 },
                 "created_at": {
@@ -1756,7 +1756,7 @@
               "properties": {
                 "id": {
                   "type": "string",
-                  "format": "cuid",
+                  "format": "uuid",
                   "example": "cm5fkwwup0006dntb34yzw7dd"
                 },
                 "external_id": {
@@ -1775,11 +1775,11 @@
                 },
                 "source": {
                   "type": "string",
-                  "example": "SLACK"
+                  "example": "Slack"
                 },
                 "workspace_id": {
                   "type": "string",
-                  "format": "cuid",
+                  "format": "uuid",
                   "example": "cm5fkwwup0006dntb34yzw7dd"
                 },
                 "created_at": {
@@ -1810,7 +1810,7 @@
               "properties": {
                 "id": {
                   "type": "string",
-                  "format": "cuid",
+                  "format": "uuid",
                   "example": "cm5fkwwup0006dntb34yzw7dd"
                 },
                 "name": {
@@ -1861,7 +1861,7 @@
                 },
                 "workspace_id": {
                   "type": "string",
-                  "format": "cuid",
+                  "format": "uuid",
                   "example": "cm5fkwwup0006dntb34yzw7dd"
                 },
                 "created_at": {
@@ -1887,7 +1887,7 @@
             "properties": {
               "id": {
                 "type": "string",
-                "format": "cuid",
+                "format": "uuid",
                 "example": "cm5fkwwup0006dntb34yzw7dd"
               },
               "name": {
@@ -1938,7 +1938,7 @@
               },
               "workspace_id": {
                 "type": "string",
-                "format": "cuid",
+                "format": "uuid",
                 "example": "cm5fkwwup0006dntb34yzw7dd"
               },
               "created_at": {

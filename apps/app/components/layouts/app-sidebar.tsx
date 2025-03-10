@@ -4,6 +4,7 @@ import { Companies } from "@/components/icons/Companies";
 import { Dashboard } from "@/components/icons/Dashboard";
 import { Members } from "@/components/icons/Members";
 import { useUser } from "@/context/userContext";
+import { MenuList } from "@/features/lists/menu-list";
 import { WorkspaceMenu } from "@/features/workspaces/workspace-menu";
 import { useOpenList } from "@/hooks/useOpenList";
 import { trpc } from "@/server/client";
@@ -19,6 +20,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarRail,
+  useSidebar,
 } from "@conquest/ui/sidebar";
 import type { Workspace } from "@conquest/zod/schemas/workspace.schema";
 import { Plus } from "lucide-react";
@@ -35,12 +37,11 @@ type Props = {
 
 export const AppSidebar = ({ workspace }: Props) => {
   const { slug } = useUser();
+  const { state } = useSidebar();
   const { setOpen } = useOpenList();
   const pathname = usePathname();
 
-  const isMemberPage = pathname.startsWith(`/${slug}/members`);
-
-  const { data: lists } = trpc.lists.getAllLists.useQuery();
+  const { data: lists } = trpc.lists.list.useQuery();
 
   const routes = [
     {
@@ -85,33 +86,37 @@ export const AppSidebar = ({ workspace }: Props) => {
   ];
 
   return (
-    <>
-      <Sidebar collapsible="offcanvas">
-        <SidebarHeader>
-          <WorkspaceMenu workspace={workspace} />
-        </SidebarHeader>
-        <SidebarContent>
-          <SidebarGroup>
-            <SidebarMenu>
-              {routes.map((route) => (
-                <SidebarMenuItem key={route.label}>
-                  <SidebarMenuButton asChild isActive={route.isActive}>
-                    <Link href={route.href}>
-                      {route.icon}
-                      <span>{route.label}</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroup>
+    <Sidebar collapsible="icon" className="z-50">
+      <SidebarHeader>
+        <WorkspaceMenu workspace={workspace} />
+      </SidebarHeader>
+      <SidebarContent>
+        <SidebarGroup>
+          <SidebarMenu>
+            {routes.map((route) => (
+              <SidebarMenuItem key={route.label}>
+                <SidebarMenuButton
+                  asChild
+                  tooltip={route.label}
+                  isActive={route.isActive}
+                >
+                  <Link href={route.href}>
+                    {route.icon}
+                    <span>{route.label}</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            ))}
+          </SidebarMenu>
+        </SidebarGroup>
+        {state === "expanded" && (
           <SidebarGroup>
             <SidebarGroupLabel>Lists</SidebarGroupLabel>
             <SidebarMenu>
               {lists?.length === 0 && (
                 <SidebarMenuItem>
                   <SidebarMenuButton
-                    className="justify-center border-border border-dashed"
+                    className="justify-center border-border border-dashed bg-background"
                     onClick={() => setOpen(true)}
                   >
                     <Plus size={16} />
@@ -125,48 +130,54 @@ export const AppSidebar = ({ workspace }: Props) => {
                     asChild
                     isActive={pathname.includes(list.id)}
                   >
-                    <Link href={`/${slug}/lists/${list.id}`}>
-                      <div className="flex items-center gap-2">
-                        <p className="text-base">{list.emoji}</p>
-                        <p>{list.name}</p>
-                      </div>
-                    </Link>
+                    <div className="flex items-center justify-between">
+                      <Link
+                        href={`/${slug}/lists/${list.id}`}
+                        className="flex-1"
+                      >
+                        <div className="flex items-center gap-2">
+                          <p className="text-base">{list.emoji}</p>
+                          <p>{list.name}</p>
+                        </div>
+                      </Link>
+                      <MenuList list={list} transparent />
+                    </div>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
             </SidebarMenu>
           </SidebarGroup>
-        </SidebarContent>
-        <SidebarFooter>
-          <SidebarMenu>
-            {footer.map((route) => (
-              <SidebarMenuItem key={route.label}>
-                <SidebarMenuButton asChild>
-                  <Link href={route.href}>
-                    {route.icon}
-                    <span>{route.label}</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            ))}
-          </SidebarMenu>
-          <Separator />
-          <SidebarMenu>
-            {links.map((route) => (
-              <SidebarMenuItem key={route.label}>
-                <SidebarMenuButton asChild>
-                  <Link href={route.href} target="_blank">
-                    {route.icon}
-                    <span>{route.label}</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            ))}
-          </SidebarMenu>
-        </SidebarFooter>
-        <LoadingIntegrations />
-        <SidebarRail />
-      </Sidebar>
-    </>
+        )}
+      </SidebarContent>
+      <SidebarFooter>
+        <SidebarMenu>
+          {footer.map((route) => (
+            <SidebarMenuItem key={route.label}>
+              <SidebarMenuButton asChild tooltip={route.label}>
+                <Link href={route.href}>
+                  {route.icon}
+                  <span>{route.label}</span>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          ))}
+        </SidebarMenu>
+        <Separator />
+        <SidebarMenu>
+          {links.map((route) => (
+            <SidebarMenuItem key={route.label}>
+              <SidebarMenuButton asChild tooltip={route.label}>
+                <Link href={route.href} target="_blank">
+                  {route.icon}
+                  <span>{route.label}</span>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          ))}
+        </SidebarMenu>
+      </SidebarFooter>
+      <LoadingIntegrations />
+      <SidebarRail />
+    </Sidebar>
   );
 };

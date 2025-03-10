@@ -4,6 +4,7 @@ import type { installDiscord } from "@conquest/trigger/tasks/installDiscord";
 import { Button } from "@conquest/ui/button";
 import { Separator } from "@conquest/ui/separator";
 import { useRealtimeTaskTrigger } from "@trigger.dev/react-hooks";
+import { Loader2 } from "lucide-react";
 import { useEffect } from "react";
 import { toast } from "sonner";
 import { ActivityTypesList } from "../activities-types/activity-types-list";
@@ -14,10 +15,10 @@ export const DiscordForm = () => {
   const { discord, loading, setLoading, step, setStep } = useIntegration();
   const utils = trpc.useUtils();
 
-  const { mutateAsync } = trpc.integrations.updateIntegration.useMutation({
+  const { mutateAsync } = trpc.integrations.update.useMutation({
     onSuccess: () => {
-      utils.integrations.getIntegrationBySource.invalidate({
-        source: "DISCORD",
+      utils.integrations.bySource.invalidate({
+        source: "Discord",
       });
     },
   });
@@ -41,16 +42,14 @@ export const DiscordForm = () => {
     const isCompleted = run.status === "COMPLETED";
 
     if (["FAILED", "CRASHED", "EXPIRED"].includes(run.status)) {
+      toast.error("Failed to install Discord", { duration: 5000 });
       setStep(0);
       setLoading(false);
-      toast.error("Failed to install Discord", { duration: 5000 });
     }
 
     if (isCompleted) {
-      utils.integrations.getIntegrationBySource.invalidate({
-        source: "DISCORD",
-      });
-      utils.channels.getAllChannels.invalidate();
+      utils.integrations.bySource.invalidate({ source: "Discord" });
+      utils.channels.list.invalidate({ source: "Discord" });
       utils.discord.listChannels.invalidate();
       setTimeout(() => setLoading(false), 1000);
     }
@@ -70,7 +69,7 @@ export const DiscordForm = () => {
       {step === 1 && (
         <div className="space-y-2">
           {loading ? (
-            <LoadingMessage />
+            <LoadingMessage progress={Number(run?.metadata?.progress)} />
           ) : (
             <>
               <div>
@@ -80,12 +79,18 @@ export const DiscordForm = () => {
                   channel-specific conditions now or later
                 </p>
               </div>
-              <ActivityTypesList source="DISCORD" disableHeader />
+              <ActivityTypesList source="Discord" disableHeader />
             </>
           )}
-          <Button onClick={onStart} loading={loading} disabled={loading}>
-            Let's start!
-          </Button>
+          {!loading && (
+            <Button onClick={onStart} disabled={loading}>
+              {loading ? (
+                <Loader2 className="size-4 animate-spin" />
+              ) : (
+                "Let's start!"
+              )}
+            </Button>
+          )}
         </div>
       )}
     </>

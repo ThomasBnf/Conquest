@@ -1,92 +1,78 @@
-import { getFilters } from "@conquest/db/helpers/getFilters";
-import { orderByParser } from "@conquest/db/helpers/orderByParser";
-import { prisma } from "@conquest/db/prisma";
-import { GroupFiltersSchema } from "@conquest/zod/schemas/filters.schema";
-import { MemberSchema } from "@conquest/zod/schemas/member.schema";
-import { Prisma } from "@prisma/client";
+import { client } from "@conquest/clickhouse/client";
+import { format } from "date-fns";
 import { z } from "zod";
 import { protectedProcedure } from "../trpc";
 
 export const atRiskMembers = protectedProcedure
   .input(
     z.object({
-      search: z.string(),
-      id: z.string(),
-      desc: z.boolean(),
-      page: z.number(),
-      pageSize: z.number(),
-      groupFilters: GroupFiltersSchema,
       from: z.date(),
       to: z.date(),
     }),
   )
   .query(async ({ ctx: { user }, input }) => {
     const { workspace_id } = user;
-    const { search, id, desc, page, pageSize, groupFilters, from, to } = input;
-    const { operator } = groupFilters;
+    const { from, to } = input;
 
-    const searchParsed = search.toLowerCase().trim();
-    const orderBy = orderByParser({ id, desc, type: "members" });
-    const filterBy = getFilters({ groupFilters });
+    const previousPeriodLength = Math.abs(to.getTime() - from.getTime());
+    const previousFrom = new Date(from.getTime() - previousPeriodLength);
+    const previousTo = new Date(to.getTime() - previousPeriodLength);
 
-    const count = await prisma.$queryRaw<[{ count: bigint }]>`
-        SELECT COUNT(DISTINCT m.id) as count
-        FROM member m
-        LEFT JOIN level l ON m.level_id = l.id
-        WHERE  
+    const formattedFrom = format(from, "yyyy-MM-dd HH:mm:ss");
+    const formattedTo = format(to, "yyyy-MM-dd HH:mm:ss");
+    const formattedPreviousFrom = format(previousFrom, "yyyy-MM-dd HH:mm:ss");
+    const formattedPreviousTo = format(previousTo, "yyyy-MM-dd HH:mm:ss");
+
+    const result = await client.query({
+      query: `
+        SELECT 
+          currentCount.count as current,
+          previousCount.count as previous,
+          ((currentCount.count - previousCount.count) / nullIf(previousCount.count, 0)) * 100 as variation_rate
+        FROM
         (
-          LOWER(COALESCE(m.first_name, '') || ' ' || COALESCE(m.last_name, '')) LIKE '%' || ${searchParsed} || '%'
-          OR LOWER(COALESCE(m.last_name, '') || ' ' || COALESCE(m.first_name, '')) LIKE '%' || ${searchParsed} || '%'
-          OR LOWER(m.primary_email) LIKE '%' || ${searchParsed} || '%'
-        )
-        AND m.workspace_id = ${workspace_id}
-        AND l.number >= 3
-        AND NOT EXISTS (
-          SELECT 1 
-          FROM activity a 
-          WHERE a.member_id = m.id
-          AND a.created_at >= ${from}
-          AND a.created_at <= ${to}
-          )
-          ${
-            filterBy.length > 0
-              ? Prisma.sql`AND (${Prisma.join(filterBy, " AND ")})`
-              : Prisma.sql``
-          }
-      `;
-
-    const members = await prisma.$queryRaw`
-        SELECT m.*
-        FROM member m
-        LEFT JOIN level l ON m.level_id = l.id
-        WHERE 
+          SELECT count(*) as count
+          FROM member m
+          LEFT JOIN level l ON m.level_id = l.id
+          WHERE 
+            m.workspace_id = '${workspace_id}'
+            AND l.number >= 3
+            AND m.id NOT IN (
+              SELECT member_id 
+              FROM activity 
+              WHERE workspace_id = '${workspace_id}'
+                AND created_at BETWEEN '${formattedFrom}' AND '${formattedTo}'
+            )
+        ) as currentCount,
         (
-          LOWER(COALESCE(m.first_name, '') || ' ' || COALESCE(m.last_name, '')) LIKE '%' || ${searchParsed} || '%'
-          OR LOWER(COALESCE(m.last_name, '') || ' ' || COALESCE(m.first_name, '')) LIKE '%' || ${searchParsed} || '%'
-          OR LOWER(m.primary_email) LIKE '%' || ${searchParsed} || '%'
-        )
-        AND m.workspace_id = ${workspace_id}
-          AND l.number >= 3
-          AND NOT EXISTS (
-            SELECT 1 
-            FROM activity a 
-            WHERE a.member_id = m.id
-              AND a.created_at >= ${from}
-              AND a.created_at <= ${to}
-          )
-          ${
-            filterBy.length > 0
-              ? Prisma.sql`AND (${Prisma.join(filterBy, operator === "OR" ? " OR " : " AND ")})`
-              : Prisma.sql``
-          }
-        GROUP BY m.id, l.number
-        ${Prisma.sql([orderBy])}
-        LIMIT ${pageSize}
-        OFFSET ${page * pageSize}
-      `;
+          SELECT count(*) as count
+          FROM member m
+          LEFT JOIN level l ON m.level_id = l.id
+          WHERE 
+            m.workspace_id = '${workspace_id}'
+            AND l.number >= 3
+            AND m.id NOT IN (
+              SELECT member_id 
+              FROM activity 
+              WHERE workspace_id = '${workspace_id}'
+                AND created_at BETWEEN '${formattedPreviousFrom}' AND '${formattedPreviousTo}'
+            )
+        ) as previousCount
+      `,
+      format: "JSON",
+    });
+
+    const { data } = (await result.json()) as {
+      data: Array<{
+        current: number;
+        previous: number;
+        variation_rate: number;
+      }>;
+    };
 
     return {
-      members: MemberSchema.array().parse(members),
-      count: Number(count[0].count),
+      current: data[0]?.current ?? 0,
+      previous: data[0]?.previous ?? 0,
+      variation: data[0]?.variation_rate ?? 0,
     };
   });

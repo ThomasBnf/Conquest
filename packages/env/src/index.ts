@@ -16,10 +16,19 @@ const baseEnv = {
   },
 };
 
+const clickhouseEnv = {
+  server: {
+    CLICKHOUSE_URL: z.string(),
+    CLICKHOUSE_USER: z.string(),
+    CLICKHOUSE_PASSWORD: z.string(),
+  },
+};
+
 const discordEnv = {
   server: {
     DISCORD_CLIENT_SECRET: z.string(),
     DISCORD_BOT_TOKEN: z.string(),
+    DISCORD_PORT: z.string(),
   },
   client: {
     NEXT_PUBLIC_DISCORD_CLIENT_ID: z.string(),
@@ -56,6 +65,8 @@ const githubEnv = {
 const googleEnv = {
   server: {
     GOOGLE_API_KEY: z.string(),
+    GOOGLE_CLIENT_ID: z.string(),
+    GOOGLE_CLIENT_SECRET: z.string(),
   },
 };
 
@@ -82,6 +93,17 @@ const livestormEnv = {
   runtimeEnv: {
     NEXT_PUBLIC_LIVESTORM_CLIENT_ID:
       process.env.NEXT_PUBLIC_LIVESTORM_CLIENT_ID,
+  },
+};
+
+const posthogEnv = {
+  client: {
+    NEXT_PUBLIC_POSTHOG_KEY: z.string(),
+    NEXT_PUBLIC_POSTHOG_HOST: z.string(),
+  },
+  runtimeEnv: {
+    NEXT_PUBLIC_POSTHOG_KEY: process.env.NEXT_PUBLIC_POSTHOG_KEY,
+    NEXT_PUBLIC_POSTHOG_HOST: process.env.NEXT_PUBLIC_POSTHOG_HOST,
   },
 };
 
@@ -129,6 +151,7 @@ const triggerEnv = {
 export const env = createEnv({
   server: {
     ...baseEnv.server,
+    ...clickhouseEnv.server,
     ...discordEnv.server,
     ...discourseEnv.server,
     ...encryptionEnv.server,
@@ -147,6 +170,7 @@ export const env = createEnv({
     ...githubEnv.client,
     ...linkedinEnv.client,
     ...livestormEnv.client,
+    ...posthogEnv.client,
     ...slackEnv.client,
     ...stripeEnv.client,
   },
@@ -156,6 +180,7 @@ export const env = createEnv({
     ...githubEnv.runtimeEnv,
     ...linkedinEnv.runtimeEnv,
     ...livestormEnv.runtimeEnv,
+    ...posthogEnv.runtimeEnv,
     ...slackEnv.runtimeEnv,
     ...stripeEnv.runtimeEnv,
   },

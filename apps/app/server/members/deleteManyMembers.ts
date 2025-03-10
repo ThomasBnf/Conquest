@@ -1,4 +1,4 @@
-import { prisma } from "@conquest/db/prisma";
+import { deleteManyMembers as _deleteManyMembers } from "@conquest/clickhouse/members/deleteManyMembers";
 import { z } from "zod";
 import { protectedProcedure } from "../trpc";
 
@@ -8,16 +8,8 @@ export const deleteManyMembers = protectedProcedure
       ids: z.array(z.string()),
     }),
   )
-  .mutation(async ({ ctx: { user }, input }) => {
-    const { workspace_id } = user;
+  .mutation(async ({ input }) => {
     const { ids } = input;
 
-    console.log(ids);
-
-    return await prisma.member.deleteMany({
-      where: {
-        id: { in: ids },
-        workspace_id,
-      },
-    });
+    return await _deleteManyMembers({ ids });
   });

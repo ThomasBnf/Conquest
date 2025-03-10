@@ -1,20 +1,21 @@
 import { SLACK_SCOPES, SLACK_USER_SCOPES } from "@/constant";
 import { getCurrentUser } from "@/queries/getCurrentUser";
-import { encrypt } from "@conquest/db/lib/encrypt";
-import { createIntegration } from "@conquest/db/queries/integration/createIntegration";
-import { getIntegration } from "@conquest/db/queries/integration/getIntegration";
+import { createIntegration } from "@conquest/db/integrations/createIntegration";
+import { getIntegration } from "@conquest/db/integrations/getIntegration";
+import { encrypt } from "@conquest/db/utils/encrypt";
 import { env } from "@conquest/env";
 import { WebClient } from "@slack/web-api";
 import { redirect } from "next/navigation";
 
 type Props = {
-  searchParams: {
+  searchParams: Promise<{
     error?: string;
     code: string;
-  };
+  }>;
 };
 
-export default async function Page({ searchParams: { error, code } }: Props) {
+export default async function Page({ searchParams }: Props) {
+  const { error, code } = await searchParams;
   const { id, workspace_id } = await getCurrentUser();
 
   if (error) redirect("/settings/integrations/slack?error=access_denied");
@@ -47,6 +48,7 @@ export default async function Page({ searchParams: { error, code } }: Props) {
 
   const integration = await getIntegration({
     external_id: team.id,
+    workspace_id,
   });
 
   if (integration) {
@@ -59,7 +61,7 @@ export default async function Page({ searchParams: { error, code } }: Props) {
   await createIntegration({
     external_id: team.id,
     details: {
-      source: "SLACK",
+      source: "Slack",
       name: team.name,
       url: team.url.slice(0, -1),
       access_token: encryptedAccessToken.token,

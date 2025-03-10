@@ -20,18 +20,18 @@ type Props = {
 export const TagForm = ({ tag, setIsVisible, setIsEditing }: Props) => {
   const utils = trpc.useUtils();
 
-  const { mutateAsync: createTag } = trpc.tags.createTag.useMutation({
+  const { mutateAsync: createTag } = trpc.tags.post.useMutation({
     onSuccess: () => {
-      utils.tags.getAllTags.invalidate();
+      utils.tags.list.invalidate();
       setIsVisible?.(false);
       setIsEditing?.(false);
       form.reset();
     },
   });
 
-  const { mutateAsync: updateTag } = trpc.tags.updateTag.useMutation({
+  const { mutateAsync: updateTag } = trpc.tags.update.useMutation({
     onSuccess: () => {
-      utils.tags.getAllTags.invalidate();
+      utils.tags.list.invalidate();
       setIsVisible?.(false);
       setIsEditing?.(false);
       form.reset();
@@ -50,7 +50,8 @@ export const TagForm = ({ tag, setIsVisible, setIsEditing }: Props) => {
     if (tag) {
       return await updateTag({
         id: tag.id,
-        data: { name, color },
+        name,
+        color,
       });
     }
 

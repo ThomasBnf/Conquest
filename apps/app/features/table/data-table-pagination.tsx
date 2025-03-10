@@ -1,4 +1,4 @@
-import { tableParsers } from "@/lib/searchParamsTable";
+import { tableParams } from "@/lib/searchParamsTable";
 import { Button } from "@conquest/ui/button";
 import {
   Select,
@@ -17,10 +17,10 @@ type Props<TData> = {
 };
 
 export const DataTablePagination = <TData,>({ table, count }: Props<TData>) => {
-  const [{ pageSize }, setParams] = useQueryStates(tableParsers);
+  const [{ pageSize }, setParams] = useQueryStates(tableParams);
 
   return (
-    <div className="flex h-12 shrink-0 items-center justify-between px-4">
+    <div className="flex h-12 shrink-0 items-center justify-between px-3">
       <div className="flex items-center gap-2">
         <p className="text-muted-foreground">
           Showing {table.getRowCount()} of {count}

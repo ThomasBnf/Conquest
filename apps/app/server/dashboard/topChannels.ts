@@ -1,44 +1,48 @@
-import { prisma } from "@conquest/db/prisma";
+import { client } from "@conquest/clickhouse/client";
+import { endOfDay, format } from "date-fns";
 import { z } from "zod";
 import { protectedProcedure } from "../trpc";
 
 export const topChannels = protectedProcedure
   .input(
     z.object({
-      from: z.coerce.date(),
-      to: z.coerce.date(),
+      from: z.date(),
+      to: z.date(),
     }),
   )
-  .query(async ({ ctx: { user }, input }) => {
+  .query(async ({ input }) => {
     const { from, to } = input;
-    const { workspace_id } = user;
 
-    const channels = await prisma.channel.findMany({
-      where: {
-        workspace_id,
-      },
-      include: {
-        _count: {
-          select: {
-            activities: {
-              where: {
-                created_at: {
-                  gte: from,
-                  lte: to,
-                },
-              },
-            },
-          },
-        },
-      },
-      take: 10,
+    const formattedFrom = format(from, "yyyy-MM-dd HH:mm:ss");
+    const formattedTo = format(endOfDay(to), "yyyy-MM-dd HH:mm:ss");
+
+    const result = await client.query({
+      query: `
+        SELECT 
+          channel.name,
+          COUNT(*) as count
+        FROM activity
+        LEFT JOIN channel ON activity.channel_id = channel.id
+        WHERE activity.created_at >= '${formattedFrom}' 
+        AND activity.created_at <= '${formattedTo}'
+        GROUP BY 
+          channel.name
+        ORDER BY count DESC
+        LIMIT 10
+      `,
+      format: "JSON",
     });
 
-    const sortedChannels = channels.sort(
-      (a, b) => b._count.activities - a._count.activities,
-    );
-
-    return {
-      channels: sortedChannels,
+    const { data } = (await result.json()) as {
+      data: Array<{
+        name: string;
+        "channel.source": string;
+        count: number;
+      }>;
     };
+
+    return data.map((item) => ({
+      channel: item.name,
+      count: item.count,
+    }));
   });

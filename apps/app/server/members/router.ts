@@ -4,27 +4,29 @@ import { createMember } from "./createMember";
 import { deleteManyMembers } from "./deleteManyMembers";
 import { deleteMember } from "./deleteMember";
 import { exportMembers } from "./exportMembers";
-import { getAllCountries } from "./getAllCountries";
-import { getAllLanguages } from "./getAllLanguages";
 import { getAllMembers } from "./getAllMembers";
 import { getMember } from "./getMember";
+import { listCountries } from "./listCountries";
+import { listLanguages } from "./listLanguages";
 import { listMembers } from "./listMembers";
-import { mergeMembers } from "./mergeMembers";
-import { updateManyMembers } from "./updateManyMembers.";
+import { listSources } from "./listSources";
+import { updateManyMembers } from "./updateManyMembers";
 import { updateMember } from "./updateMember";
+import { mergeMembers } from "./mergeMembers";
 
 export const membersRouter = router({
-  listMembers,
+  list: listMembers,
   getAllMembers,
-  countMembers,
-  getMember,
-  createMember,
-  updateMember,
+  count: countMembers,
+  get: getMember,
+  post: createMember,
+  update: updateMember,
   updateManyMembers,
   deleteManyMembers,
-  deleteMember,
-  mergeMembers,
-  exportMembers,
-  getAllLanguages,
-  getAllCountries,
+  delete: deleteMember,
+  export: exportMembers,
+  merge: mergeMembers,
+  listLanguages,
+  listCountries,
+  listSources,
 });

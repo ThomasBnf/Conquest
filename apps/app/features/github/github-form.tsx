@@ -1,46 +1,48 @@
 import { useIntegration } from "@/context/integrationContext";
+import { trpc } from "@/server/client";
 import type { installGithub } from "@conquest/trigger/tasks/installGithub";
+import { Button } from "@conquest/ui/button";
 import { Separator } from "@conquest/ui/separator";
 import { useRealtimeTaskTrigger } from "@trigger.dev/react-hooks";
 import { useRouter } from "next/navigation";
-import { type Dispatch, type SetStateAction, useEffect } from "react";
+import { useEffect } from "react";
 import { toast } from "sonner";
+import { ActivityTypesList } from "../activities-types/activity-types-list";
+import { LoadingMessage } from "../integrations/loading-message";
+import { GithubRepo } from "./github-repo";
+import { Loader2 } from "lucide-react";
 
-type Props = {
-  loading: boolean;
-  setLoading: Dispatch<SetStateAction<boolean>>;
-};
-
-export const GithubForm = ({ loading, setLoading }: Props) => {
-  const { github } = useIntegration();
-  // const [repository, setRepository] = useState<Repository | null>(null);
+export const GithubForm = () => {
+  const { github, loading, setLoading, step } = useIntegration();
   const router = useRouter();
+  const utils = trpc.useUtils();
+
+  const { mutateAsync } = trpc.integrations.update.useMutation({
+    onSuccess: () => {
+      utils.integrations.bySource.invalidate({
+        source: "Github",
+      });
+    },
+  });
 
   const { submit, run, error } = useRealtimeTaskTrigger<typeof installGithub>(
     "install-github",
     { accessToken: github?.trigger_token },
   );
 
-  // const { repositories, isLoading } = listRepositories();
-
-  const onSubmit = async () => {
-    // if (!github || !repository) return;
+  const onStart = async () => {
+    if (!github) return;
 
     setLoading(true);
-    // const reponse = await updateIntegration({
-    //   id: github.id,
-    //   status: "SYNCING",
-    //   details: {
-    //     ...github.details,
-    //     name: repository.name,
-    //     owner: repository.owner.login,
-    //   },
-    // });
-    // const updatedGithub = GithubIntegrationSchema.parse(reponse?.data);
-    // submit({ github: updatedGithub });
+    await mutateAsync({ id: github.id, status: "SYNCING" });
+    submit({ github });
   };
 
   useEffect(() => {
+    if (github?.status === "SYNCING") {
+      setLoading(true);
+    }
+
     if (!run?.status) return;
 
     const isCompleted = run.status === "COMPLETED";
@@ -53,70 +55,37 @@ export const GithubForm = ({ loading, setLoading }: Props) => {
     }
 
     if (isCompleted) router.refresh();
-  }, [run]);
+  }, [github, run]);
 
   return (
     <>
       <Separator className="my-4" />
-      <div className="space-y-4">
-        <p className="font-medium text-base">Repositories</p>
-        {/* {isLoading ? (
-          <LoadingChannels />
-        ) : (
-          <>
-            <RadioGroup className="gap-2">
-              {repositories?.map((repo) => (
-                <div
-                  key={repo.id}
-                  className={cn(
-                    "relative flex w-full items-start gap-2 rounded-md border p-4",
-                    repository?.id === repo.id && "bg-muted",
-                  )}
-                >
-                  <RadioGroupItem
-                    value={repo.id.toString()}
-                    className="order-1 after:absolute after:inset-0"
-                    onClick={() => setRepository(repo)}
-                  />
-                  <div className="grid grow gap-2">
-                    <div className="flex items-center gap-2">
-                      <Label htmlFor={`repo-${repo.id}`}>{repo.name}</Label>
-                      <div className="flex items-center gap-1 text-muted-foreground">
-                        <p>{repo.stargazers_count}</p>
-                        <Star
-                          size={16}
-                          className={cn(
-                            "-translate-y-px",
-                            repo.stargazers_count > 0 &&
-                              "fill-[#E3B341] text-[#E3B341]",
-                          )}
-                        />
-                      </div>
-                    </div>
-                    <p
-                      id={`repo-${repo.id}-description`}
-                      className="text-muted-foreground text-xs "
-                    >
-                      {repo.description || "No description available"}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </RadioGroup>
+      {step === 0 && <GithubRepo />}
+      {step === 1 && (
+        <div className="space-y-2">
+          {loading ? (
+            <LoadingMessage progress={Number(run?.metadata?.progress)} />
+          ) : (
+            <>
+              <div>
+                <p className="font-medium text-base">Activity types</p>
+                <p className="text-muted-foreground">
+                  Customize points for each activity type and set
+                  channel-specific conditions now or later
+                </p>
+              </div>
+              <ActivityTypesList source="Github" disableHeader />
+            </>
+          )}
+          <Button onClick={onStart} disabled={loading}>
             {loading ? (
-              <LoadingMessage />
+              <Loader2 className="size-4 animate-spin" />
             ) : (
-              <Button
-                loading={loading}
-                disabled={!repository || loading}
-                onClick={onSubmit}
-              >
-                Let's start!
-              </Button>
+              "Let's start!"
             )}
-          </>
-        )} */}
-      </div>
+          </Button>
+        </div>
+      )}
     </>
   );
 };

@@ -13,18 +13,15 @@ type Props = {
 };
 
 export const SlackSection = ({ profiles }: Props) => {
-  const { data: integration } =
-    trpc.integrations.getIntegrationBySource.useQuery({
-      source: "SLACK",
-    });
+  const { data } = trpc.integrations.bySource.useQuery({ source: "Slack" });
 
-  if (!integration) return null;
+  if (!data) return null;
 
-  const slack = SlackIntegrationSchema.parse(integration);
+  const slack = SlackIntegrationSchema.parse(data);
   const { url } = slack.details;
 
   const profile = profiles?.find(
-    (profile) => profile.attributes.source === "SLACK",
+    (profile) => profile.attributes.source === "Slack",
   );
 
   if (!profile) return null;

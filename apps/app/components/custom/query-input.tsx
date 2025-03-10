@@ -1,4 +1,4 @@
-import { tableParsers } from "@/lib/searchParamsTable";
+import { tableParams } from "@/lib/searchParamsTable";
 import { Button } from "@conquest/ui/button";
 import { cn } from "@conquest/ui/cn";
 import { Input } from "@conquest/ui/input";
@@ -20,7 +20,7 @@ export const QueryInput = ({
   placeholder = "Search",
   className,
 }: Props) => {
-  const [_, setParams] = useQueryStates(tableParsers);
+  const [_, setParams] = useQueryStates(tableParams);
 
   const [isFocus, setIsFocus] = useState(false);
   const [value] = useDebounce(query, 500);
@@ -40,7 +40,7 @@ export const QueryInput = ({
     <div
       className={cn(
         "actions-secondary relative flex w-full max-w-64 items-center rounded-md border pr-1 pl-2",
-        isFocus && "border-main-400 ring-2 ring-ring",
+        isFocus && "border-main-200 ring-2 ring-ring",
         className,
       )}
     >

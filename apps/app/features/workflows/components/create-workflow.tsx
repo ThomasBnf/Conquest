@@ -2,10 +2,9 @@
 
 import { useUser } from "@/context/userContext";
 import { Button } from "@conquest/ui/button";
-import { Plus } from "lucide-react";
+import { Loader2, Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { toast } from "sonner";
 
 export const CreateWorkflow = () => {
   const { slug } = useUser();
@@ -25,9 +24,15 @@ export const CreateWorkflow = () => {
   };
 
   return (
-    <Button loading={loading} onClick={handleCreateWorkflow}>
-      <Plus size={16} />
-      Create workflow
+    <Button onClick={handleCreateWorkflow}>
+      {loading ? (
+        <Loader2 className="size-4 animate-spin" />
+      ) : (
+        <>
+          <Plus size={16} />
+          Create workflow
+        </>
+      )}
     </Button>
   );
 };

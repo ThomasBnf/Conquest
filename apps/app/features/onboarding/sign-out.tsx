@@ -1,23 +1,18 @@
 "use client";
 
 import { LogOut } from "@/components/icons/LogOut";
-import { trpc } from "@/server/client";
 import { Button } from "@conquest/ui/button";
-import { useRouter } from "next/navigation";
+import { signOut } from "next-auth/react";
 
 export const SignOut = () => {
-  const router = useRouter();
-
-  const { mutateAsync } = trpc.auth.signout.useMutation({
-    onSuccess: () => {
-      router.push("/auth/login");
-    },
-  });
-
-  const onClick = async () => await mutateAsync();
+  const onSignOut = () => {
+    signOut({
+      redirectTo: "/auth/login",
+    });
+  };
 
   return (
-    <Button onClick={onClick} variant="outline" className="self-start">
+    <Button onClick={onSignOut} variant="outline" className="self-start">
       <LogOut className="size-[18px]" />
       Log out
     </Button>

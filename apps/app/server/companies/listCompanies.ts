@@ -1,5 +1,8 @@
-import { prisma } from "@conquest/db/prisma";
+import { client } from "@conquest/clickhouse/client";
+import { getFilters } from "@conquest/clickhouse/helpers/getFilters";
+import { orderByParser } from "@conquest/clickhouse/helpers/orderByParser";
 import { CompanySchema } from "@conquest/zod/schemas/company.schema";
+import { GroupFiltersSchema } from "@conquest/zod/schemas/filters.schema";
 import { z } from "zod";
 import { protectedProcedure } from "../trpc";
 
@@ -7,31 +10,36 @@ export const listCompanies = protectedProcedure
   .input(
     z.object({
       search: z.string(),
-      cursor: z.string().nullish(),
-      take: z.number(),
+      id: z.string(),
+      desc: z.boolean(),
+      page: z.number(),
+      pageSize: z.number(),
+      groupFilters: GroupFiltersSchema,
     }),
   )
   .query(async ({ ctx: { user }, input }) => {
     const { workspace_id } = user;
-    const { search, cursor, take } = input;
+    const { search, id, desc, page, pageSize, groupFilters } = input;
+    const { operator } = groupFilters;
 
-    console.log(search);
+    const searchParsed = search.toLowerCase().trim();
+    const orderBy = orderByParser({ id, desc, type: "companies" });
+    const filterBy = getFilters({ groupFilters });
 
-    const companies = await prisma.company.findMany({
-      where: {
-        name: {
-          contains: search,
-          mode: "insensitive",
-        },
-        workspace_id,
-      },
-      orderBy: {
-        name: "asc",
-      },
-      skip: cursor ? 1 : 0,
-      cursor: cursor ? { id: cursor } : undefined,
-      take,
+    const result = await client.query({
+      query: `
+        SELECT *
+        FROM company c
+        WHERE (
+          ${searchParsed ? `positionCaseInsensitive(c.name, '${searchParsed}') > 0` : "true"}
+        )
+        AND c.workspace_id = '${workspace_id}'
+        ${orderBy}
+        LIMIT ${pageSize}
+        OFFSET ${page * pageSize}
+      `,
     });
 
-    return CompanySchema.array().parse(companies);
+    const { data } = await result.json();
+    return CompanySchema.array().parse(data);
   });

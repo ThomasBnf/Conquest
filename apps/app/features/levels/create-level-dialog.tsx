@@ -19,7 +19,7 @@ import {
 } from "@conquest/ui/form";
 import { Input } from "@conquest/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Plus } from "lucide-react";
+import { Loader2, Plus } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { type FormLevel, FormLevelSchema } from "./schema/form.schema";
@@ -29,9 +29,9 @@ export const CreateLevelDialog = () => {
   const [loading, setLoading] = useState(false);
   const utils = trpc.useUtils();
 
-  const { mutateAsync } = trpc.levels.createLevel.useMutation({
+  const { mutateAsync } = trpc.levels.post.useMutation({
     onSuccess: () => {
-      utils.levels.getAllLevels.invalidate();
+      utils.levels.list.invalidate();
       setOpen(false);
       setLoading(false);
       form.reset();
@@ -123,8 +123,8 @@ export const CreateLevelDialog = () => {
                   Cancel
                 </Button>
               </DialogTrigger>
-              <Button type="submit" loading={loading} disabled={loading}>
-                Save
+              <Button type="submit" disabled={loading}>
+                {loading ? <Loader2 className="size-4 animate-spin" /> : "Save"}
               </Button>
             </DialogFooter>
           </form>

@@ -1,0 +1,32 @@
+{
+  "name": "@conquest/clickhouse",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "clickhouse:migrate": "dotenv -e ./.env -e ../../.env -- clickhouse-migrations migrate"
+  },
+  "exports": {
+    "./*": "./src/*.ts"
+  },
+  "dependencies": {
+    "@clickhouse/client": "^1.10.1",
+    "@clickhouse/client-web": "^1.10.1",
+    "@conquest/env": "workspace:*",
+    "@conquest/zod": "workspace:*",
+    "@discordjs/rest": "^2.4.2",
+    "@slack/web-api": "^7.6.0",
+    "country-data-list": "^1.4.0",
+    "country-locale-map": "^1.9.9",
+    "date-fns": "^4.1.0",
+    "discord-api-types": "^0.37.115",
+    "discourse2": "^1.1.23",
+    "iso-639-1": "^3.1.5",
+    "resend": "^4.1.2",
+    "uuid": "^11.1.0"
+  },
+  "devDependencies": {
+    "clickhouse-migrations": "^1.0.4",
+    "dotenv-cli": "8.0.0"
+  }
+}

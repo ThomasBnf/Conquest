@@ -1,31 +1,35 @@
 import { sleep } from "@/helpers/sleep";
+import { createActivity } from "@conquest/clickhouse/activities/createActivity";
+import { deleteActivity } from "@conquest/clickhouse/activities/deleteActivity";
+import { getActivity } from "@conquest/clickhouse/activities/getActivity";
+import { updateActivity } from "@conquest/clickhouse/activities/updateActivity";
+import { upsertActivity } from "@conquest/clickhouse/activities/upsertActivity";
+import { getActivityTypeByKey } from "@conquest/clickhouse/activity-types/getActivityTypeByKey";
+import { createChannel } from "@conquest/clickhouse/channels/createChannel";
+import { deleteChannel } from "@conquest/clickhouse/channels/deleteChannel";
+import { getChannel } from "@conquest/clickhouse/channels/getChannel";
+import { updateChannel } from "@conquest/clickhouse/channels/updateChannel";
+import { client } from "@conquest/clickhouse/client";
+import { createMember } from "@conquest/clickhouse/members/createMember";
+import { getMember } from "@conquest/clickhouse/members/getMember";
+import { updateMember } from "@conquest/clickhouse/members/updateMember";
+import { createProfile } from "@conquest/clickhouse/profiles/createProfile";
+import { deleteProfile } from "@conquest/clickhouse/profiles/deleteProfile";
+import { getProfile } from "@conquest/clickhouse/profiles/getProfile";
 import { discourseClient } from "@conquest/db/discourse";
 import { prisma } from "@conquest/db/prisma";
-import { createActivity } from "@conquest/db/queries/activity/createActivity";
-import { deleteActivity } from "@conquest/db/queries/activity/deleteActivity";
-import { updateActivity } from "@conquest/db/queries/activity/updateActivity";
-import { upsertActivity } from "@conquest/db/queries/activity/upsertActivity";
-import { createChannel } from "@conquest/db/queries/channel/createChannel";
-import { deleteChannel } from "@conquest/db/queries/channel/deleteChannel";
-import { getChannel } from "@conquest/db/queries/channel/getChannel";
-import { updateChannel } from "@conquest/db/queries/channel/updateChannel";
-import { checkSignature } from "@conquest/db/queries/discourse/checkSignature";
-import { getMember } from "@conquest/db/queries/member/getMember";
-import { updateMember } from "@conquest/db/queries/member/updateMember";
-import { upsertMember } from "@conquest/db/queries/member/upsertMember";
-import { deleteProfile } from "@conquest/db/queries/profile/deleteProfile";
-import { getProfile } from "@conquest/db/queries/profile/getProfile";
-import { upsertProfile } from "@conquest/db/queries/profile/upsertProfile";
-import { createTag } from "@conquest/db/queries/tag/createTag";
-import { listTags } from "@conquest/db/queries/tag/listTags";
+import { createTag } from "@conquest/db/tags/createTag";
+import { listTags } from "@conquest/db/tags/listTags";
+import { env } from "@conquest/env";
+import { DiscourseIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
 import type { DiscourseWebhook } from "@conquest/zod/types/discourse";
-import type { NextRequest } from "next/server";
-import { NextResponse } from "next/server";
+import { type NextRequest, NextResponse } from "next/server";
+import { createHmac } from "node:crypto";
 
 export async function POST(request: NextRequest) {
   const body = await request.json();
 
-  const integration = await checkSignature({ request });
+  const integration = await checkSignature(request);
 
   if (!integration) return NextResponse.json({ status: 200 });
 
@@ -62,7 +66,7 @@ export async function POST(request: NextRequest) {
       message: "",
       member_id: profile.member_id,
       channel_id: channel.id,
-      source: "DISCOURSE",
+      source: "Discourse",
       workspace_id,
     });
   }
@@ -71,11 +75,24 @@ export async function POST(request: NextRequest) {
     await sleep(1000);
     const { id, title } = topic;
 
-    await updateActivity({
+    const activity = await getActivity({
       external_id: `t-${id}`,
-      activity_type_key: "discourse:topic",
-      title,
       workspace_id,
+    });
+
+    if (!activity) return NextResponse.json({ status: 200 });
+
+    const activityType = await getActivityTypeByKey({
+      key: "discourse:topic",
+      workspace_id,
+    });
+
+    if (!activityType) return NextResponse.json({ status: 200 });
+
+    await updateActivity({
+      ...activity,
+      activity_type_id: activityType.id,
+      title,
     });
   }
 
@@ -88,21 +105,12 @@ export async function POST(request: NextRequest) {
       workspace_id,
     });
 
-    await prisma.activity.deleteMany({
-      where: {
-        OR: [
-          {
-            react_to: {
-              contains: `t-${id}`,
-            },
-          },
-          {
-            reply_to: {
-              contains: `t-${id}`,
-            },
-          },
-        ],
-      },
+    await client.query({
+      query: `
+        DELETE FROM activities
+        WHERE react_to LIKE 't-${id}'
+        OR reply_to LIKE 't-${id}'
+      `,
     });
   }
 
@@ -137,11 +145,24 @@ export async function POST(request: NextRequest) {
     if (!channel) return NextResponse.json({ status: 200 });
 
     if (post_number === 1) {
-      await updateActivity({
-        external_id: `t-${topic_id}`,
-        message: post.cooked,
-        activity_type_key: "discourse:topic",
+      const activity = await getActivity({
+        external_id: `t-${id}`,
         workspace_id,
+      });
+
+      if (!activity) return NextResponse.json({ status: 200 });
+
+      const activityType = await getActivityTypeByKey({
+        key: "discourse:topic",
+        workspace_id,
+      });
+
+      if (!activityType) return NextResponse.json({ status: 200 });
+
+      await updateActivity({
+        ...activity,
+        activity_type_id: activityType.id,
+        message: post.cooked,
       });
 
       return NextResponse.json({ status: 200 });
@@ -155,7 +176,7 @@ export async function POST(request: NextRequest) {
         reply_to: `t/${topic_id}/${reply_to_post_number}`,
         member_id: profile.member_id,
         channel_id: channel.id,
-        source: "DISCOURSE",
+        source: "Discourse",
         workspace_id,
       });
 
@@ -169,7 +190,7 @@ export async function POST(request: NextRequest) {
       message: post.cooked,
       member_id: profile.member_id,
       channel_id: channel.id,
-      source: "DISCOURSE",
+      source: "Discourse",
       workspace_id,
     });
   }
@@ -178,12 +199,24 @@ export async function POST(request: NextRequest) {
     await sleep(1000);
     const { id, post_number, topic_id } = post;
 
-    await updateActivity({
-      external_id: post_number === 1 ? `t-${topic_id}` : `p-${id}`,
-      activity_type_key:
-        post_number === 1 ? "discourse:topic" : "discourse:reply",
-      message: post.cooked,
+    const activity = await getActivity({
+      external_id: `t-${id}`,
       workspace_id,
+    });
+
+    if (!activity) return NextResponse.json({ status: 200 });
+
+    const activityType = await getActivityTypeByKey({
+      key: post_number === 1 ? "discourse:topic" : "discourse:reply",
+      workspace_id,
+    });
+
+    if (!activityType) return NextResponse.json({ status: 200 });
+
+    await updateActivity({
+      ...activity,
+      activity_type_id: activityType.id,
+      message: post.cooked,
     });
   }
 
@@ -206,7 +239,7 @@ export async function POST(request: NextRequest) {
 
   if (like && event === "post_liked") {
     const { post, user } = like;
-    const { id, category_id, topic_id, post_number } = post;
+    const { category_id, topic_id, post_number } = post;
     const { username } = user;
 
     const profile = await getProfile({
@@ -224,13 +257,12 @@ export async function POST(request: NextRequest) {
     if (!channel) return NextResponse.json({ status: 200 });
 
     await createActivity({
-      external_id: null,
       activity_type_key: "discourse:reaction",
       message: "like",
       react_to: `t/${topic_id}/${post_number}`,
       member_id: profile.member_id,
       channel_id: channel.id,
-      source: "DISCOURSE",
+      source: "Discourse",
       workspace_id,
     });
   }
@@ -241,24 +273,21 @@ export async function POST(request: NextRequest) {
     const [first_name, last_name] = name.split(" ");
     const avatar_url = avatar_template.replace("{size}", "500");
 
-    const upsertedMember = await upsertMember({
-      id: String(id),
-      data: {
-        first_name,
-        last_name,
-        primary_email: email,
-        avatar_url,
-        created_at: new Date(),
-      },
-      source: "DISCOURSE",
+    const member = await createMember({
+      first_name,
+      last_name,
+      primary_email: email,
+      avatar_url,
+      created_at: new Date(),
+      source: "Discourse",
       workspace_id,
     });
 
-    await upsertProfile({
+    await createProfile({
       external_id: String(id),
-      member_id: upsertedMember.id,
+      member_id: member.id,
       attributes: {
-        source: "DISCOURSE",
+        source: "Discourse",
         username,
       },
       workspace_id,
@@ -276,7 +305,7 @@ export async function POST(request: NextRequest) {
       activity_type_key: "discourse:invite",
       message: "",
       member_id: inviter.id,
-      source: "DISCOURSE",
+      source: "Discourse",
       workspace_id,
     });
   }
@@ -295,27 +324,24 @@ export async function POST(request: NextRequest) {
     const [first_name, last_name] = name.split(" ");
     const avatar_url = avatar_template.replace("{size}", "500");
 
-    const upsertedMember = await upsertMember({
-      id: String(id),
-      data: {
-        first_name,
-        last_name,
-        primary_email: email,
-        secondary_emails,
-        avatar_url,
-        job_title: title,
-        created_at: new Date(),
-      },
-      source: "DISCOURSE",
+    const member = await createMember({
+      first_name,
+      last_name,
+      primary_email: email,
+      secondary_emails,
+      avatar_url,
+      job_title: title ?? "",
+      created_at: new Date(),
+      source: "Discourse",
       workspace_id,
     });
 
-    await upsertProfile({
+    await createProfile({
       external_id: String(id),
-      member_id: upsertedMember.id,
+      member_id: member.id,
       attributes: {
         username,
-        source: "DISCOURSE",
+        source: "Discourse",
       },
       workspace_id,
     });
@@ -343,13 +369,13 @@ export async function POST(request: NextRequest) {
       activity_type_key: "discourse:login",
       message: "",
       member_id: profile.member_id,
-      source: "DISCOURSE",
+      source: "Discourse",
       workspace_id,
     });
   }
 
   if (category && event === "category_created") {
-    const { id, name, slug, parent_category_id } = category;
+    const { id, name, parent_category_id } = category;
 
     let channel_name = name;
 
@@ -365,16 +391,22 @@ export async function POST(request: NextRequest) {
     await createChannel({
       external_id: String(id),
       name: channel_name,
-      slug,
-      source: "DISCOURSE",
+      source: "Discourse",
       workspace_id,
     });
   }
 
   if (category && event === "category_updated") {
-    const { id, name, slug, parent_category_id } = category;
+    const { id, name, parent_category_id } = category;
 
     let channel_name = name;
+
+    const channel = await getChannel({
+      external_id: String(id),
+      workspace_id,
+    });
+
+    if (!channel) return NextResponse.json({ status: 200 });
 
     if (parent_category_id) {
       const parent = await getChannel({
@@ -388,7 +420,6 @@ export async function POST(request: NextRequest) {
     await updateChannel({
       external_id: String(id),
       name: channel_name,
-      slug,
       workspace_id,
     });
   }
@@ -412,21 +443,21 @@ export async function POST(request: NextRequest) {
 
     if (!profile) return NextResponse.json({ status: 200 });
 
+    const member = await getMember({
+      id: profile.member_id,
+    });
+
+    if (!member) return NextResponse.json({ status: 200 });
+
     const tags = await listTags({ workspace_id });
     const existingTag = tags.find(
       (tag) => tag.external_id === String(badge_id),
     );
 
     if (existingTag) {
-      await prisma.member.update({
-        where: {
-          id: profile.member_id,
-        },
-        data: {
-          tags: {
-            push: existingTag.id,
-          },
-        },
+      await updateMember({
+        ...member,
+        tags: [...(member.tags ?? []), existingTag.id],
       });
 
       return NextResponse.json({ status: 200 });
@@ -446,19 +477,13 @@ export async function POST(request: NextRequest) {
       external_id: String(badgeId),
       name,
       color: String(badge_type_id),
-      source: "DISCOURSE",
+      source: "Discourse",
       workspace_id,
     });
 
-    await prisma.member.update({
-      where: {
-        id: profile.member_id,
-      },
-      data: {
-        tags: {
-          push: newTag.id,
-        },
-      },
+    await updateMember({
+      ...member,
+      tags: [...(member?.tags ?? []), newTag.id],
     });
   }
 
@@ -483,10 +508,8 @@ export async function POST(request: NextRequest) {
     const userTags = member.tags.filter((tag) => tag !== currentTag?.id);
 
     await updateMember({
-      id: profile.member_id,
-      data: {
-        tags: userTags,
-      },
+      ...member,
+      tags: userTags,
     });
   }
 
@@ -510,11 +533,63 @@ export async function POST(request: NextRequest) {
 
     if (!channel) return NextResponse.json({ status: 200 });
 
-    await updateActivity({
-      external_id: `p-${id}`,
-      activity_type_key:
+    const activity = await getActivity({
+      external_id: `t-${id}`,
+      workspace_id,
+    });
+
+    if (!activity) return NextResponse.json({ status: 200 });
+
+    const activityType = await getActivityTypeByKey({
+      key:
         event === "accepted_solution" ? "discourse:solved" : "discourse:reply",
       workspace_id,
     });
+
+    if (!activityType) return NextResponse.json({ status: 200 });
+
+    await updateActivity({
+      ...activity,
+      activity_type_id: activityType.id,
+    });
   }
 }
+
+const checkSignature = async (request: NextRequest) => {
+  const signature = request.headers.get("X-Discourse-Event-Signature");
+  const community_url = request.headers.get("X-Discourse-Instance");
+  const rawBody = await request.text();
+
+  if (!signature) return false;
+
+  const secret = env.DISCOURSE_SECRET_KEY;
+
+  const expectedSignature = createHmac("sha256", secret)
+    .update(rawBody)
+    .digest("hex");
+
+  if (signature !== `sha256=${expectedSignature}`) {
+    return false;
+  }
+
+  if (!community_url) return false;
+
+  const integration = await prisma.integration.findFirst({
+    where: {
+      details: {
+        path: ["source"],
+        equals: "Discourse",
+      },
+      AND: [
+        {
+          details: {
+            path: ["community_url"],
+            equals: community_url,
+          },
+        },
+      ],
+    },
+  });
+
+  return DiscourseIntegrationSchema.parse(integration);
+};

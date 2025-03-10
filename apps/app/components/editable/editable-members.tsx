@@ -29,38 +29,40 @@ export const EditableMembers = ({ company }: Props) => {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
   const router = useRouter();
+  const utils = trpc.useUtils();
 
-  const { data: companyMembers } = trpc.companies.getCompanyMembers.useQuery({
+  const { data: companyMembers } = trpc.companies.listCompanyMembers.useQuery({
     companyId: company.id,
   });
 
-  const { mutateAsync: updateMemberCompany } =
-    trpc.members.updateMember.useMutation();
+  const { mutateAsync: updateMember } = trpc.members.update.useMutation({
+    onSuccess: () => {
+      utils.companies.listCompanyMembers.invalidate({ companyId: company.id });
+      utils.activities.list.invalidate({ company_id: company.id });
+    },
+  });
 
   const { data, hasNextPage, fetchNextPage, isLoading } =
-    trpc.members.listMembers.useInfiniteQuery(
-      { search, companyId: company.id, take: 25 },
+    trpc.members.getAllMembers.useInfiniteQuery(
+      { search, take: 25 },
       { getNextPageParam: (lastPage) => lastPage[lastPage.length - 1]?.id },
     );
 
   const members = data?.pages.flat();
 
   const onUpdate = async (memberId: string) => {
-    const isMemberInCompany = companyMembers?.some(
-      (member) => member.id === memberId,
-    );
+    const member = companyMembers?.find((member) => member.id === memberId);
+    const isInCompany = member?.company_id === company.id;
 
-    await updateMemberCompany({
-      id: memberId,
-      data: {
-        company_id: isMemberInCompany ? null : company.id,
-      },
+    if (!isInCompany) return;
+
+    await updateMember({
+      ...member,
+      company_id: isInCompany ? "" : company.id,
     });
 
     toast.success(
-      isMemberInCompany
-        ? "Member removed from company"
-        : "Member added to company",
+      isInCompany ? "Member removed from company" : "Member added to company",
     );
   };
 
@@ -107,8 +109,7 @@ export const EditableMembers = ({ company }: Props) => {
           <Button
             variant="ghost"
             size="xs"
-            className="h-8 px-[7px]"
-            classNameSpan="text-muted-foreground justify-start"
+            className="h-8 justify-start px-[7px] text-muted-foreground"
             onClick={() => setOpen(true)}
           >
             Set members

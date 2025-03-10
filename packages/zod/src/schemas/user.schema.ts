@@ -2,7 +2,6 @@ import type { user as UserPrisma } from "@prisma/client";
 import { z } from "zod";
 import { ROLE } from "../enum/role.enum";
 import { GroupFiltersSchema } from "./filters.schema";
-import { WorkspaceSchema } from "./workspace.schema";
 
 export const PreferencesSchema = z.object({
   id: z.string(),
@@ -14,25 +13,20 @@ export const PreferencesSchema = z.object({
 });
 
 export const UserSchema = z.object({
-  id: z.string().cuid(),
+  id: z.string(),
   email: z.string().email(),
-  hashed_password: z.string(),
+  emailVerified: z.date().nullable(),
   first_name: z.string().nullable(),
   last_name: z.string().nullable(),
   onboarding: z.date().nullable(),
   role: ROLE,
-  last_seen: z.date().nullable(),
+  last_activity_at: z.date(),
   members_preferences: PreferencesSchema,
   companies_preferences: PreferencesSchema,
-  workspace_id: z.string().cuid(),
+  workspace_id: z.string(),
   created_at: z.coerce.date(),
   updated_at: z.coerce.date(),
 }) satisfies z.ZodType<UserPrisma>;
 
-export const UserWithWorkspaceSchema = UserSchema.extend({
-  workspace: WorkspaceSchema,
-});
-
 export type User = z.infer<typeof UserSchema>;
-export type UserWithWorkspace = z.infer<typeof UserWithWorkspaceSchema>;
 export type Preferences = z.infer<typeof PreferencesSchema>;

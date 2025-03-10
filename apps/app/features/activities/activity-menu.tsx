@@ -25,10 +25,10 @@ export const ActivityMenu = ({ activity, href }: Props) => {
 
   const utils = trpc.useUtils();
 
-  const { mutateAsync } = trpc.activities.deleteActivity.useMutation({
+  const { mutateAsync } = trpc.activities.delete.useMutation({
     onSuccess: () => {
       toast.success("Activity deleted");
-      utils.activities.getMemberActivities.invalidate();
+      utils.activities.list.invalidate();
     },
     onError: (error) => {
       toast.error(error.message);

@@ -8,13 +8,18 @@ type Props = {
 };
 
 export const CompanyCell = ({ row }: Props) => {
-  const { data, isLoading } = trpc.companies.getCompany.useQuery({
-    id: row.original.company_id,
-  });
+  const { data, isLoading } = trpc.companies.get.useQuery(
+    { id: row.original.company_id ?? "" },
+    { enabled: !!row.original.company_id },
+  );
 
   return (
-    <p className="truncate p-2">
-      {isLoading ? <Skeleton className="h-4 w-24" /> : data?.name}
-    </p>
+    <div className="truncate p-2">
+      {isLoading ? (
+        <Skeleton className="h-4 w-24" />
+      ) : (
+        <p className="truncate">{data?.name}</p>
+      )}
+    </div>
   );
 };

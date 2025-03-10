@@ -1,6 +1,5 @@
 import { FormEditSchema } from "@/features/lists/schemas/form-edit.schema";
-import { prisma } from "@conquest/db/prisma";
-import { ListSchema } from "@conquest/zod/schemas/list.schema";
+import { updateList as _updateList } from "@conquest/db/lists/updateList";
 import { protectedProcedure } from "../trpc";
 
 export const updateList = protectedProcedure
@@ -8,12 +7,5 @@ export const updateList = protectedProcedure
   .mutation(async ({ input }) => {
     const { id, ...data } = input;
 
-    const list = await prisma.list.update({
-      where: {
-        id,
-      },
-      data,
-    });
-
-    return ListSchema.parse(list);
+    return _updateList({ id, ...data });
   });

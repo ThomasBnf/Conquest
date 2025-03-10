@@ -1,58 +1,57 @@
-import { PrismaAdapter } from "@auth/prisma-adapter";
 import { prisma } from "@conquest/db/prisma";
-import { LoginSchema } from "@conquest/zod/schemas/auth.schema";
-import { UserWithWorkspaceSchema } from "@conquest/zod/schemas/user.schema";
-import { compare } from "bcryptjs";
+import { resend } from "@conquest/db/resend";
+import { SignupEmail } from "@conquest/emails/SignupEmail";
+import { env } from "@conquest/env";
+import { type User, UserSchema } from "@conquest/zod/schemas/user.schema";
+import type { Workspace } from "@conquest/zod/schemas/workspace.schema";
+import type { DefaultSession } from "next-auth";
 import NextAuth from "next-auth";
-import Credentials from "next-auth/providers/credentials";
+import GoogleProvider from "next-auth/providers/google";
+import Resend from "next-auth/providers/resend";
+import { createAuthPrismaAdapter } from "./lib/createPrismaAdapter";
+
+declare module "next-auth" {
+  interface Session extends DefaultSession {
+    user: User;
+    workspace: Workspace;
+  }
+}
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
-  adapter: PrismaAdapter(prisma),
+  secret: env.AUTH_SECRET,
+  adapter: createAuthPrismaAdapter(prisma),
   providers: [
-    Credentials({
-      async authorize(credentials) {
-        const validatedFields = LoginSchema.safeParse(credentials);
-
-        if (validatedFields.success) {
-          const { email, password } = validatedFields.data;
-
-          const user = await prisma.user.findUnique({
-            where: {
-              email,
-            },
-            include: {
-              workspace: true,
-            },
-          });
-
-          if (!user || !user.hashed_password) return null;
-
-          const isValidPassword = await compare(password, user.hashed_password);
-          if (isValidPassword) return UserWithWorkspaceSchema.parse(user);
-        }
-        return null;
+    Resend({
+      maxAge: 5 * 60,
+      sendVerificationRequest: async ({ identifier, url }) => {
+        await resend.emails.send({
+          from: "Conquest <hello@useconquest.com>",
+          to: identifier,
+          subject: "Login for Conquest",
+          react: SignupEmail({ url }),
+        });
+      },
+    }),
+    GoogleProvider({
+      clientId: env.GOOGLE_CLIENT_ID,
+      clientSecret: env.GOOGLE_CLIENT_SECRET,
+      authorization: {
+        params: {
+          redirect_uri: "https://conquest.ngrok.app/api/auth/callback/google",
+        },
       },
     }),
   ],
+  pages: {
+    signIn: "/auth/login",
+  },
   session: {
-    strategy: "jwt",
+    strategy: "database",
   },
   callbacks: {
-    authorized: async ({ auth }) => {
-      return !!auth;
-    },
-    async session({ token, session }) {
-      if (token.sub && session.user) {
-        session.user.id = token.sub;
-      }
-
-      return session;
-    },
-    async jwt({ user, token }) {
-      if (user) {
-        token.accessToken = user.id;
-      }
-      return token;
-    },
+    session: async ({ session, user }) => ({
+      ...session,
+      user: UserSchema.parse(user),
+    }),
   },
 });

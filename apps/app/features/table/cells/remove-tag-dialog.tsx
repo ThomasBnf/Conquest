@@ -21,6 +21,7 @@ import {
 import { CompanySchema } from "@conquest/zod/schemas/company.schema";
 import { MemberSchema } from "@conquest/zod/schemas/member.schema";
 import type { Table } from "@tanstack/react-table";
+import { Loader2 } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 
@@ -29,7 +30,7 @@ type Props<TData> = {
 };
 
 export const RemoveTagDialog = <TData,>({ table }: Props<TData>) => {
-  const { data: tags } = trpc.tags.getAllTags.useQuery();
+  const { data: tags } = trpc.tags.list.useQuery();
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
@@ -43,7 +44,7 @@ export const RemoveTagDialog = <TData,>({ table }: Props<TData>) => {
   const { mutateAsync: updateManyMembers } =
     trpc.members.updateManyMembers.useMutation({
       onSuccess: () => {
-        utils.members.getAllMembers.invalidate();
+        utils.members.list.invalidate();
         setSelectedTags([]);
         setOpen(false);
         setLoading(false);
@@ -54,7 +55,7 @@ export const RemoveTagDialog = <TData,>({ table }: Props<TData>) => {
   const { mutateAsync: updateManyCompanies } =
     trpc.companies.updateManyCompanies.useMutation({
       onSuccess: () => {
-        utils.companies.getAllCompanies.invalidate();
+        utils.companies.list.invalidate();
         setSelectedTags([]);
         setOpen(false);
         setLoading(false);
@@ -139,10 +140,13 @@ export const RemoveTagDialog = <TData,>({ table }: Props<TData>) => {
           </DialogTrigger>
           <Button
             onClick={onConfirm}
-            loading={loading}
             disabled={selectedTags.length === 0 || loading}
           >
-            Remove tag{selectedTags.length > 1 ? "s" : ""}
+            {loading ? (
+              <Loader2 className="size-4 animate-spin" />
+            ) : (
+              <>Remove tag{selectedTags.length > 1 ? "s" : ""}</>
+            )}
           </Button>
         </DialogFooter>
       </DialogContent>

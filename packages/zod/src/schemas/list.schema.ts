@@ -1,15 +1,14 @@
-import type { list } from "@prisma/client";
 import { z } from "zod";
 import { GroupFiltersSchema } from "./filters.schema";
 
 export const ListSchema = z.object({
-  id: z.string().cuid(),
+  id: z.string().uuid(),
   emoji: z.string(),
   name: z.string(),
   groupFilters: GroupFiltersSchema,
   workspace_id: z.string(),
-  created_at: z.date(),
-  updated_at: z.date(),
-}) satisfies z.ZodType<list>;
+  created_at: z.coerce.date(),
+  updated_at: z.coerce.date(),
+});
 
 export type List = z.infer<typeof ListSchema>;

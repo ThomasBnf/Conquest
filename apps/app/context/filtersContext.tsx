@@ -35,13 +35,8 @@ export const FiltersProvider = ({ defaultGroupFilters, children }: Props) => {
         operator: "AND",
       },
   );
-  const utils = trpc.useUtils();
 
-  const { mutateAsync } = trpc.users.updateUser.useMutation({
-    onSuccess: () => {
-      utils.users.getCurrentUser.invalidate();
-    },
-  });
+  const { mutateAsync } = trpc.users.update.useMutation();
 
   const onAddFilter = async (filter: Filter) => {
     if (!user?.id) return;
@@ -53,12 +48,10 @@ export const FiltersProvider = ({ defaultGroupFilters, children }: Props) => {
       });
 
       mutateAsync({
-        id: user?.id,
-        data: {
-          members_preferences: {
-            ...user.members_preferences,
-            groupFilters: newGroupFilters,
-          },
+        id: user.id,
+        members_preferences: {
+          ...user.members_preferences,
+          groupFilters: newGroupFilters,
         },
       });
 
@@ -78,12 +71,10 @@ export const FiltersProvider = ({ defaultGroupFilters, children }: Props) => {
       });
 
       mutateAsync({
-        id: user?.id,
-        data: {
-          members_preferences: {
-            ...user.members_preferences,
-            groupFilters: newGroupFilters,
-          },
+        id: user.id,
+        members_preferences: {
+          ...user.members_preferences,
+          groupFilters: newGroupFilters,
         },
       });
 
@@ -101,12 +92,10 @@ export const FiltersProvider = ({ defaultGroupFilters, children }: Props) => {
       });
 
       mutateAsync({
-        id: user?.id,
-        data: {
-          members_preferences: {
-            ...user.members_preferences,
-            groupFilters: newGroupFilters,
-          },
+        id: user.id,
+        members_preferences: {
+          ...user.members_preferences,
+          groupFilters: newGroupFilters,
         },
       });
 
@@ -123,12 +112,10 @@ export const FiltersProvider = ({ defaultGroupFilters, children }: Props) => {
     });
 
     mutateAsync({
-      id: user?.id,
-      data: {
-        members_preferences: {
-          ...user.members_preferences,
-          groupFilters: { filters: [], operator: "AND" },
-        },
+      id: user.id,
+      members_preferences: {
+        ...user.members_preferences,
+        groupFilters: { filters: [], operator: "AND" },
       },
     });
   };
@@ -143,12 +130,10 @@ export const FiltersProvider = ({ defaultGroupFilters, children }: Props) => {
       });
 
       mutateAsync({
-        id: user?.id,
-        data: {
-          members_preferences: {
-            ...user.members_preferences,
-            groupFilters: newGroupFilters,
-          },
+        id: user.id,
+        members_preferences: {
+          ...user.members_preferences,
+          groupFilters: newGroupFilters,
         },
       });
 

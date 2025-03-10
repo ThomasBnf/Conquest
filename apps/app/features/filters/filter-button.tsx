@@ -10,9 +10,9 @@ import {
 } from "@conquest/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@conquest/ui/popover";
 import type { Filter } from "@conquest/zod/schemas/filters.schema";
-import cuid from "cuid";
 import { Plus } from "lucide-react";
 import { useState } from "react";
+import { v4 as uuid } from "uuid";
 
 export const FilterButton = () => {
   const [open, setOpen] = useState(false);
@@ -21,7 +21,7 @@ export const FilterButton = () => {
   const onSelectFilter = (filter: Filter) => {
     const newFilter = {
       ...filter,
-      id: cuid(),
+      id: uuid(),
     };
     setOpen(false);
     onAddFilter(newFilter);
@@ -57,9 +57,9 @@ export const FilterButton = () => {
                   ))}
                 </CommandGroup>
                 <CommandGroup heading="Member">
-                  {filtersMember.map((filter) => (
+                  {filtersMember.map((filter, index) => (
                     <CommandItem
-                      key={filter.id}
+                      key={index}
                       onSelect={() => onSelectFilter(filter)}
                     >
                       {filter.label}

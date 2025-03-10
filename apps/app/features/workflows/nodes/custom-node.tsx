@@ -40,7 +40,7 @@ export const CustomNode = ({ hasEdges, ...props }: Props) => {
         <div
           className={cn(
             "-top-[24px] absolute flex h-6 items-center gap-1 rounded-t-lg border-x border-t bg-muted px-1.5 text-muted-foreground",
-            node?.id === props.id && "bg-muted text-main-500",
+            node?.id === props.id && "bg-muted text-main-400",
           )}
         >
           <Target size={16} />
@@ -56,7 +56,7 @@ export const CustomNode = ({ hasEdges, ...props }: Props) => {
         className={cn(
           "relative flex w-80 flex-1 flex-col border bg-background p-3",
           isTrigger ? "rounded-b-lg rounded-tr-lg" : "rounded-md",
-          selected?.id === node.id && "border-main-500 ring-2 ring-ring",
+          selected?.id === node.id && "border-main-400 ring-2 ring-ring",
         )}
       >
         <div className="flex items-center gap-2">

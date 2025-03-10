@@ -10,17 +10,17 @@ type Props = {
   integration: {
     href: string;
     logo: ReactNode;
-    name: string;
+    source: Source;
     description: string;
     soon: boolean;
   };
 };
 
 export const IntegrationCard = ({ integration }: Props) => {
-  const { href, logo, name, description, soon } = integration;
+  const { href, logo, source, description, soon } = integration;
 
-  const { data } = trpc.integrations.getIntegrationBySource.useQuery({
-    source: name.toUpperCase() as Source,
+  const { data } = trpc.integrations.bySource.useQuery({
+    source,
   });
 
   const isConnected = data?.status === "CONNECTED";
@@ -30,15 +30,15 @@ export const IntegrationCard = ({ integration }: Props) => {
   return (
     <Link
       href={soon ? "" : href}
-      key={name}
+      key={source}
       className={cn(
-        "relative flex items-start gap-4 rounded-md border p-4 transition-colors hover:bg-muted-hover",
+        "relative flex items-start gap-4 rounded-md border p-4 transition-colors hover:bg-muted",
         soon && "cursor-not-allowed",
       )}
     >
       <div className={cn(soon && "opacity-50")}>{logo}</div>
       <div className={cn(soon && "opacity-50")}>
-        <p className="font-medium text-lg leading-tight">{name}</p>
+        <p className="font-medium text-lg leading-tight">{source}</p>
         <p className="text-muted-foreground">{description}</p>
       </div>
       {isConnected && (

@@ -18,8 +18,8 @@ export const FilteredEntries = ({ member }: Props) => {
     ["first_activity", member.first_activity],
   ];
 
-  const { data: company } = trpc.companies.getCompany.useQuery({
-    id: member.company_id,
+  const { data: company } = trpc.companies.get.useQuery({
+    id: member.company_id ?? "",
   });
 
   return entries.map(([key, value]) => {

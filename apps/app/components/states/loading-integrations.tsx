@@ -1,59 +1,57 @@
 import { trpc } from "@/server/client";
+import type { Source } from "@conquest/zod/enum/source.enum";
 import { Loader2 } from "lucide-react";
 import { Discord } from "../icons/Discord";
 import { Discourse } from "../icons/Discourse";
+import { Github } from "../icons/Github";
 import { Linkedin } from "../icons/Linkedin";
 import { Livestorm } from "../icons/Livestorm";
 import { Slack } from "../icons/Slack";
 
+type IconComponent =
+  | typeof Discord
+  | typeof Discourse
+  | typeof Github
+  | typeof Linkedin
+  | typeof Livestorm
+  | typeof Slack;
+
+const INTEGRATIONS: Array<{ source: Source; Icon: IconComponent }> = [
+  { source: "Discord", Icon: Discord },
+  { source: "Discourse", Icon: Discourse },
+  { source: "Github", Icon: Github },
+  { source: "Linkedin", Icon: Linkedin },
+  { source: "Livestorm", Icon: Livestorm },
+  { source: "Slack", Icon: Slack },
+];
+
 export const LoadingIntegrations = () => {
-  const { data: discord } = trpc.integrations.getIntegrationBySource.useQuery({
-    source: "DISCORD",
-  });
-
-  const { data: discourse } = trpc.integrations.getIntegrationBySource.useQuery(
-    {
-      source: "DISCOURSE",
-    },
+  const integrationQueries = INTEGRATIONS.map(({ source }) =>
+    trpc.integrations.bySource.useQuery({ source }),
   );
 
-  const { data: linkedin } = trpc.integrations.getIntegrationBySource.useQuery({
-    source: "LINKEDIN",
-  });
+  const syncingIntegrations = integrationQueries
+    .map((query, index) => ({
+      ...query,
+      ...INTEGRATIONS[index],
+    }))
+    .filter(({ data }) => data?.status === "SYNCING");
 
-  const { data: livestorm } = trpc.integrations.getIntegrationBySource.useQuery(
-    {
-      source: "LIVESTORM",
-    },
-  );
-
-  const { data: slack } = trpc.integrations.getIntegrationBySource.useQuery({
-    source: "SLACK",
-  });
   return (
     <div>
-      {[
-        { integration: discord, Icon: Discord },
-        { integration: discourse, Icon: Discourse },
-        { integration: linkedin, Icon: Linkedin },
-        { integration: livestorm, Icon: Livestorm },
-        { integration: slack, Icon: Slack },
-      ].map(
-        ({ integration, Icon }) =>
-          integration?.status === "SYNCING" && (
-            <div
-              key={integration.id}
-              className="flex h-10 items-center gap-2 border-t bg-background px-4 text-sm"
-            >
-              <Icon size={16} />
-              <p>Collecting data</p>
-              <Loader2
-                size={16}
-                className="ml-auto animate-spin text-muted-foreground"
-              />
-            </div>
-          ),
-      )}
+      {syncingIntegrations.map(({ data, Icon }) => (
+        <div
+          key={data!.id}
+          className="flex h-10 items-center gap-2 border-t bg-background px-4 text-sm"
+        >
+          {Icon && <Icon size={16} />}
+          <p>Collecting data</p>
+          <Loader2
+            size={16}
+            className="ml-auto animate-spin text-muted-foreground"
+          />
+        </div>
+      ))}
     </div>
   );
 };

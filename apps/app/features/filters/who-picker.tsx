@@ -24,7 +24,7 @@ export const WhoPicker = ({ filter }: Props) => {
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button variant="outline" classNameSpan="justify-between">
+        <Button variant="outline">
           {who.replaceAll("_", " ").charAt(0).toUpperCase() +
             who.replaceAll("_", " ").slice(1)}
           <ChevronDown size={16} className="text-muted-foreground" />

@@ -11,13 +11,14 @@
     "typecheck": "tsc --noEmit"
   },
   "prisma": {
-    "schema": "./src/prisma/schema.prisma",
+    "schema": "./prisma/schema.prisma",
     "seed": "bun run prisma/seed.ts"
   },
   "exports": {
     "./*": "./src/*.ts"
   },
   "dependencies": {
+    "@conquest/clickhouse": "workspace:*",
     "@conquest/env": "workspace:*",
     "@conquest/zod": "workspace:*",
     "@discordjs/rest": "^2.4.2",

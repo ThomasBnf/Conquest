@@ -1,3 +1,4 @@
+import { LoadingChannels } from "@/components/states/loading-channels";
 import { DISCORD_ACTIVITY_TYPES } from "@/constant";
 import { useIntegration } from "@/context/integrationContext";
 import { trpc } from "@/server/client";
@@ -5,9 +6,8 @@ import { Button } from "@conquest/ui/button";
 import { Checkbox } from "@conquest/ui/checkbox";
 import { cn } from "@conquest/ui/cn";
 import type { APIGuildCategoryChannel } from "discord-api-types/v10";
-import { ArrowRight, Hash } from "lucide-react";
+import { ArrowRight, Hash, Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { LoadingChannels } from "../integrations/loading-channels";
 
 export const DiscordChannels = () => {
   const { setStep, channels } = useIntegration();
@@ -18,9 +18,9 @@ export const DiscordChannels = () => {
   const utils = trpc.useUtils();
 
   const { mutateAsync: createManyActivityTypes } =
-    trpc.activityTypes.createManyActivityTypes.useMutation({
+    trpc.activityTypes.postMany.useMutation({
       onSuccess: () => {
-        utils.activityTypes.getAllActivityTypes.invalidate();
+        utils.activityTypes.list.invalidate();
         setTimeout(() => {
           setLoading(false);
           setStep(1);
@@ -29,7 +29,7 @@ export const DiscordChannels = () => {
     });
 
   const { mutateAsync: createManyChannels } =
-    trpc.channels.createManyChannels.useMutation({});
+    trpc.channels.postMany.useMutation({});
 
   const { data: discordChannels, isLoading } =
     trpc.discord.listChannels.useQuery();
@@ -61,7 +61,7 @@ export const DiscordChannels = () => {
     const channelsData = selectedChannels?.map(({ id, name }) => ({
       external_id: id ?? "",
       name: name ?? "",
-      source: "DISCORD" as const,
+      source: "Discord" as const,
     }));
 
     if (!channelsData) return;
@@ -121,8 +121,7 @@ export const DiscordChannels = () => {
                     );
 
                     return (
-                      <button
-                        type="button"
+                      <div
                         key={subChannel.id}
                         className={cn(
                           "flex items-center gap-2",
@@ -138,7 +137,7 @@ export const DiscordChannels = () => {
                           <Hash size={16} />
                           <p>{subChannel.name}</p>
                         </div>
-                      </button>
+                      </div>
                     );
                   })}
               </div>
@@ -147,12 +146,17 @@ export const DiscordChannels = () => {
         })}
       </div>
       <Button
-        loading={loading}
         disabled={selectedChannels.length === 0 || loading}
         onClick={onClick}
       >
-        Next
-        <ArrowRight size={16} />
+        {loading ? (
+          <Loader2 className="size-4 animate-spin" />
+        ) : (
+          <>
+            Next
+            <ArrowRight size={16} />
+          </>
+        )}
       </Button>
     </div>
   );

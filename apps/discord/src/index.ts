@@ -1,18 +1,23 @@
+import { createActivity } from "@conquest/clickhouse/activities/createActivity";
+import { deleteActivity } from "@conquest/clickhouse/activities/deleteActivity";
+import { getActivity } from "@conquest/clickhouse/activities/getActivity";
+import { updateActivity } from "@conquest/clickhouse/activities/updateActivity";
+import { getActivityTypeByKey } from "@conquest/clickhouse/activity-types/getActivityTypeByKey";
+import { createChannel } from "@conquest/clickhouse/channels/createChannel";
+import { deleteChannel } from "@conquest/clickhouse/channels/deleteChannel";
+import { getChannel } from "@conquest/clickhouse/channels/getChannel";
+import { updateChannel } from "@conquest/clickhouse/channels/updateChannel";
+import { client as clickhouseClient } from "@conquest/clickhouse/client";
+import { createMember } from "@conquest/clickhouse/members/createMember";
+import { getMember } from "@conquest/clickhouse/members/getMember";
+import { updateMember } from "@conquest/clickhouse/members/updateMember";
+import { createProfile } from "@conquest/clickhouse/profiles/createProfile";
+import { deleteProfile } from "@conquest/clickhouse/profiles/deleteProfile";
+import { getProfile } from "@conquest/clickhouse/profiles/getProfile";
+import { getIntegration } from "@conquest/db/integrations/getIntegration";
 import { prisma } from "@conquest/db/prisma";
-import { createActivity } from "@conquest/db/queries/activity/createActivity";
-import { deleteActivity } from "@conquest/db/queries/activity/deleteActivity";
-import { getActivity } from "@conquest/db/queries/activity/getActivity";
-import { updateActivity } from "@conquest/db/queries/activity/updateActivity";
-import { createChannel } from "@conquest/db/queries/channel/createChannel";
-import { deleteChannel } from "@conquest/db/queries/channel/deleteChannel";
-import { getChannel } from "@conquest/db/queries/channel/getChannel";
-import { updateChannel } from "@conquest/db/queries/channel/updateChannel";
-import { getIntegration } from "@conquest/db/queries/integration/getIntegration";
-import { createMember } from "@conquest/db/queries/member/createMember";
-import { updateMember } from "@conquest/db/queries/member/updateMember";
-import { deleteProfile } from "@conquest/db/queries/profile/deleteProfile";
-import { getProfile } from "@conquest/db/queries/profile/getProfile";
-import { upsertProfile } from "@conquest/db/queries/profile/upsertProfile";
+import { env } from "@conquest/env";
+import { ActivitySchema } from "@conquest/zod/schemas/activity.schema";
 import {
   ChannelType,
   Client,
@@ -24,11 +29,10 @@ import {
 import { config } from "dotenv";
 import express from "express";
 import { sleep } from "./helpers/sleep";
-
 config();
 
 const app = express();
-const port = process.env.PORT || 10000;
+const port = env.DISCORD_PORT || 10000;
 
 app.get("/", (_req, res) => {
   res.send("Discord bot is running!");
@@ -72,12 +76,12 @@ client.on(Events.GuildMemberAdd, async (member) => {
   if (!integration) return;
   const { workspace_id } = integration;
 
-  const firstName = globalName?.split(" ")[0] ?? null;
-  const lastName = globalName?.split(" ")[1] ?? null;
+  const firstName = globalName?.split(" ")[0] ?? "";
+  const lastName = globalName?.split(" ")[1] ?? "";
 
   const avatarUrl = avatar
     ? `https://cdn.discordapp.com/avatars/${id}/${avatar}.webp`
-    : null;
+    : "";
 
   try {
     const existingProfile = await getProfile({
@@ -87,20 +91,18 @@ client.on(Events.GuildMemberAdd, async (member) => {
 
     if (!existingProfile) {
       const createdMember = await createMember({
-        data: {
-          first_name: firstName,
-          last_name: lastName,
-          avatar_url: avatarUrl,
-        },
-        source: "DISCORD",
+        first_name: firstName,
+        last_name: lastName,
+        avatar_url: avatarUrl,
+        source: "Discord",
         workspace_id,
       });
 
-      await upsertProfile({
+      await createProfile({
         external_id: id,
         attributes: {
           username,
-          source: "DISCORD",
+          source: "Discord",
         },
         member_id: createdMember.id,
         workspace_id,
@@ -133,35 +135,43 @@ client.on(Events.GuildMemberRemove, async (member) => {
   }
 });
 
-client.on(Events.UserUpdate, async (user) => {
+client.on(Events.UserUpdate, async (_, user) => {
   console.log("UserUpdate", user);
   const { id, username, globalName, avatar } = user;
 
-  const firstName = globalName?.split(" ")[0] ?? null;
-  const lastName = globalName?.split(" ")[1] ?? null;
+  const firstName = globalName?.split(" ")[0] ?? "";
+  const lastName = globalName?.split(" ")[1] ?? "";
 
   const avatarUrl = avatar
     ? `https://cdn.discordapp.com/avatars/${id}/${avatar}.webp`
-    : null;
+    : "";
+
+  const profile = await getProfile({ external_id: id });
+
+  if (!profile) return;
+
+  const member = await getMember({
+    id: profile.member_id,
+  });
+
+  if (!member) return;
 
   try {
-    const updatedMember = await updateMember({
-      id,
-      data: {
-        first_name: firstName,
-        last_name: lastName,
-        avatar_url: avatarUrl,
-      },
+    await updateMember({
+      ...member,
+      first_name: firstName,
+      last_name: lastName,
+      avatar_url: avatarUrl,
     });
 
-    await upsertProfile({
+    await createProfile({
       external_id: id,
       attributes: {
         username: username ?? "",
-        source: "DISCORD",
+        source: "Discord",
       },
-      member_id: updatedMember.id,
-      workspace_id: updatedMember.workspace_id,
+      member_id: profile.member_id,
+      workspace_id: profile.workspace_id,
     });
   } catch (error) {
     console.error("UserUpdate", error);
@@ -197,7 +207,7 @@ client.on(Events.ChannelCreate, async (channel) => {
       await createChannel({
         external_id: id,
         name,
-        source: "DISCORD",
+        source: "Discord",
         workspace_id,
       });
     } catch (error) {
@@ -281,10 +291,18 @@ client.on(Events.MessageCreate, async (message) => {
     });
 
     if (activity && activity.message === "") {
+      const activityType = await getActivityTypeByKey({
+        key: "discord:thread",
+        workspace_id,
+      });
+
+      if (!activityType) return;
+
       try {
         return await updateActivity({
-          external_id: activity.external_id ?? "",
-          activity_type_key: "discord:thread",
+          ...activity,
+          external_id: activity.external_id,
+          activity_type_id: activityType.id,
           message: content,
           workspace_id,
         });
@@ -303,7 +321,7 @@ client.on(Events.MessageCreate, async (message) => {
         reply_to: channelId,
         member_id: profile.member_id,
         channel_id: activity?.channel_id,
-        source: "DISCORD",
+        source: "Discord",
         workspace_id,
       });
     } catch (error) {
@@ -319,7 +337,7 @@ client.on(Events.MessageCreate, async (message) => {
         message: content,
         member_id: profile.member_id,
         channel_id: channel.id,
-        source: "DISCORD",
+        source: "Discord",
         workspace_id,
       });
     } catch (error) {
@@ -336,7 +354,7 @@ client.on(Events.MessageCreate, async (message) => {
         reply_to: reference?.messageId,
         member_id: profile.member_id,
         channel_id: channel.id,
-        source: "DISCORD",
+        source: "Discord",
         workspace_id,
       });
     } catch (error) {
@@ -360,17 +378,19 @@ client.on(Events.MessageUpdate, async (message) => {
   if (!integration) return;
   const { workspace_id } = integration;
 
+  const activityWithType = await getActivity({
+    external_id: id,
+    workspace_id,
+  });
+
+  if (!activityWithType) return;
+
+  const { activity_type, ...activity } = activityWithType;
+
   try {
-    await prisma.activity.update({
-      where: {
-        external_id_workspace_id: {
-          external_id: id,
-          workspace_id,
-        },
-      },
-      data: {
-        message: content,
-      },
+    await updateActivity({
+      ...activity,
+      message: content,
     });
   } catch (error) {
     console.error("MessageUpdate", error);
@@ -406,11 +426,13 @@ client.on(Events.MessageDelete, async (message) => {
       workspace_id,
     });
 
-    await prisma.activity.deleteMany({
-      where: {
-        OR: [{ react_to: id }, { reply_to: id }],
-        workspace_id,
-      },
+    await clickhouseClient.query({
+      query: `
+        ALTER TABLE activity
+        DELETE WHERE react_to = '${id}'
+        OR reply_to = '${id}'
+        AND workspace_id = '${workspace_id}'
+      `,
     });
   } catch (error) {
     console.error("MessageDelete", error);
@@ -447,7 +469,7 @@ client.on(Events.ThreadCreate, async (thread) => {
       message: "",
       member_id: profile.member_id,
       channel_id: channel.id,
-      source: "DISCORD",
+      source: "Discord",
       workspace_id,
     });
   } catch (error) {
@@ -473,38 +495,37 @@ client.on(Events.ThreadDelete, async (thread) => {
   if (!profile) return;
 
   try {
-    const activities = await prisma.activity.findMany({
-      where: {
-        reply_to: id,
-        workspace_id,
-      },
+    const result = await clickhouseClient.query({
+      query: `
+        SELECT * FROM activity
+        WHERE reply_to = '${id}'
+        AND workspace_id = '${workspace_id}'
+      `,
     });
 
+    const { data } = await result.json();
+    const activities = ActivitySchema.array().parse(data);
+
     for (const activity of activities) {
-      await prisma.activity.deleteMany({
-        where: {
-          OR: [
-            { react_to: activity.external_id },
-            { reply_to: activity.external_id },
-          ],
-          workspace_id,
-        },
+      const { external_id } = activity;
+
+      await clickhouseClient.query({
+        query: `
+          ALTER TABLE activity
+          DELETE WHERE react_to = '${external_id}'
+          OR reply_to = '${external_id}'
+          AND workspace_id = '${workspace_id}'
+        `,
       });
     }
 
-    await prisma.activity.deleteMany({
-      where: {
-        OR: [
-          {
-            react_to: id,
-            workspace_id,
-          },
-          {
-            reply_to: id,
-            workspace_id,
-          },
-        ],
-      },
+    await clickhouseClient.query({
+      query: `
+        ALTER TABLE activity
+        DELETE WHERE react_to = '${id}'
+        OR reply_to = '${id}'
+        AND workspace_id = '${workspace_id}'
+      `,
     });
 
     await deleteActivity({
@@ -534,7 +555,7 @@ client.on(Events.GuildRoleCreate, async (role) => {
         external_id: id,
         name,
         color: "#99AAB5",
-        source: "DISCORD",
+        source: "Discord",
         workspace_id,
       },
     });
@@ -653,14 +674,13 @@ client.on(Events.MessageReactionAdd, async (reaction, user) => {
 
   try {
     await createActivity({
-      external_id: null,
       activity_type_key: "discord:reaction",
       message: emoji.name ?? "",
       react_to: id,
       member_id: profile.member_id,
       //TO DO: Add thread channel NAME IN Activities
       channel_id: thread?.channel_id ?? channel?.id,
-      source: "DISCORD",
+      source: "Discord",
       workspace_id,
     });
   } catch (error) {
@@ -690,17 +710,18 @@ client.on(Events.MessageReactionRemove, async (reaction, user) => {
   if (!profile) return;
 
   try {
-    await prisma.activity.deleteMany({
-      where: {
-        message: emoji.name ?? "",
-        react_to: messageId,
-        member_id: profile.member_id,
-        workspace_id,
-      },
+    await clickhouseClient.query({
+      query: `
+        ALTER TABLE activity
+        DELETE WHERE react_to = '${messageId}'
+        AND message = '${emoji.name}'
+        AND member_id = '${profile.member_id}'
+        AND workspace_id = '${workspace_id}'
+      `,
     });
   } catch (error) {
     console.error("MessageReactionRemove", error);
   }
 });
 
-client.login(process.env.DISCORD_BOT_TOKEN);
+client.login(env.DISCORD_BOT_TOKEN);

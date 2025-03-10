@@ -25,7 +25,7 @@ type Props = {
 };
 
 export const TagPicker = ({ record, onUpdate, className }: Props) => {
-  const { data: tags } = trpc.tags.getAllTags.useQuery();
+  const { data: tags } = trpc.tags.list.useQuery();
 
   const [recordTags, setRecordTags] = useState(record?.tags ?? []);
 
@@ -55,7 +55,6 @@ export const TagPicker = ({ record, onUpdate, className }: Props) => {
               recordTags.length > 0 ? "" : "-ml-1.5",
               className,
             )}
-            classNameSpan="justify-start"
           >
             <Plus size={16} />
             Add tags
