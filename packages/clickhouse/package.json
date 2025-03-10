@@ -28,8 +28,5 @@
   "devDependencies": {
     "clickhouse-migrations": "^1.0.4",
     "dotenv-cli": "8.0.0"
-  },
-  "code-runner.executorMap": {
-    "typescript": "bun run"
   }
 }

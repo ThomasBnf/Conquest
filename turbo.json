@@ -1,7 +1,6 @@
 {
   "$schema": "https://turborepo.org/schema.json",
   "globalDependencies": ["**/.env"],
-  "globalEnv": ["AUTH_SECRET", "DATABASE_URL", "DIRECT_URL"],
   "envMode": "loose",
   "tasks": {
     "topo": {
@@ -13,7 +12,7 @@
       "persistent": true
     },
     "build": {
-      "env": ["NODE_ENV", "VERCEL", "VERCEL_ENV", "DATABASE_URL"],
+      "env": ["NODE_ENV", "VERCEL", "VERCEL_ENV"],
       "inputs": ["$TURBO_DEFAULT$", ".env"],
       "dependsOn": [
         "^db:generate",
