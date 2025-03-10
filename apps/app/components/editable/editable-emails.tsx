@@ -76,7 +76,7 @@ export const EditableEmails = ({ member }: Props) => {
     <DropdownMenu open={open} onOpenChange={setOpen}>
       <DropdownMenuTrigger asChild className="w-full cursor-pointer">
         {emails.filter((email) => email.content !== "").length > 0 ? (
-          <div className="flex w-full flex-col gap-1 truncate rounded-md p-1 hover:bg-muted">
+          <div className="flex w-full flex-col gap-1 truncate rounded-md p-1">
             {emails.map((email) => {
               if (email.content === "") return;
               return (
@@ -90,7 +90,9 @@ export const EditableEmails = ({ member }: Props) => {
             })}
           </div>
         ) : (
-          <Button variant="ghost">Set emails</Button>
+          <Button variant="ghost" className="justify-start">
+            Set emails
+          </Button>
         )}
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" className="w-[233px]">
@@ -113,7 +115,11 @@ export const EditableEmails = ({ member }: Props) => {
             <DropdownMenuSeparator />
           </>
         )}
-        <Button variant="ghost" className="w-full" onClick={onAddEmail}>
+        <Button
+          variant="ghost"
+          className="w-full justify-start"
+          onClick={onAddEmail}
+        >
           <Plus size={16} />
           Add email
         </Button>

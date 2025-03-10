@@ -26,7 +26,6 @@ export const listMembers = protectedProcedure
       (filter) => filter.field === "linked_profiles",
     );
 
-    const searchParsed = search.toLowerCase().trim();
     const orderBy = orderByParser({ id, desc, type: "members" });
     const filterBy = getFilters({ groupFilters });
 
@@ -75,9 +74,9 @@ export const listMembers = protectedProcedure
         LEFT JOIN company c ON m.company_id = c.id
         ${hasProfileFilter ? "LEFT JOIN profile_sources ps ON m.id = ps.member_id" : ""}
         WHERE (
-          positionCaseInsensitive(concat(toString(first_name), ' ', toString(last_name)), '${searchParsed}') > 0
-          OR positionCaseInsensitive(concat(toString(last_name), ' ', toString(first_name)), '${searchParsed}') > 0
-          OR positionCaseInsensitive(toString(primary_email), '${searchParsed}') > 0
+          positionCaseInsensitive(concat(toString(first_name), ' ', toString(last_name)), '${search}') > 0
+          OR positionCaseInsensitive(concat(toString(last_name), ' ', toString(first_name)), '${search}') > 0
+          OR positionCaseInsensitive(toString(primary_email), '${search}') > 0
         )
         AND m.workspace_id = '${workspace_id}'
         ${filterBy.length > 0 ? `AND (${filterBy.join(operator === "OR" ? " OR " : " AND ")})` : ""}

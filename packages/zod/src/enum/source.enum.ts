@@ -9,6 +9,7 @@ export const SOURCE = z.enum([
   "Linkedin",
   "Livestorm",
   "Slack",
+  "Twitter",
 ]);
 
 export type Source = z.infer<typeof SOURCE>;

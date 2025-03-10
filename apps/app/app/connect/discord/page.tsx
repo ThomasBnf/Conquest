@@ -7,13 +7,14 @@ import { env } from "@conquest/env";
 import { redirect } from "next/navigation";
 
 type Props = {
-  searchParams: {
+  searchParams: Promise<{
     error?: string;
     code: string;
-  };
+  }>;
 };
 
-export default async function Page({ searchParams: { code, error } }: Props) {
+export default async function Page({ searchParams }: Props) {
+  const { code, error } = await searchParams;
   const { id: userId, workspace_id } = await getCurrentUser();
 
   if (error) redirect("/settings/integrations/discord?error=access_denied");

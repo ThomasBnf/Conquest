@@ -1,4 +1,4 @@
-import { getUserById } from "@conquest/db/users/getUserById";
+import { prisma } from "@conquest/db/prisma";
 import { UserSchema } from "@conquest/zod/schemas/user.schema";
 import { TRPCError, initTRPC } from "@trpc/server";
 import superjson from "superjson";
@@ -25,7 +25,11 @@ export const publicProcedure = t.procedure;
 export const protectedProcedure = t.procedure.use(async ({ ctx, next }) => {
   if (!ctx.session?.user?.id) throw new TRPCError({ code: "UNAUTHORIZED" });
 
-  const user = await getUserById({ id: ctx.session.user.id });
+  const user = await prisma.user.findUnique({
+    where: {
+      id: ctx.session.user.id,
+    },
+  });
 
   return next({
     ctx: {

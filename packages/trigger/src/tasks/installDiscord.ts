@@ -1,4 +1,4 @@
-import { listChannels } from "@conquest/db/channels/listChannels";
+import { listChannels } from "@conquest/clickhouse/channels/listChannels";
 import { createManyArchivedThreads } from "@conquest/db/discord/createManyArchivedThreads";
 import { createManyMembers } from "@conquest/db/discord/createManyMembers";
 import { createManyTags } from "@conquest/db/discord/createManyTags";

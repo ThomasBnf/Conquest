@@ -65,6 +65,8 @@ const githubEnv = {
 const googleEnv = {
   server: {
     GOOGLE_API_KEY: z.string(),
+    GOOGLE_CLIENT_ID: z.string(),
+    GOOGLE_CLIENT_SECRET: z.string(),
   },
 };
 
@@ -91,6 +93,17 @@ const livestormEnv = {
   runtimeEnv: {
     NEXT_PUBLIC_LIVESTORM_CLIENT_ID:
       process.env.NEXT_PUBLIC_LIVESTORM_CLIENT_ID,
+  },
+};
+
+const posthogEnv = {
+  client: {
+    NEXT_PUBLIC_POSTHOG_KEY: z.string(),
+    NEXT_PUBLIC_POSTHOG_HOST: z.string(),
+  },
+  runtimeEnv: {
+    NEXT_PUBLIC_POSTHOG_KEY: process.env.NEXT_PUBLIC_POSTHOG_KEY,
+    NEXT_PUBLIC_POSTHOG_HOST: process.env.NEXT_PUBLIC_POSTHOG_HOST,
   },
 };
 
@@ -157,6 +170,7 @@ export const env = createEnv({
     ...githubEnv.client,
     ...linkedinEnv.client,
     ...livestormEnv.client,
+    ...posthogEnv.client,
     ...slackEnv.client,
     ...stripeEnv.client,
   },
@@ -166,6 +180,7 @@ export const env = createEnv({
     ...githubEnv.runtimeEnv,
     ...linkedinEnv.runtimeEnv,
     ...livestormEnv.runtimeEnv,
+    ...posthogEnv.runtimeEnv,
     ...slackEnv.runtimeEnv,
     ...stripeEnv.runtimeEnv,
   },

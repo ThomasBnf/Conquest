@@ -46,7 +46,11 @@ export const EditableDate = ({ defaultValue, onUpdate }: Props) => {
             {format(date, "PPP")}
           </Button>
         ) : (
-          <Button variant="ghost" className="h-8" onClick={() => setOpen(true)}>
+          <Button
+            variant="ghost"
+            className="h-8 justify-start text-muted-foreground"
+            onClick={() => setOpen(true)}
+          >
             Set date
           </Button>
         )}

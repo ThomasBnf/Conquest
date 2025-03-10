@@ -1,6 +1,5 @@
 import { LogOut } from "@/components/icons/LogOut";
 import { Settings } from "@/components/icons/Settings";
-import { trpc } from "@/server/client";
 import { Avatar, AvatarFallback, AvatarImage } from "@conquest/ui/avatar";
 import {
   DropdownMenu,
@@ -17,6 +16,7 @@ import {
 } from "@conquest/ui/sidebar";
 import type { Workspace } from "@conquest/zod/schemas/workspace.schema";
 import { ChevronsUpDown } from "lucide-react";
+import { signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
 type Props = {
@@ -28,13 +28,11 @@ export const WorkspaceMenu = ({ workspace }: Props) => {
   const { state } = useSidebar();
   const router = useRouter();
 
-  const { mutateAsync: signout } = trpc.auth.signout.useMutation({
-    onSuccess: () => {
-      router.push("/auth/login");
-    },
-  });
-
-  const onSignOut = async () => await signout();
+  const onSignOut = () => {
+    signOut({
+      redirectTo: "/auth/login",
+    });
+  };
 
   if (state === "collapsed") {
     return (

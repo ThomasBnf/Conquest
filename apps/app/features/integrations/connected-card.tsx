@@ -17,7 +17,7 @@ import { type PropsWithChildren, useEffect, useState } from "react";
 import { toast } from "sonner";
 
 type Props = {
-  integration: Integration | undefined;
+  integration: Integration | null;
   name: string | undefined;
   source: Source | undefined;
 };

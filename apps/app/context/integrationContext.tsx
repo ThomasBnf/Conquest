@@ -23,12 +23,12 @@ import { createContext, useContext, useState } from "react";
 import { toast } from "sonner";
 
 type integrationContext = {
-  discord: DiscordIntegration | undefined;
-  discourse: DiscourseIntegration | undefined;
-  github: GithubIntegration | undefined;
-  linkedin: LinkedInIntegration | undefined;
-  livestorm: LivestormIntegration | undefined;
-  slack: SlackIntegration | undefined;
+  discord: DiscordIntegration | null;
+  discourse: DiscourseIntegration | null;
+  github: GithubIntegration | null;
+  linkedin: LinkedInIntegration | null;
+  livestorm: LivestormIntegration | null;
+  slack: SlackIntegration | null;
   channels: Channel[] | undefined;
   deleteIntegration: (integration: {
     integration: Integration;
@@ -58,12 +58,12 @@ export const IntegrationProvider = ({
   const [loading, setLoading] = useState(false);
   const utils = trpc.useUtils();
 
-  let discord: DiscordIntegration | undefined;
-  let discourse: DiscourseIntegration | undefined;
-  let github: GithubIntegration | undefined;
-  let linkedin: LinkedInIntegration | undefined;
-  let livestorm: LivestormIntegration | undefined;
-  let slack: SlackIntegration | undefined;
+  let discord: DiscordIntegration | null = null;
+  let discourse: DiscourseIntegration | null = null;
+  let github: GithubIntegration | null = null;
+  let linkedin: LinkedInIntegration | null = null;
+  let livestorm: LivestormIntegration | null = null;
+  let slack: SlackIntegration | null = null;
 
   const { data, isLoading } = trpc.integrations.bySource.useQuery({ source });
 

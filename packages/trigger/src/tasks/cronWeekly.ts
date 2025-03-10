@@ -30,6 +30,7 @@ export const cronWeekly = schedules.task({
             pulse,
             level_id: level_id ?? "",
             member_id: member.id,
+            workspace_id: member.workspace_id,
           };
 
           await createLog({ log });

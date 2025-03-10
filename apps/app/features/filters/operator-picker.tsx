@@ -40,7 +40,7 @@ export const OperatorPicker = ({ filter }: Props) => {
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button variant="outline" className="w-fit">
+        <Button variant="outline" className="w-fit shrink-0">
           {filter.operator.replaceAll("_", " ")}
           <ChevronDown size={16} className="ml-auto text-muted-foreground" />
         </Button>

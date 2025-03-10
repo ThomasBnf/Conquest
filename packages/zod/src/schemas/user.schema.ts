@@ -13,17 +13,17 @@ export const PreferencesSchema = z.object({
 });
 
 export const UserSchema = z.object({
-  id: z.string().uuid(),
+  id: z.string(),
   email: z.string().email(),
-  hashed_password: z.string(),
+  emailVerified: z.date().nullable(),
   first_name: z.string().nullable(),
   last_name: z.string().nullable(),
   onboarding: z.date().nullable(),
   role: ROLE,
-  last_seen: z.date(),
+  last_activity_at: z.date(),
   members_preferences: PreferencesSchema,
   companies_preferences: PreferencesSchema,
-  workspace_id: z.string().uuid(),
+  workspace_id: z.string(),
   created_at: z.coerce.date(),
   updated_at: z.coerce.date(),
 }) satisfies z.ZodType<UserPrisma>;

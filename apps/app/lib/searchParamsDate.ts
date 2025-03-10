@@ -1,18 +1,19 @@
 import { endOfDay, startOfDay, subDays } from "date-fns";
-import { parseAsIsoDateTime } from "nuqs";
-import { createSearchParamsCache } from "nuqs/server";
+import { createLoader, parseAsIsoDateTime } from "nuqs/server";
 
-export const dateParser = {
+const today = new Date();
+
+export const dateParams = {
   from: parseAsIsoDateTime
-    .withDefault(subDays(startOfDay(new Date()), 89))
+    .withDefault(startOfDay(subDays(today, 30)))
     .withOptions({
       shallow: false,
       clearOnDefault: true,
     }),
-  to: parseAsIsoDateTime.withDefault(endOfDay(new Date())).withOptions({
+  to: parseAsIsoDateTime.withDefault(endOfDay(today)).withOptions({
     shallow: false,
     clearOnDefault: true,
   }),
 };
 
-export const searchParamsDate = createSearchParamsCache(dateParser);
+export const loaderDate = createLoader(dateParams);

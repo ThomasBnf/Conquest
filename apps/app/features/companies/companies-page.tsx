@@ -4,7 +4,7 @@ import { QueryInput } from "@/components/custom/query-input";
 import { Companies } from "@/components/icons/Companies";
 import { useCompanies } from "@/context/companiesContext";
 import { useFilters } from "@/context/filtersContext";
-import { tableParsers } from "@/lib/searchParamsTable";
+import { tableParams } from "@/lib/searchParamsTable";
 import { Button } from "@conquest/ui/button";
 import { useQueryStates } from "nuqs";
 import { ColumnVisibility } from "../table/column-visibility";
@@ -16,7 +16,7 @@ import { ExportListCompanies } from "./export-list-companies";
 export const CompaniesPage = () => {
   const { resetFilters } = useFilters();
   const [{ search, idCompany, descCompany }, setParams] =
-    useQueryStates(tableParsers);
+    useQueryStates(tableParams);
   const { data, count, isLoading } = useCompanies();
 
   const { table } = useTable({
@@ -31,7 +31,7 @@ export const CompaniesPage = () => {
 
   return (
     <div className="flex h-full flex-col divide-y overflow-hidden">
-      <div className="flex h-12 shrink-0 items-center justify-between gap-2 px-4">
+      <div className="flex h-12 shrink-0 items-center justify-between gap-2 px-3">
         <QueryInput
           placeholder="Search..."
           query={search}

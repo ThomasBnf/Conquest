@@ -86,7 +86,7 @@ export const AppSidebar = ({ workspace }: Props) => {
   ];
 
   return (
-    <Sidebar collapsible="icon">
+    <Sidebar collapsible="icon" className="z-50">
       <SidebarHeader>
         <WorkspaceMenu workspace={workspace} />
       </SidebarHeader>
@@ -116,7 +116,7 @@ export const AppSidebar = ({ workspace }: Props) => {
               {lists?.length === 0 && (
                 <SidebarMenuItem>
                   <SidebarMenuButton
-                    className="justify-center border-border border-dashed"
+                    className="justify-center border-border border-dashed bg-background"
                     onClick={() => setOpen(true)}
                   >
                     <Plus size={16} />
@@ -131,7 +131,10 @@ export const AppSidebar = ({ workspace }: Props) => {
                     isActive={pathname.includes(list.id)}
                   >
                     <div className="flex items-center justify-between">
-                      <Link href={`/${slug}/lists/${list.id}`}>
+                      <Link
+                        href={`/${slug}/lists/${list.id}`}
+                        className="flex-1"
+                      >
                         <div className="flex items-center gap-2">
                           <p className="text-base">{list.emoji}</p>
                           <p>{list.name}</p>

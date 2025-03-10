@@ -7,7 +7,7 @@ export const CompanySchema = z.object({
   industry: z.string(),
   address: z.string(),
   domain: z.string(),
-  employees: z.coerce.number(),
+  employees: z.coerce.number().nullable(),
   founded_at: z.coerce.date().nullable(),
   logo_url: z.string(),
   tags: z.array(z.string()),

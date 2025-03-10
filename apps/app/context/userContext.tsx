@@ -16,14 +16,26 @@ type userContext = {
 const UserContext = React.createContext<userContext>({} as userContext);
 
 type Props = {
+  initialUser: User;
+  initialWorkspace: Workspace;
   children: React.ReactNode;
 };
 
-export const UserProvider = ({ children }: Props) => {
-  const { data: user, isLoading } = trpc.users.getCurrentUser.useQuery();
-  const { data: workspace } = trpc.workspaces.get.useQuery();
-  const { slug } = workspace ?? {};
+export const UserProvider = ({
+  initialUser,
+  initialWorkspace,
+  children,
+}: Props) => {
+  const { data: user, isLoading } = trpc.users.getCurrentUser.useQuery(
+    undefined,
+    { initialData: initialUser },
+  );
 
+  const { data: workspace } = trpc.workspaces.get.useQuery(undefined, {
+    initialData: initialWorkspace,
+  });
+
+  const { slug } = workspace ?? {};
   if (isLoading) return <IsLoading />;
 
   return (

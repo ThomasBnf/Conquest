@@ -28,10 +28,10 @@ export const DiscourseAttributesSchema = z.object({
 export const GithubAttributesSchema = z.object({
   source: z.literal("Github"),
   username: z.string(),
-  bio: z.string().nullable(),
+  // bio: z.string().nullable(),
   blog: z.string().nullable(),
   followers: z.number(),
-  location: z.string().nullable(),
+  // location: z.string().nullable(),
 });
 
 export const LinkedInAttributesSchema = z.object({
@@ -47,7 +47,7 @@ export const SlackAttributesSchema = z.object({
 });
 
 export const XAttributesSchema = z.object({
-  source: z.literal("X"),
+  source: z.literal("Twitter"),
   username: z.string(),
 });
 

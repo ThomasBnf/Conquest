@@ -35,6 +35,7 @@ export const listActivities = async ({
   });
 
   const { data } = await result.json();
+  if (!data?.length) return [];
 
   const transformFlatActivity = (row: Record<string, unknown>) => {
     const result: Record<string, unknown> = {};
@@ -62,6 +63,5 @@ export const listActivities = async ({
     transformFlatActivity(row as Record<string, unknown>),
   );
 
-  if (!data?.length) return [];
   return ActivityWithTypeSchema.array().parse(activities);
 };

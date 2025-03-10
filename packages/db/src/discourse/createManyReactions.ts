@@ -1,5 +1,5 @@
 import { createActivity } from "@conquest/clickhouse/activities/createActivity";
-import { getChannel } from "@conquest/db/channels/getChannel";
+import { getChannel } from "@conquest/clickhouse/channels/getChannel";
 import type { DiscourseIntegration } from "@conquest/zod/schemas/integration.schema";
 import type { DiscourseProfile } from "@conquest/zod/schemas/profile.schema";
 import { ReactionSchema } from "@conquest/zod/types/discourse";

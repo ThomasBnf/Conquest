@@ -84,15 +84,13 @@ export const EditableCompany = ({ member, onUpdate }: Props) => {
             >
               {company.name}
               {open && (
-                // biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
-                <div
+                <X
+                  size={16}
                   onClick={(e) => {
                     e.stopPropagation();
                     onUpdateMemberCompany(null);
                   }}
-                >
-                  <X size={16} />
-                </div>
+                />
               )}
             </Button>
           </div>

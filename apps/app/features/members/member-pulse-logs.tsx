@@ -86,7 +86,7 @@ export const MemberPulseLogs = ({ member }: Props) => {
               dataKey="pulse"
               fill="url(#fill-pulse)"
               fillOpacity={0.4}
-              stroke="hsl(var(--chart-1))"
+              stroke="hsl(var(--main-300))"
               strokeWidth={1.5}
             />
           </AreaChart>

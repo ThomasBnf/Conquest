@@ -16,6 +16,6 @@ export const getCompany = async ({ id }: Props) => {
 
   const { data } = await result.json();
 
-  if (!data.length) return undefined;
+  if (!data.length) return null;
   return CompanySchema.parse(data[0]);
 };

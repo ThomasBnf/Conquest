@@ -1,4 +1,4 @@
-import { tableParsers } from "@/lib/searchParamsTable";
+import { tableParams } from "@/lib/searchParamsTable";
 import { buttonVariants } from "@conquest/ui/button";
 import { cn } from "@conquest/ui/cn";
 import {
@@ -25,7 +25,7 @@ export const ColumnHeader = <TData, TValue>({
 }: Props<TData, TValue>) => {
   const pathname = usePathname();
   const type = pathname.includes("companies") ? "companies" : "members";
-  const [, setParams] = useQueryStates(tableParsers);
+  const [, setParams] = useQueryStates(tableParams);
 
   if (!column.getCanSort()) return <div>{title}</div>;
 
@@ -56,8 +56,8 @@ export const ColumnHeader = <TData, TValue>({
     >
       <SelectTrigger
         className={cn(
-          buttonVariants({ variant: "transparent" }),
-          "h-11 justify-between rounded-none border-none shadow-none hover:bg-sidebar-accent focus:ring-0 focus-visible:outline-none [&>svg:last-child]:hidden",
+          buttonVariants({ variant: "ghost" }),
+          "h-11 justify-between rounded-none border-none shadow-none hover:bg-muted-hover focus:ring-0 focus-visible:outline-none [&>svg:last-child]:hidden",
         )}
       >
         <span className="text-foreground">{title}</span>

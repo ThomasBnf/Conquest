@@ -22,7 +22,7 @@ export const DataTable = <TData,>({
     <>
       <ScrollArea className="h-full">
         <div style={{ width: table.getTotalSize() }}>
-          <div className="sticky top-0 left-0 z-20 border-b bg-muted">
+          <div className="sticky top-0 left-0 z-20 border-b">
             {table.getHeaderGroups().map((headerGroup) => (
               <div key={headerGroup.id} className="flex items-center">
                 {headerGroup.headers.map((header) => {
@@ -33,7 +33,7 @@ export const DataTable = <TData,>({
                     <div
                       key={header.id}
                       className={cn(
-                        "h-11 border-r bg-muted",
+                        "h-11 border-r bg-sidebar",
                         isPinned && "sticky z-10",
                       )}
                       style={{

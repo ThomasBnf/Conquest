@@ -7,14 +7,13 @@ export const getAllMembers = protectedProcedure
   .input(
     z.object({
       search: z.string(),
-      companyId: z.string().nullish(),
       cursor: z.string().nullish(),
       take: z.number(),
     }),
   )
   .query(async ({ ctx: { user }, input }) => {
     const { workspace_id } = user;
-    const { search, companyId, cursor, take } = input;
+    const { search, cursor, take } = input;
 
     const result = await client.query({
       query: `
@@ -26,7 +25,6 @@ export const getAllMembers = protectedProcedure
           OR lower(primary_email) LIKE lower('%${search}%')
         )
         AND workspace_id = '${workspace_id}'
-        ${companyId ? `AND company_id = '${companyId}'` : ""}
         ${cursor ? `AND id > '${cursor}'` : ""}
         ORDER BY first_name ASC
         LIMIT ${take}

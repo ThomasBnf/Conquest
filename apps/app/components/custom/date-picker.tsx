@@ -1,31 +1,79 @@
 "use client";
 
 import { formatDateRange } from "@/helpers/format-date-range";
-import { useDateRange } from "@/hooks/useDateRange";
+import { dateParams } from "@/lib/searchParamsDate";
 import { Button } from "@conquest/ui/button";
 import { Calendar } from "@conquest/ui/calendar";
 import { cn } from "@conquest/ui/cn";
 import { Popover, PopoverContent, PopoverTrigger } from "@conquest/ui/popover";
-import { CalendarIcon } from "lucide-react";
+import {
+  endOfDay,
+  endOfMonth,
+  endOfYear,
+  isEqual,
+  startOfDay,
+  startOfMonth,
+  startOfYear,
+  subDays,
+  subMonths,
+  subYears,
+} from "date-fns";
+import { CalendarIcon, CheckIcon } from "lucide-react";
+import { useQueryStates } from "nuqs";
 import { useState } from "react";
 
-export const DatePicker = () => {
-  const {
-    date,
-    setDate,
-    today,
-    month,
-    setMonth,
-    yesterday,
-    last7Days,
-    last30Days,
-    monthToDate,
-    lastMonth,
-    yearToDate,
-    lastYear,
-  } = useDateRange();
+type DateRange = {
+  from: Date;
+  to: Date;
+};
 
+export const DatePicker = () => {
   const [open, setOpen] = useState(false);
+  const [{ from, to }, setDateParams] = useQueryStates(dateParams);
+  const today = new Date();
+
+  const [date, setDate] = useState<DateRange>({ from, to });
+  const [month, setMonth] = useState<Date>(today);
+
+  const last7Days = {
+    from: startOfDay(subDays(today, 7)),
+    to: endOfDay(today),
+  };
+  const last30Days = {
+    from: startOfDay(subDays(today, 30)),
+    to: endOfDay(today),
+  };
+  const last90Days = {
+    from: startOfDay(subDays(today, 90)),
+    to: endOfDay(today),
+  };
+  const last180Days = {
+    from: startOfDay(subDays(today, 180)),
+    to: endOfDay(today),
+  };
+  const monthToDate = {
+    from: startOfMonth(today),
+    to: endOfDay(today),
+  };
+  const lastMonth = {
+    from: startOfMonth(subMonths(today, 1)),
+    to: endOfMonth(subMonths(today, 1)),
+  };
+  const yearToDate = {
+    from: startOfYear(today),
+    to: endOfDay(today),
+  };
+  const lastYear = {
+    from: startOfYear(subYears(today, 1)),
+    to: endOfYear(subYears(today, 1)),
+  };
+
+  const onSelect = (newDate: DateRange) => {
+    setDate(newDate);
+    setMonth(newDate.to);
+    setDateParams(newDate);
+    setOpen(false);
+  };
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -49,100 +97,97 @@ export const DatePicker = () => {
             variant="ghost"
             size="sm"
             className="w-full justify-start"
-            onClick={() => {
-              setDate({
-                from: today,
-                to: today,
-              });
-              setMonth(today);
-              setOpen(false);
-            }}
-          >
-            Today
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            className="w-full justify-start"
-            onClick={() => {
-              setDate(yesterday);
-              setMonth(yesterday.to);
-              setOpen(false);
-            }}
-          >
-            Yesterday
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            className="w-full justify-start"
-            onClick={() => {
-              setDate(last7Days);
-              setMonth(last7Days.to);
-              setOpen(false);
-            }}
+            onClick={() => onSelect(last7Days)}
           >
             Last 7 days
+            {isEqual(date.from, last7Days.from) &&
+              isEqual(date.to, last7Days.to) && (
+                <CheckIcon size={16} className="ml-auto" />
+              )}
           </Button>
           <Button
             variant="ghost"
             size="sm"
             className="w-full justify-start"
-            onClick={() => {
-              setDate(last30Days);
-              setMonth(last30Days.to);
-              setOpen(false);
-            }}
+            onClick={() => onSelect(last30Days)}
           >
             Last 30 days
+            {isEqual(date.from, last30Days.from) &&
+              isEqual(date.to, last30Days.to) && (
+                <CheckIcon size={16} className="ml-auto" />
+              )}
           </Button>
           <Button
             variant="ghost"
             size="sm"
             className="w-full justify-start"
-            onClick={() => {
-              setDate(monthToDate);
-              setMonth(monthToDate.to);
-              setOpen(false);
-            }}
+            onClick={() => onSelect(last90Days)}
+          >
+            Last 90 days
+            {isEqual(date.from, last90Days.from) &&
+              isEqual(date.to, last90Days.to) && (
+                <CheckIcon size={16} className="ml-auto" />
+              )}
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="w-full justify-start"
+            onClick={() => onSelect(last180Days)}
+          >
+            Last 180 days
+            {isEqual(date.from, last180Days.from) &&
+              isEqual(date.to, last180Days.to) && (
+                <CheckIcon size={16} className="ml-auto" />
+              )}
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="w-full justify-start"
+            onClick={() => onSelect(monthToDate)}
           >
             Month to date
+            {isEqual(date.from, monthToDate.from) &&
+              isEqual(date.to, monthToDate.to) && (
+                <CheckIcon size={16} className="ml-auto" />
+              )}
           </Button>
           <Button
             variant="ghost"
             size="sm"
             className="w-full justify-start"
-            onClick={() => {
-              setDate(lastMonth);
-              setMonth(lastMonth.to);
-              setOpen(false);
-            }}
+            onClick={() => onSelect(lastMonth)}
           >
             Last month
+            {isEqual(date.from, lastMonth.from) &&
+              isEqual(date.to, lastMonth.to) && (
+                <CheckIcon size={16} className="ml-auto" />
+              )}
           </Button>
           <Button
             variant="ghost"
             size="sm"
             className="w-full justify-start"
-            onClick={() => {
-              setDate(yearToDate);
-              setMonth(yearToDate.to);
-              setOpen(false);
-            }}
+            onClick={() => onSelect(yearToDate)}
           >
             Year to date
+            {isEqual(date.from, yearToDate.from) &&
+              isEqual(date.to, yearToDate.to) && (
+                <CheckIcon size={16} className="ml-auto" />
+              )}
           </Button>
           <Button
             variant="ghost"
             size="sm"
             className="w-full justify-start"
-            onClick={() => {
-              setDate(lastYear);
-              setMonth(lastYear.to);
-              setOpen(false);
-            }}
+            onClick={() => onSelect(lastYear)}
           >
             Last year
+            {isEqual(date.from, lastYear.from) &&
+              isEqual(date.to, lastYear.to) && (
+                <CheckIcon size={16} className="ml-auto" />
+              )}
           </Button>
         </div>
         <Calendar
@@ -150,8 +195,7 @@ export const DatePicker = () => {
           selected={date}
           onSelect={(newDate) => {
             if (newDate?.from && newDate?.to) {
-              setDate({ from: newDate.from, to: newDate.to });
-              setOpen(false);
+              onSelect({ from: newDate.from, to: newDate.to });
             }
           }}
           month={month}

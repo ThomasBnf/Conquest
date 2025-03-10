@@ -1,6 +1,5 @@
 import { getCurrentUser } from "@/queries/getCurrentUser";
 import { createIntegration } from "@conquest/db/integrations/createIntegration";
-
 import { redirect } from "next/navigation";
 
 export default async function Page() {

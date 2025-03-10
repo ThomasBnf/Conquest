@@ -61,9 +61,9 @@ export const MONTHS = [
 export const ACTIVITY_COLORS = {
   0: "bg-gray-100",
   1: "bg-main-200",
-  2: "bg-main-400",
-  3: "bg-main-600",
-  4: "bg-main-800",
+  2: "bg-main-500",
+  3: "bg-main-700",
+  4: "bg-black",
 } as const;
 
 export const EUROPEAN_COUNTRIES = [

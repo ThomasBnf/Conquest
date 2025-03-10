@@ -4,14 +4,14 @@ import { CompaniesProvider } from "@/context/companiesContext";
 import { FiltersProvider } from "@/context/filtersContext";
 import { CompaniesPage } from "@/features/companies/companies-page";
 import { CreateCompanyDialog } from "@/features/companies/create-company-dialog";
-import { searchParamsTable } from "@/lib/searchParamsTable";
+import { loaderTable } from "@/lib/searchParamsTable";
 
 type Props = {
-  searchParams: Record<string, string | string[] | undefined>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 };
 
-export default function Page({ searchParams }: Props) {
-  searchParamsTable.parse(searchParams);
+export default async function Page({ searchParams }: Props) {
+  await loaderTable(searchParams);
 
   return (
     <PageLayout>

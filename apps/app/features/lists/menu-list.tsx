@@ -52,8 +52,8 @@ export const MenuList = ({ list, transparent = false }: Props) => {
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button
-            variant={transparent ? "ghost" : "outline"}
-            size={transparent ? "icon" : "icon_sm"}
+            variant={transparent ? "outline" : "outline"}
+            size={transparent ? "icon_sm" : "icon"}
           >
             <MoreHorizontal size={16} />
           </Button>

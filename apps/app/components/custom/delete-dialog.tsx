@@ -55,7 +55,7 @@ export const DeleteDialog = ({
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <Button variant="destructive" onClick={onClick}>
+          <Button variant="destructive" disabled={loading} onClick={onClick}>
             {loading ? (
               <Loader2 className="size-4 animate-spin" />
             ) : (

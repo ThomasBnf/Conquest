@@ -128,7 +128,7 @@ export const MemberLevelLogs = ({ member }: Props) => {
               dataKey="levelNumber"
               fill="url(#fill-levelNumber)"
               fillOpacity={0.4}
-              stroke="hsl(var(--chart-1))"
+              stroke="hsl(var(--main-300))"
               strokeWidth={1.5}
             />
           </AreaChart>

@@ -8,13 +8,14 @@ import { WebClient } from "@slack/web-api";
 import { redirect } from "next/navigation";
 
 type Props = {
-  searchParams: {
+  searchParams: Promise<{
     error?: string;
     code: string;
-  };
+  }>;
 };
 
-export default async function Page({ searchParams: { error, code } }: Props) {
+export default async function Page({ searchParams }: Props) {
+  const { error, code } = await searchParams;
   const { id, workspace_id } = await getCurrentUser();
 
   if (error) redirect("/settings/integrations/slack?error=access_denied");

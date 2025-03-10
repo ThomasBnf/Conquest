@@ -121,8 +121,7 @@ export const DiscordChannels = () => {
                     );
 
                     return (
-                      <button
-                        type="button"
+                      <div
                         key={subChannel.id}
                         className={cn(
                           "flex items-center gap-2",
@@ -138,7 +137,7 @@ export const DiscordChannels = () => {
                           <Hash size={16} />
                           <p>{subChannel.name}</p>
                         </div>
-                      </button>
+                      </div>
                     );
                   })}
               </div>

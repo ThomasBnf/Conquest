@@ -24,5 +24,11 @@ export const ActivityWithTypeSchema = ActivitySchema.extend({
   activity_type: ActivityTypeSchema,
 });
 
+export const ActivityHeatmapSchema = z.object({
+  date: z.string(),
+  count: z.string(),
+});
+
 export type Activity = z.infer<typeof ActivitySchema>;
 export type ActivityWithType = z.infer<typeof ActivityWithTypeSchema>;
+export type ActivityHeatmap = z.infer<typeof ActivityHeatmapSchema>;

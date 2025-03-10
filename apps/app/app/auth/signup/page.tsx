@@ -1,11 +1,5 @@
-import { IsLoading } from "@/components/states/is-loading";
 import { SignupForm } from "@/features/auth/signup-form";
-import { Suspense } from "react";
 
 export default function Page() {
-  return (
-    <Suspense fallback={<IsLoading />}>
-      <SignupForm />
-    </Suspense>
-  );
+  return <SignupForm />;
 }

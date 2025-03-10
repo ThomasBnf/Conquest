@@ -1,6 +1,7 @@
 "use client";
 
 import { Slack } from "@/components/icons/Slack";
+import { LoadingChannels } from "@/components/states/loading-channels";
 import { SLACK_SCOPES, SLACK_USER_SCOPES } from "@/constant";
 import { useIntegration } from "@/context/integrationContext";
 import { env } from "@conquest/env";
@@ -10,7 +11,6 @@ import { useRouter } from "next/navigation";
 import { ConnectedCard } from "../integrations/connected-card";
 import { EnableCard } from "../integrations/enable-card";
 import { IntegrationHeader } from "../integrations/integration-header";
-import { LoadingChannels } from "@/components/states/loading-channels";
 import { SlackForm } from "./slack-form";
 
 type Props = {

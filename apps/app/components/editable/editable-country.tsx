@@ -47,7 +47,7 @@ export const EditableCountry = ({ country, onUpdate }: Props) => {
           {value ? (
             <CountryBadge country={value} />
           ) : (
-            <span className="text-muted-foreground">Select country</span>
+            <span className="text-muted-foreground">Set country</span>
           )}
         </Button>
       </PopoverTrigger>

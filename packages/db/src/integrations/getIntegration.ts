@@ -7,7 +7,7 @@ type Props = {
 };
 
 export const getIntegration = async ({ external_id, workspace_id }: Props) => {
-  if (!external_id) return undefined;
+  if (!external_id) return null;
 
   const integration = await prisma.integration.findUnique({
     where: {
@@ -16,6 +16,6 @@ export const getIntegration = async ({ external_id, workspace_id }: Props) => {
     },
   });
 
-  if (!integration) return undefined;
+  if (!integration) return null;
   return IntegrationSchema.parse(integration);
 };

@@ -1,5 +1,5 @@
 import { useUser } from "@/context/userContext";
-import { tableParsers } from "@/lib/searchParamsTable";
+import { tableParams } from "@/lib/searchParamsTable";
 import {
   type ColumnDef,
   type ColumnOrderState,
@@ -35,7 +35,7 @@ export const useTable = <TData, TValue>({
 }: Props<TData, TValue>) => {
   const { user } = useUser();
   const { members_preferences, companies_preferences } = user ?? {};
-  const [{ page, pageSize }] = useQueryStates(tableParsers);
+  const [{ page, pageSize }] = useQueryStates(tableParams);
 
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(
     type === "members"

@@ -69,9 +69,6 @@ export const deleteIntegration = async ({ integration }: Props) => {
   }
 
   await prisma.$transaction(async (tx) => {
-    await tx.channel.deleteMany({
-      where: { source },
-    });
     await tx.tag.deleteMany({
       where: { source },
     });
@@ -84,7 +81,8 @@ export const deleteIntegration = async ({ integration }: Props) => {
     client.query({
       query: `
         ALTER TABLE activity
-        DELETE WHERE member_id IN (
+        DELETE
+        WHERE member_id IN (
           SELECT id FROM member 
           WHERE source = '${source}' AND workspace_id = '${workspace_id}'
         );
@@ -93,7 +91,8 @@ export const deleteIntegration = async ({ integration }: Props) => {
     client.query({
       query: `
         ALTER TABLE log
-        DELETE WHERE member_id IN (
+        DELETE
+        WHERE member_id IN (
           SELECT id FROM member 
           WHERE source = '${source}' AND workspace_id = '${workspace_id}'
         );
@@ -102,25 +101,36 @@ export const deleteIntegration = async ({ integration }: Props) => {
     client.query({
       query: `
         ALTER TABLE activity_type
-        DELETE WHERE source = '${source}'
+        DELETE 
+        WHERE source = '${source}'
+        `,
+    }),
+    client.query({
+      query: `
+        ALTER TABLE channel
+        DELETE
+        WHERE source = '${source}'
         `,
     }),
     client.query({
       query: `
         ALTER TABLE company
-        DELETE WHERE source = '${source}'
+        DELETE
+        WHERE source = '${source}'
         `,
     }),
     client.query({
       query: `
         ALTER TABLE member
-        DELETE WHERE source = '${source}' AND workspace_id = '${workspace_id}'
+        DELETE
+        WHERE source = '${source}' AND workspace_id = '${workspace_id}'
       `,
     }),
     client.query({
       query: `
         ALTER TABLE profile
-        DELETE WHERE JSONExtractString(CAST(attributes AS String), 'source') = '${source}' AND workspace_id = '${workspace_id}'
+        DELETE
+        WHERE JSONExtractString(CAST(attributes AS String), 'source') = '${source}' AND workspace_id = '${workspace_id}'
       `,
     }),
   ]);

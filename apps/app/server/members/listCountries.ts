@@ -14,7 +14,10 @@ export const listCountries = protectedProcedure.query(
       `,
     });
 
-    const { data } = await result.json();
-    return (data as Array<{ country: string }>).map((row) => row.country);
+    const { data } = (await result.json()) as {
+      data: Array<{ country: string }>;
+    };
+
+    return data.filter((row) => row.country !== "").map((row) => row.country);
   },
 );

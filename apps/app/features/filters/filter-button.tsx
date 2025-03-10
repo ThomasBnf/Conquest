@@ -57,9 +57,9 @@ export const FilterButton = () => {
                   ))}
                 </CommandGroup>
                 <CommandGroup heading="Member">
-                  {filtersMember.map((filter) => (
+                  {filtersMember.map((filter, index) => (
                     <CommandItem
-                      key={filter.id}
+                      key={index}
                       onSelect={() => onSelectFilter(filter)}
                     >
                       {filter.label}

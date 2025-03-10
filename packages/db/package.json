@@ -11,7 +11,7 @@
     "typecheck": "tsc --noEmit"
   },
   "prisma": {
-    "schema": "./src/prisma/schema.prisma",
+    "schema": "./prisma/schema.prisma",
     "seed": "bun run prisma/seed.ts"
   },
   "exports": {

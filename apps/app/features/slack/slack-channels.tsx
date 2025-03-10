@@ -99,10 +99,9 @@ export const SlackChannels = () => {
           );
 
           return (
-            <button
+            <div
               key={slackChannel.id}
               className="flex items-center gap-2"
-              type="button"
               onClick={() => onSelect(slackChannel.id)}
             >
               <Checkbox checked={isSelected} disabled={loading} />
@@ -110,7 +109,7 @@ export const SlackChannels = () => {
                 <Hash size={16} />
                 <p>{slackChannel.name}</p>
               </div>
-            </button>
+            </div>
           );
         })}
       </div>

@@ -16,6 +16,6 @@ export const getMember = async ({ id }: Props) => {
 
   const { data } = await result.json();
 
-  if (!data.length) return undefined;
+  if (!data.length) return null;
   return MemberSchema.parse(data[0]);
 };

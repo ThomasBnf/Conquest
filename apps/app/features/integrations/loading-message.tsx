@@ -5,7 +5,7 @@ type Props = {
 };
 
 export const LoadingMessage = ({ progress }: Props) => (
-  <div className="flex flex-col rounded border bg-muted p-3">
+  <div className="flex flex-col rounded border bg-sidebar p-3">
     <div className="mb-1 flex items-center gap-2">
       <p className="text-base">⚠️</p>
       <p className="font-medium">Sync in progress</p>

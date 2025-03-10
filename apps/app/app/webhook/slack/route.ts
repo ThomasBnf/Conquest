@@ -4,6 +4,10 @@ import { deleteManyActivities } from "@conquest/clickhouse/activities/deleteMany
 import { getActivity } from "@conquest/clickhouse/activities/getActivity";
 import { updateActivity } from "@conquest/clickhouse/activities/updateActivity";
 import { getActivityTypeByKey } from "@conquest/clickhouse/activity-types/getActivityTypeByKey";
+import { createChannel } from "@conquest/clickhouse/channels/createChannel";
+import { deleteChannel } from "@conquest/clickhouse/channels/deleteChannel";
+import { getChannel } from "@conquest/clickhouse/channels/getChannel";
+import { updateChannel } from "@conquest/clickhouse/channels/updateChannel";
 import { client } from "@conquest/clickhouse/client";
 import { createMember } from "@conquest/clickhouse/members/createMember";
 import { deleteMember } from "@conquest/clickhouse/members/deleteMember";
@@ -11,10 +15,6 @@ import { getMember } from "@conquest/clickhouse/members/getMember";
 import { updateMember } from "@conquest/clickhouse/members/updateMember";
 import { createProfile } from "@conquest/clickhouse/profiles/createProfile";
 import { getProfile } from "@conquest/clickhouse/profiles/getProfile";
-import { createChannel } from "@conquest/db/channels/createChannel";
-import { deleteChannel } from "@conquest/db/channels/deleteChannel";
-import { getChannel } from "@conquest/db/channels/getChannel";
-import { updateChannel } from "@conquest/db/channels/updateChannel";
 import { updateIntegration } from "@conquest/db/integrations//updateIntegration";
 import { getIntegration } from "@conquest/db/integrations/getIntegration";
 import { decrypt } from "@conquest/db/utils/decrypt";
@@ -115,7 +115,7 @@ export async function POST(req: NextRequest) {
 
       if (!channel) return NextResponse.json({ status: 200 });
 
-      await updateChannel({ ...channel, name });
+      await updateChannel({ id: channel.id, name });
       break;
     }
 

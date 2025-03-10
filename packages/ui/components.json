@@ -16,5 +16,6 @@
     "lib": "./src/lib",
     "ui": "./src/components",
     "utils": "./src/utils"
-  }
+  },
+  "iconLibrary": "lucide"
 }

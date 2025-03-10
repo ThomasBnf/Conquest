@@ -18,6 +18,6 @@ export const getActivityTypeByKey = async ({ key, workspace_id }: Props) => {
 
   const { data } = await result.json();
 
-  if (!data.length) return undefined;
+  if (!data.length) return null;
   return ActivityTypeSchema.parse(data[0]);
 };

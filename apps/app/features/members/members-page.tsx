@@ -2,7 +2,7 @@
 
 import { QueryInput } from "@/components/custom/query-input";
 import { useMembers } from "@/context/membersContext";
-import { tableParsers } from "@/lib/searchParamsTable";
+import { tableParams } from "@/lib/searchParamsTable";
 import { useQueryStates } from "nuqs";
 import { FiltersList } from "../filters/filters-list";
 import { SaveList } from "../lists/save-list";
@@ -15,7 +15,7 @@ import { ExportListMembers } from "./export-list-members";
 
 export const MembersPage = () => {
   const [{ search, idMember, descMember }, setParams] =
-    useQueryStates(tableParsers);
+    useQueryStates(tableParams);
   const { data, count, isLoading } = useMembers();
 
   const { table } = useTable({
@@ -29,7 +29,7 @@ export const MembersPage = () => {
   });
 
   return (
-    <div className="flex flex-col divide-y overflow-hidden">
+    <div className="flex h-full flex-col divide-y overflow-hidden">
       <div className="flex h-12 shrink-0 items-center gap-2 px-3">
         <QueryInput
           placeholder="Search..."

@@ -7,6 +7,7 @@ import { Github } from "../icons/Github";
 import { Linkedin } from "../icons/Linkedin";
 import { Livestorm } from "../icons/Livestorm";
 import { Slack } from "../icons/Slack";
+import { Twitter } from "../icons/Twitter";
 
 type Props = {
   source: Source;
@@ -29,6 +30,7 @@ const sourceConfigs: Record<Source, SourceConfig> = {
   Github: { label: "Github", Icon: Github },
   Linkedin: { label: "Linkedin", Icon: Linkedin },
   Livestorm: { label: "Livestorm", Icon: Livestorm },
+  Twitter: { label: "Twitter", Icon: Twitter },
 } as const;
 
 export const SourceBadge = ({

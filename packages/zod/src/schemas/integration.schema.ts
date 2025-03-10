@@ -8,7 +8,7 @@ const BaseSchema = z.object({
   trigger_token: z.string(),
   expires_at: z.coerce.date(),
   connected_at: z.coerce.date().nullable(),
-  created_by: z.string().uuid(),
+  created_by: z.string(),
   workspace_id: z.string().uuid(),
   created_at: z.coerce.date(),
   updated_at: z.coerce.date(),

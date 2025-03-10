@@ -21,9 +21,9 @@ import { Input } from "@conquest/ui/input";
 import { Label } from "@conquest/ui/label";
 import type { List } from "@conquest/zod/schemas/list.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Loader2 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { type FormEdit, FormEditSchema } from "./schemas/form-edit.schema";
-import { Loader2 } from "lucide-react";
 
 type Props = {
   list: List;
@@ -89,7 +89,7 @@ export const EditListDialog = ({ list, open, setOpen }: Props) => {
                       render={({ field }) => (
                         <FormItem className="flex-1">
                           <FormControl>
-                            <Input autoFocus {...field} />
+                            <Input {...field} autoFocus />
                           </FormControl>
                           <FormMessage />
                         </FormItem>

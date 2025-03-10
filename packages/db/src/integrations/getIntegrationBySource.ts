@@ -11,7 +11,7 @@ export const getIntegrationBySource = async ({
   source,
   workspace_id,
 }: Props) => {
-  if (!source || !workspace_id) return undefined;
+  if (!source || !workspace_id) return null;
 
   const integration = await prisma.integration.findFirst({
     where: {
@@ -23,6 +23,6 @@ export const getIntegrationBySource = async ({
     },
   });
 
-  if (!integration) return undefined;
+  if (!integration) return null;
   return IntegrationSchema.parse(integration);
 };

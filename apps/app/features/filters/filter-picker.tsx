@@ -36,7 +36,7 @@ export const FilterPicker = ({ index, filter }: Props) => {
       {filter.type === "number" && !isEmpty && <NumberInput filter={filter} />}
       {filter.type === "level" && !isEmpty && <LevelPicker filter={filter} />}
       {isEmpty && (
-        <div className="flex h-8 w-full max-w-[180px] items-center justify-between rounded-md border px-3 opacity-40 shadow-sm">
+        <div className="flex h-8 w-full max-w-[180px] items-center justify-between gap-1.5 rounded-md border px-3 opacity-40 shadow-sm">
           <p>Select</p>
           <ChevronDown size={16} />
         </div>

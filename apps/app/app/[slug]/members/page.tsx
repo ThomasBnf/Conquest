@@ -4,14 +4,14 @@ import { FiltersProvider } from "@/context/filtersContext";
 import { MembersProvider } from "@/context/membersContext";
 import { CreateMemberDialog } from "@/features/members/create-member-dialog";
 import { MembersPage } from "@/features/members/members-page";
-import { searchParamsTable } from "@/lib/searchParamsTable";
+import { loaderTable } from "@/lib/searchParamsTable";
 
 type Props = {
-  searchParams: Record<string, string | string[] | undefined>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 };
 
-export default function Page({ searchParams }: Props) {
-  searchParamsTable.parse(searchParams);
+export default async function Page({ searchParams }: Props) {
+  await loaderTable(searchParams);
 
   return (
     <PageLayout>

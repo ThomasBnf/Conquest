@@ -1,5 +1,5 @@
+import { listChannels } from "@conquest/clickhouse/channels/listChannels";
 import { batchMergeMembers } from "@conquest/clickhouse/members/batchMergeMembers";
-import { listChannels } from "@conquest/db/channels/listChannels";
 import { deleteIntegration } from "@conquest/db/integrations/deleteIntegration";
 import { updateIntegration } from "@conquest/db/integrations/updateIntegration";
 import { createListMembers } from "@conquest/db/slack/createListMembers";

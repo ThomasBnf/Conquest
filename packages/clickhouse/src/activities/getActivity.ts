@@ -38,10 +38,10 @@ export const getActivity = async (props: Props) => {
 
   const { data } = await result.json();
 
-  if (!data?.length) return undefined;
+  if (!data?.length) return null;
 
   const transformFlatActivity = (row: Record<string, unknown>) => {
-    if (!row || typeof row !== "object") return undefined;
+    if (!row || typeof row !== "object") return null;
 
     const result: Record<string, unknown> = {};
     const activityType: Record<string, unknown> = {};
@@ -63,13 +63,13 @@ export const getActivity = async (props: Props) => {
   };
 
   const firstRow = data[0];
-  if (!firstRow) return undefined;
+  if (!firstRow) return null;
 
   const parsedActivity = transformFlatActivity(
     firstRow as Record<string, unknown>,
   );
 
-  if (!parsedActivity) return undefined;
+  if (!parsedActivity) return null;
 
   return ActivityWithTypeSchema.parse(parsedActivity);
 };

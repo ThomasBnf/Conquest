@@ -15,7 +15,7 @@ export const Header = ({ title, children, className }: Props) => {
   return (
     <div
       className={cn(
-        "flex min-h-12 shrink-0 items-center justify-between px-4",
+        "flex min-h-12 shrink-0 items-center justify-between px-3",
         className,
       )}
     >

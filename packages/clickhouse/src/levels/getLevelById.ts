@@ -16,6 +16,6 @@ export const getLevelById = async ({ id }: Props) => {
 
   const { data } = await result.json();
 
-  if (!data.length) return undefined;
+  if (!data.length) return null;
   return LevelSchema.parse(data[0]);
 };

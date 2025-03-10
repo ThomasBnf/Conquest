@@ -1,6 +1,6 @@
 "use client";
 
-import { tableParsers } from "@/lib/searchParamsTable";
+import { tableParams } from "@/lib/searchParamsTable";
 import { trpc } from "@/server/client";
 import type { Company } from "@conquest/zod/schemas/company.schema";
 import { useQueryStates } from "nuqs";
@@ -24,7 +24,7 @@ type Props = {
 export const CompaniesProvider = ({ children }: Props) => {
   const { groupFilters } = useFilters();
   const [{ search, idCompany, descCompany, page, pageSize }] =
-    useQueryStates(tableParsers);
+    useQueryStates(tableParams);
 
   trpc.tags.list.useQuery();
 

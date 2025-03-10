@@ -12,13 +12,17 @@
         "noDangerouslySetInnerHtml": "off"
       },
       "a11y": {
-        "noSvgWithoutTitle": "off"
+        "noSvgWithoutTitle": "off",
+        "useKeyWithClickEvents": "off"
       },
       "style": {
         "noNonNullAssertion": "off"
       },
       "correctness": {
         "useExhaustiveDependencies": "off"
+      },
+      "suspicious": {
+        "noArrayIndexKey": "off"
       },
       "nursery": {
         "useSortedClasses": {

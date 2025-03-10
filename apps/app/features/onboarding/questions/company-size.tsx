@@ -28,11 +28,11 @@ export const CompanySize = ({ form }: Props) => {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="just_me">Just me</SelectItem>
-                <SelectItem value="1-5">1-5</SelectItem>
-                <SelectItem value="5-25">5-25</SelectItem>
-                <SelectItem value="25-100">25-100</SelectItem>
-                <SelectItem value="100-250">100-250</SelectItem>
-                <SelectItem value="250-1000">250-1000</SelectItem>
+                <SelectItem value="1-5">2-5</SelectItem>
+                <SelectItem value="5-25">6-25</SelectItem>
+                <SelectItem value="25-100">26-100</SelectItem>
+                <SelectItem value="100-250">101-250</SelectItem>
+                <SelectItem value="250-1000">251-1000</SelectItem>
                 <SelectItem value="1000+">1000+</SelectItem>
               </SelectContent>
             </Select>

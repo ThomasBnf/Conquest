@@ -5,12 +5,13 @@ import { env } from "@conquest/env";
 import { redirect } from "next/navigation";
 
 type Props = {
-  searchParams: {
+  searchParams: Promise<{
     code: string;
-  };
+  }>;
 };
 
-export default async function Page({ searchParams: { code } }: Props) {
+export default async function Page({ searchParams }: Props) {
+  const { code } = await searchParams;
   const { id: userId, workspace_id } = await getCurrentUser();
 
   const params = new URLSearchParams({

@@ -29,16 +29,22 @@ export const EditableMembers = ({ company }: Props) => {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
   const router = useRouter();
+  const utils = trpc.useUtils();
 
   const { data: companyMembers } = trpc.companies.listCompanyMembers.useQuery({
     companyId: company.id,
   });
 
-  const { mutateAsync: updateMember } = trpc.members.update.useMutation();
+  const { mutateAsync: updateMember } = trpc.members.update.useMutation({
+    onSuccess: () => {
+      utils.companies.listCompanyMembers.invalidate({ companyId: company.id });
+      utils.activities.list.invalidate({ company_id: company.id });
+    },
+  });
 
   const { data, hasNextPage, fetchNextPage, isLoading } =
     trpc.members.getAllMembers.useInfiniteQuery(
-      { search, companyId: company.id, take: 25 },
+      { search, take: 25 },
       { getNextPageParam: (lastPage) => lastPage[lastPage.length - 1]?.id },
     );
 
@@ -103,7 +109,7 @@ export const EditableMembers = ({ company }: Props) => {
           <Button
             variant="ghost"
             size="xs"
-            className="h-8 px-[7px]"
+            className="h-8 justify-start px-[7px] text-muted-foreground"
             onClick={() => setOpen(true)}
           >
             Set members

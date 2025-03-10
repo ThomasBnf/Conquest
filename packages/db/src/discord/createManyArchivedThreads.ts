@@ -1,6 +1,6 @@
 import { createActivity } from "@conquest/clickhouse/activities/createActivity";
+import { getChannel } from "@conquest/clickhouse/channels/getChannel";
 import { getProfile } from "@conquest/clickhouse/profiles/getProfile";
-import { getChannel } from "@conquest/db/channels/getChannel";
 import type { Channel } from "@conquest/zod/schemas/channel.schema";
 import type { DiscordIntegration } from "@conquest/zod/schemas/integration.schema";
 import {

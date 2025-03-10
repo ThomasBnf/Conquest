@@ -56,8 +56,8 @@ export const EditableLink = ({
         <Button
           variant="ghost"
           className={cn(
-            "w-full justify-start overflow-hidden text-muted-foreground",
-            !editable && "hover:bg-transparent hover:text-muted-foreground",
+            "w-full justify-start overflow-hidden",
+            !value && "text-muted-foreground",
             className,
           )}
           onClick={() => editable && setIsFocus(true)}

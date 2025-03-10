@@ -16,6 +16,6 @@ export const getCompanyByDomain = async ({ domain }: Props) => {
 
   const { data } = await result.json();
 
-  if (!data.length) return undefined;
+  if (!data.length) return null;
   return CompanySchema.parse(data[0]);
 };

@@ -10,6 +10,6 @@ export const getList = async ({ id }: Props) => {
     where: { id },
   });
 
-  if (!list) return undefined;
+  if (!list) return null;
   return ListSchema.parse(list);
 };

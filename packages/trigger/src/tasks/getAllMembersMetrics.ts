@@ -86,6 +86,7 @@ export const getAllMembersMetrics = schemaTask({
             pulse: pulseScore,
             level_id: level?.id ?? null,
             member_id: member.id,
+            workspace_id: member.workspace_id,
           });
         }
 
@@ -95,8 +96,8 @@ export const getAllMembersMetrics = schemaTask({
 
         await updateMember({
           ...member,
-          first_activity: activities?.at(0)?.created_at ?? null,
-          last_activity: activities?.at(-1)?.created_at ?? null,
+          first_activity: activities?.at(-1)?.created_at ?? null,
+          last_activity: activities?.at(0)?.created_at ?? null,
           pulse: pulse ?? 0,
           level_id: level_id ?? null,
         });

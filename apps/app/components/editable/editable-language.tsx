@@ -36,7 +36,7 @@ export const EditableLanguage = ({ language, onUpdate }: Props) => {
           {value ? (
             <LanguageBadge language={value} />
           ) : (
-            <span className="text-muted-foreground">Select language</span>
+            <span className="text-muted-foreground">Set language</span>
           )}
         </Button>
       </PopoverTrigger>

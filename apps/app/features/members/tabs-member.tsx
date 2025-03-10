@@ -75,7 +75,7 @@ export const TabsMember = () => {
         }}
       />
       <div
-        className="absolute bottom-0 h-0.5 rounded-full bg-primary/80 transition-all duration-300 ease-out"
+        className="absolute bottom-0 h-0.5 rounded-t-full bg-main-400 transition-all duration-300 ease-out"
         style={activeStyle}
       />
       {tabs.map((tab, index) => (

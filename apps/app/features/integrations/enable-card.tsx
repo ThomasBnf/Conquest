@@ -13,7 +13,7 @@ import { DisconnectButton } from "./disconnect-button";
 
 type Props = {
   error: string;
-  integration: Integration | undefined;
+  integration: Integration | null;
   description: string;
   docUrl: string;
   source: Source;

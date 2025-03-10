@@ -2,6 +2,7 @@
 
 import { trpc } from "@/server/client";
 import { Button } from "@conquest/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@conquest/ui/card";
 import {
   Form,
   FormControl,
@@ -51,51 +52,58 @@ export const FormUser = () => {
   };
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-        <FormField
-          control={form.control}
-          name="first_name"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>First name</FormLabel>
-              <FormControl>
-                <Input {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="last_name"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Last name</FormLabel>
-              <FormControl>
-                <Input {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="email"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Email</FormLabel>
-              <FormControl>
-                <Input {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <Button type="submit" disabled={loading}>
-          {loading ? <Loader2 className="size-4 animate-spin" /> : "Save"}
-        </Button>
-      </form>
-    </Form>
+    <Card>
+      <CardHeader>
+        <CardTitle>Informations</CardTitle>
+      </CardHeader>
+      <CardContent className="mb-0.5">
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <FormField
+              control={form.control}
+              name="first_name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Name</FormLabel>
+                  <FormControl>
+                    <Input {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="last_name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Last Name</FormLabel>
+                  <FormControl>
+                    <Input {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Email</FormLabel>
+                  <FormControl>
+                    <Input {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <Button type="submit" disabled={loading}>
+              {loading ? <Loader2 className="size-4 animate-spin" /> : "Save"}
+            </Button>
+          </form>
+        </Form>
+      </CardContent>
+    </Card>
   );
 };

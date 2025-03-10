@@ -1,13 +1,13 @@
 import { Members } from "@/components/icons/Members";
 import { useFilters } from "@/context/filtersContext";
-import { tableParsers } from "@/lib/searchParamsTable";
+import { tableParams } from "@/lib/searchParamsTable";
 import { Button } from "@conquest/ui/button";
 import { useRouter } from "next/navigation";
 import { useQueryStates } from "nuqs";
 
 export const EmptyTable = () => {
   const { resetFilters, groupFilters } = useFilters();
-  const [_, setParams] = useQueryStates(tableParsers);
+  const [_, setParams] = useQueryStates(tableParams);
   const router = useRouter();
 
   if (groupFilters.filters.length > 0) {

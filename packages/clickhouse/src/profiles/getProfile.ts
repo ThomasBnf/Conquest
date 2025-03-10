@@ -38,6 +38,6 @@ export const getProfile = async (props: Props) => {
 
   const { data } = await result.json();
 
-  if (data.length === 0) return undefined;
+  if (data.length === 0) return null;
   return ProfileSchema.parse(data[0]);
 };

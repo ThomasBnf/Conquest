@@ -1,7 +1,7 @@
+import { createChannel } from "@conquest/clickhouse/channels/createChannel";
 import type { Channel } from "@conquest/zod/schemas/channel.schema";
 import type { Integration } from "@conquest/zod/schemas/integration.schema";
 import type { APIGuildCategoryChannel } from "discord-api-types/v10";
-import { createChannel } from "@conquest/db/channels/createChannel";
 
 type Props = {
   integration: Integration;
@@ -24,6 +24,8 @@ export const createManyChannels = async ({ integration, channels }: Props) => {
       source: "Discord",
       workspace_id,
     });
+
+    if (!createdChannel) continue;
 
     createdChannels = [...createdChannels, createdChannel];
   }

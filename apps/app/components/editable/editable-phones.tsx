@@ -119,7 +119,11 @@ export const EditablePhones = ({ member }: Props) => {
             </>
           )}
         </div>
-        <Button variant="ghost" className="w-full" onClick={onAddPhone}>
+        <Button
+          variant="ghost"
+          className="w-full justify-start"
+          onClick={onAddPhone}
+        >
           <Plus size={16} />
           Add phone
         </Button>

@@ -6,6 +6,7 @@ export const LogSchema = z.object({
   pulse: z.number(),
   level_id: z.string().nullable(),
   member_id: z.string(),
+  workspace_id: z.string(),
 });
 
 export type Log = z.infer<typeof LogSchema>;

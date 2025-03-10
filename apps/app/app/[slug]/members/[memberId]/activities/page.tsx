@@ -1,38 +1,14 @@
-"use client";
-
-import { EmptyState } from "@/components/states/empty-state";
-import { IsLoading } from "@/components/states/is-loading";
-import { Activities } from "@/features/activities/activities";
-import { trpc } from "@/server/client";
-import { Activity } from "lucide-react";
-import { redirect } from "next/navigation";
+import { PageActivities } from "@/features/members/page-activities";
 
 type Props = {
-  params: {
+  params: Promise<{
     slug: string;
     memberId: string;
-  };
+  }>;
 };
 
-export default function Page({ params: { slug, memberId } }: Props) {
-  const { data: member, isLoading } = trpc.members.get.useQuery({
-    id: memberId,
-  });
+export default async function Page({ params }: Props) {
+  const { slug, memberId } = await params;
 
-  const { data, isLoading: _isLoading } = trpc.activities.list.useQuery({
-    member_id: memberId,
-  });
-
-  if (isLoading || _isLoading) return <IsLoading />;
-  if (!member) return redirect(`/${slug}/members`);
-
-  return (
-    <Activities activities={data} isLoading={_isLoading}>
-      <EmptyState
-        icon={<Activity size={36} />}
-        title="No activities found"
-        description="This member has no activities"
-      />
-    </Activities>
-  );
+  return <PageActivities slug={slug} memberId={memberId} />;
 }

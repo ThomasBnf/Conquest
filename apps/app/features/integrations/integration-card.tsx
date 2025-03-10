@@ -32,7 +32,7 @@ export const IntegrationCard = ({ integration }: Props) => {
       href={soon ? "" : href}
       key={source}
       className={cn(
-        "relative flex items-start gap-4 rounded-md border p-4 transition-colors hover:bg-muted-hover",
+        "relative flex items-start gap-4 rounded-md border p-4 transition-colors hover:bg-muted",
         soon && "cursor-not-allowed",
       )}
     >

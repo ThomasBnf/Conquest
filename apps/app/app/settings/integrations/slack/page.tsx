@@ -3,12 +3,14 @@ import { SlackIntegration } from "@/features/slack/slack-integration";
 import { ScrollArea } from "@conquest/ui/scroll-area";
 
 type Props = {
-  searchParams: {
+  searchParams: Promise<{
     error: string;
-  };
+  }>;
 };
 
-export default function Page({ searchParams: { error } }: Props) {
+export default async function Page({ searchParams }: Props) {
+  const { error } = await searchParams;
+
   return (
     <ScrollArea className="h-dvh">
       <IntegrationProvider source="Slack">

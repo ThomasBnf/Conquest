@@ -1,17 +1,16 @@
 "use client";
 
-import { DatePicker } from "@/components/custom/date-picker";
-import { useDateRange } from "@/hooks/useDateRange";
+import { dateParams } from "@/lib/searchParamsDate";
 import { trpc } from "@/server/client";
 import { Separator } from "@conquest/ui/separator";
 import { Skeleton } from "@conquest/ui/skeleton";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@conquest/ui/tooltip";
+import { useQueryStates } from "nuqs";
 import { Percentage } from "./percentage";
-import { TimeFormat } from "./time-format";
+import { PeriodFormatter } from "./period-formatter";
 
 export const TotalMembers = () => {
-  const { date } = useDateRange();
-  const { from, to } = date;
+  const [{ from, to }] = useQueryStates(dateParams);
 
   const { data, isLoading } = trpc.dashboard.totalMembers.useQuery({
     from,
@@ -26,26 +25,25 @@ export const TotalMembers = () => {
 
   return (
     <div className="mb-0.5 flex flex-col overflow-hidden rounded-md border shadow-sm">
-      <div className="flex items-center justify-between bg-sidebar p-3">
-        <p className="font-medium text-lg">Total members</p>
-        <DatePicker />
-      </div>
+      <p className="bg-sidebar p-3 font-medium text-base">Total members</p>
       <Separator />
-      <div className="flex flex-1 flex-col items-center justify-center gap-2 p-3">
+      <div className="p flex flex-1 flex-col items-center justify-center gap-2 py-4">
         {isLoading ? (
-          <Skeleton className="h-12 w-16" />
+          <Skeleton className="h-10 w-16" />
         ) : (
-          <p className="font-bold text-5xl">{current}</p>
+          <p className="font-bold text-4xl">{current}</p>
         )}
         <Tooltip>
           <TooltipTrigger>
             <Percentage variation={variation} isLoading={isLoading} />
           </TooltipTrigger>
           <TooltipContent>
-            <p>{previous} total members in the previous period</p>
+            <p>
+              {previous} member{previous > 1 ? "s" : ""} in the previous period
+            </p>
           </TooltipContent>
         </Tooltip>
-        <TimeFormat />
+        <PeriodFormatter />
       </div>
     </div>
   );

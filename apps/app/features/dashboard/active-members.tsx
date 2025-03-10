@@ -1,17 +1,34 @@
 "use client";
 
-import { DatePicker } from "@/components/custom/date-picker";
-import { useDateRange } from "@/hooks/useDateRange";
+import { QueryInput } from "@/components/custom/query-input";
+import { dateParams } from "@/lib/searchParamsDate";
+import { tableParams } from "@/lib/searchParamsTable";
 import { trpc } from "@/server/client";
+import { Button } from "@conquest/ui/button";
 import { Separator } from "@conquest/ui/separator";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@conquest/ui/sheet";
 import { Skeleton } from "@conquest/ui/skeleton";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@conquest/ui/tooltip";
+import { useQueryStates } from "nuqs";
+import { useState } from "react";
+import { ExportListMembers } from "../members/export-list-members";
+import { ColumnVisibility } from "../table/column-visibility";
+import { DataTable } from "../table/data-table";
+import { useTable } from "../table/hooks/useTable";
+import { membersColumns } from "../table/members-columns";
 import { Percentage } from "./percentage";
-import { TimeFormat } from "./time-format";
+import { PeriodFormatter } from "./period-formatter";
+import { PanelRight } from "lucide-react";
 
 export const ActiveMembers = () => {
-  const { date } = useDateRange();
-  const { from, to } = date;
+  const [{ from, to }] = useQueryStates(dateParams);
 
   const { data, isLoading } = trpc.dashboard.activeMembers.useQuery({
     from,
@@ -26,27 +43,106 @@ export const ActiveMembers = () => {
 
   return (
     <div className="mb-0.5 flex flex-col overflow-hidden rounded-md border shadow-sm">
-      <div className="flex items-center justify-between bg-sidebar p-3">
-        <p className="font-medium text-lg">Active members</p>
-        <DatePicker />
+      <div className="flex h-[48px] items-center justify-between bg-sidebar p-3">
+        <p className="font-medium text-base">Active members</p>
+        <ActiveMembersSheet count={current} loading={isLoading} />
       </div>
       <Separator />
-      <div className="flex flex-1 flex-col items-center justify-center gap-2 p-3">
+      <div className="flex flex-1 flex-col items-center justify-center gap-2 py-4">
         {isLoading ? (
-          <Skeleton className="h-12 w-16" />
+          <Skeleton className="h-10 w-16" />
         ) : (
-          <p className="font-bold text-5xl">{current}</p>
+          <p className="font-bold text-4xl">{current}</p>
         )}
         <Tooltip>
           <TooltipTrigger>
             <Percentage variation={variation} isLoading={isLoading} />
           </TooltipTrigger>
           <TooltipContent>
-            <p>{previous} active members in the previous period</p>
+            <p>
+              {previous} active member{previous > 1 ? "s" : ""} in the previous
+              period
+            </p>
           </TooltipContent>
         </Tooltip>
-        <TimeFormat />
+        <PeriodFormatter />
       </div>
     </div>
+  );
+};
+
+const ActiveMembersSheet = ({
+  count,
+  loading,
+}: {
+  count: number;
+  loading: boolean;
+}) => {
+  const [open, setOpen] = useState(false);
+  const [{ from, to }] = useQueryStates(dateParams);
+  const [{ search, idMember, descMember }, setParams] =
+    useQueryStates(tableParams);
+
+  const { data, isLoading, failureReason } =
+    trpc.dashboard.activeMembersTable.useQuery(
+      {
+        from,
+        to,
+        search,
+        id: idMember,
+        desc: descMember,
+      },
+      {
+        enabled: open,
+      },
+    );
+
+  console.log(failureReason);
+
+  const { table } = useTable({
+    data: data ?? [],
+    columns: membersColumns,
+    count: count ?? 0,
+    left: ["full_name"],
+    id: idMember,
+    desc: descMember,
+    type: "members",
+  });
+
+  return (
+    <Sheet open={open} onOpenChange={setOpen}>
+      <SheetTrigger asChild>
+        <Button
+          variant="outline"
+          size="icon"
+          disabled={loading}
+          onClick={() => setOpen(true)}
+        >
+          <PanelRight size={16} />
+        </Button>
+      </SheetTrigger>
+      <SheetContent className="flex h-full w-[90vw] flex-col sm:max-w-[90vw]">
+        <SheetHeader>
+          <SheetTitle>At risk members</SheetTitle>
+          <SheetDescription>
+            Active members with no activities in the selected period.
+          </SheetDescription>
+        </SheetHeader>
+        <div className="flex h-full flex-col divide-y overflow-hidden rounded-md border">
+          <div className="flex h-12 shrink-0 items-center gap-2 px-3">
+            <QueryInput
+              placeholder="Search..."
+              query={search}
+              setQuery={(value) => setParams({ search: value })}
+            />
+            <div className="ml-auto flex items-center gap-2">
+              <ExportListMembers members={data} />
+              <ColumnVisibility table={table} type="members" />
+            </div>
+          </div>
+          <DataTable table={table} isLoading={isLoading} count={count ?? 0} />
+        </div>
+      </SheetContent>
+    </Sheet>
   );
 };

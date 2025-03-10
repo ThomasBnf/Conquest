@@ -1,5 +1,5 @@
 import { useFilters } from "@/context/filtersContext";
-import { tableParsers } from "@/lib/searchParamsTable";
+import { tableParams } from "@/lib/searchParamsTable";
 import { trpc } from "@/server/client";
 import { Checkbox } from "@conquest/ui/checkbox";
 import { cn } from "@conquest/ui/cn";
@@ -26,7 +26,7 @@ type Props = {
 export const TagsCell = ({ row }: Props) => {
   const { groupFilters } = useFilters();
   const [{ search, idMember, descMember, page, pageSize }] =
-    useQueryStates(tableParsers);
+    useQueryStates(tableParams);
 
   const { data: allTags } = trpc.tags.list.useQuery();
   const [open, setOpen] = useState(false);

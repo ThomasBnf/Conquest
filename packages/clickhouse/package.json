@@ -3,7 +3,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "clickhouse:migrate": "dotenv -e ./.env -e ../../.env -- clickhouse-migrations migrate"
   },
   "exports": {
     "./*": "./src/*.ts"
@@ -25,6 +26,7 @@
     "uuid": "^11.1.0"
   },
   "devDependencies": {
+    "clickhouse-migrations": "^1.0.4",
     "dotenv-cli": "8.0.0"
   },
   "code-runner.executorMap": {

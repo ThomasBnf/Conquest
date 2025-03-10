@@ -12,6 +12,6 @@ export const getUserById = async ({ id }: Props) => {
     },
   });
 
-  if (!user) return undefined;
+  if (!user) return null;
   return UserSchema.parse(user);
 };
