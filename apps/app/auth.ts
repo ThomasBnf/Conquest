@@ -37,7 +37,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       clientSecret: env.GOOGLE_CLIENT_SECRET,
       authorization: {
         params: {
-          redirect_uri: "https://conquest.ngrok.app/api/auth/callback/google",
+          redirect_uri: `${env.NEXT_PUBLIC_BASE_URL}/api/auth/callback/google`,
         },
       },
     }),
