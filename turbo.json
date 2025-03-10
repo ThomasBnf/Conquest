@@ -14,12 +14,7 @@
     "build": {
       "env": ["NODE_ENV", "VERCEL", "VERCEL_ENV"],
       "inputs": ["$TURBO_DEFAULT$", ".env"],
-      "dependsOn": [
-        "^db:generate",
-        "^clickhouse:migrate",
-        "^db:deploy",
-        "^build"
-      ],
+      "dependsOn": ["^db:generate", "^db:deploy", "^build"],
       "outputs": [".next/**", "!.next/cache/**", "dist/**", "next-env.d.ts"]
     },
     "start": {
@@ -49,9 +44,6 @@
       "cache": false
     },
     "db:deploy": {
-      "cache": false
-    },
-    "clickhouse:migrate": {
       "cache": false
     }
   }
