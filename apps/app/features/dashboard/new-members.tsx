@@ -120,9 +120,9 @@ const NewMembersSheet = ({
       </SheetTrigger>
       <SheetContent className="flex h-full w-[90vw] flex-col sm:max-w-[90vw]">
         <SheetHeader>
-          <SheetTitle>At risk members</SheetTitle>
+          <SheetTitle>New members</SheetTitle>
           <SheetDescription>
-            Active members with no activities in the selected period.
+            Members who have joined the workspace in the selected period.
           </SheetDescription>
         </SheetHeader>
         <div className="flex h-full flex-col divide-y overflow-hidden rounded-md border">

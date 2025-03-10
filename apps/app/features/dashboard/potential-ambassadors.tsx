@@ -126,9 +126,9 @@ const PotentialAmbassadorsSheet = ({
       </SheetTrigger>
       <SheetContent className="flex h-full w-[90vw] flex-col sm:max-w-[90vw]">
         <SheetHeader>
-          <SheetTitle>At risk members</SheetTitle>
+          <SheetTitle>Potential ambassadors</SheetTitle>
           <SheetDescription>
-            Active members with no activities in the selected period.
+            Contributor members with activities in the selected period.
           </SheetDescription>
         </SheetHeader>
         <div className="flex h-full flex-col divide-y overflow-hidden rounded-md border">

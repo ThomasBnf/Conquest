@@ -16,6 +16,7 @@ import {
 } from "@conquest/ui/sheet";
 import { Skeleton } from "@conquest/ui/skeleton";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@conquest/ui/tooltip";
+import { PanelRight } from "lucide-react";
 import { useQueryStates } from "nuqs";
 import { useState } from "react";
 import { ExportListMembers } from "../members/export-list-members";
@@ -25,7 +26,6 @@ import { useTable } from "../table/hooks/useTable";
 import { membersColumns } from "../table/members-columns";
 import { Percentage } from "./percentage";
 import { PeriodFormatter } from "./period-formatter";
-import { PanelRight } from "lucide-react";
 
 export const ActiveMembers = () => {
   const [{ from, to }] = useQueryStates(dateParams);
@@ -123,9 +123,9 @@ const ActiveMembersSheet = ({
       </SheetTrigger>
       <SheetContent className="flex h-full w-[90vw] flex-col sm:max-w-[90vw]">
         <SheetHeader>
-          <SheetTitle>At risk members</SheetTitle>
+          <SheetTitle>Active members</SheetTitle>
           <SheetDescription>
-            Active members with no activities in the selected period.
+            Members who have been active in the selected period.
           </SheetDescription>
         </SheetHeader>
         <div className="flex h-full flex-col divide-y overflow-hidden rounded-md border">
