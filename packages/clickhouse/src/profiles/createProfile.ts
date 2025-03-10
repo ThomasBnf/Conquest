@@ -1,4 +1,7 @@
-import type { ProfileAttributes } from "@conquest/zod/schemas/profile.schema";
+import {
+  type ProfileAttributes,
+  ProfileSchema,
+} from "@conquest/zod/schemas/profile.schema";
 import { v4 as uuid } from "uuid";
 import { client } from "../client";
 
@@ -19,7 +22,7 @@ export const createProfile = async ({
 }: Props) => {
   const id = uuid();
 
-  const result = await client.insert({
+  await client.insert({
     table: "profile",
     values: [
       {
@@ -34,14 +37,14 @@ export const createProfile = async ({
     format: "JSON",
   });
 
-  // const result = await client.query({
-  //   query: `
-  //     SELECT *
-  //     FROM profile
-  //     WHERE id = '${id}'
-  //   `,
-  // });
+  const result = await client.query({
+    query: `
+      SELECT *
+      FROM profile
+      WHERE id = '${id}'
+    `,
+  });
 
-  // const { data } = await result.json();
-  // return ProfileSchema.parse(data[0]);
+  const { data } = await result.json();
+  return ProfileSchema.parse(data[0]);
 };

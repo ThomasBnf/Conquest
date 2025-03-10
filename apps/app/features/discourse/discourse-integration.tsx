@@ -2,9 +2,11 @@
 
 import { Discourse } from "@/components/icons/Discourse";
 import { useIntegration } from "@/context/integrationContext";
+import { trpc } from "@/server/client";
 import { Separator } from "@conquest/ui/separator";
 import { Hash } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 import { DiscourseForm } from "../discourse/discourse-form";
 import { ConnectedCard } from "../integrations/connected-card";
 import { EnableCard } from "../integrations/enable-card";
@@ -17,11 +19,17 @@ type Props = {
 export const DiscourseIntegration = ({ error }: Props) => {
   const { discourse, setLoading, channels } = useIntegration();
   const router = useRouter();
+  const utils = trpc.useUtils();
 
   const onEnable = async () => {
     setLoading(true);
     router.push("/connect/discourse");
   };
+
+  useEffect(() => {
+    utils.integrations.bySource.invalidate({ source: "Discourse" });
+    router.refresh();
+  }, []);
 
   return (
     <div className="mx-auto flex max-w-4xl flex-col gap-4 px-4 py-12 lg:py-24">

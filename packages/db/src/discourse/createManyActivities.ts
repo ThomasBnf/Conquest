@@ -1,10 +1,10 @@
 import { createActivity } from "@conquest/clickhouse/activities/createActivity";
 import { getActivity } from "@conquest/clickhouse/activities/getActivity";
 import { upsertActivity } from "@conquest/clickhouse/activities/upsertActivity";
+import { getChannel } from "@conquest/clickhouse/channels/getChannel";
 import type { DiscourseProfile } from "@conquest/zod/schemas/profile.schema";
 import { startOfDay, subDays } from "date-fns";
 import type DiscourseAPI from "discourse2";
-import { getChannel } from "@conquest/clickhouse/channels/getChannel";
 
 type Props = {
   client: DiscourseAPI;

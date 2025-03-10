@@ -45,9 +45,9 @@ export const createManyMembers = async ({
   let members: AdminListUsers[] = [];
   const createdMembers: Member[] = [];
 
-  const progressWeight = 75;
+  const progressWeight = 80;
   const progressIncrement = progressWeight / members.length;
-  let currentProgress = 15;
+  let currentProgress = 10;
 
   let page = 0;
   let hasMore = true;
@@ -96,8 +96,7 @@ export const createManyMembers = async ({
     });
 
     const data = await response.json();
-    const parsedReponse = DirectoryItemsSchema.parse(data);
-    const { directory_items } = parsedReponse;
+    const { directory_items } = DirectoryItemsSchema.parse(data);
 
     for (const item of directory_items ?? []) {
       const {

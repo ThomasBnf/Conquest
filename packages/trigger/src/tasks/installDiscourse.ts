@@ -1,4 +1,3 @@
-import { listLevels } from "@conquest/clickhouse/levels/listLevels";
 import { batchMergeMembers } from "@conquest/clickhouse/members/batchMergeMembers";
 import { discourseClient } from "@conquest/db/discourse";
 import { createManyMembers } from "@conquest/db/discourse/createManyMembers";
@@ -38,11 +37,8 @@ export const installDiscourse = schemaTask({
     });
     metadata.set("progress", 5);
 
-    const levels = await listLevels({ workspace_id });
-    metadata.set("progress", 10);
-
     const tags = await createManyTags({ client, workspace_id });
-    metadata.set("progress", 15);
+    metadata.set("progress", 10);
 
     const members = await createManyMembers({
       discourse,
