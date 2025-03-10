@@ -10,6 +10,7 @@ export default async function Layout({ children }: PropsWithChildren) {
   if (!session) redirect("/auth/login");
 
   const { user } = session;
+
   const workspace = await getWorkspace({ id: user.workspace_id });
   if (user?.onboarding) redirect(`/${workspace.slug}`);
 
