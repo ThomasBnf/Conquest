@@ -27,6 +27,7 @@ export default async function Layout({
   if (user && !user.onboarding) redirect("/");
 
   const workspace = await getWorkspace({ id: user.workspace_id });
+
   if (slug !== workspace.slug) redirect(`/${workspace.slug}`);
 
   const cookieStore = await cookies();
