@@ -6,7 +6,11 @@ type Props = {
 };
 
 export const listLists = async ({ user_id }: Props) => {
-  const lists = await prisma.list.findMany({});
+  const lists = await prisma.list.findMany({
+    where: {
+      created_by: user_id,
+    },
+  });
 
   return ListSchema.array().parse(lists);
 };
