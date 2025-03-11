@@ -1,5 +1,6 @@
 "use client";
 
+import { TooltipInfo } from "@/components/badges/tooltip-info";
 import { QueryInput } from "@/components/custom/query-input";
 import { dateParams } from "@/lib/searchParamsDate";
 import { tableParams } from "@/lib/searchParamsTable";
@@ -44,7 +45,10 @@ export const ActiveMembers = () => {
   return (
     <div className="mb-0.5 flex flex-col overflow-hidden rounded-md border shadow-sm">
       <div className="flex h-[48px] items-center justify-between bg-sidebar p-3">
-        <p className="font-medium text-base">Active members</p>
+        <div className="flex items-center gap-2">
+          <p className="font-medium text-lg">Active members</p>
+          <TooltipInfo content="Members who have been active in the selected period." />
+        </div>
         <ActiveMembersSheet count={current} loading={isLoading} />
       </div>
       <Separator />

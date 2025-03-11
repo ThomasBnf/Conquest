@@ -1,5 +1,6 @@
 "use client";
 
+import { TooltipInfo } from "@/components/badges/tooltip-info";
 import { QueryInput } from "@/components/custom/query-input";
 import { dateParams } from "@/lib/searchParamsDate";
 import { tableParams } from "@/lib/searchParamsTable";
@@ -49,6 +50,10 @@ export const AtRiskMembers = () => {
             <TriangleAlert className="size-4 text-red-500" />
           </div>
           <p className="font-medium text-base">At risk members</p>
+          <TooltipInfo
+            content=" Active members (above level 3) who have not been active in the
+            selected period."
+          />
         </div>
         <AtRiskMembersSheet count={current} loading={isLoading} />
       </div>
@@ -127,7 +132,8 @@ const AtRiskMembersSheet = ({
         <SheetHeader>
           <SheetTitle>At risk members</SheetTitle>
           <SheetDescription>
-            Active members with no activities in the selected period.
+            Active members (above level 3) who have not been active in the
+            selected period.
           </SheetDescription>
         </SheetHeader>
         <div className="flex h-full flex-col divide-y overflow-hidden rounded-md border">

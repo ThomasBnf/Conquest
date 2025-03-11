@@ -1,5 +1,6 @@
 "use client";
 
+import { TooltipInfo } from "@/components/badges/tooltip-info";
 import { QueryInput } from "@/components/custom/query-input";
 import { ColumnVisibility } from "@/features/table/column-visibility";
 import { dateParams } from "@/lib/searchParamsDate";
@@ -44,7 +45,10 @@ export const NewMembers = () => {
   return (
     <div className="mb-0.5 flex flex-col overflow-hidden rounded-md border shadow-sm">
       <div className="flex h-[48px] items-center justify-between bg-sidebar p-3">
-        <p className="font-medium text-base">New members</p>
+        <div className="flex items-center gap-2">
+          <p className="font-medium text-lg">New members</p>
+          <TooltipInfo content="Members who joined the workspace in the selected period" />
+        </div>
         <NewMembersSheet count={current} loading={isLoading} />
       </div>
       <Separator />
@@ -122,7 +126,7 @@ const NewMembersSheet = ({
         <SheetHeader>
           <SheetTitle>New members</SheetTitle>
           <SheetDescription>
-            Members who have joined the workspace in the selected period.
+            Members who joined the workspace in the selected period
           </SheetDescription>
         </SheetHeader>
         <div className="flex h-full flex-col divide-y overflow-hidden rounded-md border">

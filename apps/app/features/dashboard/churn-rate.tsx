@@ -1,5 +1,6 @@
 "use client";
 
+import { TooltipInfo } from "@/components/badges/tooltip-info";
 import { dateParams } from "@/lib/searchParamsDate";
 import { trpc } from "@/server/client";
 import { Separator } from "@conquest/ui/separator";
@@ -25,7 +26,28 @@ export const ChurnRate = () => {
 
   return (
     <div className="mb-0.5 flex flex-col overflow-hidden rounded-md border shadow-sm">
-      <p className="bg-sidebar p-3 font-medium text-base">Churn rate</p>
+      <div className="flex items-center gap-2 bg-sidebar p-3">
+        <p className="font-medium text-base">Churn rate</p>
+        <TooltipInfo
+          content={
+            <div className="flex flex-col gap-2">
+              <p>
+                Percentage of active members (level 3+) who had no activity
+                during the selected period.
+              </p>
+              <div className="flex items-center gap-2 opacity-70">
+                <div className="flex w-fit flex-col">
+                  <p className="border-current border-b">
+                    Number of Inactive Members
+                  </p>
+                  <p>Total Number of Members</p>
+                </div>
+                <p>× 100%</p>
+              </div>
+            </div>
+          }
+        />
+      </div>
       <Separator />
       <div className="flex flex-1 flex-col items-center justify-center gap-2 py-4">
         {isLoading ? (

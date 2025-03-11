@@ -1,5 +1,6 @@
 "use client";
 
+import { TooltipInfo } from "@/components/badges/tooltip-info";
 import { dateParams } from "@/lib/searchParamsDate";
 import { trpc } from "@/server/client";
 import { Separator } from "@conquest/ui/separator";
@@ -25,7 +26,10 @@ export const TotalMembers = () => {
 
   return (
     <div className="mb-0.5 flex flex-col overflow-hidden rounded-md border shadow-sm">
-      <p className="bg-sidebar p-3 font-medium text-lg">Total members</p>
+      <div className="flex items-center gap-2 bg-sidebar p-3">
+        <p className="font-medium text-lg">Total members</p>
+        <TooltipInfo content="Total members at the end of the selected period, all integrations included" />
+      </div>
       <Separator />
       <div className="p flex flex-1 flex-col items-center justify-center gap-2 py-8">
         {isLoading ? (

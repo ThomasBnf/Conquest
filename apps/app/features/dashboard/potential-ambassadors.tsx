@@ -1,5 +1,6 @@
 "use client";
 
+import { TooltipInfo } from "@/components/badges/tooltip-info";
 import { QueryInput } from "@/components/custom/query-input";
 import { dateParams } from "@/lib/searchParamsDate";
 import { tableParams } from "@/lib/searchParamsTable";
@@ -50,6 +51,7 @@ export const PotentialAmbassadors = () => {
             <InfoCircledIcon className="size-4 text-green-500" />
           </div>
           <p className="font-medium text-base">Potential ambassadors</p>
+          <TooltipInfo content=" Contributor members (above level 7) with activities in the selected period." />
         </div>
         <PotentialAmbassadorsSheet count={current} loading={isLoading} />
       </div>
@@ -128,7 +130,8 @@ const PotentialAmbassadorsSheet = ({
         <SheetHeader>
           <SheetTitle>Potential ambassadors</SheetTitle>
           <SheetDescription>
-            Contributor members with activities in the selected period.
+            Contributor members (above level 7) with activities in the selected
+            period.
           </SheetDescription>
         </SheetHeader>
         <div className="flex h-full flex-col divide-y overflow-hidden rounded-md border">
