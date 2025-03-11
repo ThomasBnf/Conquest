@@ -4,17 +4,14 @@ import { Companies } from "@/components/icons/Companies";
 import { Dashboard } from "@/components/icons/Dashboard";
 import { Members } from "@/components/icons/Members";
 import { useUser } from "@/context/userContext";
-import { MenuList } from "@/features/lists/menu-list";
 import { WorkspaceMenu } from "@/features/workspaces/workspace-menu";
 import { useOpenList } from "@/hooks/useOpenList";
-import { trpc } from "@/server/client";
 import { Separator } from "@conquest/ui/separator";
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
   SidebarGroup,
-  SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
@@ -23,13 +20,13 @@ import {
   useSidebar,
 } from "@conquest/ui/sidebar";
 import type { Workspace } from "@conquest/zod/schemas/workspace.schema";
-import { Plus } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Documentation } from "../icons/Documentation";
 import { Settings } from "../icons/Settings";
 import { SlackCommunity } from "../icons/Slack-Community";
 import { LoadingIntegrations } from "../states/loading-integrations";
+import { SidebarLists } from "./sidebar-lists";
 
 type Props = {
   workspace: Workspace | undefined;
@@ -40,8 +37,6 @@ export const AppSidebar = ({ workspace }: Props) => {
   const { state } = useSidebar();
   const { setOpen } = useOpenList();
   const pathname = usePathname();
-
-  const { data: lists } = trpc.lists.list.useQuery();
 
   const routes = [
     {
@@ -109,45 +104,7 @@ export const AppSidebar = ({ workspace }: Props) => {
             ))}
           </SidebarMenu>
         </SidebarGroup>
-        {state === "expanded" && (
-          <SidebarGroup>
-            <SidebarGroupLabel>Lists</SidebarGroupLabel>
-            <SidebarMenu>
-              {lists?.length === 0 && (
-                <SidebarMenuItem>
-                  <SidebarMenuButton
-                    className="justify-center border-border border-dashed bg-background"
-                    onClick={() => setOpen(true)}
-                  >
-                    <Plus size={16} />
-                    New List
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              )}
-              {lists?.map((list) => (
-                <SidebarMenuItem key={list.id}>
-                  <SidebarMenuButton
-                    asChild
-                    isActive={pathname.includes(list.id)}
-                  >
-                    <div className="flex items-center justify-between">
-                      <Link
-                        href={`/${slug}/lists/${list.id}`}
-                        className="flex-1"
-                      >
-                        <div className="flex items-center gap-2">
-                          <p className="text-base">{list.emoji}</p>
-                          <p className="truncate">{list.name}</p>
-                        </div>
-                      </Link>
-                      <MenuList list={list} transparent />
-                    </div>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroup>
-        )}
+        {state === "expanded" && <SidebarLists />}
       </SidebarContent>
       <SidebarFooter>
         <SidebarMenu>
