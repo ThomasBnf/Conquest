@@ -38,7 +38,7 @@ export const MembersProvider = ({ children }: Props) => {
     pageSize,
     groupFilters,
   });
-  console.log(failureReason);
+  console.log("failureReason", failureReason);
 
   const { data: count } = trpc.members.count.useQuery({
     search,

@@ -40,7 +40,7 @@ export const FilterBaseSchema = z.object({
 
 export const FilterSelectSchema = FilterBaseSchema.extend({
   type: z.literal("select"),
-  field: z.enum(["country", "language", "linked_profiles", "source", "tags"]),
+  field: z.enum(["country", "language", "profiles", "source", "tags"]),
   operator: BaseOperatorSchema,
   values: z.array(z.string()).default([]),
 });
@@ -55,7 +55,7 @@ export const FilterDateSchema = FilterBaseSchema.extend({
 
 export const FilterTextSchema = FilterBaseSchema.extend({
   type: z.literal("text"),
-  field: z.enum(["job_title", "primary_email", "phones"]).or(z.string()),
+  field: z.enum(["job_title", "email", "phones"]).or(z.string()),
   operator: BaseOperatorSchema,
   value: z.string().default(""),
 });

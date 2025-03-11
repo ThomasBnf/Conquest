@@ -34,12 +34,14 @@ export const newMembers = protectedProcedure
             FROM member
             WHERE created_at >= '${formattedFrom}' 
             AND created_at <= '${formattedTo}'
+            AND workspace_id = '${workspace_id}'
           ) as current_count,
           (
             SELECT count()
             FROM member
             WHERE created_at >= '${formattedPreviousFrom}' 
             AND created_at <= '${formattedPreviousTo}'
+            AND workspace_id = '${workspace_id}'
           ) as previous_count
         SELECT 
           current_count as current,

@@ -6,11 +6,10 @@ import { IsLoading } from "@/components/states/is-loading";
 import { CreateActivityDialog } from "@/features/activities/create-activity-dialog";
 import { MemberSidebar } from "@/features/members/member-sidebar";
 import { MenuMember } from "@/features/members/menu-member";
-import { TabsMember } from "@/features/members/tabs-member";
 import { trpc } from "@/server/client";
-import { ScrollArea } from "@conquest/ui/scroll-area";
 import { redirect } from "next/navigation";
 import type { PropsWithChildren } from "react";
+import { TabsMember } from "./tabs-member";
 
 type Props = {
   slug: string;
@@ -36,17 +35,17 @@ export const LayoutMember = ({
 
   return (
     <div className="flex h-full w-full p-1">
-      <PageLayout className="flex h-full rounded-lg border shadow-lg">
+      <PageLayout className="rounded-lg border shadow-lg">
         <HeaderSubPage>
           <div className="flex items-center gap-2">
             <CreateActivityDialog member={member} />
             <MenuMember member={member} />
           </div>
         </HeaderSubPage>
-        <div className="flex h-full divide-x overflow-hidden">
-          <div className="flex flex-1 flex-col divide-y overflow-hidden">
+        <div className="flex h-full flex-1 divide-x">
+          <div className="flex flex-col divide-y">
             <TabsMember />
-            <ScrollArea className="h-full">{children}</ScrollArea>
+            {children}
           </div>
           <MemberSidebar member={member} profiles={profiles} />
         </div>

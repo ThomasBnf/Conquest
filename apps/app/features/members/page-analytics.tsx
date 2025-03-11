@@ -21,7 +21,7 @@ export const PageAnalytics = ({ slug, memberId }: Props) => {
   if (!member) return redirect(`/${slug}/members`);
 
   return (
-    <div className="mx-auto flex max-w-6xl flex-col gap-6 overflow-auto p-4 py-8">
+    <div className="mx-auto flex max-w-6xl flex-1 flex-col gap-6 overflow-auto p-4 py-8">
       <MemberHeatmap memberId={memberId} />
       <MemberLevelLogs member={member} />
       <MemberPulseLogs member={member} />

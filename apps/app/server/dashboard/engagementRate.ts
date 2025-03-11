@@ -10,7 +10,8 @@ export const engagementRate = protectedProcedure
       to: z.date(),
     }),
   )
-  .query(async ({ input }) => {
+  .query(async ({ ctx: { user }, input }) => {
+    const { workspace_id } = user;
     const { from, to } = input;
 
     const previousPeriodLength = differenceInDays(to, from);
@@ -35,6 +36,7 @@ export const engagementRate = protectedProcedure
             FROM activity
             WHERE created_at >= '${formattedFrom}' 
             AND created_at <= '${formattedTo}'
+            AND workspace_id = '${workspace_id}'
           ) as current_rate,
           (
             SELECT 
@@ -43,6 +45,7 @@ export const engagementRate = protectedProcedure
             FROM activity
             WHERE created_at >= '${formattedPreviousFrom}' 
             AND created_at <= '${formattedPreviousTo}'
+            AND workspace_id = '${workspace_id}'
           ) as previous_rate
         SELECT 
           current_rate as current,

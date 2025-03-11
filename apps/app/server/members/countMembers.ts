@@ -19,13 +19,18 @@ export const countMembers = protectedProcedure
     const searchParsed = search?.toLowerCase().trim();
     const filterBy = getFilters({ groupFilters });
 
+    const needsProfileJoin = groupFilters.filters.some(
+      (filter) =>
+        filter.field === "profiles" || filter.field.includes("discourse-"),
+    );
+
     const result = await client.query({
       query: `
         SELECT count(*) as total
         FROM member AS m
         LEFT JOIN level AS l ON m.level_id = l.id
         LEFT JOIN company AS c ON m.company_id = c.id
-        LEFT JOIN profile AS p ON m.id = p.member_id
+        ${needsProfileJoin ? "LEFT JOIN profile AS p ON m.id = p.member_id" : ""}
         WHERE (
           ${
             searchParsed

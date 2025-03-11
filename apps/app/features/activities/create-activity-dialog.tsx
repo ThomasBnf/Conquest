@@ -34,6 +34,7 @@ import { format } from "date-fns";
 import { CalendarIcon, Loader2, Plus } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { type FormCreate, FormCreateSchema } from "./schemas/form.schema";
 
 type Props = {
@@ -48,8 +49,9 @@ export const CreateActivityDialog = ({ member }: Props) => {
   const { data } = trpc.activityTypes.list.useQuery();
   const { mutateAsync, isPending } = trpc.activities.post.useMutation({
     onSuccess: () => {
-      utils.activities.list.invalidate();
       setOpen(false);
+      utils.activities.list.invalidate();
+      toast.success("Activity created successfully");
       form.reset();
     },
   });

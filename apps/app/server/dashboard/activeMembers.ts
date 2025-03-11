@@ -34,12 +34,14 @@ export const activeMembers = protectedProcedure
             FROM activity
             WHERE created_at >= '${formattedFrom}' 
             AND created_at <= '${formattedTo}'
+            AND workspace_id = '${workspace_id}'
           ) as current_count,
           (
             SELECT count(DISTINCT member_id)
             FROM activity
             WHERE created_at >= '${formattedPreviousFrom}' 
             AND created_at <= '${formattedPreviousTo}'
+            AND workspace_id = '${workspace_id}'
           ) as previous_count
         SELECT 
           current_count as current,

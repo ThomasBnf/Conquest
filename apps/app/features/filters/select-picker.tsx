@@ -22,6 +22,7 @@ import {
   FilterSelectSchema,
 } from "@conquest/zod/schemas/filters.schema";
 import type { Tag } from "@conquest/zod/schemas/tag.schema";
+import { countries } from "country-data-list";
 import { Check, ChevronDown } from "lucide-react";
 import { useState } from "react";
 import { TagBadge } from "../tags/tag-badge";
@@ -43,7 +44,7 @@ export const SelectPicker = ({ filter }: Props) => {
         >
           {field === "country" && <ValueCountry filter={filter} />}
           {field === "language" && <ValueLanguage filter={filter} />}
-          {field === "linked_profiles" && <LinkedProfiles filter={filter} />}
+          {field === "profiles" && <ValueProfiles filter={filter} />}
           {field === "source" && <ValueSource filter={filter} />}
           {field === "tags" && <ValueTag filter={filter} />}
           {!values.length && (
@@ -57,9 +58,7 @@ export const SelectPicker = ({ filter }: Props) => {
           <CommandInput placeholder="Search..." />
           {field === "country" && <CountryGroup filter={filter} />}
           {field === "language" && <LanguageGroup filter={filter} />}
-          {field === "linked_profiles" && (
-            <LinkedProfilesGroup filter={filter} />
-          )}
+          {field === "profiles" && <ProfilesGroup filter={filter} />}
           {field === "source" && <SourcesGroup filter={filter} />}
           {field === "tags" && <TagsGroup filter={filter} />}
         </Command>
@@ -106,12 +105,23 @@ const ValueLanguage = ({ filter }: { filter: FilterSelect }) => {
   );
 };
 
-const LinkedProfiles = ({ filter }: { filter: FilterSelect }) => {
+const ValueProfiles = ({ filter }: { filter: FilterSelect }) => {
   const { values } = filter;
+  const { data: sources } = trpc.members.listSourcesProfile.useQuery();
 
-  return values.map((value) => (
-    <SourceBadge key={value} source={value as Source} transparent />
-  ));
+  return (
+    <div className="flex max-w-64 items-center gap-1">
+      {values.slice(0, 1).map((value) => {
+        const source = sources?.find((source) => source === value);
+        return source ? (
+          <SourceBadge key={value} source={source} transparent />
+        ) : null;
+      })}
+      {values.length > 1 && (
+        <p className="ml-1 text-xs">+{values.length - 1}</p>
+      )}
+    </div>
+  );
 };
 
 const ValueSource = ({ filter }: { filter: FilterSelect }) => {
@@ -145,7 +155,13 @@ const CountryGroup = ({
   const { values } = filter;
   const { onUpdateFilter } = useFilters();
 
-  const { data: countries, isLoading } = trpc.members.listCountries.useQuery();
+  const { data, isLoading } = trpc.members.listCountries.useQuery();
+  const formattedCountries = countries.all
+    .filter((country) => data?.includes(country.alpha2))
+    .map((country) => ({
+      name: country.name,
+      alpha2: country.alpha2,
+    }));
 
   const onSelect = (country: string) => {
     const hasCountry = values.some((value) => value === country);
@@ -165,14 +181,17 @@ const CountryGroup = ({
       {!isLoading && <CommandEmpty>No countries found.</CommandEmpty>}
       <CommandGroup>
         {isLoading && <Skeleton className="h-8 w-full" />}
-        {countries?.map((country) => (
+        {formattedCountries?.map((country) => (
           <CommandItem
-            key={country}
-            value={country}
-            onSelect={() => onSelect(country)}
+            key={country.alpha2}
+            value={country.name}
+            onSelect={() => onSelect(country.alpha2)}
           >
-            <Checkbox checked={values.includes(country)} className="mr-2" />
-            <CountryBadge country={country} transparent />
+            <Checkbox
+              checked={values.includes(country.alpha2)}
+              className="mr-2"
+            />
+            <CountryBadge country={country.alpha2} transparent />
           </CommandItem>
         ))}
       </CommandGroup>
@@ -223,24 +242,23 @@ const LanguageGroup = ({
   );
 };
 
-const LinkedProfilesGroup = ({
+const ProfilesGroup = ({
   filter,
 }: {
   filter: FilterSelect;
 }) => {
   const { onUpdateFilter } = useFilters();
   const { values } = filter;
-  const { data: sources, isLoading } = trpc.members.listSources.useQuery();
+  const { data: sources, isLoading } =
+    trpc.members.listSourcesProfile.useQuery();
 
   const onSelect = (source: string) => {
-    const hasSource = values.some((value) =>
-      sources?.includes(value as Source),
-    );
+    const hasSource = values.some((value) => value === source);
 
     const newFilter = FilterSelectSchema.parse({
       ...filter,
       values: hasSource
-        ? values.filter((value) => !sources?.includes(value as Source))
+        ? values.filter((value) => value !== source)
         : [...values, source],
     });
 
@@ -273,22 +291,18 @@ const SourcesGroup = ({
 }) => {
   const { values } = filter;
   const { onUpdateFilter } = useFilters();
-  const { data: sources, isLoading } = trpc.members.listSources.useQuery();
-  const customSources = ["Api", "Manual", ...(sources || [])] as const;
-
-  const onSelect = (source: string) => {
-    onUpdateFilter({ ...filter, values: [source] });
-  };
+  const { data: sources, isLoading } =
+    trpc.members.listSourcesMember.useQuery();
 
   return (
     <CommandList>
       {!isLoading && <CommandEmpty>No sources found.</CommandEmpty>}
       <CommandGroup>
-        {customSources?.map((source) => (
+        {sources?.map((source) => (
           <CommandItem
             key={source}
             value={source}
-            onSelect={() => onSelect(source)}
+            onSelect={() => onUpdateFilter({ ...filter, values: [source] })}
           >
             <SourceBadge source={source} transparent />
             {values.includes(source) && <Check size={16} className="ml-auto" />}
@@ -330,7 +344,7 @@ const TagsGroup = ({
         {tags?.map((tag) => (
           <CommandItem
             key={tag.id}
-            value={tag.id}
+            value={tag.name}
             onSelect={() => onSelect(tag)}
           >
             <Checkbox checked={values.includes(tag.id)} className="mr-2" />

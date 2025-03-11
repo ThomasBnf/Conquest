@@ -59,8 +59,8 @@ export const MemberSidebar = ({ member, profiles }: Props) => {
   };
 
   return (
-    <div className="flex h-full max-w-sm flex-1 shrink-0 flex-col bg-sidebar">
-      <ScrollArea className="flex-1">
+    <div className="flex h-full flex-1 shrink-0 flex-col bg-sidebar">
+      <ScrollArea>
         <div className="space-y-4 p-4">
           <div className="flex items-center gap-2">
             <Avatar className="size-9">

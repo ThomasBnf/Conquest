@@ -10,10 +10,6 @@ export const SaveList = () => {
   const pathname = usePathname();
   const isListPage = pathname.includes("lists");
 
-  const onClearFilters = () => {
-    resetFilters();
-  };
-
   if (isListPage) return null;
   if (groupFilters.filters.length === 0) return null;
 
@@ -21,7 +17,7 @@ export const SaveList = () => {
     <div className="flex h-full items-center gap-1 border-r pr-2">
       <Tooltip>
         <TooltipTrigger asChild>
-          <Button variant="outline" onClick={onClearFilters}>
+          <Button variant="outline" onClick={resetFilters}>
             Clear
           </Button>
         </TooltipTrigger>
@@ -29,14 +25,7 @@ export const SaveList = () => {
           <p>Clear all filters</p>
         </TooltipContent>
       </Tooltip>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Button onClick={() => setOpen(true)}>Save</Button>
-        </TooltipTrigger>
-        <TooltipContent side="bottom">
-          <p>Save new list</p>
-        </TooltipContent>
-      </Tooltip>
+      <Button onClick={() => setOpen(true)}>Save list</Button>
     </div>
   );
 };

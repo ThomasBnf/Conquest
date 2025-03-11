@@ -1,23 +1,24 @@
 import { client } from "@conquest/clickhouse/client";
+import { SOURCE } from "@conquest/zod/enum/source.enum";
 import { protectedProcedure } from "../trpc";
 
-export const listLanguages = protectedProcedure.query(
+export const listSourcesProfile = protectedProcedure.query(
   async ({ ctx: { user } }) => {
     const { workspace_id } = user;
 
     const result = await client.query({
       query: `
-        SELECT DISTINCT language
-        FROM member
+        SELECT DISTINCT attributes.source as source
+        FROM profile
         WHERE workspace_id = '${workspace_id}'
-        AND language IS NOT NULL; 
+        ORDER BY source ASC
       `,
     });
 
     const { data } = (await result.json()) as {
-      data: Array<{ language: string }>;
+      data: Array<{ source: string }>;
     };
 
-    return data.filter((row) => row.language !== "").map((row) => row.language);
+    return SOURCE.array().parse(data.map((row) => row.source));
   },
 );

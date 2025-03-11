@@ -1,6 +1,5 @@
 import { Header } from "@/components/layouts/header";
 import { PageLayout } from "@/components/layouts/page-layout";
-import { FiltersProvider } from "@/context/filtersContext";
 import { MembersProvider } from "@/context/membersContext";
 import { CreateMemberDialog } from "@/features/members/create-member-dialog";
 import { MembersPage } from "@/features/members/members-page";
@@ -18,11 +17,9 @@ export default async function Page({ searchParams }: Props) {
       <Header title="Members">
         <CreateMemberDialog />
       </Header>
-      <FiltersProvider>
-        <MembersProvider>
-          <MembersPage />
-        </MembersProvider>
-      </FiltersProvider>
+      <MembersProvider>
+        <MembersPage />
+      </MembersProvider>
     </PageLayout>
   );
 }

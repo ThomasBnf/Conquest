@@ -1,7 +1,6 @@
 "use client";
 
 import { Google } from "@/components/icons/Google";
-import { sleep } from "@/helpers/sleep";
 import { env } from "@conquest/env";
 import { Button, buttonVariants } from "@conquest/ui/button";
 import {
@@ -39,7 +38,6 @@ export const SignupForm = () => {
   const onSubmit = async ({ email }: SignupSchema) => {
     setLoading(true);
     await signIn("resend", { email, redirect: false });
-    await sleep(1000);
     toast.success("Check your email for a login code");
     setLoading(false);
   };

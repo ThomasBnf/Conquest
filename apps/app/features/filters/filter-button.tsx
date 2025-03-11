@@ -63,12 +63,12 @@ export const FilterButton = () => {
           <PopoverContent className="p-0" align="start">
             <Command>
               <CommandInput placeholder="Search filter..." />
-              <CommandList className="max-h-[450px]">
+              <CommandList className="max-h-[400px]">
                 <CommandGroup heading="Activity">
                   {filtersActivity.map((filter) => (
                     <CommandItem
                       key={filter.id}
-                      value={filter.id}
+                      value={filter.label}
                       onSelect={() => onSelectFilter(filter)}
                     >
                       {filter.label}
@@ -79,7 +79,7 @@ export const FilterButton = () => {
                   {filtersMember.map((filter) => (
                     <CommandItem
                       key={filter.id}
-                      value={filter.id}
+                      value={filter.label}
                       onSelect={() => onSelectFilter(filter)}
                     >
                       {filter.label}
@@ -91,7 +91,7 @@ export const FilterButton = () => {
                     {filtersDiscourse.map((filter) => (
                       <CommandItem
                         key={filter.id}
-                        value={filter.id}
+                        value={`_${filter.label}`}
                         onSelect={() => onSelectFilter(filter)}
                       >
                         {filter.label}
@@ -119,6 +119,14 @@ const filtersMember: Filter[] = [
   },
   {
     id: uuid(),
+    label: "Email",
+    type: "text",
+    field: "primary_email",
+    operator: "contains",
+    value: "",
+  },
+  {
+    id: uuid(),
     label: "Job title",
     type: "text",
     field: "job_title",
@@ -143,9 +151,9 @@ const filtersMember: Filter[] = [
   },
   {
     id: uuid(),
-    label: "Linked profiles",
+    label: "Profiles",
     type: "select",
-    field: "linked_profiles",
+    field: "profiles",
     operator: "contains",
     values: [],
   },
@@ -154,14 +162,6 @@ const filtersMember: Filter[] = [
     label: "Phones",
     type: "text",
     field: "phones",
-    operator: "contains",
-    value: "",
-  },
-  {
-    id: uuid(),
-    label: "Primary email",
-    type: "text",
-    field: "primary_email",
     operator: "contains",
     value: "",
   },

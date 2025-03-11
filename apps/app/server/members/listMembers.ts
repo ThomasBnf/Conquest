@@ -26,7 +26,10 @@ export const listMembers = protectedProcedure
     const filtersStr = filterBy.join(operator === "OR" ? " OR " : " AND ");
 
     const needsCompanyJoin = id === "company";
-    const needsProfileJoin = filtersStr.includes("p.attributes");
+    const needsProfileJoin = groupFilters.filters.some(
+      (filter) =>
+        filter.field === "profiles" || filter.field.includes("discourse-"),
+    );
 
     const orderBy = orderByParser({ id, desc, type: "members" });
 
@@ -55,7 +58,7 @@ export const listMembers = protectedProcedure
           m.created_at as created_at,
           m.updated_at as updated_at,
           l.number,
-          ${needsProfileJoin ? ", p.attributes" : ""}
+          ${needsProfileJoin ? "p.attributes" : ""}
         FROM member m
         LEFT JOIN level l ON m.level_id = l.id
         ${needsCompanyJoin ? "LEFT JOIN company c ON m.company_id = c.id" : ""}

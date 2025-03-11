@@ -25,10 +25,10 @@ import {
 import { Input } from "@conquest/ui/input";
 import { Label } from "@conquest/ui/label";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Loader2 } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { type FormList, FormListSchema } from "./schemas/form-create.schema";
-import { Loader2 } from "lucide-react";
 
 export const CreateListDialog = () => {
   const { groupFilters, resetFilters } = useFilters();
@@ -42,9 +42,8 @@ export const CreateListDialog = () => {
 
   const { mutateAsync, isPending } = trpc.lists.post.useMutation({
     onSuccess: (data) => {
-      const { id } = data ?? {};
       utils.lists.list.invalidate();
-      router.push(`/${slug}/lists/${id}`);
+      router.push(`/${slug}/lists/${data.id}`);
       onClearFilters();
     },
   });

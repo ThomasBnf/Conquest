@@ -65,7 +65,7 @@ export const QueryInput = ({
         <Button
           onClick={handleClear}
           variant="outline"
-          size="icon"
+          size="icon_sm"
           className="shrink-0"
         >
           <X size={14} />

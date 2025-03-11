@@ -46,7 +46,7 @@ export const getFilters = ({ groupFilters, hasDiscourseData }: Props) => {
       return "true";
     }
 
-    if (field === "linked_profiles") {
+    if (field === "profiles") {
       const { values, operator } = FilterSelectSchema.parse(filter);
 
       if (values.length === 0 && !["empty", "not_empty"].includes(operator)) {
