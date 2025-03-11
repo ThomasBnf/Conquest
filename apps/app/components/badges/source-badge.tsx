@@ -45,7 +45,7 @@ export const SourceBadge = ({
   return (
     <Badge
       variant={transparent ? "transparent" : "secondary"}
-      className={cn("gap-2", className)}
+      className={cn("w-fit gap-2", className)}
     >
       {Icon ? <Icon className="size-3.5" /> : null}
       {!onlyIcon && <span className="font-medium text-sm">{label}</span>}

@@ -14,7 +14,7 @@ const BaseSchema = z.object({
   updated_at: z.coerce.date(),
 });
 
-const SlackDetailsSchema = z.object({
+export const SlackDetailsSchema = z.object({
   source: z.literal("Slack"),
   name: z.string(),
   url: z.string(),
@@ -26,7 +26,7 @@ const SlackDetailsSchema = z.object({
   user_scopes: z.string(),
 });
 
-const DiscourseDetailsSchema = z.object({
+export const DiscourseDetailsSchema = z.object({
   source: z.literal("Discourse"),
   community_url: z.string(),
   community_url_iv: z.string(),
@@ -37,7 +37,7 @@ const DiscourseDetailsSchema = z.object({
     .optional(),
 });
 
-const DiscordDetailsSchema = z.object({
+export const DiscordDetailsSchema = z.object({
   source: z.literal("Discord"),
   name: z.string(),
   access_token: z.string(),
@@ -49,7 +49,7 @@ const DiscordDetailsSchema = z.object({
   permissions: z.string(),
 });
 
-const LinkedInDetailsSchema = z.object({
+export const LinkedInDetailsSchema = z.object({
   source: z.literal("Linkedin"),
   name: z.string(),
   access_token: z.string(),
@@ -58,7 +58,7 @@ const LinkedInDetailsSchema = z.object({
   user_id: z.string(),
 });
 
-const LivestormDetailsSchema = z.object({
+export const LivestormDetailsSchema = z.object({
   source: z.literal("Livestorm"),
   name: z.string(),
   access_token: z.string(),
@@ -70,7 +70,7 @@ const LivestormDetailsSchema = z.object({
   filter: z.string().optional(),
 });
 
-const GithubDetailsSchema = z.object({
+export const GithubDetailsSchema = z.object({
   source: z.literal("Github"),
   name: z.string(),
   access_token: z.string(),

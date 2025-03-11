@@ -16,8 +16,8 @@ export const FieldCard = ({
   className,
 }: PropsWithChildren<Props>) => {
   return (
-    <div className={cn("flex items-start gap-2", className)}>
-      <div className="flex w-28 shrink-0 items-center gap-2 py-1.5 text-muted-foreground">
+    <div className={cn("grid grid-cols-[7rem_1fr] gap-2", className)}>
+      <div className="flex items-center gap-2 py-1.5 text-muted-foreground">
         {typeof icon === "string" ? (
           <Icon
             name={icon as keyof typeof icons}

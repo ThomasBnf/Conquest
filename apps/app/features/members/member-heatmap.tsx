@@ -15,7 +15,7 @@ export const MemberHeatmap = ({ memberId }: Props) => {
   });
 
   return (
-    <div>
+    <div className="flex w-full flex-col">
       <div className="flex items-center gap-2">
         <p className="font-medium text-lg">Member Heatmap</p>
         <IconDoc url="https://docs.useconquest.com/member-heatmap" />
@@ -26,7 +26,9 @@ export const MemberHeatmap = ({ memberId }: Props) => {
           {data?.length === 1 ? "activity" : "activities"} in the last 365 days
         </p>
       </div>
-      <Heatmap activities={data} />
+      <div className="w-full overflow-x-auto pb-2">
+        <Heatmap activities={data} />
+      </div>
     </div>
   );
 };

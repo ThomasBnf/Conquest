@@ -1,7 +1,7 @@
 import { client } from "@conquest/clickhouse/client";
 import { getMemberMetrics } from "@conquest/clickhouse/members/getMemberMetrics";
 import { schedules } from "@trigger.dev/sdk/v3";
-import { endOfHour, startOfHour, subHours } from "date-fns";
+import { endOfHour, format, startOfHour, subHours } from "date-fns";
 
 export const cronHourly = schedules.task({
   id: "cron-hourly",
@@ -10,15 +10,18 @@ export const cronHourly = schedules.task({
     if (ctx.environment.type === "DEVELOPMENT") return;
 
     const now = new Date();
-    const startOfLastHour = startOfHour(subHours(now, 1));
-    const endOfLastHour = endOfHour(subHours(now, 1));
+    const start = startOfHour(subHours(now, 1));
+    const end = endOfHour(subHours(now, 1));
+
+    const startFormatted = format(start, "yyyy-MM-dd HH:mm:ss");
+    const endFormatted = format(end, "yyyy-MM-dd HH:mm:ss");
 
     const result = await client.query({
       query: `
         SELECT DISTINCT member_id
         FROM activity
-        WHERE created_at >= '${startOfLastHour}'
-        AND created_at < '${endOfLastHour}'
+        WHERE created_at >= '${startFormatted}'
+        AND created_at <= '${endFormatted}'
       `,
     });
 

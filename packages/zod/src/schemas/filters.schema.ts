@@ -55,7 +55,7 @@ export const FilterDateSchema = FilterBaseSchema.extend({
 
 export const FilterTextSchema = FilterBaseSchema.extend({
   type: z.literal("text"),
-  field: z.enum(["job_title", "primary_email", "phones"]),
+  field: z.enum(["job_title", "primary_email", "phones"]).or(z.string()),
   operator: BaseOperatorSchema,
   value: z.string().default(""),
 });

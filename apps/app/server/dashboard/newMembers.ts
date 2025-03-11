@@ -10,7 +10,8 @@ export const newMembers = protectedProcedure
       to: z.date(),
     }),
   )
-  .query(async ({ input }) => {
+  .query(async ({ ctx: { user }, input }) => {
+    const { workspace_id } = user;
     const { from, to } = input;
 
     const previousPeriodLength = differenceInDays(to, from);
@@ -29,24 +30,19 @@ export const newMembers = protectedProcedure
       query: `
         WITH 
           (
-            SELECT count()
+            SELECT 
+              countIf(created_at >= '${formattedFrom}' AND created_at <= '${formattedTo}') as current_count,
+              countIf(created_at >= '${formattedPreviousFrom}' AND created_at <= '${formattedPreviousTo}') as previous_count
             FROM member
-            WHERE created_at >= '${formattedFrom}' 
-            AND created_at <= '${formattedTo}'
-          ) as current_count,
-          (
-            SELECT count()
-            FROM member
-            WHERE created_at >= '${formattedPreviousFrom}' 
-            AND created_at <= '${formattedPreviousTo}'
-          ) as previous_count
+            WHERE workspace_id = '${workspace_id}'
+          ) as counts
         SELECT 
-          current_count as current,
-          previous_count as previous,
+          counts.current_count as current,
+          counts.previous_count as previous,
           CASE
-            WHEN previous_count = 0 AND current_count > 0 THEN 100
-            WHEN previous_count = 0 THEN 0
-            ELSE ((current_count - previous_count) / previous_count) * 100
+            WHEN counts.previous_count = 0 AND counts.current_count > 0 THEN 100
+            WHEN counts.previous_count = 0 THEN 0
+            ELSE ((counts.current_count - counts.previous_count) / counts.previous_count) * 100
           END as variation
       `,
       format: "JSON",

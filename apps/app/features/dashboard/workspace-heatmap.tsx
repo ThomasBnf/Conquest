@@ -21,7 +21,7 @@ export const WorkspaceHeatmap = ({ className }: Props) => {
     >
       <p className="bg-sidebar p-3 font-medium text-lg">Heatmap</p>
       <Separator />
-      <div className="flex flex-col gap-2 p-4">
+      <div className="flex justify-center p-4">
         <Heatmap activities={data} />
       </div>
     </div>

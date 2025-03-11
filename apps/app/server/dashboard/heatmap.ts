@@ -19,15 +19,15 @@ export const heatmap = protectedProcedure
 
     const result = await client.query({
       query: `
-      SELECT 
-        toDate(created_at) as date,
-        count(*) as count
-      FROM activity
-      WHERE workspace_id = '${workspace_id}'
-      ${member_id ? `AND member_id = '${member_id}'` : ""}
-      AND created_at >= '${last365days}'
-      GROUP BY date
-    `,
+        SELECT 
+          toDate(created_at) as date,
+          count() as count
+        FROM activity
+        WHERE workspace_id = '${workspace_id}'
+          AND created_at >= '${last365days}'
+          ${member_id ? `AND member_id = '${member_id}'` : ""}
+        GROUP BY date
+      `,
     });
 
     const { data } = await result.json();

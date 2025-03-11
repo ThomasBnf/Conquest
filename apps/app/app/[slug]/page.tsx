@@ -1,4 +1,4 @@
-import { DatePicker } from "@/components/custom/date-picker";
+import { DateRangePicker } from "@/components/custom/date-range-picker";
 import { Header } from "@/components/layouts/header";
 import { PageLayout } from "@/components/layouts/page-layout";
 import { ActiveMembers } from "@/features/dashboard/active-members";
@@ -25,7 +25,7 @@ export default async function Page({ searchParams }: Props) {
   return (
     <PageLayout>
       <Header title="Dashboard">
-        <DatePicker />
+        <DateRangePicker />
       </Header>
       <ScrollArea>
         <div className="divide-y">

@@ -137,7 +137,7 @@ export const AppSidebar = ({ workspace }: Props) => {
                       >
                         <div className="flex items-center gap-2">
                           <p className="text-base">{list.emoji}</p>
-                          <p>{list.name}</p>
+                          <p className="truncate">{list.name}</p>
                         </div>
                       </Link>
                       <MenuList list={list} transparent />

@@ -11,12 +11,40 @@ import { operatorParser } from "./operatorParser";
 
 type Props = {
   groupFilters: GroupFilters;
+  hasDiscourseData?: boolean;
 };
 
-export const getFilters = ({ groupFilters }: Props) => {
+export const getFilters = ({ groupFilters, hasDiscourseData }: Props) => {
   return groupFilters.filters.map((filter) => {
     const parsedFilter = FilterSchema.parse(filter);
     const { field } = parsedFilter;
+
+    if (field.includes("discourse-")) {
+      const customFieldId = field.split("-")[1];
+
+      if (filter.type === "text") {
+        const { value, operator } = FilterTextSchema.parse(filter);
+
+        if (!value && !["empty", "not_empty"].includes(operator)) {
+          return "true";
+        }
+
+        switch (operator) {
+          case "contains":
+            return `arrayExists(x -> (JSONExtractString(x, 'id') = '${customFieldId}' AND position(lower(JSONExtractString(x, 'value')), lower('${value}')) > 0), JSONExtractArrayRaw(toString(p.attributes), 'custom_fields'))`;
+          case "not_contains":
+            return `NOT arrayExists(x -> (JSONExtractString(x, 'id') = '${customFieldId}' AND position(lower(JSONExtractString(x, 'value')), lower('${value}')) > 0), JSONExtractArrayRaw(toString(p.attributes), 'custom_fields'))`;
+          case "empty":
+            return `arrayExists(x -> (JSONExtractString(x, 'id') = '${customFieldId}' AND (JSONExtractString(x, 'value') = '' OR JSONExtractString(x, 'value') IS NULL)), JSONExtractArrayRaw(toString(p.attributes), 'custom_fields'))`;
+          case "not_empty":
+            return `arrayExists(x -> (JSONExtractString(x, 'id') = '${customFieldId}' AND JSONExtractString(x, 'value') != '' AND JSONExtractString(x, 'value') IS NOT NULL), JSONExtractArrayRaw(toString(p.attributes), 'custom_fields'))`;
+          default:
+            return "true";
+        }
+      }
+
+      return "true";
+    }
 
     if (field === "linked_profiles") {
       const { values, operator } = FilterSelectSchema.parse(filter);
@@ -28,16 +56,24 @@ export const getFilters = ({ groupFilters }: Props) => {
       switch (operator) {
         case "contains":
           return values
-            .map((value) => `hasAny(profile_sources, ['${value}'])`)
+            .map(
+              (value) =>
+                `JSONExtractString(toString(p.attributes), 'source') = '${value}'`,
+            )
             .join(" OR ");
         case "not_contains":
           return values
-            .map((value) => `NOT hasAny(profile_sources, ['${value}'])`)
+            .map(
+              (value) =>
+                `JSONExtractString(toString(p.attributes), 'source') != '${value}'`,
+            )
             .join(" AND ");
         case "empty":
-          return "empty(profile_sources)";
+          return "JSONExtractString(toString(p.attributes), 'source') = ''";
         case "not_empty":
-          return "notEmpty(profile_sources)";
+          return "JSONExtractString(toString(p.attributes), 'source') != ''";
+        default:
+          return "true";
       }
     }
 
@@ -61,6 +97,8 @@ export const getFilters = ({ groupFilters }: Props) => {
           return "empty(tags)";
         case "not_empty":
           return "notEmpty(tags)";
+        default:
+          return "true";
       }
     }
 
@@ -101,6 +139,8 @@ export const getFilters = ({ groupFilters }: Props) => {
           return `m.${field} = ''`;
         case "not_empty":
           return `m.${field} != ''`;
+        default:
+          return "true";
       }
     }
 
@@ -120,6 +160,8 @@ export const getFilters = ({ groupFilters }: Props) => {
           return `m.${field} = ''`;
         case "not_empty":
           return `m.${field} != ''`;
+        default:
+          return "true";
       }
     }
 
@@ -141,6 +183,8 @@ export const getFilters = ({ groupFilters }: Props) => {
           return `l.number < ${value}`;
         case "<=":
           return `l.number <= ${value}`;
+        default:
+          return "true";
       }
     }
 
@@ -162,6 +206,8 @@ export const getFilters = ({ groupFilters }: Props) => {
           return `m.${field} < ${value}`;
         case "<=":
           return `m.${field} <= ${value}`;
+        default:
+          return "true";
       }
     }
 
@@ -212,5 +258,7 @@ export const getFilters = ({ groupFilters }: Props) => {
         ? `m.id IN (${subquery})`
         : `m.id NOT IN (${subquery})`;
     }
+
+    return "true";
   });
 };

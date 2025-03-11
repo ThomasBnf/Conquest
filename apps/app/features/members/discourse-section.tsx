@@ -1,6 +1,8 @@
 import { EditableLink } from "@/components/editable/editable-link";
 import { FieldCard } from "@/components/editable/field-card";
 import { Discourse } from "@/components/icons/Discourse";
+import { trpc } from "@/server/client";
+import { DiscourseDetailsSchema } from "@conquest/zod/schemas/integration.schema";
 import type { Profile } from "@conquest/zod/schemas/profile.schema";
 import { DiscourseProfileSchema } from "@conquest/zod/schemas/profile.schema";
 
@@ -12,6 +14,11 @@ export const DiscourseSection = ({ profiles }: Props) => {
   const profile = profiles?.find(
     (profile) => profile.attributes.source === "Discourse",
   );
+
+  const source = "Discourse";
+  const { data: discourse } = trpc.integrations.bySource.useQuery({ source });
+  const details = DiscourseDetailsSchema.parse(discourse?.details);
+  const { user_fields } = details;
 
   if (!profile) return null;
 
@@ -31,11 +38,13 @@ export const DiscourseSection = ({ profiles }: Props) => {
       </FieldCard>
       {custom_fields?.map((user_field) => {
         const { id, value } = user_field;
-        const field = custom_fields.find((field) => field.id === id);
+        const key = user_fields?.find((field) => field.id === id)?.name;
+
+        if (!key) return null;
 
         return (
-          <FieldCard key={id} icon="User" label={value}>
-            <p className="py-1.5">{field?.value}</p>
+          <FieldCard key={id} icon="User" label={key}>
+            <p className="truncate px-[8px] py-[5px]">{value}</p>
           </FieldCard>
         );
       })}

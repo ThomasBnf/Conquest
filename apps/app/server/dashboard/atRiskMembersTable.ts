@@ -28,20 +28,25 @@ export const atRiskMembersTable = protectedProcedure
       query: `
         SELECT m.*
         FROM member m
-        LEFT JOIN level l ON m.level_id = l.id
+        JOIN level l ON m.level_id = l.id
+        LEFT JOIN (
+          SELECT DISTINCT member_id
+          FROM activity
+          WHERE workspace_id = '${workspace_id}'
+            AND created_at BETWEEN '${formattedFrom}' AND '${formattedTo}'
+        ) a ON m.id = a.member_id
         WHERE m.workspace_id = '${workspace_id}'
           AND l.number >= 3
-          AND m.id NOT IN (
-            SELECT member_id 
-            FROM activity 
-            WHERE workspace_id = '${workspace_id}'
-            AND created_at BETWEEN '${formattedFrom}' AND '${formattedTo}'
-          )
-        AND (
-          positionCaseInsensitive(concat(toString(first_name), ' ', toString(last_name)), '${search}') > 0
-          OR positionCaseInsensitive(concat(toString(last_name), ' ', toString(first_name)), '${search}') > 0
-          OR positionCaseInsensitive(toString(primary_email), '${search}') > 0
-        )
+          AND a.member_id IS NULL
+          ${
+            search
+              ? `AND (
+            positionCaseInsensitive(concat(toString(m.first_name), ' ', toString(m.last_name)), '${search}') > 0
+            OR positionCaseInsensitive(concat(toString(m.last_name), ' ', toString(m.first_name)), '${search}') > 0
+            OR positionCaseInsensitive(toString(m.primary_email), '${search}') > 0
+          )`
+              : ""
+          }
         ${orderBy}
       `,
       format: "JSON",

@@ -22,29 +22,18 @@ export const listMembers = protectedProcedure
     const { search, id, desc, page, pageSize, groupFilters } = input;
     const { operator } = groupFilters;
 
-    const hasProfileFilter = groupFilters.filters.some(
-      (filter) => filter.field === "linked_profiles",
-    );
+    const filterBy = getFilters({ groupFilters });
+    const filtersStr = filterBy.join(operator === "OR" ? " OR " : " AND ");
+
+    const needsLevelJoin =
+      filtersStr.includes("l.number") || id === "level" || id === "pulse";
+    const needsCompanyJoin = id === "company";
+    const needsProfileJoin = filtersStr.includes("p.attributes");
 
     const orderBy = orderByParser({ id, desc, type: "members" });
-    const filterBy = getFilters({ groupFilters });
 
     const result = await client.query({
       query: `
-        ${
-          hasProfileFilter
-            ? `
-          WITH profile_sources AS (
-            SELECT 
-              member_id,
-              groupArray(DISTINCT JSONExtractString(toString(attributes), 'source')) as sources
-            FROM profile
-            WHERE workspace_id = '${workspace_id}'
-            GROUP BY member_id
-          )
-        `
-            : ""
-        }
         SELECT 
           m.id as id,
           m.first_name,
@@ -66,20 +55,20 @@ export const listMembers = protectedProcedure
           m.first_activity,
           m.last_activity,
           m.created_at as created_at,
-          m.updated_at as updated_at,
-          l.number,
-          ${hasProfileFilter ? "ps.sources as profile_sources" : "[] as profile_sources"}
+          m.updated_at as updated_at
+          ${needsLevelJoin ? ", l.number" : ""}
+          ${needsProfileJoin ? ", p.attributes" : ""}
         FROM member m
-        LEFT JOIN level l ON m.level_id = l.id
-        LEFT JOIN company c ON m.company_id = c.id
-        ${hasProfileFilter ? "LEFT JOIN profile_sources ps ON m.id = ps.member_id" : ""}
+        ${needsLevelJoin ? "JOIN level l ON m.level_id = l.id" : ""}
+        ${needsCompanyJoin ? "JOIN company c ON m.company_id = c.id" : ""}
+        ${needsProfileJoin ? "JOIN profile p ON m.id = p.member_id" : ""}
         WHERE (
           positionCaseInsensitive(concat(toString(first_name), ' ', toString(last_name)), '${search}') > 0
           OR positionCaseInsensitive(concat(toString(last_name), ' ', toString(first_name)), '${search}') > 0
           OR positionCaseInsensitive(toString(primary_email), '${search}') > 0
         )
         AND m.workspace_id = '${workspace_id}'
-        ${filterBy.length > 0 ? `AND (${filterBy.join(operator === "OR" ? " OR " : " AND ")})` : ""}
+        ${filterBy.length > 0 ? `AND (${filtersStr})` : ""}
         ${orderBy}
         LIMIT ${pageSize}
         OFFSET ${page * pageSize}

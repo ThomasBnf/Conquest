@@ -10,7 +10,8 @@ export const topChannels = protectedProcedure
       to: z.date(),
     }),
   )
-  .query(async ({ input }) => {
+  .query(async ({ ctx: { user }, input }) => {
+    const { workspace_id } = user;
     const { from, to } = input;
 
     const formattedFrom = format(from, "yyyy-MM-dd HH:mm:ss");
@@ -25,6 +26,7 @@ export const topChannels = protectedProcedure
         LEFT JOIN channel ON activity.channel_id = channel.id
         WHERE activity.created_at >= '${formattedFrom}' 
         AND activity.created_at <= '${formattedTo}'
+        AND channel.workspace_id = '${workspace_id}'
         GROUP BY 
           channel.name
         ORDER BY count DESC

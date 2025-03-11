@@ -28,26 +28,28 @@ export const engagementRate = protectedProcedure
     const result = await client.query({
       query: `
         WITH 
-          (
+          total_members AS (
             SELECT 
-              round(count(DISTINCT member_id) * 100.0 / 
-              (SELECT count() FROM member WHERE created_at <= '${formattedTo}'), 2)
-            FROM activity
-            WHERE created_at >= '${formattedFrom}' 
-            AND created_at <= '${formattedTo}'
-          ) as current_rate,
-          (
+              count() AS current_total FROM member WHERE created_at <= '${formattedTo}',
+              count() AS previous_total FROM member WHERE created_at <= '${formattedPreviousTo}'
+          ),
+          active_members AS (
             SELECT 
-              round(count(DISTINCT member_id) * 100.0 / 
-              (SELECT count() FROM member WHERE created_at <= '${formattedPreviousTo}'), 2)
+              countDistinct(if(created_at BETWEEN '${formattedFrom}' AND '${formattedTo}', member_id, null)) AS current_active,
+              countDistinct(if(created_at BETWEEN '${formattedPreviousFrom}' AND '${formattedPreviousTo}', member_id, null)) AS previous_active
             FROM activity
-            WHERE created_at >= '${formattedPreviousFrom}' 
-            AND created_at <= '${formattedPreviousTo}'
-          ) as previous_rate
+            WHERE created_at >= '${formattedPreviousFrom}' AND created_at <= '${formattedTo}'
+          )
         SELECT 
-          current_rate as current,
-          previous_rate as previous,
-          if(previous_rate = 0, 0, round(current_rate - previous_rate, 2)) as variation
+          round(a.current_active * 100.0 / t.current_total, 2) AS current,
+          round(a.previous_active * 100.0 / t.previous_total, 2) AS previous,
+          if(round(a.previous_active * 100.0 / t.previous_total, 2) = 0, 0, 
+             round(
+               (a.current_active * 100.0 / t.current_total) - 
+               (a.previous_active * 100.0 / t.previous_total), 
+             2)
+          ) AS variation
+        FROM active_members a, total_members t
       `,
       format: "JSON",
     });

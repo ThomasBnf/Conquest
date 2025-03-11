@@ -39,10 +39,11 @@ export const MembersProvider = ({ children }: Props) => {
     groupFilters,
   });
 
-  const { data: count } = trpc.members.count.useQuery({
+  const { data: count, failureReason } = trpc.members.count.useQuery({
     search,
     groupFilters,
   });
+  console.log(failureReason);
 
   return (
     <MembersContext.Provider

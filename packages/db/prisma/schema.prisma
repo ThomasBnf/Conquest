@@ -116,6 +116,7 @@ model list {
     emoji        String
     name         String
     groupFilters Json   @default("{\"filters\":[],\"operator\":\"AND\"}")
+    created_by   String
 
     workspace_id String
     workspace    workspace @relation(fields: [workspace_id], references: [id], onDelete: Cascade)

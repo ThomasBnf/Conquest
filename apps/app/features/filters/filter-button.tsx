@@ -1,4 +1,5 @@
 import { useFilters } from "@/context/filtersContext";
+import { trpc } from "@/server/client";
 import { Button } from "@conquest/ui/button";
 import { cn } from "@conquest/ui/cn";
 import {
@@ -10,6 +11,7 @@ import {
 } from "@conquest/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@conquest/ui/popover";
 import type { Filter } from "@conquest/zod/schemas/filters.schema";
+import { DiscourseDetailsSchema } from "@conquest/zod/schemas/integration.schema";
 import { Plus } from "lucide-react";
 import { useState } from "react";
 import { v4 as uuid } from "uuid";
@@ -17,6 +19,22 @@ import { v4 as uuid } from "uuid";
 export const FilterButton = () => {
   const [open, setOpen] = useState(false);
   const { groupFilters, onAddFilter } = useFilters();
+
+  const source = "Discourse";
+  const { data: discourse } = trpc.integrations.bySource.useQuery({ source });
+
+  const details = DiscourseDetailsSchema.parse(discourse?.details);
+  const { user_fields } = details;
+
+  const filtersDiscourse: Filter[] =
+    user_fields?.map((field) => ({
+      id: field.id,
+      label: field.name,
+      type: "text",
+      field: `discourse-${field.id}`,
+      operator: "contains",
+      value: "",
+    })) ?? [];
 
   const onSelectFilter = (filter: Filter) => {
     const newFilter = {
@@ -50,6 +68,7 @@ export const FilterButton = () => {
                   {filtersActivity.map((filter) => (
                     <CommandItem
                       key={filter.id}
+                      value={filter.id}
                       onSelect={() => onSelectFilter(filter)}
                     >
                       {filter.label}
@@ -57,15 +76,29 @@ export const FilterButton = () => {
                   ))}
                 </CommandGroup>
                 <CommandGroup heading="Member">
-                  {filtersMember.map((filter, index) => (
+                  {filtersMember.map((filter) => (
                     <CommandItem
-                      key={index}
+                      key={filter.id}
+                      value={filter.id}
                       onSelect={() => onSelectFilter(filter)}
                     >
                       {filter.label}
                     </CommandItem>
                   ))}
                 </CommandGroup>
+                {discourse && (
+                  <CommandGroup heading="Discourse">
+                    {filtersDiscourse.map((filter) => (
+                      <CommandItem
+                        key={filter.id}
+                        value={filter.id}
+                        onSelect={() => onSelectFilter(filter)}
+                      >
+                        {filter.label}
+                      </CommandItem>
+                    ))}
+                  </CommandGroup>
+                )}
               </CommandList>
             </Command>
           </PopoverContent>
@@ -77,7 +110,7 @@ export const FilterButton = () => {
 
 const filtersMember: Filter[] = [
   {
-    id: "1",
+    id: uuid(),
     label: "Country",
     type: "select",
     field: "country",
@@ -85,7 +118,7 @@ const filtersMember: Filter[] = [
     values: [],
   },
   {
-    id: "1",
+    id: uuid(),
     label: "Job title",
     type: "text",
     field: "job_title",
@@ -93,7 +126,7 @@ const filtersMember: Filter[] = [
     value: "",
   },
   {
-    id: "1",
+    id: uuid(),
     label: "Language",
     type: "select",
     field: "language",
@@ -101,7 +134,7 @@ const filtersMember: Filter[] = [
     values: [],
   },
   {
-    id: "1",
+    id: uuid(),
     label: "Level",
     type: "level",
     field: "level",
@@ -109,7 +142,7 @@ const filtersMember: Filter[] = [
     value: 1,
   },
   {
-    id: "1",
+    id: uuid(),
     label: "Linked profiles",
     type: "select",
     field: "linked_profiles",
@@ -117,7 +150,7 @@ const filtersMember: Filter[] = [
     values: [],
   },
   {
-    id: "1",
+    id: uuid(),
     label: "Phones",
     type: "text",
     field: "phones",
@@ -125,7 +158,7 @@ const filtersMember: Filter[] = [
     value: "",
   },
   {
-    id: "1",
+    id: uuid(),
     label: "Primary email",
     type: "text",
     field: "primary_email",
@@ -133,7 +166,7 @@ const filtersMember: Filter[] = [
     value: "",
   },
   {
-    id: "1",
+    id: uuid(),
     label: "Pulse",
     type: "number",
     field: "pulse",
@@ -141,7 +174,7 @@ const filtersMember: Filter[] = [
     value: 1,
   },
   {
-    id: "1",
+    id: uuid(),
     label: "Source",
     type: "select",
     field: "source",
@@ -149,7 +182,7 @@ const filtersMember: Filter[] = [
     values: [],
   },
   {
-    id: "1",
+    id: uuid(),
     label: "Tags",
     type: "select",
     field: "tags",
@@ -160,7 +193,7 @@ const filtersMember: Filter[] = [
 
 const filtersActivity: Filter[] = [
   {
-    id: "1",
+    id: uuid(),
     who: "who_did",
     label: "Activity type",
     type: "activity",

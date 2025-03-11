@@ -3,7 +3,6 @@
 import { ACTIVITY_COLORS, WEEKDAYS } from "@/constant";
 import { trpc } from "@/server/client";
 import { cn } from "@conquest/ui/cn";
-import { ScrollArea, ScrollBar } from "@conquest/ui/scroll-area";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@conquest/ui/tooltip";
 import type {
   ActivityHeatmap,
@@ -27,8 +26,8 @@ export const Heatmap = ({ activities }: Props) => {
   const calendar = generateCalendarGrid();
 
   return (
-    <ScrollArea>
-      <div className="mt-4 flex flex-col gap-2">
+    <div className="flex flex-col" style={{ width: "max-content" }}>
+      <div className="mt-4 flex flex-col">
         <MonthLabels calendar={calendar} />
         <div className="flex">
           <div className="grid grid-flow-col gap-1">
@@ -61,7 +60,6 @@ export const Heatmap = ({ activities }: Props) => {
             ))}
           </div>
         </div>
-        <ScrollBar orientation="horizontal" />
       </div>
       <div className="my-4 ml-9 flex items-center gap-2">
         <p className="text-muted-foreground">Less</p>
@@ -73,7 +71,7 @@ export const Heatmap = ({ activities }: Props) => {
         </div>
         <p className="text-muted-foreground">More</p>
       </div>
-    </ScrollArea>
+    </div>
   );
 };
 

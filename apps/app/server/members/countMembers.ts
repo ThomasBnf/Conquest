@@ -14,6 +14,7 @@ export const countMembers = protectedProcedure
   .query(async ({ ctx: { user }, input }) => {
     const { workspace_id } = user;
     const { search, groupFilters } = input;
+    const { operator } = groupFilters;
 
     const searchParsed = search?.toLowerCase().trim();
     const filterBy = getFilters({ groupFilters });
@@ -24,6 +25,7 @@ export const countMembers = protectedProcedure
         FROM member AS m
         LEFT JOIN level AS l ON m.level_id = l.id
         LEFT JOIN company AS c ON m.company_id = c.id
+        LEFT JOIN profile AS p ON m.id = p.member_id
         WHERE (
           ${
             searchParsed
@@ -36,6 +38,7 @@ export const countMembers = protectedProcedure
           }
         )
         AND m.workspace_id = '${workspace_id}'
+        ${filterBy.length > 0 ? `AND (${filterBy.join(operator === "OR" ? " OR " : " AND ")})` : ""}
       `,
     });
 

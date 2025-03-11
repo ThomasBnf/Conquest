@@ -274,16 +274,17 @@ const SourcesGroup = ({
   const { values } = filter;
   const { onUpdateFilter } = useFilters();
   const { data: sources, isLoading } = trpc.members.listSources.useQuery();
+  const customSources = ["Api", "Manual", ...(sources || [])] as const;
 
   const onSelect = (source: string) => {
     onUpdateFilter({ ...filter, values: [source] });
   };
+
   return (
     <CommandList>
       {!isLoading && <CommandEmpty>No sources found.</CommandEmpty>}
       <CommandGroup>
-        {isLoading && <Skeleton className="h-8 w-full" />}
-        {sources?.map((source) => (
+        {customSources?.map((source) => (
           <CommandItem
             key={source}
             value={source}
@@ -293,6 +294,7 @@ const SourcesGroup = ({
             {values.includes(source) && <Check size={16} className="ml-auto" />}
           </CommandItem>
         ))}
+        {isLoading && <Skeleton className="h-8 w-full" />}
       </CommandGroup>
     </CommandList>
   );

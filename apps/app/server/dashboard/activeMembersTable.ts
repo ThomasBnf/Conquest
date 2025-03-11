@@ -26,17 +26,25 @@ export const activeMembersTable = protectedProcedure
 
     const result = await client.query({
       query: `
-        SELECT DISTINCT m.*
+        SELECT m.*, l.name as level_name, l.color as level_color
         FROM member m
-        INNER JOIN activity a ON m.id = a.member_id
         LEFT JOIN level l ON m.level_id = l.id
         WHERE m.workspace_id = '${workspace_id}'
-          AND a.created_at BETWEEN '${formattedFrom}' AND '${formattedTo}'
-        AND (
-          positionCaseInsensitive(concat(toString(first_name), ' ', toString(last_name)), '${search}') > 0
-          OR positionCaseInsensitive(concat(toString(last_name), ' ', toString(first_name)), '${search}') > 0
-          OR positionCaseInsensitive(toString(primary_email), '${search}') > 0
+        AND m.id IN (
+          SELECT DISTINCT member_id
+          FROM activity
+          WHERE created_at BETWEEN '${formattedFrom}' AND '${formattedTo}'
+          AND workspace_id = '${workspace_id}'
         )
+        ${
+          search
+            ? `AND (
+          positionCaseInsensitive(concat(toString(m.first_name), ' ', toString(m.last_name)), '${search}') > 0
+          OR positionCaseInsensitive(concat(toString(m.last_name), ' ', toString(m.first_name)), '${search}') > 0
+          OR positionCaseInsensitive(toString(m.primary_email), '${search}') > 0
+        )`
+            : ""
+        }
         ${orderBy}
       `,
       format: "JSON",
@@ -64,6 +72,5 @@ export const activeMembersTable = protectedProcedure
       transformFlatActivity(row as Record<string, unknown>),
     );
 
-    console.log(members);
     return MemberSchema.array().parse(members);
   });
