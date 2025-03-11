@@ -25,13 +25,13 @@ export const TotalMembers = () => {
 
   return (
     <div className="mb-0.5 flex flex-col overflow-hidden rounded-md border shadow-sm">
-      <p className="bg-sidebar p-3 font-medium text-base">Total members</p>
+      <p className="bg-sidebar p-3 font-medium text-lg">Total members</p>
       <Separator />
-      <div className="p flex flex-1 flex-col items-center justify-center gap-2 py-4">
+      <div className="p flex flex-1 flex-col items-center justify-center gap-2 py-8">
         {isLoading ? (
-          <Skeleton className="h-10 w-16" />
+          <Skeleton className="h-12 w-16" />
         ) : (
-          <p className="font-bold text-4xl">{current}</p>
+          <p className="font-bold text-5xl">{current}</p>
         )}
         <Tooltip>
           <TooltipTrigger>

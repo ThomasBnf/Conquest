@@ -20,7 +20,7 @@ export const DeleteAccountCard = () => {
 
   const { mutateAsync } = trpc.users.delete.useMutation({
     onSuccess: () => {
-      utils.users.getCurrentUser.invalidate();
+      utils.users.get.invalidate();
       router.push("/auth/login");
     },
   });

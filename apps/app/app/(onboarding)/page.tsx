@@ -27,7 +27,7 @@ export default function Page() {
 
   const { mutateAsync } = trpc.users.update.useMutation({
     onSuccess: () => {
-      utils.users.getCurrentUser.invalidate();
+      utils.users.get.invalidate();
       router.push("/settings/integrations");
     },
     onError: (error) => {

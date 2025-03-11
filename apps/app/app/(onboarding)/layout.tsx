@@ -1,7 +1,6 @@
 import { auth } from "@/auth";
 import { UserProvider } from "@/context/userContext";
 import { SignOut } from "@/features/onboarding/sign-out";
-import { getWorkspace } from "@conquest/db/workspaces/getWorkspace";
 import { redirect } from "next/navigation";
 import type { PropsWithChildren } from "react";
 
@@ -10,11 +9,11 @@ export default async function Layout({ children }: PropsWithChildren) {
   if (!session) redirect("/auth/login");
 
   const { user } = session;
-  const workspace = await getWorkspace({ id: user.workspace_id });
+  const { workspace } = user;
   if (user?.onboarding) redirect(`/${workspace.slug}`);
 
   return (
-    <UserProvider initialUser={user} initialWorkspace={workspace}>
+    <UserProvider initialUser={user}>
       <div className="flex h-full flex-col justify-between bg-muted/30 p-4 lg:px-8">
         <div className="flex items-center justify-between">
           <SignOut />

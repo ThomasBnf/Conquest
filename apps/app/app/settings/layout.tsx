@@ -1,7 +1,6 @@
+import { auth } from "@/auth";
 import { SettingsSidebar } from "@/components/layouts/settings-sidebar";
 import { UserProvider } from "@/context/userContext";
-import { getCurrentUser } from "@/queries/getCurrentUser";
-import { getWorkspace } from "@conquest/db/workspaces/getWorkspace";
 import { SidebarProvider } from "@conquest/ui/sidebar";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
@@ -12,10 +11,10 @@ type Props = {
 };
 
 export default async function Layout({ children }: PropsWithChildren<Props>) {
-  const user = await getCurrentUser();
-  const workspace = await getWorkspace({ id: user.workspace_id });
+  const session = await auth();
+  if (!session?.user) redirect("/");
 
-  if (!user) redirect("/");
+  const { user } = session;
   if (!user?.onboarding) redirect("/");
 
   const cookieStore = await cookies();
@@ -23,7 +22,7 @@ export default async function Layout({ children }: PropsWithChildren<Props>) {
   const defaultOpen = sidebarState ? sidebarState.value === "true" : true;
 
   return (
-    <UserProvider initialUser={user} initialWorkspace={workspace}>
+    <UserProvider initialUser={user}>
       <SidebarProvider defaultOpen={defaultOpen}>
         <SettingsSidebar />
         <main className="h-dvh flex-1 overflow-hidden">{children}</main>

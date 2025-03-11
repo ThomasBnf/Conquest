@@ -2,8 +2,10 @@ import { prisma } from "@conquest/db/prisma";
 import { resend } from "@conquest/db/resend";
 import { SignupEmail } from "@conquest/emails/SignupEmail";
 import { env } from "@conquest/env";
-import { type User, UserSchema } from "@conquest/zod/schemas/user.schema";
-import type { Workspace } from "@conquest/zod/schemas/workspace.schema";
+import {
+  type UserWithWorkspace,
+  UserWithWorkspaceSchema,
+} from "@conquest/zod/schemas/user.schema";
 import type { DefaultSession } from "next-auth";
 import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
@@ -12,8 +14,7 @@ import { createAuthPrismaAdapter } from "./lib/createPrismaAdapter";
 
 declare module "next-auth" {
   interface Session extends DefaultSession {
-    user: User;
-    workspace: Workspace;
+    user: UserWithWorkspace;
   }
 }
 
@@ -51,7 +52,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   callbacks: {
     session: async ({ session, user }) => ({
       ...session,
-      user: UserSchema.parse(user),
+      user: UserWithWorkspaceSchema.parse(user),
     }),
   },
 });

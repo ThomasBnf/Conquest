@@ -38,11 +38,9 @@ export const FiltersProvider = ({ defaultGroupFilters, children }: Props) => {
       },
   );
 
-  console.log(groupFilters);
-
   const { mutateAsync } = trpc.users.update.useMutation({
     onSuccess: () => {
-      utils.users.getCurrentUser.invalidate();
+      utils.users.get.invalidate();
     },
   });
 

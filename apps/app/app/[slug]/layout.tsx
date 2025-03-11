@@ -3,7 +3,6 @@ import { AppSidebar } from "@/components/layouts/app-sidebar";
 import { FiltersProvider } from "@/context/filtersContext";
 import { UserProvider } from "@/context/userContext";
 import { CreateListDialog } from "@/features/lists/create-list-dialog";
-import { getWorkspace } from "@conquest/db/workspaces/getWorkspace";
 import { SidebarProvider } from "@conquest/ui/sidebar";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
@@ -24,18 +23,17 @@ export default async function Layout({
   if (!session) redirect("/auth/login");
 
   const { user } = session;
-  if (user && !user.onboarding) redirect("/");
+  const { workspace } = user;
 
-  const workspace = await getWorkspace({ id: user.workspace_id });
+  if (user && !user.onboarding) redirect("/");
   if (slug !== workspace.slug) redirect(`/${workspace.slug}`);
 
   const cookieStore = await cookies();
-
   const sidebarState = cookieStore.get("sidebar:state");
   const defaultOpen = sidebarState ? sidebarState.value === "true" : true;
 
   return (
-    <UserProvider initialUser={user} initialWorkspace={workspace}>
+    <UserProvider initialUser={user}>
       <SidebarProvider defaultOpen={defaultOpen}>
         <FiltersProvider>
           <CreateListDialog />

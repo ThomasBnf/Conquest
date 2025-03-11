@@ -26,7 +26,7 @@ export const WorkspaceStep = ({ setStep }: Props) => {
 
   const { mutateAsync } = trpc.users.update.useMutation({
     onSuccess: () => {
-      utils.users.getCurrentUser.invalidate();
+      utils.users.get.invalidate();
     },
     onError: (error) => {
       setLoading(false);
@@ -37,7 +37,7 @@ export const WorkspaceStep = ({ setStep }: Props) => {
   const { mutateAsync: mutateWorkspace } = trpc.workspaces.update.useMutation({
     onSuccess: () => {
       utils.workspaces.get.invalidate();
-      utils.users.getCurrentUser.invalidate();
+      utils.users.get.invalidate();
       setStep(2);
     },
     onError: (error) => {

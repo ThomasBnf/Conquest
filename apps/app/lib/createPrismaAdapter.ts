@@ -81,7 +81,11 @@ export const createAuthPrismaAdapter = (p: Prisma.PrismaClient): Adapter => ({
     const userAndSession = await prisma.session.findUnique({
       where: { sessionToken },
       include: {
-        user: true,
+        user: {
+          include: {
+            workspace: true,
+          },
+        },
       },
     });
 
@@ -89,7 +93,10 @@ export const createAuthPrismaAdapter = (p: Prisma.PrismaClient): Adapter => ({
 
     const { user, ...session } = userAndSession;
 
-    return { user, session } as {
+    return {
+      session,
+      user,
+    } as {
       session: AdapterSession;
       user: AdapterUser;
     };

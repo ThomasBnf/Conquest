@@ -1,7 +1,6 @@
 import { Header } from "@/components/layouts/header";
 import { PageLayout } from "@/components/layouts/page-layout";
 import { CompaniesProvider } from "@/context/companiesContext";
-import { FiltersProvider } from "@/context/filtersContext";
 import { CompaniesPage } from "@/features/companies/companies-page";
 import { CreateCompanyDialog } from "@/features/companies/create-company-dialog";
 import { loaderTable } from "@/lib/searchParamsTable";
@@ -18,11 +17,9 @@ export default async function Page({ searchParams }: Props) {
       <Header title="Companies">
         <CreateCompanyDialog />
       </Header>
-      <FiltersProvider>
-        <CompaniesProvider>
-          <CompaniesPage />
-        </CompaniesProvider>
-      </FiltersProvider>
+      <CompaniesProvider>
+        <CompaniesPage />
+      </CompaniesProvider>
     </PageLayout>
   );
 }
