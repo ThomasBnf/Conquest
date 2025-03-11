@@ -6,7 +6,7 @@ export default async function Page() {
   const { id: userId, workspace_id } = await getCurrentUser();
 
   await createIntegration({
-    external_id: workspace_id,
+    external_id: null,
     details: {
       source: "Discourse",
       community_url: "",

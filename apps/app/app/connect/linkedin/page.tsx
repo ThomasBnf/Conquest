@@ -42,7 +42,7 @@ export default async function Page({ searchParams }: Props) {
   const encryptedAccessToken = await encrypt(access_token);
 
   await createIntegration({
-    external_id: workspace_id,
+    external_id: null,
     details: {
       source: "Linkedin",
       name: "",
