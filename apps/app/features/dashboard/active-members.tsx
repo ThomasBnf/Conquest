@@ -83,21 +83,10 @@ const ActiveMembersSheet = ({
   const [{ search, idMember, descMember }, setParams] =
     useQueryStates(tableParams);
 
-  const { data, isLoading, failureReason } =
-    trpc.dashboard.activeMembersTable.useQuery(
-      {
-        from,
-        to,
-        search,
-        id: idMember,
-        desc: descMember,
-      },
-      {
-        enabled: open,
-      },
-    );
-
-  console.log(failureReason);
+  const { data, isLoading } = trpc.dashboard.activeMembersTable.useQuery(
+    { from, to, search, id: idMember, desc: descMember },
+    { enabled: open },
+  );
 
   const { table } = useTable({
     data: data ?? [],

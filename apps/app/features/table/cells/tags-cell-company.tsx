@@ -57,7 +57,7 @@ export const TagsCellCompany = ({ row }: Props) => {
 
       return { prevData };
     },
-    onError(error, newData, ctx) {
+    onError(_err, _newData, ctx) {
       utils.companies.list.setData(
         {
           search,
@@ -69,9 +69,6 @@ export const TagsCellCompany = ({ row }: Props) => {
         },
         ctx?.prevData,
       );
-    },
-    onSettled() {
-      utils.companies.list.invalidate();
     },
   });
 

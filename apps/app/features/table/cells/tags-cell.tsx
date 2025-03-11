@@ -70,9 +70,6 @@ export const TagsCell = ({ row }: Props) => {
         ctx?.prevData,
       );
     },
-    onSettled() {
-      utils.members.list.invalidate();
-    },
   });
 
   const tagsIds = row.original.tags.map((tag) => tag);

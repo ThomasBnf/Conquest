@@ -28,9 +28,8 @@ export const MembersProvider = ({ children }: Props) => {
 
   trpc.levels.list.useQuery();
   trpc.tags.list.useQuery();
-  trpc.companies.getAllCompanies.useQuery({});
 
-  const { data, isFetching, failureReason } = trpc.members.list.useQuery({
+  const { data, isFetching } = trpc.members.list.useQuery({
     search,
     desc: descMember,
     id: idMember,
@@ -38,7 +37,6 @@ export const MembersProvider = ({ children }: Props) => {
     pageSize,
     groupFilters,
   });
-  console.log("failureReason", failureReason);
 
   const { data: count } = trpc.members.count.useQuery({
     search,
