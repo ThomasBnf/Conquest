@@ -40,7 +40,7 @@ export const MemberPulseLogs = ({ member }: Props) => {
   }));
 
   return (
-    <div className="relative">
+    <div>
       <div className="flex items-center gap-2">
         <p className="font-medium text-lg">Pulse Logs</p>
         <IconDoc url="https://docs.useconquest.com/pulse-score" />

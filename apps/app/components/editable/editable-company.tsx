@@ -72,7 +72,7 @@ export const EditableCompany = ({ member, onUpdate }: Props) => {
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild className="w-full cursor-pointer">
         {company?.name ? (
-          <div className="h-8 rounded-md p-1 hover:bg-muted">
+          <div className="h-8 rounded-md p-1 hover:bg-muted-hover">
             <Button
               variant="outline"
               size="xs"
@@ -104,7 +104,7 @@ export const EditableCompany = ({ member, onUpdate }: Props) => {
           </Button>
         )}
       </PopoverTrigger>
-      <PopoverContent align="start" className="w-[233px] p-0">
+      <PopoverContent align="start" className="p-0">
         <Command loop shouldFilter={false}>
           <CommandInput
             value={query}

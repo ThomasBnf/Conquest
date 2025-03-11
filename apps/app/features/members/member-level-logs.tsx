@@ -48,7 +48,7 @@ export const MemberLevelLogs = ({ member }: Props) => {
   });
 
   return (
-    <div className="relative">
+    <div>
       <div className="flex items-center gap-2">
         <p className="font-medium text-lg">Level Logs</p>
         <IconDoc url="https://docs.useconquest.com/member-level" />
@@ -57,7 +57,7 @@ export const MemberLevelLogs = ({ member }: Props) => {
         Member Level evolution over the past 365 days, logged weekly.
       </p>
       {logs?.length === 0 && <EmptyStateChart />}
-      <ResponsiveContainer height={300} className="pr-1">
+      <ResponsiveContainer width="100%" height={300} className="pr-1">
         <ChartContainer config={chartConfig}>
           <AreaChart data={formattedLogs}>
             <CartesianGrid vertical={false} />

@@ -55,11 +55,12 @@ export const MemberSidebar = ({ member, profiles }: Props) => {
     field: keyof Member,
     value: string | null | string[],
   ) => {
+    if (member[field] === value) return;
     await updateMember({ ...member, [field]: value });
   };
 
   return (
-    <div className="flex h-full flex-1 shrink-0 flex-col bg-sidebar">
+    <div className="flex h-full w-full max-w-sm shrink-0 flex-col overflow-hidden bg-sidebar">
       <ScrollArea>
         <div className="space-y-4 p-4">
           <div className="flex items-center gap-2">
@@ -70,7 +71,7 @@ export const MemberSidebar = ({ member, profiles }: Props) => {
                 {last_name?.charAt(0).toUpperCase()}
               </AvatarFallback>
             </Avatar>
-            <div>
+            <div className="flex flex-col truncate">
               <p className="font-medium text-base leading-tight">
                 {first_name} {last_name}
               </p>
@@ -128,7 +129,7 @@ export const MemberSidebar = ({ member, profiles }: Props) => {
               onUpdate={(value) => onUpdateMember("job_title", value)}
             />
           </FieldCard>
-          <FieldCard icon="Mail" label="Emails">
+          <FieldCard icon="Mail" label="Emails" className="items-start">
             <EditableEmails member={member} />
           </FieldCard>
           <FieldCard icon="Phone" label="Phones">

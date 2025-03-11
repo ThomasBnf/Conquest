@@ -72,7 +72,7 @@ export const EditableLink = ({
             href={href ?? ""}
             target="_blank"
             className={cn(
-              buttonVariants({ variant: "outline", size: "icon" }),
+              buttonVariants({ variant: "outline", size: "icon_sm" }),
               "-ml-7 z-10",
             )}
           >

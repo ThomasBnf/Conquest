@@ -45,7 +45,7 @@ export const EditableInput = ({
         variant="ghost"
         onClick={() => setIsFocus(true)}
         className={cn(
-          "w-full justify-start overflow-hidden",
+          "w-full justify-start overflow-hidden border border-transparent",
           !value && "text-muted-foreground",
           className,
         )}
@@ -71,7 +71,7 @@ export const EditableInput = ({
       ) : (
         <Input
           autoFocus
-          className="h-8 px-[7px]"
+          className="h-8"
           value={value ?? ""}
           onChange={(event) => setValue(event.target.value)}
           onBlur={(event) => onBlur(event.target.value)}

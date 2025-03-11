@@ -3,6 +3,7 @@
 import { ACTIVITY_COLORS, WEEKDAYS } from "@/constant";
 import { trpc } from "@/server/client";
 import { cn } from "@conquest/ui/cn";
+import { ScrollArea, ScrollBar } from "@conquest/ui/scroll-area";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@conquest/ui/tooltip";
 import type {
   ActivityHeatmap,
@@ -27,53 +28,50 @@ export const Heatmap = ({ activities, member_id }: Props) => {
   const calendar = generateCalendarGrid();
 
   return (
-    <div className="flex flex-col" style={{ width: "max-content" }}>
-      <div className="mt-4 flex flex-col">
+    <ScrollArea>
+      <div className="mt-4 flex w-full max-w-0 flex-col">
         <MonthLabels calendar={calendar} />
-        <div className="flex">
-          <div className="grid grid-flow-col gap-1">
-            <div className="mr-2 flex flex-col justify-between text-muted-foreground text-xs">
-              {WEEKDAYS.map((day) => (
-                <div key={day}>{day}</div>
-              ))}
-            </div>
-            {calendar.map((week) => (
-              <div
-                key={format(week[0] ?? new Date(), "yyyy-MM-dd")}
-                className="grid grid-rows-7 gap-1"
-              >
-                {week.map((day) => {
-                  const dateStr = format(day, "yyyy-MM-dd");
-                  const dayActivity = activities?.find(
-                    (a) => a.date === dateStr,
-                  );
-
-                  return (
-                    <DayCell
-                      key={dateStr}
-                      day={day}
-                      count={Number(dayActivity?.count ?? 0)}
-                      allActivities={activities}
-                      member_id={member_id}
-                    />
-                  );
-                })}
-              </div>
+        <div className="flex gap-1">
+          <div className="mr-2 flex flex-col justify-between text-muted-foreground text-xs">
+            {WEEKDAYS.map((day) => (
+              <div key={day}>{day}</div>
             ))}
           </div>
+          {calendar.map((week) => (
+            <div
+              key={format(week[0] ?? new Date(), "yyyy-MM-dd")}
+              className="grid grid-rows-7 gap-1"
+            >
+              {week.map((day) => {
+                const dateStr = format(day, "yyyy-MM-dd");
+                const dayActivity = activities?.find((a) => a.date === dateStr);
+
+                return (
+                  <DayCell
+                    key={dateStr}
+                    day={day}
+                    count={Number(dayActivity?.count ?? 0)}
+                    allActivities={activities}
+                    member_id={member_id}
+                  />
+                );
+              })}
+            </div>
+          ))}
+        </div>
+        <div className="my-4 ml-9 flex items-center gap-2">
+          <p className="text-muted-foreground">Less</p>
+          <div className="flex items-center gap-1">
+            <div className="size-3.5 rounded bg-main-200" />
+            <div className="size-3.5 rounded bg-main-500" />
+            <div className="size-3.5 rounded bg-main-700" />
+            <div className="size-3.5 rounded bg-black" />
+          </div>
+          <p className="text-muted-foreground">More</p>
         </div>
       </div>
-      <div className="my-4 ml-9 flex items-center gap-2">
-        <p className="text-muted-foreground">Less</p>
-        <div className="flex items-center gap-1">
-          <div className="size-3.5 rounded bg-main-200" />
-          <div className="size-3.5 rounded bg-main-500" />
-          <div className="size-3.5 rounded bg-main-700" />
-          <div className="size-3.5 rounded bg-black" />
-        </div>
-        <p className="text-muted-foreground">More</p>
-      </div>
-    </div>
+      <ScrollBar orientation="horizontal" />
+    </ScrollArea>
   );
 };
 
@@ -185,7 +183,7 @@ const DayCell = ({
   const { data: activities, isLoading } =
     trpc.activities.listDayActivities.useQuery(
       { date: day, member_id },
-      { enabled: hover },
+      { enabled: hover && count > 0 },
     );
 
   return (

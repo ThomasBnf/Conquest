@@ -66,7 +66,7 @@ export const TabsMember = () => {
   }, [activeTab]);
 
   return (
-    <div className="relative flex h-12 items-center gap-2 px-4">
+    <div className="relative flex min-h-12 items-center gap-2 px-4">
       <div
         className="absolute h-8 rounded bg-muted transition-all duration-300 ease-out"
         style={{

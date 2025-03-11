@@ -47,7 +47,7 @@ export const Email = ({
       )}
       <Button
         variant="outline"
-        size="icon"
+        size="icon_sm"
         className="ml-auto shrink-0 opacity-0 group-hover:opacity-100"
         onClick={() => onDeleteEmail(email.id)}
       >

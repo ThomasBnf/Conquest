@@ -3,6 +3,7 @@
 import { Heatmap } from "@/components/custom/heatmap";
 import { trpc } from "@/server/client";
 import { cn } from "@conquest/ui/cn";
+import { ScrollArea } from "@conquest/ui/scroll-area";
 import { Separator } from "@conquest/ui/separator";
 
 type Props = {
@@ -21,9 +22,11 @@ export const WorkspaceHeatmap = ({ className }: Props) => {
     >
       <p className="bg-sidebar p-3 font-medium text-lg">Heatmap</p>
       <Separator />
-      <div className="flex justify-center p-4">
-        <Heatmap activities={data} />
-      </div>
+      <ScrollArea className="h-full">
+        <div className="mx-auto flex max-w-6xl flex-col overflow-hidden px-4">
+          <Heatmap activities={data} />
+        </div>
+      </ScrollArea>
     </div>
   );
 };

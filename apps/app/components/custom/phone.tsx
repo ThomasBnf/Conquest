@@ -49,7 +49,7 @@ export const Phone = ({
       )}
       <Button
         variant="outline"
-        size="icon"
+        size="icon_sm"
         className="mr-1 shrink-0"
         onClick={() => onDeletePhone(phone.id)}
       >

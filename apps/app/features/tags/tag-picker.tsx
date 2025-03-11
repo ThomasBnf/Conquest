@@ -10,7 +10,12 @@ import {
   CommandItem,
   CommandList,
 } from "@conquest/ui/command";
-import { Popover, PopoverContent, PopoverTrigger } from "@conquest/ui/popover";
+import {
+  Popover,
+  PopoverAnchor,
+  PopoverContent,
+  PopoverTrigger,
+} from "@conquest/ui/popover";
 import type { Company } from "@conquest/zod/schemas/company.schema";
 import type { Member } from "@conquest/zod/schemas/member.schema";
 import type { Tag } from "@conquest/zod/schemas/tag.schema";
@@ -42,8 +47,9 @@ export const TagPicker = ({ record, onUpdate, className }: Props) => {
 
   return (
     <Popover>
+      <PopoverAnchor />
       <PopoverTrigger asChild>
-        <div className="flex w-full flex-wrap items-center gap-1.5">
+        <div className="flex w-full cursor-pointer flex-wrap items-center gap-1.5">
           {recordTags?.map((tagId) => (
             <TagBadge key={tagId} tag={tags?.find((t) => t.id === tagId)} />
           ))}
@@ -62,9 +68,11 @@ export const TagPicker = ({ record, onUpdate, className }: Props) => {
         </div>
       </PopoverTrigger>
       <PopoverContent
-        className="w-[233px] p-0"
+        className="p-0"
+        side="bottom"
         align="start"
-        onOpenAutoFocus={(e) => e.preventDefault()}
+        sideOffset={36}
+        alignOffset={-5}
       >
         <Command>
           <CommandInput placeholder="Search tags" />
