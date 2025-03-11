@@ -25,8 +25,6 @@ export const listMembers = protectedProcedure
     const filterBy = getFilters({ groupFilters });
     const filtersStr = filterBy.join(operator === "OR" ? " OR " : " AND ");
 
-    const needsLevelJoin =
-      filtersStr.includes("l.number") || id === "level" || id === "pulse";
     const needsCompanyJoin = id === "company";
     const needsProfileJoin = filtersStr.includes("p.attributes");
 
@@ -55,13 +53,13 @@ export const listMembers = protectedProcedure
           m.first_activity,
           m.last_activity,
           m.created_at as created_at,
-          m.updated_at as updated_at
-          ${needsLevelJoin ? ", l.number" : ""}
+          m.updated_at as updated_at,
+          l.number,
           ${needsProfileJoin ? ", p.attributes" : ""}
         FROM member m
-        ${needsLevelJoin ? "JOIN level l ON m.level_id = l.id" : ""}
-        ${needsCompanyJoin ? "JOIN company c ON m.company_id = c.id" : ""}
-        ${needsProfileJoin ? "JOIN profile p ON m.id = p.member_id" : ""}
+        LEFT JOIN level l ON m.level_id = l.id
+        ${needsCompanyJoin ? "LEFT JOIN company c ON m.company_id = c.id" : ""}
+        ${needsProfileJoin ? "LEFT JOIN profile p ON m.id = p.member_id" : ""}
         WHERE (
           positionCaseInsensitive(concat(toString(first_name), ' ', toString(last_name)), '${search}') > 0
           OR positionCaseInsensitive(concat(toString(last_name), ' ', toString(first_name)), '${search}') > 0
@@ -73,6 +71,7 @@ export const listMembers = protectedProcedure
         LIMIT ${pageSize}
         OFFSET ${page * pageSize}
       `,
+      format: "JSON",
     });
 
     const { data } = await result.json();
