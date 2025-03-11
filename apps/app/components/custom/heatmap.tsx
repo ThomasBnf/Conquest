@@ -20,9 +20,10 @@ import { useState } from "react";
 
 type Props = {
   activities: ActivityHeatmap[] | undefined;
+  member_id?: string;
 };
 
-export const Heatmap = ({ activities }: Props) => {
+export const Heatmap = ({ activities, member_id }: Props) => {
   const calendar = generateCalendarGrid();
 
   return (
@@ -53,6 +54,7 @@ export const Heatmap = ({ activities }: Props) => {
                       day={day}
                       count={Number(dayActivity?.count ?? 0)}
                       allActivities={activities}
+                      member_id={member_id}
                     />
                   );
                 })}
@@ -170,17 +172,19 @@ const DayCell = ({
   day,
   count,
   allActivities,
+  member_id,
 }: {
   day: Date;
   count: number;
   allActivities: ActivityHeatmap[] | undefined;
+  member_id?: string;
 }) => {
   const [hover, setHover] = useState(false);
   const level = getActivityLevel(count, allActivities);
 
   const { data: activities, isLoading } =
     trpc.activities.listDayActivities.useQuery(
-      { date: day },
+      { date: day, member_id },
       { enabled: hover },
     );
 

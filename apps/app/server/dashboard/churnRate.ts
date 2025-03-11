@@ -25,41 +25,56 @@ export const churnRate = protectedProcedure
 
     const result = await client.query({
       query: `
-        WITH 
-          high_level_members AS (
-            SELECT 
-              m.id
-            FROM member m
-            JOIN level l ON m.level_id = l.id
-            WHERE m.workspace_id = '${workspace_id}'
-              AND l.number >= 3
-          ),
-          activity_periods AS (
-            SELECT 
-              member_id,
-              toInt8(countIf(created_at BETWEEN '${formattedFrom}' AND '${formattedTo}') > 0) AS active_current,
-              toInt8(countIf(created_at BETWEEN '${formattedPreviousFrom}' AND '${formattedPreviousTo}') > 0) AS active_previous
-            FROM activity
-            WHERE workspace_id = '${workspace_id}'
-              AND created_at >= '${formattedPreviousFrom}' 
-              AND created_at <= '${formattedTo}'
-              AND member_id IN (SELECT id FROM high_level_members)
-            GROUP BY member_id
-          ),
-          member_stats AS (
-            SELECT
-              COUNT(h.id) AS total_members,
-              SUM(CASE WHEN a.member_id IS NULL OR a.active_current = 0 THEN 1 ELSE 0 END) AS current_inactive,
-              SUM(CASE WHEN a.member_id IS NULL OR a.active_previous = 0 THEN 1 ELSE 0 END) AS previous_inactive
-            FROM high_level_members h
-            LEFT JOIN activity_periods a ON h.id = a.member_id
-          )
-        
         SELECT 
-          (current_inactive / nullIf(total_members, 0)) * 100 AS current,
-          (previous_inactive / nullIf(total_members, 0)) * 100 AS previous,
-          ((current_inactive / nullIf(total_members, 0)) - (previous_inactive / nullIf(total_members, 0))) * 100 AS variation_rate
-        FROM member_stats
+          (currentInactive.count / nullIf(currentTotal.total, 0)) * 100 as current,
+          (previousInactive.count / nullIf(previousTotal.total, 0)) * 100 as previous,
+          (((currentInactive.count / nullIf(currentTotal.total, 0)) - 
+            (previousInactive.count / nullIf(previousTotal.total, 0))) * 100) as variation_rate
+        FROM
+        (
+          SELECT count(*) as count
+          FROM member m
+          LEFT JOIN level l ON m.level_id = l.id
+          WHERE 
+            m.workspace_id = '${workspace_id}'
+            AND l.number >= 3
+            AND m.id NOT IN (
+              SELECT member_id 
+              FROM activity 
+              WHERE workspace_id = '${workspace_id}'
+                AND created_at BETWEEN '${formattedFrom}' AND '${formattedTo}'
+            )
+        ) as currentInactive,
+        (
+          SELECT count(*) as total
+          FROM member m
+          LEFT JOIN level l ON m.level_id = l.id
+          WHERE 
+            m.workspace_id = '${workspace_id}'
+            AND l.number >= 3
+        ) as currentTotal,
+        (
+          SELECT count(*) as count
+          FROM member m
+          LEFT JOIN level l ON m.level_id = l.id
+          WHERE 
+            m.workspace_id = '${workspace_id}'
+            AND l.number >= 3
+            AND m.id NOT IN (
+              SELECT member_id 
+              FROM activity 
+              WHERE workspace_id = '${workspace_id}'
+                AND created_at BETWEEN '${formattedPreviousFrom}' AND '${formattedPreviousTo}'
+            )
+        ) as previousInactive,
+        (
+          SELECT count(*) as total
+          FROM member m
+          LEFT JOIN level l ON m.level_id = l.id
+          WHERE 
+            m.workspace_id = '${workspace_id}'
+            AND l.number >= 3
+        ) as previousTotal
       `,
       format: "JSON",
     });

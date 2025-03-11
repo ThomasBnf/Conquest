@@ -8,11 +8,12 @@ export const listDayActivities = protectedProcedure
   .input(
     z.object({
       date: z.date(),
+      member_id: z.string().optional(),
     }),
   )
   .query(async ({ ctx: { user }, input }) => {
     const { workspace_id } = user;
-    const { date } = input;
+    const { date, member_id } = input;
 
     const result = await client.query({
       query: `
@@ -23,6 +24,7 @@ export const listDayActivities = protectedProcedure
         LEFT JOIN activity_type ON a.activity_type_id = activity_type.id
         WHERE a.workspace_id = '${workspace_id}'
         AND DATE(a.created_at) = '${format(date, "yyyy-MM-dd")}'
+        ${member_id ? `AND a.member_id = '${member_id}'` : ""}
       `,
       format: "JSON",
     });

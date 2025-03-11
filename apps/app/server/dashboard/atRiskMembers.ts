@@ -25,39 +25,39 @@ export const atRiskMembers = protectedProcedure
 
     const result = await client.query({
       query: `
-        WITH 
-          active_members AS (
-            SELECT 
-              member_id,
-              toInt8(max(created_at BETWEEN '${formattedFrom}' AND '${formattedTo}')) AS active_current,
-              toInt8(max(created_at BETWEEN '${formattedPreviousFrom}' AND '${formattedPreviousTo}')) AS active_previous
-            FROM activity
-            WHERE workspace_id = '${workspace_id}'
-              AND created_at >= '${formattedPreviousFrom}' 
-              AND created_at <= '${formattedTo}'
-            GROUP BY member_id
-          ),
-          high_level_members AS (
-            SELECT 
-              count() AS total,
-              countIf(am.member_id IS NULL OR am.active_current = 0) AS current_at_risk,
-              countIf(am.member_id IS NULL OR am.active_previous = 0) AS previous_at_risk
-            FROM member m
-            JOIN level l ON m.level_id = l.id
-            LEFT JOIN active_members am ON m.id = am.member_id
-            WHERE m.workspace_id = '${workspace_id}'
-              AND l.number >= 3
-          )
-        
         SELECT 
-          current_at_risk AS current,
-          previous_at_risk AS previous,
-          multiIf(
-            previous_at_risk = 0 AND current_at_risk > 0, 100,
-            previous_at_risk = 0, 0,
-            ((current_at_risk - previous_at_risk) / previous_at_risk) * 100
-          ) AS variation_rate
-        FROM high_level_members
+          currentCount.count as current,
+          previousCount.count as previous,
+          ((currentCount.count - previousCount.count) / nullIf(previousCount.count, 0)) * 100 as variation_rate
+        FROM
+        (
+          SELECT count(*) as count
+          FROM member m
+          LEFT JOIN level l ON m.level_id = l.id
+          WHERE 
+            m.workspace_id = '${workspace_id}'
+            AND l.number >= 3
+            AND m.id NOT IN (
+              SELECT member_id 
+              FROM activity 
+              WHERE workspace_id = '${workspace_id}'
+                AND created_at BETWEEN '${formattedFrom}' AND '${formattedTo}'
+            )
+        ) as currentCount,
+        (
+          SELECT count(*) as count
+          FROM member m
+          LEFT JOIN level l ON m.level_id = l.id
+          WHERE 
+            m.workspace_id = '${workspace_id}'
+            AND l.number >= 3
+            AND m.id NOT IN (
+              SELECT member_id 
+              FROM activity 
+              WHERE workspace_id = '${workspace_id}'
+                AND created_at BETWEEN '${formattedPreviousFrom}' AND '${formattedPreviousTo}'
+            )
+        ) as previousCount
       `,
       format: "JSON",
     });

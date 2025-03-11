@@ -28,23 +28,23 @@ export const activeMembers = protectedProcedure
 
     const result = await client.query({
       query: `
-        SELECT 
-          current_count,
-          previous_count,
-          multiIf(
-            previous_count = 0 AND current_count > 0, 100,
-            previous_count = 0, 0,
-            ((current_count - previous_count) / previous_count) * 100
-          ) as variation
-        FROM (
-          SELECT 
-            countDistinct(if(created_at BETWEEN '${formattedFrom}' AND '${formattedTo}', member_id, null)) as current_count,
-            countDistinct(if(created_at BETWEEN '${formattedPreviousFrom}' AND '${formattedPreviousTo}', member_id, null)) as previous_count
-          FROM activity
-          WHERE created_at >= '${formattedPreviousFrom}'
+        WITH 
+          (
+            SELECT count(DISTINCT member_id)
+            FROM activity
+            WHERE created_at >= '${formattedFrom}' 
             AND created_at <= '${formattedTo}'
-            AND workspace_id = '${workspace_id}'
-        )
+          ) as current_count,
+          (
+            SELECT count(DISTINCT member_id)
+            FROM activity
+            WHERE created_at >= '${formattedPreviousFrom}' 
+            AND created_at <= '${formattedPreviousTo}'
+          ) as previous_count
+        SELECT 
+          current_count as current,
+          previous_count as previous,
+          if(previous_count = 0, 0, ((current_count - previous_count) / previous_count) * 100) as variation
       `,
       format: "JSON",
     });

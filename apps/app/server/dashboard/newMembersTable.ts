@@ -31,15 +31,11 @@ export const newMembersTable = protectedProcedure
         LEFT JOIN level l ON m.level_id = l.id
         WHERE m.workspace_id = '${workspace_id}'
           AND m.created_at BETWEEN '${formattedFrom}' AND '${formattedTo}'
-          ${
-            search
-              ? `AND (
-            positionCaseInsensitive(concat(toString(m.first_name), ' ', toString(m.last_name)), '${search}') > 0
-            OR positionCaseInsensitive(concat(toString(m.last_name), ' ', toString(m.first_name)), '${search}') > 0
-            OR positionCaseInsensitive(toString(m.primary_email), '${search}') > 0
-          )`
-              : ""
-          }
+        AND (
+          positionCaseInsensitive(concat(toString(first_name), ' ', toString(last_name)), '${search}') > 0
+          OR positionCaseInsensitive(concat(toString(last_name), ' ', toString(first_name)), '${search}') > 0
+          OR positionCaseInsensitive(toString(primary_email), '${search}') > 0
+        )
         ${orderBy}
       `,
       format: "JSON",

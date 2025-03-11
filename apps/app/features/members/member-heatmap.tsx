@@ -27,7 +27,7 @@ export const MemberHeatmap = ({ memberId }: Props) => {
         </p>
       </div>
       <div className="w-full overflow-x-auto pb-2">
-        <Heatmap activities={data} />
+        <Heatmap activities={data} member_id={memberId} />
       </div>
     </div>
   );
