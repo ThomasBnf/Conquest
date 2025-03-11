@@ -10,17 +10,6 @@ type Props = {
 export const TagCard = ({ tag }: Props) => {
   const [isEditing, setIsEditing] = useState(false);
 
-  const colorMap = {
-    "1": "#E7C200",
-    "2": "#CD7F31",
-    "3": "#C0C0C0",
-  };
-
-  const tagColor =
-    tag.source === "Discourse"
-      ? colorMap[tag.color as keyof typeof colorMap]
-      : tag.color;
-
   if (isEditing) return <TagForm tag={tag} setIsEditing={setIsEditing} />;
 
   return (
@@ -28,7 +17,7 @@ export const TagCard = ({ tag }: Props) => {
       <div className="flex items-center gap-2">
         <div
           className="size-3 rounded-full"
-          style={{ backgroundColor: tagColor }}
+          style={{ backgroundColor: tag.color }}
         />
         <p className="truncate font-medium">{tag.name}</p>
       </div>
