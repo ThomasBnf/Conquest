@@ -29,11 +29,13 @@ export default async function Page({ searchParams }: Props) {
     },
   );
 
+  const data = await response.json();
+  console.log(data);
+
   if (!response.ok) {
     return redirect("settings/integrations/livestorm?error=invalid_code");
   }
 
-  const data = await response.json();
   const { access_token, expires_in, refresh_token, scope } = data;
 
   const encryptedAccessToken = await encrypt(access_token);
