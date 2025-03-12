@@ -25,7 +25,6 @@ export async function POST(request: NextRequest) {
   const { event, organization_id } = meta.webhook;
 
   const integration = await getIntegration({ external_id: organization_id });
-
   if (!integration) return NextResponse.json(200);
 
   const livestorm = LivestormIntegrationSchema.parse(integration);
@@ -42,6 +41,7 @@ export async function POST(request: NextRequest) {
       accessToken: access_token,
       id: event_id,
     });
+
     const { title } = event.attributes;
 
     if (filter && !title.includes(filter)) return NextResponse.json(200);
@@ -99,7 +99,6 @@ export async function POST(request: NextRequest) {
     const { session_id, ip_country_code } = registrant_detail;
     const session = await getEvent({ id: session_id });
 
-    const { title } = session;
     const locale = ip_country_code ? getLocaleByAlpha2(ip_country_code) : "";
     const languageCode = locale?.split("_")[0] ?? "";
     const language = languageCode ? ISO6391.getName(languageCode) : "";
@@ -131,7 +130,6 @@ export async function POST(request: NextRequest) {
 
     await createActivity({
       activity_type_key: "livestorm:register",
-      message: `Registered to: ${title}`,
       member_id: profile.member_id,
       event_id: session.id,
       source: "Livestorm",
@@ -141,8 +139,6 @@ export async function POST(request: NextRequest) {
 
   if (event === "session.ended") {
     const session = await getEvent({ id });
-    const { title } = session;
-
     const peoples = await listPeopleFromSession({ access_token, id });
 
     for (const people of peoples) {

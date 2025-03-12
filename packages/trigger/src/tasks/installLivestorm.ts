@@ -20,6 +20,7 @@ export const installLivestorm = schemaTask({
   run: async ({ livestorm }) => {
     const { details, workspace_id } = livestorm;
     const { access_token, access_token_iv, expires_in } = details;
+    metadata.set("progress", 5);
 
     const isExpired = new Date(Date.now() + expires_in * 1000) < new Date();
 
@@ -43,6 +44,7 @@ export const installLivestorm = schemaTask({
         event,
       });
     }
+    metadata.set("progress", 10);
 
     const members = await createManyEvents({ livestorm });
 
