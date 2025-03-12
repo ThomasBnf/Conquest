@@ -1,8 +1,8 @@
 import { SourceBadge } from "@/components/badges/source-badge";
 import { useIntegration } from "@/context/integrationContext";
+import { trpc } from "@/server/client";
 import { Avatar, AvatarFallback, AvatarImage } from "@conquest/ui/avatar";
 import type { ActivityWithType } from "@conquest/zod/schemas/activity.schema";
-import type { Channel } from "@conquest/zod/schemas/channel.schema";
 import type { Member } from "@conquest/zod/schemas/member.schema";
 import { format } from "date-fns";
 import ReactMarkdown from "react-markdown";
@@ -11,22 +11,21 @@ import { ActivityMenu } from "../activity-menu";
 type Props = {
   activity: ActivityWithType;
   member: Member | null | undefined;
-  channel: Channel | null | undefined;
   isThread?: boolean;
 };
 
-export const DiscordReply = ({
-  activity,
-  member,
-  channel,
-  isThread,
-}: Props) => {
+export const DiscordReply = ({ activity, member, isThread }: Props) => {
   const { discord } = useIntegration();
   const { external_id: guild_id } = discord ?? {};
-  const { external_id, message, reply_to, created_at } = activity;
+  const { external_id, message, reply_to, channel_id, created_at } = activity;
   const { source } = activity.activity_type;
 
   const { avatar_url, first_name, last_name } = member ?? {};
+
+  const { data: channel } = trpc.channels.get.useQuery(
+    { id: channel_id },
+    { enabled: !!channel_id },
+  );
 
   const href = isThread
     ? `https://discord.com/channels/${guild_id}/${reply_to}/${external_id}`

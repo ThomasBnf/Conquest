@@ -3,7 +3,6 @@ import { emojiParser } from "@/helpers/emoji-parser";
 import { trpc } from "@/server/client";
 import { Avatar, AvatarFallback, AvatarImage } from "@conquest/ui/avatar";
 import type { ActivityWithType } from "@conquest/zod/schemas/activity.schema";
-import type { Channel } from "@conquest/zod/schemas/channel.schema";
 import type { Member } from "@conquest/zod/schemas/member.schema";
 import { format } from "date-fns";
 import { ActivityMenu } from "../activity-menu";
@@ -11,14 +10,18 @@ import { ActivityMenu } from "../activity-menu";
 type Props = {
   activity: ActivityWithType;
   member: Member | null | undefined;
-  channel: Channel | null | undefined;
 };
 
-export const SlackReaction = ({ activity, member, channel }: Props) => {
-  const { message, react_to, created_at } = activity;
+export const SlackReaction = ({ activity, member }: Props) => {
+  const { message, react_to, channel_id, created_at } = activity;
   const { source } = activity.activity_type;
 
   const { avatar_url, first_name, last_name } = member ?? {};
+
+  const { data: channel } = trpc.channels.get.useQuery(
+    { id: channel_id },
+    { enabled: !!channel_id },
+  );
 
   const { data: permalink } = trpc.slack.getPermaLink.useQuery({
     channel_id: channel?.external_id,

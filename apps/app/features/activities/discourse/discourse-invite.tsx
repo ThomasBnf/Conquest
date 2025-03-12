@@ -1,5 +1,4 @@
 import { SourceBadge } from "@/components/badges/source-badge";
-import { useIntegration } from "@/context/integrationContext";
 import { trpc } from "@/server/client";
 import { Avatar, AvatarFallback, AvatarImage } from "@conquest/ui/avatar";
 import type { ActivityWithType } from "@conquest/zod/schemas/activity.schema";
@@ -12,20 +11,16 @@ type Props = {
   member: Member | null | undefined;
 };
 
-export const DiscordReaction = ({ activity, member }: Props) => {
-  const { discord } = useIntegration();
-  const { external_id: guild_id } = discord ?? {};
-  const { message, react_to, channel_id, created_at } = activity;
+export const DiscourseInvite = ({ activity, member }: Props) => {
+  const { created_at, invite_to } = activity;
   const { source } = activity.activity_type;
 
   const { avatar_url, first_name, last_name } = member ?? {};
 
-  const { data: channel } = trpc.channels.get.useQuery(
-    { id: channel_id },
-    { enabled: !!channel_id },
+  const { data: inviter } = trpc.members.get.useQuery(
+    { id: invite_to },
+    { enabled: !!invite_to },
   );
-
-  const href = `https://discord.com/channels/${guild_id}/${channel?.external_id}/${react_to}`;
 
   return (
     <div className="flex items-center justify-between">
@@ -41,16 +36,16 @@ export const DiscordReaction = ({ activity, member }: Props) => {
           <span className="font-medium text-foreground">
             {first_name} {last_name}
           </span>{" "}
-          added reaction {message}
+          invited{" "}
           <span className="font-medium text-foreground">
-            {" "}
-            in #{channel?.name}
-          </span>
+            {inviter?.first_name} {inviter?.last_name}
+          </span>{" "}
+          to join the {source === "Discord" ? "server" : "workspace"}
         </p>
         <SourceBadge source={source} transparent onlyIcon />
         <p className="text-muted-foreground">{format(created_at, "HH:mm")}</p>
       </div>
-      <ActivityMenu activity={activity} href={href} />
+      <ActivityMenu activity={activity} />
     </div>
   );
 };

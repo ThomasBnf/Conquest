@@ -1,8 +1,8 @@
 import { SourceBadge } from "@/components/badges/source-badge";
 import { useIntegration } from "@/context/integrationContext";
+import { trpc } from "@/server/client";
 import { Avatar, AvatarFallback, AvatarImage } from "@conquest/ui/avatar";
 import type { ActivityWithType } from "@conquest/zod/schemas/activity.schema";
-import type { Channel } from "@conquest/zod/schemas/channel.schema";
 import type { Member } from "@conquest/zod/schemas/member.schema";
 import { format } from "date-fns";
 import { ActivityMenu } from "../activity-menu";
@@ -10,16 +10,20 @@ import { ActivityMenu } from "../activity-menu";
 type Props = {
   activity: ActivityWithType;
   member: Member | null | undefined;
-  channel: Channel | null | undefined;
 };
 
-export const DiscourseTopic = ({ activity, member, channel }: Props) => {
+export const DiscourseTopic = ({ activity, member }: Props) => {
   const { discourse } = useIntegration();
   const { community_url } = discourse?.details ?? {};
-  const { external_id, title, message, created_at } = activity;
+  const { external_id, title, message, channel_id, created_at } = activity;
   const { source } = activity.activity_type;
 
   const { avatar_url, first_name, last_name } = member ?? {};
+
+  const { data: channel } = trpc.channels.get.useQuery(
+    { id: channel_id },
+    { enabled: !!channel_id },
+  );
 
   const href = `${community_url}/t/${external_id}`;
 

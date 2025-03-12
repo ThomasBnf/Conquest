@@ -8,6 +8,7 @@ import { DiscordMessage } from "./discord/discord-message";
 import { DiscordReaction } from "./discord/discord-reaction";
 import { DiscordReply } from "./discord/discord-reply";
 import { DiscordThread } from "./discord/discord-thread";
+import { DiscourseInvite } from "./discourse/discourse-invite";
 import { DiscourseLogin } from "./discourse/discourse-login";
 import { DiscourseReaction } from "./discourse/discourse-reaction";
 import { DiscourseReply } from "./discourse/discourse-reply";
@@ -15,7 +16,9 @@ import { DiscourseSolved } from "./discourse/discourse-solved";
 import { DiscourseTopic } from "./discourse/discourse-topic";
 import { GithubComment } from "./github/github-comment";
 import { GithubIssue } from "./github/github-issue";
-import { ActivityRegister } from "./livestorm/activity-register";
+import { LivestormAttendee } from "./livestorm/livestorm-attendee";
+import { LivestormCohost } from "./livestorm/livestorm-cohost";
+import { LivestormRegister } from "./livestorm/livestorm-register";
 import { SlackMessage } from "./slack/slack-message";
 import { SlackReaction } from "./slack/slack-reaction";
 import { SlackReply } from "./slack/slack-reply";
@@ -25,89 +28,46 @@ type Props = {
 };
 
 export const ActivityParser = ({ activity }: Props) => {
-  const { member_id, channel_id, invite_to } = activity;
+  const { member_id } = activity;
   const { key } = activity.activity_type;
 
-  const { data: member } = trpc.members.get.useQuery({
-    id: member_id,
-  });
-
-  const { data: channel } = trpc.channels.get.useQuery(
-    { id: channel_id },
-    { enabled: !!channel_id },
-  );
-
-  // const { data: inviter } = trpc.members.get.useQuery(
-  //   { id: invite_to },
-  //   { enabled: !!invite_to },
-  // );
+  const { data: member } = trpc.members.get.useQuery({ id: member_id });
 
   const { first_name, last_name, avatar_url } = member ?? {};
   const { activity_type, message, created_at } = activity;
   const { source } = activity_type;
 
   switch (key) {
-    // case "discord:invite":
-    //   return (
-    //     <ActivityInvite activity={activity} member={member} inviter={inviter} />
-    //   );
-    case "discord:thread":
-      return (
-        <DiscordThread activity={activity} member={member} channel={channel} />
-      );
-    case "discord:reply_thread":
-      return (
-        <DiscordReply
-          activity={activity}
-          member={member}
-          channel={channel}
-          isThread
-        />
-      );
-    case "discord:message":
-      return (
-        <DiscordMessage activity={activity} member={member} channel={channel} />
-      );
-    case "discord:reply":
-      return (
-        <DiscordReply activity={activity} member={member} channel={channel} />
-      );
-    case "discord:reaction":
-      return (
-        <DiscordReaction
-          activity={activity}
-          member={member}
-          channel={channel}
-        />
-      );
-    // case "discourse:invite":
-    //   return (
-    //     <ActivityInvite activity={activity} member={member} inviter={inviter} />
-    //   );
-    case "discourse:solved":
-      return (
-        <DiscourseSolved
-          activity={activity}
-          member={member}
-          channel={channel}
-        />
-      );
-    case "discourse:topic":
-      return (
-        <DiscourseTopic activity={activity} member={member} channel={channel} />
-      );
-    case "discourse:reply":
-      return (
-        <DiscourseReply activity={activity} member={member} channel={channel} />
-      );
-    case "discourse:reaction":
-      return (
-        <DiscourseReaction
-          activity={activity}
-          member={member}
-          channel={channel}
-        />
-      );
+    case "discord:thread": {
+      return <DiscordThread activity={activity} member={member} />;
+    }
+    case "discord:reply_thread": {
+      return <DiscordReply activity={activity} member={member} isThread />;
+    }
+    case "discord:message": {
+      return <DiscordMessage activity={activity} member={member} />;
+    }
+    case "discord:reply": {
+      return <DiscordReply activity={activity} member={member} />;
+    }
+    case "discord:reaction": {
+      return <DiscordReaction activity={activity} member={member} />;
+    }
+    case "discourse:invite": {
+      return <DiscourseInvite activity={activity} member={member} />;
+    }
+    case "discourse:solved": {
+      return <DiscourseSolved activity={activity} member={member} />;
+    }
+    case "discourse:topic": {
+      return <DiscourseTopic activity={activity} member={member} />;
+    }
+    case "discourse:reply": {
+      return <DiscourseReply activity={activity} member={member} />;
+    }
+    case "discourse:reaction": {
+      return <DiscourseReaction activity={activity} member={member} />;
+    }
     case "discourse:login": {
       return <DiscourseLogin activity={activity} member={member} />;
     }
@@ -118,25 +78,24 @@ export const ActivityParser = ({ activity }: Props) => {
       return <GithubComment activity={activity} member={member} />;
     }
     case "livestorm:register": {
-      return <ActivityRegister activity={activity} member={member} />;
+      return <LivestormRegister activity={activity} member={member} />;
     }
-    // case "slack:invite":
-    //   return (
-    //     <ActivityInvite activity={activity} member={member} inviter={inviter} />
-    //   );
-    case "slack:message":
-      return (
-        <SlackMessage activity={activity} member={member} channel={channel} />
-      );
-    case "slack:reply":
-      return (
-        <SlackReply activity={activity} member={member} channel={channel} />
-      );
-    case "slack:reaction":
-      return (
-        <SlackReaction activity={activity} member={member} channel={channel} />
-      );
-    default:
+    case "livestorm:attend": {
+      return <LivestormAttendee activity={activity} member={member} />;
+    }
+    case "livestorm:co-host": {
+      return <LivestormCohost activity={activity} member={member} />;
+    }
+    case "slack:message": {
+      return <SlackMessage activity={activity} member={member} />;
+    }
+    case "slack:reply": {
+      return <SlackReply activity={activity} member={member} />;
+    }
+    case "slack:reaction": {
+      return <SlackReaction activity={activity} member={member} />;
+    }
+    default: {
       return (
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -162,5 +121,6 @@ export const ActivityParser = ({ activity }: Props) => {
           <ActivityMenu activity={activity} />
         </div>
       );
+    }
   }
 };

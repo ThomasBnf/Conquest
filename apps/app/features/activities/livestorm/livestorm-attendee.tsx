@@ -11,16 +11,13 @@ type Props = {
   member: Member | null | undefined;
 };
 
-export const ActivityRegister = ({ activity, member }: Props) => {
-  const { message, created_at, event_id } = activity;
+export const LivestormAttendee = ({ activity, member }: Props) => {
+  const { created_at, event_id } = activity;
   const { source } = activity.activity_type;
 
   const { avatar_url, first_name, last_name } = member ?? {};
 
-  const { data: event } = trpc.events.get.useQuery(
-    { id: event_id },
-    { enabled: !!event_id },
-  );
+  const { data: event } = trpc.events.get.useQuery({ id: event_id });
   const { title } = event ?? {};
 
   return (
@@ -37,7 +34,8 @@ export const ActivityRegister = ({ activity, member }: Props) => {
           <span className="font-medium text-foreground">
             {first_name} {last_name}
           </span>{" "}
-          {message}
+          participated to the webinar{" "}
+          <span className="font-medium text-foreground">{title}</span>
         </p>
         <SourceBadge source={source} transparent onlyIcon />
         <p className="text-muted-foreground">{format(created_at, "HH:mm")}</p>
