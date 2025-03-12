@@ -134,6 +134,7 @@ export async function POST(request: NextRequest) {
       message: `Registered to: ${title}`,
       member_id: profile.member_id,
       event_id: session.id,
+      source: "Livestorm",
       workspace_id,
     });
   }
@@ -194,6 +195,7 @@ export async function POST(request: NextRequest) {
           message: `Co-hosted to: ${title}`,
           member_id: profile.member_id,
           event_id: session.id,
+          source: "Livestorm",
           workspace_id,
         });
       } else {
@@ -202,6 +204,7 @@ export async function POST(request: NextRequest) {
           message: `Attended to: ${title}`,
           member_id: profile.member_id,
           event_id: session.id,
+          source: "Livestorm",
           workspace_id,
         });
       }

@@ -99,6 +99,7 @@ export const createManyPeoples = async ({
         member_id: profile.member_id,
         event_id: event.id,
         created_at: ended_at,
+        source: "Livestorm",
         workspace_id,
       });
     }
@@ -110,6 +111,7 @@ export const createManyPeoples = async ({
         member_id: profile.member_id,
         event_id: event.id,
         created_at: ended_at,
+        source: "Livestorm",
         workspace_id,
       });
     }
@@ -120,6 +122,7 @@ export const createManyPeoples = async ({
       member_id: profile.member_id,
       event_id: event.id,
       created_at: new Date(created_at * 1000),
+      source: "Livestorm",
       workspace_id,
     });
   }

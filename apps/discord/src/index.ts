@@ -311,8 +311,6 @@ client.on(Events.MessageCreate, async (message) => {
       }
     }
 
-    console.log("activity", activity);
-
     try {
       await createActivity({
         external_id: id,
