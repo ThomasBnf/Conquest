@@ -26,7 +26,7 @@ export const EngagementRate = () => {
 
   return (
     <div className="mb-0.5 flex flex-col overflow-hidden rounded-md border shadow-sm">
-      <div className="flex items-center gap-2 bg-sidebar p-3">
+      <div className="flex h-[48px] items-center gap-2 bg-sidebar p-3">
         <p className="font-medium text-lg">Engagement rate</p>
         <TooltipInfo
           content={
