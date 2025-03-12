@@ -26,6 +26,8 @@ export const listEvents = async ({ access_token, page, filter }: Props) => {
     },
   );
 
-  const { data } = ListEventsSchema.parse(await response.json());
+  const result = await response.json();
+  console.log("listEvents", result);
+  const { data } = ListEventsSchema.parse(result);
   return data;
 };
