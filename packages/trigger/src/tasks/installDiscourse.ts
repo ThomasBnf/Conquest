@@ -50,10 +50,7 @@ export const installDiscourse = schemaTask({
     await batchMergeMembers({ members });
     metadata.set("progress", 95);
 
-    await integrationSuccessEmail.trigger({
-      integration: discourse,
-      workspace_id,
-    });
+    await integrationSuccessEmail.trigger({ integration: discourse });
     metadata.set("progress", 100);
   },
   onSuccess: async ({ discourse }) => {

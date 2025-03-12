@@ -1,8 +1,15 @@
+import { batchMergeMembers } from "@conquest/clickhouse/members/batchMergeMembers";
 import { deleteIntegration } from "@conquest/db/integrations/deleteIntegration";
 import { updateIntegration } from "@conquest/db/integrations/updateIntegration";
+import { createManyEvents } from "@conquest/db/livestorm/createManyEvents";
+import { createWebhook } from "@conquest/db/livestorm/createWebhook";
+import { getRefreshToken } from "@conquest/db/livestorm/getRefreshToken";
+import { decrypt } from "@conquest/db/utils/decrypt";
 import { LivestormIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
-import { schemaTask } from "@trigger.dev/sdk/v3";
+import { metadata, schemaTask } from "@trigger.dev/sdk/v3";
 import { z } from "zod";
+import { getAllMembersMetrics } from "./getAllMembersMetrics";
+import { integrationSuccessEmail } from "./integrationSuccessEmail";
 
 export const installLivestorm = schemaTask({
   id: "install-livestorm",
@@ -11,37 +18,41 @@ export const installLivestorm = schemaTask({
     livestorm: LivestormIntegrationSchema,
   }),
   run: async ({ livestorm }) => {
-    // const { details, workspace_id } = livestorm;
-    // const { access_token, access_token_iv, expires_in, filter } = details;
-    // const isExpired = new Date(Date.now() + expires_in * 1000) < new Date();
-    // const decryptedAccessToken = await decrypt({
-    //   access_token: access_token,
-    //   iv: access_token_iv,
-    // });
-    // let accessToken = decryptedAccessToken;
-    // if (isExpired) accessToken = await getRefreshToken(livestorm);
-    // const webhookEvents = [
-    //   "session.created",
-    //   "session.ended",
-    //   "people.registered",
-    // ];
-    // for (const event of webhookEvents) {
-    //   await createWebhook({
-    //     accessToken,
-    //     event,
-    //   });
-    // }
-    // const members = await createManyEvents({
-    //   filter,
-    //   access_token: accessToken,
-    //   workspace_id,
-    // });
-    // await getAllMembersMetrics.trigger({ workspace_id });
-    // await batchMergeMembers({ members });
-    // await integrationSuccessEmail.trigger({
-    //   integration: livestorm,
-    //   workspace_id,
-    // });
+    const { details, workspace_id } = livestorm;
+    const { access_token, access_token_iv, expires_in, filter } = details;
+
+    const isExpired = new Date(Date.now() + expires_in * 1000) < new Date();
+    const decryptedAccessToken = await decrypt({
+      access_token: access_token,
+      iv: access_token_iv,
+    });
+
+    let accessToken = decryptedAccessToken;
+    if (isExpired) accessToken = await getRefreshToken({ livestorm });
+
+    const webhookEvents = [
+      "session.created",
+      "session.ended",
+      "people.registered",
+    ];
+
+    for (const event of webhookEvents) {
+      await createWebhook({
+        accessToken,
+        event,
+      });
+    }
+
+    const members = await createManyEvents({ livestorm });
+
+    await batchMergeMembers({ members });
+    metadata.set("progress", 90);
+
+    await getAllMembersMetrics.trigger({ workspace_id });
+    metadata.set("progress", 95);
+
+    await integrationSuccessEmail.trigger({ integration: livestorm });
+    metadata.set("progress", 100);
   },
   onSuccess: async ({ livestorm }) => {
     const { id, workspace_id } = livestorm;

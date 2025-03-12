@@ -11,12 +11,11 @@ export const integrationSuccessEmail = schemaTask({
   id: "integration-success-email",
   schema: z.object({
     integration: IntegrationSchema,
-    workspace_id: z.string(),
   }),
-  run: async ({ integration, workspace_id }, { ctx }) => {
+  run: async ({ integration }, { ctx }) => {
     if (ctx.environment.type === "DEVELOPMENT") return;
 
-    const { created_by, details } = integration;
+    const { created_by, details, workspace_id } = integration;
     const { source } = details;
 
     const user = await getUserById({ id: created_by });

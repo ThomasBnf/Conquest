@@ -6,7 +6,7 @@ export const EventSchema = z.object({
   external_id: z.string(),
   title: z.string(),
   started_at: z.coerce.date(),
-  ended_at: z.coerce.date(),
+  ended_at: z.coerce.date().nullable(),
   source: SOURCE,
   workspace_id: z.string().uuid(),
   created_at: z.coerce.date(),

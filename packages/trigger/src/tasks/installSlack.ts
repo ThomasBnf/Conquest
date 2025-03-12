@@ -56,7 +56,7 @@ export const installSlack = schemaTask({
     await getAllMembersMetrics.trigger({ workspace_id });
     metadata.set("progress", 95);
 
-    await integrationSuccessEmail.trigger({ integration: slack, workspace_id });
+    await integrationSuccessEmail.trigger({ integration: slack });
     metadata.set("progress", 100);
   },
   onSuccess: async ({ slack }) => {

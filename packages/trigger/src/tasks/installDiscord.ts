@@ -57,10 +57,7 @@ export const installDiscord = schemaTask({
     await getAllMembersMetrics.trigger({ workspace_id });
     metadata.set("progress", 90);
 
-    await integrationSuccessEmail.trigger({
-      integration: discord,
-      workspace_id,
-    });
+    await integrationSuccessEmail.trigger({ integration: discord });
     metadata.set("progress", 100);
   },
   onSuccess: async ({ discord }) => {
