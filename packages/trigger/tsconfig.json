@@ -1,17 +1,4 @@
 {
   "extends": "@conquest/tsconfig/base.json",
-  "compilerOptions": {
-    "baseUrl": ".",
-    "paths": {
-      "@/*": ["./src/*"]
-    },
-    "jsx": "react-jsx"
-  },
-  "include": [
-    "src/**/*.ts",
-    "../db/src/lib/resend.ts",
-    "../db/src/queries/member/getMembersMetrics.ts",
-    "../db/src/helpers/getPulseScore.ts"
-  ],
-  "exclude": ["node_modules"]
+  "include": ["src/**/*.ts"]
 }
