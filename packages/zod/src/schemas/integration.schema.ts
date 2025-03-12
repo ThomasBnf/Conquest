@@ -9,6 +9,7 @@ const BaseSchema = z.object({
   expires_at: z.coerce.date(),
   connected_at: z.coerce.date().nullable(),
   created_by: z.string(),
+  run_id: z.string().nullable(),
   workspace_id: z.string().uuid(),
   created_at: z.coerce.date(),
   updated_at: z.coerce.date(),

@@ -91,7 +91,7 @@ export const EventSchema = z.object({
     status: z.string(),
     light_registration_page_enabled: z.boolean(),
     recording_enabled: z.boolean(),
-    recording_public: z.boolean(),
+    recording_public: z.boolean().nullable(),
     show_in_company_page: z.boolean(),
     chat_enabled: z.boolean(),
     polls_enabled: z.boolean(),

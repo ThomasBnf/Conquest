@@ -51,7 +51,7 @@ export default async function Page({ searchParams }: Props) {
   const encryptedAccessToken = await encrypt(access_token);
   const encryptedRefreshToken = await encrypt(refresh_token);
 
-  await createIntegration({
+  const createdIntegration = await createIntegration({
     external_id: id,
     details: {
       source: "Discord",
@@ -67,6 +67,8 @@ export default async function Page({ searchParams }: Props) {
     created_by: userId,
     workspace_id,
   });
+
+  console.log("createdIntegration", createdIntegration);
 
   redirect("/settings/integrations/discord");
 }

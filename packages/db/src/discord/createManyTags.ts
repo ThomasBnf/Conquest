@@ -11,23 +11,29 @@ type Props = {
 export const createManyTags = async ({ discord }: Props) => {
   const { external_id, workspace_id } = discord;
 
+  console.log("discord", discord);
+
   if (!external_id) return;
 
   const roles = (await discordClient.get(
     Routes.guildRoles(external_id),
   )) as APIRole[];
 
+  const filteredRoles = roles.filter(
+    (role) => !["Conquest", "conquest-sandbox"].includes(role.name),
+  );
+
   const tags: Tag[] = [];
 
-  for (const role of roles) {
+  for (const role of filteredRoles) {
     const { id, name, color } = role;
-
-    if (["Conquest", "conquest-sandbox"].includes(name)) continue;
 
     const decimalToHex = (decimal: number) =>
       `#${decimal.toString(16).padStart(6, "0")}`;
 
     const parsedColor = decimalToHex(color);
+
+    console.log("creating Tag", workspace_id);
 
     const tag = await createTag({
       external_id: id,

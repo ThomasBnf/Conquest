@@ -19,27 +19,26 @@ export const installDiscord = schemaTask({
     discord: DiscordIntegrationSchema,
   }),
 
-  run: async ({ discord }) => {
-    metadata.set("progress", 0);
+  run: async ({ discord }, { ctx: { run } }) => {
+    const { id, workspace_id } = discord;
 
-    const { workspace_id, external_id } = discord;
-
-    if (!external_id) return;
+    await updateIntegration({ id, run_id: run.id, workspace_id });
+    metadata.set("progress", 5);
 
     const channels = await listChannels({ workspace_id, source: "Discord" });
     metadata.set("progress", 10);
 
     const tags = await createManyTags({ discord });
     metadata.set("progress", 15);
+
     await createManyMembers({ discord, tags });
     metadata.set("progress", 20);
 
     await createManyThreads({ discord });
     metadata.set("progress", 30);
 
-    const channelProgressWeight = 45;
-    const channelProgressIncrement =
-      channelProgressWeight / (channels?.length ?? 1);
+    const progressWeight = 45;
+    const progressIncrement = progressWeight / (channels?.length ?? 1);
 
     for (const [index, channel] of (channels ?? []).entries()) {
       await createManyArchivedThreads({ discord, channel });
@@ -51,7 +50,8 @@ export const installDiscord = schemaTask({
         channel,
         workspace_id,
       });
-      metadata.set("progress", 20 + (index + 1) * channelProgressIncrement);
+
+      metadata.set("progress", 20 + (index + 1) * progressIncrement);
     }
 
     await getAllMembersMetrics.trigger({ workspace_id });
@@ -71,6 +71,7 @@ export const installDiscord = schemaTask({
     });
   },
   onFailure: async ({ discord }) => {
+    console.log("onFailure", discord);
     await deleteIntegration({ integration: discord });
   },
 });

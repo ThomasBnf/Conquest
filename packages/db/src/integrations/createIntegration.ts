@@ -20,7 +20,7 @@ export const createIntegration = async ({
 }: Props) => {
   const integration = await getIntegration({ external_id });
 
-  console.log("integration", integration);
+  console.log("getIntegration", integration);
 
   if (!integration) {
     const expiresAt = addDays(new Date(), 30);
@@ -30,8 +30,6 @@ export const createIntegration = async ({
       `install-${source.toLowerCase()}`,
       { expirationTime: expiresAt },
     );
-
-    console.log("triggerToken", triggerToken);
 
     return prisma.integration.create({
       data: {

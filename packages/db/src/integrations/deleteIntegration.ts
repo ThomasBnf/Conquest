@@ -22,6 +22,8 @@ export const deleteIntegration = async ({ integration }: Props) => {
   const { workspace_id, details } = integration;
   const { source } = details;
 
+  console.log("integration", integration);
+
   if (source === "Livestorm") {
     const { access_token, access_token_iv } = details;
 
@@ -70,7 +72,7 @@ export const deleteIntegration = async ({ integration }: Props) => {
 
   await prisma.$transaction(async (tx) => {
     await tx.tag.deleteMany({
-      where: { source },
+      where: { source, workspace_id },
     });
     await tx.integration.delete({
       where: { id: integration.id },
@@ -84,7 +86,8 @@ export const deleteIntegration = async ({ integration }: Props) => {
         DELETE
         WHERE member_id IN (
           SELECT id FROM member 
-          WHERE source = '${source}' AND workspace_id = '${workspace_id}'
+          WHERE source = '${source}'
+          AND workspace_id = '${workspace_id}'
         );
         `,
     }),
@@ -94,7 +97,8 @@ export const deleteIntegration = async ({ integration }: Props) => {
         DELETE
         WHERE member_id IN (
           SELECT id FROM member 
-          WHERE source = '${source}' AND workspace_id = '${workspace_id}'
+          WHERE source = '${source}'
+          AND workspace_id = '${workspace_id}'
         );
       `,
     }),
@@ -103,6 +107,7 @@ export const deleteIntegration = async ({ integration }: Props) => {
         ALTER TABLE activity_type
         DELETE 
         WHERE source = '${source}'
+        AND workspace_id = '${workspace_id}'
         `,
     }),
     client.query({
@@ -110,6 +115,7 @@ export const deleteIntegration = async ({ integration }: Props) => {
         ALTER TABLE channel
         DELETE
         WHERE source = '${source}'
+        AND workspace_id = '${workspace_id}'
         `,
     }),
     client.query({
@@ -117,20 +123,23 @@ export const deleteIntegration = async ({ integration }: Props) => {
         ALTER TABLE company
         DELETE
         WHERE source = '${source}'
+        AND workspace_id = '${workspace_id}'
         `,
     }),
     client.query({
       query: `
         ALTER TABLE member
         DELETE
-        WHERE source = '${source}' AND workspace_id = '${workspace_id}'
+        WHERE source = '${source}'
+        AND workspace_id = '${workspace_id}'
       `,
     }),
     client.query({
       query: `
         ALTER TABLE profile
         DELETE
-        WHERE JSONExtractString(CAST(attributes AS String), 'source') = '${source}' AND workspace_id = '${workspace_id}'
+        WHERE JSONExtractString(CAST(attributes AS String), 'source') = '${source}'
+        AND workspace_id = '${workspace_id}'
       `,
     }),
   ]);
