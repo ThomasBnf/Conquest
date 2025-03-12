@@ -22,9 +22,6 @@ export const installDiscord = schemaTask({
   run: async ({ discord }, { ctx: { run } }) => {
     const { id, workspace_id } = discord;
 
-    await updateIntegration({ id, run_id: run.id, workspace_id });
-    metadata.set("progress", 5);
-
     const channels = await listChannels({ workspace_id, source: "Discord" });
     metadata.set("progress", 10);
 
