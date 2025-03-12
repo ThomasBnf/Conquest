@@ -38,6 +38,8 @@ export const getActivity = async (props: Props) => {
 
   const { data } = await result.json();
 
+  console.log("getActivity", data);
+
   if (!data?.length) return null;
 
   const transformFlatActivity = (row: Record<string, unknown>) => {
@@ -69,7 +71,7 @@ export const getActivity = async (props: Props) => {
     firstRow as Record<string, unknown>,
   );
 
-  if (!parsedActivity) return null;
+  console.log("parsedActivity", parsedActivity);
 
   return ActivityWithTypeSchema.parse(parsedActivity);
 };
