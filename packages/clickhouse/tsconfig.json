@@ -1,11 +1,4 @@
 {
   "extends": "@conquest/tsconfig/base.json",
-  "compilerOptions": {
-    "baseUrl": ".",
-    "paths": {
-      "@/*": ["./src/*"]
-    }
-  },
-  "include": ["src/**/*.tsx", "src/**/*.ts", "../db/src/events/deleteEvent.ts", "../db/src/events/listEvents.ts", "../db/src/discord.ts", "../db/src/discourse.ts"],
-  "exclude": ["node_modules"]
+  "include": ["src/**/*.ts"],
 }

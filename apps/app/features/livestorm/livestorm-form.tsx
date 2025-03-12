@@ -4,12 +4,12 @@ import type { installLivestorm } from "@conquest/trigger/tasks/installLivestorm"
 import { Button } from "@conquest/ui/button";
 import { Separator } from "@conquest/ui/separator";
 import { useRealtimeTaskTrigger } from "@trigger.dev/react-hooks";
+import { Loader2 } from "lucide-react";
 import { useEffect } from "react";
 import { toast } from "sonner";
 import { ActivityTypesList } from "../activities-types/activity-types-list";
 import { LoadingMessage } from "../integrations/loading-message";
 import { LivestormFilter } from "./livestorm-filter";
-import { Loader2 } from "lucide-react";
 
 export const LivestormForm = () => {
   const { livestorm, loading, setLoading, step, setStep } = useIntegration();
@@ -76,13 +76,15 @@ export const LivestormForm = () => {
               <ActivityTypesList source="Livestorm" disableHeader />
             </>
           )}
-          <Button onClick={onStart} disabled={loading}>
-            {loading ? (
-              <Loader2 className="size-4 animate-spin" />
-            ) : (
-              "Let's start!"
-            )}
-          </Button>
+          {!loading && (
+            <Button onClick={onStart} disabled={loading}>
+              {loading ? (
+                <Loader2 className="size-4 animate-spin" />
+              ) : (
+                "Let's start!"
+              )}
+            </Button>
+          )}
         </div>
       )}
     </>

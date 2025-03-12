@@ -13,10 +13,10 @@ import {
 } from "@conquest/ui/form";
 import { Input } from "@conquest/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { ArrowRight, Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { type FormCreate, FormCreateSchema } from "./schemas/form.schema";
-import { Loader2 } from "lucide-react";
 
 export const LivestormFilter = () => {
   const { livestorm, setStep } = useIntegration();
@@ -80,7 +80,7 @@ export const LivestormFilter = () => {
           name="filter"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Filter</FormLabel>
+              <FormLabel>Filter by title</FormLabel>
               <FormControl>
                 <Input
                   {...field}
@@ -96,7 +96,14 @@ export const LivestormFilter = () => {
           )}
         />
         <Button type="submit" disabled={loading}>
-          {loading ? <Loader2 className="size-4 animate-spin" /> : "Next"}
+          {loading ? (
+            <Loader2 className="size-4 animate-spin" />
+          ) : (
+            <>
+              Next
+              <ArrowRight size={16} />
+            </>
+          )}
         </Button>
       </form>
     </Form>
