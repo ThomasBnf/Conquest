@@ -15,6 +15,7 @@ import { DiscourseSolved } from "./discourse/discourse-solved";
 import { DiscourseTopic } from "./discourse/discourse-topic";
 import { GithubComment } from "./github/github-comment";
 import { GithubIssue } from "./github/github-issue";
+import { ActivityRegister } from "./livestorm/activity-register";
 import { SlackMessage } from "./slack/slack-message";
 import { SlackReaction } from "./slack/slack-reaction";
 import { SlackReply } from "./slack/slack-reply";
@@ -116,6 +117,9 @@ export const ActivityParser = ({ activity }: Props) => {
     case "github:comment": {
       return <GithubComment activity={activity} member={member} />;
     }
+    case "livestorm:register": {
+      return <ActivityRegister activity={activity} member={member} />;
+    }
     // case "slack:invite":
     //   return (
     //     <ActivityInvite activity={activity} member={member} inviter={inviter} />
@@ -136,7 +140,7 @@ export const ActivityParser = ({ activity }: Props) => {
       return (
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Avatar className="size-5">
+            <Avatar className="size-6">
               <AvatarImage src={avatar_url ?? ""} />
               <AvatarFallback className="text-sm">
                 {first_name?.charAt(0).toUpperCase()}

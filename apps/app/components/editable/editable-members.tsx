@@ -85,14 +85,13 @@ export const EditableMembers = ({ company }: Props) => {
                 className="w-fit max-w-[225px] justify-start border-blue-200 text-blue-500 hover:bg-background hover:text-blue-500"
                 onClick={(e) => {
                   e.stopPropagation();
-                  router.push(`/${slug}/members/${member.id}`);
+                  router.push(`/${slug}/members/${member.id}/analytics`);
                 }}
               >
                 <span className="truncate">
                   {member.first_name} {member.last_name}
                 </span>
                 {open && (
-                  // biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
                   <div
                     onClick={(e) => {
                       e.stopPropagation();

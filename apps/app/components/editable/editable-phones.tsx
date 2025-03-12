@@ -65,7 +65,7 @@ export const EditablePhones = ({ member }: Props) => {
 
   return (
     <DropdownMenu open={open} onOpenChange={setOpen}>
-      <DropdownMenuTrigger className="w-full cursor-pointer" asChild>
+      <DropdownMenuTrigger asChild className="w-full cursor-pointer">
         {phones.filter((phone) => phone.content !== "").length > 0 ? (
           <div className="min-h-8 space-y-1 rounded-md p-1 hover:bg-muted-hover">
             {phones.map((phone) => {
@@ -97,31 +97,29 @@ export const EditablePhones = ({ member }: Props) => {
           </Button>
         )}
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
-        <div className="space-y-0.5">
-          {phones.length > 0 && (
-            <>
-              <div className="space-y-0.5">
-                {phones.map((phone) => (
-                  <Phone
-                    key={phone.id}
-                    phone={phone}
-                    setOpen={setOpen}
-                    onChangePhone={(newPhone) =>
-                      onChangePhone(phone.id, newPhone.phone)
-                    }
-                    onDeletePhone={onDeletePhone}
-                  />
-                ))}
-              </div>
-              <DropdownMenuSeparator />
-            </>
-          )}
-        </div>
+      <DropdownMenuContent align="start">
+        {phones.length > 0 && (
+          <>
+            <div className="space-y-0.5">
+              {phones.map((phone) => (
+                <Phone
+                  key={phone.id}
+                  phone={phone}
+                  setOpen={setOpen}
+                  onChangePhone={(newPhone) =>
+                    onChangePhone(phone.id, newPhone.phone)
+                  }
+                  onDeletePhone={onDeletePhone}
+                />
+              ))}
+            </div>
+            <DropdownMenuSeparator />
+          </>
+        )}
         <Button
           variant="ghost"
-          className="w-full justify-start"
           onClick={onAddPhone}
+          className="w-full justify-start"
         >
           <Plus size={16} />
           Add phone

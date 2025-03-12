@@ -45,7 +45,7 @@ export const Activities = ({
     );
 
   return (
-    <div className={cn("mx-auto max-w-3xl px-4 pt-6 pb-12", className)}>
+    <div className={cn("mx-auto w-full max-w-3xl px-4 pt-6 pb-12", className)}>
       {Object.entries(groupedActivities).map(([date, activities]) => (
         <div key={date} className="mb-10 space-y-14">
           <div className="my-4 flex items-center">

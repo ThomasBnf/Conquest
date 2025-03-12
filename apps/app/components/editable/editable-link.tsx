@@ -4,12 +4,14 @@ import { Input } from "@conquest/ui/input";
 import { ExternalLink } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
+import { CopyButton } from "../custom/copy-button";
 
 type Props = {
   placeholder?: string;
   defaultValue: string | null;
   href?: string | null;
   editable?: boolean;
+  redirect?: boolean;
   onUpdate?: (value: string) => void;
   className?: string;
 };
@@ -49,7 +51,7 @@ export const EditableLink = ({
   if (!isFocus) {
     return (
       <div
-        className="flex w-full items-center truncate"
+        className="flex flex-1 items-center"
         onMouseEnter={() => setIsHover(true)}
         onMouseLeave={() => setIsHover(false)}
       >
@@ -66,18 +68,19 @@ export const EditableLink = ({
             {value === "" || value === null ? placeholder : value}
           </span>
         </Button>
-
         {isHover && value && (
-          <Link
-            href={href ?? ""}
-            target="_blank"
-            className={cn(
-              buttonVariants({ variant: "outline", size: "icon_sm" }),
-              "-ml-7 z-10",
-            )}
-          >
-            <ExternalLink size={16} />
-          </Link>
+          <div className="absolute right-5 z-10 flex items-center gap-1">
+            <CopyButton value={value} />
+            <Link
+              href={href ?? ""}
+              target="_blank"
+              className={cn(
+                buttonVariants({ variant: "outline", size: "icon_sm" }),
+              )}
+            >
+              <ExternalLink size={16} />
+            </Link>
+          </div>
         )}
       </div>
     );

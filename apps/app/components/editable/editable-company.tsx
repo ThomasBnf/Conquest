@@ -70,13 +70,15 @@ export const EditableCompany = ({ member, onUpdate }: Props) => {
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild className="w-full cursor-pointer">
-        {company?.name ? (
-          <div className="h-8 rounded-md p-1 hover:bg-muted-hover">
-            <Button
-              variant="outline"
-              size="xs"
-              className="w-fit justify-start border-main-200 text-main-400 hover:bg-background hover:text-main-400"
+      <PopoverTrigger asChild className="w-full">
+        <Button
+          variant="ghost"
+          className="justify-start text-muted-foreground"
+          onClick={() => setOpen(true)}
+        >
+          {company?.name ? (
+            <div
+              className="flex h-6 items-center gap-2 rounded-md border border-main-200 bg-background px-1.5 text-main-400"
               onClick={(e) => {
                 e.stopPropagation();
                 router.push(`/${slug}/companies/${member?.company_id}`);
@@ -92,17 +94,11 @@ export const EditableCompany = ({ member, onUpdate }: Props) => {
                   }}
                 />
               )}
-            </Button>
-          </div>
-        ) : (
-          <Button
-            variant="ghost"
-            className="justify-start text-muted-foreground"
-            onClick={() => setOpen(true)}
-          >
-            Set company
-          </Button>
-        )}
+            </div>
+          ) : (
+            " Set company"
+          )}
+        </Button>
       </PopoverTrigger>
       <PopoverContent align="start" className="p-0">
         <Command loop shouldFilter={false}>

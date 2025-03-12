@@ -1,8 +1,7 @@
 import { SourceBadge } from "@/components/badges/source-badge";
-import { useIntegration } from "@/context/integrationContext";
+import { trpc } from "@/server/client";
 import { Avatar, AvatarFallback, AvatarImage } from "@conquest/ui/avatar";
 import type { ActivityWithType } from "@conquest/zod/schemas/activity.schema";
-import type { Channel } from "@conquest/zod/schemas/channel.schema";
 import type { Member } from "@conquest/zod/schemas/member.schema";
 import { format } from "date-fns";
 import { ActivityMenu } from "../activity-menu";
@@ -10,18 +9,19 @@ import { ActivityMenu } from "../activity-menu";
 type Props = {
   activity: ActivityWithType;
   member: Member | null | undefined;
-  channel: Channel | null | undefined;
 };
 
-export const DiscourseReaction = ({ activity, member, channel }: Props) => {
-  const { discourse } = useIntegration();
-  const { community_url } = discourse?.details ?? {};
-  const { message, react_to, created_at } = activity;
+export const ActivityRegister = ({ activity, member }: Props) => {
+  const { message, created_at, event_id } = activity;
   const { source } = activity.activity_type;
 
   const { avatar_url, first_name, last_name } = member ?? {};
 
-  const href = `${community_url}/${react_to}`;
+  const { data: event } = trpc.events.get.useQuery(
+    { id: event_id },
+    { enabled: !!event_id },
+  );
+  const { title } = event ?? {};
 
   return (
     <div className="flex items-center justify-between">
@@ -37,20 +37,12 @@ export const DiscourseReaction = ({ activity, member, channel }: Props) => {
           <span className="font-medium text-foreground">
             {first_name} {last_name}
           </span>{" "}
-          added reaction {message === "like" && "❤️"}
-          {message === "pray" && "🙏"}
-          {message === "bulb" && "💡"}
-          {message === "clap" && "👏"}
-          {message === "laugh" && "😂"}
-          <span className="font-medium text-foreground">
-            {" "}
-            in #{channel?.name}
-          </span>
+          {message}
         </p>
         <SourceBadge source={source} transparent onlyIcon />
         <p className="text-muted-foreground">{format(created_at, "HH:mm")}</p>
       </div>
-      <ActivityMenu activity={activity} href={href} />
+      <ActivityMenu activity={activity} />
     </div>
   );
 };

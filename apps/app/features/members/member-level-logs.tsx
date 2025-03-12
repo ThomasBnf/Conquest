@@ -48,7 +48,7 @@ export const MemberLevelLogs = ({ member }: Props) => {
   });
 
   return (
-    <div>
+    <div className="relative">
       <div className="flex items-center gap-2">
         <p className="font-medium text-lg">Level Logs</p>
         <IconDoc url="https://docs.useconquest.com/member-level" />

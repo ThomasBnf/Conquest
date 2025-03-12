@@ -95,7 +95,6 @@ export const createManyPeoples = async ({
     if (is_guest_speaker && ended_at) {
       await createActivity({
         activity_type_key: "livestorm:co-host",
-        message: `Co-hosted to: ${title}`,
         member_id: profile.member_id,
         event_id: event.id,
         created_at: ended_at,
@@ -107,7 +106,6 @@ export const createManyPeoples = async ({
     if (attended && ended_at) {
       await createActivity({
         activity_type_key: "livestorm:attend",
-        message: `Attended to: ${title}`,
         member_id: profile.member_id,
         event_id: event.id,
         created_at: ended_at,
@@ -118,7 +116,6 @@ export const createManyPeoples = async ({
 
     await createActivity({
       activity_type_key: "livestorm:register",
-      message: `Registered to: ${title}`,
       member_id: profile.member_id,
       event_id: event.id,
       created_at: new Date(created_at * 1000),

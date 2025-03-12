@@ -1,8 +1,10 @@
 import { router } from "../trpc";
 import { deleteEvent } from "./deleteEvent";
+import { getEvent } from "./getEvent";
 import { listEvents } from "./listEvents";
 
 export const eventsRouter = router({
-  deleteEvent,
-  listEvents,
+  list: listEvents,
+  get: getEvent,
+  delete: deleteEvent,
 });

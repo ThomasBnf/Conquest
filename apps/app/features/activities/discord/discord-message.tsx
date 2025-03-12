@@ -28,7 +28,7 @@ export const DiscordMessage = ({ activity, member, channel }: Props) => {
     <div>
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Avatar className="size-5">
+          <Avatar className="size-6">
             <AvatarImage src={avatar_url ?? ""} />
             <AvatarFallback className="text-sm">
               {first_name?.charAt(0).toUpperCase()}

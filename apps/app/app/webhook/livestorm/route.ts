@@ -192,7 +192,6 @@ export async function POST(request: NextRequest) {
       if (is_guest_speaker) {
         await createActivity({
           activity_type_key: "livestorm:co-host",
-          message: `Co-hosted to: ${title}`,
           member_id: profile.member_id,
           event_id: session.id,
           source: "Livestorm",
@@ -201,7 +200,6 @@ export async function POST(request: NextRequest) {
       } else {
         await createActivity({
           activity_type_key: "livestorm:attend",
-          message: `Attended to: ${title}`,
           member_id: profile.member_id,
           event_id: session.id,
           source: "Livestorm",

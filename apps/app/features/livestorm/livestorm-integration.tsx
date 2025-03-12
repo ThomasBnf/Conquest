@@ -21,7 +21,7 @@ export const LivestormIntegration = ({ error }: Props) => {
   const { name } = livestorm?.details ?? {};
   const router = useRouter();
 
-  const { data: events } = trpc.events.listEvents.useQuery();
+  const { data: events } = trpc.events.list.useQuery();
 
   const onEnable = () => {
     setLoading(true);
@@ -62,7 +62,7 @@ export const LivestormIntegration = ({ error }: Props) => {
         <>
           <Separator className="my-4" />
           <div>
-            <p className="mb-2 font-medium">Events</p>
+            <p className="mb-2 font-medium text-base">Events</p>
             <div className="flex flex-col gap-2 divide-y">
               {events?.map((event) => (
                 <EventCard key={event.id} event={event} />

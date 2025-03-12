@@ -21,11 +21,12 @@ export const LivestormSection = ({ profiles }: Props) => {
   const { external_id } = livestormProfile;
 
   return (
-    <FieldCard icon={<Livestorm size={14} />} label="Livestorm">
+    <FieldCard icon={<Livestorm size={16} />} label="Livestorm">
       <EditableLink
         placeholder="No livestorm profile"
         defaultValue={external_id}
         editable={false}
+        redirect={false}
       />
     </FieldCard>
   );

@@ -25,7 +25,14 @@ export const SaveList = () => {
           <p>Clear all filters</p>
         </TooltipContent>
       </Tooltip>
-      <Button onClick={() => setOpen(true)}>Save list</Button>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button onClick={() => setOpen(true)}>Save</Button>
+        </TooltipTrigger>
+        <TooltipContent side="bottom">
+          <p>Save as a list</p>
+        </TooltipContent>
+      </Tooltip>
     </div>
   );
 };

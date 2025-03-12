@@ -20,6 +20,7 @@ import { TagIcon } from "lucide-react";
 import { DiscordSection } from "./discord-section";
 import { DiscourseSection } from "./discourse-section";
 import { LevelBadge } from "./level-badge";
+import { LivestormSection } from "./livestorm-section";
 import { PulseBadge } from "./pulse-badge";
 import { SlackSection } from "./slack-section";
 
@@ -30,10 +31,9 @@ type Props = {
 
 export const MemberSidebar = ({ member, profiles }: Props) => {
   const utils = trpc.useUtils();
+
   const { mutateAsync: updateMember } = trpc.members.update.useMutation({
-    onSuccess: () => {
-      utils.members.get.invalidate();
-    },
+    onSuccess: () => utils.members.get.invalidate(),
   });
 
   const {
@@ -58,6 +58,8 @@ export const MemberSidebar = ({ member, profiles }: Props) => {
     if (member[field] === value) return;
     await updateMember({ ...member, [field]: value });
   };
+
+  console.log(profiles);
 
   return (
     <div className="flex h-full w-full max-w-sm shrink-0 flex-col overflow-hidden bg-sidebar">
@@ -95,12 +97,17 @@ export const MemberSidebar = ({ member, profiles }: Props) => {
           />
         </div>
         <Separator />
-        <div className="space-y-2 p-4">
-          <DiscordSection profiles={profiles} />
-          <DiscourseSection profiles={profiles} />
-          <SlackSection profiles={profiles} />
-        </div>
-        {profiles && profiles?.length > 0 && <Separator />}
+        {profiles && profiles?.length > 0 && (
+          <>
+            <div className="space-y-2 p-4">
+              <DiscordSection profiles={profiles} />
+              <DiscourseSection profiles={profiles} />
+              <LivestormSection profiles={profiles} />
+              <SlackSection profiles={profiles} />
+            </div>
+            <Separator />
+          </>
+        )}
         <div className="space-y-2 p-4">
           <FieldCard icon="User" label="First name">
             <EditableInput

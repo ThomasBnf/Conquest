@@ -20,10 +20,10 @@ type Props = {
 
 export const EventCard = ({ event }: Props) => {
   const [open, setOpen] = useState(false);
-  const { id, title, started_at, ended_at } = event;
+  const { id, title, started_at } = event;
   const today = new Date();
 
-  const { mutateAsync } = trpc.events.deleteEvent.useMutation({
+  const { mutateAsync } = trpc.events.delete.useMutation({
     onSuccess: () => {
       toast.success("Event deleted");
     },

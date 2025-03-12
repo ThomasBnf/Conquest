@@ -48,7 +48,7 @@ export const CompanySidebar = ({ company }: Props) => {
   };
 
   return (
-    <div className="flex h-full max-w-sm flex-1 flex-col">
+    <div className="flex h-full max-w-sm flex-1 flex-col bg-sidebar">
       <div className="flex items-center gap-2 p-4">
         <Avatar className="size-12">
           <AvatarImage src={logo_url ?? ""} />

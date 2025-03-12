@@ -1,14 +1,13 @@
-import { Button } from "@conquest/ui/button";
+import { buttonVariants } from "@conquest/ui/button";
 import { cn } from "@conquest/ui/cn";
 import { Input } from "@conquest/ui/input";
-import { TextField } from "@conquest/ui/text-field";
 import { useState } from "react";
+import { CopyButton } from "../custom/copy-button";
 
 type Props = {
   defaultValue: string | null;
   placeholder?: string;
   onUpdate: (value: string) => void;
-  textArea?: boolean;
   className?: string;
 };
 
@@ -16,11 +15,11 @@ export const EditableInput = ({
   defaultValue,
   placeholder,
   onUpdate,
-  textArea,
   className,
 }: Props) => {
   const [value, setValue] = useState(defaultValue);
   const [isFocus, setIsFocus] = useState(false);
+  const [isHover, setIsHover] = useState(false);
 
   const onBlur = (value: string) => {
     onUpdate(value);
@@ -41,43 +40,33 @@ export const EditableInput = ({
 
   if (!isFocus) {
     return (
-      <Button
-        variant="ghost"
-        onClick={() => setIsFocus(true)}
+      <div
         className={cn(
-          "w-full justify-start overflow-hidden border border-transparent",
+          buttonVariants({ variant: "ghost" }),
+          "relative w-full justify-start border border-transparent",
           !value && "text-muted-foreground",
           className,
         )}
+        onMouseEnter={() => setIsHover(true)}
+        onMouseLeave={() => setIsHover(false)}
+        onClick={() => setIsFocus(true)}
       >
-        <span className="truncate">
-          {value === "" || value === null ? placeholder : value}
-        </span>
-      </Button>
+        {value === "" || value === null ? placeholder : value}
+        {isHover && !isFocus && value && (
+          <CopyButton value={value} className="absolute right-1" />
+        )}
+      </div>
     );
   }
 
   return (
-    <>
-      {textArea ? (
-        <TextField
-          autoFocus
-          value={value ?? ""}
-          onChange={(event) => setValue(event.target.value)}
-          onBlur={(event) => onBlur(event.target.value)}
-          onKeyDown={(event) => onKeyDown(event.key)}
-          className={cn("px-[7px] py-[5px]", className)}
-        />
-      ) : (
-        <Input
-          autoFocus
-          className="h-8"
-          value={value ?? ""}
-          onChange={(event) => setValue(event.target.value)}
-          onBlur={(event) => onBlur(event.target.value)}
-          onKeyDown={(event) => onKeyDown(event.key)}
-        />
-      )}
-    </>
+    <Input
+      autoFocus
+      className="h-8 flex-1"
+      value={value ?? ""}
+      onChange={(event) => setValue(event.target.value)}
+      onBlur={(event) => onBlur(event.target.value)}
+      onKeyDown={(event) => onKeyDown(event.key)}
+    />
   );
 };
