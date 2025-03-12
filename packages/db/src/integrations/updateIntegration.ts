@@ -11,7 +11,6 @@ type Props = {
   trigger_token?: string;
   expires_at?: Date;
   created_by?: string;
-  run_id?: string;
   workspace_id: string;
 };
 
@@ -22,7 +21,6 @@ export const updateIntegration = async ({
   connected_at,
   status,
   created_by,
-  run_id,
   workspace_id,
 }: Props) => {
   return await prisma.integration.update({
@@ -36,7 +34,6 @@ export const updateIntegration = async ({
       details,
       status,
       created_by,
-      run_id,
     },
   });
 };

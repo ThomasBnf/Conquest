@@ -16,7 +16,6 @@ export const updateIntegration = protectedProcedure
       trigger_token: z.string().optional(),
       expires_at: z.date().optional(),
       created_by: z.string().optional(),
-      run_id: z.string().optional(),
     }),
   )
   .mutation(async ({ ctx: { user }, input }) => {
@@ -31,7 +30,6 @@ export const updateIntegration = protectedProcedure
       trigger_token,
       expires_at,
       created_by,
-      run_id,
     } = input;
 
     if (details?.source === "Discourse") {
@@ -55,7 +53,6 @@ export const updateIntegration = protectedProcedure
       trigger_token,
       expires_at,
       created_by,
-      run_id,
       workspace_id,
     });
   });
