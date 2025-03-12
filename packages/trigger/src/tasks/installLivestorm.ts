@@ -22,6 +22,7 @@ export const installLivestorm = schemaTask({
     const { access_token, access_token_iv, expires_in } = details;
 
     const isExpired = new Date(Date.now() + expires_in * 1000) < new Date();
+
     const decryptedAccessToken = await decrypt({
       access_token: access_token,
       iv: access_token_iv,

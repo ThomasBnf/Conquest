@@ -9,7 +9,9 @@ import type { Session } from "@conquest/zod/types/livestorm";
 import { wait } from "@trigger.dev/sdk/v3";
 import { getLocaleByAlpha2 } from "country-locale-map";
 import ISO6391 from "iso-639-1";
+import { decrypt } from "../utils/decrypt";
 import { listPeopleFromSession } from "./listPeopleFromSession";
+
 type Props = {
   livestorm: LivestormIntegration;
   event: Event;
@@ -22,15 +24,20 @@ export const createManyPeoples = async ({
   session,
 }: Props) => {
   const { workspace_id, details } = livestorm;
-  const { access_token } = details;
+  const { access_token, access_token_iv } = details;
   const { title, ended_at } = event;
+
+  const decryptedAccessToken = await decrypt({
+    access_token: access_token,
+    iv: access_token_iv,
+  });
 
   const createdMembers: Member[] = [];
 
   await wait.for({ seconds: 0.5 });
 
   const peoples = await listPeopleFromSession({
-    access_token,
+    access_token: decryptedAccessToken,
     id: session.id,
   });
 
