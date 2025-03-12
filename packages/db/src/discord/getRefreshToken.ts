@@ -1,6 +1,6 @@
-import { updateIntegration } from "@conquest/db/integrations/updateIntegration";
 import { env } from "@conquest/env";
 import type { DiscordIntegration } from "@conquest/zod/schemas/integration.schema";
+import { updateIntegration } from "../integrations/updateIntegration";
 
 type Props = {
   discord: DiscordIntegration;

@@ -1,8 +1,8 @@
-import { decrypt } from "@conquest/db/utils/decrypt";
-import { encrypt } from "@conquest/db/utils/encrypt";
 import { env } from "@conquest/env";
 import type { LivestormIntegration } from "@conquest/zod/schemas/integration.schema";
 import { updateIntegration } from "../integrations/updateIntegration";
+import { decrypt } from "../utils/decrypt";
+import { encrypt } from "../utils/encrypt";
 
 type Props = {
   livestorm: LivestormIntegration;
