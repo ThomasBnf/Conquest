@@ -33,7 +33,6 @@ export const deleteIntegration = async ({ integration }: Props) => {
     await deleteManyEvents({ source });
 
     const webhooks = await listWebhooks({ accessToken: decryptedToken });
-    console.log("webhooks", webhooks);
 
     for (const webhook of webhooks) {
       await deleteWebhook({ accessToken: decryptedToken, id: webhook.id });
@@ -78,70 +77,54 @@ export const deleteIntegration = async ({ integration }: Props) => {
     });
   });
 
-  await Promise.all([
-    client.query({
-      query: `
-        ALTER TABLE activity
-        DELETE
-        WHERE member_id IN (
-          SELECT id FROM member 
-          WHERE source = '${source}'
-          AND workspace_id = '${workspace_id}'
-        );
-        `,
-    }),
-    client.query({
-      query: `
-        ALTER TABLE log
-        DELETE
-        WHERE member_id IN (
-          SELECT id FROM member 
-          WHERE source = '${source}'
-          AND workspace_id = '${workspace_id}'
-        );
-      `,
-    }),
-    client.query({
-      query: `
-        ALTER TABLE activity_type
-        DELETE 
+  client.query({
+    query: `
+      ALTER TABLE activity DELETE 
+      WHERE member_id IN (
+        SELECT id FROM member 
         WHERE source = '${source}'
         AND workspace_id = '${workspace_id}'
-        `,
-    }),
-    client.query({
-      query: `
-        ALTER TABLE channel
-        DELETE
+      );`,
+  });
+  client.query({
+    query: `
+      ALTER TABLE log DELETE 
+      WHERE member_id IN (
+        SELECT id FROM member 
         WHERE source = '${source}'
         AND workspace_id = '${workspace_id}'
-        `,
-    }),
-    client.query({
-      query: `
-        ALTER TABLE company
-        DELETE
-        WHERE source = '${source}'
-        AND workspace_id = '${workspace_id}'
-        `,
-    }),
-    client.query({
-      query: `
-        ALTER TABLE member
-        DELETE
-        WHERE source = '${source}'
-        AND workspace_id = '${workspace_id}'
-      `,
-    }),
-    client.query({
-      query: `
-        ALTER TABLE profile
-        DELETE
-        WHERE JSONExtractString(CAST(attributes AS String), 'source') = '${source}'
-        AND workspace_id = '${workspace_id}'
-      `,
-    }),
-  ]);
+      );`,
+  });
+  client.query({
+    query: `
+      ALTER TABLE activity_type DELETE 
+      WHERE source = '${source}'
+      AND workspace_id = '${workspace_id}';`,
+  });
+  client.query({
+    query: `
+      ALTER TABLE channel DELETE
+      WHERE source = '${source}'
+      AND workspace_id = '${workspace_id}';`,
+  });
+  client.query({
+    query: `
+      ALTER TABLE company DELETE
+      WHERE source = '${source}'
+      AND workspace_id = '${workspace_id}';`,
+  });
+  client.query({
+    query: `
+      ALTER TABLE member DELETE
+      WHERE source = '${source}'
+      AND workspace_id = '${workspace_id}';`,
+  });
+  client.query({
+    query: `
+      ALTER TABLE profile DELETE
+      WHERE JSONExtractString(CAST(attributes AS String), 'source') = '${source}'
+      AND workspace_id = '${workspace_id}';`,
+  });
 
   return { success: true };
 };

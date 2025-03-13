@@ -13,8 +13,9 @@ export const getMemberMetrics = schemaTask({
   }),
   run: async ({ memberId }) => {
     const member = await getMember({ id: memberId });
+    const { workspace_id } = member ?? {};
 
-    if (!member) return;
+    if (!member || !workspace_id) return;
 
     const activities = await listActivities({
       member_id: member.id,
@@ -26,7 +27,7 @@ export const getMemberMetrics = schemaTask({
 
     const level = await getLevel({
       pulse: pulseScore,
-      workspace_id: member.workspace_id,
+      workspace_id,
     });
 
     await updateMember({

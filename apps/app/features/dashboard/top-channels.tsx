@@ -44,7 +44,7 @@ export const TopChannels = () => {
     <div className="mb-0.5 flex flex-col overflow-hidden rounded-md border shadow-sm">
       <p className="bg-sidebar p-3 font-medium text-lg">Top channels</p>
       <Separator />
-      <div className=" flex min-h-[200px] flex-1 flex-col items-center justify-center gap-2 py-4">
+      <div className=" flex min-h-[200px] flex-1 flex-col items-center gap-2 py-4">
         {isLoading ? (
           <Loader2 className="size-4 animate-spin" />
         ) : formattedData && formattedData.length > 0 ? (

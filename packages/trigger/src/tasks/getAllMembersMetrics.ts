@@ -1,4 +1,5 @@
 import { listActivities } from "@conquest/clickhouse/activities/listActivities";
+import { client } from "@conquest/clickhouse/client";
 import { getPulseScore } from "@conquest/clickhouse/helpers/getPulseScore";
 import { listLevels } from "@conquest/clickhouse/levels/listLevels";
 import { createManyLogs } from "@conquest/clickhouse/logs/createManyLogs";
@@ -54,6 +55,13 @@ export const getAllMembersMetrics = schemaTask({
 
     await Promise.all(
       members?.map(async (member) => {
+        await client.query({
+          query: `
+            ALTER TABLE log DELETE
+            WHERE member_id = '${member.id}'
+          `,
+        });
+
         const activities = await listActivities({
           member_id: member.id,
           period: 365,

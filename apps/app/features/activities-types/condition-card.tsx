@@ -24,7 +24,7 @@ export const ConditionCard = ({ activityType, condition }: Props) => {
       </p>
       <p>{`in #${channel?.name}`}</p>
       <p className="font-medium text-foreground">
-        {`+${points}`} {points > 1 ? "points" : "point"}
+        {points} {points > 1 ? "points" : "point"}
       </p>
     </div>
   );

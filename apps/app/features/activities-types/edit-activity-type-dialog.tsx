@@ -30,6 +30,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2, Plus, X } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { v4 as uuid } from "uuid";
 import { ConditionChannel } from "./condition-channel";
 import {
@@ -57,6 +58,9 @@ export const EditActivityTypeDialog = ({
       utils.activityTypes.list.invalidate();
       setOpen(false);
       setLoading(false);
+      toast.success(
+        "Activity type updated, recalculating members pulse scores...",
+      );
     },
   });
 
@@ -197,7 +201,6 @@ export const EditActivityTypeDialog = ({
                 <div className="flex flex-col items-start gap-2">
                   <FormLabel>Conditions</FormLabel>
                   {form.watch("conditions").rules.map((_, index) => (
-                    // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
                     <div key={index} className="flex w-full gap-2">
                       <ConditionChannel
                         form={form}
@@ -211,9 +214,6 @@ export const EditActivityTypeDialog = ({
                           <FormItem className="w-full">
                             <FormControl>
                               <div className="flex h-[34px] items-center overflow-hidden rounded-md border">
-                                <p className="h-[34px] w-fit place-content-center border-r bg-muted px-2">
-                                  +
-                                </p>
                                 <Input {...field} variant="transparent" />
                                 <p className="h-[34px] w-fit place-content-center border-l bg-muted px-2">
                                   Points

@@ -54,7 +54,7 @@ export const getPulseScoreDetails = ({ activities, channels }: Props) => {
       }
 
       if (condition) {
-        const { points: conditionPoints } = condition;
+        const { points } = condition;
         const conditionKey = channels?.find(
           (channel) => channel.id === condition.channel_id,
         )?.name;
@@ -63,7 +63,7 @@ export const getPulseScoreDetails = ({ activities, channels }: Props) => {
         if (!acc[source][name].conditions![conditionKey]) {
           acc[source][name].conditions![conditionKey] = {
             count: 0,
-            points: conditionPoints,
+            points,
           };
         }
         acc[source][name].conditions![conditionKey].count += 1;

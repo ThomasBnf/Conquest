@@ -28,50 +28,54 @@ export const Heatmap = ({ activities, member_id }: Props) => {
   const calendar = generateCalendarGrid();
 
   return (
-    <ScrollArea>
-      <div className="mt-4 flex w-full max-w-0 flex-col">
-        <MonthLabels calendar={calendar} />
-        <div className="flex gap-1">
-          <div className="mr-2 flex flex-col justify-between text-muted-foreground text-xs">
-            {WEEKDAYS.map((day) => (
-              <div key={day}>{day}</div>
+    <>
+      <ScrollArea>
+        <div className="mt-4 flex w-full max-w-0 flex-col">
+          <MonthLabels calendar={calendar} />
+          <div className="flex gap-1 py-4">
+            <div className="mr-2 flex flex-col justify-between text-muted-foreground text-xs">
+              {WEEKDAYS.map((day) => (
+                <div key={day}>{day}</div>
+              ))}
+            </div>
+            {calendar.map((week) => (
+              <div
+                key={format(week[0] ?? new Date(), "yyyy-MM-dd")}
+                className="grid grid-rows-7 gap-1"
+              >
+                {week.map((day) => {
+                  const dateStr = format(day, "yyyy-MM-dd");
+                  const dayActivity = activities?.find(
+                    (a) => a.date === dateStr,
+                  );
+
+                  return (
+                    <DayCell
+                      key={dateStr}
+                      day={day}
+                      count={Number(dayActivity?.count ?? 0)}
+                      allActivities={activities}
+                      member_id={member_id}
+                    />
+                  );
+                })}
+              </div>
             ))}
           </div>
-          {calendar.map((week) => (
-            <div
-              key={format(week[0] ?? new Date(), "yyyy-MM-dd")}
-              className="grid grid-rows-7 gap-1"
-            >
-              {week.map((day) => {
-                const dateStr = format(day, "yyyy-MM-dd");
-                const dayActivity = activities?.find((a) => a.date === dateStr);
-
-                return (
-                  <DayCell
-                    key={dateStr}
-                    day={day}
-                    count={Number(dayActivity?.count ?? 0)}
-                    allActivities={activities}
-                    member_id={member_id}
-                  />
-                );
-              })}
-            </div>
-          ))}
         </div>
-        <div className="my-4 ml-9 flex items-center gap-2">
-          <p className="text-muted-foreground">Less</p>
-          <div className="flex items-center gap-1">
-            <div className="size-3.5 rounded bg-main-200" />
-            <div className="size-3.5 rounded bg-main-500" />
-            <div className="size-3.5 rounded bg-main-700" />
-            <div className="size-3.5 rounded bg-black" />
-          </div>
-          <p className="text-muted-foreground">More</p>
+        <ScrollBar orientation="horizontal" />
+      </ScrollArea>
+      <div className="mb-4 ml-9 flex items-center gap-2">
+        <p className="text-muted-foreground">Less</p>
+        <div className="flex items-center gap-1">
+          <div className="size-3.5 rounded bg-main-200" />
+          <div className="size-3.5 rounded bg-main-500" />
+          <div className="size-3.5 rounded bg-main-700" />
+          <div className="size-3.5 rounded bg-black" />
         </div>
+        <p className="text-muted-foreground">More</p>
       </div>
-      <ScrollBar orientation="horizontal" />
-    </ScrollArea>
+    </>
   );
 };
 
@@ -198,7 +202,7 @@ const DayCell = ({
           )}
         />
       </TooltipTrigger>
-      <TooltipContent align="start" side="right">
+      <TooltipContent align="start" side="left">
         {isLoading ? (
           <Loader2 className="size-4 animate-spin text-muted-foreground" />
         ) : (

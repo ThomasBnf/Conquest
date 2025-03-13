@@ -200,7 +200,6 @@ export const CreateActivityTypeDialog = () => {
                 <div className="flex flex-col items-start gap-2">
                   <FormLabel>Conditions</FormLabel>
                   {form.watch("conditions").rules.map((_, index) => (
-                    // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
                     <div key={index} className="flex w-full gap-2">
                       <ConditionChannel
                         form={form}

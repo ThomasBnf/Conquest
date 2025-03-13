@@ -13,17 +13,19 @@ export const getMemberMetrics = async ({ memberId }: Props) => {
 
   if (!member) return;
 
+  const { id, workspace_id } = member;
+
   const activities = await listActivities({
     period: 90,
-    member_id: member.id,
-    workspace_id: member.workspace_id,
+    member_id: id,
+    workspace_id,
   });
 
   const pulseScore = getPulseScore({ activities });
 
   const level = await getLevel({
     pulse: pulseScore,
-    workspace_id: member.workspace_id,
+    workspace_id,
   });
 
   await updateMember({
