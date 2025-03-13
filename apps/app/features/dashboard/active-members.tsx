@@ -99,6 +99,7 @@ const ActiveMembersSheet = ({
     },
     { enabled: open },
   );
+
   const { table } = useTable({
     data: data ?? [],
     columns: membersColumns,
@@ -110,19 +111,16 @@ const ActiveMembersSheet = ({
   });
 
   return (
-    <Sheet
-      open={open}
-      onOpenChange={() => {
-        setOpen(!open);
-        setParams({ page: 0 });
-      }}
-    >
+    <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
         <Button
           variant="outline"
           size="icon"
           disabled={loading}
-          onClick={() => setParams({ page: 0 })}
+          onClick={() => {
+            table.setPageIndex(0);
+            setParams({ page: 0 });
+          }}
         >
           <PanelRight size={16} />
         </Button>

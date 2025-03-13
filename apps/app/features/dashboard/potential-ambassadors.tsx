@@ -123,7 +123,10 @@ const PotentialAmbassadorsSheet = ({
           variant="outline"
           size="icon"
           disabled={loading}
-          onClick={() => setParams({ page: 0 })}
+          onClick={() => {
+            table.setPageIndex(0);
+            setParams({ page: 0 });
+          }}
         >
           <PanelRight size={16} />
         </Button>
