@@ -33,9 +33,9 @@ export const TotalMembers = () => {
       <Separator />
       <div className="p flex flex-1 flex-col items-center justify-center gap-2 py-8">
         {isLoading ? (
-          <Skeleton className="h-12 w-16" />
+          <Skeleton className="h-10 w-16" />
         ) : (
-          <p className="font-bold text-5xl">{current}</p>
+          <p className="font-bold text-4xl">{current}</p>
         )}
         <Tooltip>
           <TooltipTrigger>

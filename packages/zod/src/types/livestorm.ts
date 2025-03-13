@@ -124,8 +124,8 @@ export const ListEventsSchema = z.object({
   data: z.array(EventSchema),
   meta: z.object({
     current_page: z.number(),
-    previous_page: z.boolean().nullable(),
-    next_page: z.boolean().nullable(),
+    previous_page: z.number().nullable(),
+    next_page: z.number().nullable(),
     record_count: z.number(),
     page_count: z.number(),
     items_per_page: z.number(),
@@ -166,8 +166,8 @@ export const ListEventSessionsSchema = z.object({
   data: z.array(SessionSchema),
   meta: z.object({
     current_page: z.number(),
-    previous_page: z.boolean().nullable(),
-    next_page: z.boolean().nullable(),
+    previous_page: z.number().nullable(),
+    next_page: z.number().nullable(),
     record_count: z.number(),
     page_count: z.number(),
     items_per_page: z.number(),
@@ -237,8 +237,8 @@ export const PeopleSchema = z.object({
     .array(),
   meta: z.object({
     current_page: z.number(),
-    previous_page: z.boolean().nullable(),
-    next_page: z.boolean().nullable(),
+    previous_page: z.number().nullable(),
+    next_page: z.number().nullable(),
     record_count: z.number(),
     page_count: z.number(),
     items_per_page: z.number(),
@@ -318,8 +318,8 @@ export const WebhookSchema = z.object({
   ),
   meta: z.object({
     current_page: z.number(),
-    previous_page: z.boolean().nullable(),
-    next_page: z.boolean().nullable(),
+    previous_page: z.number().nullable(),
+    next_page: z.number().nullable(),
     record_count: z.number(),
     page_count: z.number(),
     items_per_page: z.number(),
