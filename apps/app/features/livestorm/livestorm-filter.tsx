@@ -14,7 +14,7 @@ import {
 import { Input } from "@conquest/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowRight, Loader2 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { type FormCreate, FormCreateSchema } from "./schemas/form.schema";
 
@@ -60,10 +60,6 @@ export const LivestormFilter = () => {
 
     await createManyActivityTypes({ activity_types: LIVESTORM_ACTIVITY_TYPES });
   };
-
-  useEffect(() => {
-    if (livestorm?.details.name) setStep(1);
-  }, [livestorm]);
 
   return (
     <Form {...form}>
