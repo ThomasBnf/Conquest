@@ -58,7 +58,7 @@ export const createManyPeoples = async ({
 
     if (role === "team_member") continue;
 
-    const locale = getLocaleByAlpha2(ip_country_code);
+    const locale = getLocaleByAlpha2(ip_country_code ?? "");
     const languageCode = locale?.split("_")[0] ?? "";
     const language = languageCode ? ISO6391.getName(languageCode) : "";
 
@@ -70,7 +70,7 @@ export const createManyPeoples = async ({
         last_name,
         primary_email: email,
         avatar_url: avatar_link ?? "",
-        country: ip_country_code,
+        country: ip_country_code ?? "",
         language,
         source: "Livestorm",
         created_at: new Date(created_at * 1000),
