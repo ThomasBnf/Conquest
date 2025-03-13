@@ -39,10 +39,7 @@ export default async function Page({ searchParams }: Props) {
   const { access_token, expires_in, refresh_token, guild } = data;
   const { id, name } = guild;
 
-  const integration = await getIntegration({
-    external_id: id,
-    workspace_id,
-  });
+  const integration = await getIntegration({ external_id: id });
 
   if (integration) {
     return redirect("settings/integrations/discord?error=already_connected");
@@ -51,7 +48,7 @@ export default async function Page({ searchParams }: Props) {
   const encryptedAccessToken = await encrypt(access_token);
   const encryptedRefreshToken = await encrypt(refresh_token);
 
-  const createdIntegration = await createIntegration({
+  await createIntegration({
     external_id: id,
     details: {
       source: "Discord",
