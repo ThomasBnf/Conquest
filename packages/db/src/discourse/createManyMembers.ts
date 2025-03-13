@@ -135,8 +135,6 @@ export const createManyMembers = async ({
         )
         .map((tag) => tag.id);
 
-      console.log("memberTags", memberTags);
-
       const filteredMember = members.find((member) => member.id === id);
 
       if (!filteredMember) continue;
@@ -163,6 +161,8 @@ export const createManyMembers = async ({
         source: "Discourse",
         workspace_id,
       });
+
+      console.log("tags", member.id, memberTags);
 
       const profile = await createProfile({
         external_id: String(id),
