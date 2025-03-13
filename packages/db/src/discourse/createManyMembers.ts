@@ -212,7 +212,7 @@ export const createManyMembers = async ({
 
       await getMemberMetrics({ memberId: member.id });
 
-      await wait.for({ seconds: 2.5 });
+      await wait.for({ seconds: 3 });
     }
 
     if (data.directory_items.length < 50) _hasMore = false;
