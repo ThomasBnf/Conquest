@@ -28,33 +28,7 @@ import { UserFields } from "./user-fields";
 
 export const DiscourseApi = () => {
   const { discourse, loading, setLoading, setStep } = useIntegration();
-  const [fields, setFields] = useState<Field[]>([
-    {
-      id: "cm73gke9v00003b6wntfv5bui",
-      external_id: "12",
-      name: "Company",
-    },
-    {
-      id: "cm73gkemq00013b6wjug54cd9",
-      external_id: "13",
-      name: "Linkedin",
-    },
-    {
-      id: "cm73gkf5o00023b6wl5go619q",
-      external_id: "8",
-      name: "Language",
-    },
-    {
-      id: "cm73gkffb00033b6wusl8sru1",
-      external_id: "11",
-      name: "Sell services",
-    },
-    {
-      id: "cm73gkg0y00043b6w9pa94c48",
-      external_id: "3",
-      name: "Need Vs Expertise",
-    },
-  ]);
+  const [fields, setFields] = useState<Field[]>([]);
 
   const { mutateAsync: updateIntegration } =
     trpc.integrations.update.useMutation({
@@ -66,15 +40,6 @@ export const DiscourseApi = () => {
 
   const form = useForm<FormCreate>({
     resolver: zodResolver(FormCreateSchema),
-    defaultValues: {
-      community_url: "https://playground.lagrowthmachine.com/",
-      api_key:
-        "a7e80919eecc82b71fe8a23d8d0e199bf3d593216835315133254de014e9e1b3",
-      content_type: true,
-      payload_url: true,
-      secret: true,
-      send_me_everything: true,
-    },
   });
 
   const onSubmit = async ({ community_url, api_key }: FormCreate) => {
