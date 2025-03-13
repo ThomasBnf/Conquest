@@ -29,7 +29,7 @@ export const MembersProvider = ({ children }: Props) => {
   trpc.levels.list.useQuery();
   trpc.tags.list.useQuery();
 
-  const { data, isFetching } = trpc.members.list.useQuery({
+  const { data, isLoading } = trpc.members.list.useQuery({
     search,
     desc: descMember,
     id: idMember,
@@ -48,7 +48,7 @@ export const MembersProvider = ({ children }: Props) => {
       value={{
         data,
         count,
-        isLoading: isFetching,
+        isLoading,
       }}
     >
       {children}

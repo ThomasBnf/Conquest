@@ -13,11 +13,13 @@ export const activeMembersTable = protectedProcedure
       search: z.string(),
       id: z.string(),
       desc: z.boolean(),
+      page: z.number(),
+      pageSize: z.number(),
     }),
   )
   .query(async ({ ctx: { user }, input }) => {
     const { workspace_id } = user;
-    const { from, to, search, id, desc } = input;
+    const { from, to, search, id, desc, page, pageSize } = input;
 
     const orderBy = orderByParser({ id, desc, type: "members" });
 
@@ -38,6 +40,8 @@ export const activeMembersTable = protectedProcedure
           OR positionCaseInsensitive(toString(primary_email), '${search}') > 0
         )
         ${orderBy}
+        LIMIT ${pageSize}
+        OFFSET ${page * pageSize}
       `,
       format: "JSON",
     });

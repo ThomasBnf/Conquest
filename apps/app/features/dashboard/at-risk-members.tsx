@@ -90,7 +90,7 @@ const AtRiskMembersSheet = ({
 }) => {
   const [open, setOpen] = useState(false);
   const [{ from, to }] = useQueryStates(dateParams);
-  const [{ search, idMember, descMember }, setParams] =
+  const [{ search, idMember, descMember, page, pageSize }, setParams] =
     useQueryStates(tableParams);
 
   const { data, isLoading } = trpc.dashboard.atRiskMembersTable.useQuery(
@@ -100,6 +100,8 @@ const AtRiskMembersSheet = ({
       search,
       id: idMember,
       desc: descMember,
+      page,
+      pageSize,
     },
     {
       enabled: open,
