@@ -65,7 +65,9 @@ export const IntegrationProvider = ({
   let livestorm: LivestormIntegration | null = null;
   let slack: SlackIntegration | null = null;
 
-  const { data, isLoading } = trpc.integrations.bySource.useQuery({ source });
+  const { data, isLoading, failureReason } =
+    trpc.integrations.bySource.useQuery({ source });
+  console.log("failureReason", failureReason);
 
   if (data) {
     switch (source) {

@@ -28,7 +28,6 @@ const discordEnv = {
   server: {
     DISCORD_CLIENT_SECRET: z.string(),
     DISCORD_BOT_TOKEN: z.string(),
-    DISCORD_PORT: z.string(),
   },
   client: {
     NEXT_PUBLIC_DISCORD_CLIENT_ID: z.string(),
@@ -113,6 +112,14 @@ const resendEnv = {
   },
 };
 
+const sentryEnv = {
+  server: {
+    SENTRY_ORG: z.string(),
+    SENTRY_PROJECT: z.string(),
+    SENTRY_DSN: z.string(),
+  },
+};
+
 const slackEnv = {
   server: {
     SLACK_APP_ID: z.string(),
@@ -160,6 +167,7 @@ export const env = createEnv({
     ...linkedinEnv.server,
     ...livestormEnv.server,
     ...resendEnv.server,
+    ...sentryEnv.server,
     ...slackEnv.server,
     ...stripeEnv.server,
     ...triggerEnv.server,

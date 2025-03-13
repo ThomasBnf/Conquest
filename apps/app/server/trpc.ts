@@ -1,4 +1,5 @@
 import { UserWithWorkspaceSchema } from "@conquest/zod/schemas/user.schema";
+import * as Sentry from "@sentry/node";
 import { TRPCError, initTRPC } from "@trpc/server";
 import superjson from "superjson";
 import { ZodError } from "zod";
@@ -34,4 +35,12 @@ const middleware = t.middleware(async ({ ctx, next }) => {
   });
 });
 
-export const protectedProcedure = t.procedure.use(middleware);
+const sentryMiddleware = t.middleware(
+  Sentry.trpcMiddleware({
+    attachRpcInput: true,
+  }),
+);
+
+export const protectedProcedure = t.procedure
+  .use(sentryMiddleware)
+  .use(middleware);

@@ -16,7 +16,6 @@ import { deleteProfile } from "@conquest/clickhouse/profiles/deleteProfile";
 import { getProfile } from "@conquest/clickhouse/profiles/getProfile";
 import { getIntegration } from "@conquest/db/integrations/getIntegration";
 import { prisma } from "@conquest/db/prisma";
-import { env } from "@conquest/env";
 import { ActivitySchema } from "@conquest/zod/schemas/activity.schema";
 import {
   ChannelType,
@@ -32,7 +31,7 @@ import { sleep } from "./helpers/sleep";
 config();
 
 const app = express();
-const port = env.DISCORD_PORT || 10000;
+const port = process.env.DISCORD_PORT || 10000;
 
 app.get("/", (_req, res) => {
   res.send("Discord bot is running!");
@@ -722,4 +721,4 @@ client.on(Events.MessageReactionRemove, async (reaction, user) => {
   }
 });
 
-client.login(env.DISCORD_BOT_TOKEN);
+client.login(process.env.DISCORD_BOT_TOKEN);
