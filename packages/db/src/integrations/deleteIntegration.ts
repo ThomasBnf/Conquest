@@ -3,12 +3,14 @@ import { env } from "@conquest/env";
 import {
   type Integration,
   LinkedInIntegrationSchema,
+  LivestormIntegrationSchema,
 } from "@conquest/zod/schemas/integration.schema";
 import { WebClient } from "@slack/web-api";
 import { deleteManyEvents } from "../events/deleteManyEvents";
 import { listSubscriptions } from "../linkedin/listSubscriptions";
 import { removeWebhook } from "../linkedin/removeWebhook";
 import { deleteWebhook } from "../livestorm/deleteWebhook";
+import { getRefreshToken } from "../livestorm/getRefreshToken";
 import { listWebhooks } from "../livestorm/listWebhooks";
 import { deleteManyPosts } from "../posts/deleteManyPosts";
 import { prisma } from "../prisma";
@@ -23,19 +25,16 @@ export const deleteIntegration = async ({ integration }: Props) => {
   const { source } = details;
 
   if (source === "Livestorm") {
-    const { access_token, access_token_iv } = details;
+    const livestorm = LivestormIntegrationSchema.parse(integration);
 
-    const decryptedToken = await decrypt({
-      access_token,
-      iv: access_token_iv,
-    });
+    const accessToken = await getRefreshToken({ livestorm });
 
     await deleteManyEvents({ source });
 
-    const webhooks = await listWebhooks({ accessToken: decryptedToken });
+    const webhooks = await listWebhooks({ accessToken });
 
     for (const webhook of webhooks) {
-      await deleteWebhook({ accessToken: decryptedToken, id: webhook.id });
+      await deleteWebhook({ accessToken, id: webhook.id });
     }
   }
 

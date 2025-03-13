@@ -9,6 +9,7 @@ import { getEvent as getLivestormEvent } from "@conquest/db/livestorm/getEvent";
 import { getRefreshToken } from "@conquest/db/livestorm/getRefreshToken";
 import { listEventSessions } from "@conquest/db/livestorm/listEventSessions";
 import { listPeopleFromSession } from "@conquest/db/livestorm/listPeopleFromSession";
+import { decrypt } from "@conquest/db/utils/decrypt";
 import { LivestormIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
 import {
   PeopleRegisteredSchema,
@@ -29,16 +30,23 @@ export async function POST(request: NextRequest) {
 
   const livestorm = LivestormIntegrationSchema.parse(integration);
   const { workspace_id, details } = livestorm;
-  const { filter } = details;
+  const { filter, access_token, access_token_iv, expires_in } = details;
 
-  const access_token = await getRefreshToken({ livestorm });
+  let accessToken = await decrypt({
+    access_token,
+    iv: access_token_iv,
+  });
+
+  if (expires_in < Date.now()) {
+    accessToken = await getRefreshToken({ livestorm });
+  }
 
   if (event === "session.created") {
     const parsedAttributes = SessionWebhookSchema.parse(attributes);
     const { event_id } = parsedAttributes;
 
     const event = await getLivestormEvent({
-      accessToken: access_token,
+      accessToken,
       id: event_id,
     });
 
@@ -51,7 +59,7 @@ export async function POST(request: NextRequest) {
 
     while (true) {
       const listOfSessions = await listEventSessions({
-        access_token,
+        access_token: accessToken,
         event_id,
         page: sessionPage,
       });
@@ -139,7 +147,10 @@ export async function POST(request: NextRequest) {
 
   if (event === "session.ended") {
     const session = await getEvent({ id });
-    const peoples = await listPeopleFromSession({ access_token, id });
+    const peoples = await listPeopleFromSession({
+      access_token: accessToken,
+      id,
+    });
 
     for (const people of peoples) {
       const { id, attributes } = people;
