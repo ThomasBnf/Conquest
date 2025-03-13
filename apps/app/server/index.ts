@@ -11,7 +11,6 @@ import { githubRouter } from "./github/router";
 import { integrationsRouter } from "./integrations/router";
 import { levelsRouter } from "./levels/router";
 import { listsRouter } from "./lists/router";
-import { livestormRouter } from "./livestorm/router";
 import { logsRouter } from "./logs/router";
 import { membersRouter } from "./members/router";
 import { profilesRouter } from "./profiles/router";
@@ -35,7 +34,6 @@ export const appRouter = router({
   integrations: integrationsRouter,
   levels: levelsRouter,
   lists: listsRouter,
-  livestorm: livestormRouter,
   logs: logsRouter,
   members: membersRouter,
   profiles: profilesRouter,

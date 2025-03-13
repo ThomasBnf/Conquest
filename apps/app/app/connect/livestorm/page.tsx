@@ -1,7 +1,9 @@
 import { getCurrentUser } from "@/queries/getCurrentUser";
 import { createIntegration } from "@conquest/db/integrations/createIntegration";
+import { getOrganization } from "@conquest/db/livestorm/getOrganization";
 import { encrypt } from "@conquest/db/utils/encrypt";
 import { env } from "@conquest/env";
+import { LivestormIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
 import { redirect } from "next/navigation";
 
 type Props = {
@@ -30,6 +32,7 @@ export default async function Page({ searchParams }: Props) {
   );
 
   const data = await response.json();
+  console.log("livestorm data", data);
 
   if (!response.ok) {
     return redirect("settings/integrations/livestorm?error=invalid_code");
@@ -40,7 +43,7 @@ export default async function Page({ searchParams }: Props) {
   const encryptedAccessToken = await encrypt(access_token);
   const encryptedRefreshToken = await encrypt(refresh_token);
 
-  await createIntegration({
+  const createdIntegration = await createIntegration({
     external_id: null,
     details: {
       source: "Livestorm",
@@ -55,6 +58,15 @@ export default async function Page({ searchParams }: Props) {
     created_by: userId,
     workspace_id,
   });
+
+  if (!createdIntegration) {
+    return redirect(
+      "settings/integrations/livestorm?error=creating_integration",
+    );
+  }
+
+  const livestorm = LivestormIntegrationSchema.parse(createdIntegration);
+  await getOrganization({ livestorm });
 
   redirect("/settings/integrations/livestorm");
 }

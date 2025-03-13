@@ -23,7 +23,6 @@ export const LivestormFilter = () => {
   const [loading, setLoading] = useState(false);
   const utils = trpc.useUtils();
 
-  const { data: organization } = trpc.livestorm.getOrganization.useQuery();
   const { mutateAsync } = trpc.integrations.update.useMutation({
     onSuccess: () => {
       utils.integrations.bySource.invalidate({
@@ -51,16 +50,10 @@ export const LivestormFilter = () => {
     if (!livestorm) return;
     setLoading(true);
 
-    const { included } = organization ?? {};
-    const organization_id = included?.at(0)?.id ?? "";
-    const organization_name = included?.at(0)?.attributes.name ?? "";
-
     await mutateAsync({
       id: livestorm.id,
-      external_id: organization_id,
       details: {
         ...livestorm.details,
-        name: organization_name,
         filter,
       },
     });
