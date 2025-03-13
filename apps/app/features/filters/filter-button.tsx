@@ -66,7 +66,7 @@ export const FilterButton = () => {
           <PopoverContent className="p-0" align="start">
             <Command>
               <CommandInput placeholder="Search filter..." />
-              <CommandList className="max-h-[400px]">
+              <CommandList className="max-h-[300px]">
                 <CommandGroup heading="Activity">
                   {filtersActivity.map((filter) => (
                     <CommandItem

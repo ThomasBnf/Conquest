@@ -25,7 +25,7 @@ export const createManyPeoples = async ({
 }: Props) => {
   const { workspace_id, details } = livestorm;
   const { access_token, access_token_iv } = details;
-  const { title, ended_at } = event;
+  const { ended_at } = event;
 
   const decryptedAccessToken = await decrypt({
     access_token: access_token,
