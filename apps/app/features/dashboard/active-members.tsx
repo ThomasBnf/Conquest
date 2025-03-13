@@ -110,13 +110,19 @@ const ActiveMembersSheet = ({
   });
 
   return (
-    <Sheet open={open} onOpenChange={setOpen}>
+    <Sheet
+      open={open}
+      onOpenChange={() => {
+        setOpen(!open);
+        setParams({ page: 0 });
+      }}
+    >
       <SheetTrigger asChild>
         <Button
           variant="outline"
           size="icon"
           disabled={loading}
-          onClick={() => setOpen(true)}
+          onClick={() => setParams({ page: 0 })}
         >
           <PanelRight size={16} />
         </Button>

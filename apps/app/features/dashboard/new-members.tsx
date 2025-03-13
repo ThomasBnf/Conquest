@@ -117,7 +117,7 @@ const NewMembersSheet = ({
           variant="outline"
           size="icon"
           disabled={loading}
-          onClick={() => setOpen(true)}
+          onClick={() => setParams({ page: 0 })}
         >
           <PanelRight size={16} />
         </Button>
