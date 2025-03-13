@@ -27,6 +27,7 @@ export const createManyMembers = async ({
   client: DiscourseAPI;
   tags: Tag[];
 }) => {
+  console.log("tags", tags.length, tags);
   const { workspace_id, details } = discourse;
   const { community_url, community_url_iv, api_key, api_key_iv, user_fields } =
     details;
@@ -129,7 +130,7 @@ export const createManyMembers = async ({
 
       const { user_badges } = await client.listUserBadges({ username });
 
-      console.log("user_badges", user_badges);
+      console.log("user_badges", user_badges.length, user_badges);
 
       const memberTags = tags
         .filter((tag) =>
@@ -164,7 +165,7 @@ export const createManyMembers = async ({
         workspace_id,
       });
 
-      console.log("memberTags", member.id, memberTags);
+      console.log("memberTags", member.id, memberTags.length, memberTags);
 
       const profile = await createProfile({
         external_id: String(id),
