@@ -99,6 +99,7 @@ model integration {
     details       Json
     trigger_token String
     expires_at    DateTime
+    run_id        String?
     created_by    String
 
     workspace_id String

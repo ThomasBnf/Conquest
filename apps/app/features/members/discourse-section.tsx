@@ -15,12 +15,12 @@ export const DiscourseSection = ({ profiles }: Props) => {
     (profile) => profile.attributes.source === "Discourse",
   );
 
+  if (!profile) return null;
+
   const source = "Discourse";
   const { data: discourse } = trpc.integrations.bySource.useQuery({ source });
   const details = DiscourseDetailsSchema.parse(discourse?.details);
   const { user_fields } = details;
-
-  if (!profile) return null;
 
   const discourseProfile = DiscourseProfileSchema.parse(profile);
   const { attributes } = discourseProfile;

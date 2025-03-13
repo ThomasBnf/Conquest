@@ -59,8 +59,6 @@ export const MemberSidebar = ({ member, profiles }: Props) => {
     await updateMember({ ...member, [field]: value });
   };
 
-  console.log(profiles);
-
   return (
     <div className="flex h-full w-full max-w-sm shrink-0 flex-col overflow-hidden bg-sidebar">
       <ScrollArea>
