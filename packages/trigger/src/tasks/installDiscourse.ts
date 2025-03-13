@@ -8,6 +8,7 @@ import { decrypt } from "@conquest/db/utils/decrypt";
 import { DiscourseIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
 import { metadata, schemaTask } from "@trigger.dev/sdk/v3";
 import { z } from "zod";
+import { getAllMembersMetrics } from "./getAllMembersMetrics";
 import { integrationSuccessEmail } from "./integrationSuccessEmail";
 
 export const installDiscourse = schemaTask({
@@ -48,6 +49,9 @@ export const installDiscourse = schemaTask({
     metadata.set("progress", 90);
 
     await batchMergeMembers({ members });
+    metadata.set("progress", 95);
+
+    await getAllMembersMetrics.trigger({ workspace_id });
     metadata.set("progress", 95);
 
     await integrationSuccessEmail.trigger({ integration: discourse });

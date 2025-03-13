@@ -4,6 +4,7 @@ import { EmptyState } from "@/components/states/empty-state";
 import { IsLoading } from "@/components/states/is-loading";
 import { Activities } from "@/features/activities/activities";
 import { trpc } from "@/server/client";
+import { ScrollArea } from "@conquest/ui/scroll-area";
 import { Activity } from "lucide-react";
 import { redirect } from "next/navigation";
 
@@ -25,12 +26,14 @@ export const PageActivities = ({ slug, memberId }: Props) => {
   if (!member) return redirect(`/${slug}/members`);
 
   return (
-    <Activities activities={data} isLoading={_isLoading}>
-      <EmptyState
-        icon={<Activity size={36} />}
-        title="No activities found"
-        description="This member has no activities"
-      />
-    </Activities>
+    <ScrollArea className="h-full">
+      <Activities activities={data} isLoading={_isLoading}>
+        <EmptyState
+          icon={<Activity size={36} />}
+          title="No activities found"
+          description="This member has no activities"
+        />
+      </Activities>
+    </ScrollArea>
   );
 };
