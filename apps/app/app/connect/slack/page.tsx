@@ -51,6 +51,8 @@ export default async function Page({ searchParams }: Props) {
     workspace_id,
   });
 
+  console.log("slack", integration);
+
   if (integration) {
     return redirect("/settings/integrations/slack?error=already_connected");
   }
