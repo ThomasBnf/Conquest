@@ -10,7 +10,7 @@ import {
   AdminListUsersSchema,
   DirectoryItemsSchema,
 } from "@conquest/zod/types/discourse";
-import { metadata, wait } from "@trigger.dev/sdk/v3";
+import { logger, metadata, wait } from "@trigger.dev/sdk/v3";
 import { getLocaleByAlpha2 } from "country-locale-map";
 import type DiscourseAPI from "discourse2";
 import ISO6391 from "iso-639-1";
@@ -136,11 +136,17 @@ export const createManyMembers = async ({
 
       const { user_badges } = await client.listUserBadges({ username });
 
+      logger.info("user_badges", { username, user_badges });
+
       const memberTags = tags
         .filter((tag) =>
-          user_badges?.some((badge) => String(badge.id) === tag.external_id),
+          user_badges?.some(
+            (badge) => String(badge.badge_id) === tag.external_id,
+          ),
         )
         .map((tag) => tag.id);
+
+      logger.info("memberTags", { username, memberTags });
 
       const filteredMember = members.find((member) => member.id === id);
 
