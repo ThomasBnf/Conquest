@@ -129,6 +129,8 @@ export const createManyMembers = async ({
 
       const { user_badges } = await client.listUserBadges({ username });
 
+      console.log("user_badges", user_badges);
+
       const memberTags = tags
         .filter((tag) =>
           user_badges?.some((badge) => String(badge.id) === tag.external_id),
@@ -162,7 +164,7 @@ export const createManyMembers = async ({
         workspace_id,
       });
 
-      console.log("tags", member.id, memberTags);
+      console.log("memberTags", member.id, memberTags);
 
       const profile = await createProfile({
         external_id: String(id),
