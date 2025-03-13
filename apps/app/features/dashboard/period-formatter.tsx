@@ -1,4 +1,4 @@
-import { dateParams } from "@/lib/searchParamsDate";
+import { dateParams } from "@/lib/dateParams";
 import {
   endOfDay,
   endOfMonth,

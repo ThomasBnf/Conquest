@@ -11,9 +11,9 @@ import { TopActivityType } from "@/features/dashboard/top-activity-type";
 import { TopChannels } from "@/features/dashboard/top-channels";
 import { TotalMembers } from "@/features/dashboard/total-members";
 import { WorkspaceHeatmap } from "@/features/dashboard/workspace-heatmap";
+import { loaderDate } from "@/lib/dateParams";
 import { ScrollArea } from "@conquest/ui/scroll-area";
 import { Separator } from "@conquest/ui/separator";
-import { loaderDate } from "lib/searchParamsDate";
 
 type Props = {
   searchParams: Promise<Record<string, string | string[] | undefined>>;

@@ -1,6 +1,6 @@
 "use client";
 
-import { dateParams } from "@/lib/searchParamsDate";
+import { dateParams } from "@/lib/dateParams";
 import { trpc } from "@/server/client";
 import {
   type ChartConfig,

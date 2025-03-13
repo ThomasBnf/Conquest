@@ -1,6 +1,6 @@
 "use client";
 
-import { tableParams } from "@/lib/searchParamsTable";
+import { tableParams } from "@/lib/tableParams";
 import { trpc } from "@/server/client";
 import type { Member } from "@conquest/zod/schemas/member.schema";
 import { useQueryStates } from "nuqs";

@@ -24,7 +24,7 @@ export const tableParams = {
     shallow: false,
     clearOnDefault: true,
   }),
-  descCompany: parseAsBoolean.withDefault(false).withOptions({
+  descCompany: parseAsBoolean.withDefault(true).withOptions({
     shallow: false,
     clearOnDefault: true,
   }),

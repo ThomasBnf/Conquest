@@ -1,4 +1,4 @@
-import { tableParams } from "@/lib/searchParamsTable";
+import { tableParams } from "@/lib/tableParams";
 import { Button } from "@conquest/ui/button";
 import {
   Select,

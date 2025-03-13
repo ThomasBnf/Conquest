@@ -1,5 +1,5 @@
 import { useUser } from "@/context/userContext";
-import { tableParams } from "@/lib/searchParamsTable";
+import { tableParams } from "@/lib/tableParams";
 import {
   type ColumnDef,
   type ColumnOrderState,

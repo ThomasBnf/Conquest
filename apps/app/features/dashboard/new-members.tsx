@@ -3,8 +3,8 @@
 import { TooltipInfo } from "@/components/badges/tooltip-info";
 import { QueryInput } from "@/components/custom/query-input";
 import { ColumnVisibility } from "@/features/table/column-visibility";
-import { dateParams } from "@/lib/searchParamsDate";
-import { tableParams } from "@/lib/searchParamsTable";
+import { dateParams } from "@/lib/dateParams";
+import { tableParams } from "@/lib/tableParams";
 import { trpc } from "@/server/client";
 import { Button } from "@conquest/ui/button";
 import { Separator } from "@conquest/ui/separator";

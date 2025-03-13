@@ -1,6 +1,6 @@
 import { Members } from "@/components/icons/Members";
 import { useFilters } from "@/context/filtersContext";
-import { tableParams } from "@/lib/searchParamsTable";
+import { tableParams } from "@/lib/tableParams";
 import { Button } from "@conquest/ui/button";
 import { useRouter } from "next/navigation";
 import { useQueryStates } from "nuqs";

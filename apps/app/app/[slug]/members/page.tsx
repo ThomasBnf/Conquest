@@ -3,7 +3,7 @@ import { PageLayout } from "@/components/layouts/page-layout";
 import { MembersProvider } from "@/context/membersContext";
 import { CreateMemberDialog } from "@/features/members/create-member-dialog";
 import { MembersPage } from "@/features/members/members-page";
-import { loaderTable } from "@/lib/searchParamsTable";
+import { loaderTable } from "@/lib/tableParams";
 
 type Props = {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
