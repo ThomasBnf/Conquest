@@ -45,9 +45,6 @@ export const createGithubMember = async ({
       source: "Github",
     });
 
-    console.log(followers);
-    console.log(typeof followers);
-
     await createProfile({
       external_id: String(id),
       attributes: {

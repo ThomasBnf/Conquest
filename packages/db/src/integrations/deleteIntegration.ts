@@ -22,8 +22,6 @@ export const deleteIntegration = async ({ integration }: Props) => {
   const { workspace_id, details } = integration;
   const { source } = details;
 
-  console.log("integration", integration);
-
   if (source === "Livestorm") {
     const { access_token, access_token_iv } = details;
 

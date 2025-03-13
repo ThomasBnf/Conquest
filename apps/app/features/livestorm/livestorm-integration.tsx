@@ -25,6 +25,7 @@ export const LivestormIntegration = ({ error }: Props) => {
 
   const onEnable = () => {
     setLoading(true);
+
     const params = new URLSearchParams({
       response_type: "code",
       client_id: env.NEXT_PUBLIC_LIVESTORM_CLIENT_ID,

@@ -13,8 +13,6 @@ type Props = {
 export const createTag = async (props: Props) => {
   const { external_id, name, color, source, workspace_id } = props;
 
-  console.log("props", props);
-
   const tag = await prisma.tag.create({
     data: {
       external_id,

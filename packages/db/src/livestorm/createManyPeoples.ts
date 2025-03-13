@@ -64,8 +64,6 @@ export const createManyPeoples = async ({
 
     let profile = await getProfile({ external_id: id });
 
-    console.log("profile", profile);
-
     if (!profile) {
       const member = await createMember({
         first_name,

@@ -20,8 +20,6 @@ export const createIntegration = async ({
 }: Props) => {
   const integration = await getIntegration({ external_id });
 
-  console.log("getIntegration", integration);
-
   if (!integration) {
     const expiresAt = addDays(new Date(), 30);
     const source = details.source.toLowerCase();

@@ -29,18 +29,13 @@ export default async function Page({ searchParams }: Props) {
     },
   );
 
-  console.log("response", response);
-
   const data = await response.json();
-  console.log(data);
 
   if (!response.ok) {
     return redirect("settings/integrations/livestorm?error=invalid_code");
   }
 
   const { access_token, expires_in, refresh_token, scope } = data;
-
-  console.log("data", data);
 
   const encryptedAccessToken = await encrypt(access_token);
   const encryptedRefreshToken = await encrypt(refresh_token);
@@ -60,8 +55,6 @@ export default async function Page({ searchParams }: Props) {
     created_by: userId,
     workspace_id,
   });
-
-  console.log("integration", integration);
 
   redirect("/settings/integrations/livestorm");
 }
