@@ -44,7 +44,7 @@ export const DiscourseSection = ({ profiles }: Props) => {
 
         return (
           <FieldCard key={id} icon="User" label={key}>
-            <p className="place-content-center truncate px-2">{value}</p>
+            <p className="h-full place-content-center truncate px-2">{value}</p>
           </FieldCard>
         );
       })}

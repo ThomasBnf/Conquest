@@ -28,9 +28,9 @@ export const CopyButton = ({ value, className }: Props) => {
       className={className}
     >
       {isCopied ? (
-        <Check size={16} className="text-green-600" />
+        <Check size={14} className="text-green-600" />
       ) : (
-        <Copy size={16} />
+        <Copy size={14} />
       )}
     </Button>
   );
