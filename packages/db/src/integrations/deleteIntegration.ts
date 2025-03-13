@@ -35,6 +35,7 @@ export const deleteIntegration = async ({ integration }: Props) => {
     await deleteManyEvents({ source });
 
     const webhooks = await listWebhooks({ accessToken: decryptedToken });
+    console.log("webhooks", webhooks);
 
     for (const webhook of webhooks) {
       await deleteWebhook({ accessToken: decryptedToken, id: webhook.id });

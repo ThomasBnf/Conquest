@@ -39,7 +39,6 @@ const WebhookSchema = z.object({
 });
 
 export async function POST(req: NextRequest) {
-  console.log("req", req);
   const body = await req.json();
 
   if (body.challenge) {

@@ -68,7 +68,5 @@ export default async function Page({ searchParams }: Props) {
     workspace_id,
   });
 
-  console.log("createdIntegration", createdIntegration);
-
   redirect("/settings/integrations/discord");
 }

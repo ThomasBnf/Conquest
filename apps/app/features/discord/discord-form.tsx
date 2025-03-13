@@ -13,12 +13,7 @@ import { DiscordChannels } from "./discord-channels";
 
 export const DiscordForm = () => {
   const { discord, loading, setLoading, step, setStep } = useIntegration();
-  const { run_id } = discord ?? {};
   const utils = trpc.useUtils();
-
-  const { data: currentRun } = trpc.integrations.getRun.useQuery({
-    run_id: run_id ?? "",
-  });
 
   const { mutateAsync } = trpc.integrations.update.useMutation({
     onSuccess: () => {
@@ -66,8 +61,6 @@ export const DiscordForm = () => {
       setStep(1);
     }
   }, [discord]);
-
-  console.log("currentRun", currentRun);
 
   return (
     <>
