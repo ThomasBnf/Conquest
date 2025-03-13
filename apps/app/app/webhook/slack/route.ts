@@ -83,6 +83,8 @@ export async function POST(req: NextRequest) {
 
   switch (type) {
     case "app_uninstalled": {
+      console.log("app_uninstalled", event);
+
       await updateIntegration({
         id: integration.id,
         status: "DISCONNECTED",
