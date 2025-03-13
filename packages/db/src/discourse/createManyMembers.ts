@@ -135,6 +135,8 @@ export const createManyMembers = async ({
         )
         .map((tag) => tag.id);
 
+      console.log("memberTags", memberTags);
+
       const filteredMember = members.find((member) => member.id === id);
 
       if (!filteredMember) continue;
