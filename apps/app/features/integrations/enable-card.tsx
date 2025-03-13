@@ -47,9 +47,14 @@ export const EnableCard = ({
         case "invalid_code":
           toast.error("Error: Invalid code", { duration: 10000 });
           break;
+        case "creating_integration":
+          toast.error("Error: Failed to create integration", {
+            duration: 10000,
+          });
+          break;
         case "already_connected":
           toast.error(
-            "Error: This integration is already connected to another account",
+            "Error: This integration is already connected to another workspace",
             { duration: 10000 },
           );
           break;

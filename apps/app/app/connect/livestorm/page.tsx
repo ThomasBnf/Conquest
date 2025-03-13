@@ -1,9 +1,9 @@
 import { getCurrentUser } from "@/queries/getCurrentUser";
 import { createIntegration } from "@conquest/db/integrations/createIntegration";
+import { getIntegration } from "@conquest/db/integrations/getIntegration";
 import { getOrganization } from "@conquest/db/livestorm/getOrganization";
 import { encrypt } from "@conquest/db/utils/encrypt";
 import { env } from "@conquest/env";
-import { LivestormIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
 import { redirect } from "next/navigation";
 
 type Props = {
@@ -32,7 +32,6 @@ export default async function Page({ searchParams }: Props) {
   );
 
   const data = await response.json();
-  console.log("livestorm data", data);
 
   if (!response.ok) {
     return redirect("settings/integrations/livestorm?error=invalid_code");
@@ -40,14 +39,26 @@ export default async function Page({ searchParams }: Props) {
 
   const { access_token, expires_in, refresh_token, scope } = data;
 
+  const organization = await getOrganization({ access_token });
+  const { included } = organization ?? {};
+
+  const organization_id = included?.at(0)?.id ?? "";
+  const organization_name = included?.at(0)?.attributes.name ?? "";
+
+  const integration = await getIntegration({ external_id: organization_id });
+
+  if (integration) {
+    return redirect("/settings/integrations/livestorm?error=already_connected");
+  }
+
   const encryptedAccessToken = await encrypt(access_token);
   const encryptedRefreshToken = await encrypt(refresh_token);
 
-  const createdIntegration = await createIntegration({
-    external_id: null,
+  await createIntegration({
+    external_id: organization_id,
     details: {
       source: "Livestorm",
-      name: "",
+      name: organization_name,
       access_token: encryptedAccessToken.token,
       access_token_iv: encryptedAccessToken.iv,
       refresh_token: encryptedRefreshToken.token,
@@ -58,15 +69,6 @@ export default async function Page({ searchParams }: Props) {
     created_by: userId,
     workspace_id,
   });
-
-  if (!createdIntegration) {
-    return redirect(
-      "settings/integrations/livestorm?error=creating_integration",
-    );
-  }
-
-  const livestorm = LivestormIntegrationSchema.parse(createdIntegration);
-  await getOrganization({ livestorm });
 
   redirect("/settings/integrations/livestorm");
 }
