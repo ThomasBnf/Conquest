@@ -28,7 +28,7 @@ export const SignupEmail = ({ url }: Props) => (
           <Section className="py-7">
             <Button
               href={url}
-              className="block rounded bg-[#5067D7] px-6 py-3 text-center font-semibold text-sm text-white no-underline"
+              className="block w-fit rounded bg-[#5067D7] px-6 py-3 text-center font-semibold text-sm text-white no-underline"
             >
               Login to Conquest
             </Button>

@@ -32,7 +32,7 @@ export const SuccessIntegrationEmail = ({ source, url }: Props) => (
           </Text>
           <Section className="pt-4">
             <Button
-              className="rounded-md bg-main-600 p-3 text-center text-base text-white"
+              className="block w-fit rounded bg-[#5067D7] px-6 py-3 text-center font-semibold text-sm text-white no-underline"
               href={url}
             >
               Access to Conquest
