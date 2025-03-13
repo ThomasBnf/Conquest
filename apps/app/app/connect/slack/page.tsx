@@ -46,12 +46,7 @@ export default async function Page({ searchParams }: Props) {
     return redirect("/settings/integrations/slack?error=invalid_code");
   }
 
-  const integration = await getIntegration({
-    external_id: team.id,
-    workspace_id,
-  });
-
-  console.log("slack", integration);
+  const integration = await getIntegration({ external_id: team.id });
 
   if (integration) {
     return redirect("/settings/integrations/slack?error=already_connected");

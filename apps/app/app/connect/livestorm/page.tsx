@@ -40,7 +40,7 @@ export default async function Page({ searchParams }: Props) {
   const encryptedAccessToken = await encrypt(access_token);
   const encryptedRefreshToken = await encrypt(refresh_token);
 
-  const integration = await createIntegration({
+  await createIntegration({
     external_id: null,
     details: {
       source: "Livestorm",
