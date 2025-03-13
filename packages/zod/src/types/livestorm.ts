@@ -183,7 +183,7 @@ export const PeopleSchema = z.object({
         role: z.string(),
         created_at: z.number(),
         updated_at: z.number(),
-        timezone: z.string(),
+        timezone: z.string().nullable(),
         first_name: z.string(),
         last_name: z.string(),
         email: z.string(),
