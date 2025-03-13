@@ -23,8 +23,11 @@ export const FilterButton = () => {
   const source = "Discourse";
   const { data: discourse } = trpc.integrations.bySource.useQuery({ source });
 
-  const details = DiscourseDetailsSchema.parse(discourse?.details);
-  const { user_fields } = details;
+  const details = discourse
+    ? DiscourseDetailsSchema.parse(discourse?.details)
+    : null;
+
+  const { user_fields } = details ?? {};
 
   const filtersDiscourse: Filter[] =
     user_fields?.map((field) => ({
