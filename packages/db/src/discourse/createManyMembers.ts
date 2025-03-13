@@ -1,4 +1,5 @@
 import { createMember } from "@conquest/clickhouse/members/createMember";
+import { getMemberMetrics } from "@conquest/clickhouse/members/getMemberMetrics";
 import { createProfile } from "@conquest/clickhouse/profiles/createProfile";
 import type { DiscourseIntegration } from "@conquest/zod/schemas/integration.schema";
 import type { Member } from "@conquest/zod/schemas/member.schema";
@@ -201,7 +202,11 @@ export const createManyMembers = async ({
         profile: DiscourseProfileSchema.parse(profile),
       });
 
-      await wait.for({ seconds: 3 });
+      await wait.for({ seconds: 0.5 });
+
+      await getMemberMetrics({ memberId: member.id });
+
+      await wait.for({ seconds: 2.5 });
     }
 
     if (data.directory_items.length < 50) _hasMore = false;
