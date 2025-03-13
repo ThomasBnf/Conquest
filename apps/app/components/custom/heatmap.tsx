@@ -184,11 +184,17 @@ const DayCell = ({
   const [hover, setHover] = useState(false);
   const level = getActivityLevel(count, allActivities);
 
-  const { data: activities, isLoading } =
-    trpc.activities.listDayActivities.useQuery(
-      { date: day, member_id },
-      { enabled: hover && count > 0 },
-    );
+  const {
+    data: activities,
+    isLoading,
+    failureReason,
+  } = trpc.activities.listDayActivities.useQuery(
+    { date: day, member_id },
+    { enabled: hover && count > 0 },
+  );
+
+  console.log(failureReason);
+  console.log(activities);
 
   return (
     <Tooltip>
@@ -197,7 +203,7 @@ const DayCell = ({
           onMouseEnter={() => setHover(true)}
           onMouseLeave={() => setHover(false)}
           className={cn(
-            "h-4 w-4 cursor-pointer rounded-sm transition-colors duration-200",
+            "size-4 cursor-pointer rounded-sm transition-colors duration-200",
             ACTIVITY_COLORS[level],
           )}
         />
@@ -236,11 +242,8 @@ const MonthLabels = ({ calendar }: { calendar: Date[][] }) => {
           return (
             <div
               key={firstDayOfMonth.toISOString()}
-              className="absolute text-muted-foreground text-xs"
-              style={{
-                left: `${position}px`,
-                top: "0",
-              }}
+              className="absolute top-0 text-muted-foreground text-xs"
+              style={{ left: `${position}px` }}
             >
               {format(firstDayOfMonth, "MMM")}
             </div>
