@@ -10,7 +10,8 @@ export const topActivityType = protectedProcedure
       to: z.date(),
     }),
   )
-  .query(async ({ input }) => {
+  .query(async ({ ctx: { user }, input }) => {
+    const { workspace_id } = user;
     const { from, to } = input;
 
     const formattedFrom = format(from, "yyyy-MM-dd HH:mm:ss");
@@ -26,6 +27,7 @@ export const topActivityType = protectedProcedure
         LEFT JOIN activity_type ON activity.activity_type_id = activity_type.id
         WHERE activity.created_at >= '${formattedFrom}' 
         AND activity.created_at <= '${formattedTo}'
+        AND workspace_id = '${workspace_id}'
         GROUP BY 
           activity_type.name,
           activity_type.source
