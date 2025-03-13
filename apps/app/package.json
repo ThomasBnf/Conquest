@@ -4,10 +4,13 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "dotenv -e ./.env -e ../../.env -- next dev -p 3000",
+    "dev": "dotenv -e ./.env -e ../../.env -- next dev -p 3000 --turbo",
     "build": "dotenv -e ./.env -e ../../.env -- next build",
     "start": "dotenv -e ./.env -e ../../.env -- next start",
     "typecheck": "tsc --noEmit"
+  },
+  "resolutions": {
+    "import-in-the-middle": "1.13.1"
   },
   "dependencies": {
     "@auth/core": "^0.37.4",

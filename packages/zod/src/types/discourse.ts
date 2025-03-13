@@ -731,3 +731,44 @@ export const DiscourseWebhookSchema = z.object({
 export type Reaction = z.infer<typeof ReactionSchema>;
 export type Invite = z.infer<typeof InviteSchema>;
 export type DiscourseWebhook = z.infer<typeof DiscourseWebhookSchema>;
+
+export const UserBadgeSchema = z.object({
+  id: z.number(),
+  granted_at: z.string(),
+  grouping_position: z.number(),
+  is_favorite: z.string().nullable(),
+  can_favorite: z.boolean(),
+  badge_id: z.number(),
+  granted_by_id: z.number(),
+});
+
+export type UserBadge = z.infer<typeof UserBadgeSchema>;
+
+export const BadgeSchema = z.object({
+  id: z.number(),
+  icon: z.string(),
+  name: z.string(),
+  slug: z.string(),
+  query: z.string().nullable(),
+  system: z.boolean(),
+  enabled: z.boolean(),
+  trigger: z.number().nullable(),
+  listable: z.boolean(),
+  i18n_name: z.string(),
+  image_url: z.string().nullable(),
+  show_posts: z.boolean(),
+  allow_title: z.boolean(),
+  auto_revoke: z.boolean(),
+  description: z.string(),
+  grant_count: z.number(),
+  target_posts: z.boolean(),
+  badge_type_id: z.number(),
+  multiple_grant: z.boolean(),
+  image_upload_id: z.number().nullable(),
+  long_description: z.string().nullable(),
+  badge_grouping_id: z.number(),
+  manually_grantable: z.boolean(),
+  show_in_post_header: z.boolean(),
+});
+
+export type Badge = z.infer<typeof BadgeSchema>;

@@ -10,5 +10,4 @@ export default withSentryConfig(nextConfig, {
   org: env.SENTRY_ORG,
   project: env.SENTRY_PROJECT,
   silent: !process.env.CI,
-  disableLogger: true,
 });

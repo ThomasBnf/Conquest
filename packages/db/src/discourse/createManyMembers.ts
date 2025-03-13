@@ -27,7 +27,6 @@ export const createManyMembers = async ({
   client: DiscourseAPI;
   tags: Tag[];
 }) => {
-  console.log("tags", tags.length, tags);
   const { workspace_id, details } = discourse;
   const { community_url, community_url_iv, api_key, api_key_iv, user_fields } =
     details;
@@ -46,8 +45,8 @@ export const createManyMembers = async ({
   const createdMembers: Member[] = [];
 
   const progressWeight = 80;
-  const progressIncrement = progressWeight / members.length;
   let currentProgress = 10;
+  metadata.set("progress", currentProgress);
 
   let page = 0;
   let hasMore = true;
@@ -68,8 +67,14 @@ export const createManyMembers = async ({
     members = [...members, ...parsedListOfUsers];
     page += 1;
 
+    currentProgress += 1;
+    metadata.set("progress", Math.min(20, currentProgress));
     await wait.for({ seconds: 0.5 });
   }
+
+  const progressIncrement = progressWeight / Math.max(1, members.length);
+  currentProgress = 20;
+  metadata.set("progress", currentProgress);
 
   let _page = 0;
   let _hasMore = true;
@@ -130,8 +135,6 @@ export const createManyMembers = async ({
 
       const { user_badges } = await client.listUserBadges({ username });
 
-      console.log("user_badges", user_badges.length, user_badges);
-
       const memberTags = tags
         .filter((tag) =>
           user_badges?.some((badge) => String(badge.id) === tag.external_id),
@@ -165,7 +168,7 @@ export const createManyMembers = async ({
         workspace_id,
       });
 
-      console.log("memberTags", member.id, memberTags.length, memberTags);
+      createdMembers.push(member);
 
       const profile = await createProfile({
         external_id: String(id),
@@ -204,7 +207,7 @@ export const createManyMembers = async ({
     if (data.directory_items.length < 50) _hasMore = false;
     _page += 1;
     currentProgress += progressIncrement;
-    metadata.set("progress", currentProgress);
+    metadata.set("progress", Math.min(90, currentProgress));
   }
 
   return createdMembers;
