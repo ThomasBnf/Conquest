@@ -51,7 +51,7 @@ export const LivestormForm = () => {
       utils.integrations.bySource.invalidate({
         source: "Livestorm",
       });
-      utils.events.list.invalidate();
+      utils.events.list.invalidate({ source: "Livestorm" });
       setTimeout(() => setLoading(false), 1000);
     }
   }, [run]);

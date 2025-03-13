@@ -39,6 +39,7 @@ export const ConnectedCard = ({
       onSuccess: () => {
         toast.success(`${source} disconnected`);
         utils.channels.list.invalidate({ source });
+        utils.events.list.invalidate({ source });
         utils.integrations.bySource.invalidate({ source });
       },
       onError: (error) => {

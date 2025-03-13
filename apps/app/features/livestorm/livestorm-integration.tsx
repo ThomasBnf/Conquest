@@ -21,7 +21,7 @@ export const LivestormIntegration = ({ error }: Props) => {
   const { name } = livestorm?.details ?? {};
   const router = useRouter();
 
-  const { data: events } = trpc.events.list.useQuery();
+  const { data: events } = trpc.events.list.useQuery({ source: "Livestorm" });
 
   const onEnable = () => {
     setLoading(true);
