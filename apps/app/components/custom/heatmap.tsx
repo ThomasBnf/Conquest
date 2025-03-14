@@ -184,17 +184,11 @@ const DayCell = ({
   const [hover, setHover] = useState(false);
   const level = getActivityLevel(count, allActivities);
 
-  const {
-    data: activities,
-    isLoading,
-    failureReason,
-  } = trpc.activities.listDayActivities.useQuery(
-    { date: day, member_id },
-    { enabled: hover && count > 0 },
-  );
-
-  console.log(failureReason);
-  console.log(activities);
+  const { data: activities, isLoading } =
+    trpc.activities.listDayActivities.useQuery(
+      { date: day, member_id },
+      { enabled: hover && count > 0 },
+    );
 
   return (
     <Tooltip>
