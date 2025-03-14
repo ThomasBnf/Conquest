@@ -6,21 +6,20 @@ import { Button } from "@conquest/ui/button";
 import {
   Card,
   CardContent,
-  CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from "@conquest/ui/card";
+import { Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-export const DeleteAccountCard = () => {
+export const DeleteWorkspace = () => {
   const [open, setOpen] = useState(false);
   const router = useRouter();
-  const utils = trpc.useUtils();
 
-  const { mutateAsync } = trpc.users.delete.useMutation({
+  const { mutateAsync } = trpc.workspaces.delete.useMutation({
     onSuccess: () => {
-      utils.users.get.invalidate();
       router.push("/auth/login");
     },
   });
@@ -40,17 +39,22 @@ export const DeleteAccountCard = () => {
       />
       <Card>
         <CardHeader>
-          <CardTitle>Delete Account</CardTitle>
-          <CardDescription>
-            Permanently delete your account and all associated data. This action
-            is not reversible.
-          </CardDescription>
+          <CardTitle>Danger zone</CardTitle>
         </CardHeader>
-        <CardContent className="mb-0.5 flex justify-end">
-          <Button variant="destructive" onClick={() => setOpen(true)}>
-            Delete Account
-          </Button>
+        <CardContent>
+          <div>
+            <p className="font-medium text-base">Delete workspace</p>
+            <p className="text-muted-foreground text-sm">
+              Once deleted, your workspace cannot be recovered
+            </p>
+          </div>
         </CardContent>
+        <CardFooter className="justify-end">
+          <Button variant="destructive" onClick={() => setOpen(true)}>
+            <Trash2 className="size-4" />
+            Delete workspace
+          </Button>
+        </CardFooter>
       </Card>
     </>
   );

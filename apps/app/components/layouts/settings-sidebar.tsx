@@ -18,6 +18,8 @@ import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ActivityType } from "../icons/ActivityType";
+import { Billing } from "../icons/Billing";
+import { General } from "../icons/General";
 import { Integration } from "../icons/Integration";
 import { Level } from "../icons/Level";
 import { LoadingIntegrations } from "../states/loading-integrations";
@@ -59,6 +61,21 @@ export const SettingsSidebar = () => {
       label: "Integrations",
       href: "/settings/integrations",
       isActive: pathname.startsWith("/settings/integrations"),
+    },
+  ];
+
+  const routesWorkspace = [
+    {
+      icon: <General size={18} />,
+      label: "General",
+      href: "/settings/workspace",
+      isActive: pathname === "/settings/workspace",
+    },
+    {
+      icon: <Billing size={18} />,
+      label: "Billing",
+      href: "/settings/billing",
+      isActive: pathname === "/settings/billing",
     },
   ];
 
@@ -105,6 +122,21 @@ export const SettingsSidebar = () => {
           <SidebarGroupLabel>System</SidebarGroupLabel>
           <SidebarMenu>
             {routesSystem.map((route) => (
+              <SidebarMenuItem key={route.label}>
+                <SidebarMenuButton asChild isActive={route.isActive}>
+                  <Link href={route.href}>
+                    {route.icon}
+                    <span>{route.label}</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            ))}
+          </SidebarMenu>
+        </SidebarGroup>
+        <SidebarGroup>
+          <SidebarGroupLabel>Workspace</SidebarGroupLabel>
+          <SidebarMenu>
+            {routesWorkspace.map((route) => (
               <SidebarMenuItem key={route.label}>
                 <SidebarMenuButton asChild isActive={route.isActive}>
                   <Link href={route.href}>

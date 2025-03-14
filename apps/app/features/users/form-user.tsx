@@ -56,7 +56,7 @@ export const FormUser = () => {
       <CardHeader>
         <CardTitle>Informations</CardTitle>
       </CardHeader>
-      <CardContent className="mb-0.5">
+      <CardContent>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField

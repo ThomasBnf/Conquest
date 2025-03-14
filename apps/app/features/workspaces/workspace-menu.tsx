@@ -29,9 +29,8 @@ export const WorkspaceMenu = ({ workspace }: Props) => {
   const router = useRouter();
 
   const onSignOut = () => {
-    signOut({
-      redirectTo: "/auth/login",
-    });
+    router.push("/auth/login");
+    signOut({ redirectTo: "/auth/login" });
   };
 
   if (state === "collapsed") {
