@@ -30,9 +30,7 @@ export const LivestormIntegration = ({ error }: Props) => {
       response_type: "code",
       client_id: env.NEXT_PUBLIC_LIVESTORM_CLIENT_ID,
       redirect_uri: "https://app.useconquest.com/connect/livestorm",
-      scope: encodeURIComponent(
-        "identity:read events:read webhooks:read webhooks:write",
-      ),
+      scope: "identity:read events:read webhooks:read webhooks:write",
     });
 
     router.push(
