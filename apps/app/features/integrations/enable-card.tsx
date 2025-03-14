@@ -94,7 +94,7 @@ export const EnableCard = ({
           </Button>
         )}
         {isEnabled && !loading && !isExpired && (
-          <DisconnectButton source={source} integration={integration} />
+          <DisconnectButton integration={integration} />
         )}
       </CardHeader>
       <CardContent className="mb-0.5">

@@ -54,7 +54,7 @@ export const LinkedInIntegration = ({ error }: Props) => {
       >
         <LinkedinForm />
       </EnableCard>
-      <ConnectedCard integration={linkedin} name={name} source="Linkedin" />
+      <ConnectedCard integration={linkedin} name={name} />
     </div>
   );
 };

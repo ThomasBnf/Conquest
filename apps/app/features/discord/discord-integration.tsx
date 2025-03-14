@@ -54,7 +54,7 @@ export const DiscordIntegration = ({ error }: Props) => {
       >
         <DiscordForm />
       </EnableCard>
-      <ConnectedCard integration={discord} name={name} source="Discord">
+      <ConnectedCard integration={discord} name={name}>
         <>
           <Separator className="my-4" />
           <div>

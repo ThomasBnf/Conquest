@@ -57,7 +57,7 @@ export const LivestormIntegration = ({ error }: Props) => {
       >
         <LivestormForm />
       </EnableCard>
-      <ConnectedCard integration={livestorm} name={name} source="Livestorm">
+      <ConnectedCard integration={livestorm} name={name}>
         <>
           <Separator className="my-4" />
           <div>

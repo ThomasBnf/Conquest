@@ -1,5 +1,5 @@
 import { AlertDialog } from "@/components/custom/alert-dialog";
-import { trpc } from "@/server/client";
+import { useIntegration } from "@/context/integrationContext";
 import { Button } from "@conquest/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@conquest/ui/card";
 import {
@@ -8,53 +8,29 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@conquest/ui/dropdown-menu";
-import type { Source } from "@conquest/zod/enum/source.enum";
 import type { Integration } from "@conquest/zod/schemas/integration.schema";
 import { format } from "date-fns";
 import { ChevronDown } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { type PropsWithChildren, useEffect, useState } from "react";
-import { toast } from "sonner";
+import { type PropsWithChildren, useState } from "react";
 
 type Props = {
   integration: Integration | null;
   name: string | undefined;
-  source: Source | undefined;
 };
 
 export const ConnectedCard = ({
   integration,
   name,
-  source,
   children,
 }: PropsWithChildren<Props>) => {
+  const { deleteIntegration } = useIntegration();
   const { status, connected_at } = integration ?? {};
   const [open, setOpen] = useState(false);
-
-  const router = useRouter();
-  const utils = trpc.useUtils();
-
-  const { mutateAsync: deleteIntegration } =
-    trpc.integrations.delete.useMutation({
-      onSuccess: () => {
-        toast.success(`${source} disconnected`);
-        utils.channels.list.invalidate({ source });
-        utils.events.list.invalidate({ source });
-        utils.integrations.bySource.invalidate({ source });
-      },
-      onError: (error) => {
-        toast.error(error.message);
-      },
-    });
 
   const onDisconnect = async () => {
     if (!integration) return;
     await deleteIntegration({ integration });
   };
-
-  useEffect(() => {
-    router.refresh();
-  }, []);
 
   if (status !== "CONNECTED") return null;
 

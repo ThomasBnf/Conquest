@@ -50,7 +50,7 @@ export const GithubIntegration = ({ error }: Props) => {
       >
         <GithubForm />
       </EnableCard>
-      <ConnectedCard integration={github} name={name} source="Github" />
+      <ConnectedCard integration={github} name={name} />
     </div>
   );
 };

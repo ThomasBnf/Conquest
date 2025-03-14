@@ -50,11 +50,7 @@ export const DiscourseIntegration = ({ error }: Props) => {
       >
         <DiscourseForm />
       </EnableCard>
-      <ConnectedCard
-        integration={discourse}
-        name="Discourse"
-        source="Discourse"
-      >
+      <ConnectedCard integration={discourse} name="Discourse">
         <>
           <Separator className="my-4" />
           <div>

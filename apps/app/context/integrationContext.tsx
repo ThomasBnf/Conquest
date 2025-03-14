@@ -33,6 +33,7 @@ type integrationContext = {
   deleteIntegration: (integration: {
     integration: Integration;
   }) => Promise<{ success: boolean }>;
+  refetch: () => void;
   loading: boolean;
   setLoading: (loading: boolean) => void;
   step: number;
@@ -65,7 +66,9 @@ export const IntegrationProvider = ({
   let livestorm: LivestormIntegration | null = null;
   let slack: SlackIntegration | null = null;
 
-  const { data, isLoading } = trpc.integrations.bySource.useQuery({ source });
+  const { data, isLoading, refetch } = trpc.integrations.bySource.useQuery({
+    source,
+  });
 
   if (data) {
     switch (source) {
@@ -117,6 +120,7 @@ export const IntegrationProvider = ({
         slack,
         channels,
         deleteIntegration,
+        refetch,
         loading,
         setLoading,
         step,

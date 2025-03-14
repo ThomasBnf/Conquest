@@ -19,7 +19,7 @@ type Props = {
 
 export const SlackIntegration = ({ error }: Props) => {
   const { slack, channels, setLoading } = useIntegration();
-  const { name, source } = slack?.details ?? {};
+  const { name } = slack?.details ?? {};
   const router = useRouter();
 
   const onEnable = () => {
@@ -55,7 +55,7 @@ export const SlackIntegration = ({ error }: Props) => {
       >
         <SlackForm />
       </EnableCard>
-      <ConnectedCard integration={slack} name={name} source={source}>
+      <ConnectedCard integration={slack} name={name}>
         <>
           <Separator className="my-4" />
           <div>
