@@ -7,7 +7,7 @@ import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import type Stripe from "stripe";
 
-const signingSecret = env.STRIPE_SIGNING_SECRET;
+const signingSecret = env.STRIPE_WEBHOOK_SECRET;
 
 export const POST = async (request: NextRequest) => {
   const text = await request.text();

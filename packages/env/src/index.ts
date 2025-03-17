@@ -138,7 +138,7 @@ const slackEnv = {
 const stripeEnv = {
   server: {
     STRIPE_SECRET_KEY: z.string(),
-    STRIPE_SIGNING_SECRET: z.string(),
+    STRIPE_WEBHOOK_SECRET: z.string(),
   },
   client: {
     NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: z.string(),

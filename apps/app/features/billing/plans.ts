@@ -6,8 +6,14 @@ export const plans = [
     description: "For small communities",
     priceMonthly: 34,
     priceAnnually: 29,
-    priceIdMonthly: "price_1R3JRgCa7sC12ar1IGHNN0yF",
-    priceIdAnnually: "price_1R3JRrCa7sC12ar1QDd1Bytj",
+    priceIdMonthly:
+      process.env.NODE_ENV === "development"
+        ? "price_1R3JRgCa7sC12ar1IGHNN0yF"
+        : "price_1R3edCCa7sC12ar1jh9HYefy",
+    priceIdAnnually:
+      process.env.NODE_ENV === "development"
+        ? "price_1R3JRrCa7sC12ar1QDd1Bytj"
+        : "price_1R3eeMCa7sC12ar1KUbWniox",
     seats: "1 seat",
     members: "Up to 5,000 members",
     integrations: "1 integration",
@@ -19,8 +25,14 @@ export const plans = [
     description: "For active communities",
     priceMonthly: 69,
     priceAnnually: 59,
-    priceIdMonthly: "price_1R3JSFCa7sC12ar1rxPAFqGE",
-    priceIdAnnually: "price_1R3JSOCa7sC12ar1B7u13ua9",
+    priceIdMonthly:
+      process.env.NODE_ENV === "development"
+        ? "price_1R3JSFCa7sC12ar1rxPAFqGE"
+        : "price_1R3edvCa7sC12ar1LWAhGpDo",
+    priceIdAnnually:
+      process.env.NODE_ENV === "development"
+        ? "price_1R3JSOCa7sC12ar1B7u13ua9"
+        : "price_1R3ef2Ca7sC12ar12m2YZcKa",
     seats: "2 seats",
     members: "Up to 30,000 members",
     integrations: "3 integrations",
@@ -49,7 +61,7 @@ export const plans = [
     priceIdAnnually: "custom_annually_priceId",
     seats: "Custom seats",
     members: "Custom members",
-    integrations: "Unlimited",
+    integrations: "Unlimited & Custom",
     api: true,
     popular: false,
   },

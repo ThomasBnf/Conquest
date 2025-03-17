@@ -10,7 +10,7 @@ export default function Page() {
   return (
     <ScrollArea className="h-dvh">
       <div className="mx-auto flex max-w-4xl flex-col px-4 py-12 lg:py-24">
-        <p className="font-medium text-2xl">Member Level</p>
+        <p className="font-medium text-2xl">Member Levels</p>
         <p className="text-muted-foreground">
           Create and manage community levels based on member Pulse Score, set
           thresholds for progression

@@ -75,7 +75,7 @@ export const SettingsSidebar = () => {
         },
         {
           icon: <Level size={18} />,
-          label: "Member Level",
+          label: "Member Levels",
           href: "/settings/member-level",
           isActive: pathname.startsWith("/settings/member-level"),
         },
