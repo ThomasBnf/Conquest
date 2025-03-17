@@ -2,6 +2,4 @@
 ALTER TABLE activity
 MODIFY COLUMN event_id Nullable(UUID);
 
-ALTER TABLE activity UPDATE event_id = NULL WHERE event_id = '00000000-0000-0000-0000-000000000000'
-
 OPTIMIZE TABLE activity FINAL;
