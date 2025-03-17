@@ -6,7 +6,7 @@ import { createManyLogs } from "@conquest/clickhouse/logs/createManyLogs";
 import { listMembers } from "@conquest/clickhouse/members/listMembers";
 import { updateMember } from "@conquest/clickhouse/members/updateMember";
 import type { Log } from "@conquest/zod/schemas/logs.schema";
-import { runs, schemaTask } from "@trigger.dev/sdk/v3";
+import { type Context, runs, schemaTask } from "@trigger.dev/sdk/v3";
 import {
   eachWeekOfInterval,
   endOfDay,
@@ -23,24 +23,7 @@ export const getAllMembersMetrics = schemaTask({
     workspace_id: z.string(),
   }),
   run: async ({ workspace_id }, { ctx }) => {
-    const allRuns = await runs.list({
-      status: "EXECUTING",
-      taskIdentifier: "get-all-members-metrics",
-    });
-
-    const currentRunId = ctx.run.id;
-    const previousTasks = allRuns.data.filter(
-      (run) =>
-        run.id !== currentRunId && run.metadata?.workspace_id === workspace_id,
-    );
-
-    if (previousTasks.length > 0) {
-      await Promise.all(
-        previousTasks.map(async (run) => {
-          await runs.cancel(run.id);
-        }),
-      );
-    }
+    await checkPreviousRuns(ctx, workspace_id);
 
     const levels = await listLevels({ workspace_id });
     const members = await listMembers({ workspace_id });
@@ -114,3 +97,24 @@ export const getAllMembersMetrics = schemaTask({
     }
   },
 });
+
+const checkPreviousRuns = async (ctx: Context, workspace_id: string) => {
+  const allRuns = await runs.list({
+    status: "EXECUTING",
+    taskIdentifier: "get-all-members-metrics",
+  });
+
+  const currentRunId = ctx.run.id;
+  const previousTasks = allRuns.data.filter(
+    (run) =>
+      run.id !== currentRunId && run.metadata?.workspace_id === workspace_id,
+  );
+
+  if (previousTasks.length > 0) {
+    await Promise.all(
+      previousTasks.map(async (run) => {
+        await runs.cancel(run.id);
+      }),
+    );
+  }
+};
