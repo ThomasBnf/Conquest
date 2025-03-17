@@ -63,5 +63,7 @@ export const listActivities = async ({
     transformFlatActivity(row as Record<string, unknown>),
   );
 
+  console.log(activities);
+
   return ActivityWithTypeSchema.array().parse(activities);
 };
