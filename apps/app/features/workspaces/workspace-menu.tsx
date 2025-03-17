@@ -29,7 +29,6 @@ export const WorkspaceMenu = ({ workspace }: Props) => {
   const router = useRouter();
 
   const onSignOut = () => {
-    router.push("/auth/login");
     signOut({ redirectTo: "/auth/login" });
   };
 
