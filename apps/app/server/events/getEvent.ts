@@ -5,11 +5,13 @@ import { protectedProcedure } from "../trpc";
 export const getEvent = protectedProcedure
   .input(
     z.object({
-      id: z.string(),
+      id: z.string().nullable(),
     }),
   )
   .query(async ({ input }) => {
     const { id } = input;
+
+    if (!id) return null;
 
     return await _getEvent({ id });
   });
