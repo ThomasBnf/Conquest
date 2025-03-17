@@ -1,19 +1,12 @@
 import { MemberSchema } from "@conquest/zod/schemas/member.schema";
 import { client } from "../client";
 
-type Props = {
-  limit: number;
-  offset: number;
-};
-
-export const batchMembers = async ({ limit, offset }: Props) => {
+export const listAllMembers = async () => {
   const result = await client.query({
     query: `
       SELECT * 
       FROM member
-      ORDER BY id ASC
-      LIMIT ${limit}
-      OFFSET ${offset}
+      ORDER BY created_at DESC
     `,
   });
 

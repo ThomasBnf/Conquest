@@ -1,5 +1,5 @@
 import { createLog } from "@conquest/clickhouse/logs/createLog";
-import { batchMembers } from "@conquest/clickhouse/members/batchMembers";
+import { listAllMembers } from "@conquest/clickhouse/members/listAllMembers";
 import type { Log } from "@conquest/zod/schemas/logs.schema";
 import { schedules } from "@trigger.dev/sdk/v3";
 import { startOfWeek } from "date-fns";
@@ -10,34 +10,20 @@ export const cronWeekly = schedules.task({
   run: async (_, { ctx }) => {
     if (ctx.environment.type === "DEVELOPMENT") return;
 
-    const BATCH_SIZE = 500;
-    let offset = 0;
+    const members = await listAllMembers();
 
-    while (true) {
-      const members = await batchMembers({
-        limit: BATCH_SIZE,
-        offset,
-      });
+    for (const member of members) {
+      const { level_id, pulse } = member;
 
-      if (members.length === 0) break;
+      const log: Omit<Log, "id"> = {
+        date: startOfWeek(new Date(), { weekStartsOn: 1 }),
+        pulse,
+        level_id: level_id ?? null,
+        member_id: member.id,
+        workspace_id: member.workspace_id,
+      };
 
-      await Promise.all(
-        members.map(async (member) => {
-          const { level_id, pulse } = member;
-
-          const log: Omit<Log, "id"> = {
-            date: startOfWeek(new Date(), { weekStartsOn: 1 }),
-            pulse,
-            level_id: level_id ?? null,
-            member_id: member.id,
-            workspace_id: member.workspace_id,
-          };
-
-          await createLog({ log });
-        }),
-      );
-
-      offset += BATCH_SIZE;
+      await createLog({ log });
     }
   },
 });
