@@ -27,13 +27,6 @@ enum STATUS {
     DISCONNECTED
 }
 
-enum PLAN {
-    EXPLORER
-    ACTIVE
-    CONTRIBUTOR
-    AMBASSADOR
-}
-
 enum ROLE {
     STAFF
     ADMIN
