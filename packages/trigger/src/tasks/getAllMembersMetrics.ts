@@ -4,7 +4,6 @@ import { getPulseScore } from "@conquest/clickhouse/helpers/getPulseScore";
 import { listLevels } from "@conquest/clickhouse/levels/listLevels";
 import { createManyLogs } from "@conquest/clickhouse/logs/createManyLogs";
 import { listMembers } from "@conquest/clickhouse/members/listMembers";
-import { updateMember } from "@conquest/clickhouse/members/updateMember";
 import type { Log } from "@conquest/zod/schemas/logs.schema";
 import { type Context, runs, schemaTask } from "@trigger.dev/sdk/v3";
 import {
@@ -39,21 +38,23 @@ export const getAllMembersMetrics = schemaTask({
       { weekStartsOn: 1 },
     );
 
-    for (const member of members) {
-      await client.query({
-        query: `
-          ALTER TABLE log DELETE
-          WHERE member_id = '${member.id}'
-        `,
-      });
+    await client.query({
+      query: `
+        ALTER TABLE log DELETE WHERE workspace_id = '${workspace_id}';
+      `,
+    });
 
+    const logs: Log[] = [];
+    const updatedMembers = [];
+
+    for (const member of members) {
       const activities = await listActivities({
         member_id: member.id,
         period: 365,
         workspace_id,
       });
 
-      const logs: Log[] = [];
+      let lastLog = null;
 
       for (const interval of intervals) {
         const intervalEnd = interval;
@@ -73,26 +74,50 @@ export const getAllMembersMetrics = schemaTask({
             pulseScore <= (level.to ?? Number.POSITIVE_INFINITY),
         );
 
-        logs.push({
+        const log = {
           id: randomUUID(),
           date: interval,
           pulse: pulseScore,
           level_id: level?.id ?? null,
           member_id: member.id,
           workspace_id: member.workspace_id,
-        });
+        };
+
+        logs.push(log);
+        lastLog = log;
       }
 
+      // Stocker les mises à jour des membres pour un bulk insert
+      if (lastLog) {
+        updatedMembers.push({
+          ...member,
+          first_activity: activities?.at(-1)?.created_at ?? null,
+          last_activity: activities?.at(0)?.created_at ?? null,
+          pulse: lastLog.pulse,
+          level_id: lastLog.level_id,
+        });
+      }
+    }
+
+    // Bulk insert des logs
+    if (logs.length > 0) {
       await createManyLogs({ logs });
+    }
 
-      const { pulse, level_id } = logs.at(-1) ?? {};
+    // Bulk insert des mises à jour des membres
+    if (updatedMembers.length > 0) {
+      await client.insert({
+        table: "member",
+        values: updatedMembers.map((member) => ({
+          ...member,
+          updated_at: new Date(),
+        })),
+        format: "JSON",
+      });
 
-      await updateMember({
-        ...member,
-        first_activity: activities?.at(-1)?.created_at ?? null,
-        last_activity: activities?.at(0)?.created_at ?? null,
-        pulse: pulse ?? 0,
-        level_id: level_id ?? null,
+      // Exécuter un seul `OPTIMIZE` après les mises à jour en bulk
+      await client.query({
+        query: "OPTIMIZE TABLE member FINAL;",
       });
     }
   },
