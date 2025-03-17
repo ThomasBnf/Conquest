@@ -87,7 +87,7 @@ export const TopChannels = () => {
                           y={yPos}
                           className="font-medium"
                         >
-                          {value}
+                          #{value}
                         </text>
                       );
                     }}

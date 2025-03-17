@@ -28,6 +28,7 @@ export const topActivityType = protectedProcedure
         WHERE activity.created_at >= '${formattedFrom}' 
         AND activity.created_at <= '${formattedTo}'
         AND workspace_id = '${workspace_id}'
+        AND activity_type.name != ''
         GROUP BY 
           activity_type.name,
           activity_type.source
@@ -37,7 +38,10 @@ export const topActivityType = protectedProcedure
       format: "JSON",
     });
 
-    const { data } = (await result.json()) as {
+    const json = await result.json();
+    console.log(json);
+
+    const { data } = json as {
       data: Array<{
         name: string;
         "activity_type.source": string;
