@@ -13,7 +13,7 @@ export const ActivitySchema = z.object({
   source: SOURCE,
   activity_type_id: z.string(),
   channel_id: z.string(),
-  event_id: z.string(),
+  event_id: z.string().nullable(),
   member_id: z.string(),
   workspace_id: z.string(),
   created_at: z.coerce.date(),
