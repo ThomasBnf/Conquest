@@ -15,7 +15,12 @@ export const listDayActivities = protectedProcedure
     const { workspace_id } = user;
     const { date, member_id } = input;
 
-    console.log(date);
+    console.log("Date reçue:", date);
+    console.log("Date formatée:", format(date, "yyyy-MM-dd"));
+    console.log(
+      "Query date condition:",
+      `AND toDate(a.created_at) = '${format(date, "yyyy-MM-dd")}'`,
+    );
 
     const result = await client.query({
       query: `
