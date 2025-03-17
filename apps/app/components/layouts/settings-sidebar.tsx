@@ -69,7 +69,7 @@ export const SettingsSidebar = () => {
         },
         {
           icon: <ActivityType size={18} />,
-          label: "Activity types",
+          label: "Activity Types",
           href: "/settings/activity-types",
           isActive: pathname.startsWith("/settings/activity-types"),
         },
