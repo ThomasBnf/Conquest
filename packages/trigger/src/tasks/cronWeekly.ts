@@ -2,6 +2,7 @@ import { createLog } from "@conquest/clickhouse/logs/createLog";
 import { batchMembers } from "@conquest/clickhouse/members/batchMembers";
 import type { Log } from "@conquest/zod/schemas/logs.schema";
 import { schedules } from "@trigger.dev/sdk/v3";
+import { startOfWeek } from "date-fns";
 
 export const cronWeekly = schedules.task({
   id: "cron-weekly",
@@ -26,7 +27,7 @@ export const cronWeekly = schedules.task({
           const { level_id, pulse } = member;
 
           const log: Omit<Log, "id"> = {
-            date: new Date(),
+            date: startOfWeek(new Date(), { weekStartsOn: 1 }),
             pulse,
             level_id: level_id ?? null,
             member_id: member.id,
