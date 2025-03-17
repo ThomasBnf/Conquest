@@ -20,7 +20,7 @@ export const heatmap = protectedProcedure
     const result = await client.query({
       query: `
         SELECT 
-          formatDateTime(created_at, '%Y-%m-%d %H:%M:%S') as date,
+          toDate(created_at) as date,
           count() as count
         FROM activity
         WHERE workspace_id = '${workspace_id}'

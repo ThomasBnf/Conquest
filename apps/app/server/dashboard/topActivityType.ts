@@ -38,10 +38,7 @@ export const topActivityType = protectedProcedure
       format: "JSON",
     });
 
-    const json = await result.json();
-    console.log(json);
-
-    const { data } = json as {
+    const { data } = (await result.json()) as {
       data: Array<{
         name: string;
         "activity_type.source": string;

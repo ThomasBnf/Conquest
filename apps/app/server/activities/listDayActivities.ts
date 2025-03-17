@@ -15,6 +15,8 @@ export const listDayActivities = protectedProcedure
     const { workspace_id } = user;
     const { date, member_id } = input;
 
+    console.log(date);
+
     const result = await client.query({
       query: `
         SELECT 
@@ -23,8 +25,9 @@ export const listDayActivities = protectedProcedure
         FROM activity a
         LEFT JOIN activity_type ON a.activity_type_id = activity_type.id
         WHERE a.workspace_id = '${workspace_id}'
-        AND DATE(a.created_at) = '${format(date, "yyyy-MM-dd")}'
-        ${member_id ? `AND a.member_id = '${member_id}'` : ""}
+          AND toDate(a.created_at) = '${format(date, "yyyy-MM-dd")}'
+          ${member_id ? `AND a.member_id = '${member_id}'` : ""}
+        ORDER BY a.created_at DESC
       `,
       format: "JSON",
     });
@@ -32,6 +35,8 @@ export const listDayActivities = protectedProcedure
     const { data } = await result.json();
 
     if (!data?.length) return [];
+
+    console.log(data);
 
     const transformFlatActivity = (row: Record<string, unknown>) => {
       const result: Record<string, unknown> = {};
@@ -59,6 +64,8 @@ export const listDayActivities = protectedProcedure
       transformFlatActivity(row as Record<string, unknown>),
     );
 
-    if (!data?.length) return [];
+    // console.log(activities);
+
+    if (!activities?.length) return [];
     return ActivityWithTypeSchema.array().parse(activities);
   });
