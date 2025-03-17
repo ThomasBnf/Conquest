@@ -24,7 +24,4 @@
   "search.exclude": {
     "**/node_modules": true
   },
-  "[jsonc]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  }
 }

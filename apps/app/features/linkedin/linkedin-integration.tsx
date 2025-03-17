@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation";
 import { ConnectedCard } from "../integrations/connected-card";
 import { EnableCard } from "../integrations/enable-card";
 import { IntegrationHeader } from "../integrations/integration-header";
-import { LinkedinForm } from "../linkedin/linkedin-form";
+import { LinkedinForm } from "./linkedin-form";
 
 type Props = {
   error: string;

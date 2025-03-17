@@ -18,21 +18,18 @@ export const DeleteWorkspace = () => {
   const [open, setOpen] = useState(false);
   const router = useRouter();
 
-  const { mutateAsync } = trpc.workspaces.delete.useMutation({
-    onSuccess: () => {
-      router.push("/auth/login");
-    },
-  });
+  const { mutateAsync } = trpc.workspaces.delete.useMutation({});
 
   const onDelete = async () => {
     await mutateAsync();
+    router.push("/auth/login");
   };
 
   return (
     <>
       <AlertDialog
-        title="Delete account"
-        description="Are you sure you want to delete your account? This action is not reversible."
+        title="Delete workspace"
+        description="Are you sure you want to delete your workspace? Once deleted, your workspace cannot be recovered."
         onConfirm={onDelete}
         open={open}
         setOpen={setOpen}

@@ -15,6 +15,7 @@ import { logsRouter } from "./logs/router";
 import { membersRouter } from "./members/router";
 import { profilesRouter } from "./profiles/router";
 import { slackRouter } from "./slack/router";
+import { stripeRouter } from "./stripe/router";
 import { tagsRouter } from "./tags/router";
 import { router } from "./trpc";
 import { usersRouter } from "./users/router";
@@ -38,6 +39,7 @@ export const appRouter = router({
   members: membersRouter,
   profiles: profilesRouter,
   slack: slackRouter,
+  stripe: stripeRouter,
   tags: tagsRouter,
   users: usersRouter,
   workspaces: workspacesRouter,

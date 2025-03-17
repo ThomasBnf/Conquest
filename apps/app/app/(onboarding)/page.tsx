@@ -1,19 +1,20 @@
 "use client";
 
 import { useUser } from "@/context/userContext";
+import { BillingPage } from "@/features/billing/billing-page";
+import { PlanPicker } from "@/features/billing/plan-picker";
+import type { PlanPeriod } from "@/features/billing/types";
 import { StepsIndicator } from "@/features/onboarding/steps-indicator";
 import { trpc } from "@/server/client";
-import { Button, buttonVariants } from "@conquest/ui/button";
 import {
   Card,
   CardDescription,
   CardHeader,
   CardTitle,
 } from "@conquest/ui/card";
-import { cn } from "@conquest/ui/cn";
+import type { Plan } from "@conquest/zod/enum/plan.enum";
 import { QuestionsStep } from "features/onboarding/questions/questions-step";
 import { WorkspaceStep } from "features/onboarding/workspace/workspace-step";
-import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -21,7 +22,9 @@ import { toast } from "sonner";
 export default function Page() {
   const { user } = useUser();
   const [step, setStep] = useState(1);
-  const [loading, setLoading] = useState(false);
+  const [period, setPeriod] = useState<PlanPeriod>("monthly");
+  const [loading, setLoading] = useState<Plan | null>(null);
+
   const router = useRouter();
   const utils = trpc.useUtils();
 
@@ -32,42 +35,51 @@ export default function Page() {
     },
     onError: (error) => {
       toast.error(error.message);
-      setLoading(false);
+      setLoading(null);
     },
   });
 
-  const onComplete = async () => {
+  const { mutateAsync: createCustomer } =
+    trpc.stripe.createCustomer.useMutation({
+      onSuccess: () => {
+        utils.workspaces.get.invalidate();
+      },
+      onError: (error) => {
+        toast.error(error.message);
+        setLoading(null);
+      },
+    });
+
+  const onComplete = async ({
+    plan,
+    priceId,
+  }: {
+    plan: Plan;
+    priceId: string;
+  }) => {
     if (!user) return;
 
-    setLoading(true);
+    setLoading(plan);
+    await createCustomer({ plan, priceId });
     await mutateAsync({ ...user, onboarding: new Date() });
   };
 
-  if (step === 3) {
+  if (step === 3)
     return (
-      <div className="flex h-screen flex-col items-center justify-center">
-        <img src="/logo.svg" alt="Conquest" className="size-44" />
-        <h1 className="mb-4 font-bold text-5xl text-foreground">
-          Welcome to Conquest
-        </h1>
-        <p className="mb-8 max-w-xl text-balance text-center text-muted-foreground">
-          Conquest is the CRM you need to track, understand, engage and scale
-          your community.
-        </p>
-        <Button
-          onClick={onComplete}
-          disabled={loading}
-          className={cn(buttonVariants({ size: "lg" }), "min-w-64")}
-        >
-          {loading ? (
-            <Loader2 className="size-4 animate-spin" />
-          ) : (
-            "Get Started"
-          )}
-        </Button>
-      </div>
+      <BillingPage
+        title="Start your 14-day free trial"
+        description="Choose a plan that suits your needs"
+        displayTrial={false}
+      >
+        <PlanPicker
+          period={period}
+          setPeriod={setPeriod}
+          onSelectPlan={onComplete}
+          loading={loading}
+          trial
+        />
+      </BillingPage>
     );
-  }
 
   return (
     <Card className="mx-auto w-full max-w-xl">

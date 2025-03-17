@@ -23,68 +23,80 @@ import { General } from "../icons/General";
 import { Integration } from "../icons/Integration";
 import { Level } from "../icons/Level";
 import { LoadingIntegrations } from "../states/loading-integrations";
+import { TrialCard } from "./trial-card";
 
 export const SettingsSidebar = () => {
   const { slug } = useUser();
   const pathname = usePathname();
 
-  const routesAccount = [
+  const menu = [
     {
-      icon: <User size={18} />,
-      label: "Profile",
-      href: "/settings",
-      isActive: pathname === "/settings",
-    },
-  ];
-
-  const routesSystem = [
-    {
-      icon: <Tags size={18} />,
-      label: "Tags",
-      href: "/settings/tags",
-      isActive: pathname.startsWith("/settings/tags"),
+      label: "Account",
+      routes: [
+        {
+          icon: <User size={18} />,
+          label: "Profile",
+          href: "/settings",
+          isActive: pathname === "/settings",
+        },
+      ],
     },
     {
-      icon: <ActivityType size={18} />,
-      label: "Activity types",
-      href: "/settings/activity-types",
-      isActive: pathname.startsWith("/settings/activity-types"),
+      label: "Workspace",
+      routes: [
+        {
+          icon: <General size={18} />,
+          label: "General",
+          href: "/settings/workspace",
+          isActive: pathname === "/settings/workspace",
+        },
+        {
+          icon: <Billing size={18} />,
+          label: "Billing",
+          href: "/settings/billing",
+          isActive: pathname === "/settings/billing",
+        },
+      ],
     },
     {
-      icon: <Level size={18} />,
-      label: "Member Level",
-      href: "/settings/member-level",
-      isActive: pathname.startsWith("/settings/member-level"),
+      label: "System",
+      routes: [
+        {
+          icon: <Tags size={18} />,
+          label: "Tags",
+          href: "/settings/tags",
+          isActive: pathname.startsWith("/settings/tags"),
+        },
+        {
+          icon: <ActivityType size={18} />,
+          label: "Activity types",
+          href: "/settings/activity-types",
+          isActive: pathname.startsWith("/settings/activity-types"),
+        },
+        {
+          icon: <Level size={18} />,
+          label: "Member Level",
+          href: "/settings/member-level",
+          isActive: pathname.startsWith("/settings/member-level"),
+        },
+        {
+          icon: <Integration size={18} />,
+          label: "Integrations",
+          href: "/settings/integrations",
+          isActive: pathname.startsWith("/settings/integrations"),
+        },
+      ],
     },
     {
-      icon: <Integration size={18} />,
-      label: "Integrations",
-      href: "/settings/integrations",
-      isActive: pathname.startsWith("/settings/integrations"),
-    },
-  ];
-
-  const routesWorkspace = [
-    {
-      icon: <General size={18} />,
-      label: "General",
-      href: "/settings/workspace",
-      isActive: pathname === "/settings/workspace",
-    },
-    {
-      icon: <Billing size={18} />,
-      label: "Billing",
-      href: "/settings/billing",
-      isActive: pathname === "/settings/billing",
-    },
-  ];
-
-  const routesAdmin = [
-    {
-      icon: <APIKey size={18} />,
-      label: "API Keys",
-      href: "/settings/api-keys",
-      isActive: pathname.startsWith("/settings/api-keys"),
+      label: "Developer",
+      routes: [
+        {
+          icon: <APIKey size={18} />,
+          label: "API Keys",
+          href: "/settings/api-keys",
+          isActive: pathname.startsWith("/settings/api-keys"),
+        },
+      ],
     },
   ];
 
@@ -103,68 +115,26 @@ export const SettingsSidebar = () => {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <SidebarGroup>
-          <SidebarGroupLabel>Account</SidebarGroupLabel>
-          <SidebarMenu>
-            {routesAccount.map((route) => (
-              <SidebarMenuItem key={route.label}>
-                <SidebarMenuButton asChild isActive={route.isActive}>
-                  <Link href={route.href}>
-                    {route.icon}
-                    <span>{route.label}</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            ))}
-          </SidebarMenu>
-        </SidebarGroup>
-        <SidebarGroup>
-          <SidebarGroupLabel>System</SidebarGroupLabel>
-          <SidebarMenu>
-            {routesSystem.map((route) => (
-              <SidebarMenuItem key={route.label}>
-                <SidebarMenuButton asChild isActive={route.isActive}>
-                  <Link href={route.href}>
-                    {route.icon}
-                    <span>{route.label}</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            ))}
-          </SidebarMenu>
-        </SidebarGroup>
-        <SidebarGroup>
-          <SidebarGroupLabel>Workspace</SidebarGroupLabel>
-          <SidebarMenu>
-            {routesWorkspace.map((route) => (
-              <SidebarMenuItem key={route.label}>
-                <SidebarMenuButton asChild isActive={route.isActive}>
-                  <Link href={route.href}>
-                    {route.icon}
-                    <span>{route.label}</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            ))}
-          </SidebarMenu>
-        </SidebarGroup>
-        <SidebarGroup>
-          <SidebarGroupLabel>Developer</SidebarGroupLabel>
-          <SidebarMenu>
-            {routesAdmin.map((route) => (
-              <SidebarMenuItem key={route.label}>
-                <SidebarMenuButton asChild isActive={route.isActive}>
-                  <Link href={route.href}>
-                    {route.icon}
-                    <span>{route.label}</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            ))}
-          </SidebarMenu>
-        </SidebarGroup>
+        {menu.map((group) => (
+          <SidebarGroup key={group.label}>
+            <SidebarGroupLabel>{group.label}</SidebarGroupLabel>
+            <SidebarMenu>
+              {group.routes.map((route) => (
+                <SidebarMenuItem key={route.label}>
+                  <SidebarMenuButton asChild isActive={route.isActive}>
+                    <Link href={route.href}>
+                      {route.icon}
+                      <span>{route.label}</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroup>
+        ))}
       </SidebarContent>
       <LoadingIntegrations />
+      <TrialCard />
     </Sidebar>
   );
 };

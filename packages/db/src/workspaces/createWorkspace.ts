@@ -13,7 +13,6 @@ export const createWorkspace = async (props: Props) => {
   const workspace = await prisma.workspace.create({
     data: {
       ...props,
-      plan: "BASIC",
     },
   });
 

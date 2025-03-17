@@ -4,10 +4,10 @@ import { Github } from "@/components/icons/Github";
 import { useIntegration } from "@/context/integrationContext";
 import { env } from "@conquest/env";
 import { useRouter } from "next/navigation";
-import { GithubForm } from "../github/github-form";
 import { ConnectedCard } from "../integrations/connected-card";
 import { EnableCard } from "../integrations/enable-card";
 import { IntegrationHeader } from "../integrations/integration-header";
+import { GithubForm } from "./github-form";
 
 type Props = {
   error: string;

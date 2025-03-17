@@ -98,7 +98,9 @@ export const TopActivityType = () => {
             </ChartContainer>
           </ResponsiveContainer>
         ) : (
-          <p className="text-muted-foreground">No data available</p>
+          <div className="flex h-full items-center justify-center">
+            <p className="text-muted-foreground">No data available</p>
+          </div>
         )}
       </div>
     </div>

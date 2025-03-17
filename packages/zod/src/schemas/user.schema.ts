@@ -18,6 +18,7 @@ export const UserSchema = z.object({
   emailVerified: z.coerce.date().nullable(),
   first_name: z.string().nullable(),
   last_name: z.string().nullable(),
+  avatar_url: z.string().nullable(),
   onboarding: z.coerce.date().nullable(),
   role: ROLE,
   last_activity_at: z.coerce.date(),

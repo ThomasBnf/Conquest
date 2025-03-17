@@ -27,6 +27,7 @@ import { Settings } from "../icons/Settings";
 import { SlackCommunity } from "../icons/Slack-Community";
 import { LoadingIntegrations } from "../states/loading-integrations";
 import { SidebarLists } from "./sidebar-lists";
+import { TrialCard } from "./trial-card";
 
 type Props = {
   workspace: Workspace | undefined;
@@ -134,6 +135,7 @@ export const AppSidebar = ({ workspace }: Props) => {
         </SidebarMenu>
       </SidebarFooter>
       <LoadingIntegrations />
+      <TrialCard />
       <SidebarRail />
     </Sidebar>
   );

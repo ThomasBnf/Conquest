@@ -9,8 +9,8 @@ import { useRouter } from "next/navigation";
 import { ConnectedCard } from "../integrations/connected-card";
 import { EnableCard } from "../integrations/enable-card";
 import { IntegrationHeader } from "../integrations/integration-header";
-import { LivestormForm } from "../livestorm/livestorm-form";
 import { EventCard } from "./event-card";
+import { LivestormForm } from "./livestorm-form";
 
 type Props = {
   error: string;

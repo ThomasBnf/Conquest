@@ -28,10 +28,10 @@ enum STATUS {
 }
 
 enum PLAN {
-    BASIC
-    PREMIUM
-    BUSINESS
-    ENTERPRISE
+    EXPLORER
+    ACTIVE
+    CONTRIBUTOR
+    AMBASSADOR
 }
 
 enum ROLE {
@@ -176,6 +176,7 @@ model user {
     emailVerified         DateTime? @map("email_verified")
     first_name            String?
     last_name             String?
+    avatar_url            String?
     onboarding            DateTime?
     role                  ROLE      @default(ADMIN)
     last_activity_at      DateTime  @updatedAt
@@ -236,12 +237,15 @@ model workflow {
 }
 
 model workspace {
-    id           String  @id @default(uuid())
-    name         String
-    slug         String  @unique
-    source       String?
-    company_size String?
-    plan         PLAN    @default(BASIC)
+    id                 String    @id @default(uuid())
+    name               String
+    slug               String    @unique
+    source             String?
+    company_size       String?
+    plan               PLAN?
+    stripe_customer_id String?
+    trial_end          DateTime?
+    is_past_due        Boolean   @default(false)
 
     api_keys     api_key[]
     events       event[]

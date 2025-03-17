@@ -26,6 +26,10 @@ export default async function Layout({
   const { workspace } = user;
 
   if (user && !user.onboarding) redirect("/");
+
+  const { is_past_due } = workspace;
+  if (is_past_due) redirect("/billing");
+
   if (slug !== workspace.slug) redirect(`/${workspace.slug}`);
 
   const cookieStore = await cookies();

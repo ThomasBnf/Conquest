@@ -7,10 +7,10 @@ import { Separator } from "@conquest/ui/separator";
 import { Hash } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { DiscourseForm } from "../discourse/discourse-form";
 import { ConnectedCard } from "../integrations/connected-card";
 import { EnableCard } from "../integrations/enable-card";
 import { IntegrationHeader } from "../integrations/integration-header";
+import { DiscourseForm } from "./discourse-form";
 
 type Props = {
   error: string;

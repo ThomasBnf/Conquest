@@ -1,4 +1,5 @@
 import { useFilters } from "@/context/filtersContext";
+import { useClickOutside } from "@/hooks/useClickOutside";
 import { tableParams } from "@/lib/tableParams";
 import { trpc } from "@/server/client";
 import { Checkbox } from "@conquest/ui/checkbox";
@@ -12,11 +13,10 @@ import {
   CommandList,
 } from "@conquest/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@conquest/ui/popover";
-import { Separator } from "@conquest/ui/separator";
 import type { Member } from "@conquest/zod/schemas/member.schema";
 import type { Row } from "@tanstack/react-table";
 import { useQueryStates } from "nuqs";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { TagBadge } from "../../tags/tag-badge";
 
 type Props = {
@@ -30,7 +30,19 @@ export const TagsCell = ({ row }: Props) => {
 
   const { data: allTags } = trpc.tags.list.useQuery();
   const [open, setOpen] = useState(false);
+  const [focus, setFocus] = useState(false);
+
   const utils = trpc.useUtils();
+  const ref = useRef<HTMLDivElement>(null);
+  const refCommand = useRef<HTMLDivElement>(null);
+
+  const onClickOutside = () => {
+    setFocus(false);
+    setOpen(false);
+  };
+
+  useClickOutside(ref, onClickOutside);
+  useClickOutside(refCommand, onClickOutside);
 
   const { mutateAsync: updateMember } = trpc.members.update.useMutation({
     async onMutate(newData) {
@@ -73,9 +85,8 @@ export const TagsCell = ({ row }: Props) => {
   });
 
   const tagsIds = row.original.tags.map((tag) => tag);
-  const tagsToSelect = allTags?.filter((tag) => !tagsIds.includes(tag.id));
-  const filteredTags = allTags?.filter((tag) => tagsIds.includes(tag.id));
-  const sliceTags = filteredTags?.slice(0, 1);
+  const tags = allTags?.filter((tag) => !tagsIds.includes(tag.id));
+  const memberTags = allTags?.filter((tag) => tagsIds.includes(tag.id));
 
   const onSelect = async (tagId: string) => {
     const hasTag = tagsIds.includes(tagId);
@@ -94,27 +105,46 @@ export const TagsCell = ({ row }: Props) => {
   };
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger className="h-full flex-1">
+    <Popover open={open}>
+      <PopoverTrigger
+        className={cn("h-full flex-1", focus ? "relative" : "overflow-hidden")}
+        onClick={(e) => {
+          e.preventDefault();
+          if (open) {
+            setOpen(false);
+            setFocus(true);
+            return;
+          }
+
+          if (!focus) setFocus(true);
+        }}
+        onDoubleClick={(e) => {
+          e.preventDefault();
+          setOpen(!open);
+        }}
+      >
         <div
+          ref={ref}
           className={cn(
-            "flex h-full w-full flex-wrap items-center gap-1 p-2 hover:bg-muted",
-            open && "bg-muted",
+            "flex h-full w-full items-center gap-1 p-2 hover:bg-muted",
+            focus &&
+              "relative z-20 h-fit min-h-full flex-wrap bg-muted ring-1 ring-main-400",
           )}
         >
-          {sliceTags?.map((tag) => (
-            <TagBadge key={tag.id} tag={tag} />
+          {memberTags?.map((tag) => (
+            <TagBadge
+              key={tag.id}
+              tag={tag}
+              onDelete={() => onSelect(tag.id)}
+              deletable={open}
+            />
           ))}
-          {filteredTags && filteredTags?.length > 1 && (
-            <span className="text-muted-foreground text-xs">
-              +{filteredTags?.length - 1}
-            </span>
-          )}
         </div>
       </PopoverTrigger>
       <PopoverContent
-        className="w-[251px] rounded-t-none p-0"
-        sideOffset={0}
+        ref={refCommand}
+        className="w-[--radix-popover-trigger-width] shrink-0 rounded-t-none p-0"
+        sideOffset={ref.current?.offsetHeight! - 42}
         alignOffset={-1}
         align="start"
       >
@@ -122,37 +152,18 @@ export const TagsCell = ({ row }: Props) => {
           <CommandInput placeholder="Search tags..." />
           <CommandList>
             <CommandEmpty>No tags found.</CommandEmpty>
-            {filteredTags && filteredTags?.length > 0 && (
-              <CommandGroup>
-                {filteredTags?.map((tag) => (
-                  <CommandItem
-                    key={tag.id}
-                    value={tag.name}
-                    onSelect={() => onSelect(tag.id)}
-                  >
-                    <Checkbox checked={true} className="mr-2" />
-                    <TagBadge tag={tag} />
-                  </CommandItem>
-                ))}
-              </CommandGroup>
-            )}
-            {tagsToSelect && tagsToSelect?.length > 0 && (
-              <>
-                {filteredTags && filteredTags?.length > 0 && <Separator />}
-                <CommandGroup>
-                  {tagsToSelect.map((tag) => (
-                    <CommandItem
-                      key={tag.id}
-                      value={tag.name}
-                      onSelect={() => onSelect(tag.id)}
-                    >
-                      <Checkbox checked={false} className="mr-2" />
-                      <TagBadge tag={tag} />
-                    </CommandItem>
-                  ))}
-                </CommandGroup>
-              </>
-            )}
+            <CommandGroup>
+              {tags?.map((tag) => (
+                <CommandItem
+                  key={tag.id}
+                  value={tag.name}
+                  onSelect={() => onSelect(tag.id)}
+                >
+                  <Checkbox checked={false} className="mr-2" />
+                  <TagBadge tag={tag} />
+                </CommandItem>
+              ))}
+            </CommandGroup>
           </CommandList>
         </Command>
       </PopoverContent>

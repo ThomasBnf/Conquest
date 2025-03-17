@@ -7,19 +7,29 @@ import type {
 } from "@auth/core/adapters";
 import { client } from "@conquest/clickhouse/client";
 import { PrismaClientKnownRequestError } from "@conquest/db/enum";
-import { prisma } from "@conquest/db/prisma";
 import type { Prisma } from "@conquest/db/types";
 import { createWorkspace } from "@conquest/db/workspaces/createWorkspace";
 import { UserSchema } from "@conquest/zod/schemas/user.schema";
 import { v4 as uuid } from "uuid";
 
-export const createAuthPrismaAdapter = (p: Prisma.PrismaClient): Adapter => ({
-  createUser: async (data) => {
-    if (!data.email) {
+export const createAuthPrismaAdapter = (
+  prisma: Prisma.PrismaClient,
+): Adapter => ({
+  createUser: async ({ email, image }) => {
+    if (!email) {
       throw Error("Provider did not forward email but it is required");
     }
 
     const workspace = await createWorkspace({ name: "", slug: uuid() });
+
+    const user = await prisma.user.create({
+      data: {
+        email,
+        avatar_url: image ?? null,
+        emailVerified: new Date(),
+        workspace_id: workspace.id,
+      },
+    });
 
     await client.insert({
       table: "level",
@@ -28,14 +38,6 @@ export const createAuthPrismaAdapter = (p: Prisma.PrismaClient): Adapter => ({
         workspace_id: workspace.id,
       })),
       format: "JSON",
-    });
-
-    const user = await prisma.user.create({
-      data: {
-        email: data.email,
-        emailVerified: new Date(),
-        workspace_id: workspace.id,
-      },
     });
 
     return user as AdapterUser;

@@ -53,7 +53,6 @@ export const NextStep = () => {
           <div className="-mt-8 ml-4 h-20 w-5 rounded-l-lg border-bl-lg border-b border-l" />
           <div className="w-full space-y-1.5">
             <Badge variant="secondary">Next node</Badge>
-            {/* biome-ignore lint/a11y/useKeyWithClickEvents: <explanation> */}
             <div
               className="relative z-10 flex h-10 cursor-pointer items-center gap-2 rounded-md border px-2 transition-colors-hover hover:bg-muted-hover"
               onClick={() => {

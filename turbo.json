@@ -13,7 +13,14 @@
       "persistent": true
     },
     "build": {
-      "env": ["NODE_ENV", "VERCEL", "VERCEL_ENV", "DATABASE_URL", "DIRECT_URL"],
+      "env": [
+        "NODE_ENV",
+        "VERCEL",
+        "VERCEL_ENV",
+        "AUTH_SECRET",
+        "DATABASE_URL",
+        "DIRECT_URL"
+      ],
       "inputs": ["$TURBO_DEFAULT$", ".env"],
       "dependsOn": [
         "^db:generate",

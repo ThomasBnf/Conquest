@@ -9,9 +9,6 @@
     "start": "dotenv -e ./.env -e ../../.env -- next start",
     "typecheck": "tsc --noEmit"
   },
-  "resolutions": {
-    "import-in-the-middle": "1.13.1"
-  },
   "dependencies": {
     "@auth/core": "^0.37.4",
     "@clickhouse/client-web": "^1.10.1",
@@ -53,6 +50,7 @@
     "react-markdown": "^9.0.3",
     "react-phone-number-input": "^3.4.9",
     "remark-gfm": "^4.0.1",
+    "stripe": "^17.7.0",
     "superjson": "^2.2.2",
     "use-debounce": "^10.0.4",
     "use-places-autocomplete": "^4.0.1",

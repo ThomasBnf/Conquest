@@ -1,12 +1,20 @@
 import { Badge } from "@conquest/ui/badge";
 import type { Tag } from "@conquest/zod/schemas/tag.schema";
+import { X } from "lucide-react";
 
 type Props = {
   tag: Tag | undefined;
   transparent?: boolean;
+  onDelete?: () => void;
+  deletable?: boolean;
 };
 
-export const TagBadge = ({ tag, transparent = false }: Props) => {
+export const TagBadge = ({
+  tag,
+  transparent = false,
+  onDelete,
+  deletable,
+}: Props) => {
   if (!tag) return null;
 
   return (
@@ -16,6 +24,14 @@ export const TagBadge = ({ tag, transparent = false }: Props) => {
         style={{ backgroundColor: tag.color }}
       />
       <p className="leading-none">{tag.name}</p>
+      {deletable && (
+        <div onClick={onDelete}>
+          <X
+            size={13}
+            className="shrink-0 text-muted-foreground hover:text-foreground"
+          />
+        </div>
+      )}
     </Badge>
   );
 };

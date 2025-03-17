@@ -47,7 +47,6 @@ export const CustomNode = ({ hasEdges, ...props }: Props) => {
           <p className="text-xs leading-none">Trigger</p>
         </div>
       )}
-      {/* biome-ignore lint/a11y/useKeyWithClickEvents: <explanation> */}
       <div
         onClick={() => {
           setPanel("node");
