@@ -1,0 +1,5 @@
+-- CreateEnum
+CREATE TYPE "PLAN" AS ENUM ('EXPLORER', 'ACTIVE', 'CONTRIBUTOR', 'AMBASSADOR');
+
+-- AlterTable
+ALTER TABLE "workspace" ADD COLUMN     "plan" "PLAN";
