@@ -10,20 +10,19 @@ export const cronWeekly = schedules.task({
   run: async (_, { ctx }) => {
     if (ctx.environment.type === "DEVELOPMENT") return;
 
-    const BATCH_SIZE = 100;
-
-    let cursor: string | undefined;
+    const BATCH_SIZE = 500;
+    let offset = 0;
 
     while (true) {
-      const batch = await batchMembers({
+      const members = await batchMembers({
         limit: BATCH_SIZE,
-        offset: cursor ? 1 : 0,
+        offset,
       });
 
-      if (batch.length === 0) break;
+      if (members.length === 0) break;
 
       await Promise.all(
-        batch.map(async (member) => {
+        members.map(async (member) => {
           const { level_id, pulse } = member;
 
           const log: Omit<Log, "id"> = {
@@ -38,7 +37,7 @@ export const cronWeekly = schedules.task({
         }),
       );
 
-      cursor = batch[batch.length - 1]?.id;
+      offset += BATCH_SIZE;
     }
   },
 });

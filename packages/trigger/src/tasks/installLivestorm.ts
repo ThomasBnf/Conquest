@@ -51,7 +51,10 @@ export const installLivestorm = schemaTask({
     await batchMergeMembers({ members });
     metadata.set("progress", 90);
 
-    await getAllMembersMetrics.trigger({ workspace_id });
+    await getAllMembersMetrics.trigger(
+      { workspace_id },
+      { metadata: { workspace_id } },
+    );
     metadata.set("progress", 95);
 
     await integrationSuccessEmail.trigger({ integration: livestorm });

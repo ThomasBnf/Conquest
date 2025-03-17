@@ -10,5 +10,8 @@ export const updateActivityType = protectedProcedure
 
     await _updateActivityType(input);
 
-    await getAllMembersMetrics.trigger({ workspace_id });
+    await getAllMembersMetrics.trigger(
+      { workspace_id },
+      { metadata: { workspace_id } },
+    );
   });
