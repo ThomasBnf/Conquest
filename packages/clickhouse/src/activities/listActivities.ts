@@ -70,13 +70,5 @@ export const listActivities = async ({
     (activity) => !activity.activity_type?.source,
   );
 
-  if (problematicActivity) {
-    console.log("Activité sans source dans activity_type:", {
-      activity_id: problematicActivity.id,
-      activity_type: problematicActivity.activity_type,
-      full_activity: problematicActivity,
-    });
-  }
-
   return ActivityWithTypeSchema.array().parse(activities);
 };
