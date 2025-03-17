@@ -184,22 +184,20 @@ const DayCell = ({
   const [hover, setHover] = useState(false);
   const level = getActivityLevel(count, allActivities);
 
-  const {
-    data: activities,
-    isLoading,
-    failureReason,
-  } = trpc.activities.listDayActivities.useQuery(
-    { date: day, member_id },
-    { enabled: hover && count > 0 },
-  );
-
-  console.log(failureReason);
+  const { data: activities, isLoading } =
+    trpc.activities.listDayActivities.useQuery(
+      { date: day, member_id },
+      { enabled: hover && count > 0 },
+    );
 
   return (
     <Tooltip>
       <TooltipTrigger>
         <div
-          onMouseEnter={() => setHover(true)}
+          onMouseEnter={() => {
+            console.log(day);
+            setHover(true);
+          }}
           onMouseLeave={() => setHover(false)}
           className={cn(
             "size-4 cursor-pointer rounded-sm transition-colors duration-200",
