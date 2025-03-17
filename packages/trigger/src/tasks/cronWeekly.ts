@@ -28,7 +28,7 @@ export const cronWeekly = schedules.task({
           const log: Omit<Log, "id"> = {
             date: new Date(),
             pulse,
-            level_id: level_id ?? "",
+            level_id: level_id ?? null,
             member_id: member.id,
             workspace_id: member.workspace_id,
           };
