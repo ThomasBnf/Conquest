@@ -22,7 +22,7 @@ export const CompanySizeSchema = z.enum([
 export const WorkspaceSchema = z.object({
   first_name: z.string().min(1),
   last_name: z.string().min(1),
-  workspace_name: z.string().min(1),
+  name: z.string().min(1),
   slug: z.string(),
 });
 

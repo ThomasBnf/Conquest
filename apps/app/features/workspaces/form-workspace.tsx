@@ -14,17 +14,17 @@ import {
 } from "@conquest/ui/form";
 import { Input } from "@conquest/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
+import slugify from "@sindresorhus/slugify";
 import { Loader2 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { useDebounce } from "use-debounce";
 import { FormWorkspaceSchema } from "./schema/form.schema";
 
 export const FormWorkspace = () => {
   const { data: workspace } = trpc.workspaces.get.useQuery();
   const [loading, setLoading] = useState(false);
-  const [isFocus, setFocus] = useState(false);
+  const [focus, setFocus] = useState(false);
   const utils = trpc.useUtils();
 
   const { mutateAsync } = trpc.workspaces.update.useMutation({
@@ -37,6 +37,7 @@ export const FormWorkspace = () => {
     onError: (error) => {
       toast.error(error.message);
       setLoading(false);
+      form.setError("slug", { message: error.message });
     },
   });
 
@@ -46,45 +47,13 @@ export const FormWorkspace = () => {
       name: workspace?.name ?? "",
       slug: workspace?.slug ?? "",
     },
-    mode: "onChange",
   });
 
-  const currentSlug = form.watch("slug");
-  const [debouncedSlug] = useDebounce(currentSlug, 500);
-  const {
-    data: slugCount,
-    isLoading: isSlugChecking,
-    isFetched,
-  } = trpc.workspaces.getSlug.useQuery(
-    { slug: debouncedSlug },
-    { enabled: Boolean(debouncedSlug) },
-  );
-
-  const isSlugTaken =
-    slugCount && slugCount > 0 && currentSlug !== workspace?.slug;
-
-  useEffect(() => {
-    if (!currentSlug) return;
-
-    if (isSlugTaken) {
-      form.setError("slug", { message: "Slug already taken" });
-    } else if (isFetched && debouncedSlug === currentSlug) {
-      form.clearErrors("slug");
-    }
-  }, [isSlugTaken, currentSlug, debouncedSlug, isFetched, form]);
-
   const onSubmit = async (data: FormWorkspaceSchema) => {
-    if (!workspace || isSlugTaken) return;
+    if (!workspace) return;
 
     setLoading(true);
     await mutateAsync({ ...workspace, ...data });
-  };
-
-  const generateSlugFromName = (name: string) => {
-    return name
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/(^-|-$)/g, "");
   };
 
   return (
@@ -96,26 +65,21 @@ export const FormWorkspace = () => {
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField
-              control={form.control}
               name="name"
+              control={form.control}
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Name</FormLabel>
+                  <FormLabel>Workspace name</FormLabel>
                   <FormControl>
                     <Input
                       {...field}
+                      placeholder="Acme"
                       onChange={(e) => {
                         field.onChange(e);
-                        if (
-                          !form.getValues("slug") ||
-                          form.getValues("slug") ===
-                            generateSlugFromName(field.value)
-                        ) {
-                          const newSlug = generateSlugFromName(e.target.value);
-                          form.setValue("slug", newSlug, {
-                            shouldValidate: true,
-                          });
-                        }
+                        form.setValue(
+                          "slug",
+                          slugify(e.target.value, { decamelize: false }),
+                        );
                       }}
                     />
                   </FormControl>
@@ -124,8 +88,8 @@ export const FormWorkspace = () => {
               )}
             />
             <FormField
-              control={form.control}
               name="slug"
+              control={form.control}
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Slug</FormLabel>
@@ -133,11 +97,11 @@ export const FormWorkspace = () => {
                     <div
                       className={cn(
                         "relative flex items-center overflow-hidden rounded-md border",
-                        isFocus && "border-main-200 ring-2 ring-ring",
+                        focus && "border-main-200 ring-2 ring-ring",
                       )}
                     >
                       <p className="h-9 place-content-center border-r bg-muted px-3">
-                        useconquest.com/
+                        useconquest.com
                       </p>
                       <Input
                         {...field}
@@ -146,24 +110,13 @@ export const FormWorkspace = () => {
                         onFocus={() => setFocus(true)}
                         onBlur={() => setFocus(false)}
                       />
-                      {isSlugChecking && (
-                        <Loader2 className="absolute right-3 size-4 animate-spin text-muted-foreground" />
-                      )}
                     </div>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            <Button
-              type="submit"
-              disabled={
-                isSlugTaken ||
-                isSlugChecking ||
-                loading ||
-                Object.keys(form.formState.errors).length > 0
-              }
-            >
+            <Button type="submit" disabled={loading}>
               {loading ? <Loader2 className="size-4 animate-spin" /> : "Save"}
             </Button>
           </form>

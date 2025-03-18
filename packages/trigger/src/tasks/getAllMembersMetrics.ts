@@ -1,9 +1,21 @@
+import { listActivities } from "@conquest/clickhouse/activities/listActivities";
 import { client } from "@conquest/clickhouse/client";
+import { getPulseScore } from "@conquest/clickhouse/helpers/getPulseScore";
 import { listLevels } from "@conquest/clickhouse/levels/listLevels";
+import { createManyLogs } from "@conquest/clickhouse/logs/createManyLogs";
 import { listMembers } from "@conquest/clickhouse/members/listMembers";
-import { type Context, runs, schemaTask } from "@trigger.dev/sdk/v3";
+import { updateMember } from "@conquest/clickhouse/members/updateMember";
+import type { Log } from "@conquest/zod/schemas/logs.schema";
+import { type Context, logger, runs, schemaTask } from "@trigger.dev/sdk/v3";
+import {
+  eachWeekOfInterval,
+  endOfDay,
+  startOfDay,
+  subDays,
+  subWeeks,
+} from "date-fns";
+import { randomUUID } from "node:crypto";
 import { z } from "zod";
-import { getMemberMetrics } from "./getMemberMetrics";
 
 export const getAllMembersMetrics = schemaTask({
   id: "get-all-members-metrics",
@@ -22,27 +34,65 @@ export const getAllMembersMetrics = schemaTask({
       query: `ALTER TABLE log DELETE WHERE workspace_id = '${workspace_id}'`,
     });
 
-    const BATCH_SIZE = 500;
+    const today = new Date();
+    const startDate = startOfDay(subWeeks(today, 52));
+    const endDate = endOfDay(today);
 
-    for (let i = 0; i < members.length; i += BATCH_SIZE) {
-      const membersBatch = members.slice(i, i + BATCH_SIZE);
+    const intervals = eachWeekOfInterval(
+      { start: startDate, end: endDate },
+      { weekStartsOn: 1 },
+    );
 
-      await getMemberMetrics.batchTrigger(
-        membersBatch.map((member) => ({
-          payload: {
-            member,
-            levels,
-          },
-          options: {
-            idempotencyKey: `get-metrics-${member.id}`,
-            concurrencyKey: `metrics-${workspace_id}`,
-            queue: {
-              name: "members-processing-queue",
-              concurrencyLimit: 5,
-            },
-          },
-        })),
-      );
+    for (const member of members) {
+      const activities = await listActivities({
+        member_id: member.id,
+        period: 365,
+        workspace_id,
+      });
+
+      const logs: Log[] = [];
+
+      for (const interval of intervals) {
+        const intervalEnd = interval;
+        const intervalStart = subDays(intervalEnd, 90);
+
+        const filteredActivities = activities?.filter(
+          (activity) =>
+            activity.created_at >= intervalStart &&
+            activity.created_at <= intervalEnd,
+        );
+
+        const pulseScore = getPulseScore({ activities: filteredActivities });
+
+        const level = levels.find(
+          (level) =>
+            pulseScore >= level.from &&
+            pulseScore <= (level.to ?? Number.POSITIVE_INFINITY),
+        );
+
+        logs.push({
+          id: randomUUID(),
+          date: interval,
+          pulse: pulseScore,
+          level_id: level?.id ?? null,
+          member_id: member.id,
+          workspace_id: member.workspace_id,
+        });
+      }
+
+      await createManyLogs({ logs });
+
+      const { pulse, level_id } = logs.at(-1) ?? {};
+
+      await updateMember({
+        ...member,
+        first_activity: activities?.at(-1)?.created_at ?? null,
+        last_activity: activities?.at(0)?.created_at ?? null,
+        pulse: pulse ?? 0,
+        level_id: level_id ?? null,
+      });
+
+      logger.info(`Member ${member.id} updated`);
     }
   },
 });

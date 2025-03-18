@@ -44,6 +44,7 @@ export const QuestionsStep = ({ setStep }: Props) => {
     if (!workspace) return;
 
     setLoading(true);
+
     await mutateWorkspace({
       id: workspace.id,
       company_size,
