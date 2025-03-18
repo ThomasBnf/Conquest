@@ -40,8 +40,10 @@ export const upsertActivity = async (props: Props) => {
       throw new Error(`Activity type ${activity_type_key} not found`);
     }
 
+    const { activity_type, ...data } = activity;
+
     await updateActivity({
-      ...activity,
+      ...data,
       activity_type_id: activityType.id,
     });
   } else {

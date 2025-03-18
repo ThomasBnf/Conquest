@@ -11,15 +11,18 @@ import { getChannel } from "@conquest/clickhouse/channels/getChannel";
 import { updateChannel } from "@conquest/clickhouse/channels/updateChannel";
 import { client } from "@conquest/clickhouse/client";
 import { createMember } from "@conquest/clickhouse/members/createMember";
+import { deleteMember } from "@conquest/clickhouse/members/deleteMember";
 import { getMember } from "@conquest/clickhouse/members/getMember";
 import { updateMember } from "@conquest/clickhouse/members/updateMember";
 import { createProfile } from "@conquest/clickhouse/profiles/createProfile";
 import { deleteProfile } from "@conquest/clickhouse/profiles/deleteProfile";
 import { getProfile } from "@conquest/clickhouse/profiles/getProfile";
+import { updateProfile } from "@conquest/clickhouse/profiles/updateProfile";
 import { discourseClient } from "@conquest/db/discourse";
 import { prisma } from "@conquest/db/prisma";
 import { createTag } from "@conquest/db/tags/createTag";
 import { listTags } from "@conquest/db/tags/listTags";
+import { decrypt } from "@conquest/db/utils/decrypt";
 import { env } from "@conquest/env";
 import { DiscourseIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
 import type { DiscourseWebhook } from "@conquest/zod/types/discourse";
@@ -87,16 +90,11 @@ export async function POST(request: NextRequest) {
 
     if (!activity) return NextResponse.json({ status: 200 });
 
-    const activityType = await getActivityTypeByKey({
-      key: "discourse:topic",
-      workspace_id,
-    });
-
-    if (!activityType) return NextResponse.json({ status: 200 });
+    const { activity_type, ...data } = activity;
 
     await updateActivity({
-      ...activity,
-      activity_type_id: activityType.id,
+      ...data,
+      activity_type_id: activity_type.id,
       title,
     });
   }
@@ -112,8 +110,8 @@ export async function POST(request: NextRequest) {
 
     await client.query({
       query: `
-        DELETE FROM activities
-        WHERE react_to LIKE 't/${id}'
+        ALTER TABLE activity
+        DELETE WHERE react_to LIKE 't/${id}'
         OR reply_to LIKE 't/${id}'
       `,
     });
@@ -151,11 +149,9 @@ export async function POST(request: NextRequest) {
 
     if (post_number === 1) {
       const activity = await getActivity({
-        external_id: `t/${id}`,
+        external_id: `t/${topic_id}`,
         workspace_id,
       });
-
-      console.log("activity", activity);
 
       if (!activity) return NextResponse.json({ status: 200 });
 
@@ -164,12 +160,12 @@ export async function POST(request: NextRequest) {
         workspace_id,
       });
 
-      console.log("activityType", activityType);
-
       if (!activityType) return NextResponse.json({ status: 200 });
 
+      const { activity_type, ...data } = activity;
+
       await updateActivity({
-        ...activity,
+        ...data,
         activity_type_id: activityType.id,
         message: post.cooked,
       });
@@ -206,10 +202,10 @@ export async function POST(request: NextRequest) {
 
   if (post && event === "post_edited") {
     await sleep(1000);
-    const { id, post_number } = post;
+    const { id, topic_id, post_number } = post;
 
     const activity = await getActivity({
-      external_id: `t/${id}`,
+      external_id: post_number === 1 ? `t/${topic_id}` : `p/${id}`,
       workspace_id,
     });
 
@@ -222,8 +218,10 @@ export async function POST(request: NextRequest) {
 
     if (!activityType) return NextResponse.json({ status: 200 });
 
+    const { activity_type, ...data } = activity;
+
     await updateActivity({
-      ...activity,
+      ...data,
       activity_type_id: activityType.id,
       message: post.cooked,
     });
@@ -248,7 +246,7 @@ export async function POST(request: NextRequest) {
 
   if (like && event === "post_liked") {
     const { post, user } = like;
-    const { category_id, topic_id, post_number } = post;
+    const { category_id, topic_id, post_number, reactions } = post;
     const { username } = user;
 
     const profile = await getProfile({
@@ -267,7 +265,7 @@ export async function POST(request: NextRequest) {
 
     await createActivity({
       activity_type_key: "discourse:reaction",
-      message: "like",
+      message: reactions?.[0]?.id ?? "like",
       react_to: `t/${topic_id}/${post_number}`,
       member_id: profile.member_id,
       channel_id: channel.id,
@@ -310,10 +308,10 @@ export async function POST(request: NextRequest) {
     if (!inviter) return NextResponse.json({ status: 200 });
 
     await createActivity({
-      external_id: String(id),
       activity_type_key: "discourse:invite",
-      message: "",
-      member_id: inviter.id,
+      message: "invitation accepted",
+      invite_to: member.id,
+      member_id: inviter.member_id,
       source: "Discourse",
       workspace_id,
     });
@@ -333,9 +331,23 @@ export async function POST(request: NextRequest) {
     const [first_name, last_name] = name.split(" ");
     const avatar_url = avatar_template.replace("{size}", "500");
 
-    const member = await createMember({
-      first_name,
-      last_name,
+    const profile = await getProfile({
+      username,
+      workspace_id,
+    });
+
+    if (!profile) return NextResponse.json({ status: 200 });
+
+    const member = await getMember({
+      id: profile.member_id,
+    });
+
+    if (!member) return NextResponse.json({ status: 200 });
+
+    await updateMember({
+      ...member,
+      first_name: first_name ?? "",
+      last_name: last_name ?? "",
       primary_email: email,
       secondary_emails,
       avatar_url,
@@ -345,7 +357,8 @@ export async function POST(request: NextRequest) {
       workspace_id,
     });
 
-    await createProfile({
+    await updateProfile({
+      id: profile.id,
       external_id: String(id),
       member_id: member.id,
       attributes: {
@@ -359,9 +372,28 @@ export async function POST(request: NextRequest) {
   if (user && event === "user_destroyed") {
     const { username } = user;
 
+    const profile = await getProfile({
+      username,
+      workspace_id,
+    });
+
+    if (!profile) return NextResponse.json({ status: 200 });
+
     await deleteProfile({
       username,
       workspace_id,
+    });
+
+    await deleteMember({
+      id: profile.member_id,
+    });
+
+    await client.query({
+      query: `
+        ALTER TABLE activity
+        DELETE WHERE invite_to = '${profile.member_id}'
+        AND workspace_id = '${workspace_id}'
+      `,
     });
   }
 
@@ -376,7 +408,7 @@ export async function POST(request: NextRequest) {
 
     await createActivity({
       activity_type_key: "discourse:login",
-      message: "",
+      message: "login",
       member_id: profile.member_id,
       source: "Discourse",
       workspace_id,
@@ -436,6 +468,21 @@ export async function POST(request: NextRequest) {
   if (category && event === "category_destroyed") {
     const { id } = category;
 
+    const channel = await getChannel({
+      external_id: String(id),
+      workspace_id,
+    });
+
+    if (!channel) return NextResponse.json({ status: 200 });
+
+    await client.query({
+      query: `
+        ALTER TABLE activity
+        DELETE WHERE channel_id = '${channel.id}'
+        AND workspace_id = '${workspace_id}'
+      `,
+    });
+
     await deleteChannel({
       external_id: String(id),
       workspace_id,
@@ -472,8 +519,14 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ status: 200 });
     }
 
-    const { community_url, api_key } = integration.details;
-    const client = discourseClient({ community_url, api_key });
+    const { community_url, api_key, api_key_iv } = integration.details;
+
+    const decryptedApiKey = await decrypt({
+      access_token: api_key,
+      iv: api_key_iv,
+    });
+
+    const client = discourseClient({ community_url, api_key: decryptedApiKey });
 
     const { badges } = await client.adminListBadges();
     const badge = badges.find((badge) => badge.id === badge_id);
@@ -482,10 +535,18 @@ export async function POST(request: NextRequest) {
 
     const { id: badgeId, name, badge_type_id } = badge;
 
+    const colorMap = {
+      "1": "#E7C200",
+      "2": "#CD7F31",
+      "3": "#C0C0C0",
+    } as const;
+
+    const color = colorMap[String(badge_type_id) as keyof typeof colorMap];
+
     const newTag = await createTag({
       external_id: String(badgeId),
       name,
-      color: String(badge_type_id),
+      color,
       source: "Discourse",
       workspace_id,
     });
@@ -543,7 +604,7 @@ export async function POST(request: NextRequest) {
     if (!channel) return NextResponse.json({ status: 200 });
 
     const activity = await getActivity({
-      external_id: `t/${id}`,
+      external_id: `p/${id}`,
       workspace_id,
     });
 
@@ -557,8 +618,10 @@ export async function POST(request: NextRequest) {
 
     if (!activityType) return NextResponse.json({ status: 200 });
 
+    const { activity_type, ...data } = activity;
+
     await updateActivity({
-      ...activity,
+      ...data,
       activity_type_id: activityType.id,
     });
   }

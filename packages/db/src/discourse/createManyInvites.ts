@@ -71,7 +71,7 @@ export const createManyInvites = async ({ discourse, profile }: Props) => {
 
       await createActivity({
         activity_type_key: "discourse:invite",
-        message: "",
+        message: "invitation accepted",
         invite_to: invitee.id,
         member_id: member_id,
         created_at: new Date(redeemed_at),

@@ -4,6 +4,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@conquest/ui/avatar";
 import type { ActivityWithType } from "@conquest/zod/schemas/activity.schema";
 import type { Member } from "@conquest/zod/schemas/member.schema";
 import { format } from "date-fns";
+import { useSession } from "next-auth/react";
+import Link from "next/link";
 import { ActivityMenu } from "../activity-menu";
 
 type Props = {
@@ -12,12 +14,15 @@ type Props = {
 };
 
 export const DiscourseInvite = ({ activity, member }: Props) => {
+  const { data: session } = useSession();
+  const { slug } = session?.user.workspace ?? {};
+
   const { created_at, invite_to } = activity;
   const { source } = activity.activity_type;
 
   const { avatar_url, first_name, last_name } = member ?? {};
 
-  const { data: inviter } = trpc.members.get.useQuery(
+  const { data: joiner } = trpc.members.get.useQuery(
     { id: invite_to },
     { enabled: !!invite_to },
   );
@@ -37,9 +42,12 @@ export const DiscourseInvite = ({ activity, member }: Props) => {
             {first_name} {last_name}
           </span>{" "}
           invited{" "}
-          <span className="font-medium text-foreground">
-            {inviter?.first_name} {inviter?.last_name}
-          </span>{" "}
+          <Link
+            href={`/${slug}/members/${joiner?.id}/analytics`}
+            className="font-medium text-foreground hover:underline"
+          >
+            {joiner?.first_name} {joiner?.last_name}
+          </Link>{" "}
           to join the {source === "Discord" ? "server" : "workspace"}
         </p>
         <SourceBadge source={source} transparent onlyIcon />

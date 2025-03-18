@@ -645,6 +645,15 @@ export const DiscourseWebhookSchema = z.object({
         category_slug: z.string(),
         akismet_state: z.string().nullable(),
         user_cakedate: z.string(),
+        reactions: z
+          .array(
+            z.object({
+              id: z.string(),
+              type: z.string(),
+              count: z.number(),
+            }),
+          )
+          .optional(),
         can_accept_answer: z.boolean(),
         can_unaccept_answer: z.boolean(),
         accepted_answer: z.boolean(),

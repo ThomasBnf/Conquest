@@ -16,7 +16,7 @@ export const deleteProfile = async (props: Props) => {
     await client.query({
       query: `
         ALTER TABLE profile
-        DELETE WHERE username = '${username}'
+        DELETE WHERE attributes.username = '${username}'
         AND workspace_id = '${workspace_id}'
       `,
     });
