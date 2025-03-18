@@ -25,9 +25,9 @@ export const getAllMembersMetrics = schemaTask({
   run: async ({ workspace_id }, { ctx }) => {
     await checkPreviousRuns(ctx, workspace_id);
 
-    await client.query({
-      query: `ALTER TABLE log DELETE WHERE workspace_id = '${workspace_id}'`,
-    });
+    // await client.query({
+    //   query: `ALTER TABLE log DELETE WHERE workspace_id = '${workspace_id}'`,
+    // });
 
     const levels = await listLevels({ workspace_id });
 
