@@ -387,14 +387,6 @@ export async function POST(request: NextRequest) {
     await deleteMember({
       id: profile.member_id,
     });
-
-    await client.query({
-      query: `
-        ALTER TABLE activity
-        DELETE WHERE invite_to = '${profile.member_id}'
-        AND workspace_id = '${workspace_id}'
-      `,
-    });
   }
 
   if (user && event === "user_logged_in") {

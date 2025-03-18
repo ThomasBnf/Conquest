@@ -9,6 +9,7 @@ import { getChannel } from "@conquest/clickhouse/channels/getChannel";
 import { updateChannel } from "@conquest/clickhouse/channels/updateChannel";
 import { client as clickhouseClient } from "@conquest/clickhouse/client";
 import { createMember } from "@conquest/clickhouse/members/createMember";
+import { deleteMember } from "@conquest/clickhouse/members/deleteMember";
 import { getMember } from "@conquest/clickhouse/members/getMember";
 import { updateMember } from "@conquest/clickhouse/members/updateMember";
 import { createProfile } from "@conquest/clickhouse/profiles/createProfile";
@@ -28,6 +29,7 @@ import {
 import { config } from "dotenv";
 import express from "express";
 import { sleep } from "./helpers/sleep";
+
 config();
 
 const app = express();
@@ -55,10 +57,6 @@ const client = new Client({
 
 client.once(Events.ClientReady, (readyClient) => {
   console.log(`Ready! Logged in as ${readyClient.user.tag}`);
-});
-
-client.on(Events.InviteCreate, async (invite) => {
-  console.log("InviteCreate", invite);
 });
 
 client.on(Events.GuildMemberAdd, async (member) => {
@@ -125,9 +123,20 @@ client.on(Events.GuildMemberRemove, async (member) => {
   const { workspace_id } = integration;
 
   try {
+    const profile = await getProfile({
+      external_id: id,
+      workspace_id,
+    });
+
+    if (!profile) return;
+
     await deleteProfile({
       external_id: id,
       workspace_id,
+    });
+
+    await deleteMember({
+      id: profile.member_id,
     });
   } catch (error) {
     console.error("GuildMemberRemove", error);
@@ -215,7 +224,7 @@ client.on(Events.ChannelCreate, async (channel) => {
   }
 });
 
-client.on(Events.ChannelUpdate, async (channel) => {
+client.on(Events.ChannelUpdate, async (_, channel) => {
   console.log("ChannelUpdate", channel);
   const { id, name, guildId } = channel as NonThreadGuildBasedChannel;
 
@@ -282,7 +291,7 @@ client.on(Events.MessageCreate, async (message) => {
   const channel = await getChannel({ external_id: channelId, workspace_id });
 
   if (!channel) {
-    await sleep(1500);
+    await sleep(2000);
 
     const activity = await getActivity({
       external_id: channelId,
@@ -297,13 +306,13 @@ client.on(Events.MessageCreate, async (message) => {
 
       if (!activityType) return;
 
+      const { activity_type, ...data } = activity;
+
       try {
         return await updateActivity({
-          ...activity,
-          external_id: activity.external_id,
+          ...data,
           activity_type_id: activityType.id,
           message: content,
-          workspace_id,
         });
       } catch (error) {
         console.error("ThreadFirstMessage", error);
@@ -616,23 +625,24 @@ client.on(Events.GuildRoleDelete, async (role) => {
 
     if (!tag) return;
 
-    await prisma.$transaction([
-      prisma.tag.delete({
-        where: {
-          external_id_workspace_id: {
-            external_id: id,
-            workspace_id,
-          },
+    await prisma.tag.delete({
+      where: {
+        external_id_workspace_id: {
+          external_id: id,
+          workspace_id,
         },
-      }),
+      },
+    });
 
-      prisma.$executeRaw`
-        UPDATE members 
-        SET tags = array_remove(tags, ${tag.id})
-        WHERE workspace_id = ${workspace_id}
-        AND tags @> ARRAY[${tag.id}]::text[]
+    await clickhouseClient.query({
+      query: `
+        ALTER TABLE member
+        UPDATE tags = arrayFilter(x -> x != '${tag.id}', tags)
+        WHERE workspace_id = '${workspace_id}'
+        AND has(tags, '${tag.id}')
       `,
-    ]);
+      format: "JSON",
+    });
   } catch (error) {
     console.error("GuildRoleDelete", error);
   }

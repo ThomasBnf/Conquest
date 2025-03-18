@@ -43,7 +43,7 @@ export const DiscordThread = ({ activity, member }: Props) => {
             <span className="font-medium text-foreground">
               {first_name} {last_name}
             </span>{" "}
-            sent message
+            created a thread
             <span className="font-medium text-foreground">
               {" "}
               in #{channel?.name}

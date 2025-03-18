@@ -89,7 +89,7 @@ export const FilterButton = () => {
                     </CommandItem>
                   ))}
                 </CommandGroup>
-                {discourse && (
+                {user_fields && user_fields?.length > 0 && (
                   <CommandGroup heading="Discourse">
                     {filtersDiscourse.map((filter) => (
                       <CommandItem

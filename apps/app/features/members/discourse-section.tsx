@@ -20,7 +20,7 @@ export const DiscourseSection = ({ profiles }: Props) => {
   const source = "Discourse";
   const { data: discourse } = trpc.integrations.bySource.useQuery({ source });
   const details = DiscourseDetailsSchema.parse(discourse?.details);
-  const { user_fields } = details;
+  const { community_url, user_fields } = details;
 
   const discourseProfile = DiscourseProfileSchema.parse(profile);
   const { attributes } = discourseProfile;
@@ -32,7 +32,7 @@ export const DiscourseSection = ({ profiles }: Props) => {
         <EditableLink
           placeholder="No discourse profile"
           defaultValue={username}
-          href={`https://playground.lagrowthmachine.com/u/${username}/summary`}
+          href={`${community_url}/u/${username}/summary`}
           editable={false}
         />
       </FieldCard>

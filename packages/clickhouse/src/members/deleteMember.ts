@@ -11,4 +11,12 @@ export const deleteMember = async ({ id }: Props) => {
       DELETE WHERE id = '${id}'
     `,
   });
+
+  await client.query({
+    query: `
+      ALTER TABLE activity
+      DELETE WHERE 
+      (invite_to = '${id}' OR member_id = '${id}')
+    `,
+  });
 };
