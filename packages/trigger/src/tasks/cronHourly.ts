@@ -28,10 +28,8 @@ export const cronHourly = schedules.task({
     const { data } = await result.json();
     const members = data as Array<{ member_id: string }>;
 
-    await Promise.all(
-      members.map(async (member) => {
-        await getPulseAndLevel({ memberId: member.member_id });
-      }),
-    );
+    for (const member of members) {
+      await getPulseAndLevel({ memberId: member.member_id });
+    }
   },
 });
