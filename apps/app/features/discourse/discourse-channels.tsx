@@ -37,8 +37,13 @@ export const DiscourseChannels = () => {
       },
     });
 
-  const { data: discourseChannels, isLoading } =
-    trpc.discourse.listChannels.useQuery();
+  const {
+    data: discourseChannels,
+    isLoading,
+    failureReason,
+  } = trpc.discourse.listChannels.useQuery();
+
+  console.log(failureReason);
 
   const groupedChannels = groupChannels(discourseChannels ?? []);
 
