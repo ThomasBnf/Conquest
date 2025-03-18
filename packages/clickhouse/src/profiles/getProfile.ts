@@ -24,7 +24,7 @@ export const getProfile = async (props: Props) => {
     params.username = username;
     params.workspace_id = workspace_id;
 
-    where = `username = '${username}' AND workspace_id = '${workspace_id}'`;
+    where = `attributes.username = '${username}' AND workspace_id = '${workspace_id}'`;
   }
 
   const result = await client.query({

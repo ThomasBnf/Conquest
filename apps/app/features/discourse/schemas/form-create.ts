@@ -13,6 +13,7 @@ export const FormCreateSchema = z.object({
   content_type: z.boolean(),
   secret: z.boolean(),
   send_me_everything: z.boolean(),
+  active: z.boolean(),
 });
 
 export type FormCreate = z.infer<typeof FormCreateSchema>;

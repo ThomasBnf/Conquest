@@ -13,14 +13,9 @@ type Props = {
 
 export const createManyReactions = async ({ discourse, profile }: Props) => {
   const { details, workspace_id } = discourse;
-  const { community_url, community_url_iv, api_key, api_key_iv } = details;
+  const { community_url, api_key, api_key_iv } = details;
   const { member_id, attributes } = profile;
   const { username } = attributes;
-
-  const decryptedCommunityUrl = await decrypt({
-    access_token: community_url,
-    iv: community_url_iv,
-  });
 
   const decryptedApiKey = await decrypt({
     access_token: api_key,
@@ -35,7 +30,7 @@ export const createManyReactions = async ({ discourse, profile }: Props) => {
 
   while (hasMore) {
     const response = await fetch(
-      `${decryptedCommunityUrl}/discourse-reactions/posts/reactions.json?username=${username}${
+      `${community_url}/discourse-reactions/posts/reactions.json?username=${username}${
         before ? `&before_reaction_user_id=${before}` : ""
       }`,
       {
@@ -46,6 +41,11 @@ export const createManyReactions = async ({ discourse, profile }: Props) => {
         },
       },
     );
+
+    if (!response.ok) {
+      hasMore = false;
+      break;
+    }
 
     const data = await response.json();
     const dataReactions = ReactionSchema.array().parse(data);

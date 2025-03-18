@@ -1,5 +1,5 @@
 import { createMember } from "@conquest/clickhouse/members/createMember";
-import { getMemberMetrics } from "@conquest/clickhouse/members/getMemberMetrics";
+import { getPulseAndLevel } from "@conquest/clickhouse/members/getPulseAndLevel";
 import { createProfile } from "@conquest/clickhouse/profiles/createProfile";
 import type { DiscourseIntegration } from "@conquest/zod/schemas/integration.schema";
 import type { Member } from "@conquest/zod/schemas/member.schema";
@@ -29,13 +29,7 @@ export const createManyMembers = async ({
   tags: Tag[];
 }) => {
   const { workspace_id, details } = discourse;
-  const { community_url, community_url_iv, api_key, api_key_iv, user_fields } =
-    details;
-
-  const decryptedCommunityUrl = await decrypt({
-    access_token: community_url,
-    iv: community_url_iv,
-  });
+  const { community_url, api_key, api_key_iv, user_fields } = details;
 
   const decryptedApiKey = await decrypt({
     access_token: api_key,
@@ -92,7 +86,7 @@ export const createManyMembers = async ({
       params.set("user_field_ids", fieldsIds.join("|"));
     }
 
-    const url = `${decryptedCommunityUrl}/directory_items.json?${params.toString()}`;
+    const url = `${community_url}/directory_items.json?${params.toString()}`;
 
     const response = await fetch(url, {
       headers: {
@@ -102,6 +96,7 @@ export const createManyMembers = async ({
     });
 
     const data = await response.json();
+    console.log("directory_items", data);
     const { directory_items } = DirectoryItemsSchema.parse(data);
 
     for (const item of directory_items ?? []) {
@@ -129,7 +124,7 @@ export const createManyMembers = async ({
       }
 
       const [firstName, lastName] = name?.split(" ") ?? [];
-      const avatarUrl = `${decryptedCommunityUrl}/${avatar_template.replace(
+      const avatarUrl = `${community_url}/${avatar_template.replace(
         "{size}",
         "500",
       )}`;
@@ -210,7 +205,7 @@ export const createManyMembers = async ({
 
       await wait.for({ seconds: 0.5 });
 
-      await getMemberMetrics({ memberId: member.id });
+      await getPulseAndLevel({ memberId: member.id });
 
       await wait.for({ seconds: 3 });
     }

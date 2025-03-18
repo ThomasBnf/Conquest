@@ -10,7 +10,6 @@ export default async function Page() {
     details: {
       source: "Discourse",
       community_url: "",
-      community_url_iv: "",
       api_key: "",
       api_key_iv: "",
       user_fields: [],

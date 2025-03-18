@@ -113,27 +113,29 @@ export const DirectoryItemsSchema = z.object({
             }),
           )
           .optional(),
-        geo_location: z.union([
-          z.object({
-            lat: z.string(),
-            lon: z.string(),
-            address: z.string(),
-            countrycode: z.string(),
-            city: z.string(),
-            state: z.string(),
-            country: z.string(),
-            postalcode: z.string().optional(),
-            boundingbox: z.array(z.string()),
-            type: z.string(),
-          }),
-          z.string(),
-          z.null(),
-        ]),
+        geo_location: z
+          .union([
+            z.object({
+              lat: z.string(),
+              lon: z.string(),
+              address: z.string(),
+              countrycode: z.string(),
+              city: z.string(),
+              state: z.string(),
+              country: z.string(),
+              postalcode: z.string().optional(),
+              boundingbox: z.array(z.string()),
+              type: z.string(),
+            }),
+            z.string(),
+            z.null(),
+          ])
+          .optional(),
       }),
     })
     .array(),
   meta: z.object({
-    last_updated_at: z.string(),
+    last_updated_at: z.string().nullable(),
     total_rows_directory_items: z.number(),
     load_more_directory_items: z.string(),
   }),

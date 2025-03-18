@@ -30,7 +30,6 @@ export const SlackDetailsSchema = z.object({
 export const DiscourseDetailsSchema = z.object({
   source: z.literal("Discourse"),
   community_url: z.string(),
-  community_url_iv: z.string(),
   api_key: z.string(),
   api_key_iv: z.string(),
   user_fields: z

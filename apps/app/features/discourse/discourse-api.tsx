@@ -256,6 +256,24 @@ export const DiscourseApi = () => {
                 </FormItem>
               )}
             />
+            <FormField
+              control={form.control}
+              name="active"
+              render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    <DiscourseInstruction
+                      title="Active"
+                      text={`I have checked "Active"`}
+                      value={field.value}
+                      disabled={loading}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
           </div>
         </div>
         <Button disabled={loading} className="w-fit">

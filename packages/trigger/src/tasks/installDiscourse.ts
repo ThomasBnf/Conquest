@@ -21,21 +21,18 @@ export const installDiscourse = schemaTask({
     metadata.set("progress", 0);
 
     const { workspace_id, details } = discourse;
-    const { community_url, community_url_iv, api_key, api_key_iv } = details;
+    const { community_url, api_key, api_key_iv } = details;
 
-    const decryptedCommunityUrl = await decrypt({
-      access_token: community_url,
-      iv: community_url_iv,
-    });
     const decryptedApiKey = await decrypt({
       access_token: api_key,
       iv: api_key_iv,
     });
 
     const client = discourseClient({
-      community_url: decryptedCommunityUrl,
+      community_url,
       api_key: decryptedApiKey,
     });
+
     metadata.set("progress", 5);
 
     const tags = await createManyTags({ client, workspace_id });

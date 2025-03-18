@@ -33,13 +33,10 @@ export const updateIntegration = protectedProcedure
     } = input;
 
     if (details?.source === "Discourse") {
-      const { community_url, api_key } = details;
+      const { api_key } = details;
 
-      const encryptedCommunityUrl = await encrypt(community_url);
       const encryptedApiKey = await encrypt(api_key);
 
-      details.community_url = encryptedCommunityUrl.token;
-      details.community_url_iv = encryptedCommunityUrl.iv;
       details.api_key = encryptedApiKey.token;
       details.api_key_iv = encryptedApiKey.iv;
     }

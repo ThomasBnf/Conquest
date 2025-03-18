@@ -17,12 +17,7 @@ export const listChannels = protectedProcedure.query(
     );
 
     const { details } = integration;
-    const { community_url, community_url_iv, api_key, api_key_iv } = details;
-
-    const decryptedCommunityUrl = await decrypt({
-      access_token: community_url,
-      iv: community_url_iv,
-    });
+    const { community_url, api_key, api_key_iv } = details;
 
     const decryptedApiKey = await decrypt({
       access_token: api_key,
@@ -30,8 +25,8 @@ export const listChannels = protectedProcedure.query(
     });
 
     const client = discourseClient({
-      community_url: decryptedCommunityUrl,
       api_key: decryptedApiKey,
+      community_url,
     });
 
     const { categories } = await client.getSite();

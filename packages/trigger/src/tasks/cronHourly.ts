@@ -1,5 +1,5 @@
 import { client } from "@conquest/clickhouse/client";
-import { getMemberMetrics } from "@conquest/clickhouse/members/getMemberMetrics";
+import { getPulseAndLevel } from "@conquest/clickhouse/members/getPulseAndLevel";
 import { schedules } from "@trigger.dev/sdk/v3";
 import { endOfHour, format, startOfHour, subHours } from "date-fns";
 
@@ -30,7 +30,7 @@ export const cronHourly = schedules.task({
 
     await Promise.all(
       members.map(async (member) => {
-        await getMemberMetrics({ memberId: member.member_id });
+        await getPulseAndLevel({ memberId: member.member_id });
       }),
     );
   },

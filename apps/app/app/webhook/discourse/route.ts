@@ -27,9 +27,14 @@ import { type NextRequest, NextResponse } from "next/server";
 import { createHmac } from "node:crypto";
 
 export async function POST(request: NextRequest) {
-  const body = await request.json();
+  const rawBody = await request.text();
+  const body = JSON.parse(rawBody);
 
-  const integration = await checkSignature(request);
+  if (body.ping) {
+    return NextResponse.json({ status: 200 });
+  }
+
+  const integration = await checkSignature(request, rawBody);
 
   if (!integration) return NextResponse.json({ status: 200 });
 
@@ -60,7 +65,7 @@ export async function POST(request: NextRequest) {
     if (!channel) return NextResponse.json({ status: 200 });
 
     await upsertActivity({
-      external_id: `t-${id}`,
+      external_id: `t/${id}`,
       activity_type_key: "discourse:topic",
       title,
       message: "",
@@ -76,7 +81,7 @@ export async function POST(request: NextRequest) {
     const { id, title } = topic;
 
     const activity = await getActivity({
-      external_id: `t-${id}`,
+      external_id: `t/${id}`,
       workspace_id,
     });
 
@@ -101,15 +106,15 @@ export async function POST(request: NextRequest) {
     const { id } = topic;
 
     await deleteActivity({
-      external_id: `t-${id}`,
+      external_id: `t/${id}`,
       workspace_id,
     });
 
     await client.query({
       query: `
         DELETE FROM activities
-        WHERE react_to LIKE 't-${id}'
-        OR reply_to LIKE 't-${id}'
+        WHERE react_to LIKE 't/${id}'
+        OR reply_to LIKE 't/${id}'
       `,
     });
   }
@@ -146,9 +151,11 @@ export async function POST(request: NextRequest) {
 
     if (post_number === 1) {
       const activity = await getActivity({
-        external_id: `t-${id}`,
+        external_id: `t/${id}`,
         workspace_id,
       });
+
+      console.log("activity", activity);
 
       if (!activity) return NextResponse.json({ status: 200 });
 
@@ -156,6 +163,8 @@ export async function POST(request: NextRequest) {
         key: "discourse:topic",
         workspace_id,
       });
+
+      console.log("activityType", activityType);
 
       if (!activityType) return NextResponse.json({ status: 200 });
 
@@ -170,7 +179,7 @@ export async function POST(request: NextRequest) {
 
     if (reply_to_user && reply_to_post_number) {
       await createActivity({
-        external_id: `p-${id}`,
+        external_id: `p/${id}`,
         activity_type_key: "discourse:reply",
         message: post.cooked,
         reply_to: `t/${topic_id}/${reply_to_post_number}`,
@@ -184,7 +193,7 @@ export async function POST(request: NextRequest) {
     }
 
     await createActivity({
-      external_id: `p-${id}`,
+      external_id: `p/${id}`,
       activity_type_key: "discourse:reply",
       reply_to: `t/${topic_id}`,
       message: post.cooked,
@@ -197,10 +206,10 @@ export async function POST(request: NextRequest) {
 
   if (post && event === "post_edited") {
     await sleep(1000);
-    const { id, post_number, topic_id } = post;
+    const { id, post_number } = post;
 
     const activity = await getActivity({
-      external_id: `t-${id}`,
+      external_id: `t/${id}`,
       workspace_id,
     });
 
@@ -232,7 +241,7 @@ export async function POST(request: NextRequest) {
     if (!profile) return NextResponse.json({ status: 200 });
 
     await deleteActivity({
-      external_id: `p-${id}`,
+      external_id: `p/${id}`,
       workspace_id,
     });
   }
@@ -534,7 +543,7 @@ export async function POST(request: NextRequest) {
     if (!channel) return NextResponse.json({ status: 200 });
 
     const activity = await getActivity({
-      external_id: `t-${id}`,
+      external_id: `t/${id}`,
       workspace_id,
     });
 
@@ -553,12 +562,13 @@ export async function POST(request: NextRequest) {
       activity_type_id: activityType.id,
     });
   }
+
+  return NextResponse.json({ status: 200 });
 }
 
-const checkSignature = async (request: NextRequest) => {
-  const signature = request.headers.get("X-Discourse-Event-Signature");
-  const community_url = request.headers.get("X-Discourse-Instance");
-  const rawBody = await request.text();
+const checkSignature = async (request: NextRequest, rawBody: string) => {
+  const signature = request.headers.get("x-discourse-event-signature");
+  const community_url = request.headers.get("x-discourse-instance");
 
   if (!signature) return false;
 
