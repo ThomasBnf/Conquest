@@ -1,9 +1,3 @@
-import { listActivities } from "@conquest/clickhouse/activities/listActivities";
-import { getPulseScore } from "@conquest/clickhouse/helpers/getPulseScore";
-import { listLevels } from "@conquest/clickhouse/levels/listLevels";
-import { createManyLogs } from "@conquest/clickhouse/logs/createManyLogs";
-import { listMembers } from "@conquest/clickhouse/members/listMembers";
-import { updateMember } from "@conquest/clickhouse/members/updateMember";
 import type { Log } from "@conquest/zod/schemas/logs.schema";
 import { runs, schemaTask } from "@trigger.dev/sdk/v3";
 import {
@@ -13,7 +7,6 @@ import {
   subDays,
   subWeeks,
 } from "date-fns";
-import { randomUUID } from "node:crypto";
 import { z } from "zod";
 
 export const getAllMembersMetrics = schemaTask({
@@ -38,10 +31,10 @@ export const getAllMembersMetrics = schemaTask({
       );
     }
 
-    const levels = await listLevels({ workspace_id });
-    const members = await listMembers({ workspace_id });
+    // const levels = await listLevels({ workspace_id });
+    // const members = await listMembers({ workspace_id });
 
-    if (!members) return;
+    // if (!members) return;
 
     const today = new Date();
     const startDate = startOfDay(subWeeks(today, 52));
@@ -52,56 +45,56 @@ export const getAllMembersMetrics = schemaTask({
       { weekStartsOn: 1 },
     );
 
-    await Promise.all(
-      members?.map(async (member) => {
-        const activities = await listActivities({
-          member_id: member.id,
-          period: 365,
-          workspace_id,
-        });
+    // await Promise.all(
+    //   members?.map(async (member) => {
+    // const activities = await listActivities({
+    //   member_id: member.id,
+    //   period: 365,
+    //   workspace_id,
+    // });
 
-        const logs: Log[] = [];
+    const logs: Log[] = [];
 
-        for (const interval of intervals) {
-          const intervalEnd = interval;
-          const intervalStart = subDays(intervalEnd, 90);
+    for (const interval of intervals) {
+      const intervalEnd = interval;
+      const intervalStart = subDays(intervalEnd, 90);
 
-          const filteredActivities = activities?.filter(
-            (activity) =>
-              activity.created_at >= intervalStart &&
-              activity.created_at <= intervalEnd,
-          );
+      // const filteredActivities = activities?.filter(
+      //   (activity) =>
+      //     activity.created_at >= intervalStart &&
+      //     activity.created_at <= intervalEnd,
+      // );
 
-          const pulseScore = getPulseScore({ activities: filteredActivities });
+      // const pulseScore = getPulseScore({ activities: filteredActivities });
 
-          const level = levels.find(
-            (level) =>
-              pulseScore >= level.from &&
-              pulseScore <= (level.to ?? Number.POSITIVE_INFINITY),
-          );
+      // const level = levels.find(
+      //   (level) =>
+      //     pulseScore >= level.from &&
+      //     pulseScore <= (level.to ?? Number.POSITIVE_INFINITY),
+      // );
 
-          logs.push({
-            id: randomUUID(),
-            date: interval,
-            pulse: pulseScore,
-            level_id: level?.id ?? null,
-            member_id: member.id,
-            workspace_id: member.workspace_id,
-          });
-        }
+      // logs.push({
+      //   id: randomUUID(),
+      //   date: interval,
+      //   pulse: pulseScore,
+      //   level_id: level?.id ?? null,
+      //   member_id: member.id,
+      //   workspace_id: member.workspace_id,
+      // });
+    }
 
-        await createManyLogs({ logs });
+    // await createManyLogs({ logs });
 
-        const { pulse, level_id } = logs.at(-1) ?? {};
+    const { pulse, level_id } = logs.at(-1) ?? {};
 
-        await updateMember({
-          ...member,
-          first_activity: activities?.at(-1)?.created_at ?? null,
-          last_activity: activities?.at(0)?.created_at ?? null,
-          pulse: pulse ?? 0,
-          level_id: level_id ?? null,
-        });
-      }) ?? [],
-    );
+    // await updateMember({
+    //   ...member,
+    //   first_activity: activities?.at(-1)?.created_at ?? null,
+    //   last_activity: activities?.at(0)?.created_at ?? null,
+    //   pulse: pulse ?? 0,
+    //   level_id: level_id ?? null,
+    // });
+    // }) ?? [],
+    // );
   },
 });
