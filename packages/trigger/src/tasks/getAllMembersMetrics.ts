@@ -38,8 +38,6 @@ export const getAllMembersMetrics = schemaTask({
 
     logger.info(`Found ${members.length} members`);
 
-    // if (!members) return;
-
     const today = new Date();
     const startDate = startOfDay(subWeeks(today, 52));
     const endDate = endOfDay(today);
@@ -49,56 +47,58 @@ export const getAllMembersMetrics = schemaTask({
       { weekStartsOn: 1 },
     );
 
-    // await Promise.all(
-    //   members?.map(async (member) => {
-    // const activities = await listActivities({
-    //   member_id: member.id,
-    //   period: 365,
-    //   workspace_id,
-    // });
-
-    const logs: Log[] = [];
-
-    for (const interval of intervals) {
-      const intervalEnd = interval;
-      const intervalStart = subDays(intervalEnd, 90);
-
-      // const filteredActivities = activities?.filter(
-      //   (activity) =>
-      //     activity.created_at >= intervalStart &&
-      //     activity.created_at <= intervalEnd,
-      // );
-
-      // const pulseScore = getPulseScore({ activities: filteredActivities });
-
-      // const level = levels.find(
-      //   (level) =>
-      //     pulseScore >= level.from &&
-      //     pulseScore <= (level.to ?? Number.POSITIVE_INFINITY),
-      // );
-
-      // logs.push({
-      //   id: randomUUID(),
-      //   date: interval,
-      //   pulse: pulseScore,
-      //   level_id: level?.id ?? null,
+    for (const member of members) {
+      // const activities = await listActivities({
       //   member_id: member.id,
-      //   workspace_id: member.workspace_id,
+      //   period: 365,
+      //   workspace_id,
       // });
+
+      const logs: Log[] = [];
+
+      for (const interval of intervals) {
+        const intervalEnd = interval;
+        const intervalStart = subDays(intervalEnd, 90);
+
+        // const filteredActivities = activities?.filter(
+        //   (activity) =>
+        //     activity.created_at >= intervalStart &&
+        //     activity.created_at <= intervalEnd,
+        // );
+
+        // const pulseScore = getPulseScore({ activities: filteredActivities });
+
+        // const level = levels.find(
+        //   (level) =>
+        //     pulseScore >= level.from &&
+        //     pulseScore <= (level.to ?? Number.POSITIVE_INFINITY),
+        // );
+
+        // logs.push({
+        //   id: randomUUID(),
+        //   date: interval,
+        //   pulse: pulseScore,
+        //   level_id: level?.id ?? null,
+        //   member_id: member.id,
+        //   workspace_id: member.workspace_id,
+        // });
+      }
+
+      // await createManyLogs({ logs });
+
+      const { pulse, level_id } = logs.at(-1) ?? {};
+
+      // await updateMember({
+      //   ...member,
+      //   first_activity: activities?.at(-1)?.created_at ?? null,
+      //   last_activity: activities?.at(0)?.created_at ?? null,
+      //   pulse: pulse ?? 0,
+      //   level_id: level_id ?? null,
+      // });
+      // }) ?? [],
+      // );
+
+      console.log(member.id);
     }
-
-    // await createManyLogs({ logs });
-
-    const { pulse, level_id } = logs.at(-1) ?? {};
-
-    // await updateMember({
-    //   ...member,
-    //   first_activity: activities?.at(-1)?.created_at ?? null,
-    //   last_activity: activities?.at(0)?.created_at ?? null,
-    //   pulse: pulse ?? 0,
-    //   level_id: level_id ?? null,
-    // });
-    // }) ?? [],
-    // );
   },
 });
