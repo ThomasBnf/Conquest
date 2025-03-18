@@ -1,7 +1,9 @@
+import { auth } from "@/auth";
 import { env } from "@conquest/env";
 import { cn } from "@conquest/ui/cn";
 import "@conquest/ui/globals.css";
 import type { Metadata } from "next";
+import { SessionProvider } from "next-auth/react";
 import { Inter } from "next/font/google";
 import Script from "next/script";
 import { Providers } from "providers/Providers";
@@ -18,10 +20,14 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const session = await auth();
+
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={cn("h-dvh overflow-hidden", inter.className)}>
-        <Providers>{children}</Providers>
+        <SessionProvider session={session}>
+          <Providers>{children}</Providers>
+        </SessionProvider>
         <Script
           id="initMap"
           strategy="beforeInteractive"

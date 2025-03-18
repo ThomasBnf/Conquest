@@ -1,5 +1,6 @@
 import { useUser } from "@/context/userContext";
 import { trpc } from "@/server/client";
+import { useSession } from "next-auth/react";
 import Link from "next/link";
 
 type Props = {
@@ -7,7 +8,8 @@ type Props = {
 };
 
 export const SlackMention = ({ slackId }: Props) => {
-  const { slug } = useUser();
+  const { data: session } = useSession();
+  const { slug } = session?.user.workspace ?? {};
 
   const { data: profile } = trpc.profiles.get.useQuery({
     external_id: slackId,

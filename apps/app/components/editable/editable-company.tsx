@@ -1,4 +1,3 @@
-import { useUser } from "@/context/userContext";
 import { trpc } from "@/server/client";
 import { Button } from "@conquest/ui/button";
 import {
@@ -15,6 +14,7 @@ import type { Company } from "@conquest/zod/schemas/company.schema";
 import type { Member } from "@conquest/zod/schemas/member.schema";
 import { CommandLoading } from "cmdk";
 import { Plus, X } from "lucide-react";
+import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useDebounce } from "use-debounce";
@@ -25,7 +25,8 @@ type Props = {
 };
 
 export const EditableCompany = ({ member, onUpdate }: Props) => {
-  const { slug } = useUser();
+  const { data: session } = useSession();
+  const { slug } = session?.user.workspace ?? {};
   const [query, setQuery] = useState("");
   const [search, setSearch] = useDebounce(query, 500);
   const [open, setOpen] = useState(false);

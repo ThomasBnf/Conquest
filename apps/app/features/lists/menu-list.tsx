@@ -1,5 +1,4 @@
 import { AlertDialog } from "@/components/custom/alert-dialog";
-import { useUser } from "@/context/userContext";
 import { trpc } from "@/server/client";
 import { Button } from "@conquest/ui/button";
 import {
@@ -10,6 +9,7 @@ import {
 } from "@conquest/ui/dropdown-menu";
 import type { List } from "@conquest/zod/schemas/list.schema";
 import { MoreHorizontal, Pen, Trash2 } from "lucide-react";
+import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -21,7 +21,8 @@ type Props = {
 };
 
 export const MenuList = ({ list, transparent = false }: Props) => {
-  const { slug } = useUser();
+  const { data: session } = useSession();
+  const { slug } = session?.user.workspace ?? {};
   const [open, setOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
   const router = useRouter();

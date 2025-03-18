@@ -1,4 +1,3 @@
-import { useUser } from "@/context/userContext";
 import { tableParams } from "@/lib/tableParams";
 import {
   type ColumnDef,
@@ -11,6 +10,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
+import { useSession } from "next-auth/react";
 import { useQueryStates } from "nuqs";
 import { useState } from "react";
 
@@ -33,7 +33,8 @@ export const useTable = <TData, TValue>({
   desc,
   type,
 }: Props<TData, TValue>) => {
-  const { user } = useUser();
+  const { data: session } = useSession();
+  const { user } = session ?? {};
   const { members_preferences, companies_preferences } = user ?? {};
   const [{ page, pageSize }] = useQueryStates(tableParams);
 

@@ -1,16 +1,16 @@
-import { useUser } from "@/context/userContext";
 import { trpc } from "@/server/client";
 import { Badge } from "@conquest/ui/badge";
 import { Button } from "@conquest/ui/button";
 import { differenceInDays } from "date-fns";
 import { Loader2 } from "lucide-react";
+import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 
 export const TrialCard = () => {
-  const { workspace } = useUser();
-  const { trial_end, is_past_due } = workspace ?? {};
+  const { data: session } = useSession();
+  const { trial_end, is_past_due } = session?.user.workspace ?? {};
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 

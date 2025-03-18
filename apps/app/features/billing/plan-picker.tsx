@@ -1,4 +1,3 @@
-import { useUser } from "@/context/userContext";
 import { Button } from "@conquest/ui/button";
 import { cn } from "@conquest/ui/cn";
 import {
@@ -12,6 +11,7 @@ import {
 import { ScrollArea } from "@conquest/ui/scroll-area";
 import type { Plan } from "@conquest/zod/enum/plan.enum";
 import { Check, Loader2 } from "lucide-react";
+import { useSession } from "next-auth/react";
 import { type Dispatch, type SetStateAction, useState } from "react";
 import { PeriodToggle } from "./period-toggle";
 import { plans } from "./plans";
@@ -39,7 +39,8 @@ export const PlanPicker = ({
   loading,
   trial,
 }: Props) => {
-  const { workspace } = useUser();
+  const { data: session } = useSession();
+  const { workspace } = session?.user ?? {};
   const [open, setOpen] = useState(false);
 
   const { plan: currentPlan, is_past_due } = workspace ?? {};

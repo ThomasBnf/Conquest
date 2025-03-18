@@ -10,11 +10,13 @@ import {
   SidebarMenuItem,
 } from "@conquest/ui/sidebar";
 import { Plus } from "lucide-react";
+import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 export const SidebarLists = () => {
-  const { slug } = useUser();
+  const { data: session } = useSession();
+  const { slug } = session?.user.workspace ?? {};
   const { setOpen } = useOpenList();
   const pathname = usePathname();
 

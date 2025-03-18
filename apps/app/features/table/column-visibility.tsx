@@ -1,4 +1,3 @@
-import { useUser } from "@/context/userContext";
 import { trpc } from "@/server/client";
 import { Button } from "@conquest/ui/button";
 import { cn } from "@conquest/ui/cn";
@@ -11,6 +10,7 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from "@conquest/ui/popover";
 import type { Column, Table } from "@tanstack/react-table";
 import { Check, Settings2 } from "lucide-react";
+import { useSession } from "next-auth/react";
 import { useState } from "react";
 
 type Props<TData> = {
@@ -19,7 +19,8 @@ type Props<TData> = {
 };
 
 export const ColumnVisibility = <TData,>({ table, type }: Props<TData>) => {
-  const { user } = useUser();
+  const { data: session } = useSession();
+  const { user } = session ?? {};
   const [open, setOpen] = useState(false);
 
   const { mutateAsync } = trpc.users.update.useMutation();

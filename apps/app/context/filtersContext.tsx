@@ -6,8 +6,8 @@ import {
   type GroupFilters,
   GroupFiltersSchema,
 } from "@conquest/zod/schemas/filters.schema";
+import { useSession } from "next-auth/react";
 import { createContext, useContext, useState } from "react";
-import { useUser } from "./userContext";
 
 type filtersContext = {
   groupFilters: GroupFilters;
@@ -26,7 +26,8 @@ type Props = {
 };
 
 export const FiltersProvider = ({ defaultGroupFilters, children }: Props) => {
-  const { user } = useUser();
+  const { data: session } = useSession();
+  const { user } = session ?? {};
   const { members_preferences } = user ?? {};
   const utils = trpc.useUtils();
 

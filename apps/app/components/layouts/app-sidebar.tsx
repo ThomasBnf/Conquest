@@ -3,9 +3,7 @@
 import { Companies } from "@/components/icons/Companies";
 import { Dashboard } from "@/components/icons/Dashboard";
 import { Members } from "@/components/icons/Members";
-import { useUser } from "@/context/userContext";
 import { WorkspaceMenu } from "@/features/workspaces/workspace-menu";
-import { useOpenList } from "@/hooks/useOpenList";
 import { Separator } from "@conquest/ui/separator";
 import {
   Sidebar,
@@ -20,6 +18,7 @@ import {
   useSidebar,
 } from "@conquest/ui/sidebar";
 import type { Workspace } from "@conquest/zod/schemas/workspace.schema";
+import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Documentation } from "../icons/Documentation";
@@ -34,9 +33,9 @@ type Props = {
 };
 
 export const AppSidebar = ({ workspace }: Props) => {
-  const { slug } = useUser();
+  const { data: session } = useSession();
+  const { slug } = session?.user.workspace ?? {};
   const { state } = useSidebar();
-  const { setOpen } = useOpenList();
   const pathname = usePathname();
 
   const routes = [
@@ -96,7 +95,7 @@ export const AppSidebar = ({ workspace }: Props) => {
                   tooltip={route.label}
                   isActive={route.isActive}
                 >
-                  <Link href={route.href}>
+                  <Link href={route.href} prefetch>
                     {route.icon}
                     <span>{route.label}</span>
                   </Link>
@@ -112,7 +111,7 @@ export const AppSidebar = ({ workspace }: Props) => {
           {footer.map((route) => (
             <SidebarMenuItem key={route.label}>
               <SidebarMenuButton asChild tooltip={route.label}>
-                <Link href={route.href}>
+                <Link href={route.href} prefetch>
                   {route.icon}
                   <span>{route.label}</span>
                 </Link>
@@ -125,7 +124,7 @@ export const AppSidebar = ({ workspace }: Props) => {
           {links.map((route) => (
             <SidebarMenuItem key={route.label}>
               <SidebarMenuButton asChild tooltip={route.label}>
-                <Link href={route.href} target="_blank">
+                <Link href={route.href} target="_blank" prefetch>
                   {route.icon}
                   <span>{route.label}</span>
                 </Link>

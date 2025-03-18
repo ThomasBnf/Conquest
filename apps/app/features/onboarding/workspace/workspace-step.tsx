@@ -1,4 +1,3 @@
-import { useUser } from "@/context/userContext";
 import { trpc } from "@/server/client";
 import { Button } from "@conquest/ui/button";
 import { CardContent, CardFooter } from "@conquest/ui/card";
@@ -14,6 +13,7 @@ import {
 import { Input } from "@conquest/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowRightIcon, Loader2 } from "lucide-react";
+import { useSession } from "next-auth/react";
 import { type Dispatch, type SetStateAction, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -29,7 +29,10 @@ type Props = {
 };
 
 export const WorkspaceStep = ({ setStep }: Props) => {
-  const { user, workspace } = useUser();
+  const { data: session } = useSession();
+  const { user } = session ?? {};
+  const { workspace } = user ?? {};
+
   const [loading, setLoading] = useState(false);
   const [isFocus, setFocus] = useState(false);
   const utils = trpc.useUtils();

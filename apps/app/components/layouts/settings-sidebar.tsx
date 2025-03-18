@@ -1,6 +1,5 @@
 "use client";
 
-import { useUser } from "@/context/userContext";
 import {
   Sidebar,
   SidebarContent,
@@ -15,6 +14,7 @@ import { APIKey } from "components/icons/APIKey";
 import { Tags } from "components/icons/Tags";
 import { User } from "components/icons/User";
 import { ArrowLeft } from "lucide-react";
+import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ActivityType } from "../icons/ActivityType";
@@ -26,7 +26,8 @@ import { LoadingIntegrations } from "../states/loading-integrations";
 import { TrialCard } from "./trial-card";
 
 export const SettingsSidebar = () => {
-  const { slug } = useUser();
+  const { data: session } = useSession();
+  const { slug } = session?.user.workspace ?? {};
   const pathname = usePathname();
 
   const menu = [
@@ -106,7 +107,7 @@ export const SettingsSidebar = () => {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton asChild className="w-fit">
-              <Link href={`/${slug}`}>
+              <Link href={`/${slug}`} prefetch>
                 <ArrowLeft />
                 Back to dashboard
               </Link>
@@ -122,7 +123,7 @@ export const SettingsSidebar = () => {
               {group.routes.map((route) => (
                 <SidebarMenuItem key={route.label}>
                   <SidebarMenuButton asChild isActive={route.isActive}>
-                    <Link href={route.href}>
+                    <Link href={route.href} prefetch>
                       {route.icon}
                       <span>{route.label}</span>
                     </Link>

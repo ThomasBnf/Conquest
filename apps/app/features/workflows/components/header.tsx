@@ -1,6 +1,5 @@
 "use client";
 
-import { useUser } from "@/context/userContext";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -12,23 +11,22 @@ import {
 import { Form, FormControl, FormField, FormItem } from "@conquest/ui/form";
 import { Input } from "@conquest/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
+import { useSession } from "next-auth/react";
 import Link from "next/link";
-import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import {
   type FormName,
   FormNameSchema,
 } from "../panels/schemas/form-name.schema";
-import { IsPublished } from "./isPublished";
-import { WorkflowMenu } from "./workflow-menu";
 
 type Props = {
   workflow_id: string;
 };
 
 export const Header = ({ workflow_id }: Props) => {
-  const { slug } = useUser();
+  const { data: session } = useSession();
+  const { slug } = session?.user.workspace ?? {};
   const queryClient = useQueryClient();
 
   // const { data: workflow } = getWorkflow({ workflow_id });

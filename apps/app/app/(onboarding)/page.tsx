@@ -1,6 +1,5 @@
 "use client";
 
-import { useUser } from "@/context/userContext";
 import { BillingPage } from "@/features/billing/billing-page";
 import { PlanPicker } from "@/features/billing/plan-picker";
 import type { PlanPeriod } from "@/features/billing/types";
@@ -15,12 +14,15 @@ import {
 import type { Plan } from "@conquest/zod/enum/plan.enum";
 import { QuestionsStep } from "features/onboarding/questions/questions-step";
 import { WorkspaceStep } from "features/onboarding/workspace/workspace-step";
+import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 
 export default function Page() {
-  const { user } = useUser();
+  const { data: session } = useSession();
+  const { user } = session ?? {};
+
   const [step, setStep] = useState(1);
   const [period, setPeriod] = useState<PlanPeriod>("monthly");
   const [loading, setLoading] = useState<Plan | null>(null);

@@ -17,6 +17,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { MemberCard } from "./member-card";
 import { MemberPicker } from "./member-picker";
+import { useSession } from "next-auth/react";
 
 type Props = {
   open: boolean;
@@ -25,7 +26,8 @@ type Props = {
 };
 
 export const MergeDialog = ({ open, setOpen, member }: Props) => {
-  const { slug } = useUser();
+  const { data: session } = useSession();
+  const { slug } = session?.user.workspace ?? {};
   const { first_name, last_name } = member ?? {};
   const [leftMember, setLeftMember] = useState<Member | null>(null);
   const [rightMember, setRightMember] = useState(member);
