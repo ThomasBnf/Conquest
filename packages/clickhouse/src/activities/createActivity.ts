@@ -1,3 +1,4 @@
+import type { Source } from "@conquest/zod/enum/source.enum";
 import type { Activity } from "@conquest/zod/schemas/activity.schema";
 import { randomUUID } from "node:crypto";
 import { getActivityTypeByKey } from "../activity-types/getActivityTypeByKey";
@@ -6,7 +7,7 @@ import { getActivity } from "./getActivity";
 
 type Props = {
   activity_type_key: string;
-  source: string;
+  source: Source;
   workspace_id: string;
 } & Partial<Activity>;
 
