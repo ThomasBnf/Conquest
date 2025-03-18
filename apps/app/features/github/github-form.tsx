@@ -4,17 +4,15 @@ import type { installGithub } from "@conquest/trigger/tasks/installGithub";
 import { Button } from "@conquest/ui/button";
 import { Separator } from "@conquest/ui/separator";
 import { useRealtimeTaskTrigger } from "@trigger.dev/react-hooks";
-import { useRouter } from "next/navigation";
+import { Loader2 } from "lucide-react";
 import { useEffect } from "react";
 import { toast } from "sonner";
 import { ActivityTypesList } from "../activities-types/activity-types-list";
 import { LoadingMessage } from "../integrations/loading-message";
 import { GithubRepo } from "./github-repo";
-import { Loader2 } from "lucide-react";
 
 export const GithubForm = () => {
-  const { github, loading, setLoading, step } = useIntegration();
-  const router = useRouter();
+  const { github, loading, setLoading, step, setStep } = useIntegration();
   const utils = trpc.useUtils();
 
   const { mutateAsync } = trpc.integrations.update.useMutation({
@@ -39,23 +37,23 @@ export const GithubForm = () => {
   };
 
   useEffect(() => {
-    if (github?.status === "SYNCING") {
-      setLoading(true);
-    }
-
     if (!run?.status) return;
 
     const isCompleted = run.status === "COMPLETED";
-    const isFailed = run.status === "FAILED";
 
-    if (isFailed || error) {
-      router.refresh();
+    if (["FAILED", "CRASHED", "EXPIRED"].includes(run.status)) {
+      toast.error("Failed to install Github", { duration: 5000 });
+      setStep(0);
       setLoading(false);
-      toast.error("Failed to install GitHub", { duration: 5000 });
     }
 
-    if (isCompleted) router.refresh();
-  }, [github, run]);
+    if (isCompleted) {
+      utils.integrations.bySource.invalidate({ source: "Slack" });
+      utils.channels.list.invalidate({ source: "Slack" });
+      utils.slack.listChannels.invalidate();
+      setTimeout(() => setLoading(false), 1000);
+    }
+  }, [github]);
 
   return (
     <>

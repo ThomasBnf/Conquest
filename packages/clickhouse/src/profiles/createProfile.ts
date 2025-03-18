@@ -43,6 +43,7 @@ export const createProfile = async ({
       FROM profile
       WHERE id = '${id}'
     `,
+    format: "JSON",
   });
 
   const { data } = await result.json();

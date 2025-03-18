@@ -1,6 +1,6 @@
 import type { GithubIntegration } from "@conquest/zod/schemas/integration.schema";
 import type { Endpoints } from "@octokit/types";
-import { wait } from "@trigger.dev/sdk/v3";
+import { logger, wait } from "@trigger.dev/sdk/v3";
 import { subDays } from "date-fns";
 import type { Octokit } from "octokit";
 import { createGithubMember } from "./createGithubMember";
@@ -46,6 +46,8 @@ export const createManyIssues = async ({ octokit, github }: Props) => {
 
     page++;
   }
+
+  logger.info("issues", { issuesLength: issues.length, issues });
 
   for (const issue of issues) {
     const { user } = issue;

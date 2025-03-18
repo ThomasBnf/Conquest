@@ -18,14 +18,13 @@ export const createGithubMember = async ({
     account_id: id,
   });
 
-  const profile = await getProfile({ external_id: id.toString() });
+  const profile = await getProfile({ external_id: String(id) });
 
   if (!profile) {
     const {
       avatar_url,
       bio,
       blog,
-      company,
       email,
       followers,
       location,
@@ -43,6 +42,7 @@ export const createGithubMember = async ({
       primary_email: email ?? "",
       avatar_url,
       source: "Github",
+      workspace_id,
     });
 
     await createProfile({
@@ -50,23 +50,25 @@ export const createGithubMember = async ({
       attributes: {
         source: "Github",
         username: login,
+        bio,
         blog,
         followers,
+        location,
       },
       member_id: member.id,
       workspace_id,
     });
 
-    // if (twitter_username) {
-    //   await createProfile({
-    //     member_id: member.id,
-    //     attributes: {
-    //       source: "Twitter",
-    //       username: twitter_username,
-    //     },
-    //     workspace_id,
-    //   });
-    // }
+    if (twitter_username) {
+      await createProfile({
+        member_id: member.id,
+        attributes: {
+          source: "Twitter",
+          username: twitter_username,
+        },
+        workspace_id,
+      });
+    }
   }
 
   return {

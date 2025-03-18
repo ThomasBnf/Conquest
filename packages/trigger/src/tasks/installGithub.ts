@@ -1,4 +1,3 @@
-import { deleteIntegration } from "@conquest/db/integrations/deleteIntegration";
 import { updateIntegration } from "@conquest/db/integrations/updateIntegration";
 import { decrypt } from "@conquest/db/utils/decrypt";
 import { GithubIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
@@ -32,7 +31,7 @@ export const installGithub = schemaTask({
       workspace_id,
     });
   },
-  onFailure: async ({ github }) => {
-    await deleteIntegration({ integration: github });
-  },
+  // onFailure: async ({ github }) => {
+  //   await deleteIntegration({ integration: github });
+  // },
 });

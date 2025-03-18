@@ -3,9 +3,9 @@ import { client } from "@conquest/clickhouse/client";
 import { getPulseScore } from "@conquest/clickhouse/helpers/getPulseScore";
 import { listLevels } from "@conquest/clickhouse/levels/listLevels";
 import { createManyLogs } from "@conquest/clickhouse/logs/createManyLogs";
-import { listMembers } from "@conquest/clickhouse/members/listMembers";
 import { updateMember } from "@conquest/clickhouse/members/updateMember";
 import type { Log } from "@conquest/zod/schemas/logs.schema";
+import { MemberSchema } from "@conquest/zod/schemas/member.schema";
 import { type Context, logger, runs, schemaTask } from "@trigger.dev/sdk/v3";
 import {
   eachWeekOfInterval,
@@ -25,14 +25,11 @@ export const getAllMembersMetrics = schemaTask({
   run: async ({ workspace_id }, { ctx }) => {
     await checkPreviousRuns(ctx, workspace_id);
 
-    const levels = await listLevels({ workspace_id });
-    const members = await listMembers({ workspace_id });
-
-    if (!members) return;
-
     await client.query({
       query: `ALTER TABLE log DELETE WHERE workspace_id = '${workspace_id}'`,
     });
+
+    const levels = await listLevels({ workspace_id });
 
     const today = new Date();
     const startDate = startOfDay(subWeeks(today, 52));
@@ -43,56 +40,79 @@ export const getAllMembersMetrics = schemaTask({
       { weekStartsOn: 1 },
     );
 
-    for (const member of members) {
-      const activities = await listActivities({
-        member_id: member.id,
-        period: 365,
-        workspace_id,
+    const SIZE = 500;
+    let offset = 0;
+
+    while (true) {
+      const result = await client.query({
+        query: `
+          SELECT * 
+          FROM member
+          WHERE workspace_id = '${workspace_id}'
+          LIMIT ${SIZE} 
+          OFFSET ${offset}
+        `,
       });
 
-      const logs: Log[] = [];
+      const { data } = await result.json();
+      const members = MemberSchema.array().parse(data);
 
-      for (const interval of intervals) {
-        const intervalEnd = interval;
-        const intervalStart = subDays(intervalEnd, 90);
-
-        const filteredActivities = activities?.filter(
-          (activity) =>
-            activity.created_at >= intervalStart &&
-            activity.created_at <= intervalEnd,
-        );
-
-        const pulseScore = getPulseScore({ activities: filteredActivities });
-
-        const level = levels.find(
-          (level) =>
-            pulseScore >= level.from &&
-            pulseScore <= (level.to ?? Number.POSITIVE_INFINITY),
-        );
-
-        logs.push({
-          id: randomUUID(),
-          date: interval,
-          pulse: pulseScore,
-          level_id: level?.id ?? null,
+      for (const member of members) {
+        const activities = await listActivities({
           member_id: member.id,
-          workspace_id: member.workspace_id,
+          period: 365,
+          workspace_id,
         });
+
+        const logs: Log[] = [];
+
+        for (const interval of intervals) {
+          const intervalEnd = interval;
+          const intervalStart = subDays(intervalEnd, 90);
+
+          const filteredActivities = activities?.filter(
+            (activity) =>
+              activity.created_at >= intervalStart &&
+              activity.created_at <= intervalEnd,
+          );
+
+          const pulseScore = getPulseScore({ activities: filteredActivities });
+
+          const level = levels.find(
+            (level) =>
+              pulseScore >= level.from &&
+              pulseScore <= (level.to ?? Number.POSITIVE_INFINITY),
+          );
+
+          logs.push({
+            id: randomUUID(),
+            date: interval,
+            pulse: pulseScore,
+            level_id: level?.id ?? null,
+            member_id: member.id,
+            workspace_id: member.workspace_id,
+          });
+        }
+
+        await createManyLogs({ logs });
+
+        const { pulse, level_id } = logs.at(-1) ?? {};
+
+        await updateMember({
+          ...member,
+          first_activity: activities?.at(-1)?.created_at ?? null,
+          last_activity: activities?.at(0)?.created_at ?? null,
+          pulse: pulse ?? 0,
+          level_id: level_id ?? null,
+        });
+
+        logger.info(`Member ${member.id} updated`);
       }
 
-      await createManyLogs({ logs });
+      logger.info(`Batch completed ${offset} members`);
 
-      const { pulse, level_id } = logs.at(-1) ?? {};
-
-      await updateMember({
-        ...member,
-        first_activity: activities?.at(-1)?.created_at ?? null,
-        last_activity: activities?.at(0)?.created_at ?? null,
-        pulse: pulse ?? 0,
-        level_id: level_id ?? null,
-      });
-
-      logger.info(`Member ${member.id} updated`);
+      if (members.length < SIZE) break;
+      offset += SIZE;
     }
   },
 });
