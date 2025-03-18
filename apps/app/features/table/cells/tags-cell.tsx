@@ -33,48 +33,35 @@ export const TagsCell = ({ row }: Props) => {
 
   const [height, setHeight] = useState(0);
   const [open, setOpen] = useState(false);
-  const [focus, setFocus] = useState(false);
 
   const utils = trpc.useUtils();
   const ref = useRef<HTMLDivElement>(null);
   const refDiv = useRef<HTMLDivElement>(null);
+
+  const queryParams = {
+    search,
+    id: idMember,
+    desc: descMember,
+    page,
+    pageSize,
+    groupFilters,
+  };
 
   const { mutateAsync: updateMember } = trpc.members.update.useMutation({
     onMutate: async (newData) => {
       await utils.members.list.cancel();
       const prevData = utils.members.list.getData();
 
-      utils.members.list.setData(
-        {
-          search,
-          id: idMember,
-          desc: descMember,
-          page,
-          pageSize,
-          groupFilters,
-        },
-        (old) =>
-          old?.map((member) =>
-            member.id === newData.id
-              ? { ...member, tags: newData.tags }
-              : member,
-          ),
+      utils.members.list.setData(queryParams, (old) =>
+        old?.map((member) =>
+          member.id === newData.id ? { ...member, tags: newData.tags } : member,
+        ),
       );
 
       return { prevData };
     },
     onError(_, __, ctx) {
-      utils.members.list.setData(
-        {
-          search,
-          id: idMember,
-          desc: descMember,
-          page,
-          pageSize,
-          groupFilters,
-        },
-        ctx?.prevData,
-      );
+      utils.members.list.setData(queryParams, ctx?.prevData);
     },
   });
 
@@ -90,38 +77,49 @@ export const TagsCell = ({ row }: Props) => {
     }
   };
 
-  const onDoubleClick = (e: React.MouseEvent) => {
+  const onClick = (e: React.MouseEvent) => {
     e.preventDefault();
     setOpen(true);
-    setTimeout(() => setHeight(ref.current?.offsetHeight ?? 0), 0);
+    requestAnimationFrame(() => setHeight(ref.current?.offsetHeight ?? 0));
   };
 
-  useClickOutside(refDiv, () => {
-    setOpen(false);
-    setFocus(false);
-  });
+  useClickOutside(refDiv, () => setOpen(false));
 
   useEffect(() => {
-    setHeight(ref.current?.offsetHeight ?? 0);
+    if (ref.current) {
+      setHeight(ref.current.offsetHeight);
+    }
   }, [memberTags]);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setOpen(false);
+      }
+    };
+
+    if (open) {
+      document.addEventListener("keydown", handleKeyDown);
+      return () => document.removeEventListener("keydown", handleKeyDown);
+    }
+  }, [open]);
 
   return (
     <div ref={refDiv} className="flex h-full w-full">
       <Popover open={open}>
         <PopoverTrigger
           className={cn(
-            "h-full flex-1",
-            focus ? "relative" : "overflow-hidden",
+            "h-full flex-1 focus:outline-none",
+            open ? "relative" : "overflow-hidden",
           )}
-          onClick={() => setFocus(true)}
-          onDoubleClick={onDoubleClick}
+          onClick={onClick}
         >
           <div
             ref={ref}
             className={cn(
               "flex h-full w-full items-center gap-1 p-2 hover:bg-muted",
-              focus &&
-                "relative z-20 h-fit min-h-full flex-wrap bg-muted ring-1 ring-main-400",
+              open &&
+                "relative z-20 h-fit min-h-full w-[300px] flex-wrap bg-muted ring-1 ring-main-400",
             )}
           >
             {memberTags?.map((tag) => (
@@ -152,9 +150,7 @@ export const TagsCell = ({ row }: Props) => {
                     <CommandItem
                       key={tag.id}
                       value={tag.name}
-                      onSelect={() => {
-                        onSelect(tag.id);
-                      }}
+                      onSelect={() => onSelect(tag.id)}
                     >
                       <Checkbox checked={false} className="mr-2" />
                       <TagBadge tag={tag} />
