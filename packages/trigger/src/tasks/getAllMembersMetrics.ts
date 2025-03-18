@@ -1,6 +1,7 @@
 import { listLevels } from "@conquest/clickhouse/levels/listLevels";
+import { listMembers } from "@conquest/clickhouse/members/listMembers";
 import type { Log } from "@conquest/zod/schemas/logs.schema";
-import { runs, schemaTask } from "@trigger.dev/sdk/v3";
+import { logger, runs, schemaTask } from "@trigger.dev/sdk/v3";
 import {
   eachWeekOfInterval,
   endOfDay,
@@ -9,6 +10,7 @@ import {
   subWeeks,
 } from "date-fns";
 import { z } from "zod";
+
 export const getAllMembersMetrics = schemaTask({
   id: "get-all-members-metrics",
   schema: z.object({
@@ -32,7 +34,9 @@ export const getAllMembersMetrics = schemaTask({
     }
 
     const levels = await listLevels({ workspace_id });
-    // const members = await listMembers({ workspace_id });
+    const members = await listMembers({ workspace_id });
+
+    logger.info(`Found ${members.length} members`);
 
     // if (!members) return;
 
