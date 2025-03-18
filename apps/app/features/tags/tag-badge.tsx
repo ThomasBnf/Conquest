@@ -20,10 +20,10 @@ export const TagBadge = ({
   return (
     <Badge variant={transparent ? "transparent" : "secondary"}>
       <div
-        className="size-2.5 rounded-full"
+        className="size-2.5 shrink-0 rounded-full"
         style={{ backgroundColor: tag.color }}
       />
-      <p className="leading-none">{tag.name}</p>
+      <p className="whitespace-nowrap leading-none">{tag.name}</p>
       {deletable && (
         <div onClick={onDelete}>
           <X
