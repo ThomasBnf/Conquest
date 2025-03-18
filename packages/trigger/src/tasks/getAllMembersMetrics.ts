@@ -2,7 +2,6 @@ import { listActivities } from "@conquest/clickhouse/activities/listActivities";
 import { client } from "@conquest/clickhouse/client";
 import { getPulseScore } from "@conquest/clickhouse/helpers/getPulseScore";
 import { listLevels } from "@conquest/clickhouse/levels/listLevels";
-import { createManyLogs } from "@conquest/clickhouse/logs/createManyLogs";
 import { updateMember } from "@conquest/clickhouse/members/updateMember";
 import type { Log } from "@conquest/zod/schemas/logs.schema";
 import { MemberSchema } from "@conquest/zod/schemas/member.schema";
@@ -25,10 +24,6 @@ export const getAllMembersMetrics = schemaTask({
   run: async ({ workspace_id }, { ctx }) => {
     await checkPreviousRuns(ctx, workspace_id);
 
-    // await client.query({
-    //   query: `ALTER TABLE log DELETE WHERE workspace_id = '${workspace_id}'`,
-    // });
-
     const levels = await listLevels({ workspace_id });
 
     const today = new Date();
@@ -40,7 +35,7 @@ export const getAllMembersMetrics = schemaTask({
       { weekStartsOn: 1 },
     );
 
-    const SIZE = 500;
+    const BATCH_SIZE = 200;
     let offset = 0;
 
     while (true) {
@@ -49,13 +44,21 @@ export const getAllMembersMetrics = schemaTask({
           SELECT * 
           FROM member
           WHERE workspace_id = '${workspace_id}'
-          LIMIT ${SIZE} 
+          LIMIT ${BATCH_SIZE} 
           OFFSET ${offset}
         `,
       });
 
       const { data } = await result.json();
       const members = MemberSchema.array().parse(data);
+
+      // await client.query({
+      //   query: `
+      //   ALTER TABLE log DELETE
+      //   WHERE workspace_id = '${workspace_id}'
+      //   AND member_id IN (${members.map((member) => `'${member.id}'`).join(",")})
+      //   `,
+      // });
 
       for (const member of members) {
         const activities = await listActivities({
@@ -94,7 +97,7 @@ export const getAllMembersMetrics = schemaTask({
           });
         }
 
-        await createManyLogs({ logs });
+        // await createManyLogs({ logs });
 
         const { pulse, level_id } = logs.at(-1) ?? {};
 
@@ -111,8 +114,8 @@ export const getAllMembersMetrics = schemaTask({
 
       logger.info(`Batch completed ${offset} members`);
 
-      if (members.length < SIZE) break;
-      offset += SIZE;
+      if (members.length < BATCH_SIZE) break;
+      offset += BATCH_SIZE;
     }
   },
 });
