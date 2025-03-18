@@ -1,12 +1,11 @@
 import { auth } from "@/auth";
 import { AppSidebar } from "@/components/layouts/app-sidebar";
-import { IsLoading } from "@/components/states/is-loading";
 import { FiltersProvider } from "@/context/filtersContext";
 import { CreateListDialog } from "@/features/lists/create-list-dialog";
 import { SidebarProvider } from "@conquest/ui/sidebar";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { type PropsWithChildren, Suspense } from "react";
+import type { PropsWithChildren } from "react";
 
 type Props = {
   children: React.ReactNode;
@@ -41,9 +40,7 @@ export default async function Layout({
       <FiltersProvider>
         <CreateListDialog />
         <AppSidebar workspace={workspace} />
-        <Suspense fallback={<IsLoading />}>
-          <main className="h-dvh flex-1 overflow-hidden">{children}</main>
-        </Suspense>
+        <main className="h-dvh flex-1 overflow-hidden">{children}</main>
       </FiltersProvider>
     </SidebarProvider>
   );
