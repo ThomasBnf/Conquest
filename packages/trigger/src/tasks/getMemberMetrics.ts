@@ -22,6 +22,7 @@ export const getMemberMetrics = schemaTask({
     member: MemberSchema,
     levels: z.array(LevelSchema),
   }),
+  maxDuration: 1000 * 60 * 60 * 1,
   run: async ({ member, levels }) => {
     const { id, workspace_id } = member;
 
