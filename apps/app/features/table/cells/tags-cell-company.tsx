@@ -1,4 +1,3 @@
-import { useFilters } from "@/context/filtersContext";
 import { tableParams } from "@/lib/tableParams";
 import { trpc } from "@/server/client";
 import { Checkbox } from "@conquest/ui/checkbox";
@@ -24,7 +23,6 @@ type Props = {
 };
 
 export const TagsCellCompany = ({ row }: Props) => {
-  const { groupFilters } = useFilters();
   const [{ search, idCompany, descCompany, page, pageSize }] =
     useQueryStates(tableParams);
 
@@ -45,7 +43,6 @@ export const TagsCellCompany = ({ row }: Props) => {
           desc: descCompany,
           page,
           pageSize,
-          groupFilters,
         },
         (old) =>
           old?.map((company) =>
@@ -65,7 +62,6 @@ export const TagsCellCompany = ({ row }: Props) => {
           desc: descCompany,
           page,
           pageSize,
-          groupFilters,
         },
         ctx?.prevData,
       );

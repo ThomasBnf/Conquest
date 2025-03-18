@@ -7,9 +7,10 @@ import { format, formatDistanceToNow } from "date-fns";
 import { CompanyNameCell } from "./cells/company-name-cell";
 import { TagsCellCompany } from "./cells/tags-cell-company";
 import { ColumnHeader } from "./column-header";
+
 export const companiesColumns: ColumnDef<Company>[] = [
   {
-    accessorKey: "full_name",
+    accessorKey: "name",
     header: ({ table, column }) => (
       <div className="flex items-center gap-3 pl-3">
         <Checkbox
@@ -19,7 +20,7 @@ export const companiesColumns: ColumnDef<Company>[] = [
           }
           onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
         />
-        <ColumnHeader table={table} column={column} title="Full Name" />
+        <ColumnHeader table={table} column={column} title="Name" />
       </div>
     ),
     cell: ({ row }) => (

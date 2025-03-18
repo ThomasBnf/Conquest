@@ -1,5 +1,5 @@
 type Props = {
-  id?: string;
+  id: string;
   desc: boolean;
   type: "members" | "companies";
 };
@@ -38,7 +38,7 @@ export const orderByParser = ({ id, desc, type }: Props) => {
     case "name":
       return `ORDER BY c.name ${direction}`;
     case "tags":
-      return `ORDER BY c.tags ${direction} NULLS LAST`;
+      return `ORDER BY c.tags ${direction}`;
     case "website":
       return `ORDER BY c.website ${direction}`;
     case "industry":

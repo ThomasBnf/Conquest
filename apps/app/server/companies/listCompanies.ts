@@ -1,8 +1,6 @@
 import { client } from "@conquest/clickhouse/client";
-import { getFilters } from "@conquest/clickhouse/helpers/getFilters";
 import { orderByParser } from "@conquest/clickhouse/helpers/orderByParser";
 import { CompanySchema } from "@conquest/zod/schemas/company.schema";
-import { GroupFiltersSchema } from "@conquest/zod/schemas/filters.schema";
 import { z } from "zod";
 import { protectedProcedure } from "../trpc";
 
@@ -14,17 +12,14 @@ export const listCompanies = protectedProcedure
       desc: z.boolean(),
       page: z.number(),
       pageSize: z.number(),
-      groupFilters: GroupFiltersSchema,
     }),
   )
   .query(async ({ ctx: { user }, input }) => {
     const { workspace_id } = user;
-    const { search, id, desc, page, pageSize, groupFilters } = input;
-    const { operator } = groupFilters;
+    const { search, id, desc, page, pageSize } = input;
 
     const searchParsed = search.toLowerCase().trim();
     const orderBy = orderByParser({ id, desc, type: "companies" });
-    const filterBy = getFilters({ groupFilters });
 
     const result = await client.query({
       query: `

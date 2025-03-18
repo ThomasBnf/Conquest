@@ -181,7 +181,7 @@ model user {
     role                  ROLE      @default(ADMIN)
     last_activity_at      DateTime  @updatedAt
     members_preferences   Json      @default("{\"id\":\"full_name\",\"desc\":true,\"pageSize\":50,\"groupFilters\":{\"filters\":[],\"operator\":\"AND\"},\"columnVisibility\":{},\"columnOrder\":[]}")
-    companies_preferences Json      @default("{\"id\":\"name\",\"desc\":true,\"pageSize\":50,\"groupFilters\":{\"filters\":[],\"operator\":\"AND\"},\"columnVisibility\":{},\"columnOrder\":[]}")
+    companies_preferences Json      @default("{\"id\":\"name\",\"desc\":false,\"pageSize\":50,\"groupFilters\":{\"filters\":[],\"operator\":\"AND\"},\"columnVisibility\":{},\"columnOrder\":[]}")
     workspace_id          String
     workspace             workspace @relation(fields: [workspace_id], references: [id], onDelete: Cascade)
 
