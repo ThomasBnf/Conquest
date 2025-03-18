@@ -1,11 +1,11 @@
 import { listActivities } from "@conquest/clickhouse/activities/listActivities";
-import { client } from "@conquest/clickhouse/client";
 import { getPulseScore } from "@conquest/clickhouse/helpers/getPulseScore";
 import { listLevels } from "@conquest/clickhouse/levels/listLevels";
+import { createManyLogs } from "@conquest/clickhouse/logs/createManyLogs";
+import { listMembers } from "@conquest/clickhouse/members/listMembers";
 import { updateMember } from "@conquest/clickhouse/members/updateMember";
 import type { Log } from "@conquest/zod/schemas/logs.schema";
-import { MemberSchema } from "@conquest/zod/schemas/member.schema";
-import { type Context, logger, runs, schemaTask } from "@trigger.dev/sdk/v3";
+import { runs, schemaTask } from "@trigger.dev/sdk/v3";
 import {
   eachWeekOfInterval,
   endOfDay,
@@ -22,9 +22,26 @@ export const getAllMembersMetrics = schemaTask({
     workspace_id: z.string(),
   }),
   run: async ({ workspace_id }, { ctx }) => {
-    await checkPreviousRuns(ctx, workspace_id);
+    const allRuns = await runs.list({
+      status: "EXECUTING",
+      taskIdentifier: "get-all-members-metrics",
+    });
+
+    const currentRunId = ctx.run.id;
+    const previousTask = allRuns.data.filter((run) => run.id !== currentRunId);
+
+    if (previousTask) {
+      await Promise.all(
+        previousTask.map(async (run) => {
+          await runs.cancel(run.id);
+        }),
+      );
+    }
 
     const levels = await listLevels({ workspace_id });
+    const members = await listMembers({ workspace_id });
+
+    if (!members) return;
 
     const today = new Date();
     const startDate = startOfDay(subWeeks(today, 52));
@@ -35,32 +52,8 @@ export const getAllMembersMetrics = schemaTask({
       { weekStartsOn: 1 },
     );
 
-    const BATCH_SIZE = 200;
-    let offset = 0;
-
-    while (true) {
-      const result = await client.query({
-        query: `
-          SELECT * 
-          FROM member
-          WHERE workspace_id = '${workspace_id}'
-          LIMIT ${BATCH_SIZE} 
-          OFFSET ${offset}
-        `,
-      });
-
-      const { data } = await result.json();
-      const members = MemberSchema.array().parse(data);
-
-      // await client.query({
-      //   query: `
-      //   ALTER TABLE log DELETE
-      //   WHERE workspace_id = '${workspace_id}'
-      //   AND member_id IN (${members.map((member) => `'${member.id}'`).join(",")})
-      //   `,
-      // });
-
-      for (const member of members) {
+    await Promise.all(
+      members?.map(async (member) => {
         const activities = await listActivities({
           member_id: member.id,
           period: 365,
@@ -97,7 +90,7 @@ export const getAllMembersMetrics = schemaTask({
           });
         }
 
-        // await createManyLogs({ logs });
+        await createManyLogs({ logs });
 
         const { pulse, level_id } = logs.at(-1) ?? {};
 
@@ -108,35 +101,7 @@ export const getAllMembersMetrics = schemaTask({
           pulse: pulse ?? 0,
           level_id: level_id ?? null,
         });
-
-        logger.info(`Member ${member.id} updated`);
-      }
-
-      logger.info(`Batch completed ${offset} members`);
-
-      if (members.length < BATCH_SIZE) break;
-      offset += BATCH_SIZE;
-    }
+      }) ?? [],
+    );
   },
 });
-
-const checkPreviousRuns = async (ctx: Context, workspace_id: string) => {
-  const allRuns = await runs.list({
-    status: "EXECUTING",
-    taskIdentifier: "get-all-members-metrics",
-  });
-
-  const currentRunId = ctx.run.id;
-  const previousTasks = allRuns.data.filter(
-    (run) =>
-      run.id !== currentRunId && run.metadata?.workspace_id === workspace_id,
-  );
-
-  if (previousTasks.length > 0) {
-    await Promise.all(
-      previousTasks.map(async (run) => {
-        await runs.cancel(run.id);
-      }),
-    );
-  }
-};
