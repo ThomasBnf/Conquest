@@ -1,5 +1,5 @@
 import { client } from "@conquest/clickhouse/client";
-import { endOfDay, format } from "date-fns";
+import { addHours, format } from "date-fns";
 import { z } from "zod";
 import { protectedProcedure } from "../trpc";
 
@@ -14,8 +14,8 @@ export const topActivityType = protectedProcedure
     const { workspace_id } = user;
     const { from, to } = input;
 
-    const formattedFrom = format(from, "yyyy-MM-dd HH:mm:ss");
-    const formattedTo = format(endOfDay(to), "yyyy-MM-dd HH:mm:ss");
+    const _from = format(addHours(from, 1), "yyyy-MM-dd HH:mm:ss");
+    const _to = format(addHours(to, 1), "yyyy-MM-dd HH:mm:ss");
 
     const result = await client.query({
       query: `
@@ -25,8 +25,8 @@ export const topActivityType = protectedProcedure
           COUNT(*) as count
         FROM activity
         LEFT JOIN activity_type ON activity.activity_type_id = activity_type.id
-        WHERE activity.created_at >= '${formattedFrom}' 
-        AND activity.created_at <= '${formattedTo}'
+        WHERE activity.created_at >= '${_from}' 
+        AND activity.created_at <= '${_to}'
         AND workspace_id = '${workspace_id}'
         AND activity_type.name != ''
         GROUP BY 

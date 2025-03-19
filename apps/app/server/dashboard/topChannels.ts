@@ -1,5 +1,5 @@
 import { client } from "@conquest/clickhouse/client";
-import { endOfDay, format } from "date-fns";
+import { addHours, format } from "date-fns";
 import { z } from "zod";
 import { protectedProcedure } from "../trpc";
 
@@ -14,8 +14,8 @@ export const topChannels = protectedProcedure
     const { workspace_id } = user;
     const { from, to } = input;
 
-    const formattedFrom = format(from, "yyyy-MM-dd HH:mm:ss");
-    const formattedTo = format(endOfDay(to), "yyyy-MM-dd HH:mm:ss");
+    const _from = format(addHours(from, 1), "yyyy-MM-dd HH:mm:ss");
+    const _to = format(addHours(to, 1), "yyyy-MM-dd HH:mm:ss");
 
     const result = await client.query({
       query: `
@@ -24,8 +24,8 @@ export const topChannels = protectedProcedure
           COUNT(*) as count
         FROM activity
         LEFT JOIN channel ON activity.channel_id = channel.id
-        WHERE activity.created_at >= '${formattedFrom}' 
-        AND activity.created_at <= '${formattedTo}'
+        WHERE activity.created_at >= '${_from}' 
+        AND activity.created_at <= '${_to}'
         AND channel.workspace_id = '${workspace_id}'
         GROUP BY 
           channel.name

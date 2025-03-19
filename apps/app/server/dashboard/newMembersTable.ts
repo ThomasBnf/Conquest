@@ -1,7 +1,7 @@
 import { client } from "@conquest/clickhouse/client";
 import { orderByParser } from "@conquest/clickhouse/helpers/orderByParser";
 import { MemberSchema } from "@conquest/zod/schemas/member.schema";
-import { format } from "date-fns";
+import { addHours, format } from "date-fns";
 import { z } from "zod";
 import { protectedProcedure } from "../trpc";
 
@@ -23,8 +23,8 @@ export const newMembersTable = protectedProcedure
 
     const orderBy = orderByParser({ id, desc, type: "members" });
 
-    const formattedFrom = format(from, "yyyy-MM-dd HH:mm:ss");
-    const formattedTo = format(to, "yyyy-MM-dd HH:mm:ss");
+    const _from = format(addHours(from, 1), "yyyy-MM-dd HH:mm:ss");
+    const _to = format(addHours(to, 1), "yyyy-MM-dd HH:mm:ss");
 
     const result = await client.query({
       query: `
@@ -32,7 +32,7 @@ export const newMembersTable = protectedProcedure
         FROM member m
         LEFT JOIN level l ON m.level_id = l.id
         WHERE m.workspace_id = '${workspace_id}'
-          AND m.created_at BETWEEN '${formattedFrom}' AND '${formattedTo}'
+          AND m.created_at BETWEEN '${_from}' AND '${_to}'
         AND (
           positionCaseInsensitive(concat(toString(first_name), ' ', toString(last_name)), '${search}') > 0
           OR positionCaseInsensitive(concat(toString(last_name), ' ', toString(first_name)), '${search}') > 0

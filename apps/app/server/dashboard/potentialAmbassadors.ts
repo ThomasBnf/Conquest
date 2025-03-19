@@ -1,5 +1,5 @@
 import { client } from "@conquest/clickhouse/client";
-import { format } from "date-fns";
+import { addHours, differenceInDays, format, subDays } from "date-fns";
 import { z } from "zod";
 import { protectedProcedure } from "../trpc";
 
@@ -14,14 +14,15 @@ export const potentialAmbassadors = protectedProcedure
     const { workspace_id } = user;
     const { from, to } = input;
 
-    const previousPeriodLength = Math.abs(to.getTime() - from.getTime());
-    const previousFrom = new Date(from.getTime() - previousPeriodLength);
-    const previousTo = new Date(to.getTime() - previousPeriodLength);
+    const _from = format(addHours(from, 1), "yyyy-MM-dd HH:mm:ss");
+    const _to = format(addHours(to, 1), "yyyy-MM-dd HH:mm:ss");
 
-    const formattedFrom = format(from, "yyyy-MM-dd HH:mm:ss");
-    const formattedTo = format(to, "yyyy-MM-dd HH:mm:ss");
-    const formattedPreviousFrom = format(previousFrom, "yyyy-MM-dd HH:mm:ss");
-    const formattedPreviousTo = format(previousTo, "yyyy-MM-dd HH:mm:ss");
+    const difference = differenceInDays(_to, _from);
+    const previousFrom = subDays(_from, difference);
+    const previousTo = subDays(_to, difference);
+
+    const _previousFrom = format(previousFrom, "yyyy-MM-dd HH:mm:ss");
+    const _previousTo = format(previousTo, "yyyy-MM-dd HH:mm:ss");
 
     const result = await client.query({
       query: `
@@ -38,7 +39,7 @@ export const potentialAmbassadors = protectedProcedure
                 SELECT member_id 
                 FROM activity 
                 WHERE workspace_id = '${workspace_id}'
-                  AND created_at BETWEEN '${formattedFrom}' AND '${formattedTo}'
+                  AND created_at BETWEEN '${_from}' AND '${_to}'
               )
           ) as current_count,
           (
@@ -53,7 +54,7 @@ export const potentialAmbassadors = protectedProcedure
                 SELECT member_id 
                 FROM activity 
                 WHERE workspace_id = '${workspace_id}'
-                  AND created_at BETWEEN '${formattedPreviousFrom}' AND '${formattedPreviousTo}'
+                  AND created_at BETWEEN '${_previousFrom}' AND '${_previousTo}'
               )
           ) as previous_count
         SELECT 

@@ -6,8 +6,8 @@ import { protectedProcedure } from "../trpc";
 export const totalMembers = protectedProcedure
   .input(
     z.object({
-      from: z.coerce.date(),
-      to: z.coerce.date(),
+      from: z.date(),
+      to: z.date(),
     }),
   )
   .query(async ({ ctx: { user }, input }) => {
@@ -18,15 +18,11 @@ export const totalMembers = protectedProcedure
     const _to = format(addHours(to, 1), "yyyy-MM-dd HH:mm:ss");
 
     const difference = differenceInDays(_to, _from);
-    console.log(difference);
     const previousFrom = subDays(_from, difference);
     const previousTo = subDays(_to, difference);
 
     const _previousFrom = format(previousFrom, "yyyy-MM-dd HH:mm:ss");
     const _previousTo = format(previousTo, "yyyy-MM-dd HH:mm:ss");
-
-    console.log(_from, _to);
-    console.log(_previousFrom, _previousTo);
 
     const result = await client.query({
       query: `
