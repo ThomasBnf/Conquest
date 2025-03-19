@@ -37,12 +37,10 @@ export const ChurnRate = () => {
               </p>
               <div className="flex items-center gap-2 opacity-70">
                 <div className="flex w-fit flex-col">
-                  <p className="border-current border-b">
-                    Number of Inactive Members
-                  </p>
-                  <p>Total Number of Members</p>
+                  <p className="border-current border-b">Inactive Members</p>
+                  <p>Total Members</p>
                 </div>
-                <p>× 100%</p>
+                <p>x 100%</p>
               </div>
             </div>
           }

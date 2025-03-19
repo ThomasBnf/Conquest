@@ -16,6 +16,7 @@
         "useKeyWithClickEvents": "off"
       },
       "style": {
+        "useImportType": "off",
         "noNonNullAssertion": "off"
       },
       "correctness": {
