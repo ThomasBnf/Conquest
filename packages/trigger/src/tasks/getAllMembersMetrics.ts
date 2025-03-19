@@ -1,4 +1,5 @@
 import { listActivities } from "@conquest/clickhouse/activities/listActivities";
+import { getPulseScore } from "@conquest/clickhouse/helpers/getPulseScore";
 import { listLevels } from "@conquest/clickhouse/levels/listLevels";
 import { listMembers } from "@conquest/clickhouse/members/listMembers";
 import type { Log } from "@conquest/zod/schemas/logs.schema";
@@ -10,6 +11,7 @@ import {
   subDays,
   subWeeks,
 } from "date-fns";
+import { randomUUID } from "node:crypto";
 import { z } from "zod";
 
 export const getAllMembersMetrics = schemaTask({
@@ -36,6 +38,7 @@ export const getAllMembersMetrics = schemaTask({
 
     const levels = await listLevels({ workspace_id });
     const members = await listMembers({ workspace_id });
+    const activities = await listActivities({ workspace_id, period: 365 });
 
     logger.info(`Found ${members.length} members`);
 
@@ -49,40 +52,35 @@ export const getAllMembersMetrics = schemaTask({
     );
 
     for (const member of members) {
-      const activities = await listActivities({
-        member_id: member.id,
-        period: 365,
-        workspace_id,
-      });
-
       const logs: Log[] = [];
 
       for (const interval of intervals) {
         const intervalEnd = interval;
         const intervalStart = subDays(intervalEnd, 90);
 
-        // const filteredActivities = activities?.filter(
-        //   (activity) =>
-        //     activity.created_at >= intervalStart &&
-        //     activity.created_at <= intervalEnd,
-        // );
+        const filteredActivities = activities?.filter(
+          (activity) =>
+            activity.member_id === member.id &&
+            activity.created_at >= intervalStart &&
+            activity.created_at <= intervalEnd,
+        );
 
-        // const pulseScore = getPulseScore({ activities: filteredActivities });
+        const pulseScore = getPulseScore({ activities: filteredActivities });
 
-        // const level = levels.find(
-        //   (level) =>
-        //     pulseScore >= level.from &&
-        //     pulseScore <= (level.to ?? Number.POSITIVE_INFINITY),
-        // );
+        const level = levels.find(
+          (level) =>
+            pulseScore >= level.from &&
+            pulseScore <= (level.to ?? Number.POSITIVE_INFINITY),
+        );
 
-        // logs.push({
-        //   id: randomUUID(),
-        //   date: interval,
-        //   pulse: pulseScore,
-        //   level_id: level?.id ?? null,
-        //   member_id: member.id,
-        //   workspace_id: member.workspace_id,
-        // });
+        logs.push({
+          id: randomUUID(),
+          date: interval,
+          pulse: pulseScore,
+          level_id: level?.id ?? null,
+          member_id: member.id,
+          workspace_id: member.workspace_id,
+        });
       }
 
       // await createManyLogs({ logs });
