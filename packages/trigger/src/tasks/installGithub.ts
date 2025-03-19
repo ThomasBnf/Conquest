@@ -5,7 +5,9 @@ import { GithubIntegrationSchema } from "@conquest/zod/schemas/integration.schem
 import { schemaTask } from "@trigger.dev/sdk/v3";
 import { Octokit } from "octokit";
 import { z } from "zod";
-import { createManyIssues } from "../queries/createManyIssues";
+import { listStargazers } from "../queries/listStargazers";
+import { getAllMembersMetrics } from "./getAllMembersMetrics";
+import { integrationSuccessEmail } from "./integrationSuccessEmail";
 
 export const installGithub = schemaTask({
   id: "install-github",
@@ -14,13 +16,20 @@ export const installGithub = schemaTask({
     github: GithubIntegrationSchema,
   }),
   run: async ({ github }) => {
-    const { details } = github;
+    const { details, workspace_id } = github;
     const { access_token, iv } = details;
 
     const decryptedToken = await decrypt({ access_token, iv });
     const octokit = new Octokit({ auth: decryptedToken });
 
-    await createManyIssues({ github, octokit });
+    await listStargazers({ github, octokit });
+    // await createManyIssues({ github, octokit });
+
+    await getAllMembersMetrics.trigger(
+      { workspace_id },
+      { metadata: { workspace_id } },
+    );
+    await integrationSuccessEmail.trigger({ integration: github });
   },
   onSuccess: async ({ github }) => {
     const { id, workspace_id } = github;

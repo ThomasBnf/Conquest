@@ -12,6 +12,7 @@
     "@conquest/clickhouse": "workspace:*",
     "@conquest/db": "workspace:*",
     "@conquest/env": "workspace:*",
+    "@conquest/zod": "workspace:*",
     "@types/express": "^5.0.0",
     "date-fns": "^4.1.0",
     "discord-api-types": "^0.37.118",
@@ -22,7 +23,7 @@
   },
   "devDependencies": {
     "@conquest/tsconfig": "workspace:*",
-    "@conquest/zod": "workspace:*",
+
     "@types/node": "^20.11.24",
     "typescript": "^5.3.3",
     "dotenv-cli": "8.0.0"
