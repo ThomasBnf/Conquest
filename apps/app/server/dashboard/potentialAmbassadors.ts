@@ -1,5 +1,5 @@
 import { client } from "@conquest/clickhouse/client";
-import { addHours, endOfDay, format } from "date-fns";
+import { format } from "date-fns";
 import { z } from "zod";
 import { protectedProcedure } from "../trpc";
 
@@ -14,24 +14,14 @@ export const potentialAmbassadors = protectedProcedure
     const { workspace_id } = user;
     const { from, to } = input;
 
-    const fromAdjusted = addHours(from, 1);
-    const toAdjusted = addHours(to, 1);
+    const previousPeriodLength = Math.abs(to.getTime() - from.getTime());
+    const previousFrom = new Date(from.getTime() - previousPeriodLength);
+    const previousTo = new Date(to.getTime() - previousPeriodLength);
 
-    const previousPeriodLength = Math.abs(
-      toAdjusted.getTime() - fromAdjusted.getTime(),
-    );
-    const previousFrom = new Date(
-      fromAdjusted.getTime() - previousPeriodLength,
-    );
-    const previousTo = new Date(toAdjusted.getTime() - previousPeriodLength);
-
-    const formattedFrom = format(fromAdjusted, "yyyy-MM-dd HH:mm:ss");
-    const formattedTo = format(endOfDay(toAdjusted), "yyyy-MM-dd HH:mm:ss");
+    const formattedFrom = format(from, "yyyy-MM-dd HH:mm:ss");
+    const formattedTo = format(to, "yyyy-MM-dd HH:mm:ss");
     const formattedPreviousFrom = format(previousFrom, "yyyy-MM-dd HH:mm:ss");
-    const formattedPreviousTo = format(
-      endOfDay(previousTo),
-      "yyyy-MM-dd HH:mm:ss",
-    );
+    const formattedPreviousTo = format(previousTo, "yyyy-MM-dd HH:mm:ss");
 
     const result = await client.query({
       query: `
