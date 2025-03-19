@@ -1,3 +1,4 @@
+import { listActivities } from "@conquest/clickhouse/activities/listActivities";
 import { listLevels } from "@conquest/clickhouse/levels/listLevels";
 import { listMembers } from "@conquest/clickhouse/members/listMembers";
 import type { Log } from "@conquest/zod/schemas/logs.schema";
@@ -48,11 +49,11 @@ export const getAllMembersMetrics = schemaTask({
     );
 
     for (const member of members) {
-      // const activities = await listActivities({
-      //   member_id: member.id,
-      //   period: 365,
-      //   workspace_id,
-      // });
+      const activities = await listActivities({
+        member_id: member.id,
+        period: 365,
+        workspace_id,
+      });
 
       const logs: Log[] = [];
 
