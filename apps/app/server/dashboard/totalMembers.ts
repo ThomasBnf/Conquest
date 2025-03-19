@@ -1,5 +1,5 @@
 import { client } from "@conquest/clickhouse/client";
-import { differenceInDays, format, subDays } from "date-fns";
+import { addHours, differenceInDays, format, subDays } from "date-fns";
 import { z } from "zod";
 import { protectedProcedure } from "../trpc";
 
@@ -14,19 +14,18 @@ export const totalMembers = protectedProcedure
     const { workspace_id } = user;
     const { from, to } = input;
 
-    const _from = format(from, "yyyy-MM-dd HH:mm:ss");
-    const _to = format(to, "yyyy-MM-dd HH:mm:ss");
+    const _from = format(addHours(from, 1), "yyyy-MM-dd HH:mm:ss");
+    const _to = format(addHours(to, 1), "yyyy-MM-dd HH:mm:ss");
+
+    const difference = differenceInDays(_to, _from);
+    const previousFrom = subDays(_from, difference);
+    const previousTo = subDays(_to, difference);
+
+    const _previousFrom = format(previousFrom, "yyyy-MM-dd HH:mm:ss");
+    const _previousTo = format(previousTo, "yyyy-MM-dd HH:mm:ss");
 
     console.log(_from, _to);
-
-    const difference = differenceInDays(to, from);
-    const previousFrom = subDays(from, difference);
-    const previousTo = subDays(to, difference);
-
-    // const formattedFrom = format(from, "yyyy-MM-dd HH:mm:ss");
-    // const formattedTo = format(endOfDay(to), "yyyy-MM-dd HH:mm:ss");
-    const formattedPreviousFrom = format(previousFrom, "yyyy-MM-dd HH:mm:ss");
-    const formattedPreviousTo = format(previousTo, "yyyy-MM-dd HH:mm:ss");
+    console.log(_previousFrom, _previousTo);
 
     const result = await client.query({
       query: `
@@ -35,8 +34,8 @@ export const totalMembers = protectedProcedure
             SELECT 
               countIf(created_at <= '${_to}') as current_period_end,
               countIf(created_at <= '${_from}') as current_period_start,
-              countIf(created_at <= '${formattedPreviousTo}') as previous_period_end,
-              countIf(created_at <= '${formattedPreviousFrom}') as previous_period_start
+              countIf(created_at <= '${_previousTo}') as previous_period_end,
+              countIf(created_at <= '${_previousFrom}') as previous_period_start
             FROM member
             WHERE workspace_id = '${workspace_id}'
           ) as counts 
