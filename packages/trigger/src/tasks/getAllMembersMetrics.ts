@@ -1,6 +1,7 @@
 import { listActivities } from "@conquest/clickhouse/activities/listActivities";
 import { getPulseScore } from "@conquest/clickhouse/helpers/getPulseScore";
 import { listLevels } from "@conquest/clickhouse/levels/listLevels";
+import { createManyLogs } from "@conquest/clickhouse/logs/createManyLogs";
 import { listMembers } from "@conquest/clickhouse/members/listMembers";
 import type { Log } from "@conquest/zod/schemas/logs.schema";
 import { logger, runs, schemaTask } from "@trigger.dev/sdk/v3";
@@ -83,7 +84,7 @@ export const getAllMembersMetrics = schemaTask({
         });
       }
 
-      // await createManyLogs({ logs });
+      await createManyLogs({ logs });
 
       const { pulse, level_id } = logs.at(-1) ?? {};
 
