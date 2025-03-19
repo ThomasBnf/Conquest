@@ -70,5 +70,7 @@ export const listActivities = async ({
     (activity) => !activity.activity_type?.source,
   );
 
+  console.log(problematicActivity);
+
   return ActivityWithTypeSchema.array().parse(activities);
 };
