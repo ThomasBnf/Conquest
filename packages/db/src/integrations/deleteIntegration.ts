@@ -67,6 +67,18 @@ export const deleteIntegration = async ({ integration }: Props) => {
     }
   }
 
+  if (source === "Github") {
+    client.query({
+      query: `
+        ALTER TABLE profile DELETE
+        WHERE member_id IN (
+          SELECT id FROM member 
+          WHERE source = '${source}'
+          AND workspace_id = '${workspace_id}'
+        );`,
+    });
+  }
+
   await prisma.$transaction(async (tx) => {
     await tx.tag.deleteMany({
       where: { source, workspace_id },
@@ -79,11 +91,8 @@ export const deleteIntegration = async ({ integration }: Props) => {
   client.query({
     query: `
       ALTER TABLE activity DELETE 
-      WHERE member_id IN (
-        SELECT id FROM member 
-        WHERE source = '${source}'
-        AND workspace_id = '${workspace_id}'
-      );`,
+      WHERE source = '${source}'
+      AND workspace_id = '${workspace_id}'`,
   });
   client.query({
     query: `
@@ -98,31 +107,31 @@ export const deleteIntegration = async ({ integration }: Props) => {
     query: `
       ALTER TABLE activity_type DELETE 
       WHERE source = '${source}'
-      AND workspace_id = '${workspace_id}';`,
+      AND workspace_id = '${workspace_id}'`,
   });
   client.query({
     query: `
       ALTER TABLE channel DELETE
       WHERE source = '${source}'
-      AND workspace_id = '${workspace_id}';`,
+      AND workspace_id = '${workspace_id}'`,
   });
   client.query({
     query: `
       ALTER TABLE company DELETE
       WHERE source = '${source}'
-      AND workspace_id = '${workspace_id}';`,
+      AND workspace_id = '${workspace_id}'`,
   });
   client.query({
     query: `
       ALTER TABLE member DELETE
       WHERE source = '${source}'
-      AND workspace_id = '${workspace_id}';`,
+      AND workspace_id = '${workspace_id}'`,
   });
   client.query({
     query: `
       ALTER TABLE profile DELETE
       WHERE JSONExtractString(CAST(attributes AS String), 'source') = '${source}'
-      AND workspace_id = '${workspace_id}';`,
+      AND workspace_id = '${workspace_id}'`,
   });
 
   return { success: true };

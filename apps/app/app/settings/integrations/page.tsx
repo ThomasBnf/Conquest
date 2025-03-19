@@ -1,6 +1,6 @@
 "use client";
 
-import { categories } from "@/features/integrations/constant";
+import { categories } from "@/features/integrations/integrations";
 import { IntegrationCard } from "@/features/integrations/integration-card";
 import { ScrollArea } from "@conquest/ui/scroll-area";
 

@@ -1,38 +1,40 @@
 import { client } from "@conquest/clickhouse/client";
-import { differenceInDays, endOfDay, format, subDays } from "date-fns";
+import { differenceInDays, format, subDays } from "date-fns";
 import { z } from "zod";
 import { protectedProcedure } from "../trpc";
 
 export const totalMembers = protectedProcedure
   .input(
     z.object({
-      from: z.date(),
-      to: z.date(),
+      from: z.coerce.date(),
+      to: z.coerce.date(),
     }),
   )
   .query(async ({ ctx: { user }, input }) => {
     const { workspace_id } = user;
     const { from, to } = input;
 
-    const previousPeriodLength = differenceInDays(to, from);
-    const previousFrom = subDays(from, previousPeriodLength);
-    const previousTo = subDays(to, previousPeriodLength);
+    const _from = format(from, "yyyy-MM-dd HH:mm:ss");
+    const _to = format(to, "yyyy-MM-dd HH:mm:ss");
 
-    const formattedFrom = format(from, "yyyy-MM-dd HH:mm:ss");
-    const formattedTo = format(endOfDay(to), "yyyy-MM-dd HH:mm:ss");
+    console.log(_from, _to);
+
+    const difference = differenceInDays(to, from);
+    const previousFrom = subDays(from, difference);
+    const previousTo = subDays(to, difference);
+
+    // const formattedFrom = format(from, "yyyy-MM-dd HH:mm:ss");
+    // const formattedTo = format(endOfDay(to), "yyyy-MM-dd HH:mm:ss");
     const formattedPreviousFrom = format(previousFrom, "yyyy-MM-dd HH:mm:ss");
-    const formattedPreviousTo = format(
-      endOfDay(previousTo),
-      "yyyy-MM-dd HH:mm:ss",
-    );
+    const formattedPreviousTo = format(previousTo, "yyyy-MM-dd HH:mm:ss");
 
     const result = await client.query({
       query: `
         WITH 
           (
             SELECT 
-              countIf(created_at <= '${formattedTo}') as current_period_end,
-              countIf(created_at <= '${formattedFrom}') as current_period_start,
+              countIf(created_at <= '${_to}') as current_period_end,
+              countIf(created_at <= '${_from}') as current_period_start,
               countIf(created_at <= '${formattedPreviousTo}') as previous_period_end,
               countIf(created_at <= '${formattedPreviousFrom}') as previous_period_start
             FROM member

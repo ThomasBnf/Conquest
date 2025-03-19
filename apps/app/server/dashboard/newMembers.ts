@@ -1,5 +1,11 @@
 import { client } from "@conquest/clickhouse/client";
-import { differenceInDays, endOfDay, format, subDays } from "date-fns";
+import {
+  addHours,
+  differenceInDays,
+  endOfDay,
+  format,
+  subDays,
+} from "date-fns";
 import { z } from "zod";
 import { protectedProcedure } from "../trpc";
 
@@ -14,12 +20,15 @@ export const newMembers = protectedProcedure
     const { workspace_id } = user;
     const { from, to } = input;
 
-    const previousPeriodLength = differenceInDays(to, from);
-    const previousFrom = subDays(from, previousPeriodLength);
-    const previousTo = subDays(to, previousPeriodLength);
+    const fromAdjusted = addHours(from, 1);
+    const toAdjusted = addHours(to, 1);
 
-    const formattedFrom = format(from, "yyyy-MM-dd HH:mm:ss");
-    const formattedTo = format(endOfDay(to), "yyyy-MM-dd HH:mm:ss");
+    const previousPeriodLength = differenceInDays(toAdjusted, fromAdjusted);
+    const previousFrom = subDays(fromAdjusted, previousPeriodLength);
+    const previousTo = subDays(toAdjusted, previousPeriodLength);
+
+    const formattedFrom = format(fromAdjusted, "yyyy-MM-dd HH:mm:ss");
+    const formattedTo = format(endOfDay(toAdjusted), "yyyy-MM-dd HH:mm:ss");
     const formattedPreviousFrom = format(previousFrom, "yyyy-MM-dd HH:mm:ss");
     const formattedPreviousTo = format(
       endOfDay(previousTo),

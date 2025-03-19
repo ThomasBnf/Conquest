@@ -1,7 +1,7 @@
 import { SourceBadge } from "@/components/badges/source-badge";
-import { trpc } from "@/server/client";
 import { Avatar, AvatarFallback, AvatarImage } from "@conquest/ui/avatar";
 import type { ActivityWithType } from "@conquest/zod/schemas/activity.schema";
+import type { GithubIntegration } from "@conquest/zod/schemas/integration.schema";
 import type { Member } from "@conquest/zod/schemas/member.schema";
 import { format } from "date-fns";
 import { ActivityMenu } from "../activity-menu";
@@ -9,14 +9,20 @@ import { ActivityMenu } from "../activity-menu";
 type Props = {
   activity: ActivityWithType;
   member: Member | null | undefined;
+  github: GithubIntegration | null;
 };
 
-export const GithubIssue = ({ activity, member }: Props) => {
-  const { title, message, created_at } = activity;
+export const GithubIssue = ({ activity, member, github }: Props) => {
+  const { external_id, title, message, created_at } = activity;
   const { source } = activity.activity_type;
   const { avatar_url, first_name, last_name } = member ?? {};
 
-  const { data: link } = trpc.github.getLink.useQuery({ activity });
+  if (!github) return null;
+
+  const { details } = github;
+  const { owner, name } = details;
+
+  const link = `https://github.com/${owner}/${name}/issues/${external_id}`;
 
   return (
     <div>

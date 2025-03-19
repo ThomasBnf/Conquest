@@ -49,7 +49,7 @@ export const createGithubMember = async ({
       external_id: String(id),
       attributes: {
         source: "Github",
-        username: login,
+        login,
         bio,
         blog,
         followers,

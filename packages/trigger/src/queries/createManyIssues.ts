@@ -1,8 +1,10 @@
+import { createActivity } from "@conquest/clickhouse/activities/createActivity";
 import type { GithubIntegration } from "@conquest/zod/schemas/integration.schema";
 import type { Endpoints } from "@octokit/types";
-import { logger, wait } from "@trigger.dev/sdk/v3";
+import { logger } from "@trigger.dev/sdk/v3";
 import { subDays } from "date-fns";
 import type { Octokit } from "octokit";
+import { checkRateLimit } from "./checkRateLimit";
 import { createGithubMember } from "./createGithubMember";
 
 type Issue =
@@ -37,12 +39,7 @@ export const createManyIssues = async ({ octokit, github }: Props) => {
 
     if (data.length < 100) break;
 
-    const rateLimit = Number(headers["x-ratelimit-remaining"]);
-    const rateLimitReset = headers["x-ratelimit-reset"];
-
-    if (rateLimit === 0) {
-      await wait.until({ date: new Date(Number(rateLimitReset) * 1000) });
-    }
+    await checkRateLimit(headers);
 
     page++;
   }
@@ -50,22 +47,68 @@ export const createManyIssues = async ({ octokit, github }: Props) => {
   logger.info("issues", { issuesLength: issues.length, issues });
 
   for (const issue of issues) {
-    const { user } = issue;
-    const { id } = user ?? {};
+    const { number, user, title, body, comments, created_at, updated_at } =
+      issue;
+    const { id: userId, login } = user ?? {};
 
-    if (!id) continue;
+    if (!userId || login?.includes("[bot]")) continue;
 
-    await createGithubMember({
+    const { headers, member_id } = await createGithubMember({
       octokit,
-      id,
+      id: userId,
       workspace_id,
     });
 
-    // const rateLimit = Number(headers["x-ratelimit-remaining"]);
-    // const rateLimitReset = headers["x-ratelimit-reset"];
+    await checkRateLimit(headers);
 
-    // if (rateLimit === 0) {
-    //   await wait.until({ date: new Date(Number(rateLimitReset) * 1000) });
-    // }
+    await createActivity({
+      external_id: String(number),
+      activity_type_key: "github:issue",
+      title: `#${number} - ${title}`,
+      message: body ?? "",
+      member_id,
+      created_at: new Date(created_at),
+      updated_at: new Date(updated_at),
+      source: "Github",
+      workspace_id,
+    });
+
+    if (comments > 0) {
+      const { headers, data: comments } =
+        await octokit.rest.issues.listComments({
+          owner,
+          repo: name,
+          issue_number: number,
+        });
+
+      await checkRateLimit(headers);
+
+      for (const comment of comments) {
+        const { id: commentId, user, body, created_at, updated_at } = comment;
+        const { id: userId, login } = user ?? {};
+
+        if (!userId || login?.includes("[bot]")) continue;
+
+        const { headers, member_id } = await createGithubMember({
+          octokit,
+          id: userId,
+          workspace_id,
+        });
+
+        await createActivity({
+          external_id: String(commentId),
+          activity_type_key: "github:comment",
+          message: body ?? "",
+          member_id,
+          reply_to: String(number),
+          created_at: new Date(created_at),
+          updated_at: new Date(updated_at),
+          source: "Github",
+          workspace_id,
+        });
+
+        await checkRateLimit(headers);
+      }
+    }
   }
 };

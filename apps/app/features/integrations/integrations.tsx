@@ -58,7 +58,7 @@ export const categories = [
         logo: <Github />,
         source: "Github" as const,
         description: "Synchronize your members with Github",
-        soon: true,
+        soon: false,
       },
     ],
   },

@@ -19,6 +19,7 @@ import { format } from "date-fns";
 import { TagIcon } from "lucide-react";
 import { DiscordSection } from "./discord-section";
 import { DiscourseSection } from "./discourse-section";
+import { GithubSection } from "./github-section";
 import { LevelBadge } from "./level-badge";
 import { LivestormSection } from "./livestorm-section";
 import { PulseBadge } from "./pulse-badge";
@@ -100,6 +101,7 @@ export const MemberSidebar = ({ member, profiles }: Props) => {
             <div className="space-y-2 p-4">
               <DiscordSection profiles={profiles} />
               <DiscourseSection profiles={profiles} />
+              <GithubSection profiles={profiles} />
               <LivestormSection profiles={profiles} />
               <SlackSection profiles={profiles} />
             </div>

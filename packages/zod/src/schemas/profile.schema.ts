@@ -27,7 +27,7 @@ export const DiscourseAttributesSchema = z.object({
 
 export const GithubAttributesSchema = z.object({
   source: z.literal("Github"),
-  username: z.string(),
+  login: z.string(),
   bio: z.string().nullish(),
   blog: z.string().nullish(),
   followers: z.coerce.number(),

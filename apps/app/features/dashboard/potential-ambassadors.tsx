@@ -68,8 +68,8 @@ export const PotentialAmbassadors = () => {
           </TooltipTrigger>
           <TooltipContent>
             <p>
-              {previous} at risk member{previous > 1 ? "s" : ""} in the previous
-              period
+              {previous} potential ambassador{previous > 1 ? "s" : ""} in the
+              previous period
             </p>
           </TooltipContent>
         </Tooltip>

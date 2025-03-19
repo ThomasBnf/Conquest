@@ -1,5 +1,5 @@
 import { client } from "@conquest/clickhouse/client";
-import { endOfDay, format } from "date-fns";
+import { addHours, endOfDay, format } from "date-fns";
 import { z } from "zod";
 import { protectedProcedure } from "../trpc";
 
@@ -14,8 +14,11 @@ export const topChannels = protectedProcedure
     const { workspace_id } = user;
     const { from, to } = input;
 
-    const formattedFrom = format(from, "yyyy-MM-dd HH:mm:ss");
-    const formattedTo = format(endOfDay(to), "yyyy-MM-dd HH:mm:ss");
+    const fromAdjusted = addHours(from, 1);
+    const toAdjusted = addHours(to, 1);
+
+    const formattedFrom = format(fromAdjusted, "yyyy-MM-dd HH:mm:ss");
+    const formattedTo = format(endOfDay(toAdjusted), "yyyy-MM-dd HH:mm:ss");
 
     const result = await client.query({
       query: `
