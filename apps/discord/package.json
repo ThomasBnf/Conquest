@@ -9,10 +9,11 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@conquest/env": "workspace:*",
     "@conquest/clickhouse": "workspace:*",
     "@conquest/db": "workspace:*",
+    "@conquest/env": "workspace:*",
     "@types/express": "^5.0.0",
+    "date-fns": "^4.1.0",
     "discord-api-types": "^0.37.118",
     "discord.js": "^14.14.1",
     "express": "^4.21.2",
