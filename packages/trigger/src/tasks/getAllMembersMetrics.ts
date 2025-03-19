@@ -3,8 +3,9 @@ import { getPulseScore } from "@conquest/clickhouse/helpers/getPulseScore";
 import { listLevels } from "@conquest/clickhouse/levels/listLevels";
 import { createManyLogs } from "@conquest/clickhouse/logs/createManyLogs";
 import { listMembers } from "@conquest/clickhouse/members/listMembers";
+import { updateMember } from "@conquest/clickhouse/members/updateMember";
 import type { Log } from "@conquest/zod/schemas/logs.schema";
-import { logger, runs, schemaTask } from "@trigger.dev/sdk/v3";
+import { type Context, logger, runs, schemaTask } from "@trigger.dev/sdk/v3";
 import {
   eachWeekOfInterval,
   endOfDay,
@@ -21,21 +22,7 @@ export const getAllMembersMetrics = schemaTask({
     workspace_id: z.string(),
   }),
   run: async ({ workspace_id }, { ctx }) => {
-    const allRuns = await runs.list({
-      status: "EXECUTING",
-      taskIdentifier: "get-all-members-metrics",
-    });
-
-    const currentRunId = ctx.run.id;
-    const previousTask = allRuns.data.filter((run) => run.id !== currentRunId);
-
-    if (previousTask) {
-      await Promise.all(
-        previousTask.map(async (run) => {
-          await runs.cancel(run.id);
-        }),
-      );
-    }
+    await hasTasksRunning({ ctx, workspace_id });
 
     const levels = await listLevels({ workspace_id });
     const members = await listMembers({ workspace_id });
@@ -52,7 +39,7 @@ export const getAllMembersMetrics = schemaTask({
       { weekStartsOn: 1 },
     );
 
-    for (const member of members) {
+    for (const [index, member] of members.entries()) {
       const logs: Log[] = [];
 
       for (const interval of intervals) {
@@ -85,20 +72,41 @@ export const getAllMembersMetrics = schemaTask({
       }
 
       await createManyLogs({ logs });
-
       const { pulse, level_id } = logs.at(-1) ?? {};
 
-      // await updateMember({
-      //   ...member,
-      //   first_activity: activities?.at(-1)?.created_at ?? null,
-      //   last_activity: activities?.at(0)?.created_at ?? null,
-      //   pulse: pulse ?? 0,
-      //   level_id: level_id ?? null,
-      // });
-      // }) ?? [],
-      // );
+      await updateMember({
+        ...member,
+        first_activity: activities?.at(-1)?.created_at ?? null,
+        last_activity: activities?.at(0)?.created_at ?? null,
+        pulse: pulse ?? 0,
+        level_id: level_id ?? null,
+      });
 
-      console.log(member.id);
+      console.log(index, member.id);
     }
   },
 });
+
+export const hasTasksRunning = async ({
+  ctx,
+  workspace_id,
+}: { ctx: Context; workspace_id: string }) => {
+  const allRuns = await runs.list({
+    status: "EXECUTING",
+    taskIdentifier: "get-all-members-metrics",
+  });
+
+  const currentRunId = ctx.run.id;
+  const previousTask = allRuns.data.filter(
+    (run) =>
+      run.id !== currentRunId && run.metadata?.workspace_id === workspace_id,
+  );
+
+  if (previousTask) {
+    await Promise.all(
+      previousTask.map(async (run) => {
+        await runs.cancel(run.id);
+      }),
+    );
+  }
+};
