@@ -9,6 +9,8 @@ type Props = {
   period?: number;
   member_id?: string;
   company_id?: string;
+  cursor?: number | null | undefined;
+  limit?: number;
   workspace_id: string;
 };
 
@@ -16,6 +18,8 @@ export const listActivities = async ({
   period,
   member_id,
   company_id,
+  cursor,
+  limit,
   workspace_id,
 }: Props) => {
   const today = new Date();
@@ -34,6 +38,8 @@ export const listActivities = async ({
       ${company_id ? `AND m.company_id = '${company_id}'` : ""}
       ${period ? `AND a.created_at BETWEEN '${format(to, "yyyy-MM-dd HH:mm:ss")}' AND '${format(today, "yyyy-MM-dd HH:mm:ss")}'` : ""}
       ORDER BY a.created_at DESC
+      ${limit ? `LIMIT ${limit}` : ""}
+      ${cursor ? `OFFSET ${cursor}` : ""}
     `,
   });
 
@@ -65,12 +71,6 @@ export const listActivities = async ({
   const activities = data.map((row: unknown) =>
     transformFlatActivity(row as Record<string, unknown>),
   ) as ActivityWithType[];
-
-  const problematicActivity = activities.find(
-    (activity) => !activity.activity_type?.source,
-  );
-
-  console.log(problematicActivity);
 
   return ActivityWithTypeSchema.array().parse(activities);
 };

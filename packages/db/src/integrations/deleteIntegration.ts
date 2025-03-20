@@ -1,11 +1,13 @@
 import { client } from "@conquest/clickhouse/client";
 import { env } from "@conquest/env";
 import {
+  GithubIntegrationSchema,
   type Integration,
   LinkedInIntegrationSchema,
   LivestormIntegrationSchema,
 } from "@conquest/zod/schemas/integration.schema";
 import { WebClient } from "@slack/web-api";
+import { Octokit } from "octokit";
 import { deleteManyEvents } from "../events/deleteManyEvents";
 import { listSubscriptions } from "../linkedin/listSubscriptions";
 import { removeWebhook } from "../linkedin/removeWebhook";
@@ -15,7 +17,6 @@ import { listWebhooks } from "../livestorm/listWebhooks";
 import { deleteManyPosts } from "../posts/deleteManyPosts";
 import { prisma } from "../prisma";
 import { decrypt } from "../utils/decrypt";
-
 type Props = {
   integration: Integration;
 };
@@ -68,6 +69,14 @@ export const deleteIntegration = async ({ integration }: Props) => {
   }
 
   if (source === "Github") {
+    const github = GithubIntegrationSchema.parse(integration);
+    const { access_token, iv } = github.details;
+
+    const decryptedToken = await decrypt({ access_token, iv });
+    const octokit = new Octokit({ auth: decryptedToken });
+
+    // await listAndDeleteWebhooks({ github, octokit });
+
     client.query({
       query: `
         ALTER TABLE profile DELETE

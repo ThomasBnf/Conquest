@@ -72,7 +72,7 @@ export const LivestormDetailsSchema = z.object({
 
 export const GithubDetailsSchema = z.object({
   source: z.literal("Github"),
-  name: z.string(),
+  repo: z.string(),
   access_token: z.string(),
   iv: z.string(),
   scope: z.string(),

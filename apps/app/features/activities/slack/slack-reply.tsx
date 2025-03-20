@@ -4,6 +4,7 @@ import { trpc } from "@/server/client";
 import { Avatar, AvatarFallback, AvatarImage } from "@conquest/ui/avatar";
 import type { ActivityWithType } from "@conquest/zod/schemas/activity.schema";
 import type { Member } from "@conquest/zod/schemas/member.schema";
+import { skipToken } from "@tanstack/react-query";
 import { format } from "date-fns";
 import ReactMarkdown from "react-markdown";
 import { ActivityMenu } from "../activity-menu";
@@ -20,8 +21,7 @@ export const SlackReply = ({ activity, member }: Props) => {
   const { avatar_url, first_name, last_name } = member ?? {};
 
   const { data: channel } = trpc.channels.get.useQuery(
-    { id: channel_id },
-    { enabled: !!channel_id },
+    channel_id ? { id: channel_id } : skipToken,
   );
 
   const { data: permalink } = trpc.slack.getPermaLink.useQuery({
@@ -56,7 +56,7 @@ export const SlackReply = ({ activity, member }: Props) => {
         <ActivityMenu activity={activity} href={permalink} />
       </div>
       <div className="mt-2 ml-7 rounded-md border p-3">
-        <ReactMarkdown className="whitespace-pre-wrap">
+        <ReactMarkdown className="whitespace-pre-wrap break-words">
           {parseSlackMessage(message)}
         </ReactMarkdown>
       </div>

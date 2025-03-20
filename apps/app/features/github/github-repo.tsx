@@ -9,6 +9,7 @@ import { RadioGroup, RadioGroupItem } from "@conquest/ui/radio-group";
 import type { Endpoints } from "@octokit/types";
 import { ArrowRight, Loader2, Star } from "lucide-react";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 type Repository = Endpoints["GET /user/repos"]["response"]["data"][number];
 
@@ -25,6 +26,10 @@ export const GithubRepo = () => {
       utils.integrations.bySource.invalidate({
         source: "Github",
       });
+    },
+    onError: (error) => {
+      toast.error(error.message);
+      setLoading(false);
     },
   });
 
@@ -48,7 +53,7 @@ export const GithubRepo = () => {
       id: github.id,
       details: {
         ...github.details,
-        name: repository.name,
+        repo: repository.name,
         owner: repository.owner.login,
       },
     });
@@ -57,7 +62,7 @@ export const GithubRepo = () => {
   };
 
   useEffect(() => {
-    if (github?.details.name) setStep(1);
+    if (github?.details.repo) setStep(1);
   }, [github]);
 
   if (isLoading) return <LoadingRepositories />;

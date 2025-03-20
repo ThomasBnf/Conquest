@@ -5,6 +5,7 @@ import { Badge } from "@conquest/ui/badge";
 import { cn } from "@conquest/ui/cn";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@conquest/ui/tooltip";
 import type { Member } from "@conquest/zod/schemas/member.schema";
+import { skipToken } from "@tanstack/react-query";
 import { endOfHour, startOfDay, subDays, subHours } from "date-fns";
 import { Hash, InfoIcon, Loader2 } from "lucide-react";
 import { useState } from "react";
@@ -29,8 +30,7 @@ export const PulseBadge = ({
 
   const { data: channels } = trpc.channels.list.useQuery({});
   const { data: activities, isLoading } = trpc.activities.list.useQuery(
-    { member_id: member?.id },
-    { enabled: hover },
+    hover ? { member_id: member?.id } : skipToken,
   );
 
   const today = new Date();
@@ -49,7 +49,6 @@ export const PulseBadge = ({
     <Tooltip>
       <TooltipTrigger
         onMouseEnter={() => setHover(true)}
-        onMouseLeave={() => setHover(false)}
         className={cn(
           "flex items-center justify-end gap-1.5",
           pulse === 0 && "cursor-default",
@@ -85,20 +84,26 @@ export const PulseBadge = ({
               {Object.entries(pulseScore).map(([source, activities]) => (
                 <div key={source} className="mt-2">
                   <p className="mb-2 font-medium">{source}</p>
-                  {Object.entries(activities).map(([name, activity]) => (
-                    <div key={name} className="mb-2">
+                  {Object.entries(activities).map(([name, group]) => (
+                    <div
+                      key={name}
+                      className={cn(
+                        "mb-2 gap-2",
+                        !group.hasChannel &&
+                          "grid grid-cols-[1fr_auto] items-center gap-8",
+                      )}
+                    >
                       <p className="first-letter:capitalize">{name}</p>
                       <div className="text-muted/70">
-                        {activity.count > 0 && (
+                        {group.count > 0 && (
                           <div className="flex items-center justify-between gap-6">
-                            <p>In any channel</p>
+                            {group.hasChannel && <p>In any channel</p>}
                             <p className="flex items-baseline gap-1 text-white">
-                              {activity.count} <span>x</span> {activity.points}{" "}
-                              pts
+                              {group.count} <span>x</span> {group.points} pts
                             </p>
                           </div>
                         )}
-                        {Object.entries(activity.conditions ?? {}).map(
+                        {Object.entries(group.conditions ?? {}).map(
                           ([name, condition]) => (
                             <div
                               key={name}

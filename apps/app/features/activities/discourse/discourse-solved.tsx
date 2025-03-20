@@ -4,6 +4,7 @@ import { trpc } from "@/server/client";
 import { Avatar, AvatarFallback, AvatarImage } from "@conquest/ui/avatar";
 import type { ActivityWithType } from "@conquest/zod/schemas/activity.schema";
 import type { Member } from "@conquest/zod/schemas/member.schema";
+import { skipToken } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { ActivityMenu } from "../activity-menu";
 
@@ -21,8 +22,7 @@ export const DiscourseSolved = ({ activity, member }: Props) => {
   const { avatar_url, first_name, last_name } = member ?? {};
 
   const { data: channel } = trpc.channels.get.useQuery(
-    { id: channel_id },
-    { enabled: !!channel_id },
+    channel_id ? { id: channel_id } : skipToken,
   );
 
   const href = `${community_url}/${reply_to}`;
@@ -55,8 +55,8 @@ export const DiscourseSolved = ({ activity, member }: Props) => {
       </div>
       <div className="mt-2 ml-7 rounded-md border p-3">
         <p
-          className="whitespace-pre-wrap"
           dangerouslySetInnerHTML={{ __html: message }}
+          className="whitespace-pre-wrap break-words"
         />
       </div>
     </div>

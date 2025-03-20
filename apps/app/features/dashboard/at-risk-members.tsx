@@ -17,6 +17,7 @@ import {
 } from "@conquest/ui/sheet";
 import { Skeleton } from "@conquest/ui/skeleton";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@conquest/ui/tooltip";
+import { skipToken } from "@tanstack/react-query";
 import { PanelRight, TriangleAlert } from "lucide-react";
 import { useQueryStates } from "nuqs";
 import { useState } from "react";
@@ -94,18 +95,17 @@ const AtRiskMembersSheet = ({
     useQueryStates(tableParams);
 
   const { data, isLoading } = trpc.dashboard.atRiskMembersTable.useQuery(
-    {
-      from,
-      to,
-      search,
-      id: idMember,
-      desc: descMember,
-      page,
-      pageSize,
-    },
-    {
-      enabled: open,
-    },
+    open
+      ? {
+          from,
+          to,
+          search,
+          id: idMember,
+          desc: descMember,
+          page,
+          pageSize,
+        }
+      : skipToken,
   );
 
   const { table } = useTable({

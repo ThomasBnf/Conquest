@@ -20,9 +20,9 @@ export const GithubComment = ({ activity, member, github }: Props) => {
   if (!github) return null;
 
   const { details } = github;
-  const { owner, name } = details;
+  const { owner, repo } = details;
 
-  const link = `https://github.com/${owner}/${name}/${reply_to}#issuecomment-${external_id}`;
+  const link = `https://github.com/${owner}/${repo}/${reply_to}#issuecomment-${external_id}`;
 
   return (
     <div className="flex items-center justify-between">

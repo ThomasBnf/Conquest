@@ -1,6 +1,7 @@
 import { trpc } from "@/server/client";
 import { Skeleton } from "@conquest/ui/skeleton";
 import type { Member } from "@conquest/zod/schemas/member.schema";
+import { skipToken } from "@tanstack/react-query";
 import type { Row } from "@tanstack/react-table";
 
 type Props = {
@@ -9,8 +10,7 @@ type Props = {
 
 export const CompanyCell = ({ row }: Props) => {
   const { data, isLoading } = trpc.companies.get.useQuery(
-    { id: row.original.company_id ?? "" },
-    { enabled: !!row.original.company_id },
+    row.original.company_id ? { id: row.original.company_id } : skipToken,
   );
 
   return (

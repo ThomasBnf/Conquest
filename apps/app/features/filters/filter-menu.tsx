@@ -20,6 +20,10 @@ export const FilterMenu = ({ filter }: Props) => {
   const [open, setOpen] = useState(false);
   const { onUpdateFilter } = useFilters();
 
+  const hasChannel = filter.activity_types.some((activityType) =>
+    ["slack", "discord", "discourse"].includes(activityType.key),
+  );
+
   const onUpdateDisplay = (
     field: "display_count" | "display_date" | "display_channel",
   ) => {
@@ -49,15 +53,17 @@ export const FilterMenu = ({ filter }: Props) => {
                 <Checkbox checked={filter.display_count} className="mr-2" />
                 Filter by count
               </CommandItem>
-              <CommandItem
-                onSelect={() => {
-                  setOpen(false);
-                  onUpdateDisplay("display_channel");
-                }}
-              >
-                <Checkbox checked={filter.display_channel} className="mr-2" />
-                Filter by channel
-              </CommandItem>
+              {hasChannel && (
+                <CommandItem
+                  onSelect={() => {
+                    setOpen(false);
+                    onUpdateDisplay("display_channel");
+                  }}
+                >
+                  <Checkbox checked={filter.display_channel} className="mr-2" />
+                  Filter by channel
+                </CommandItem>
+              )}
               <CommandItem
                 onSelect={() => {
                   setOpen(false);

@@ -17,6 +17,7 @@ import { DiscourseSolved } from "./discourse/discourse-solved";
 import { DiscourseTopic } from "./discourse/discourse-topic";
 import { GithubComment } from "./github/github-comment";
 import { GithubIssue } from "./github/github-issue";
+import { GithubPr } from "./github/github-pr";
 import { LivestormAttendee } from "./livestorm/livestorm-attendee";
 import { LivestormCohost } from "./livestorm/livestorm-cohost";
 import { LivestormRegister } from "./livestorm/livestorm-register";
@@ -74,6 +75,9 @@ export const ActivityParser = ({ activity }: Props) => {
     }
     case "discourse:login": {
       return <DiscourseLogin activity={activity} member={member} />;
+    }
+    case "github:pr": {
+      return <GithubPr activity={activity} member={member} github={github} />;
     }
     case "github:issue": {
       return (

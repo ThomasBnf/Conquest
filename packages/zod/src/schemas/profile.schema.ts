@@ -46,7 +46,7 @@ export const SlackAttributesSchema = z.object({
   source: z.literal("Slack"),
 });
 
-export const XAttributesSchema = z.object({
+export const TwitterAttributesSchema = z.object({
   source: z.literal("Twitter"),
   username: z.string(),
 });
@@ -58,7 +58,7 @@ export const ProfileAttributesSchema = z.discriminatedUnion("source", [
   LinkedInAttributesSchema,
   LivestormAttributesSchema,
   SlackAttributesSchema,
-  XAttributesSchema,
+  TwitterAttributesSchema,
 ]);
 
 export const DiscordProfileSchema = BaseProfileSchema.extend({
@@ -85,8 +85,8 @@ export const SlackProfileSchema = BaseProfileSchema.extend({
   attributes: SlackAttributesSchema,
 });
 
-export const XProfileSchema = BaseProfileSchema.extend({
-  attributes: XAttributesSchema,
+export const TwitterProfileSchema = BaseProfileSchema.extend({
+  attributes: TwitterAttributesSchema,
 });
 
 export const ProfileSchema = z.union([
@@ -96,7 +96,7 @@ export const ProfileSchema = z.union([
   LinkedInProfileSchema,
   LivestormProfileSchema,
   SlackProfileSchema,
-  XProfileSchema,
+  TwitterProfileSchema,
 ]);
 
 export type Profile = z.infer<typeof ProfileSchema>;
@@ -107,4 +107,4 @@ export type GithubProfile = z.infer<typeof GithubProfileSchema>;
 export type LinkedInProfile = z.infer<typeof LinkedInProfileSchema>;
 export type LivestormProfile = z.infer<typeof LivestormProfileSchema>;
 export type SlackProfile = z.infer<typeof SlackProfileSchema>;
-export type XProfile = z.infer<typeof XProfileSchema>;
+export type TwitterProfile = z.infer<typeof TwitterProfileSchema>;

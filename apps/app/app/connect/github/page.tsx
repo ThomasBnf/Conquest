@@ -43,7 +43,7 @@ export default async function Page({ searchParams }: Props) {
       access_token: encryptedAccessToken.token,
       iv: encryptedAccessToken.iv,
       scope,
-      name: "",
+      repo: "",
       owner: "",
     },
     created_by: userId,

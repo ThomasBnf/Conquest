@@ -6,22 +6,29 @@ import { cn } from "@conquest/ui/cn";
 import { Separator } from "@conquest/ui/separator";
 import type { ActivityWithType } from "@conquest/zod/schemas/activity.schema";
 import { format, isToday, isYesterday } from "date-fns";
-import { type PropsWithChildren, useMemo } from "react";
+import { type PropsWithChildren, useEffect, useMemo } from "react";
+import { useInView } from "react-intersection-observer";
 import { ActivityParser } from "./activity-parser";
 
 type Activities = Record<string, ActivityWithType[]>;
 
 type Props = {
   activities: ActivityWithType[] | undefined;
+  fetchNextPage: () => void;
+  hasNextPage: boolean | undefined;
   isLoading: boolean;
   className?: string;
 };
 
 export const Activities = ({
   activities,
+  fetchNextPage,
+  hasNextPage,
   isLoading,
   className,
 }: PropsWithChildren<Props>) => {
+  const { ref, inView } = useInView();
+
   const groupedActivities = useMemo(() => {
     if (!activities) return {};
 
@@ -32,6 +39,12 @@ export const Activities = ({
       return acc;
     }, {});
   }, [activities]);
+
+  useEffect(() => {
+    if (inView && hasNextPage) {
+      fetchNextPage();
+    }
+  }, [inView, hasNextPage, fetchNextPage]);
 
   if (isLoading) return <IsLoading />;
 
@@ -46,7 +59,7 @@ export const Activities = ({
 
   return (
     <div className={cn("mx-auto w-full max-w-3xl px-4 pt-6 pb-12", className)}>
-      {Object.entries(groupedActivities).map(([date, activities]) => (
+      {Object.entries(groupedActivities).map(([date, activities], index) => (
         <div key={date} className="mb-10 space-y-14">
           <div className="my-4 flex items-center">
             <Separator className="flex-1" />
@@ -73,6 +86,7 @@ export const Activities = ({
           </div>
         </div>
       ))}
+      <div ref={ref} />
     </div>
   );
 };

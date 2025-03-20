@@ -6,6 +6,7 @@ import type { ActivityWithType } from "@conquest/zod/schemas/activity.schema";
 import type { Member } from "@conquest/zod/schemas/member.schema";
 import { format } from "date-fns";
 import { ActivityMenu } from "../activity-menu";
+import { skipToken } from "@tanstack/react-query";
 
 type Props = {
   activity: ActivityWithType;
@@ -19,8 +20,7 @@ export const SlackReaction = ({ activity, member }: Props) => {
   const { avatar_url, first_name, last_name } = member ?? {};
 
   const { data: channel } = trpc.channels.get.useQuery(
-    { id: channel_id },
-    { enabled: !!channel_id },
+    channel_id ? { id: channel_id } : skipToken,
   );
 
   const { data: permalink } = trpc.slack.getPermaLink.useQuery({

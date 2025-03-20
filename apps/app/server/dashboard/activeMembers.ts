@@ -1,5 +1,5 @@
 import { client } from "@conquest/clickhouse/client";
-import { differenceInDays, endOfDay, format, subDays } from "date-fns";
+import { differenceInDays, format, subDays } from "date-fns";
 import { z } from "zod";
 import { protectedProcedure } from "../trpc";
 
@@ -14,17 +14,15 @@ export const activeMembers = protectedProcedure
     const { workspace_id } = user;
     const { from, to } = input;
 
-    const previousPeriodLength = differenceInDays(to, from);
-    const previousFrom = subDays(from, previousPeriodLength);
-    const previousTo = subDays(to, previousPeriodLength);
+    const _from = format(from, "yyyy-MM-dd HH:mm:ss");
+    const _to = format(to, "yyyy-MM-dd HH:mm:ss");
 
-    const formattedFrom = format(from, "yyyy-MM-dd HH:mm:ss");
-    const formattedTo = format(endOfDay(to), "yyyy-MM-dd HH:mm:ss");
-    const formattedPreviousFrom = format(previousFrom, "yyyy-MM-dd HH:mm:ss");
-    const formattedPreviousTo = format(
-      endOfDay(previousTo),
-      "yyyy-MM-dd HH:mm:ss",
-    );
+    const difference = differenceInDays(_to, _from);
+    const previousFrom = subDays(_from, difference);
+    const previousTo = subDays(_to, difference);
+
+    const _previousFrom = format(previousFrom, "yyyy-MM-dd HH:mm:ss");
+    const _previousTo = format(previousTo, "yyyy-MM-dd HH:mm:ss");
 
     const result = await client.query({
       query: `
@@ -32,15 +30,15 @@ export const activeMembers = protectedProcedure
           (
             SELECT count(DISTINCT member_id)
             FROM activity
-            WHERE created_at >= '${formattedFrom}' 
-            AND created_at <= '${formattedTo}'
+            WHERE created_at >= '${_from}' 
+            AND created_at <= '${_to}'
             AND workspace_id = '${workspace_id}'
           ) as current_count,
           (
             SELECT count(DISTINCT member_id)
             FROM activity
-            WHERE created_at >= '${formattedPreviousFrom}' 
-            AND created_at <= '${formattedPreviousTo}'
+            WHERE created_at >= '${_previousFrom}' 
+            AND created_at <= '${_previousTo}'
             AND workspace_id = '${workspace_id}'
           ) as previous_count
         SELECT 

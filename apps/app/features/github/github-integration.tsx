@@ -15,7 +15,7 @@ type Props = {
 
 export const GithubIntegration = ({ error }: Props) => {
   const { github, setLoading } = useIntegration();
-  const { name } = github?.details ?? {};
+  const { repo } = github?.details ?? {};
   const router = useRouter();
 
   const onEnable = () => {
@@ -50,7 +50,7 @@ export const GithubIntegration = ({ error }: Props) => {
       >
         <GithubForm />
       </EnableCard>
-      <ConnectedCard integration={github} name={name} />
+      <ConnectedCard integration={github} name={repo} />
     </div>
   );
 };

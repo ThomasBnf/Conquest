@@ -18,16 +18,32 @@ export const PageActivities = ({ slug, memberId }: Props) => {
     id: memberId,
   });
 
-  const { data, isLoading: _isLoading } = trpc.activities.list.useQuery({
-    member_id: memberId,
-  });
+  const {
+    data,
+    isLoading: _isLoading,
+    fetchNextPage,
+    hasNextPage,
+  } = trpc.activities.listInfinite.useInfiniteQuery(
+    { member_id: memberId, limit: 25 },
+    {
+      getNextPageParam: (lastPage, allPages) =>
+        lastPage.length === 25 ? allPages.length * 25 : undefined,
+    },
+  );
+
+  const activities = data?.pages.flat();
 
   if (isLoading || _isLoading) return <IsLoading />;
   if (!member) return redirect(`/${slug}/members`);
 
   return (
     <ScrollArea className="h-full">
-      <Activities activities={data} isLoading={_isLoading}>
+      <Activities
+        activities={activities}
+        isLoading={_isLoading}
+        fetchNextPage={fetchNextPage}
+        hasNextPage={hasNextPage}
+      >
         <EmptyState
           icon={<Activity size={36} />}
           title="No activities found"

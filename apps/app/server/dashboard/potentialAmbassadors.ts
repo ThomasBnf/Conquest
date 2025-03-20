@@ -14,8 +14,8 @@ export const potentialAmbassadors = protectedProcedure
     const { workspace_id } = user;
     const { from, to } = input;
 
-    const _from = format(addHours(from, 1), "yyyy-MM-dd HH:mm:ss");
-    const _to = format(addHours(to, 1), "yyyy-MM-dd HH:mm:ss");
+    const _from = format(from, "yyyy-MM-dd HH:mm:ss");
+    const _to = format(to, "yyyy-MM-dd HH:mm:ss");
 
     const difference = differenceInDays(_to, _from);
     const previousFrom = subDays(_from, difference);

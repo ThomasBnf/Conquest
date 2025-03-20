@@ -12,6 +12,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@conquest/ui/popover";
 import { Skeleton } from "@conquest/ui/skeleton";
 import type { Company } from "@conquest/zod/schemas/company.schema";
 import type { Member } from "@conquest/zod/schemas/member.schema";
+import { skipToken } from "@tanstack/react-query";
 import { CommandLoading } from "cmdk";
 import { Plus, X } from "lucide-react";
 import { useSession } from "next-auth/react";
@@ -35,8 +36,7 @@ export const EditableCompany = ({ member, onUpdate }: Props) => {
   const utils = trpc.useUtils();
 
   const { data: company } = trpc.companies.get.useQuery(
-    { id: member.company_id ?? "" },
-    { enabled: !!member.company_id },
+    member.company_id ? { id: member.company_id } : skipToken,
   );
 
   const { data: companies, isLoading } =

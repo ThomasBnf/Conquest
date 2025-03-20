@@ -20,9 +20,9 @@ export const GithubIssue = ({ activity, member, github }: Props) => {
   if (!github) return null;
 
   const { details } = github;
-  const { owner, name } = details;
+  const { owner, repo } = details;
 
-  const link = `https://github.com/${owner}/${name}/issues/${external_id}`;
+  const link = `https://github.com/${owner}/${repo}/issues/${external_id}`;
 
   return (
     <div>
@@ -50,7 +50,7 @@ export const GithubIssue = ({ activity, member, github }: Props) => {
         <p className="font-medium">{title}</p>
         <p
           dangerouslySetInnerHTML={{ __html: message }}
-          className="whitespace-pre-wrap"
+          className="whitespace-pre-wrap break-words"
         />
       </div>
     </div>

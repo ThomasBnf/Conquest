@@ -6,12 +6,14 @@ import type { Octokit } from "octokit";
 type Props = {
   octokit: Octokit;
   id: number;
+  created_at?: Date;
   workspace_id: string;
 };
 
 export const createGithubMember = async ({
   octokit,
   id,
+  created_at,
   workspace_id,
 }: Props) => {
   const { headers, data } = await octokit.rest.users.getById({
@@ -42,6 +44,7 @@ export const createGithubMember = async ({
       primary_email: email ?? "",
       avatar_url,
       source: "Github",
+      created_at,
       workspace_id,
     });
 
@@ -50,12 +53,13 @@ export const createGithubMember = async ({
       attributes: {
         source: "Github",
         login,
-        bio,
-        blog,
+        bio: bio ?? null,
+        blog: blog ?? null,
         followers,
-        location,
+        location: location ?? null,
       },
       member_id: member.id,
+      created_at,
       workspace_id,
     });
 
@@ -66,6 +70,7 @@ export const createGithubMember = async ({
           source: "Twitter",
           username: twitter_username,
         },
+        created_at,
         workspace_id,
       });
     }

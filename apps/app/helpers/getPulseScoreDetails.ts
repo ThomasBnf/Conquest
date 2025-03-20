@@ -10,7 +10,8 @@ type Props = {
 type ScoreGroup = {
   count: number;
   points: number;
-  activities: string[];
+  activities: ActivityWithType[];
+  hasChannel: boolean;
   conditions?: Record<
     string,
     {
@@ -43,6 +44,7 @@ export const getPulseScoreDetails = ({ activities, channels }: Props) => {
         acc[source][name] = {
           count: 0,
           points,
+          hasChannel: ["Slack", "Discord", "Discourse"].includes(source),
           conditions: {},
           activities: [],
         };
@@ -50,7 +52,7 @@ export const getPulseScoreDetails = ({ activities, channels }: Props) => {
 
       if (!condition) {
         acc[source][name].count += 1;
-        acc[source][name].activities.push(activity.id);
+        acc[source][name].activities.push(activity);
       }
 
       if (condition) {

@@ -7,6 +7,7 @@ import { format } from "date-fns";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { ActivityMenu } from "../activity-menu";
+import { skipToken } from "@tanstack/react-query";
 
 type Props = {
   activity: ActivityWithType;
@@ -23,8 +24,7 @@ export const DiscourseInvite = ({ activity, member }: Props) => {
   const { avatar_url, first_name, last_name } = member ?? {};
 
   const { data: joiner } = trpc.members.get.useQuery(
-    { id: invite_to },
-    { enabled: !!invite_to },
+    invite_to ? { id: invite_to } : skipToken,
   );
 
   return (

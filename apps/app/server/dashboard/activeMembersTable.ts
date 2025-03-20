@@ -1,7 +1,7 @@
 import { client } from "@conquest/clickhouse/client";
 import { orderByParser } from "@conquest/clickhouse/helpers/orderByParser";
 import { MemberSchema } from "@conquest/zod/schemas/member.schema";
-import { addHours, format } from "date-fns";
+import { format } from "date-fns";
 import { z } from "zod";
 import { protectedProcedure } from "../trpc";
 
@@ -23,8 +23,8 @@ export const activeMembersTable = protectedProcedure
 
     const orderBy = orderByParser({ id, desc, type: "members" });
 
-    const _from = format(addHours(from, 1), "yyyy-MM-dd HH:mm:ss");
-    const _to = format(addHours(to, 1), "yyyy-MM-dd HH:mm:ss");
+    const _from = format(from, "yyyy-MM-dd HH:mm:ss");
+    const _to = format(to, "yyyy-MM-dd HH:mm:ss");
 
     const result = await client.query({
       query: `

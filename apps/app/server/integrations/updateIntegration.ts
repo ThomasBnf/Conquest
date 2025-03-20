@@ -1,7 +1,9 @@
 import { updateIntegration as _updateIntegration } from "@conquest/db/integrations/updateIntegration";
+import { prisma } from "@conquest/db/prisma";
 import { encrypt } from "@conquest/db/utils/encrypt";
 import { STATUS } from "@conquest/zod/enum/status.enum";
 import { IntegrationDetailsSchema } from "@conquest/zod/schemas/integration.schema";
+import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { protectedProcedure } from "../trpc";
 
@@ -39,6 +41,28 @@ export const updateIntegration = protectedProcedure
 
       details.api_key = encryptedApiKey.token;
       details.api_key_iv = encryptedApiKey.iv;
+    }
+
+    if (details?.source === "Github") {
+      const { repo } = details;
+
+      console.log(repo);
+
+      const github = await prisma.integration.findFirst({
+        where: {
+          details: {
+            path: ["repo"],
+            equals: repo,
+          },
+        },
+      });
+
+      if (github) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "This repository is already connected to another workspace",
+        });
+      }
     }
 
     return await _updateIntegration({

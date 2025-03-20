@@ -9,6 +9,7 @@ import { Activities } from "@/features/activities/activities";
 import { CompanySidebar } from "@/features/companies/company-sidebar";
 import { trpc } from "@/server/client";
 import { ScrollArea } from "@conquest/ui/scroll-area";
+import { skipToken } from "@tanstack/react-query";
 
 type Props = {
   companyId: string;
@@ -16,14 +17,23 @@ type Props = {
 
 export const CompanyPage = ({ companyId }: Props) => {
   const { data: company, isLoading } = trpc.companies.get.useQuery(
-    { id: companyId },
-    { enabled: !!companyId },
+    companyId ? { id: companyId } : skipToken,
   );
 
-  const { data, isLoading: _isLoading } = trpc.activities.list.useQuery(
-    { company_id: companyId },
-    { enabled: !!companyId },
+  const {
+    data,
+    isLoading: _isLoading,
+    fetchNextPage,
+    hasNextPage,
+  } = trpc.activities.listInfinite.useInfiniteQuery(
+    { company_id: companyId, limit: 25 },
+    {
+      getNextPageParam: (lastPage, allPages) =>
+        lastPage.length === 25 ? allPages.length * 25 : undefined,
+    },
   );
+
+  const activities = data?.pages.flat();
 
   if (isLoading || _isLoading) return <IsLoading />;
   if (!company) return;
@@ -33,7 +43,12 @@ export const CompanyPage = ({ companyId }: Props) => {
       <HeaderSubPage />
       <div className="flex h-full divide-x overflow-hidden">
         <ScrollArea className="flex-1">
-          <Activities activities={data} isLoading={_isLoading}>
+          <Activities
+            activities={activities}
+            isLoading={_isLoading}
+            fetchNextPage={fetchNextPage}
+            hasNextPage={hasNextPage}
+          >
             <EmptyState
               icon={<ActivitiesIcon size={36} />}
               title="No activities found"

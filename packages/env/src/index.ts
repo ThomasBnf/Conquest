@@ -52,6 +52,7 @@ const encryptionEnv = {
 const githubEnv = {
   server: {
     GITHUB_CLIENT_SECRET: z.string(),
+    GITHUB_WEBHOOK_SECRET: z.string(),
   },
   client: {
     NEXT_PUBLIC_GITHUB_CLIENT_ID: z.string(),

@@ -18,6 +18,7 @@ import {
 import { Skeleton } from "@conquest/ui/skeleton";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@conquest/ui/tooltip";
 import { InfoCircledIcon } from "@radix-ui/react-icons";
+import { skipToken } from "@tanstack/react-query";
 import { PanelRight } from "lucide-react";
 import { useQueryStates } from "nuqs";
 import { useState } from "react";
@@ -92,18 +93,17 @@ const PotentialAmbassadorsSheet = ({
     useQueryStates(tableParams);
 
   const { data, isLoading } = trpc.dashboard.potentialAmbassadorsTable.useQuery(
-    {
-      from,
-      to,
-      search,
-      id: idMember,
-      desc: descMember,
-      page,
-      pageSize,
-    },
-    {
-      enabled: open,
-    },
+    open
+      ? {
+          from,
+          to,
+          search,
+          id: idMember,
+          desc: descMember,
+          page,
+          pageSize,
+        }
+      : skipToken,
   );
 
   const { table } = useTable({

@@ -21,6 +21,7 @@
     "@conquest/zod": "workspace:*",
     "@emoji-mart/data": "^1.2.1",
     "@emoji-mart/react": "^1.1.1",
+    "@octokit/webhooks-types": "^7.6.1",
     "@radix-ui/react-icons": "^1.3.2",
     "@sentry/nextjs": "^9.5.0",
     "@sindresorhus/slugify": "^2.2.1",

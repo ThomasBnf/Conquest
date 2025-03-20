@@ -3,7 +3,8 @@ import type { Endpoints } from "@octokit/types";
 import { logger } from "@trigger.dev/sdk/v3";
 import { subDays } from "date-fns";
 import type { Octokit } from "octokit";
-import { checkRateLimit } from "./checkRateLimit";
+import { checkRateLimit } from "../../../trigger/src/queries/checkRateLimit";
+import { createActivity } from "../activities/createActivity";
 import { createGithubMember } from "./createGithubMember";
 
 type Stargazer =
@@ -16,7 +17,7 @@ type Props = {
 
 export const listStargazers = async ({ octokit, github }: Props) => {
   const { details, workspace_id } = github;
-  const { name, owner } = details;
+  const { owner, repo } = details;
 
   let page = 1;
   const stargazers: Stargazer[] = [];
@@ -26,13 +27,16 @@ export const listStargazers = async ({ octokit, github }: Props) => {
     const { headers, data } = await octokit.rest.activity.listStargazersForRepo(
       {
         owner,
-        repo: name,
+        repo,
         page,
         state: "all",
         per_page: 100,
         since,
         sort: "created",
         direction: "desc",
+        headers: {
+          accept: "application/vnd.github.star+json",
+        },
       },
     );
 
@@ -45,16 +49,31 @@ export const listStargazers = async ({ octokit, github }: Props) => {
     page++;
   }
 
+  logger.info("stargazers", { stargazers: stargazers.length });
+
   for (const stargazer of stargazers) {
-    logger.info("stargazer", { stargazer });
-    const { user } = stargazer as { user: { id: number; login: string } };
-    const { id, login } = user ?? {};
+    const { starred_at, user } = stargazer as {
+      starred_at: string;
+      user: {
+        id: number;
+      };
+    };
+    const { id } = user;
 
-    if (!id || login?.includes("[bot]")) continue;
-
-    const { headers } = await createGithubMember({
+    const { headers, member_id } = await createGithubMember({
       octokit,
       id,
+      created_at: new Date(starred_at),
+      workspace_id,
+    });
+
+    await createActivity({
+      activity_type_key: "github:star",
+      message: `Starred the repository ${repo}`,
+      member_id,
+      created_at: new Date(starred_at),
+      updated_at: new Date(starred_at),
+      source: "Github",
       workspace_id,
     });
 

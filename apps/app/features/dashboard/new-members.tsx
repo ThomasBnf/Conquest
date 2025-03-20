@@ -27,6 +27,7 @@ import { useTable } from "../table/hooks/useTable";
 import { membersColumns } from "../table/members-columns";
 import { Percentage } from "./percentage";
 import { PeriodFormatter } from "./period-formatter";
+import { skipToken } from "@tanstack/react-query";
 
 export const NewMembers = () => {
   const [{ from, to }] = useQueryStates(dateParams);
@@ -88,16 +89,17 @@ const NewMembersSheet = ({
     useQueryStates(tableParams);
 
   const { data, isLoading } = trpc.dashboard.newMembersTable.useQuery(
-    {
-      from,
-      to,
-      search,
-      id: idMember,
-      desc: descMember,
-      page,
-      pageSize,
-    },
-    { enabled: open },
+    open
+      ? {
+          from,
+          to,
+          search,
+          id: idMember,
+          desc: descMember,
+          page,
+          pageSize,
+        }
+      : skipToken,
   );
 
   const { table } = useTable({
