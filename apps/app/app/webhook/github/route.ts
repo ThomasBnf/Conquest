@@ -134,6 +134,8 @@ export async function POST(request: NextRequest) {
       const event = body as PullRequestEvent;
       const { action } = event;
 
+      console.log(event);
+
       break;
     }
   }
