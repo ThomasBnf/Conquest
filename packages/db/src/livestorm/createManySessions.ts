@@ -36,6 +36,8 @@ export const createManySessions = async ({ livestorm, event }: Props) => {
       page: sessionPage,
     });
 
+    console.log("listOfSessions", listOfSessions);
+
     if (!listOfSessions?.length) break;
 
     allSessions.push(...listOfSessions);

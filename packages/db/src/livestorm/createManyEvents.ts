@@ -29,6 +29,7 @@ export const createManyEvents = async ({ livestorm }: Props) => {
       page,
       filter,
     });
+    console.log("listOfEvents", listOfEvents);
     if (!listOfEvents?.length) break;
 
     events.push(...listOfEvents);

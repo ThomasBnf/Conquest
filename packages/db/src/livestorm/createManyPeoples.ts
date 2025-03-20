@@ -41,6 +41,8 @@ export const createManyPeoples = async ({
     id: session.id,
   });
 
+  console.log("peoples", peoples);
+
   await wait.for({ seconds: 0.5 });
 
   for (const people of peoples) {
