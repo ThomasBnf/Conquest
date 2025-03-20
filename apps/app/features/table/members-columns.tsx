@@ -11,6 +11,7 @@ import { LevelBadge } from "../members/level-badge";
 import { PulseBadge } from "../members/pulse-badge";
 import { CompanyCell } from "./cells/company-cell";
 import { FullNameCell } from "./cells/full-name-cell";
+import { ProfilesCell } from "./cells/profiles-cell";
 import { TagsCell } from "./cells/tags-cell";
 import { ColumnHeader } from "./column-header";
 
@@ -79,6 +80,14 @@ export const membersColumns: ColumnDef<Member>[] = [
         <PulseBadge member={row.original} />
       </div>
     ),
+    size: 250,
+  },
+  {
+    accessorKey: "profiles",
+    header: ({ table, column }) => (
+      <ColumnHeader table={table} column={column} title="Profiles" />
+    ),
+    cell: ({ row }) => <ProfilesCell row={row} />,
     size: 250,
   },
   {
