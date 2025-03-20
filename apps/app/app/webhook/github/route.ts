@@ -1,13 +1,13 @@
-import { prisma } from "@conquest/db/prisma";
-import { env } from "@conquest/env";
-import { GithubIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
 import { StarEvent, WebhookEvent } from "@octokit/webhooks-types";
 import { NextRequest, NextResponse } from "next/server";
-import { createHmac } from "node:crypto";
 
 export async function POST(request: NextRequest) {
   const body = await request.json();
   const headers = request.headers;
+
+  const integration = await checkSignature(request, body);
+
+  // if (!integration) return NextResponse.json({ status: 200 });
 
   const type = headers.get("x-github-event");
 
@@ -25,40 +25,33 @@ export async function POST(request: NextRequest) {
   return NextResponse.json({ message: "Webhook received" });
 }
 
-const checkSignature = async (request: NextRequest, rawBody: string) => {
-  const signature = request.headers.get("x-discourse-event-signature");
-  const community_url = request.headers.get("x-discourse-instance");
-
-  if (!signature) return false;
-
-  const secret = env.GITHUB_WEBHOOK_SECRET;
-
-  const expectedSignature = createHmac("sha256", secret)
-    .update(rawBody)
-    .digest("hex");
-
-  if (signature !== `sha256=${expectedSignature}`) {
-    return false;
-  }
-
-  if (!community_url) return false;
-
-  const integration = await prisma.integration.findFirst({
-    where: {
-      details: {
-        path: ["source"],
-        equals: "Discourse",
-      },
-      AND: [
-        {
-          details: {
-            path: ["repo"],
-            equals: community_url,
-          },
-        },
-      ],
-    },
-  });
-
-  return GithubIntegrationSchema.parse(integration);
+const checkSignature = async (request: NextRequest, body: WebhookEvent) => {
+  // const name = body.na
+  // const signature = request.headers.get("x-hub-signature-256");
+  // if (!signature) return false;
+  // const secret = env.GITHUB_WEBHOOK_SECRET;
+  // const expectedSignature = createHmac("sha256", secret)
+  //   .update(body)
+  //   .digest("hex");
+  // if (signature !== `sha256=${expectedSignature}`) {
+  //   return false;
+  // }
+  // if (!name) return false;
+  // const integration = await prisma.integration.findFirst({
+  //   where: {
+  //     details: {
+  //       path: ["source"],
+  //       equals: "Discourse",
+  //     },
+  //     AND: [
+  //       {
+  //         details: {
+  //           path: ["repo"],
+  //           equals: name,
+  //         },
+  //       },
+  //     ],
+  //   },
+  // });
+  // return GithubIntegrationSchema.parse(integration);
 };
