@@ -19,7 +19,7 @@ export const FullNameCell = ({ row }: Props) => {
   const { slug } = session?.user.workspace ?? {};
   const { id, first_name, last_name, avatar_url } = row.original;
 
-  const hasName = !!first_name && !!last_name;
+  const hasName = !!first_name || !!last_name;
 
   const { data, isLoading } = trpc.profiles.getBySource.useQuery(
     !hasName ? { member_id: id, source: "Github" } : skipToken,
@@ -36,19 +36,17 @@ export const FullNameCell = ({ row }: Props) => {
     >
       <Avatar className="size-6">
         <AvatarImage src={avatar_url ?? ""} />
-        <AvatarFallback className="text-sm ">
+        <AvatarFallback className="text-sm">
           {first_name?.charAt(0).toUpperCase()}
         </AvatarFallback>
       </Avatar>
-      <div>
-        {isLoading ? (
-          <Skeleton className="h-4 w-24" />
-        ) : hasName ? (
-          <p className="truncate font-medium">{`${first_name} ${last_name}`}</p>
-        ) : (
-          <p className="truncate font-medium">{login}</p>
-        )}
-      </div>
+      {isLoading ? (
+        <Skeleton className="h-4 w-24" />
+      ) : hasName ? (
+        <p className="truncate font-medium">{`${first_name} ${last_name}`}</p>
+      ) : (
+        <p className="truncate font-medium">{login}</p>
+      )}
     </Link>
   );
 };
