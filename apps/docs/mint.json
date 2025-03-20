@@ -45,18 +45,18 @@
   "navigation": [
     {
       "group": "Getting Started",
-      "pages": ["quickstart", "changelog"]
+      "pages": ["introduction", "get-started", "changelog"]
     },
     {
-      "group": "Pulse System",
+      "group": "Conquest Pulse",
       "pages": [
-        "pulse-system/introduction",
-        "pulse-system/activities",
-        "pulse-system/activity-types",
-        "pulse-system/max-weight",
-        "pulse-system/presence",
-        "pulse-system/level",
-        "pulse-system/pulse-score"
+        "conquest-pulse/introduction",
+        "conquest-pulse/activities",
+        "conquest-pulse/activity-types",
+        "conquest-pulse/max-weight",
+        "conquest-pulse/presence",
+        "conquest-pulse/level",
+        "conquest-pulse/pulse-score"
       ]
     },
     {

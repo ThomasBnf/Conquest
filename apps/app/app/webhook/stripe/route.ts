@@ -47,7 +47,7 @@ export const POST = async (request: NextRequest) => {
         await updateWorkspace({
           id: workspace.id,
           plan,
-          is_past_due: new Date(),
+          is_past_due: null,
           trial_end: null,
         });
 
