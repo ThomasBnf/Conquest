@@ -15,12 +15,9 @@ export const listAndDeleteWebhooks = async ({ octokit, github }: Props) => {
   const { details } = github;
   const { owner, repo } = details;
 
-  const response = await octokit.request(`GET /repos/${owner}/${repo}/hooks`, {
+  const response = await octokit.rest.repos.listWebhooks({
     owner,
     repo,
-    headers: {
-      "X-GitHub-Api-Version": "2022-11-28",
-    },
   });
 
   const webhooks = response.data as Webhook[];
@@ -33,13 +30,10 @@ export const listAndDeleteWebhooks = async ({ octokit, github }: Props) => {
   for (const webhook of filteredWebhooks) {
     const { id } = webhook;
 
-    await octokit.request(`DELETE /repos/${owner}/${repo}/hooks/${id}`, {
+    await octokit.rest.repos.deleteWebhook({
       owner,
       repo,
       hook_id: id,
-      headers: {
-        "X-GitHub-Api-Version": "2022-11-28",
-      },
     });
   }
 };
