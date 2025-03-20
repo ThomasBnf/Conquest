@@ -3,6 +3,7 @@ import { z } from "zod";
 import { ROLE } from "../enum/role.enum";
 import { GroupFiltersSchema } from "./filters.schema";
 import { WorkspaceSchema } from "./workspace.schema";
+
 export const PreferencesSchema = z.object({
   id: z.string(),
   desc: z.boolean(),

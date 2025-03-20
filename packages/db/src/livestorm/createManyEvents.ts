@@ -18,7 +18,7 @@ export const createManyEvents = async ({ livestorm }: Props) => {
     iv: access_token_iv,
   });
 
-  const members: Member[] = [];
+  const createdMembers: Member[] = [];
   const events: Event[] = [];
 
   let page = 0;
@@ -41,8 +41,8 @@ export const createManyEvents = async ({ livestorm }: Props) => {
 
   for (const event of events) {
     const members = await createManySessions({ livestorm, event });
-    members.push(...members);
+    createdMembers.push(...members);
   }
 
-  return members;
+  return createdMembers;
 };

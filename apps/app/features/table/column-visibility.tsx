@@ -1,17 +1,32 @@
 import { trpc } from "@/server/client";
 import { Button } from "@conquest/ui/button";
-import { cn } from "@conquest/ui/cn";
 import {
   Command,
   CommandGroup,
-  CommandItem,
+  CommandInput,
   CommandList,
 } from "@conquest/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@conquest/ui/popover";
-import type { Column, Table } from "@tanstack/react-table";
-import { Check, Settings2 } from "lucide-react";
+import {
+  DndContext,
+  DragEndEvent,
+  KeyboardSensor,
+  MouseSensor,
+  TouchSensor,
+  closestCenter,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
+import {
+  restrictToParentElement,
+  restrictToVerticalAxis,
+} from "@dnd-kit/modifiers";
+import { SortableContext, arrayMove } from "@dnd-kit/sortable";
+import type { Table } from "@tanstack/react-table";
+import { Settings2 } from "lucide-react";
 import { useSession } from "next-auth/react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import { ColumnItem } from "./column-item";
 
 type Props<TData> = {
   table: Table<TData>;
@@ -22,43 +37,67 @@ export const ColumnVisibility = <TData,>({ table, type }: Props<TData>) => {
   const { data: session } = useSession();
   const { user } = session ?? {};
   const [open, setOpen] = useState(false);
+  const [search, setSearch] = useState("");
 
   const { mutateAsync } = trpc.users.update.useMutation();
+  const columnOrder = table.getState().columnOrder;
+  const allColumns = table.getAllColumns();
 
-  const onClick = (column: Column<TData>) => {
-    if (!user?.id) return;
+  const sortedColumns = useMemo(() => {
+    // If no column order is set, use the default order
+    if (!columnOrder || columnOrder.length === 0) {
+      return allColumns;
+    }
 
-    const isVisible = !column.getIsVisible();
-    column.toggleVisibility(isVisible);
+    // Create a map for faster lookups
+    const orderMap = new Map(columnOrder.map((id, index) => [id, index]));
 
-    const { members_preferences, companies_preferences } = user;
-    const currentVisibility =
-      type === "members"
-        ? (members_preferences?.columnVisibility ?? {})
-        : (companies_preferences?.columnVisibility ?? {});
-
-    mutateAsync({
-      ...user,
-      ...(type === "members"
-        ? {
-            members_preferences: {
-              ...members_preferences,
-              columnVisibility: {
-                ...currentVisibility,
-                [column.id]: isVisible,
-              },
-            },
-          }
-        : {
-            companies_preferences: {
-              ...companies_preferences,
-              columnVisibility: {
-                ...currentVisibility,
-                [column.id]: isVisible,
-              },
-            },
-          }),
+    // Sort columns based on the current column order
+    return [...allColumns].sort((a, b) => {
+      const aIndex = orderMap.get(a.id) ?? Number.MAX_SAFE_INTEGER;
+      const bIndex = orderMap.get(b.id) ?? Number.MAX_SAFE_INTEGER;
+      return aIndex - bIndex;
     });
+  }, [allColumns, columnOrder]);
+
+  const sensors = useSensors(
+    useSensor(MouseSensor),
+    useSensor(TouchSensor),
+    useSensor(KeyboardSensor),
+  );
+
+  const onDragEnd = async (event: DragEndEvent) => {
+    if (!user) return;
+
+    const { active, over } = event;
+
+    if (over && active.id !== over.id) {
+      const columns = table.getAllColumns().map((column) => column.id);
+
+      const activeIndex = columns.indexOf(active.id as string);
+      const overIndex = columns.indexOf(over.id as string);
+
+      const newColumnOrder = arrayMove(columns, activeIndex, overIndex);
+      table.setColumnOrder(newColumnOrder);
+
+      if (type === "members") {
+        await mutateAsync({
+          ...user,
+          members_preferences: {
+            ...user.members_preferences,
+            columnOrder: newColumnOrder,
+          },
+        });
+      } else {
+        await mutateAsync({
+          ...user,
+          companies_preferences: {
+            ...user.companies_preferences,
+            columnOrder: newColumnOrder,
+          },
+        });
+      }
+    }
   };
 
   return (
@@ -69,32 +108,38 @@ export const ColumnVisibility = <TData,>({ table, type }: Props<TData>) => {
           View
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[160px] p-0" align="end">
+      <PopoverContent className="p-0" align="end">
         <Command>
+          <CommandInput
+            value={search}
+            onValueChange={setSearch}
+            placeholder="Search..."
+          />
           <CommandList className="max-h-full">
             <CommandGroup>
-              {table
-                .getAllColumns()
-                .filter((column) => column.getCanHide())
-                .map((column) => {
-                  return (
-                    <CommandItem
-                      key={column.id}
-                      onSelect={() => onClick(column)}
-                    >
-                      <span className="truncate first-letter:uppercase">
-                        {column.id.replaceAll("_", " ")}
-                      </span>
-                      <Check
-                        size={16}
-                        className={cn(
-                          "ml-auto shrink-0",
-                          column.getIsVisible() ? "opacity-100" : "opacity-0",
-                        )}
-                      />
-                    </CommandItem>
-                  );
-                })}
+              <DndContext
+                sensors={sensors}
+                collisionDetection={closestCenter}
+                modifiers={[restrictToVerticalAxis, restrictToParentElement]}
+                onDragEnd={onDragEnd}
+              >
+                <SortableContext
+                  items={sortedColumns.map((column) => column.id)}
+                >
+                  {sortedColumns
+                    .filter((column) => column.getCanHide())
+                    .map((column) => {
+                      return (
+                        <ColumnItem
+                          key={column.id}
+                          column={column}
+                          search={search}
+                          type={type}
+                        />
+                      );
+                    })}
+                </SortableContext>
+              </DndContext>
             </CommandGroup>
           </CommandList>
         </Command>
