@@ -30,7 +30,6 @@ export async function POST(request: NextRequest) {
   const { access_token, iv, repo } = details;
 
   const type = headers.get("x-github-event");
-
   const decryptedToken = await decrypt({ access_token, iv });
   const octokit = new Octokit({ auth: decryptedToken });
 
