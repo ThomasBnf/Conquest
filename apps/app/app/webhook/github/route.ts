@@ -8,6 +8,7 @@ import { decrypt } from "@conquest/db/utils/decrypt";
 import { env } from "@conquest/env";
 import { GithubIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
 import {
+  IssueCommentEvent,
   IssuesEvent,
   PullRequestEvent,
   Repository,
@@ -22,6 +23,7 @@ export async function POST(request: NextRequest) {
   const bodyRaw = await request.text();
   const headers = request.headers;
   const body = JSON.parse(bodyRaw) as WebhookEvent;
+  const type = headers.get("x-github-event");
 
   console.log(body);
 
@@ -30,8 +32,6 @@ export async function POST(request: NextRequest) {
 
   const { details, workspace_id } = github;
   const { access_token, iv, repo } = details;
-
-  const type = headers.get("x-github-event");
 
   const decryptedToken = await decrypt({ access_token, iv });
   const octokit = new Octokit({ auth: decryptedToken });
@@ -122,8 +122,8 @@ export async function POST(request: NextRequest) {
     case "pull_request": {
       const event = body as PullRequestEvent;
       const { action, sender, pull_request } = event;
-      const { id } = sender;
       const { number, title, body: message } = pull_request;
+      const { id } = sender;
 
       const { member_id } = await createGithubMember({
         octokit,
@@ -166,6 +166,60 @@ export async function POST(request: NextRequest) {
 
       break;
     }
+    case "issue_comment": {
+      const event = body as IssueCommentEvent;
+      const { action, sender, issue, comment } = event;
+      const { id: commentId, body: message } = comment;
+      const { number } = issue;
+      const { id } = sender;
+
+      const { member_id } = await createGithubMember({
+        octokit,
+        id,
+        workspace_id,
+      });
+
+      switch (action) {
+        case "created": {
+          await createActivity({
+            external_id: String(commentId),
+            activity_type_key: "github:comment",
+            message,
+            member_id,
+            reply_to: String(number),
+            source: "Github",
+            workspace_id,
+          });
+
+          break;
+        }
+        case "edited": {
+          const activity = await getActivity({
+            external_id: String(number),
+            workspace_id,
+          });
+
+          if (!activity) return NextResponse.json({ status: 200 });
+
+          const { activity_type, ...data } = activity;
+
+          await updateActivity({
+            ...data,
+            message: message ?? "",
+          });
+
+          break;
+        }
+        case "deleted": {
+          await deleteActivity({
+            external_id: String(commentId),
+            workspace_id,
+          });
+        }
+      }
+
+      break;
+    }
   }
 
   return NextResponse.json({ message: "Webhook received" });
@@ -201,6 +255,7 @@ const checkSignature = async (request: NextRequest, bodyRaw: string) => {
       },
     });
 
+    if (!integration) return false;
     return GithubIntegrationSchema.parse(integration);
   }
 };

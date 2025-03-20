@@ -12,8 +12,8 @@ type Props = {
   github: GithubIntegration | null;
 };
 
-export const GithubComment = ({ activity, member, github }: Props) => {
-  const { external_id, reply_to, created_at } = activity;
+export const GithubStar = ({ activity, member, github }: Props) => {
+  const { created_at } = activity;
   const { source } = activity.activity_type;
   const { avatar_url, first_name, last_name } = member ?? {};
 
@@ -22,7 +22,7 @@ export const GithubComment = ({ activity, member, github }: Props) => {
   const { details } = github;
   const { owner, repo } = details;
 
-  const link = `https://github.com/${owner}/${repo}/issues/${reply_to}#issuecomment-${external_id}`;
+  const link = `https://github.com/${owner}/${repo}`;
 
   return (
     <div className="flex items-center justify-between">
@@ -38,7 +38,10 @@ export const GithubComment = ({ activity, member, github }: Props) => {
           <span className="font-medium text-foreground">
             {first_name} {last_name}
           </span>{" "}
-          commented on an issue
+          starred{" "}
+          <span className="font-medium text-foreground">
+            {owner}/{repo}
+          </span>
         </p>
         <SourceBadge source={source} transparent onlyIcon />
         <p className="text-muted-foreground">{format(created_at, "HH:mm")}</p>

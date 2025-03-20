@@ -1,11 +1,11 @@
-import { createActivity } from "@conquest/clickhouse/activities/createActivity";
-import { createGithubMember } from "@conquest/clickhouse/github/createGithubMember";
 import type { GithubIntegration } from "@conquest/zod/schemas/integration.schema";
 import type { Endpoints } from "@octokit/types";
 import { logger } from "@trigger.dev/sdk/v3";
 import { subDays } from "date-fns";
 import type { Octokit } from "octokit";
 import { checkRateLimit } from "../../../trigger/src/queries/checkRateLimit";
+import { createActivity } from "../activities/createActivity";
+import { createGithubMember } from "./createGithubMember";
 
 type Issue =
   Endpoints["GET /repos/{owner}/{repo}/issues"]["response"]["data"][number];
@@ -35,7 +35,7 @@ export const createManyIssues = async ({ octokit, github }: Props) => {
       direction: "desc",
     });
 
-    issues.push(...data);
+    issues.push(...data.filter((issue) => !issue.pull_request));
 
     if (data.length < 100) break;
 
@@ -61,13 +61,9 @@ export const createManyIssues = async ({ octokit, github }: Props) => {
 
     await checkRateLimit(headers);
 
-    if (issue.pull_request) {
-      logger.info("pr", { pr: issue });
-    }
-
     await createActivity({
       external_id: String(number),
-      activity_type_key: issue.pull_request ? "github:pr" : "github:issue",
+      activity_type_key: "github:issue",
       title: `#${number} - ${title}`,
       message: body ?? "",
       member_id,

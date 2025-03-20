@@ -1,4 +1,5 @@
 import { createManyIssues } from "@conquest/clickhouse/github/createManyIssues";
+import { createManyPullRequests } from "@conquest/clickhouse/github/createManyPullRequests";
 import { createWebhook } from "@conquest/clickhouse/github/createWebhook";
 import { listStargazers } from "@conquest/clickhouse/github/listStargazers";
 import { deleteIntegration } from "@conquest/db/integrations/deleteIntegration";
@@ -27,6 +28,7 @@ export const installGithub = schemaTask({
     await createWebhook({ github, octokit });
     await listStargazers({ github, octokit });
     await createManyIssues({ github, octokit });
+    await createManyPullRequests({ github, octokit });
 
     await getAllMembersMetrics.trigger(
       { workspace_id },
