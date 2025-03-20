@@ -15,8 +15,7 @@ export const listWebhooks = async ({ accessToken }: Props) => {
 
   if (!response.ok) {
     const data = await response.json();
-    console.log("listWebhooks", data);
-    throw new Error("Failed to list webhooks");
+    return [];
   }
 
   const { data } = WebhookSchema.parse(await response.json());
