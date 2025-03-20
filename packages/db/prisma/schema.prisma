@@ -112,6 +112,10 @@ model integration {
     @@index([external_id])
 }
 
+model invitation {
+    id String @id @default(uuid())
+}
+
 model list {
     id           String @id @default(uuid())
     emoji        String
