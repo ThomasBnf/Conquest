@@ -170,7 +170,7 @@ const filtersMember: Filter[] = [
   },
   {
     id: uuid(),
-    label: "Pulse",
+    label: "Pulse Score",
     type: "number",
     field: "pulse",
     operator: ">",
