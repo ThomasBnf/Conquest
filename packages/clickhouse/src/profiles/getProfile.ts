@@ -4,7 +4,7 @@ import { client } from "../client";
 type Props =
   | {
       external_id: string;
-      workspace_id: string;
+      workspace_id?: string;
     }
   | {
       username: string;
@@ -19,7 +19,9 @@ export const getProfile = async (props: Props) => {
     const { external_id, workspace_id } = props;
     params.external_id = external_id;
 
-    where = `external_id = '${external_id}' AND workspace_id = '${workspace_id}'`;
+    where = `external_id = '${external_id}' ${
+      workspace_id ? `AND workspace_id = '${workspace_id}'` : ""
+    }`;
   } else {
     const { username, workspace_id } = props;
     params.username = username;

@@ -62,7 +62,7 @@ export const createManyPeoples = async ({
     const languageCode = locale?.split("_")[0] ?? "";
     const language = languageCode ? ISO6391.getName(languageCode) : "";
 
-    let profile = await getProfile({ external_id: id });
+    let profile = await getProfile({ external_id: id, workspace_id });
 
     if (!profile) {
       const member = await createMember({
