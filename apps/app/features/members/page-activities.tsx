@@ -32,6 +32,7 @@ export const PageActivities = ({ slug, memberId }: Props) => {
   );
 
   const activities = data?.pages.flat();
+  console.log(activities);
 
   if (isLoading || _isLoading) return <IsLoading />;
   if (!member) return redirect(`/${slug}/members`);

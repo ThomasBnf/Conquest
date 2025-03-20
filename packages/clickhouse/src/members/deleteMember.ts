@@ -7,8 +7,8 @@ type Props = {
 export const deleteMember = async ({ id }: Props) => {
   await client.query({
     query: `
-      ALTER TABLE member
-      DELETE WHERE id = '${id}'
+      ALTER TABLE profile
+      DELETE WHERE member_id = '${id}'
     `,
   });
 
@@ -17,6 +17,13 @@ export const deleteMember = async ({ id }: Props) => {
       ALTER TABLE activity
       DELETE WHERE 
       (invite_to = '${id}' OR member_id = '${id}')
+    `,
+  });
+
+  await client.query({
+    query: `
+      ALTER TABLE member
+      DELETE WHERE id = '${id}'
     `,
   });
 };

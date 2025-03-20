@@ -20,7 +20,7 @@ export const createGithubMember = async ({
     account_id: id,
   });
 
-  const profile = await getProfile({ external_id: String(id) });
+  let profile = await getProfile({ external_id: String(id), workspace_id });
 
   if (!profile) {
     const {
@@ -48,7 +48,7 @@ export const createGithubMember = async ({
       workspace_id,
     });
 
-    await createProfile({
+    profile = await createProfile({
       external_id: String(id),
       attributes: {
         source: "Github",

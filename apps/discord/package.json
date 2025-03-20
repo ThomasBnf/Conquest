@@ -6,8 +6,8 @@
     "dev": "bun run db:generate && dotenv -e ./.env -e ../../.env -- tsx src/index.ts --watch",
     "build": "bun run db:generate && dotenv -e ./.env -e ../../.env -- tsup src/index.ts",
     "start": "dotenv -e ./.env -e ../../.env -- node dist/index.cjs",
-    "typecheck": "tsc --noEmit",
-    "db:generate": "cd ../../packages/db && bun run db:generate"
+    "db:generate": "cd ../../packages/db && bun run db:generate",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "date-fns": "^4.1.0",
