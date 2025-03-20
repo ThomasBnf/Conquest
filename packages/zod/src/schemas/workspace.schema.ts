@@ -11,7 +11,7 @@ export const WorkspaceSchema = z.object({
   plan: PLAN.nullable(),
   stripe_customer_id: z.string().nullable(),
   trial_end: z.coerce.date().nullable(),
-  is_past_due: z.boolean(),
+  is_past_due: z.coerce.date().nullable(),
   created_at: z.coerce.date(),
   updated_at: z.coerce.date(),
 }) satisfies z.ZodType<WorkspacePrisma>;

@@ -245,7 +245,7 @@ model workspace {
     plan               PLAN?
     stripe_customer_id String?
     trial_end          DateTime?
-    is_past_due        Boolean   @default(false)
+    is_past_due        DateTime?
 
     api_keys     api_key[]
     events       event[]

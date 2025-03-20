@@ -47,7 +47,7 @@ export const POST = async (request: NextRequest) => {
         await updateWorkspace({
           id: workspace.id,
           plan,
-          is_past_due: false,
+          is_past_due: new Date(),
           trial_end: null,
         });
 
@@ -72,7 +72,7 @@ export const POST = async (request: NextRequest) => {
         await updateWorkspace({
           id: workspace.id,
           plan,
-          is_past_due: false,
+          is_past_due: null,
         });
 
         break;
@@ -93,7 +93,9 @@ export const POST = async (request: NextRequest) => {
           id: workspace.id,
           is_past_due:
             subscription.status === "paused" ||
-            subscription.status === "past_due",
+            subscription.status === "past_due"
+              ? new Date()
+              : null,
         });
 
         break;
@@ -112,7 +114,7 @@ export const POST = async (request: NextRequest) => {
 
         await updateWorkspace({
           id: workspace.id,
-          is_past_due: true,
+          is_past_due: new Date(),
         });
 
         break;
