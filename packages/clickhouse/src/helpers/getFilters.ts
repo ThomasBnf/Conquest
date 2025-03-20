@@ -228,6 +228,10 @@ export const getFilters = ({ groupFilters, hasDiscourseData }: Props) => {
         return "true";
       }
 
+      const anyActivity = activity_types.some(
+        (at) => at.key === "any_activity",
+      );
+
       const activityKeys = activity_types.map((at) => `'${at.key}'`).join(",");
       const channelIds = channels.map((channel) => `'${channel.id}'`).join(",");
       const operatorParsed = operatorParser(operator);
@@ -247,11 +251,17 @@ export const getFilters = ({ groupFilters, hasDiscourseData }: Props) => {
             count(*) as activity_count
           FROM activity a
           JOIN activity_type at ON a.activity_type_id = at.id
-          WHERE at.key IN (${activityKeys})
+          WHERE ${anyActivity ? "true" : `at.key IN (${activityKeys})`}
           ${dateCondition}
           ${channelCondition}
           GROUP BY a.member_id
-          HAVING ${display_count ? `activity_count ${operatorParsed} ${count}` : "true"}
+          HAVING ${
+            anyActivity
+              ? "activity_count > 0"
+              : display_count
+                ? `activity_count ${operatorParsed} ${count}`
+                : "true"
+          }
         )`;
 
       return who === "who_did"

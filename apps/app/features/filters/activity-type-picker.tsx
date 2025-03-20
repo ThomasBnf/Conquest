@@ -93,6 +93,21 @@ export const ActivityTypePicker = ({ filter }: Props) => {
                 <CommandEmpty>No activity types found.</CommandEmpty>
               </CommandGroup>
             )}
+            <CommandGroup>
+              <CommandItem
+                onSelect={() =>
+                  onUpdateActivityTypes("any_activity", "Any activity")
+                }
+              >
+                <Checkbox
+                  checked={filterActivity.activity_types.some(
+                    (type) => type.key === "any_activity",
+                  )}
+                  className="mr-2"
+                />
+                Any activity
+              </CommandItem>
+            </CommandGroup>
             {activityTypes &&
               Object.entries(activityTypes).map(([source, types]) => (
                 <CommandGroup key={source} heading={source}>
