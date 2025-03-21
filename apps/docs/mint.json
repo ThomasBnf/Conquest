@@ -7,8 +7,8 @@
   },
   "favicon": "/favicon.svg",
   "colors": {
-    "primary": "#5319E6",
-    "dark": "#5319E6",
+    "primary": "#5067D7",
+    "dark": "#5067D7",
     "light": "#CCBCF3",
     "anchors": {
       "from": "#0D9373",
@@ -16,13 +16,13 @@
     },
     "background": {
       "dark": "#0c0c0e",
-      "light": "#F9F5FF"
+      "light": "#FCFAF8"
     }
   },
   "topbarLinks": [
     {
       "name": "Support",
-      "url": "mailto:audrey@conquest.com"
+      "url": "mailto:support@useconquest.com"
     }
   ],
   "topbarCtaButton": {
