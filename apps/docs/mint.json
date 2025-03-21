@@ -53,6 +53,10 @@
       ]
     },
     {
+      "group": "Workspace",
+      "pages": ["workspace/tags", "workspace/lists", "workspace/merge"]
+    },
+    {
       "group": "Conquest Pulse",
       "pages": [
         "conquest-pulse/introduction",
