@@ -73,9 +73,7 @@ export const ActivityTypesList = ({ source, disableHeader = false }: Props) => {
                     <TableCell className="text-muted-foreground">
                       {key}
                     </TableCell>
-                    <TableCell className="text-muted-foreground">
-                      {points}
-                    </TableCell>
+                    <TableCell>{points}</TableCell>
                     <TableCell className="text-right">
                       <MenuActivityType activityType={activityType} />
                     </TableCell>
