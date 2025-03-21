@@ -55,14 +55,14 @@ export const createManyArchivedThreads = async ({
       while (true) {
         const params = new URLSearchParams({
           limit: "100",
-          ...(before ? { before: new Date(before).toISOString() } : {}),
+          ...(before ? { before } : {}),
         });
 
         const messages = (await discordClient.get(
           `${Routes.channelMessages(thread.id)}?${params.toString()}`,
         )) as APIMessage[];
 
-        logger.info("messages", { messages });
+        logger.info("archived thread messages", { messages });
 
         if (messages.length < 100) firstMessage = messages.at(-1);
 

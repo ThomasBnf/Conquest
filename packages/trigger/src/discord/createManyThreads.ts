@@ -48,7 +48,7 @@ export const createManyThreads = async ({ discord }: Props) => {
     while (true) {
       const params = new URLSearchParams({
         limit: "100",
-        ...(before ? { before: new Date(before).toISOString() } : {}),
+        ...(before ? { before } : {}),
       });
 
       const messages = (await discordClient.get(

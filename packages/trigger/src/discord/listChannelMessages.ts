@@ -25,8 +25,13 @@ export const listChannelMessages = async ({
   let before: string | undefined;
 
   while (true) {
+    const params = new URLSearchParams({
+      limit: "100",
+      ...(before ? { before } : {}),
+    });
+
     const messages = (await discordClient.get(
-      `${Routes.channelMessages(external_id)}?limit=100${before ? `&before=${before}` : ""}`,
+      `${Routes.channelMessages(external_id)}?${params.toString()}`,
     )) as APIMessage[];
 
     logger.info("messages", { messages });

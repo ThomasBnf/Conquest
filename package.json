@@ -6,6 +6,7 @@
     "build": "turbo build",
     "dev": "turbo dev --parallel",
     "dev:app": "turbo dev --filter=app",
+    "dev:api": "turbo dev --filter=api",
     "dev:docs": "turbo dev --filter=docs",
     "dev:discord": "turbo dev --filter=discord",
     "trigger:dev": "cd packages/trigger && bun trigger:dev",

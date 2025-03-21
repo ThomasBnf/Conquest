@@ -1,0 +1,26 @@
+{
+  "name": "api",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "dotenv -e ./.env -e ../../.env -- next dev -p 3001 --turbo",
+    "build": "dotenv -e ./.env -e ../../.env -- next build",
+    "start": "dotenv -e ./.env -e ../../.env -- next start",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@conquest/clickhouse": "workspace:*",
+    "@conquest/db": "workspace:*",
+    "@conquest/env": "workspace:*",
+    "@conquest/zod": "workspace:*",
+    "next": "14.2.15",
+    "next-zod-route": "^0.2.4",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "@conquest/tsconfig": "workspace:*",
+    "@types/node": "^22.7.5",
+    "typescript": "^5.6.3",
+    "dotenv-cli": "8.0.0"
+  }
+}

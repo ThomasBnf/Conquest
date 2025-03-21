@@ -17,8 +17,6 @@ export const createMember = async ({ discord, discord_id }: Props) => {
     const owner = (await discordClient.get(Routes.user(discord_id))) as APIUser;
     logger.info("owner", { owner });
 
-    console.log(owner);
-
     if (!owner) return;
 
     const { id, username, avatar, global_name, bot } = owner;
