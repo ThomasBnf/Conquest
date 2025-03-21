@@ -3,4 +3,86 @@ title: "Activity Types"
 description: "Understand what Activity Types are, their role and how you can customize your activity tracking."
 ---
 
-Coming soon...
+**Conquest** is built to track and centralize member activities, giving you deep insights into their engagement and interactions.
+
+## What are Activity Types?
+
+Activity Types are all the activities we can track from each integration. For communities, these include reactions, replies, and messages. For other platforms, they include the specific actions your members can take
+
+<Tip>
+    More details about activities for each integration can be found in the relevant integration documentation.
+</Tip>
+
+Go to **Settings**, **Activity Types** to see all the activities you are tracking.
+
+
+## How it works?
+
+Each time you connect a new integration to Conquest, default Activity Types will be automatically created based on what the API provides us.
+
+Once the platform is connected, all your members' activities will be retrieved and attributed to them. They will be automatically tracked in the future.
+
+<Tip> 
+    We retrieve all activities from the past 365 days.
+</Tip>
+
+### Configure Activity Types
+
+Each Activity Type has a Source, a Name, a Key, and Points. Only the name and number of points are configurable by clicking **Edit** under **Action**.
+
+The Source represents the platform from which the activity originates, allowing you to track the number of activities per platform, which is essential for your analyses.
+
+#### Points
+
+Each activity has a number of points based on its weight, which combines the difficulty, time, and impact of the activity. We have assigned a default score to each Activity Type, but this can be modified in the editor.
+
+#### Conditions
+
+In order to give more weight to a message in one channel rather than another (product feedback > introduction), you can add additional points to actions depending on the discussion channel.
+
+In the Activity Type editor, click on **+ Add Conditions**, select the associated channel and add the new score that you wish to assign to this action.
+
+This way, you can identify members who bring more value by contributing to important channels in your community.
+
+### Add Activity Type
+
+You can add activities manually if you want to track your members' activity on a platform not integrated with Conquest or record actions that we cannot track, such as a blog article written by a member or participation in physical events.
+
+To do this, click on **+ Activity Type,** select "Manual", give a name to this activity and assign points.
+
+Once these manual activities are created, you have two ways to add them to your members:
+
+- By selecting your members in the Members tab, then clicking on **Add Activity.**
+- By going to a member's profile and clicking on **Add Activity.**
+
+You will be able to view this activity in their activity feed.
+
+<Tip>
+    The Pulse Score is recalculated every hour.
+</Tip>
+
+### Delete Activity Type
+
+**You might want to delete Activity Types if:**
+
+- You had created them manually while waiting for a platform to be integrated with Conquest, and that integration finally becomes available.
+
+You should then delete the manual Activity Type. 
+
+
+- You no longer wish to track an activity
+
+Make sure this doesn't impact your current information.
+
+Once the Activity Type is deleted, it will remove all activities for all associated members, impacting their **Pulse Score** and **Member Level.**
+
+<Warning> Deleting an Activity Type is irreversible. </Warning>
+
+### Associated Topics
+
+- [Pulse Score](/conquest-pulse/pulse-score)
+- [Member Level](/conquest-pulse/member-level)
+
+Couldn’t find something? Contact us at [support@useconquest.com](mailto:support@useconquest.com)
+
+If you want us to suggest a new feature, drop a message on our Slack Community and we will review it.

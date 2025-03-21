@@ -56,7 +56,7 @@ export const getMemberMetrics = async ({ member, levels }: Props) => {
     const level = levels.find(
       (level) =>
         pulseScore >= level.from &&
-        pulseScore <= (level.to ?? Number.POSITIVE_INFINITY),
+        (level.to === null || pulseScore <= level.to),
     );
 
     logs.push({

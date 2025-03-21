@@ -45,18 +45,21 @@
   "navigation": [
     {
       "group": "Getting Started",
-      "pages": ["introduction", "get-started", "changelog"]
+      "pages": [
+        "introduction",
+        "quickstart",
+        "member-records",
+        "company-records",
+        "changelog"
+      ]
     },
     {
       "group": "Conquest Pulse",
       "pages": [
         "conquest-pulse/introduction",
-        "conquest-pulse/activities",
         "conquest-pulse/activity-types",
-        "conquest-pulse/max-weight",
-        "conquest-pulse/presence",
-        "conquest-pulse/level",
-        "conquest-pulse/pulse-score"
+        "conquest-pulse/pulse-score",
+        "conquest-pulse/member-level"
       ]
     },
     {
