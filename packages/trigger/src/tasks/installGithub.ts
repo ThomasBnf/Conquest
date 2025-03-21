@@ -6,10 +6,10 @@ import { GithubIntegrationSchema } from "@conquest/zod/schemas/integration.schem
 import { logger, schemaTask } from "@trigger.dev/sdk/v3";
 import { Octokit } from "octokit";
 import { z } from "zod";
-import { createManyIssues } from "../queries/github/createManyIssues";
-import { createManyPullRequests } from "../queries/github/createManyPullRequests";
-import { createWebhook } from "../queries/github/createWebhook";
-import { listStargazers } from "../queries/github/listStargazers";
+import { createManyIssues } from "../github/createManyIssues";
+import { createManyPullRequests } from "../github/createManyPullRequests";
+import { createWebhook } from "../github/createWebhook";
+import { listStargazers } from "../github/listStargazers";
 import { getAllMembersMetrics } from "./getAllMembersMetrics";
 import { integrationSuccessEmail } from "./integrationSuccessEmail";
 

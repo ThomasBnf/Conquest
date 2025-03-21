@@ -1,6 +1,7 @@
 import { createActivity } from "@conquest/clickhouse/activities/createActivity";
 import { getChannel } from "@conquest/clickhouse/channels/getChannel";
 import { getProfile } from "@conquest/clickhouse/profiles/getProfile";
+import { discordClient } from "@conquest/db/discord";
 import type { DiscordIntegration } from "@conquest/zod/schemas/integration.schema";
 import { logger } from "@trigger.dev/sdk/v3";
 import {
@@ -9,7 +10,6 @@ import {
   type APIThreadList,
   Routes,
 } from "discord-api-types/v10";
-import { discordClient } from "../discord";
 import { createMember } from "./createMember";
 
 type Props = {

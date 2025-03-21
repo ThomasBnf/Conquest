@@ -1,6 +1,6 @@
 import { client } from "@conquest/clickhouse/client";
 import { env } from "@conquest/env";
-import { listAndDeleteWebhooks } from "@conquest/trigger/queries/github/listAndDeleteWebhooks";
+import { listAndDeleteWebhooks } from "@conquest/trigger/github/listAndDeleteWebhooks";
 import {
   GithubIntegrationSchema,
   type Integration,
@@ -77,7 +77,6 @@ export const deleteIntegration = async ({ integration }: Props) => {
     const octokit = new Octokit({ auth: decryptedToken });
 
     await listAndDeleteWebhooks({ octokit, github });
-    // await uninstallGithubApp({ github });
 
     client.query({
       query: `

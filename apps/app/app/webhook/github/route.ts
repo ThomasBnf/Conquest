@@ -5,7 +5,7 @@ import { updateActivity } from "@conquest/clickhouse/activities/updateActivity";
 import { prisma } from "@conquest/db/prisma";
 import { decrypt } from "@conquest/db/utils/decrypt";
 import { env } from "@conquest/env";
-import { createGithubMember } from "@conquest/trigger/queries/github/createGithubMember";
+import { createGithubMember } from "@conquest/trigger/github/createGithubMember";
 import { GithubIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
 import {
   IssueCommentEvent,

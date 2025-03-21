@@ -1,14 +1,14 @@
 import { listChannels } from "@conquest/clickhouse/channels/listChannels";
-import { createManyArchivedThreads } from "@conquest/db/discord/createManyArchivedThreads";
-import { createManyMembers } from "@conquest/db/discord/createManyMembers";
-import { createManyTags } from "@conquest/db/discord/createManyTags";
-import { createManyThreads } from "@conquest/db/discord/createManyThreads";
-import { listChannelMessages } from "@conquest/db/discord/listChannelMessages";
 import { deleteIntegration } from "@conquest/db/integrations/deleteIntegration";
 import { updateIntegration } from "@conquest/db/integrations/updateIntegration";
 import { DiscordIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
 import { logger, metadata, schemaTask } from "@trigger.dev/sdk/v3";
 import { z } from "zod";
+import { createManyArchivedThreads } from "../discord/createManyArchivedThreads";
+import { createManyMembers } from "../discord/createManyMembers";
+import { createManyTags } from "../discord/createManyTags";
+import { createManyThreads } from "../discord/createManyThreads";
+import { listChannelMessages } from "../discord/listChannelMessages";
 import { getAllMembersMetrics } from "./getAllMembersMetrics";
 import { integrationSuccessEmail } from "./integrationSuccessEmail";
 

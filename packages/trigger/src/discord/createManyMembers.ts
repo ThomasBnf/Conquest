@@ -1,10 +1,11 @@
 import { createMember } from "@conquest/clickhouse/members/createMember";
 import { createProfile } from "@conquest/clickhouse/profiles/createProfile";
+import { discordClient } from "@conquest/db/discord";
 import type { DiscordIntegration } from "@conquest/zod/schemas/integration.schema";
 import type { Tag } from "@conquest/zod/schemas/tag.schema";
 import { logger } from "@trigger.dev/sdk/v3";
 import { type APIGuildMember, Routes } from "discord-api-types/v10";
-import { discordClient } from "../discord";
+
 type Props = {
   discord: DiscordIntegration;
   tags: Tag[] | undefined;
