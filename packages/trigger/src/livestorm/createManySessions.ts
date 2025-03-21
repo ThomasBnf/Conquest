@@ -3,7 +3,7 @@ import { EventSchema } from "@conquest/zod/schemas/event.schema";
 import type { LivestormIntegration } from "@conquest/zod/schemas/integration.schema";
 import type { Member } from "@conquest/zod/schemas/member.schema";
 import type { Event, Session } from "@conquest/zod/types/livestorm";
-import { decrypt } from "../utils/decrypt";
+import { decrypt } from "@conquest/db/utils/decrypt";
 import { createManyPeoples } from "./createManyPeoples";
 import { listEventSessions } from "./listEventSessions";
 

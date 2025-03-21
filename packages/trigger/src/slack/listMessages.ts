@@ -3,7 +3,7 @@ import { getProfile } from "@conquest/clickhouse/profiles/getProfile";
 import type { Channel } from "@conquest/zod/schemas/channel.schema";
 import type { WebClient } from "@slack/web-api";
 import { getUnixTime, subYears } from "date-fns";
-import { listReplies } from "../slack/listReplies";
+import { listReplies } from "./listReplies";
 
 type Props = {
   web: WebClient;

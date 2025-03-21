@@ -1,13 +1,13 @@
 import { batchMergeMembers } from "@conquest/clickhouse/members/batchMergeMembers";
 import { discourseClient } from "@conquest/db/discourse";
-import { createManyMembers } from "@conquest/db/discourse/createManyMembers";
-import { createManyTags } from "@conquest/db/discourse/createManyTags";
 import { deleteIntegration } from "@conquest/db/integrations/deleteIntegration";
 import { updateIntegration } from "@conquest/db/integrations/updateIntegration";
 import { decrypt } from "@conquest/db/utils/decrypt";
 import { DiscourseIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
 import { metadata, schemaTask } from "@trigger.dev/sdk/v3";
 import { z } from "zod";
+import { createManyMembers } from "../discourse/createManyMembers";
+import { createManyTags } from "../discourse/createManyTags";
 import { getAllMembersMetrics } from "./getAllMembersMetrics";
 import { integrationSuccessEmail } from "./integrationSuccessEmail";
 

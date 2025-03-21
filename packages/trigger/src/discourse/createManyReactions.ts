@@ -1,10 +1,10 @@
 import { createActivity } from "@conquest/clickhouse/activities/createActivity";
 import { getChannel } from "@conquest/clickhouse/channels/getChannel";
+import { decrypt } from "@conquest/db/utils/decrypt";
 import type { DiscourseIntegration } from "@conquest/zod/schemas/integration.schema";
 import type { DiscourseProfile } from "@conquest/zod/schemas/profile.schema";
 import { ReactionSchema } from "@conquest/zod/types/discourse";
 import { startOfDay, subDays } from "date-fns";
-import { decrypt } from "../utils/decrypt";
 
 type Props = {
   discourse: DiscourseIntegration;

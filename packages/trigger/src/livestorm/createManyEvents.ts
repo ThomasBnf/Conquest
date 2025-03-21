@@ -1,7 +1,7 @@
+import { decrypt } from "@conquest/db/utils/decrypt";
 import type { LivestormIntegration } from "@conquest/zod/schemas/integration.schema";
 import type { Member } from "@conquest/zod/schemas/member.schema";
 import type { Event } from "@conquest/zod/types/livestorm";
-import { decrypt } from "../utils/decrypt";
 import { createManySessions } from "./createManySessions";
 import { listEvents } from "./listEvents";
 

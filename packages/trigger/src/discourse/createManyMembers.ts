@@ -1,6 +1,7 @@
 import { createMember } from "@conquest/clickhouse/members/createMember";
 import { getPulseAndLevel } from "@conquest/clickhouse/members/getPulseAndLevel";
 import { createProfile } from "@conquest/clickhouse/profiles/createProfile";
+import { decrypt } from "@conquest/db/utils/decrypt";
 import type { DiscourseIntegration } from "@conquest/zod/schemas/integration.schema";
 import type { Member } from "@conquest/zod/schemas/member.schema";
 import { DiscourseProfileSchema } from "@conquest/zod/schemas/profile.schema";
@@ -14,7 +15,6 @@ import { logger, metadata, wait } from "@trigger.dev/sdk/v3";
 import { getLocaleByAlpha2 } from "country-locale-map";
 import type DiscourseAPI from "discourse2";
 import ISO6391 from "iso-639-1";
-import { decrypt } from "../utils/decrypt";
 import { createManyActivities } from "./createManyActivities";
 import { createManyInvites } from "./createManyInvites";
 import { createManyReactions } from "./createManyReactions";

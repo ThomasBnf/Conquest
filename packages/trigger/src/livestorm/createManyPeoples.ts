@@ -2,6 +2,7 @@ import { createActivity } from "@conquest/clickhouse/activities/createActivity";
 import { createMember } from "@conquest/clickhouse/members/createMember";
 import { createProfile } from "@conquest/clickhouse/profiles/createProfile";
 import { getProfile } from "@conquest/clickhouse/profiles/getProfile";
+import { decrypt } from "@conquest/db/utils/decrypt";
 import type { Event } from "@conquest/zod/schemas/event.schema";
 import type { LivestormIntegration } from "@conquest/zod/schemas/integration.schema";
 import type { Member } from "@conquest/zod/schemas/member.schema";
@@ -9,7 +10,6 @@ import type { Session } from "@conquest/zod/types/livestorm";
 import { wait } from "@trigger.dev/sdk/v3";
 import { getLocaleByAlpha2 } from "country-locale-map";
 import ISO6391 from "iso-639-1";
-import { decrypt } from "../utils/decrypt";
 import { listPeopleFromSession } from "./listPeopleFromSession";
 
 type Props = {

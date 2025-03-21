@@ -2,13 +2,13 @@ import { listChannels } from "@conquest/clickhouse/channels/listChannels";
 import { batchMergeMembers } from "@conquest/clickhouse/members/batchMergeMembers";
 import { deleteIntegration } from "@conquest/db/integrations/deleteIntegration";
 import { updateIntegration } from "@conquest/db/integrations/updateIntegration";
-import { createListMembers } from "@conquest/db/slack/createListMembers";
-import { listMessages } from "@conquest/db/slack/listMessages";
 import { decrypt } from "@conquest/db/utils/decrypt";
 import { SlackIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
 import { WebClient } from "@slack/web-api";
 import { metadata, schemaTask } from "@trigger.dev/sdk/v3";
 import { z } from "zod";
+import { createListMembers } from "../slack/createListMembers";
+import { listMessages } from "../slack/listMessages";
 import { getAllMembersMetrics } from "./getAllMembersMetrics";
 import { integrationSuccessEmail } from "./integrationSuccessEmail";
 
