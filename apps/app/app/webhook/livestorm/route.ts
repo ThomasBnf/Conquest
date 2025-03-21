@@ -5,11 +5,11 @@ import { getProfile } from "@conquest/clickhouse/profiles/getProfile";
 import { createEvent } from "@conquest/db/events/createEvent";
 import { getEvent } from "@conquest/db/events/getEvent";
 import { getIntegration } from "@conquest/db/integrations/getIntegration";
-import { getEvent as getLivestormEvent } from "@conquest/db/livestorm/getEvent";
-import { getRefreshToken } from "@conquest/db/livestorm/getRefreshToken";
-import { listEventSessions } from "@conquest/db/livestorm/listEventSessions";
-import { listPeopleFromSession } from "@conquest/db/livestorm/listPeopleFromSession";
 import { decrypt } from "@conquest/db/utils/decrypt";
+import { getEvent as getLivestormEvent } from "@conquest/trigger/livestorm/getEvent";
+import { getRefreshToken } from "@conquest/trigger/livestorm/getRefreshToken";
+import { listEventSessions } from "@conquest/trigger/livestorm/listEventSessions";
+import { listPeopleFromSession } from "@conquest/trigger/livestorm/listPeopleFromSession";
 import { LivestormIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
 import {
   PeopleRegisteredSchema,

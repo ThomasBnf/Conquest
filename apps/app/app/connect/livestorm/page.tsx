@@ -1,9 +1,9 @@
 import { getCurrentUser } from "@/queries/getCurrentUser";
 import { createIntegration } from "@conquest/db/integrations/createIntegration";
 import { getIntegration } from "@conquest/db/integrations/getIntegration";
-import { getOrganization } from "@conquest/db/livestorm/getOrganization";
 import { encrypt } from "@conquest/db/utils/encrypt";
 import { env } from "@conquest/env";
+import { getOrganization } from "@conquest/trigger/livestorm/getOrganization";
 import { redirect } from "next/navigation";
 
 type Props = {

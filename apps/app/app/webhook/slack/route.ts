@@ -96,6 +96,7 @@ export async function POST(req: NextRequest) {
 
     case "channel_created": {
       const { name, id } = event.channel;
+
       await createChannel({
         external_id: id,
         name,
@@ -110,6 +111,7 @@ export async function POST(req: NextRequest) {
 
     case "channel_rename": {
       const { name, id } = event.channel;
+
       const channel = await getChannel({
         external_id: id,
         workspace_id,
@@ -123,7 +125,7 @@ export async function POST(req: NextRequest) {
 
     case "channel_deleted": {
       const { channel } = event;
-      await deleteChannel({ id: channel });
+      await deleteChannel({ external_id: channel, workspace_id });
 
       return NextResponse.json({ status: 200 });
     }
