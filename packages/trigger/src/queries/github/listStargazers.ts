@@ -1,12 +1,12 @@
+import { createActivity } from "@conquest/clickhouse/activities/createActivity";
 import type { GithubIntegration } from "@conquest/zod/schemas/integration.schema";
+import type { Member } from "@conquest/zod/schemas/member.schema";
 import type { Endpoints } from "@octokit/types";
 import { logger } from "@trigger.dev/sdk/v3";
 import { subDays } from "date-fns";
 import type { Octokit } from "octokit";
-import { checkRateLimit } from "../../../trigger/src/queries/checkRateLimit";
-import { createActivity } from "../activities/createActivity";
+import { checkRateLimit } from "./checkRateLimit";
 import { createGithubMember } from "./createGithubMember";
-
 type Stargazer =
   Endpoints["GET /repos/{owner}/{repo}/stargazers"]["response"]["data"][number];
 
@@ -18,6 +18,8 @@ type Props = {
 export const listStargazers = async ({ octokit, github }: Props) => {
   const { details, workspace_id } = github;
   const { owner, repo } = details;
+
+  const createdMembers: Member[] = [];
 
   let page = 1;
   const stargazers: Stargazer[] = [];
@@ -40,6 +42,8 @@ export const listStargazers = async ({ octokit, github }: Props) => {
       },
     );
 
+    logger.info("listStargazers", { data });
+
     stargazers.push(...data);
 
     if (data.length < 100) break;
@@ -49,7 +53,10 @@ export const listStargazers = async ({ octokit, github }: Props) => {
     page++;
   }
 
-  logger.info("stargazers", { stargazers: stargazers.length });
+  logger.info("stargazers", {
+    count: stargazers.length,
+    stargazers,
+  });
 
   for (const stargazer of stargazers) {
     const { starred_at, user } = stargazer as {
@@ -60,17 +67,21 @@ export const listStargazers = async ({ octokit, github }: Props) => {
     };
     const { id } = user;
 
-    const { headers, member_id } = await createGithubMember({
+    const { headers, member } = await createGithubMember({
       octokit,
       id,
       created_at: new Date(starred_at),
       workspace_id,
     });
 
+    await checkRateLimit(headers);
+
+    if (!member) continue;
+
     await createActivity({
       activity_type_key: "github:star",
       message: `Starred the repository ${repo}`,
-      member_id,
+      member_id: member.id,
       created_at: new Date(starred_at),
       updated_at: new Date(starred_at),
       source: "Github",
@@ -78,5 +89,14 @@ export const listStargazers = async ({ octokit, github }: Props) => {
     });
 
     await checkRateLimit(headers);
+
+    createdMembers.push(member);
   }
+
+  logger.info("listStargazers Members", {
+    count: createdMembers.length,
+    createdMembers,
+  });
+
+  return createdMembers;
 };

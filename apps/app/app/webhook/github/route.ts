@@ -2,10 +2,10 @@ import { createActivity } from "@conquest/clickhouse/activities/createActivity";
 import { deleteActivity } from "@conquest/clickhouse/activities/deleteActivity";
 import { getActivity } from "@conquest/clickhouse/activities/getActivity";
 import { updateActivity } from "@conquest/clickhouse/activities/updateActivity";
-import { createGithubMember } from "@conquest/clickhouse/github/createGithubMember";
 import { prisma } from "@conquest/db/prisma";
 import { decrypt } from "@conquest/db/utils/decrypt";
 import { env } from "@conquest/env";
+import { createGithubMember } from "@conquest/trigger/queries/github/createGithubMember";
 import { GithubIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
 import {
   IssueCommentEvent,
@@ -44,17 +44,19 @@ export async function POST(request: NextRequest) {
 
       if (!starred_at) return NextResponse.json({ status: 200 });
 
-      const { member_id } = await createGithubMember({
+      const { member } = await createGithubMember({
         octokit,
         id,
         created_at: new Date(starred_at),
         workspace_id,
       });
 
+      if (!member) return NextResponse.json({ status: 200 });
+
       await createActivity({
         activity_type_key: "github:star",
         message: `Starred the repository ${repo}`,
-        member_id,
+        member_id: member.id,
         created_at: new Date(starred_at),
         updated_at: new Date(starred_at),
         source: "Github",
@@ -69,11 +71,13 @@ export async function POST(request: NextRequest) {
       const { number, title, body: message, created_at, updated_at } = issue;
       const { id } = sender;
 
-      const { member_id } = await createGithubMember({
+      const { member } = await createGithubMember({
         octokit,
         id,
         workspace_id,
       });
+
+      if (!member) return NextResponse.json({ status: 200 });
 
       switch (action) {
         case "opened": {
@@ -82,7 +86,7 @@ export async function POST(request: NextRequest) {
             activity_type_key: "github:issue",
             title: `#${number} - ${title}`,
             message: message ?? "",
-            member_id,
+            member_id: member.id,
             created_at: new Date(created_at),
             updated_at: new Date(updated_at),
             source: "Github",
@@ -125,11 +129,13 @@ export async function POST(request: NextRequest) {
       const { number, title, body: message } = pull_request;
       const { id } = sender;
 
-      const { member_id } = await createGithubMember({
+      const { member } = await createGithubMember({
         octokit,
         id,
         workspace_id,
       });
+
+      if (!member) return NextResponse.json({ status: 200 });
 
       switch (action) {
         case "opened": {
@@ -137,7 +143,7 @@ export async function POST(request: NextRequest) {
             activity_type_key: "github:pr",
             title: `#${number} - ${title}`,
             message: message ?? "",
-            member_id,
+            member_id: member.id,
             source: "Github",
             workspace_id,
           });
@@ -173,11 +179,13 @@ export async function POST(request: NextRequest) {
       const { number } = issue;
       const { id } = sender;
 
-      const { member_id } = await createGithubMember({
+      const { member } = await createGithubMember({
         octokit,
         id,
         workspace_id,
       });
+
+      if (!member) return NextResponse.json({ status: 200 });
 
       switch (action) {
         case "created": {
@@ -185,7 +193,7 @@ export async function POST(request: NextRequest) {
             external_id: String(commentId),
             activity_type_key: "github:comment",
             message,
-            member_id,
+            member_id: member.id,
             reply_to: String(number),
             source: "Github",
             workspace_id,

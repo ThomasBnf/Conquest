@@ -2,6 +2,7 @@ import { SLACK_SCOPES, SLACK_USER_SCOPES } from "@/constant";
 import { getCurrentUser } from "@/queries/getCurrentUser";
 import { createIntegration } from "@conquest/db/integrations/createIntegration";
 import { getIntegration } from "@conquest/db/integrations/getIntegration";
+import { decrypt } from "@conquest/db/utils/decrypt";
 import { encrypt } from "@conquest/db/utils/encrypt";
 import { env } from "@conquest/env";
 import { WebClient } from "@slack/web-api";

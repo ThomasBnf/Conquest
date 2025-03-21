@@ -1,6 +1,7 @@
 import { createMember as _createMember } from "@conquest/clickhouse/members/createMember";
 import { createProfile } from "@conquest/clickhouse/profiles/createProfile";
 import type { DiscordIntegration } from "@conquest/zod/schemas/integration.schema";
+import { logger } from "@trigger.dev/sdk/v3";
 import { type APIUser, Routes } from "discord-api-types/v10";
 import { discordClient } from "../discord";
 
@@ -13,6 +14,7 @@ export const createMember = async ({ discord, discord_id }: Props) => {
   const { workspace_id } = discord;
 
   const owner = (await discordClient.get(Routes.user(discord_id))) as APIUser;
+  logger.info("owner", { owner });
 
   console.log(owner);
 

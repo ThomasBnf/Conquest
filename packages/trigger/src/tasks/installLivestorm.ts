@@ -2,6 +2,7 @@ import { batchMergeMembers } from "@conquest/clickhouse/members/batchMergeMember
 import { deleteIntegration } from "@conquest/db/integrations/deleteIntegration";
 import { updateIntegration } from "@conquest/db/integrations/updateIntegration";
 import { createManyEvents } from "@conquest/db/livestorm/createManyEvents";
+import { createWebhook } from "@conquest/db/livestorm/createWebhook";
 import { getRefreshToken } from "@conquest/db/livestorm/getRefreshToken";
 import { decrypt } from "@conquest/db/utils/decrypt";
 import { LivestormIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
@@ -31,19 +32,19 @@ export const installLivestorm = schemaTask({
     let accessToken = decryptedAccessToken;
     if (isExpired) accessToken = await getRefreshToken({ livestorm });
 
-    // const webhookEvents = [
-    //   "session.created",
-    //   "session.ended",
-    //   "people.registered",
-    // ];
+    const webhookEvents = [
+      "session.created",
+      "session.ended",
+      "people.registered",
+    ];
 
-    // for (const event of webhookEvents) {
-    //   await createWebhook({
-    //     accessToken,
-    //     event,
-    //   });
-    // }
-    // metadata.set("progress", 10);
+    for (const event of webhookEvents) {
+      await createWebhook({
+        accessToken,
+        event,
+      });
+    }
+    metadata.set("progress", 10);
 
     const members = await createManyEvents({ livestorm });
 
@@ -69,7 +70,7 @@ export const installLivestorm = schemaTask({
       workspace_id,
     });
   },
-  // onFailure: async ({ livestorm }) => {
-  //   await deleteIntegration({ integration: livestorm });
-  // },
+  onFailure: async ({ livestorm }) => {
+    await deleteIntegration({ integration: livestorm });
+  },
 });

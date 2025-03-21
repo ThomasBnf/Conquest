@@ -75,6 +75,7 @@ export const GithubDetailsSchema = z.object({
   repo: z.string(),
   access_token: z.string(),
   iv: z.string(),
+  installation_id: z.coerce.number(),
   scope: z.string(),
   owner: z.string(),
 });

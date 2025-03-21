@@ -11,8 +11,6 @@ type Props = {
 export const createManyTags = async ({ discord }: Props) => {
   const { external_id, workspace_id } = discord;
 
-  console.log("discord", discord);
-
   if (!external_id) return;
 
   const roles = (await discordClient.get(
@@ -32,8 +30,6 @@ export const createManyTags = async ({ discord }: Props) => {
       `#${decimal.toString(16).padStart(6, "0")}`;
 
     const parsedColor = decimalToHex(color);
-
-    console.log("creating Tag", workspace_id);
 
     const tag = await createTag({
       external_id: id,

@@ -75,13 +75,15 @@ export const GithubForm = () => {
               <ActivityTypesList source="Github" disableHeader />
             </>
           )}
-          <Button onClick={onStart} disabled={loading}>
-            {loading ? (
-              <Loader2 className="size-4 animate-spin" />
-            ) : (
-              "Let's start!"
-            )}
-          </Button>
+          {!loading && (
+            <Button onClick={onStart} disabled={loading}>
+              {loading ? (
+                <Loader2 className="size-4 animate-spin" />
+              ) : (
+                "Let's start!"
+              )}
+            </Button>
+          )}
         </div>
       )}
     </>

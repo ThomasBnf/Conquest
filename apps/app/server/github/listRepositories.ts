@@ -1,8 +1,11 @@
 import { getIntegrationBySource } from "@conquest/db/integrations/getIntegrationBySource";
 import { decrypt } from "@conquest/db/utils/decrypt";
 import { GithubIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
+import type { Endpoints } from "@octokit/types";
 import { Octokit } from "octokit";
 import { protectedProcedure } from "../trpc";
+
+type Repository = Endpoints["GET /user/repos"]["response"]["data"][number];
 
 export const listRepositories = protectedProcedure.query(
   async ({ ctx: { user } }) => {
@@ -22,8 +25,24 @@ export const listRepositories = protectedProcedure.query(
 
     const octokit = new Octokit({ auth: token });
 
-    const { data } = await octokit.rest.repos.listForAuthenticatedUser();
+    const repositories: Repository[] = [];
 
-    return data;
+    let page = 1;
+
+    while (true) {
+      const { data } = await octokit.rest.repos.listForAuthenticatedUser({
+        per_page: 100,
+        sort: "full_name",
+        direction: "asc",
+        page,
+      });
+
+      repositories.push(...data);
+
+      if (data.length < 100) break;
+      page++;
+    }
+
+    return repositories;
   },
 );

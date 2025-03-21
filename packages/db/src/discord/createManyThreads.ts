@@ -2,6 +2,7 @@ import { createActivity } from "@conquest/clickhouse/activities/createActivity";
 import { getChannel } from "@conquest/clickhouse/channels/getChannel";
 import { getProfile } from "@conquest/clickhouse/profiles/getProfile";
 import type { DiscordIntegration } from "@conquest/zod/schemas/integration.schema";
+import { logger } from "@trigger.dev/sdk/v3";
 import {
   type APIMessage,
   type APIThreadChannel,
@@ -25,6 +26,8 @@ export const createManyThreads = async ({ discord }: Props) => {
   )) as APIThreadList;
 
   const threads = responseThreads.threads as APIThreadChannel[];
+
+  logger.info("threads", { threads });
 
   for (const thread of threads) {
     const { name, parent_id, owner_id: discord_id, thread_metadata } = thread;
@@ -51,6 +54,8 @@ export const createManyThreads = async ({ discord }: Props) => {
       const messages = (await discordClient.get(
         `${Routes.channelMessages(thread.id)}?${params.toString()}`,
       )) as APIMessage[];
+
+      logger.info("messages", { messages });
 
       if (messages.length < 100) firstMessage = messages.at(-1);
 

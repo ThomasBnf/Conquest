@@ -20,14 +20,9 @@ export const GithubIntegration = ({ error }: Props) => {
 
   const onEnable = () => {
     setLoading(true);
-    const params = new URLSearchParams({
-      client_id: env.NEXT_PUBLIC_GITHUB_CLIENT_ID,
-      redirect_uri: `${env.NEXT_PUBLIC_BASE_URL}/connect/github`,
-      scope: "repo",
-    });
 
     router.push(
-      `https://github.com/login/oauth/authorize?${params.toString()}`,
+      `https://github.com/apps/${env.NEXT_PUBLIC_GITHUB_APP_NAME}/installations/new`,
     );
   };
 

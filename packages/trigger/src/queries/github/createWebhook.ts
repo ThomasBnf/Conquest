@@ -1,5 +1,6 @@
 import { env } from "@conquest/env";
 import { GithubIntegration } from "@conquest/zod/schemas/integration.schema";
+import { logger } from "@trigger.dev/sdk/v3";
 import { Octokit } from "octokit";
 
 type Props = {
@@ -11,7 +12,21 @@ export const createWebhook = async ({ octokit, github }: Props) => {
   const { details } = github;
   const { owner, repo } = details;
 
-  await octokit.request(`POST /repos/${owner}/${repo}/hooks`, {
+  const { data: existingHooks } = await octokit.rest.repos.listWebhooks({
+    owner,
+    repo,
+  });
+
+  logger.info("existingHooks", { existingHooks });
+
+  const webhookUrl = `${env.NEXT_PUBLIC_BASE_URL}/webhook/github`;
+
+  if (existingHooks.some((hook) => hook.config.url === webhookUrl)) {
+    logger.info("Webhook already exists");
+    return;
+  }
+
+  const response = await octokit.rest.repos.createWebhook({
     owner,
     repo,
     name: "web",
@@ -23,8 +38,14 @@ export const createWebhook = async ({ octokit, github }: Props) => {
       secret: env.GITHUB_WEBHOOK_SECRET,
       insecure_ssl: "0",
     },
-    headers: {
-      "X-GitHub-Api-Version": "2022-11-28",
-    },
   });
+
+  logger.info("createWebhook", { response });
+
+  const { data: webhooks } = await octokit.rest.repos.listWebhooks({
+    owner,
+    repo,
+  });
+
+  logger.info("webhooks", { webhooks });
 };

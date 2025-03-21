@@ -1,14 +1,15 @@
-import { createManyIssues } from "@conquest/clickhouse/github/createManyIssues";
-import { createManyPullRequests } from "@conquest/clickhouse/github/createManyPullRequests";
-import { createWebhook } from "@conquest/clickhouse/github/createWebhook";
-import { listStargazers } from "@conquest/clickhouse/github/listStargazers";
+import { batchMergeMembers } from "@conquest/clickhouse/members/batchMergeMembers";
 import { deleteIntegration } from "@conquest/db/integrations/deleteIntegration";
 import { updateIntegration } from "@conquest/db/integrations/updateIntegration";
 import { decrypt } from "@conquest/db/utils/decrypt";
 import { GithubIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
-import { schemaTask } from "@trigger.dev/sdk/v3";
+import { logger, schemaTask } from "@trigger.dev/sdk/v3";
 import { Octokit } from "octokit";
 import { z } from "zod";
+import { createManyIssues } from "../queries/github/createManyIssues";
+import { createManyPullRequests } from "../queries/github/createManyPullRequests";
+import { createWebhook } from "../queries/github/createWebhook";
+import { listStargazers } from "../queries/github/listStargazers";
 import { getAllMembersMetrics } from "./getAllMembersMetrics";
 import { integrationSuccessEmail } from "./integrationSuccessEmail";
 
@@ -26,9 +27,25 @@ export const installGithub = schemaTask({
     const octokit = new Octokit({ auth: decryptedToken });
 
     await createWebhook({ github, octokit });
-    await listStargazers({ github, octokit });
-    await createManyIssues({ github, octokit });
-    await createManyPullRequests({ github, octokit });
+    const stargazers = await listStargazers({ github, octokit });
+    const issuesMembers = await createManyIssues({ github, octokit });
+    const pullRequestsMembers = await createManyPullRequests({
+      github,
+      octokit,
+    });
+
+    const members = [...stargazers, ...issuesMembers, ...pullRequestsMembers];
+    const uniqueMembers = members.filter(
+      (member, index, self) =>
+        index === self.findIndex((t) => t.id === member.id),
+    );
+
+    logger.info("members", {
+      count: uniqueMembers.length,
+      members: uniqueMembers,
+    });
+
+    await batchMergeMembers({ members: uniqueMembers });
 
     await getAllMembersMetrics.trigger(
       { workspace_id },

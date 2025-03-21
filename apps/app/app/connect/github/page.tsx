@@ -7,11 +7,12 @@ import { redirect } from "next/navigation";
 type Props = {
   searchParams: Promise<{
     code: string;
+    installation_id: number;
   }>;
 };
 
 export default async function Page({ searchParams }: Props) {
-  const { code } = await searchParams;
+  const { code, installation_id } = await searchParams;
   const { id: userId, workspace_id } = await getCurrentUser();
 
   const response = await fetch("https://github.com/login/oauth/access_token", {
@@ -35,13 +36,13 @@ export default async function Page({ searchParams }: Props) {
   const { access_token, scope } = data;
 
   const encryptedAccessToken = await encrypt(access_token);
-
   await createIntegration({
     external_id: null,
     details: {
       source: "Github",
       access_token: encryptedAccessToken.token,
       iv: encryptedAccessToken.iv,
+      installation_id,
       scope,
       repo: "",
       owner: "",

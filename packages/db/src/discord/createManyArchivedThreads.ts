@@ -11,6 +11,7 @@ import {
 } from "discord-api-types/v10";
 import { discordClient } from "../discord";
 import { createMember } from "./createMember";
+import { logger } from "@trigger.dev/sdk/v3";
 
 type Props = {
   discord: DiscordIntegration;
@@ -38,6 +39,8 @@ export const createManyArchivedThreads = async ({
       `${Routes.channelThreads(external_id, "public")}?${params.toString()}`,
     )) as APIThreadList;
 
+    logger.info("responseThreads", { responseThreads });
+
     const threads = responseThreads.threads as APIThreadChannel[];
 
     for (const thread of threads) {
@@ -58,6 +61,8 @@ export const createManyArchivedThreads = async ({
         const messages = (await discordClient.get(
           `${Routes.channelMessages(thread.id)}?${params.toString()}`,
         )) as APIMessage[];
+
+        logger.info("messages", { messages });
 
         if (messages.length < 100) firstMessage = messages.at(-1);
 

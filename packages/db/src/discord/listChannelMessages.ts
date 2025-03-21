@@ -2,6 +2,7 @@ import { createActivity } from "@conquest/clickhouse/activities/createActivity";
 import { getProfile } from "@conquest/clickhouse/profiles/getProfile";
 import type { Channel } from "@conquest/zod/schemas/channel.schema";
 import type { DiscordIntegration } from "@conquest/zod/schemas/integration.schema";
+import { logger } from "@trigger.dev/sdk/v3";
 import { type APIMessage, Routes } from "discord-api-types/v10";
 import { discordClient } from "../discord";
 import { createMember } from "./createMember";
@@ -27,6 +28,8 @@ export const listChannelMessages = async ({
     const messages = (await discordClient.get(
       `${Routes.channelMessages(external_id)}?limit=100${before ? `&before=${before}` : ""}`,
     )) as APIMessage[];
+
+    logger.info("messages", { messages });
 
     for (const message of messages) {
       const {

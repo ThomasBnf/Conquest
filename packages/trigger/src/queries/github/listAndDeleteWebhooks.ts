@@ -1,10 +1,6 @@
 import { env } from "@conquest/env";
 import { GithubIntegration } from "@conquest/zod/schemas/integration.schema";
-import type { Endpoints } from "@octokit/types";
 import { Octokit } from "octokit";
-
-type Webhook =
-  Endpoints["GET /repos/{owner}/{repo}/hooks"]["response"]["data"][number];
 
 type Props = {
   octokit: Octokit;
@@ -20,7 +16,9 @@ export const listAndDeleteWebhooks = async ({ octokit, github }: Props) => {
     repo,
   });
 
-  const webhooks = response.data as Webhook[];
+  if (response.status !== 200) console.log(response);
+
+  const webhooks = response.data;
 
   const filteredWebhooks = webhooks.filter(
     (webhook) =>

@@ -1,6 +1,6 @@
 import { client } from "@conquest/clickhouse/client";
-import { listAndDeleteWebhooks } from "@conquest/clickhouse/github/listAndDeleteWebhooks";
 import { env } from "@conquest/env";
+import { listAndDeleteWebhooks } from "@conquest/trigger/queries/github/listAndDeleteWebhooks";
 import {
   GithubIntegrationSchema,
   type Integration,
@@ -18,7 +18,6 @@ import { listWebhooks } from "../livestorm/listWebhooks";
 import { deleteManyPosts } from "../posts/deleteManyPosts";
 import { prisma } from "../prisma";
 import { decrypt } from "../utils/decrypt";
-
 type Props = {
   integration: Integration;
 };
@@ -77,7 +76,8 @@ export const deleteIntegration = async ({ integration }: Props) => {
     const decryptedToken = await decrypt({ access_token, iv });
     const octokit = new Octokit({ auth: decryptedToken });
 
-    await listAndDeleteWebhooks({ github, octokit });
+    await listAndDeleteWebhooks({ octokit, github });
+    // await uninstallGithubApp({ github });
 
     client.query({
       query: `

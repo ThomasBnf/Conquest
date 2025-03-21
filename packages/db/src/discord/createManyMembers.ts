@@ -2,9 +2,9 @@ import { createMember } from "@conquest/clickhouse/members/createMember";
 import { createProfile } from "@conquest/clickhouse/profiles/createProfile";
 import type { DiscordIntegration } from "@conquest/zod/schemas/integration.schema";
 import type { Tag } from "@conquest/zod/schemas/tag.schema";
+import { logger } from "@trigger.dev/sdk/v3";
 import { type APIGuildMember, Routes } from "discord-api-types/v10";
 import { discordClient } from "../discord";
-
 type Props = {
   discord: DiscordIntegration;
   tags: Tag[] | undefined;
@@ -23,6 +23,8 @@ export const createManyMembers = async ({ discord, tags }: Props) => {
         after ? `&after=${after}` : ""
       }`,
     )) as APIGuildMember[];
+
+    logger.info("members", { members });
 
     for (const member of members) {
       const { user, joined_at, roles } = member;

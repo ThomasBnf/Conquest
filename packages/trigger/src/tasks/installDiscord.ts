@@ -7,7 +7,7 @@ import { listChannelMessages } from "@conquest/db/discord/listChannelMessages";
 import { deleteIntegration } from "@conquest/db/integrations/deleteIntegration";
 import { updateIntegration } from "@conquest/db/integrations/updateIntegration";
 import { DiscordIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
-import { metadata, schemaTask } from "@trigger.dev/sdk/v3";
+import { logger, metadata, schemaTask } from "@trigger.dev/sdk/v3";
 import { z } from "zod";
 import { getAllMembersMetrics } from "./getAllMembersMetrics";
 import { integrationSuccessEmail } from "./integrationSuccessEmail";
@@ -21,11 +21,14 @@ export const installDiscord = schemaTask({
 
   run: async ({ discord }) => {
     const { workspace_id } = discord;
+    logger.info("discord", { discord });
 
     const channels = await listChannels({ workspace_id, source: "Discord" });
+    logger.info("channels", { channels });
     metadata.set("progress", 10);
 
     const tags = await createManyTags({ discord });
+    logger.info("tags", { tags });
     metadata.set("progress", 15);
 
     await createManyMembers({ discord, tags });

@@ -29,7 +29,9 @@ export const createManyEvents = async ({ livestorm }: Props) => {
       page,
       filter,
     });
+
     console.log("listOfEvents", listOfEvents);
+
     if (!listOfEvents?.length) break;
 
     events.push(...listOfEvents);
@@ -37,8 +39,6 @@ export const createManyEvents = async ({ livestorm }: Props) => {
 
     if (listOfEvents.length < 100) break;
   }
-
-  const currentProgress = 10;
 
   for (const event of events) {
     const members = await createManySessions({ livestorm, event });

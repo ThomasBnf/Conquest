@@ -1,7 +1,7 @@
 import { env } from "@conquest/env";
 import type { DiscordIntegration } from "@conquest/zod/schemas/integration.schema";
+import { logger } from "@trigger.dev/sdk/v3";
 import { updateIntegration } from "../integrations/updateIntegration";
-
 type Props = {
   discord: DiscordIntegration;
 };
@@ -26,6 +26,8 @@ export const getRefreshToken = async ({ discord }: Props) => {
   });
 
   const data = await response.json();
+
+  logger.info("data", { data });
 
   await updateIntegration({
     id,
