@@ -82,7 +82,7 @@ export const getAllMembersMetrics = schemaTask({
         level_id: level_id ?? null,
       });
 
-      logger.info("updated member", { index, member_id: member.id });
+      logger.info(`${index}`, { member });
     }
   },
 });
