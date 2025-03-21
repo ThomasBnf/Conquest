@@ -4,7 +4,7 @@ import { deleteIntegration } from "@conquest/db/integrations/deleteIntegration";
 import { updateIntegration } from "@conquest/db/integrations/updateIntegration";
 import { decrypt } from "@conquest/db/utils/decrypt";
 import { DiscourseIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
-import { metadata, schemaTask } from "@trigger.dev/sdk/v3";
+import { schemaTask } from "@trigger.dev/sdk/v3";
 import { z } from "zod";
 import { createManyMembers } from "../discourse/createManyMembers";
 import { createManyTags } from "../discourse/createManyTags";
@@ -18,8 +18,6 @@ export const installDiscourse = schemaTask({
     discourse: DiscourseIntegrationSchema,
   }),
   run: async ({ discourse }) => {
-    metadata.set("progress", 0);
-
     const { workspace_id, details } = discourse;
     const { community_url, api_key, api_key_iv } = details;
 
@@ -33,29 +31,22 @@ export const installDiscourse = schemaTask({
       api_key: decryptedApiKey,
     });
 
-    metadata.set("progress", 5);
-
     const tags = await createManyTags({ client, workspace_id });
-    metadata.set("progress", 10);
 
     const members = await createManyMembers({
       discourse,
       client,
       tags,
     });
-    metadata.set("progress", 90);
 
     await batchMergeMembers({ members });
-    metadata.set("progress", 95);
 
-    await getAllMembersMetrics.trigger(
+    await getAllMembersMetrics.triggerAndWait(
       { workspace_id },
       { metadata: { workspace_id } },
     );
-    metadata.set("progress", 95);
 
     await integrationSuccessEmail.trigger({ integration: discourse });
-    metadata.set("progress", 100);
   },
   onSuccess: async ({ discourse }) => {
     const { id, workspace_id } = discourse;

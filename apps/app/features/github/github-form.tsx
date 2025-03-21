@@ -42,16 +42,21 @@ export const GithubForm = () => {
     const isCompleted = run.status === "COMPLETED";
 
     if (["FAILED", "CRASHED", "EXPIRED"].includes(run.status)) {
-      toast.error("Failed to install Github", { duration: 5000 });
       setStep(0);
       setLoading(false);
+      toast.error("Failed to install Github", { duration: 5000 });
     }
 
     if (isCompleted) {
-      utils.integrations.bySource.invalidate({ source: "Slack" });
-      utils.channels.list.invalidate({ source: "Slack" });
-      utils.slack.listChannels.invalidate();
+      utils.integrations.bySource.invalidate({ source: "Github" });
       setTimeout(() => setLoading(false), 1000);
+    }
+  }, [github]);
+
+  useEffect(() => {
+    if (github?.status === "SYNCING") {
+      setLoading(true);
+      setStep(1);
     }
   }, [github]);
 

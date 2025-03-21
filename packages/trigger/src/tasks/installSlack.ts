@@ -5,7 +5,7 @@ import { updateIntegration } from "@conquest/db/integrations/updateIntegration";
 import { decrypt } from "@conquest/db/utils/decrypt";
 import { SlackIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
 import { WebClient } from "@slack/web-api";
-import { metadata, schemaTask } from "@trigger.dev/sdk/v3";
+import { schemaTask } from "@trigger.dev/sdk/v3";
 import { z } from "zod";
 import { createListMembers } from "../slack/createListMembers";
 import { listMessages } from "../slack/listMessages";
@@ -19,8 +19,6 @@ export const installSlack = schemaTask({
     slack: SlackIntegrationSchema,
   }),
   run: async ({ slack }) => {
-    metadata.set("progress", 0);
-
     const { workspace_id, details } = slack;
     const { access_token, access_token_iv } = details;
 
@@ -32,35 +30,23 @@ export const installSlack = schemaTask({
     });
 
     const web = new WebClient(token);
-    metadata.set("progress", 10);
 
     const channels = await listChannels({ source: "Slack", workspace_id });
     const members = await createListMembers({ web, workspace_id });
-    metadata.set("progress", 20);
-
-    const channelProgressWeight = 60;
-    const channelProgressIncrement = channelProgressWeight / channels.length;
-    let currentProgress = 20;
 
     for (const channel of channels) {
       await web.conversations.join({ channel: channel.external_id ?? "" });
       await listMessages({ web, channel, workspace_id });
-
-      currentProgress += channelProgressIncrement;
-      metadata.set("progress", Math.round(currentProgress));
     }
 
     await batchMergeMembers({ members });
-    metadata.set("progress", 90);
 
-    await getAllMembersMetrics.trigger(
+    await getAllMembersMetrics.triggerAndWait(
       { workspace_id },
       { metadata: { workspace_id } },
     );
-    metadata.set("progress", 95);
 
     await integrationSuccessEmail.trigger({ integration: slack });
-    metadata.set("progress", 100);
   },
   onSuccess: async ({ slack }) => {
     const { id, workspace_id } = slack;

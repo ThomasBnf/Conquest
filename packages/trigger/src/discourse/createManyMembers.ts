@@ -11,7 +11,7 @@ import {
   AdminListUsersSchema,
   DirectoryItemsSchema,
 } from "@conquest/zod/types/discourse";
-import { logger, metadata, wait } from "@trigger.dev/sdk/v3";
+import { logger, wait } from "@trigger.dev/sdk/v3";
 import { getLocaleByAlpha2 } from "country-locale-map";
 import type DiscourseAPI from "discourse2";
 import ISO6391 from "iso-639-1";
@@ -39,10 +39,6 @@ export const createManyMembers = async ({
   let members: AdminListUsers[] = [];
   const createdMembers: Member[] = [];
 
-  const progressWeight = 80;
-  let currentProgress = 10;
-  metadata.set("progress", currentProgress);
-
   let page = 0;
   let hasMore = true;
 
@@ -62,14 +58,8 @@ export const createManyMembers = async ({
     members = [...members, ...parsedListOfUsers];
     page += 1;
 
-    currentProgress += 1;
-    metadata.set("progress", Math.min(20, currentProgress));
     await wait.for({ seconds: 0.5 });
   }
-
-  const progressIncrement = progressWeight / Math.max(1, members.length);
-  currentProgress = 20;
-  metadata.set("progress", currentProgress);
 
   let _page = 0;
   let _hasMore = true;
@@ -212,8 +202,6 @@ export const createManyMembers = async ({
 
     if (data.directory_items.length < 50) _hasMore = false;
     _page += 1;
-    currentProgress += progressIncrement;
-    metadata.set("progress", Math.min(90, currentProgress));
   }
 
   return createdMembers;

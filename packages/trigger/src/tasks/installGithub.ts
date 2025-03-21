@@ -47,7 +47,7 @@ export const installGithub = schemaTask({
 
     await batchMergeMembers({ members: uniqueMembers });
 
-    await getAllMembersMetrics.trigger(
+    await getAllMembersMetrics.triggerAndWait(
       { workspace_id },
       { metadata: { workspace_id } },
     );

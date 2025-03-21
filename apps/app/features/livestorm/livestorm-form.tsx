@@ -54,6 +54,13 @@ export const LivestormForm = () => {
     }
   }, [run]);
 
+  useEffect(() => {
+    if (livestorm?.status === "SYNCING") {
+      setLoading(true);
+      setStep(1);
+    }
+  }, [livestorm]);
+
   return (
     <>
       <Separator className="my-4" />

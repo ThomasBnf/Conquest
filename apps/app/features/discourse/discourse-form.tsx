@@ -51,9 +51,7 @@ export const DiscourseForm = () => {
     }
 
     if (isCompleted) {
-      utils.integrations.bySource.invalidate({
-        source: "Discourse",
-      });
+      utils.integrations.bySource.invalidate({ source: "Discourse" });
       utils.channels.list.invalidate();
       utils.discourse.listChannels.invalidate();
       setTimeout(() => setLoading(false), 1000);

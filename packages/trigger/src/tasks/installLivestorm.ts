@@ -3,7 +3,7 @@ import { deleteIntegration } from "@conquest/db/integrations/deleteIntegration";
 import { updateIntegration } from "@conquest/db/integrations/updateIntegration";
 import { decrypt } from "@conquest/db/utils/decrypt";
 import { LivestormIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
-import { metadata, schemaTask } from "@trigger.dev/sdk/v3";
+import { schemaTask } from "@trigger.dev/sdk/v3";
 import { z } from "zod";
 import { createManyEvents } from "../livestorm/createManyEvents";
 import { createWebhook } from "../livestorm/createWebhook";
@@ -20,7 +20,6 @@ export const installLivestorm = schemaTask({
   run: async ({ livestorm }) => {
     const { details, workspace_id } = livestorm;
     const { access_token, access_token_iv, expires_in } = details;
-    metadata.set("progress", 5);
 
     const isExpired = new Date(Date.now() + expires_in * 1000) < new Date();
 
@@ -44,21 +43,17 @@ export const installLivestorm = schemaTask({
         event,
       });
     }
-    metadata.set("progress", 10);
 
     const members = await createManyEvents({ livestorm });
 
     await batchMergeMembers({ members });
-    metadata.set("progress", 90);
 
-    await getAllMembersMetrics.trigger(
+    await getAllMembersMetrics.triggerAndWait(
       { workspace_id },
       { metadata: { workspace_id } },
     );
-    metadata.set("progress", 95);
 
     await integrationSuccessEmail.trigger({ integration: livestorm });
-    metadata.set("progress", 100);
   },
   onSuccess: async ({ livestorm }) => {
     const { id, workspace_id } = livestorm;

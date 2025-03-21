@@ -1,5 +1,3 @@
-import { Progress } from "@conquest/ui/progress";
-
 type Props = {
   progress: number;
 };
@@ -17,11 +15,5 @@ export const LoadingMessage = ({ progress }: Props) => (
         You will be notified by email when the sync is complete.
       </span>
     </p>
-    {!Number.isNaN(progress) && (
-      <div>
-        <p className="mt-2 mb-1">{progress}% completed</p>
-        <Progress value={progress} className="h-3 transition-all" />
-      </div>
-    )}
   </div>
 );
