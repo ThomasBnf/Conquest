@@ -51,7 +51,6 @@ const encryptionEnv = {
 
 const githubEnv = {
   server: {
-    GITHUB_APP_ID: z.string(),
     GITHUB_CLIENT_SECRET: z.string(),
     GITHUB_WEBHOOK_SECRET: z.string(),
   },
