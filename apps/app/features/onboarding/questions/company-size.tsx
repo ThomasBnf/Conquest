@@ -7,7 +7,7 @@ import {
   SelectValue,
 } from "@conquest/ui/select";
 import type { UseFormReturn } from "react-hook-form";
-import type { Questions } from "../schemas/create-workspace.schema";
+import type { Questions } from "../schemas/workspace-form.schema";
 
 type Props = {
   form: UseFormReturn<Questions>;

@@ -199,7 +199,7 @@ export const EditActivityTypeDialog = ({
               />
               {hasNoConditions && !isInviteOrJoin && (
                 <div className="flex flex-col items-start gap-2">
-                  <FormLabel>Conditions</FormLabel>
+                  <FormLabel>Channels</FormLabel>
                   {form.watch("conditions").rules.map((_, index) => (
                     <div key={index} className="flex w-full gap-2">
                       <ConditionChannel

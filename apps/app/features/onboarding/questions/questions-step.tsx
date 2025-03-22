@@ -11,7 +11,7 @@ import { toast } from "sonner";
 import {
   type Questions,
   QuestionsSchema,
-} from "../schemas/create-workspace.schema";
+} from "../schemas/workspace-form.schema";
 import { CompanySize } from "./company-size";
 import { Source } from "./source";
 

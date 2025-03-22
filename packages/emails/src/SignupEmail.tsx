@@ -39,7 +39,10 @@ export const SignupEmail = ({ url }: Props) => (
             directly:
           </Text>
           <Hr className="my-10 border-gray-200" />
-          <Link href="https://linear.app" className="text-gray-400 text-sm">
+          <Link
+            href="https://useconquest.com"
+            className="text-gray-400 text-sm"
+          >
             Conquest
           </Link>
         </Container>

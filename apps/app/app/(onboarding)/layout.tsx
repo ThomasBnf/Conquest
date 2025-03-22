@@ -21,7 +21,6 @@ export default async function Layout({ children }: PropsWithChildren) {
         </div>
       </div>
       {children}
-      <div />
     </div>
   );
 }

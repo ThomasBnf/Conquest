@@ -26,10 +26,11 @@ import { signIn } from "next-auth/react";
 import Link from "next/link";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { toast } from "sonner";
+import { EmailSuccess } from "./email-success";
 
 export const SignupForm = () => {
   const [loading, setLoading] = useState(false);
+  const [sentTo, setSentTo] = useState("");
 
   const form = useForm<SignupSchema>({
     resolver: zodResolver(SignupSchema),
@@ -38,7 +39,7 @@ export const SignupForm = () => {
   const onSubmit = async ({ email }: SignupSchema) => {
     setLoading(true);
     await signIn("resend", { email, redirect: false });
-    toast.success("Check your email for a login code");
+    setSentTo(email);
     setLoading(false);
   };
 
@@ -49,6 +50,16 @@ export const SignupForm = () => {
       redirectTo: env.NEXT_PUBLIC_BASE_URL,
     });
   };
+
+  if (sentTo) {
+    return (
+      <EmailSuccess
+        sentTo={sentTo}
+        setSentTo={setSentTo}
+        buttonLabel="Back to signup"
+      />
+    );
+  }
 
   return (
     <Card className="w-full max-w-md">

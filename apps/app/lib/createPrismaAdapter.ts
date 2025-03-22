@@ -10,6 +10,7 @@ import { PrismaClientKnownRequestError } from "@conquest/db/enum";
 import type { Prisma } from "@conquest/db/types";
 import { createWorkspace } from "@conquest/db/workspaces/createWorkspace";
 import { UserSchema } from "@conquest/zod/schemas/user.schema";
+import { isBefore, subHours } from "date-fns";
 import { v4 as uuid } from "uuid";
 
 export const createAuthPrismaAdapter = (
@@ -95,6 +96,15 @@ export const createAuthPrismaAdapter = (
 
     const { user, ...session } = userAndSession;
 
+    const oneHourAgo = subHours(new Date(), 1);
+
+    if (user.last_activity_at && isBefore(user.last_activity_at, oneHourAgo)) {
+      await prisma.user.update({
+        where: { id: user.id },
+        data: { last_activity_at: new Date() },
+      });
+    }
+
     return {
       session,
       user,
@@ -137,7 +147,6 @@ export const createAuthPrismaAdapter = (
       }
       return verificationToken;
     } catch (error: unknown) {
-      // If token already used/deleted
       if (
         error instanceof PrismaClientKnownRequestError &&
         error.code === "P2025"

@@ -13,5 +13,7 @@ export const updateUser = async ({ id, ...data }: Props) => {
     data,
   });
 
+  console.log(user);
+
   return UserSchema.parse(user);
 };
