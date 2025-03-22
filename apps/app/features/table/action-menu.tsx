@@ -65,7 +65,7 @@ export const ActionMenu = <TData,>({ table }: Props<TData>) => {
       <div className="actions-primary flex items-center divide-background/50 overflow-hidden rounded-lg border border-foreground bg-foreground py-1 pr-1 pl-2.5 text-background">
         <p className="border-r border-r-background/30 py-1 pr-2">
           {rowSelected.length}
-          <span className="ml-1 text-muted-foreground">selected</span>
+          <span className="ml-1">selected</span>
         </p>
         <div className="ml-2 flex items-center gap-1.5">
           <AddTagDialog table={table} />
