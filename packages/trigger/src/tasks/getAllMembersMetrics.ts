@@ -42,13 +42,16 @@ export const getAllMembersMetrics = schemaTask({
     for (const [index, member] of members.entries()) {
       const logs: Log[] = [];
 
+      const memberActivities = activities?.filter(
+        (activity) => activity.member_id === member.id,
+      );
+
       for (const interval of intervals) {
         const intervalEnd = interval;
         const intervalStart = subDays(intervalEnd, 90);
 
-        const filteredActivities = activities?.filter(
+        const filteredActivities = memberActivities?.filter(
           (activity) =>
-            activity.member_id === member.id &&
             activity.created_at >= intervalStart &&
             activity.created_at <= intervalEnd,
         );
@@ -76,8 +79,8 @@ export const getAllMembersMetrics = schemaTask({
 
       await updateMember({
         ...member,
-        first_activity: activities?.at(-1)?.created_at ?? null,
-        last_activity: activities?.at(0)?.created_at ?? null,
+        first_activity: memberActivities?.at(-1)?.created_at ?? null,
+        last_activity: memberActivities?.at(0)?.created_at ?? null,
         pulse: pulse ?? 0,
         level_id: level_id ?? null,
       });

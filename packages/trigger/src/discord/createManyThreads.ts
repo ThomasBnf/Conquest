@@ -30,10 +30,10 @@ export const createManyThreads = async ({ discord }: Props) => {
   logger.info("threads", { threads });
 
   for (const thread of threads) {
-    const { name, parent_id, owner_id: discord_id, thread_metadata } = thread;
+    const { name, parent_id, owner_id, thread_metadata } = thread;
     const { create_timestamp } = thread_metadata ?? {};
 
-    if (!discord_id || !parent_id) continue;
+    if (!owner_id || !parent_id) continue;
 
     let before: string | undefined = undefined;
     let firstMessage: APIMessage | undefined;
@@ -69,14 +69,16 @@ export const createManyThreads = async ({ discord }: Props) => {
           author,
         } = message;
         const { content: message_content } = referenced_message ?? {};
+        const { id: author_id } = author;
 
         if (author.bot) continue;
         if (sticker_items && sticker_items.length > 0) continue;
 
         if (message.id === firstMessage?.id) {
           const member_id =
-            (await getProfile({ external_id: discord_id, workspace_id }))
-              ?.member_id ?? (await createMember({ discord, discord_id }))?.id;
+            (await getProfile({ external_id: owner_id, workspace_id }))
+              ?.member_id ??
+            (await createMember({ discord, discord_id: owner_id }))?.id;
 
           if (!member_id) continue;
 
@@ -97,8 +99,9 @@ export const createManyThreads = async ({ discord }: Props) => {
         }
 
         const member_id =
-          (await getProfile({ external_id: discord_id, workspace_id }))
-            ?.member_id ?? (await createMember({ discord, discord_id }))?.id;
+          (await getProfile({ external_id: author_id, workspace_id }))
+            ?.member_id ??
+          (await createMember({ discord, discord_id: author_id }))?.id;
 
         if (!member_id) continue;
 
