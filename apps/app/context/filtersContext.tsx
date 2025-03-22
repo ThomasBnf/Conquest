@@ -26,10 +26,9 @@ type Props = {
 };
 
 export const FiltersProvider = ({ defaultGroupFilters, children }: Props) => {
-  const { data: session } = useSession();
+  const { data: session, update } = useSession();
   const { user } = session ?? {};
   const { members_preferences } = user ?? {};
-  const utils = trpc.useUtils();
 
   const [groupFilters, setGroupFilters] = useState<GroupFilters>(
     defaultGroupFilters ??
@@ -40,9 +39,7 @@ export const FiltersProvider = ({ defaultGroupFilters, children }: Props) => {
   );
 
   const { mutateAsync } = trpc.users.update.useMutation({
-    onSuccess: () => {
-      utils.users.get.invalidate();
-    },
+    onSuccess: () => update(),
   });
 
   const onAddFilter = async (filter: Filter) => {

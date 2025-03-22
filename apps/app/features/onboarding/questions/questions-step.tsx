@@ -20,14 +20,13 @@ type Props = {
 };
 
 export const QuestionsStep = ({ setStep }: Props) => {
-  const { data: session } = useSession();
+  const { data: session, update } = useSession();
   const { workspace } = session?.user ?? {};
   const [loading, setLoading] = useState(false);
-  const utils = trpc.useUtils();
 
   const { mutateAsync: mutateWorkspace } = trpc.workspaces.update.useMutation({
     onSuccess: () => {
-      utils.workspaces.get.invalidate();
+      update();
       setStep(3);
     },
     onError: (error) => {

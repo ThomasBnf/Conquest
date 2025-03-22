@@ -25,13 +25,10 @@ export const FormWorkspace = () => {
   const { data: workspace } = trpc.workspaces.get.useQuery();
   const [loading, setLoading] = useState(false);
   const [focus, setFocus] = useState(false);
-  const utils = trpc.useUtils();
 
   const { mutateAsync } = trpc.workspaces.update.useMutation({
     onSuccess: () => {
       setLoading(false);
-      utils.workspaces.get.invalidate();
-      utils.workspaces.getSlug.invalidate();
       toast.success("Workspace updated");
     },
     onError: (error) => {

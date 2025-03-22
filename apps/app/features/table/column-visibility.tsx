@@ -34,36 +34,37 @@ type Props<TData> = {
 };
 
 export const ColumnVisibility = <TData,>({ table, type }: Props<TData>) => {
-  const { data: session } = useSession();
+  const { data: session, update } = useSession();
   const { user } = session ?? {};
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
 
-  const { mutateAsync } = trpc.users.update.useMutation();
-  const columnOrder = table.getState().columnOrder;
-  const allColumns = table.getAllColumns();
-
-  const sortedColumns = useMemo(() => {
-    // If no column order is set, use the default order
-    if (!columnOrder || columnOrder.length === 0) {
-      return allColumns;
-    }
-
-    // Create a map for faster lookups
-    const orderMap = new Map(columnOrder.map((id, index) => [id, index]));
-
-    // Sort columns based on the current column order
-    return [...allColumns].sort((a, b) => {
-      const aIndex = orderMap.get(a.id) ?? Number.MAX_SAFE_INTEGER;
-      const bIndex = orderMap.get(b.id) ?? Number.MAX_SAFE_INTEGER;
-      return aIndex - bIndex;
-    });
-  }, [allColumns, columnOrder]);
+  const { mutateAsync } = trpc.users.update.useMutation({
+    onSuccess: () => update(),
+  });
 
   const sensors = useSensors(
     useSensor(MouseSensor),
     useSensor(TouchSensor),
     useSensor(KeyboardSensor),
+  );
+
+  const columns = table.getAllColumns().filter((column) => column.getCanHide());
+  const columnsOrder = table.getState().columnOrder;
+
+  const sortedColumns = useMemo(
+    () =>
+      columns.sort((a, b) => {
+        const aIndex = columnsOrder.indexOf(a.id);
+        const bIndex = columnsOrder.indexOf(b.id);
+        return aIndex - bIndex;
+      }),
+    [columns, columnsOrder],
+  );
+
+  const columnsIds = useMemo(
+    () => sortedColumns.map((column) => column.id),
+    [sortedColumns],
   );
 
   const onDragEnd = async (event: DragEndEvent) => {
@@ -72,20 +73,18 @@ export const ColumnVisibility = <TData,>({ table, type }: Props<TData>) => {
     const { active, over } = event;
 
     if (over && active.id !== over.id) {
-      const columns = table.getAllColumns().map((column) => column.id);
+      const activeIndex = columnsIds.indexOf(active.id as string);
+      const overIndex = columnsIds.indexOf(over.id as string);
 
-      const activeIndex = columns.indexOf(active.id as string);
-      const overIndex = columns.indexOf(over.id as string);
-
-      const newColumnOrder = arrayMove(columns, activeIndex, overIndex);
-      table.setColumnOrder(newColumnOrder);
+      const columnOrder = arrayMove(columnsIds, activeIndex, overIndex);
+      table.setColumnOrder(columnOrder);
 
       if (type === "members") {
         await mutateAsync({
           ...user,
           members_preferences: {
             ...user.members_preferences,
-            columnOrder: newColumnOrder,
+            columnOrder,
           },
         });
       } else {
@@ -93,7 +92,7 @@ export const ColumnVisibility = <TData,>({ table, type }: Props<TData>) => {
           ...user,
           companies_preferences: {
             ...user.companies_preferences,
-            columnOrder: newColumnOrder,
+            columnOrder,
           },
         });
       }
@@ -123,21 +122,17 @@ export const ColumnVisibility = <TData,>({ table, type }: Props<TData>) => {
                 modifiers={[restrictToVerticalAxis, restrictToParentElement]}
                 onDragEnd={onDragEnd}
               >
-                <SortableContext
-                  items={sortedColumns.map((column) => column.id)}
-                >
-                  {sortedColumns
-                    .filter((column) => column.getCanHide())
-                    .map((column) => {
-                      return (
-                        <ColumnItem
-                          key={column.id}
-                          column={column}
-                          search={search}
-                          type={type}
-                        />
-                      );
-                    })}
+                <SortableContext items={columnsIds}>
+                  {sortedColumns.map((column) => {
+                    return (
+                      <ColumnItem
+                        key={column.id}
+                        column={column}
+                        search={search}
+                        type={type}
+                      />
+                    );
+                  })}
                 </SortableContext>
               </DndContext>
             </CommandGroup>

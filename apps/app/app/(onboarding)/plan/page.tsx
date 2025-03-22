@@ -12,18 +12,15 @@ import { useState } from "react";
 import { toast } from "sonner";
 
 export default function Page() {
-  const { data: session } = useSession();
+  const { data: session, update } = useSession();
   const { user } = session ?? {};
-
   const [period, setPeriod] = useState<PlanPeriod>("monthly");
   const [loading, setLoading] = useState<Plan | null>(null);
-
   const router = useRouter();
-  const utils = trpc.useUtils();
 
   const { mutateAsync } = trpc.users.update.useMutation({
     onSuccess: () => {
-      utils.users.get.invalidate();
+      update();
       router.push("/settings/integrations");
     },
     onError: (error) => {
@@ -34,9 +31,7 @@ export default function Page() {
 
   const { mutateAsync: createCustomer } =
     trpc.stripe.createCustomer.useMutation({
-      onSuccess: () => {
-        utils.workspaces.get.invalidate();
-      },
+      onSuccess: () => update(),
       onError: (error) => {
         toast.error(error.message);
         setLoading(null);

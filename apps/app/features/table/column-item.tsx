@@ -1,9 +1,11 @@
 import { trpc } from "@/server/client";
+import { Button } from "@conquest/ui/button";
 import { Checkbox } from "@conquest/ui/checkbox";
 import { CommandItem } from "@conquest/ui/command";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { Column } from "@tanstack/react-table";
+import { GripVertical } from "lucide-react";
 import { useSession } from "next-auth/react";
 
 type Props<TData> = {
@@ -13,7 +15,7 @@ type Props<TData> = {
 };
 
 export const ColumnItem = <TData,>({ column, search, type }: Props<TData>) => {
-  const { data: session } = useSession();
+  const { data: session, update } = useSession();
   const { user } = session ?? {};
 
   const {
@@ -31,7 +33,9 @@ export const ColumnItem = <TData,>({ column, search, type }: Props<TData>) => {
     transition,
   };
 
-  const { mutateAsync } = trpc.users.update.useMutation();
+  const { mutateAsync } = trpc.users.update.useMutation({
+    onSuccess: () => update(),
+  });
 
   const onSelect = async (column: Column<TData>) => {
     if (!user?.id) return;
@@ -70,7 +74,12 @@ export const ColumnItem = <TData,>({ column, search, type }: Props<TData>) => {
   };
 
   return (
-    <CommandItem ref={setNodeRef} style={style} {...attributes}>
+    <CommandItem
+      ref={setNodeRef}
+      style={style}
+      {...attributes}
+      className="cursor-default"
+    >
       <Checkbox
         checked={column.getIsVisible()}
         onCheckedChange={() => onSelect(column)}
@@ -78,7 +87,7 @@ export const ColumnItem = <TData,>({ column, search, type }: Props<TData>) => {
       <span className="ml-2 truncate first-letter:uppercase">
         {column.id.replaceAll("_", " ")}
       </span>
-      {/* {!search ? (
+      {!search ? (
         <Button
           {...listeners}
           variant="ghost"
@@ -87,7 +96,7 @@ export const ColumnItem = <TData,>({ column, search, type }: Props<TData>) => {
         >
           <GripVertical className="size-4" aria-hidden />
         </Button>
-      ) : null} */}
+      ) : null}
     </CommandItem>
   );
 };
