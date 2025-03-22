@@ -1,17 +1,26 @@
 import { updateActivityType as _updateActivityType } from "@conquest/clickhouse/activity-types/updateActivityType";
 import { getAllMembersMetrics } from "@conquest/trigger/tasks/getAllMembersMetrics";
 import { ActivityTypeSchema } from "@conquest/zod/schemas/activity-type.schema";
+import { z } from "zod";
 import { protectedProcedure } from "../trpc";
 
 export const updateActivityType = protectedProcedure
-  .input(ActivityTypeSchema)
+  .input(
+    z.object({
+      activityType: ActivityTypeSchema,
+      isIntegrationPage: z.boolean(),
+    }),
+  )
   .mutation(async ({ ctx: { user }, input }) => {
     const { workspace_id } = user;
+    const { activityType, isIntegrationPage } = input;
 
-    await _updateActivityType(input);
+    await _updateActivityType(activityType);
 
-    await getAllMembersMetrics.trigger(
-      { workspace_id },
-      { metadata: { workspace_id } },
-    );
+    if (!isIntegrationPage) {
+      await getAllMembersMetrics.trigger(
+        { workspace_id },
+        { metadata: { workspace_id } },
+      );
+    }
   });

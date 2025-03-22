@@ -28,6 +28,7 @@ import {
 import type { ActivityType } from "@conquest/zod/schemas/activity-type.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2, Plus, X } from "lucide-react";
+import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -50,6 +51,8 @@ export const EditActivityTypeDialog = ({
   activityType,
 }: Props) => {
   const [loading, setLoading] = useState(false);
+  const pathname = usePathname();
+  const isIntegrationPage = pathname.includes("integrations");
   const utils = trpc.useUtils();
 
   const { data: channels } = trpc.channels.list.useQuery({});
@@ -59,7 +62,7 @@ export const EditActivityTypeDialog = ({
       setOpen(false);
       setLoading(false);
       toast.success(
-        "Activity type updated, recalculating members pulse scores...",
+        "Activity type updated, recalculating members Pulse Score...",
       );
     },
   });
@@ -75,7 +78,10 @@ export const EditActivityTypeDialog = ({
 
   const onSubmit = async (data: FormActivityType) => {
     setLoading(true);
-    await mutateAsync({ ...activityType, ...data });
+    await mutateAsync({
+      activityType: { ...activityType, ...data },
+      isIntegrationPage,
+    });
   };
 
   const addCondition = () => {
