@@ -45,7 +45,7 @@ export default function Page() {
       description="Update your payment information or switch plans according to your needs"
       displayTrial={false}
     >
-      <div className="flex items-end justify-between">
+      <div className="grid grid-cols-2 gap-12">
         <div>
           <p className="font-medium text-lg">Manage your subscription</p>
           <p className="text-muted-foreground">

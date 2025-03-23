@@ -18,7 +18,7 @@ export const BillingPage = ({
 }: PropsWithChildren<Props>) => {
   return (
     <ScrollArea className="h-dvh">
-      <div className="mx-auto flex max-w-5xl flex-col px-4 py-12 lg:py-24">
+      <div className="mx-auto flex max-w-6xl flex-col px-6 py-12 lg:px-12">
         <p className="font-medium text-2xl">{title}</p>
         <p className="text-muted-foreground">{description}</p>
         <Separator className="my-4" />
