@@ -21,17 +21,15 @@ export const ProfilesCell = ({ row }: Props) => {
   });
 
   return (
-    <div className="truncate p-2">
+    <div className="flex items-center gap-2 p-2">
       {isLoading ? (
         <Skeleton className="h-4 w-24" />
       ) : (
-        <div className="flex items-center gap-2 p-2">
-          {data?.map((profile) => (
-            <div key={profile.id} className="rounded-md border p-1">
-              <ProfileIconParser profile={profile} />
-            </div>
-          ))}
-        </div>
+        data?.map((profile) => (
+          <div key={profile.id} className="rounded-md border p-1">
+            <ProfileIconParser profile={profile} />
+          </div>
+        ))
       )}
     </div>
   );

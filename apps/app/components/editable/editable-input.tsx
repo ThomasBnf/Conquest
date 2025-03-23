@@ -51,7 +51,9 @@ export const EditableInput = ({
         onMouseLeave={() => setIsHover(false)}
         onClick={() => setIsFocus(true)}
       >
-        {value === "" || value === null ? placeholder : value}
+        <span className="truncate">
+          {value === "" || value === null ? placeholder : value}
+        </span>
         {isHover && !isFocus && value && (
           <CopyButton value={value} className="absolute right-1" />
         )}

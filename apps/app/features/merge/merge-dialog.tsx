@@ -1,4 +1,3 @@
-import { useUser } from "@/context/userContext";
 import { trpc } from "@/server/client";
 import { Button } from "@conquest/ui/button";
 import {
@@ -12,12 +11,12 @@ import {
 import { Separator } from "@conquest/ui/separator";
 import type { Member } from "@conquest/zod/schemas/member.schema";
 import { ArrowLeftRight, Equal, Loader2 } from "lucide-react";
+import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 import { MemberCard } from "./member-card";
 import { MemberPicker } from "./member-picker";
-import { useSession } from "next-auth/react";
 
 type Props = {
   open: boolean;
@@ -32,15 +31,12 @@ export const MergeDialog = ({ open, setOpen, member }: Props) => {
   const [leftMember, setLeftMember] = useState<Member | null>(null);
   const [rightMember, setRightMember] = useState(member);
   const [loading, setLoading] = useState(false);
-
   const router = useRouter();
-  const utils = trpc.useUtils();
 
   const { mutateAsync: mergeMembers } = trpc.members.merge.useMutation({
     onSuccess: () => {
-      utils.members.list.invalidate();
+      window.location.reload();
       toast.success("Members merged");
-      onCancel();
     },
   });
 

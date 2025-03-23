@@ -69,7 +69,7 @@ export const FilteredEntries = ({ member }: Props) => {
                 value ? "text-foreground" : "text-muted-foreground",
               )}
             >
-              {value?.toString() ?? "N/A"}
+              {value && String(value).trim() !== "" ? value.toString() : "N/A"}
             </p>
           </div>
         );
