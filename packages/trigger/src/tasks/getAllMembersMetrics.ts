@@ -1,4 +1,5 @@
 import { listActivities } from "@conquest/clickhouse/activities/listActivities";
+import { getLevel } from "@conquest/clickhouse/helpers/getLevel";
 import { getPulseScore } from "@conquest/clickhouse/helpers/getPulseScore";
 import { listLevels } from "@conquest/clickhouse/levels/listLevels";
 import { createManyLogs } from "@conquest/clickhouse/logs/createManyLogs";
@@ -57,12 +58,7 @@ export const getAllMembersMetrics = schemaTask({
         );
 
         const pulseScore = getPulseScore({ activities: filteredActivities });
-
-        const level = levels.find(
-          (level) =>
-            pulseScore >= level.from &&
-            (level.to === null || pulseScore <= level.to),
-        );
+        const level = getLevel({ levels, pulse: pulseScore });
 
         logs.push({
           id: randomUUID(),

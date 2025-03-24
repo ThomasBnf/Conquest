@@ -10,6 +10,7 @@ import {
 } from "date-fns";
 import { randomUUID } from "node:crypto";
 import { listActivities } from "../activities/listActivities";
+import { getLevel } from "../helpers/getLevel";
 import { getPulseScore } from "../helpers/getPulseScore";
 import { createManyLogs } from "../logs/createManyLogs";
 import { updateMember } from "./updateMember";
@@ -53,11 +54,7 @@ export const getMemberMetrics = async ({ member, levels }: Props) => {
       activities: filteredActivities,
     });
 
-    const level = levels.find(
-      (level) =>
-        pulseScore >= level.from &&
-        (level.to === null || pulseScore <= level.to),
-    );
+    const level = getLevel({ levels, pulse: pulseScore });
 
     logs.push({
       id: randomUUID(),

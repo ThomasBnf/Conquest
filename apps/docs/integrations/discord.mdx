@@ -14,29 +14,22 @@ The integration collects information about:
 ### Members
 
 * **Full Name**
-
 * **Username**
-
 * **Avatar** if provided
-
-* **Join Date**
-
+* **Join server date**
 * **Roles**
 
 We do not collect:
 
 * **Email**
+* **Bio**
 
 ### Conversations
 
 * **Active Threads** from public channels
-
 * **Archived Threads** from public channels
-
 * **Messages** from public channels
-
 * **Replies** from public channels
-
 * **Reactions** from public channels
 
 
@@ -45,28 +38,26 @@ We do not collect:
 When you connect your Discord server, activity types are automatically generated and integrated.
 
 <Tip>
-  Activity weights can be customized to fit your community's scoring system.
+  Activity points can be customized to fit your community's scoring system.
 </Tip>
 
-* **Invitation** - 7 weight
-
-* **Write a post** - 6 weight
-
-* **Reply to post** - 5 weight
-
-* **Join Discord community** - 4 weight
-
-* **Add reaction** - 0 weight
+* **Create a thread**
+* **Reply to thread**
+* **Write a message**
+* **Reply to message**
+* **Add reaction**
 
 ## Real-Time Updates
 
 Once connected, Conquest syncs the following events in real-time:
 
-* **Members joining the workspace**
-
+* **Members joining the server**
+* **Members updates**
+* **Members removed from the server**
 * **Threads, messages, replies, reactions in public channels**
-
 * **Creation, updates, and deletion of public channels**
+* **Creation, updates, and deletion of roles**
+
 
 ## Setup guide
 
@@ -79,7 +70,7 @@ Once connected, Conquest syncs the following events in real-time:
     3. Click **"Enable"** to start the connection process.
 
     <Frame>
-      ![Discord Connection](/images/discord-enable.png)
+      ![Discord Connection](/images/discord/enable.png)
     </Frame>
   </Step>
 
@@ -91,7 +82,7 @@ Once connected, Conquest syncs the following events in real-time:
     </Tip>
 
     <Frame>
-      ![Discord OAuth](/images/discord-oauth.png)
+      ![Discord OAuth](/images/discord/oauth.png)
     </Frame>
   </Step>
 
@@ -100,7 +91,9 @@ Once connected, Conquest syncs the following events in real-time:
 
     1. Select the channels you want to collect data from
 
-    2. Click **"Let's Start"**
+     <Frame>
+      ![Discord Collect](/images/discord/channels.png)
+    </Frame>
 
     ### Missing channels?
 
@@ -118,12 +111,20 @@ Once connected, Conquest syncs the following events in real-time:
     </Frame>
   </Step>
 
-  <Step title="Data Collection">
-    Conquest will begin importing historical data.
+  <Step title="Configure Activity Types">
+    Conquest will automatically generate activity types based on the data collected.
+    You can add conditions on specific channels to fit your community's scoring system.
 
     <Frame>
-      ![Discord Collect](/images/discord-collect.png)
+      ![Discord activity types](/images/discord/activity-types.png)
     </Frame>
+
+    <br />
+    
+    <Frame>
+      ![Discord activity types](/images/discord/condition.png)
+    </Frame>
+   
   </Step>
 </Steps>
 
@@ -136,7 +137,6 @@ Once connected, Conquest syncs the following events in real-time:
 <AccordionGroup>
   <Accordion title="Why my Discord server is not visible?">
     * Confirm that you are an admin of the Discord server
-
     * Ensure you are logged into the correct Discord account
   </Accordion>
 </AccordionGroup>

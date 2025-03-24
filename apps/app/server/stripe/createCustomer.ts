@@ -1,4 +1,5 @@
 import { stripe } from "@/lib/stripe";
+import { resend } from "@conquest/db/resend";
 import { updateWorkspace } from "@conquest/db/workspaces/updateWorkspace";
 import { env } from "@conquest/env";
 import { PLAN } from "@conquest/zod/enum/plan.enum";
@@ -72,5 +73,16 @@ export const createCustomer = protectedProcedure
       trial_end: subscription.trial_end
         ? new Date(subscription.trial_end * 1000)
         : null,
+    });
+
+    await resend.emails.send({
+      from: "Conquest <hello@useconquest.com>",
+      to: "audrey@useconquest.com",
+      subject: "New User Signup",
+      html: `
+        <p>Email: ${email}</p>
+        <p>Workspace: ${workspace.name}</p>
+        <p>Plan: ${plan}</p>
+      `,
     });
   });

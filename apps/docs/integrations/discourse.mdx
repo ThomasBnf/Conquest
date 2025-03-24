@@ -18,33 +18,21 @@ The integration collects information about:
 ### Members
 
 * **Full Name**
-
 * **Username**
-
 * **Email**
-
 * **Job Title** if provided
-
-* **Avatar** if provided
-
+* **Avatar**
 * **Locale** if provided
-
 * **Tags**
-
 * **User Fields**
-
 * **Joined Date**
 
 ### Community Activity
 
 * **Topics** from all categories
-
 * **Replies** to topics
-
 * **Reactions** on posts
-
 * **Replies marked as solved**
-
 * **Invitations**
 
 ## Activity Types
@@ -55,43 +43,27 @@ When you connect your Discourse workspace, activity types are automatically gene
   Activity weights can be customized to fit your community's scoring system.
 </Tip>
 
-* **Invitation** - 7 weight
-
-* **Post marked as solved** - 7 weight
-
-* **Write a topic** - 6 weight
-
-* **Reply to topic** - 5 weight
-
-* **Join Discourse community** - 4 weight
-
-* **Add reaction** - 0 weight
-
-* **Login** - 0 weight
+* **Invitation**
+* **Post marked as solved**
+* **Write a topic**
+* **Reply to topic**
+* **Join Discourse community**
+* **Add reaction**
+* **Login**
 
 ## Real-Time Updates
 
 Once connected and webhook is configured, Conquest syncs the following events in real-time:
 
 * **Members joining the workspace**
-
-* **Topics, replies, and reactions**
-
-* **Category creation, updates, and deletion**
-
-* **Post marked as solved**
-
-## Merging Members
-
-<Tip>
-  When new Discourse activity occurs, we automatically:
-
-  1. Check if the member exists in your Conquest workspace
-
-  2. Merge with an existing member if we find a matching email
-
-  3. Create a new member if none exists
-</Tip>
+* **Members updates**
+* **Members deleted**
+* **Categories, created, updated and deleted**
+* **Topics, edited, deleted and recovered**
+* **Posts, edited, deleted and recovered**
+* **Reactions added**
+* **Badges granted and revoked**
+* **Accept / unaccept post as solution**
 
 ## Setup Guide
 
@@ -104,7 +76,7 @@ Once connected and webhook is configured, Conquest syncs the following events in
     3. Click **"Enable"** to start the connection process
 
     <Frame>
-      ![Discourse Connection](/images/discourse-enable.png)
+      ![Discourse Connection](/images/discourse/enable.png)
     </Frame>
   </Step>
 
@@ -137,19 +109,19 @@ Once connected and webhook is configured, Conquest syncs the following events in
       You will get a JSON response like this:
 
       <Frame>
-        ![Discourse User Fields](/images/discourse-user-fields.png)
+        ![Discourse User Fields](/images/discourse/user-fields.png)
       </Frame>
 
       Add the ID and name from the JSON response into the form fields.
 
       <Frame>
-        ![Discourse User Fields](/images/discourse-field.png)
+        ![Discourse User Fields](/images/discourse/field.png)
       </Frame>
 
       You can add multiple custom fields by clicking the "Add field" button and repeating this process.
 
       <Frame>
-        ![Discourse API](/images/discourse-form.png)
+        ![Discourse API](/images/discourse/form.png)
       </Frame>
     </ParamField>
 
@@ -174,7 +146,11 @@ Once connected and webhook is configured, Conquest syncs the following events in
       Select **"Send me everything"**
     </ParamField>
 
-    Click on **"Create"**
+    <ParamField path="Active">
+      Select **"Active"**
+    </ParamField>
+
+    Then click on **"Create"**
   </Step>
 
   <Step title="Data Collection">
@@ -183,6 +159,40 @@ Once connected and webhook is configured, Conquest syncs the following events in
     <Note>
       We only collect data from the last 365 days.
     </Note>
+  </Step>
+
+   <Step title="Select Channels">
+    Once authorized, you'll be redirected to Conquest to select public channels for data collection.
+
+    1. Select the channels you want to collect data from
+
+    <Frame>
+      ![Discourse Collect](/images/discourse/channels.png)
+    </Frame>
+
+    ### Missing channels?
+
+    Verify that the category has security group set on "everyone"
+
+     <Frame>
+      ![Discourse Collect](/images/discourse/security.png)
+    </Frame>
+  </Step>
+
+  <Step title="Configure Activity Types">
+    Conquest will automatically generate activity types based on the data collected.
+    You can add conditions on specific channels to fit your community's scoring system.
+
+    <Frame>
+      ![Discourse activity types](/images/discourse/activity-types.png)
+    </Frame>
+
+    <br />
+    
+    <Frame>
+      ![Discourse activity types](/images/discourse/condition.png)
+    </Frame>
+   
   </Step>
 </Steps>
 
@@ -197,12 +207,10 @@ Once connected and webhook is configured, Conquest syncs the following events in
     If you are not seeing your community updates in Conquest, the most common cause is an incorrect webhook configuration. Please verify that:
 
     * You've added the correct secret key provided by Conquest
-
-    * The webhook URL is exactly `https://app.useconquest.com/api/discourse`
-
+    * The webhook URL is exactly `https://app.useconquest.com/webhook/discourse`
     * Content type is set to "application/json"
-
     * All events are selected ("Send me everything")
+    * Verify that the webhook is active
 
     Without proper webhook configuration, especially the secret key, we cannot authenticate and process real-time updates from your community.
   </Accordion>

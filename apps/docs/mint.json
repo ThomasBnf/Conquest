@@ -68,11 +68,10 @@
     {
       "group": "Integrations",
       "pages": [
-        "integrations/discourse",
         "integrations/discord",
-        "integrations/slack",
-        "integrations/linkedin",
-        "integrations/livestorm"
+        "integrations/discourse",
+        "integrations/livestorm",
+        "integrations/slack"
       ]
     },
     {
