@@ -13,7 +13,7 @@ export const TagCard = ({ tag }: Props) => {
   if (isEditing) return <TagForm tag={tag} setIsEditing={setIsEditing} />;
 
   return (
-    <div className="flex items-center justify-between rounded-md border px-4 py-2">
+    <div className="flex h-12 items-center justify-between rounded-md border py-2 pr-2 pl-4">
       <div className="flex items-center gap-2">
         <div
           className="size-3 rounded-full"

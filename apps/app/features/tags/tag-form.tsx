@@ -19,6 +19,7 @@ type Props = {
 
 export const TagForm = ({ tag, setIsVisible, setIsEditing }: Props) => {
   const utils = trpc.useUtils();
+  const isManual = tag?.source === "Manual";
 
   const { mutateAsync: createTag } = trpc.tags.post.useMutation({
     onSuccess: () => {
@@ -117,6 +118,7 @@ export const TagForm = ({ tag, setIsVisible, setIsEditing }: Props) => {
               <FormControl>
                 <Input
                   {...field}
+                  disabled={!isManual}
                   autoFocus
                   placeholder="Tag name"
                   className="h-8 rounded"
