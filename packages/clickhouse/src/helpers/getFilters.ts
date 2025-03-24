@@ -56,22 +56,16 @@ export const getFilters = ({ groupFilters, hasDiscourseData }: Props) => {
       switch (operator) {
         case "contains":
           return values
-            .map(
-              (value) =>
-                `JSONExtractString(toString(p.attributes), 'source') = '${value}'`,
-            )
+            .map((value) => `p.attributes.source = '${value}'`)
             .join(" OR ");
         case "not_contains":
           return values
-            .map(
-              (value) =>
-                `JSONExtractString(toString(p.attributes), 'source') != '${value}'`,
-            )
+            .map((value) => `p.attributes.source != '${value}'`)
             .join(" AND ");
         case "empty":
-          return "JSONExtractString(toString(p.attributes), 'source') = ''";
+          return "p.attributes.source = ''";
         case "not_empty":
-          return "JSONExtractString(toString(p.attributes), 'source') != ''";
+          return "p.attributes.source != ''";
         default:
           return "true";
       }
