@@ -1,8 +1,8 @@
 {
   "extends": "@conquest/tsconfig/react-library.json",
   "compilerOptions": {
-    "moduleResolution": "bundler",
+    "moduleResolution": "bundler"
   },
-  "include": ["src"],
+  "include": ["src", "../../apps/app/components/custom/Icon.tsx"],
   "exclude": ["node_modules"]
 }

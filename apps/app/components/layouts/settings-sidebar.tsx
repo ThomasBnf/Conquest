@@ -1,5 +1,13 @@
 "use client";
 
+import { APIKey } from "@conquest/ui/icons/APIKey";
+import { ActivityType } from "@conquest/ui/icons/ActivityType";
+import { Billing } from "@conquest/ui/icons/Billing";
+import { General } from "@conquest/ui/icons/General";
+import { Integration } from "@conquest/ui/icons/Integration";
+import { Level } from "@conquest/ui/icons/Level";
+import { Tags } from "@conquest/ui/icons/Tags";
+import { User } from "@conquest/ui/icons/User";
 import {
   Sidebar,
   SidebarContent,
@@ -10,18 +18,10 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@conquest/ui/sidebar";
-import { APIKey } from "components/icons/APIKey";
-import { Tags } from "components/icons/Tags";
-import { User } from "components/icons/User";
 import { ArrowLeft } from "lucide-react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ActivityType } from "../icons/ActivityType";
-import { Billing } from "../icons/Billing";
-import { General } from "../icons/General";
-import { Integration } from "../icons/Integration";
-import { Level } from "../icons/Level";
 import { LoadingIntegrations } from "../states/loading-integrations";
 import { TrialCard } from "./trial-card";
 

@@ -1,6 +1,6 @@
 import { EditableLink } from "@/components/editable/editable-link";
 import { FieldCard } from "@/components/editable/field-card";
-import { Github } from "@/components/icons/Github";
+import { Github } from "@conquest/ui/icons/Github";
 import {
   GithubProfileSchema,
   type Profile,

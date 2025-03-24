@@ -24,9 +24,10 @@ export const listMembers = protectedProcedure
 
     const filterBy = getFilters({ groupFilters });
     const filtersStr = filterBy.join(operator === "OR" ? " OR " : " AND ");
+    console.log(filtersStr);
 
-    const needsCompanyJoin = id === "company";
-    const needsProfileJoin = groupFilters.filters.some(
+    const companyJoin = id === "company";
+    const profileJoin = groupFilters.filters.some(
       (filter) =>
         filter.field === "profiles" || filter.field.includes("discourse-"),
     );
@@ -58,11 +59,11 @@ export const listMembers = protectedProcedure
           m.created_at as created_at,
           m.updated_at as updated_at,
           l.number,
-          ${needsProfileJoin ? "p.attributes" : ""}
+          ${profileJoin ? "p.attributes" : ""}
         FROM member m
         LEFT JOIN level l ON m.level_id = l.id
-        ${needsCompanyJoin ? "LEFT JOIN company c ON m.company_id = c.id" : ""}
-        ${needsProfileJoin ? "LEFT JOIN profile p ON m.id = p.member_id" : ""}
+        ${companyJoin ? "LEFT JOIN company c ON m.company_id = c.id" : ""}
+        ${profileJoin ? "LEFT JOIN profile p ON m.id = p.member_id" : ""}
         WHERE (
           positionCaseInsensitive(concat(toString(first_name), ' ', toString(last_name)), '${search}') > 0
           OR positionCaseInsensitive(concat(toString(last_name), ' ', toString(first_name)), '${search}') > 0

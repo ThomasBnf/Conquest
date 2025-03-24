@@ -1,9 +1,9 @@
 "use client";
 
-import { Livestorm } from "@/components/icons/Livestorm";
 import { useIntegration } from "@/context/integrationContext";
 import { trpc } from "@/server/client";
 import { env } from "@conquest/env";
+import { Livestorm } from "@conquest/ui/icons/Livestorm";
 import { Separator } from "@conquest/ui/separator";
 import { useRouter } from "next/navigation";
 import { ConnectedCard } from "../integrations/connected-card";

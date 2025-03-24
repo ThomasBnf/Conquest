@@ -16,6 +16,12 @@ const baseEnv = {
   },
 };
 
+const brevoEnv = {
+  server: {
+    BREVO_API_KEY: z.string(),
+  },
+};
+
 const clickhouseEnv = {
   server: {
     CLICKHOUSE_URL: z.string(),
@@ -162,6 +168,7 @@ const triggerEnv = {
 export const env = createEnv({
   server: {
     ...baseEnv.server,
+    ...brevoEnv.server,
     ...clickhouseEnv.server,
     ...discordEnv.server,
     ...discourseEnv.server,

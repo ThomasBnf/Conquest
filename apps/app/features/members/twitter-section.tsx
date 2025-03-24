@@ -1,6 +1,6 @@
 import { EditableLink } from "@/components/editable/editable-link";
 import { FieldCard } from "@/components/editable/field-card";
-import { Twitter } from "@/components/icons/Twitter";
+import { Twitter } from "@conquest/ui/icons/Twitter";
 import {
   type Profile,
   TwitterProfileSchema,

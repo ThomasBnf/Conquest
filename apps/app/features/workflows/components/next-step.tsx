@@ -1,7 +1,7 @@
-import { Icon } from "@/components/icons/Icon";
-import { Slack } from "@/components/icons/Slack";
+import { Icon } from "@/components/custom/Icon";
 import { Badge } from "@conquest/ui/badge";
 import { Button } from "@conquest/ui/button";
+import { Slack } from "@conquest/ui/icons/Slack";
 import { Label } from "@conquest/ui/label";
 import { useReactFlow } from "@xyflow/react";
 import { X, type icons } from "lucide-react";

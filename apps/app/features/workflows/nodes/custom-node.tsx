@@ -1,10 +1,10 @@
-import { Slack } from "@/components/icons/Slack";
+import { Icon } from "@/components/custom/Icon";
 import { Badge } from "@conquest/ui/badge";
 import { Button } from "@conquest/ui/button";
 import { cn } from "@conquest/ui/cn";
+import { Slack } from "@conquest/ui/icons/Slack";
 import { Separator } from "@conquest/ui/separator";
 import { type NodeProps, Position, useReactFlow } from "@xyflow/react";
-import { Icon } from "components/icons/Icon";
 import { Plus, Target, type icons } from "lucide-react";
 import { useMemo } from "react";
 import { usePanel } from "../hooks/usePanel";

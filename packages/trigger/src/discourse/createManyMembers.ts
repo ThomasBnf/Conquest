@@ -86,7 +86,6 @@ export const createManyMembers = async ({
     });
 
     const data = await response.json();
-    console.log("directory_items", data);
     const { directory_items } = DirectoryItemsSchema.parse(data);
 
     for (const item of directory_items ?? []) {

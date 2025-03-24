@@ -5,6 +5,7 @@ import { Button } from "@conquest/ui/button";
 import { Separator } from "@conquest/ui/separator";
 import { useRealtimeTaskTrigger } from "@trigger.dev/react-hooks";
 import { Loader2 } from "lucide-react";
+import { useSession } from "next-auth/react";
 import { useEffect } from "react";
 import { toast } from "sonner";
 import { ActivityTypesList } from "../activities-types/activity-types-list";
@@ -13,6 +14,7 @@ import { DiscourseApi } from "./discourse-api";
 import { DiscourseChannels } from "./discourse-channels";
 
 export const DiscourseForm = () => {
+  const { data: session } = useSession();
   const { discourse, loading, setLoading, step, setStep } = useIntegration();
   const utils = trpc.useUtils();
 
@@ -24,6 +26,8 @@ export const DiscourseForm = () => {
     },
   });
 
+  const { mutateAsync: createEvent } = trpc.brevo.createEvent.useMutation();
+
   const { submit, run, error } = useRealtimeTaskTrigger<
     typeof installDiscourse
   >("install-discourse", {
@@ -31,10 +35,18 @@ export const DiscourseForm = () => {
   });
 
   const onStart = async () => {
-    if (!discourse) return;
+    if (!discourse || !session) return;
 
     setLoading(true);
     await mutateAsync({ id: discourse.id, status: "SYNCING" });
+    await createEvent({
+      email: session.user.email,
+      event: "install_community",
+      eventData: {
+        community_id: discourse.id,
+        source: "Discourse",
+      },
+    });
     submit({ discourse });
   };
 

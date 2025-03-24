@@ -1,9 +1,9 @@
 "use client";
 
-import { Discord } from "@/components/icons/Discord";
 import { DISCORD_PERMISSIONS, DISCORD_SCOPES } from "@/constant";
 import { useIntegration } from "@/context/integrationContext";
 import { env } from "@conquest/env";
+import { Discord } from "@conquest/ui/icons/Discord";
 import { Separator } from "@conquest/ui/separator";
 import { Hash } from "lucide-react";
 import { useRouter } from "next/navigation";

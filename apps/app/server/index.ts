@@ -1,6 +1,7 @@
 import { activitiesRouter } from "./activities/router";
 import { activityTypesRouter } from "./activity-types/router";
 import { apiKeysRouter } from "./api-keys/router";
+import { brevoRouter } from "./brevo/router";
 import { channelsRouter } from "./channels/router";
 import { companiesRouter } from "./companies/router";
 import { dashboardRouter } from "./dashboard/router";
@@ -25,6 +26,7 @@ export const appRouter = router({
   activityTypes: activityTypesRouter,
   activities: activitiesRouter,
   apiKeys: apiKeysRouter,
+  brevo: brevoRouter,
   channels: channelsRouter,
   companies: companiesRouter,
   dashboard: dashboardRouter,

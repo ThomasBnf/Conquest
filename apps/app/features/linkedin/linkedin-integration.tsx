@@ -1,9 +1,9 @@
 "use client";
 
-import { Linkedin } from "@/components/icons/Linkedin";
 import { LINKEDIN_SCOPES } from "@/constant/index";
 import { useIntegration } from "@/context/integrationContext";
 import { env } from "@conquest/env";
+import { Linkedin } from "@conquest/ui/icons/Linkedin";
 import { useRouter } from "next/navigation";
 import { ConnectedCard } from "../integrations/connected-card";
 import { EnableCard } from "../integrations/enable-card";

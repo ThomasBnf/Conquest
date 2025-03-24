@@ -29,7 +29,8 @@ export const GET = createZodRoute()
   })
   .params(paramsSchema)
   .query(querySchema)
-  .handler(async (_, { params, query }) => {
+  .handler(async (_, { ctx, params, query }) => {
+    const { workspace_id } = ctx;
     const { member_id } = params;
     const { page, page_size } = query;
 
@@ -38,6 +39,7 @@ export const GET = createZodRoute()
         SELECT COUNT(*) as total
         FROM activity
         WHERE member_id = '${member_id}'
+        AND workspace_id = '${workspace_id}'
       `,
       format: "JSON",
     });
@@ -51,6 +53,7 @@ export const GET = createZodRoute()
         SELECT * 
         FROM activity
         WHERE member_id = '${member_id}'
+        AND workspace_id = '${workspace_id}'
         ORDER BY created_at DESC
         LIMIT ${page_size}
         OFFSET ${(page - 1) * page_size}

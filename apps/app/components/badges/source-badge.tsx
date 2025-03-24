@@ -1,13 +1,13 @@
 import { Badge } from "@conquest/ui/badge";
 import { cn } from "@conquest/ui/cn";
 import type { Source } from "@conquest/zod/enum/source.enum";
-import { Discord } from "../icons/Discord";
-import { Discourse } from "../icons/Discourse";
-import { Github } from "../icons/Github";
-import { Linkedin } from "../icons/Linkedin";
-import { Livestorm } from "../icons/Livestorm";
-import { Slack } from "../icons/Slack";
-import { Twitter } from "../icons/Twitter";
+import { Discord } from "../../../../packages/ui/src/icons/Discord";
+import { Discourse } from "../../../../packages/ui/src/icons/Discourse";
+import { Github } from "../../../../packages/ui/src/icons/Github";
+import { Linkedin } from "../../../../packages/ui/src/icons/Linkedin";
+import { Livestorm } from "../../../../packages/ui/src/icons/Livestorm";
+import { Slack } from "../../../../packages/ui/src/icons/Slack";
+import { Twitter } from "../../../../packages/ui/src/icons/Twitter";
 
 type Props = {
   source: Source;

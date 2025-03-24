@@ -243,7 +243,6 @@ export async function POST(req: NextRequest) {
       if (is_bot) return NextResponse.json({ status: 200 });
 
       const { user: info } = await web.users.info({ user: id });
-      console.log(info);
       const { locale } = info ?? {};
 
       const { profile } = info ?? {};
@@ -260,8 +259,6 @@ export async function POST(req: NextRequest) {
         workspace_id,
       });
 
-      console.log("existingProfile", existingProfile);
-
       if (!existingProfile) {
         const createdMember = await createMember({
           first_name,
@@ -275,8 +272,6 @@ export async function POST(req: NextRequest) {
           source: "Slack",
           workspace_id,
         });
-
-        console.log("createdMember", createdMember);
 
         await createProfile({
           external_id: id,

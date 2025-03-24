@@ -1,12 +1,12 @@
 import { trpc } from "@/server/client";
 import type { Source } from "@conquest/zod/enum/source.enum";
 import { Loader2 } from "lucide-react";
-import { Discord } from "../icons/Discord";
-import { Discourse } from "../icons/Discourse";
-import { Github } from "../icons/Github";
-import { Linkedin } from "../icons/Linkedin";
-import { Livestorm } from "../icons/Livestorm";
-import { Slack } from "../icons/Slack";
+import { Discord } from "../../../../packages/ui/src/icons/Discord";
+import { Discourse } from "../../../../packages/ui/src/icons/Discourse";
+import { Github } from "../../../../packages/ui/src/icons/Github";
+import { Linkedin } from "../../../../packages/ui/src/icons/Linkedin";
+import { Livestorm } from "../../../../packages/ui/src/icons/Livestorm";
+import { Slack } from "../../../../packages/ui/src/icons/Slack";
 
 type IconComponent =
   | typeof Discord

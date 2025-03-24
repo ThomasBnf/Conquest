@@ -73,7 +73,7 @@ export default function Page() {
     <>
       <Card className="mx-auto w-full max-w-lg">
         <CardHeader>
-          <CardTitle>Create your workspace</CardTitle>
+          <CardTitle>About you</CardTitle>
           <CardDescription>Tell us a bit about your company.</CardDescription>
         </CardHeader>
         <Form {...form}>

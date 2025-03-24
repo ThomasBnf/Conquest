@@ -1,4 +1,4 @@
-import { Icon } from "@/components/icons/Icon";
+import { Icon } from "@/components/custom/Icon";
 import { cn } from "@conquest/ui/cn";
 import type { icons } from "lucide-react";
 import type { PropsWithChildren, ReactNode } from "react";

@@ -1,7 +1,7 @@
 import { EditableLink } from "@/components/editable/editable-link";
 import { FieldCard } from "@/components/editable/field-card";
-import { Slack } from "@/components/icons/Slack";
 import { trpc } from "@/server/client";
+import { Slack } from "@conquest/ui/icons/Slack";
 import { SlackIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
 import {
   type Profile,

@@ -1,8 +1,8 @@
 "use client";
 
-import { Discourse } from "@/components/icons/Discourse";
 import { useIntegration } from "@/context/integrationContext";
 import { trpc } from "@/server/client";
+import { Discourse } from "@conquest/ui/icons/Discourse";
 import { Separator } from "@conquest/ui/separator";
 import { Hash } from "lucide-react";
 import { useRouter } from "next/navigation";

@@ -21,6 +21,8 @@
   "exports": {
     "./*": "./src/components/*.tsx",
     "./cn": "./src/utils/cn.ts",
+    "./icons/*": "./src/icons/*.tsx",
+    "./brand/*": "./src/brand/*.tsx",
     "./hooks/*": "./src/hooks/*.tsx",
     "./globals.css": "./globals.css",
     "./tailwind.config": "./tailwind.config.ts",
@@ -52,6 +54,7 @@
     "cmdk": "1.0.0",
     "date-fns": "^4.1.0",
     "lucide-react": "^0.453.0",
+    "motion": "^12.5.0",
     "next-themes": "^0.3.0",
     "react-colorful": "^5.6.1",
     "react-day-picker": "8.10.1",

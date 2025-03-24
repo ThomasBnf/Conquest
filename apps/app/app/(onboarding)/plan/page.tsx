@@ -19,10 +19,7 @@ export default function Page() {
   const router = useRouter();
 
   const { mutateAsync } = trpc.users.update.useMutation({
-    onSuccess: () => {
-      update();
-      router.push("/settings/integrations");
-    },
+    onSuccess: () => update(),
     onError: (error) => {
       toast.error(error.message);
       setLoading(null);
@@ -38,6 +35,14 @@ export default function Page() {
       },
     });
 
+  const { mutateAsync: createContact } = trpc.brevo.createContact.useMutation({
+    onSuccess: () => router.push("/settings/integrations"),
+    onError: (error) => {
+      toast.error(error.message);
+      setLoading(null);
+    },
+  });
+
   const onComplete = async ({
     plan,
     priceId,
@@ -50,6 +55,7 @@ export default function Page() {
     setLoading(plan);
     await createCustomer({ plan, priceId });
     await mutateAsync({ id: user.id, onboarding: new Date() });
+    await createContact({ user });
   };
 
   return (

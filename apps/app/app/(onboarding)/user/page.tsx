@@ -32,13 +32,14 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
 export default function Page() {
-  const { data: session } = useSession();
+  const { data: session, update } = useSession();
   const { user } = session ?? {};
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   const { mutateAsync } = trpc.users.update.useMutation({
     onSuccess: () => {
+      update();
       router.push("/workspace");
     },
     onError: (error) => {

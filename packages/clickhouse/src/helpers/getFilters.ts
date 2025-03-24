@@ -85,14 +85,18 @@ export const getFilters = ({ groupFilters, hasDiscourseData }: Props) => {
       }
 
       switch (operator) {
-        case "contains":
-          return values
-            .map((value) => `hasAny(tags, ['${value}'])`)
-            .join(" OR ");
-        case "not_contains":
-          return values
-            .map((value) => `NOT hasAny(tags, ['${value}'])`)
-            .join(" AND ");
+        case "contains": {
+          const formattedValues = values
+            .map((value) => `'${value}'`)
+            .join(", ");
+          return `hasAny(tags, [${formattedValues}])`;
+        }
+        case "not_contains": {
+          const formattedValues = values
+            .map((value) => `'${value}'`)
+            .join(", ");
+          return `NOT hasAny(tags, [${formattedValues}])`;
+        }
         case "empty":
           return "empty(tags)";
         case "not_empty":

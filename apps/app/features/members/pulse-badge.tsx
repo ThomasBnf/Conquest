@@ -1,8 +1,8 @@
-import { Pulse } from "@/components/icons/Pulse";
 import { getPulseScoreDetails } from "@/helpers/getPulseScoreDetails";
 import { trpc } from "@/server/client";
 import { Badge } from "@conquest/ui/badge";
 import { cn } from "@conquest/ui/cn";
+import { Pulse } from "@conquest/ui/icons/Pulse";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@conquest/ui/tooltip";
 import type { Member } from "@conquest/zod/schemas/member.schema";
 import { skipToken } from "@tanstack/react-query";

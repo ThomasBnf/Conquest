@@ -1,6 +1,5 @@
 "use client";
 
-import { Google } from "@/components/icons/Google";
 import { env } from "@conquest/env";
 import { Button, buttonVariants } from "@conquest/ui/button";
 import {
@@ -18,6 +17,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@conquest/ui/form";
+import { Google } from "@conquest/ui/icons/Google";
 import { Input } from "@conquest/ui/input";
 import { SignupSchema } from "@conquest/zod/schemas/auth.schema";
 import { zodResolver } from "@hookform/resolvers/zod";

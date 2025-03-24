@@ -1,7 +1,7 @@
 "use client";
 
-import { LogOut } from "@/components/icons/LogOut";
 import { Button } from "@conquest/ui/button";
+import { LogOut } from "@conquest/ui/icons/LogOut";
 import { signOut } from "next-auth/react";
 
 export const SignOut = () => {

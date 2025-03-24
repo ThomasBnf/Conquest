@@ -46,8 +46,6 @@ export const updateIntegration = protectedProcedure
     if (details?.source === "Github") {
       const { repo } = details;
 
-      console.log(repo);
-
       const github = await prisma.integration.findFirst({
         where: {
           details: {

@@ -5,6 +5,7 @@ import { Button } from "@conquest/ui/button";
 import { Separator } from "@conquest/ui/separator";
 import { useRealtimeTaskTrigger } from "@trigger.dev/react-hooks";
 import { Loader2 } from "lucide-react";
+import { useSession } from "next-auth/react";
 import { useEffect } from "react";
 import { toast } from "sonner";
 import { ActivityTypesList } from "../activities-types/activity-types-list";
@@ -12,6 +13,7 @@ import { LoadingMessage } from "../integrations/loading-message";
 import { SlackChannels } from "./slack-channels";
 
 export const SlackForm = () => {
+  const { data: session } = useSession();
   const { slack, loading, setLoading, step, setStep } = useIntegration();
   const utils = trpc.useUtils();
 
@@ -21,16 +23,26 @@ export const SlackForm = () => {
     },
   });
 
+  const { mutateAsync: createEvent } = trpc.brevo.createEvent.useMutation();
+
   const { submit, run } = useRealtimeTaskTrigger<typeof installSlack>(
     "install-slack",
     { accessToken: slack?.trigger_token },
   );
 
   const onStart = async () => {
-    if (!slack) return;
+    if (!slack || !session) return;
 
     setLoading(true);
     await mutateAsync({ id: slack.id, status: "SYNCING" });
+    await createEvent({
+      email: session.user.email,
+      event: "install_community",
+      eventData: {
+        community_id: slack.id,
+        source: "Slack",
+      },
+    });
     submit({ slack });
   };
 

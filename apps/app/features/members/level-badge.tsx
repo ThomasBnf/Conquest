@@ -1,6 +1,6 @@
-import { Level } from "@/components/icons/Level";
 import { trpc } from "@/server/client";
 import { Badge } from "@conquest/ui/badge";
+import { Level } from "@conquest/ui/icons/Level";
 import { Skeleton } from "@conquest/ui/skeleton";
 import type { Member } from "@conquest/zod/schemas/member.schema";
 

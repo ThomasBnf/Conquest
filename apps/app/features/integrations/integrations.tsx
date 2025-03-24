@@ -1,8 +1,8 @@
-import { Discord } from "@/components/icons/Discord";
-import { Discourse } from "@/components/icons/Discourse";
-import { Github } from "@/components/icons/Github";
-import { Livestorm } from "@/components/icons/Livestorm";
-import { Slack } from "@/components/icons/Slack";
+import { Discord } from "@conquest/ui/icons/Discord";
+import { Discourse } from "@conquest/ui/icons/Discourse";
+import { Github } from "@conquest/ui/icons/Github";
+import { Livestorm } from "@conquest/ui/icons/Livestorm";
+import { Slack } from "@conquest/ui/icons/Slack";
 
 export const categories = [
   {

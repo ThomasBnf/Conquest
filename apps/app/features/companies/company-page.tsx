@@ -1,6 +1,5 @@
 "use client";
 
-import { Activities as ActivitiesIcon } from "@/components/icons/Activities";
 import { HeaderSubPage } from "@/components/layouts/header-subpage";
 import { PageLayout } from "@/components/layouts/page-layout";
 import { EmptyState } from "@/components/states/empty-state";
@@ -8,6 +7,7 @@ import { IsLoading } from "@/components/states/is-loading";
 import { Activities } from "@/features/activities/activities";
 import { CompanySidebar } from "@/features/companies/company-sidebar";
 import { trpc } from "@/server/client";
+import { Activities as ActivitiesIcon } from "@conquest/ui/icons/Activities";
 import { ScrollArea } from "@conquest/ui/scroll-area";
 import { skipToken } from "@tanstack/react-query";
 

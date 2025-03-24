@@ -1,11 +1,11 @@
 "use client";
 
 import { QueryInput } from "@/components/custom/query-input";
-import { Companies } from "@/components/icons/Companies";
 import { useCompanies } from "@/context/companiesContext";
 import { useFilters } from "@/context/filtersContext";
 import { tableParams } from "@/lib/tableParams";
 import { Button } from "@conquest/ui/button";
+import { Companies } from "@conquest/ui/icons/Companies";
 import { useQueryStates } from "nuqs";
 import { ColumnVisibility } from "../table/column-visibility";
 import { companiesColumns } from "../table/companies-columns";

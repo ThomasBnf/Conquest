@@ -1,6 +1,6 @@
 import { EditableLink } from "@/components/editable/editable-link";
 import { FieldCard } from "@/components/editable/field-card";
-import { Discord } from "@/components/icons/Discord";
+import { Discord } from "@conquest/ui/icons/Discord";
 import {
   DiscordProfileSchema,
   type Profile,

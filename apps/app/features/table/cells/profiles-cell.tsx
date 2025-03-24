@@ -1,11 +1,11 @@
-import { Discord } from "@/components/icons/Discord";
-import { Discourse } from "@/components/icons/Discourse";
-import { Github } from "@/components/icons/Github";
-import { Linkedin } from "@/components/icons/Linkedin";
-import { Livestorm } from "@/components/icons/Livestorm";
-import { Slack } from "@/components/icons/Slack";
-import { Twitter } from "@/components/icons/Twitter";
 import { trpc } from "@/server/client";
+import { Discord } from "@conquest/ui/icons/Discord";
+import { Discourse } from "@conquest/ui/icons/Discourse";
+import { Github } from "@conquest/ui/icons/Github";
+import { Linkedin } from "@conquest/ui/icons/Linkedin";
+import { Livestorm } from "@conquest/ui/icons/Livestorm";
+import { Slack } from "@conquest/ui/icons/Slack";
+import { Twitter } from "@conquest/ui/icons/Twitter";
 import { Skeleton } from "@conquest/ui/skeleton";
 import type { Member } from "@conquest/zod/schemas/member.schema";
 import { Profile } from "@conquest/zod/schemas/profile.schema";

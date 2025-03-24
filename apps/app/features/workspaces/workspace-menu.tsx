@@ -1,5 +1,3 @@
-import { LogOut } from "@/components/icons/LogOut";
-import { Settings } from "@/components/icons/Settings";
 import { Avatar, AvatarFallback, AvatarImage } from "@conquest/ui/avatar";
 import {
   DropdownMenu,
@@ -7,6 +5,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@conquest/ui/dropdown-menu";
+import { LogOut } from "@conquest/ui/icons/LogOut";
+import { Settings } from "@conquest/ui/icons/Settings";
 import {
   SidebarMenu,
   SidebarMenuButton,
@@ -24,7 +24,7 @@ type Props = {
 };
 
 export const WorkspaceMenu = ({ workspace }: Props) => {
-  const { name, slug } = workspace ?? {};
+  const { name } = workspace ?? {};
   const { state } = useSidebar();
   const router = useRouter();
 
@@ -52,7 +52,7 @@ export const WorkspaceMenu = ({ workspace }: Props) => {
             </SidebarMenuButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent className="w-40" align="start">
-            <DropdownMenuItem onClick={() => router.push(`/${slug}/settings`)}>
+            <DropdownMenuItem onClick={() => router.push("/settings")}>
               <Settings size={18} />
               Settings
             </DropdownMenuItem>

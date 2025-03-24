@@ -1,7 +1,7 @@
 import { EditableLink } from "@/components/editable/editable-link";
 import { FieldCard } from "@/components/editable/field-card";
-import { Discourse } from "@/components/icons/Discourse";
 import { trpc } from "@/server/client";
+import { Discourse } from "@conquest/ui/icons/Discourse";
 import { DiscourseDetailsSchema } from "@conquest/zod/schemas/integration.schema";
 import type { Profile } from "@conquest/zod/schemas/profile.schema";
 import { DiscourseProfileSchema } from "@conquest/zod/schemas/profile.schema";

@@ -1,6 +1,6 @@
 import { EditableLink } from "@/components/editable/editable-link";
 import { FieldCard } from "@/components/editable/field-card";
-import { Livestorm } from "@/components/icons/Livestorm";
+import { Livestorm } from "@conquest/ui/icons/Livestorm";
 import {
   LivestormProfileSchema,
   type Profile,

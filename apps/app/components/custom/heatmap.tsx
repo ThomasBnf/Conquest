@@ -194,10 +194,7 @@ const DayCell = ({
     <Tooltip>
       <TooltipTrigger>
         <div
-          onMouseEnter={() => {
-            console.log(day);
-            setHover(true);
-          }}
+          onMouseEnter={() => setHover(true)}
           onMouseLeave={() => setHover(false)}
           className={cn(
             "size-4 cursor-pointer rounded-sm transition-colors duration-200",

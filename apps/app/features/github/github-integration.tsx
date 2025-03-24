@@ -1,8 +1,8 @@
 "use client";
 
-import { Github } from "@/components/icons/Github";
 import { useIntegration } from "@/context/integrationContext";
 import { env } from "@conquest/env";
+import { Github } from "@conquest/ui/icons/Github";
 import { useRouter } from "next/navigation";
 import { ConnectedCard } from "../integrations/connected-card";
 import { EnableCard } from "../integrations/enable-card";

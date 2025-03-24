@@ -1,10 +1,10 @@
-import { Slack } from "@/components/icons/Slack";
+import { Icon } from "@/components/custom/Icon";
 import { Button } from "@conquest/ui/button";
+import { Slack } from "@conquest/ui/icons/Slack";
 import { Label } from "@conquest/ui/label";
 import { useReactFlow } from "@xyflow/react";
-import { Icon } from "components/icons/Icon";
-import { v4 as uuid } from "uuid";
 import type { icons } from "lucide-react";
+import { v4 as uuid } from "uuid";
 import { usePanel } from "../hooks/usePanel";
 import { useSelected } from "../hooks/useSelected";
 import type { WorkflowNode } from "./schemas/workflow-node.type";

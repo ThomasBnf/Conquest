@@ -1,5 +1,5 @@
-import { V1UpdateActivitySchema } from "@/schemas/activity.schema";
 import { getAuthenticatedUser } from "@/utils/getAuthenticatedUser";
+import { getActivityTypeByKey } from "@conquest/clickhouse/activity-types/getActivityTypeByKey";
 import { client } from "@conquest/clickhouse/client";
 import { ActivitySchema } from "@conquest/zod/schemas/activity.schema";
 import { createZodRoute } from "next-zod-route";
@@ -24,7 +24,8 @@ export const GET = createZodRoute()
     return next({ ctx: { workspace_id: result.workspace_id } });
   })
   .params(paramsSchema)
-  .handler(async (_, { params }) => {
+  .handler(async (_, { ctx, params }) => {
+    const { workspace_id } = ctx;
     const { id } = params;
 
     const result = await client.query({
@@ -32,6 +33,7 @@ export const GET = createZodRoute()
         SELECT * 
         FROM activity
         WHERE id = '${id}'
+        AND workspace_id = '${workspace_id}'
       `,
       format: "JSON",
     });
@@ -55,11 +57,29 @@ export const PATCH = createZodRoute()
 
     return next({ ctx: { workspace_id: result.workspace_id } });
   })
-  .body(V1UpdateActivitySchema)
-  .handler(async (_, { params, body }) => {
+  .body(
+    z.object({
+      id: z.string(),
+      activity_key: z.string().optional(),
+      ...ActivitySchema.omit({ id: true }).partial().shape,
+    }),
+  )
+  .handler(async (_, { ctx, params, body }) => {
+    const { workspace_id } = ctx;
     const { id } = params;
+    const { activity_key, ...rest } = body;
 
-    const values = Object.entries(body)
+    let activity_type_id = null;
+
+    if (activity_key) {
+      const activity_type = await getActivityTypeByKey({
+        key: activity_key,
+        workspace_id,
+      });
+      activity_type_id = activity_type?.id;
+    }
+
+    const values = Object.entries(rest)
       .map(([key, value]) => `${key} = '${value}'`)
       .join(", ");
 
@@ -68,8 +88,10 @@ export const PATCH = createZodRoute()
         ALTER TABLE activity
         UPDATE 
           ${values}, 
+          ${activity_type_id ? `activity_type_id = '${activity_type_id}',` : ""}
           updated_at = now()
         WHERE id = '${id}' 
+        AND workspace_id = '${workspace_id}'
       `,
       format: "JSON",
     });
@@ -79,6 +101,7 @@ export const PATCH = createZodRoute()
         SELECT * 
         FROM activity
         WHERE id = '${id}'
+        AND workspace_id = '${workspace_id}'
       `,
       format: "JSON",
     });
@@ -103,14 +126,16 @@ export const DELETE = createZodRoute()
     return next({ ctx: { workspace_id: result.workspace_id } });
   })
   .params(paramsSchema)
-  .handler(async (_, { params }) => {
+  .handler(async (_, { ctx, params }) => {
+    const { workspace_id } = ctx;
     const { id } = params;
 
-    const result = await client.query({
+    await client.query({
       query: `
         ALTER TABLE activity
         DELETE
         WHERE id = '${id}'
+        AND workspace_id = '${workspace_id}'
       `,
       format: "JSON",
     });

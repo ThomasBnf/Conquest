@@ -5,6 +5,7 @@ import { Button } from "@conquest/ui/button";
 import { Separator } from "@conquest/ui/separator";
 import { useRealtimeTaskTrigger } from "@trigger.dev/react-hooks";
 import { Loader2 } from "lucide-react";
+import { useSession } from "next-auth/react";
 import { useEffect } from "react";
 import { toast } from "sonner";
 import { ActivityTypesList } from "../activities-types/activity-types-list";
@@ -12,6 +13,7 @@ import { LoadingMessage } from "../integrations/loading-message";
 import { DiscordChannels } from "./discord-channels";
 
 export const DiscordForm = () => {
+  const { data: session } = useSession();
   const { discord, loading, setLoading, step, setStep } = useIntegration();
   const utils = trpc.useUtils();
 
@@ -23,16 +25,26 @@ export const DiscordForm = () => {
     },
   });
 
+  const { mutateAsync: createEvent } = trpc.brevo.createEvent.useMutation();
+
   const { submit, run } = useRealtimeTaskTrigger<typeof installDiscord>(
     "install-discord",
     { accessToken: discord?.trigger_token },
   );
 
   const onStart = async () => {
-    if (!discord) return;
+    if (!discord || !session) return;
 
     setLoading(true);
     await mutateAsync({ id: discord.id, status: "SYNCING" });
+    await createEvent({
+      email: session.user.email,
+      event: "install_community",
+      eventData: {
+        community_id: discord.id,
+        source: "Discord",
+      },
+    });
     submit({ discord });
   };
 

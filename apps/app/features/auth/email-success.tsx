@@ -1,4 +1,4 @@
-import { Logo } from "@/components/layouts/logo";
+import { Logo } from "@conquest/ui/brand/logo";
 import { Button } from "@conquest/ui/button";
 import { Dispatch, SetStateAction } from "react";
 

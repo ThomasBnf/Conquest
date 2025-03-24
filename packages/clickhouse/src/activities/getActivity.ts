@@ -69,10 +69,6 @@ export const getActivity = async (props: Props) => {
     firstRow as Record<string, unknown>,
   );
 
-  if (!parsedActivity) {
-    console.log("parsedActivity", parsedActivity);
-    return null;
-  }
-
+  if (!parsedActivity) return null;
   return ActivityWithTypeSchema.parse(parsedActivity);
 };

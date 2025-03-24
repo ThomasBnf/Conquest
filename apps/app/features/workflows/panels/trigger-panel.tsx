@@ -1,8 +1,8 @@
+import { Icon } from "@/components/custom/Icon";
 import { Button } from "@conquest/ui/button";
 import { Label } from "@conquest/ui/label";
 import { ScrollArea } from "@conquest/ui/scroll-area";
 import { useReactFlow } from "@xyflow/react";
-import { Icon } from "components/icons/Icon";
 import type { icons } from "lucide-react";
 import { v4 as uuid } from "uuid";
 import { usePanel } from "../hooks/usePanel";

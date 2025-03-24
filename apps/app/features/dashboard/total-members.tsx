@@ -13,13 +13,10 @@ import { PeriodFormatter } from "./period-formatter";
 export const TotalMembers = () => {
   const [{ from, to }] = useQueryStates(dateParams);
 
-  const { data, isLoading, failureReason } =
-    trpc.dashboard.totalMembers.useQuery({
-      from,
-      to,
-    });
-
-  console.log(failureReason);
+  const { data, isLoading } = trpc.dashboard.totalMembers.useQuery({
+    from,
+    to,
+  });
 
   const { current, previous, variation } = data ?? {
     current: 0,
