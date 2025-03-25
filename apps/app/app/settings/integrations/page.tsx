@@ -8,6 +8,7 @@ import { ScrollArea } from "@conquest/ui/scroll-area";
 import { Loader2 } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { useState } from "react";
+import { toast } from "sonner";
 
 export default function Page() {
   const { data: session } = useSession();
@@ -17,6 +18,10 @@ export default function Page() {
   const { mutate: seed } = trpc.db.seed.useMutation({
     onMutate: () => {
       setLoading(true);
+    },
+    onError: (error) => {
+      setLoading(false);
+      toast.error(error.message);
     },
     onSuccess: () => {
       setLoading(false);
