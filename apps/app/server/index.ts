@@ -5,6 +5,7 @@ import { brevoRouter } from "./brevo/router";
 import { channelsRouter } from "./channels/router";
 import { companiesRouter } from "./companies/router";
 import { dashboardRouter } from "./dashboard/router";
+import { dbRouter } from "./db/router";
 import { discordRouter } from "./discord/router";
 import { discourseRouter } from "./discourse/router";
 import { eventsRouter } from "./events/router";
@@ -30,6 +31,7 @@ export const appRouter = router({
   channels: channelsRouter,
   companies: companiesRouter,
   dashboard: dashboardRouter,
+  db: dbRouter,
   discord: discordRouter,
   discourse: discourseRouter,
   events: eventsRouter,

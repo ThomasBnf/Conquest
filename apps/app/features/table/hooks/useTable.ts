@@ -1,4 +1,4 @@
-import { tableParams } from "@/lib/tableParams";
+import { tableParams } from "@/utils/tableParams";
 import {
   type ColumnDef,
   type ColumnOrderState,

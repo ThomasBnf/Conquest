@@ -64,7 +64,17 @@ export const listMembers = protectedProcedure
         FROM member m
         LEFT JOIN level l ON m.level_id = l.id
         ${companyJoin ? "LEFT JOIN company c ON m.company_id = c.id" : ""}
-        ${profileJoin ? "LEFT JOIN profile p ON m.id = p.member_id" : ""}
+        ${
+          profileJoin
+            ? `LEFT JOIN (
+                SELECT 
+                  member_id,
+                  groupArray(attributes) as attributes
+                FROM profile
+                GROUP BY member_id
+              ) p ON m.id = p.member_id`
+            : ""
+        }
         WHERE (
           positionCaseInsensitive(concat(toString(first_name), ' ', toString(last_name)), '${search}') > 0
           OR positionCaseInsensitive(concat(toString(last_name), ' ', toString(first_name)), '${search}') > 0
@@ -80,5 +90,6 @@ export const listMembers = protectedProcedure
     });
 
     const { data } = await result.json();
+    console.dir(data, { depth: 100 });
     return MemberSchema.array().parse(data);
   });

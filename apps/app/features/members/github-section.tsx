@@ -1,6 +1,7 @@
 import { EditableLink } from "@/components/editable/editable-link";
 import { FieldCard } from "@/components/editable/field-card";
 import { Github } from "@conquest/ui/icons/Github";
+import { Separator } from "@conquest/ui/separator";
 import {
   GithubProfileSchema,
   type Profile,
@@ -23,24 +24,29 @@ export const GithubSection = ({ profiles }: Props) => {
 
   return (
     <>
-      <FieldCard icon={<Github size={14} />} label="Github">
-        <EditableLink
-          placeholder="No github profile"
-          defaultValue={login}
-          href={`https://github.com/${login}`}
-          editable={false}
-        />
-      </FieldCard>
-      {Object.entries(fields).map(([key, value]) => {
-        const formattedKey = key.slice(0, 1).toUpperCase() + key.slice(1);
-        if (!value) return null;
+      <div className="space-y-2 p-4">
+        <FieldCard icon={<Github size={14} />} label="Github">
+          <EditableLink
+            placeholder="No github profile"
+            defaultValue={login}
+            href={`https://github.com/${login}`}
+            editable={false}
+          />
+        </FieldCard>
+        {Object.entries(fields).map(([key, value]) => {
+          const formattedKey = key.slice(0, 1).toUpperCase() + key.slice(1);
+          if (!value) return null;
 
-        return (
-          <FieldCard key={key} icon="User" label={formattedKey}>
-            <p className="h-full place-content-center truncate px-2">{value}</p>
-          </FieldCard>
-        );
-      })}
+          return (
+            <FieldCard key={key} icon="User" label={formattedKey}>
+              <p className="h-full place-content-center truncate px-2">
+                {value}
+              </p>
+            </FieldCard>
+          );
+        })}
+      </div>
+      <Separator />
     </>
   );
 };

@@ -1,7 +1,7 @@
 "use client";
 
-import { tableParams } from "@/lib/tableParams";
 import { trpc } from "@/server/client";
+import { tableParams } from "@/utils/tableParams";
 import type { Company } from "@conquest/zod/schemas/company.schema";
 import { useQueryStates } from "nuqs";
 import * as React from "react";

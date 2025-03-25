@@ -1,4 +1,4 @@
-import { tableParams } from "@/lib/tableParams";
+import { tableParams } from "@/utils/tableParams";
 import { Button } from "@conquest/ui/button";
 import { cn } from "@conquest/ui/cn";
 import { Input } from "@conquest/ui/input";

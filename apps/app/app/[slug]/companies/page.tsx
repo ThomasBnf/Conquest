@@ -3,7 +3,7 @@ import { PageLayout } from "@/components/layouts/page-layout";
 import { CompaniesProvider } from "@/context/companiesContext";
 import { CompaniesPage } from "@/features/companies/companies-page";
 import { CreateCompanyDialog } from "@/features/companies/create-company-dialog";
-import { loaderTable } from "@/lib/tableParams";
+import { loaderTable } from "@/utils/tableParams";
 
 type Props = {
   searchParams: Promise<Record<string, string | string[] | undefined>>;

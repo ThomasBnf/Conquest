@@ -3,7 +3,7 @@
 import { QueryInput } from "@/components/custom/query-input";
 import { useCompanies } from "@/context/companiesContext";
 import { useFilters } from "@/context/filtersContext";
-import { tableParams } from "@/lib/tableParams";
+import { tableParams } from "@/utils/tableParams";
 import { Button } from "@conquest/ui/button";
 import { Companies } from "@conquest/ui/icons/Companies";
 import { useQueryStates } from "nuqs";

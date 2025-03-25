@@ -1,7 +1,7 @@
 "use client";
 
-import { dateParams } from "@/lib/dateParams";
 import { trpc } from "@/server/client";
+import { dateParams } from "@/utils/dateParams";
 import {
   type ChartConfig,
   ChartContainer,

@@ -11,10 +11,9 @@ import { operatorParser } from "./operatorParser";
 
 type Props = {
   groupFilters: GroupFilters;
-  hasDiscourseData?: boolean;
 };
 
-export const getFilters = ({ groupFilters, hasDiscourseData }: Props) => {
+export const getFilters = ({ groupFilters }: Props) => {
   return groupFilters.filters.map((filter) => {
     const parsedFilter = FilterSchema.parse(filter);
     const { field } = parsedFilter;
@@ -29,15 +28,38 @@ export const getFilters = ({ groupFilters, hasDiscourseData }: Props) => {
           return "true";
         }
 
+        const formattedValue = value?.toLowerCase();
+
+        const innerCondition = `
+            arrayExists(x -> (
+              JSONExtractString(x, 'id') = '${customFieldId}' AND 
+              position(lower(JSONExtractString(x, 'value')), '${formattedValue}') > 0
+            ), JSONExtractArrayRaw(toJSONString(attr), 'custom_fields'))
+          `;
+
         switch (operator) {
           case "contains":
-            return `arrayExists(x -> (JSONExtractString(x, 'id') = '${customFieldId}' AND position(lower(JSONExtractString(x, 'value')), lower('${value}')) > 0), JSONExtractArrayRaw(toString(p.attributes), 'custom_fields'))`;
+            return `
+                arrayExists(attr -> attr.source = 'Discourse' AND ${innerCondition}, p.attributes)
+              `.trim();
           case "not_contains":
-            return `NOT arrayExists(x -> (JSONExtractString(x, 'id') = '${customFieldId}' AND position(lower(JSONExtractString(x, 'value')), lower('${value}')) > 0), JSONExtractArrayRaw(toString(p.attributes), 'custom_fields'))`;
+            return `
+                NOT arrayExists(attr -> attr.source = 'Discourse' AND ${innerCondition}, p.attributes)
+              `.trim();
           case "empty":
-            return `arrayExists(x -> (JSONExtractString(x, 'id') = '${customFieldId}' AND (JSONExtractString(x, 'value') = '' OR JSONExtractString(x, 'value') IS NULL)), JSONExtractArrayRaw(toString(p.attributes), 'custom_fields'))`;
+            return `
+                arrayExists(attr -> attr.source = 'Discourse' AND arrayExists(
+                  x -> JSONExtractString(x, 'id') = '${customFieldId}' AND (JSONExtractString(x, 'value') = '' OR JSONExtractString(x, 'value') IS NULL),
+                  JSONExtractArrayRaw(toJSONString(attr), 'custom_fields')
+                ), p.attributes)
+              `.trim();
           case "not_empty":
-            return `arrayExists(x -> (JSONExtractString(x, 'id') = '${customFieldId}' AND JSONExtractString(x, 'value') != '' AND JSONExtractString(x, 'value') IS NOT NULL), JSONExtractArrayRaw(toString(p.attributes), 'custom_fields'))`;
+            return `
+                arrayExists(attr -> attr.source = 'Discourse' AND arrayExists(
+                  x -> JSONExtractString(x, 'id') = '${customFieldId}' AND (JSONExtractString(x, 'value') != '' AND JSONExtractString(x, 'value') IS NOT NULL),
+                  JSONExtractArrayRaw(toJSONString(attr), 'custom_fields')
+                ), p.attributes)
+              `.trim();
           default:
             return "true";
         }
@@ -59,19 +81,23 @@ export const getFilters = ({ groupFilters, hasDiscourseData }: Props) => {
           return "true";
         }
 
+        const parsedOperator = operatorParser(operator);
+        const hasGithub = `arrayExists(attr -> attr.source = 'Github'`;
+        const condition = `toFloat64OrNull(JSONExtractString(toJSONString(attr), '${customFieldId}')) ${parsedOperator} ${value}, p.attributes)`;
+
         switch (operator) {
           case ">":
-            return `p.attributes.${customFieldId} > ${value}`;
+            return `${hasGithub} AND ${condition}`;
           case ">=":
-            return `p.attributes.${customFieldId} >= ${value}`;
+            return `${hasGithub} AND ${condition}`;
           case "equal":
-            return `p.attributes.${customFieldId} = ${value}`;
+            return `${hasGithub} AND ${condition}`;
           case "not equal":
-            return `p.attributes.${customFieldId} != ${value}`;
+            return `${hasGithub} AND ${condition}`;
           case "<":
-            return `p.attributes.${customFieldId} < ${value}`;
+            return `${hasGithub} AND ${condition}`;
           case "<=":
-            return `p.attributes.${customFieldId} <= ${value}`;
+            return `${hasGithub} AND ${condition}`;
           default:
             return "true";
         }
@@ -87,15 +113,18 @@ export const getFilters = ({ groupFilters, hasDiscourseData }: Props) => {
           return "true";
         }
 
+        const hasGithub = `arrayExists(attr -> attr.source = 'Github'`;
+        const condition = `position(lower(toString(attr.${customFieldId})), lower('${value}')) > 0, p.attributes)`;
+
         switch (operator) {
           case "contains":
-            return `p.attributes.${customFieldId} ILIKE '%${value}%'`;
+            return `${hasGithub} AND ${condition}`;
           case "not_contains":
-            return `p.attributes.${customFieldId} NOT ILIKE '%${value}%'`;
+            return `${hasGithub} AND NOT ${condition}`;
           case "empty":
-            return `p.attributes.${customFieldId} = ''`;
+            return `${hasGithub} AND (attr.${customFieldId} = '' OR attr.${customFieldId} IS NULL), p.attributes)`;
           case "not_empty":
-            return `p.attributes.${customFieldId} != ''`;
+            return `${hasGithub} AND attr.${customFieldId} != '' AND attr.${customFieldId} IS NOT NULL, p.attributes)`;
           default:
             return "true";
         }
@@ -114,16 +143,22 @@ export const getFilters = ({ groupFilters, hasDiscourseData }: Props) => {
       switch (operator) {
         case "contains":
           return values
-            .map((value) => `p.attributes.source = '${value}'`)
+            .map(
+              (value) =>
+                `arrayExists(attr -> attr.source = '${value}', p.attributes)`,
+            )
             .join(" OR ");
         case "not_contains":
           return values
-            .map((value) => `p.attributes.source != '${value}'`)
+            .map(
+              (value) =>
+                `NOT arrayExists(attr -> attr.source = '${value}', p.attributes)`,
+            )
             .join(" AND ");
         case "empty":
-          return "p.attributes.source = ''";
+          return `empty(p.attributes) OR NOT arrayExists(attr -> attr.source != '', p.attributes)`;
         case "not_empty":
-          return "p.attributes.source != ''";
+          return `notEmpty(p.attributes) AND arrayExists(attr -> attr.source != '', p.attributes)`;
         default:
           return "true";
       }

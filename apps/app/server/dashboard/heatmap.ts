@@ -31,5 +31,6 @@ export const heatmap = protectedProcedure
     });
 
     const { data } = await result.json();
+    console.log(data);
     return ActivityHeatmapSchema.array().parse(data);
   });

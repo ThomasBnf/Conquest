@@ -14,15 +14,6 @@ export const MemberHeatmap = ({ memberId }: Props) => {
     member_id: memberId,
   });
 
-  const activities = data?.reduce(
-    (acc, activity) => {
-      const date = activity.count;
-      acc[date] = (acc[date] ?? 0) + 1;
-      return acc;
-    },
-    {} as Record<string, number>,
-  );
-
   return (
     <div className="flex flex-col">
       <div className="flex items-center gap-2">

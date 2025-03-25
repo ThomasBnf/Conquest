@@ -3,9 +3,9 @@
 import { TooltipInfo } from "@/components/badges/tooltip-info";
 import { QueryInput } from "@/components/custom/query-input";
 import { ColumnVisibility } from "@/features/table/column-visibility";
-import { dateParams } from "@/lib/dateParams";
-import { tableParams } from "@/lib/tableParams";
 import { trpc } from "@/server/client";
+import { dateParams } from "@/utils/dateParams";
+import { tableParams } from "@/utils/tableParams";
 import { Button } from "@conquest/ui/button";
 import { Separator } from "@conquest/ui/separator";
 import {
@@ -18,6 +18,7 @@ import {
 } from "@conquest/ui/sheet";
 import { Skeleton } from "@conquest/ui/skeleton";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@conquest/ui/tooltip";
+import { skipToken } from "@tanstack/react-query";
 import { PanelRight } from "lucide-react";
 import { useQueryStates } from "nuqs";
 import { useState } from "react";
@@ -27,7 +28,6 @@ import { useTable } from "../table/hooks/useTable";
 import { membersColumns } from "../table/members-columns";
 import { Percentage } from "./percentage";
 import { PeriodFormatter } from "./period-formatter";
-import { skipToken } from "@tanstack/react-query";
 
 export const NewMembers = () => {
   const [{ from, to }] = useQueryStates(dateParams);

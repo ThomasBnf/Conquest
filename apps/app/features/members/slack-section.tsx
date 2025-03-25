@@ -2,6 +2,7 @@ import { EditableLink } from "@/components/editable/editable-link";
 import { FieldCard } from "@/components/editable/field-card";
 import { trpc } from "@/server/client";
 import { Slack } from "@conquest/ui/icons/Slack";
+import { Separator } from "@conquest/ui/separator";
 import { SlackIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
 import {
   type Profile,
@@ -30,13 +31,18 @@ export const SlackSection = ({ profiles }: Props) => {
   const { external_id } = slackProfile;
 
   return (
-    <FieldCard icon={<Slack size={14} />} label="Slack">
-      <EditableLink
-        placeholder="No slack profile"
-        defaultValue={external_id}
-        href={`${url}team/${external_id}`}
-        editable={false}
-      />
-    </FieldCard>
+    <>
+      <div className="space-y-2 p-4">
+        <FieldCard icon={<Slack size={14} />} label="Slack">
+          <EditableLink
+            placeholder="No slack profile"
+            defaultValue={external_id}
+            href={`${url}team/${external_id}`}
+            editable={false}
+          />
+        </FieldCard>
+      </div>
+      <Separator />
+    </>
   );
 };

@@ -1,8 +1,8 @@
 import { useFilters } from "@/context/filtersContext";
 import { TagBadge } from "@/features/tags/tag-badge";
 import { useClickOutside } from "@/hooks/useClickOutside";
-import { tableParams } from "@/lib/tableParams";
 import { trpc } from "@/server/client";
+import { tableParams } from "@/utils/tableParams";
 import { Checkbox } from "@conquest/ui/checkbox";
 import { cn } from "@conquest/ui/cn";
 import {

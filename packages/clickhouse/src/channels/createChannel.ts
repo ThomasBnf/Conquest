@@ -2,6 +2,7 @@ import type { Source } from "@conquest/zod/enum/source.enum";
 import { v4 as uuid } from "uuid";
 import { client } from "../client";
 import { getChannel } from "./getChannel";
+
 type Props = {
   external_id: string;
   name: string;

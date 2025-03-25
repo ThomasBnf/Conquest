@@ -1,8 +1,8 @@
 "use client";
 
 import { TooltipInfo } from "@/components/badges/tooltip-info";
-import { dateParams } from "@/lib/dateParams";
 import { trpc } from "@/server/client";
+import { dateParams } from "@/utils/dateParams";
 import { Separator } from "@conquest/ui/separator";
 import { Skeleton } from "@conquest/ui/skeleton";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@conquest/ui/tooltip";

@@ -1,6 +1,7 @@
 import { EditableLink } from "@/components/editable/editable-link";
 import { FieldCard } from "@/components/editable/field-card";
 import { Twitter } from "@conquest/ui/icons/Twitter";
+import { Separator } from "@conquest/ui/separator";
 import {
   type Profile,
   TwitterProfileSchema,
@@ -21,13 +22,18 @@ export const TwitterSection = ({ profiles }: Props) => {
   const { external_id } = twitterProfile;
 
   return (
-    <FieldCard icon={<Twitter size={16} />} label="Twitter">
-      <EditableLink
-        placeholder="No twitter profile"
-        defaultValue={external_id}
-        editable={false}
-        redirect={false}
-      />
-    </FieldCard>
+    <>
+      <div className="space-y-2 p-4">
+        <FieldCard icon={<Twitter size={16} />} label="Twitter">
+          <EditableLink
+            placeholder="No twitter profile"
+            defaultValue={external_id}
+            editable={false}
+            redirect={false}
+          />
+        </FieldCard>
+      </div>
+      <Separator />
+    </>
   );
 };

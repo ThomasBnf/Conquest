@@ -1,7 +1,7 @@
 "use client";
 
 import { formatDateRange } from "@/helpers/format-date-range";
-import { dateParams } from "@/lib/dateParams";
+import { dateParams } from "@/utils/dateParams";
 import { Button } from "@conquest/ui/button";
 import { Calendar } from "@conquest/ui/calendar";
 import { cn } from "@conquest/ui/cn";

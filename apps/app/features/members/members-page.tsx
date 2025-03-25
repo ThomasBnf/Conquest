@@ -2,7 +2,7 @@
 
 import { QueryInput } from "@/components/custom/query-input";
 import { useMembers } from "@/context/membersContext";
-import { tableParams } from "@/lib/tableParams";
+import { tableParams } from "@/utils/tableParams";
 import { useQueryStates } from "nuqs";
 import { FiltersList } from "../filters/filters-list";
 import { SaveList } from "../lists/save-list";

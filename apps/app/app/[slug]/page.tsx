@@ -11,7 +11,7 @@ import { TopActivityType } from "@/features/dashboard/top-activity-type";
 import { TopChannels } from "@/features/dashboard/top-channels";
 import { TotalMembers } from "@/features/dashboard/total-members";
 import { WorkspaceHeatmap } from "@/features/dashboard/workspace-heatmap";
-import { loaderDate } from "@/lib/dateParams";
+import { loaderDate } from "@/utils/dateParams";
 import { ScrollArea } from "@conquest/ui/scroll-area";
 import { Separator } from "@conquest/ui/separator";
 

@@ -33,6 +33,22 @@ type Props = {
 export const MemberSidebar = ({ member, profiles }: Props) => {
   const utils = trpc.useUtils();
 
+  const hasSlackProfile = profiles?.some(
+    (profile) => profile.attributes.source === "Slack",
+  );
+  const hasDiscordProfile = profiles?.some(
+    (profile) => profile.attributes.source === "Discord",
+  );
+  const hasDiscourseProfile = profiles?.some(
+    (profile) => profile.attributes.source === "Discourse",
+  );
+  const hasGithubProfile = profiles?.some(
+    (profile) => profile.attributes.source === "Github",
+  );
+  const hasLivestormProfile = profiles?.some(
+    (profile) => profile.attributes.source === "Livestorm",
+  );
+
   const { mutateAsync: updateMember } = trpc.members.update.useMutation({
     onSuccess: () => utils.members.get.invalidate(),
   });
@@ -96,18 +112,11 @@ export const MemberSidebar = ({ member, profiles }: Props) => {
           />
         </div>
         <Separator />
-        {profiles && profiles?.length > 0 && (
-          <>
-            <div className="space-y-2 p-4">
-              <DiscordSection profiles={profiles} />
-              <DiscourseSection profiles={profiles} />
-              <GithubSection profiles={profiles} />
-              <LivestormSection profiles={profiles} />
-              <SlackSection profiles={profiles} />
-            </div>
-            <Separator />
-          </>
-        )}
+        {hasDiscourseProfile && <DiscourseSection profiles={profiles} />}
+        {hasGithubProfile && <GithubSection profiles={profiles} />}
+        {hasLivestormProfile && <LivestormSection profiles={profiles} />}
+        {hasSlackProfile && <SlackSection profiles={profiles} />}
+        {hasDiscordProfile && <DiscordSection profiles={profiles} />}
         <div className="space-y-2 p-4">
           <FieldCard icon="User" label="First name">
             <EditableInput

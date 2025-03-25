@@ -12,6 +12,7 @@ export const getCompanyByDomain = async ({ domain }: Props) => {
       FROM company
       WHERE domain = '${domain}'
     `,
+    format: "JSON",
   });
 
   const { data } = await result.json();
