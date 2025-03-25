@@ -1,7 +1,7 @@
 import { client } from "@conquest/clickhouse/client";
 import { ActivityWithTypeSchema } from "@conquest/zod/schemas/activity.schema";
 import { endOfDay, startOfDay } from "date-fns";
-import { formatInTimeZone } from "date-fns-tz";
+import { formatInTimeZone, toZonedTime } from "date-fns-tz";
 import { z } from "zod";
 import { protectedProcedure } from "../trpc";
 
@@ -19,14 +19,16 @@ export const listDayActivities = protectedProcedure
     console.log(date);
 
     const timeZone = "Europe/Paris";
-    
+
+    const dateInParis = toZonedTime(date, timeZone);
+
     const startDay = formatInTimeZone(
-      startOfDay(date),
+      startOfDay(dateInParis),
       timeZone,
       "yyyy-MM-dd HH:mm:ss",
     );
     const endDay = formatInTimeZone(
-      endOfDay(date),
+      endOfDay(dateInParis),
       timeZone,
       "yyyy-MM-dd HH:mm:ss",
     );
@@ -51,8 +53,6 @@ export const listDayActivities = protectedProcedure
     });
 
     const { data } = await result.json();
-
-    console.log(data);
 
     if (!data?.length) return [];
 
@@ -81,8 +81,6 @@ export const listDayActivities = protectedProcedure
     const activities = data.map((row: unknown) =>
       transformFlatActivity(row as Record<string, unknown>),
     );
-
-    console.log(activities);
 
     if (!activities?.length) return [];
     return ActivityWithTypeSchema.array().parse(activities);
