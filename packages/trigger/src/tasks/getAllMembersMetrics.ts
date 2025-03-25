@@ -3,6 +3,7 @@ import { getLevel } from "@conquest/clickhouse/helpers/getLevel";
 import { getPulseScore } from "@conquest/clickhouse/helpers/getPulseScore";
 import { listLevels } from "@conquest/clickhouse/levels/listLevels";
 import { createManyLogs } from "@conquest/clickhouse/logs/createManyLogs";
+import { deleteAllLogs } from "@conquest/clickhouse/logs/deleteAllLogs";
 import { listMembers } from "@conquest/clickhouse/members/listMembers";
 import { updateMember } from "@conquest/clickhouse/members/updateMember";
 import type { Log } from "@conquest/zod/schemas/logs.schema";
@@ -28,6 +29,7 @@ export const getAllMembersMetrics = schemaTask({
     const levels = await listLevels({ workspace_id });
     const members = await listMembers({ workspace_id });
     const activities = await listActivities({ workspace_id, period: 365 });
+    await deleteAllLogs({ workspace_id });
 
     logger.info(`Found ${members.length} members`);
 
@@ -57,13 +59,13 @@ export const getAllMembersMetrics = schemaTask({
             activity.created_at <= intervalEnd,
         );
 
-        const pulseScore = getPulseScore({ activities: filteredActivities });
-        const level = getLevel({ levels, pulse: pulseScore });
+        const pulse = getPulseScore({ activities: filteredActivities });
+        const level = getLevel({ levels, pulse });
 
         logs.push({
           id: randomUUID(),
           date: interval,
-          pulse: pulseScore,
+          pulse,
           level_id: level?.id ?? null,
           member_id: member.id,
           workspace_id: member.workspace_id,
