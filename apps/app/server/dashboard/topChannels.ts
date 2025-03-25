@@ -21,6 +21,7 @@ export const topChannels = protectedProcedure
       query: `
         SELECT 
           channel.name,
+          channel.source,
           COUNT(*) as count
         FROM activity
         LEFT JOIN channel ON activity.channel_id = channel.id
@@ -28,7 +29,8 @@ export const topChannels = protectedProcedure
         AND activity.created_at <= '${_to}'
         AND channel.workspace_id = '${workspace_id}'
         GROUP BY 
-          channel.name
+          channel.name,
+          channel.source
         ORDER BY count DESC
         LIMIT 10
       `,
@@ -43,8 +45,10 @@ export const topChannels = protectedProcedure
       }>;
     };
 
+    console.log(data);
+
     return data.map((item) => ({
-      channel: item.name,
+      channel: `${item["channel.source"]} - #${item.name}`,
       count: item.count,
     }));
   });
