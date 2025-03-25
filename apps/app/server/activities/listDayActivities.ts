@@ -15,6 +15,8 @@ export const listDayActivities = protectedProcedure
     const { workspace_id } = user;
     const { date, member_id } = input;
 
+    console.log(date);
+
     const startDay = format(startOfDay(date), "yyyy-MM-dd HH:mm:ss");
     const endDay = format(endOfDay(date), "yyyy-MM-dd HH:mm:ss");
 
