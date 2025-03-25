@@ -17,6 +17,9 @@ export const totalMembers = protectedProcedure
     const _from = format(from, "yyyy-MM-dd HH:mm:ss");
     const _to = format(to, "yyyy-MM-dd HH:mm:ss");
 
+    console.log(_from);
+    console.log(_to);
+
     const difference = differenceInDays(_to, _from);
     const previousFrom = subDays(_from, difference);
     const previousTo = subDays(_to, difference);

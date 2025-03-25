@@ -16,10 +16,7 @@ export const listDayActivities = protectedProcedure
     const { workspace_id } = user;
     const { date, member_id } = input;
 
-    console.log(date);
-
     const timeZone = "Europe/Paris";
-
     const dateInParis = toZonedTime(date, timeZone);
 
     const startDay = formatInTimeZone(
@@ -27,14 +24,12 @@ export const listDayActivities = protectedProcedure
       timeZone,
       "yyyy-MM-dd HH:mm:ss",
     );
+
     const endDay = formatInTimeZone(
       endOfDay(dateInParis),
       timeZone,
       "yyyy-MM-dd HH:mm:ss",
     );
-
-    console.log(startDay);
-    console.log(endDay);
 
     const result = await client.query({
       query: `
