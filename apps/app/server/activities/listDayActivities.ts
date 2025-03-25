@@ -1,6 +1,6 @@
 import { client } from "@conquest/clickhouse/client";
 import { ActivityWithTypeSchema } from "@conquest/zod/schemas/activity.schema";
-import { addHours, format } from "date-fns";
+import { endOfDay, format, startOfDay } from "date-fns";
 import { z } from "zod";
 import { protectedProcedure } from "../trpc";
 
@@ -15,9 +15,8 @@ export const listDayActivities = protectedProcedure
     const { workspace_id } = user;
     const { date, member_id } = input;
 
-    console.log("date", date);
-    const adjustedDate = addHours(date, 1);
-    console.log("adjustedDate", adjustedDate);
+    const startDay = format(startOfDay(date), "yyyy-MM-dd HH:mm:ss");
+    const endDay = format(endOfDay(date), "yyyy-MM-dd HH:mm:ss");
 
     const result = await client.query({
       query: `
@@ -27,7 +26,8 @@ export const listDayActivities = protectedProcedure
         FROM activity a
         LEFT JOIN activity_type ON a.activity_type_id = activity_type.id
         WHERE a.workspace_id = '${workspace_id}'
-          AND toDate(a.created_at) = '${format(adjustedDate, "yyyy-MM-dd")}'
+          AND a.created_at >= '${startDay}'
+          AND a.created_at <= '${endDay}'
           ${member_id ? `AND a.member_id = '${member_id}'` : ""}
         ORDER BY a.created_at DESC
       `,
@@ -37,8 +37,6 @@ export const listDayActivities = protectedProcedure
     const { data } = await result.json();
 
     if (!data?.length) return [];
-
-    console.log(data);
 
     const transformFlatActivity = (row: Record<string, unknown>) => {
       const result: Record<string, unknown> = {};
@@ -65,8 +63,6 @@ export const listDayActivities = protectedProcedure
     const activities = data.map((row: unknown) =>
       transformFlatActivity(row as Record<string, unknown>),
     );
-
-    console.log(activities);
 
     if (!activities?.length) return [];
     return ActivityWithTypeSchema.array().parse(activities);

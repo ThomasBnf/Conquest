@@ -24,7 +24,6 @@ export const listMembers = protectedProcedure
 
     const filterBy = getFilters({ groupFilters });
     const filtersStr = filterBy.join(operator === "OR" ? " OR " : " AND ");
-    console.log(filtersStr);
 
     const companyJoin = id === "company";
     const profileJoin = groupFilters.filters.some(

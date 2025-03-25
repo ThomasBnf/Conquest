@@ -45,8 +45,6 @@ export const topChannels = protectedProcedure
       }>;
     };
 
-    console.log(data);
-
     return data.map((item) => ({
       channel: `${item["channel.source"]} - #${item.name}`,
       count: item.count,
