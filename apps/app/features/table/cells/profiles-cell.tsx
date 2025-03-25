@@ -21,7 +21,7 @@ export const ProfilesCell = ({ row }: Props) => {
   });
 
   return (
-    <div className="flex items-center gap-2 p-2">
+    <div className="flex items-center gap-1 p-2">
       {isLoading ? (
         <Skeleton className="h-4 w-24" />
       ) : (

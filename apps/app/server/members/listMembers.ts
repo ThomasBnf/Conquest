@@ -28,7 +28,9 @@ export const listMembers = protectedProcedure
     const companyJoin = id === "company";
     const profileJoin = groupFilters.filters.some(
       (filter) =>
-        filter.field === "profiles" || filter.field.includes("discourse-"),
+        filter.field === "profiles" ||
+        filter.field.includes("discourse-") ||
+        filter.field.includes("github-"),
     );
 
     const orderBy = orderByParser({ id, desc, type: "members" });

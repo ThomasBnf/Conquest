@@ -9,10 +9,10 @@ export const Twitter = ({ size = 24, className }: Props) => {
       xmlnsXlink="http://www.w3.org/1999/xlink"
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 24 24"
+      width={size}
+      height={size}
       aria-hidden="true"
       className={className}
-      width={size}
-      height="30"
     >
       <g fill="#0F1419">
         <path

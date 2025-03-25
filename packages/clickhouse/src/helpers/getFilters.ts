@@ -46,6 +46,64 @@ export const getFilters = ({ groupFilters, hasDiscourseData }: Props) => {
       return "true";
     }
 
+    if (field.includes("github-")) {
+      const customFieldId = field.split("-")[1];
+
+      if (filter.type === "number") {
+        const { value, operator } = FilterNumberSchema.parse(filter);
+
+        if (
+          (value === undefined || value === null) &&
+          !["empty", "not_empty"].includes(operator)
+        ) {
+          return "true";
+        }
+
+        switch (operator) {
+          case ">":
+            return `p.attributes.${customFieldId} > ${value}`;
+          case ">=":
+            return `p.attributes.${customFieldId} >= ${value}`;
+          case "equal":
+            return `p.attributes.${customFieldId} = ${value}`;
+          case "not equal":
+            return `p.attributes.${customFieldId} != ${value}`;
+          case "<":
+            return `p.attributes.${customFieldId} < ${value}`;
+          case "<=":
+            return `p.attributes.${customFieldId} <= ${value}`;
+          default:
+            return "true";
+        }
+      }
+
+      if (filter.type === "text") {
+        const { value, operator } = FilterTextSchema.parse(filter);
+
+        if (
+          (value === undefined || value === null) &&
+          !["empty", "not_empty"].includes(operator)
+        ) {
+          return "true";
+        }
+
+        switch (operator) {
+          case "contains":
+            return `p.attributes.${customFieldId} ILIKE '%${value}%'`;
+          case "not_contains":
+            return `p.attributes.${customFieldId} NOT ILIKE '%${value}%'`;
+          case "empty":
+            return `p.attributes.${customFieldId} = ''`;
+          case "not_empty":
+            return `p.attributes.${customFieldId} != ''`;
+          default:
+            return "true";
+        }
+      }
+
+      return "true";
+    }
+
     if (field === "profiles") {
       const { values, operator } = FilterSelectSchema.parse(filter);
 

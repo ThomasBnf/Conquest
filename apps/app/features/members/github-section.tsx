@@ -19,16 +19,28 @@ export const GithubSection = ({ profiles }: Props) => {
 
   const githubProfile = GithubProfileSchema.parse(profile);
   const { attributes } = githubProfile;
-  const { login } = attributes;
+  const { source, login, ...fields } = attributes;
 
   return (
-    <FieldCard icon={<Github size={14} />} label="Github">
-      <EditableLink
-        placeholder="No github profile"
-        defaultValue={login}
-        href={`https://github.com/${login}`}
-        editable={false}
-      />
-    </FieldCard>
+    <>
+      <FieldCard icon={<Github size={14} />} label="Github">
+        <EditableLink
+          placeholder="No github profile"
+          defaultValue={login}
+          href={`https://github.com/${login}`}
+          editable={false}
+        />
+      </FieldCard>
+      {Object.entries(fields).map(([key, value]) => {
+        const formattedKey = key.slice(0, 1).toUpperCase() + key.slice(1);
+        if (!value) return null;
+
+        return (
+          <FieldCard key={key} icon="User" label={formattedKey}>
+            <p className="h-full place-content-center truncate px-2">{value}</p>
+          </FieldCard>
+        );
+      })}
+    </>
   );
 };

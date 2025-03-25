@@ -61,10 +61,10 @@ export const createGithubMember = async ({
     external_id: String(id),
     attributes: {
       source: "Github",
-      login,
+      login: login ?? null,
       bio: bio ?? null,
       blog: blog ?? null,
-      followers,
+      followers: followers ?? 0,
       location: location ?? null,
     },
     member_id: member.id,

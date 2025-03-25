@@ -20,8 +20,13 @@ export const FilterButton = () => {
   const [open, setOpen] = useState(false);
   const { groupFilters, onAddFilter } = useFilters();
 
-  const source = "Discourse";
-  const { data: discourse } = trpc.integrations.bySource.useQuery({ source });
+  const { data: discourse } = trpc.integrations.bySource.useQuery({
+    source: "Discourse",
+  });
+
+  const { data: github } = trpc.integrations.bySource.useQuery({
+    source: "Github",
+  });
 
   const details = discourse
     ? DiscourseDetailsSchema.parse(discourse?.details)
@@ -38,6 +43,41 @@ export const FilterButton = () => {
       operator: "contains",
       value: "",
     })) ?? [];
+
+  const filtersGithub: Filter[] = [
+    {
+      id: uuid(),
+      label: "Bio",
+      type: "text",
+      field: "github-bio",
+      operator: "contains",
+      value: "",
+    },
+    {
+      id: uuid(),
+      label: "Blog",
+      type: "text",
+      field: "github-blog",
+      operator: "contains",
+      value: "",
+    },
+    {
+      id: uuid(),
+      label: "Followers",
+      type: "number",
+      field: "github-followers",
+      operator: ">",
+      value: 1,
+    },
+    {
+      id: uuid(),
+      label: "Location",
+      type: "text",
+      field: "github-location",
+      operator: "contains",
+      value: "",
+    },
+  ];
 
   const onSelectFilter = (filter: Filter) => {
     const newFilter = {
@@ -92,6 +132,19 @@ export const FilterButton = () => {
                 {user_fields && user_fields?.length > 0 && (
                   <CommandGroup heading="Discourse">
                     {filtersDiscourse.map((filter) => (
+                      <CommandItem
+                        key={filter.id}
+                        value={`_${filter.label}`}
+                        onSelect={() => onSelectFilter(filter)}
+                      >
+                        {filter.label}
+                      </CommandItem>
+                    ))}
+                  </CommandGroup>
+                )}
+                {github && (
+                  <CommandGroup heading="Github">
+                    {filtersGithub.map((filter) => (
                       <CommandItem
                         key={filter.id}
                         value={`_${filter.label}`}

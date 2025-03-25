@@ -32,17 +32,19 @@ export const ActivityTypePicker = ({ filter }: Props) => {
 
   const filterActivity = FilterActivitySchema.parse(filter);
 
-  const activityTypes = data?.reduce(
-    (acc, activityType) => {
-      const source = activityType.source || "Other";
-      if (!acc[source]) {
-        acc[source] = {};
-      }
-      acc[source][activityType.key] = activityType.name;
-      return acc;
-    },
-    {} as Record<string, Record<string, string>>,
-  );
+  const activityTypes = data
+    ?.sort((a, b) => a.source.localeCompare(b.source))
+    .reduce(
+      (acc, activityType) => {
+        const source = activityType.source || "Other";
+        if (!acc[source]) {
+          acc[source] = {};
+        }
+        acc[source][activityType.key] = activityType.name;
+        return acc;
+      },
+      {} as Record<string, Record<string, string>>,
+    );
 
   const activityTypesList = filterActivity.activity_types;
 
