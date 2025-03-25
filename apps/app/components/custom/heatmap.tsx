@@ -184,6 +184,8 @@ const DayCell = ({
   const [hover, setHover] = useState(false);
   const level = getActivityLevel(count, allActivities);
 
+  console.log(day);
+
   const { data: activities, isLoading } =
     trpc.activities.listDayActivities.useQuery(
       { date: day, member_id },

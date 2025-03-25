@@ -7,7 +7,7 @@ import { protectedProcedure } from "../trpc";
 export const listDayActivities = protectedProcedure
   .input(
     z.object({
-      date: z.date(),
+      date: z.coerce.date(),
       member_id: z.string().optional(),
     }),
   )
@@ -15,7 +15,9 @@ export const listDayActivities = protectedProcedure
     const { workspace_id } = user;
     const { date, member_id } = input;
 
+    console.log("date", date);
     const adjustedDate = addHours(date, 1);
+    console.log("adjustedDate", adjustedDate);
 
     const result = await client.query({
       query: `
@@ -35,6 +37,8 @@ export const listDayActivities = protectedProcedure
     const { data } = await result.json();
 
     if (!data?.length) return [];
+
+    console.log(data);
 
     const transformFlatActivity = (row: Record<string, unknown>) => {
       const result: Record<string, unknown> = {};
@@ -61,6 +65,8 @@ export const listDayActivities = protectedProcedure
     const activities = data.map((row: unknown) =>
       transformFlatActivity(row as Record<string, unknown>),
     );
+
+    console.log(activities);
 
     if (!activities?.length) return [];
     return ActivityWithTypeSchema.array().parse(activities);
