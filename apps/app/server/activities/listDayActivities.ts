@@ -18,11 +18,14 @@ export const listDayActivities = protectedProcedure
     const startDay = format(startOfDay(date), "yyyy-MM-dd HH:mm:ss");
     const endDay = format(endOfDay(date), "yyyy-MM-dd HH:mm:ss");
 
+    console.log(startDay);
+    console.log(endDay);
+
     const result = await client.query({
       query: `
         SELECT 
-        a.*,
-        activity_type.*
+          a.*,
+          activity_type.*
         FROM activity a
         LEFT JOIN activity_type ON a.activity_type_id = activity_type.id
         WHERE a.workspace_id = '${workspace_id}'
@@ -35,6 +38,8 @@ export const listDayActivities = protectedProcedure
     });
 
     const { data } = await result.json();
+
+    console.log(data);
 
     if (!data?.length) return [];
 
@@ -63,6 +68,8 @@ export const listDayActivities = protectedProcedure
     const activities = data.map((row: unknown) =>
       transformFlatActivity(row as Record<string, unknown>),
     );
+
+    console.log(activities);
 
     if (!activities?.length) return [];
     return ActivityWithTypeSchema.array().parse(activities);
