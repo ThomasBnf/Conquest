@@ -1,6 +1,6 @@
-import { LIVESTORM_ACTIVITY_TYPES } from "@/constant";
 import { useIntegration } from "@/context/integrationContext";
 import { trpc } from "@/server/client";
+import { LIVESTORM_ACTIVITY_TYPES } from "@conquest/db/constant";
 import { Button } from "@conquest/ui/button";
 import {
   Form,

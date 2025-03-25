@@ -1,5 +1,5 @@
 import { LoadingChannels } from "@/components/states/loading-channels";
-import { SLACK_ACTIVITY_TYPES } from "@/constant";
+import { SLACK_ACTIVITY_TYPES } from "@conquest/db/constant";
 import { useIntegration } from "@/context/integrationContext";
 import { trpc } from "@/server/client";
 import { Button } from "@conquest/ui/button";

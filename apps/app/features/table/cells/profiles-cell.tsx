@@ -25,11 +25,15 @@ export const ProfilesCell = ({ row }: Props) => {
       {isLoading ? (
         <Skeleton className="h-4 w-24" />
       ) : (
-        data?.map((profile) => (
-          <div key={profile.id} className="rounded-md border p-1">
-            <ProfileIconParser profile={profile} />
-          </div>
-        ))
+        data
+          ?.sort((a, b) =>
+            a.attributes.source.localeCompare(b.attributes.source),
+          )
+          .map((profile) => (
+            <div key={profile.id} className="rounded-md border p-1">
+              <ProfileIconParser profile={profile} />
+            </div>
+          ))
       )}
     </div>
   );
