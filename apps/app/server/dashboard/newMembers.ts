@@ -1,5 +1,6 @@
 import { client } from "@conquest/clickhouse/client";
-import { addHours, differenceInDays, format, subDays } from "date-fns";
+import { differenceInDays, format, subDays } from "date-fns";
+import { toZonedTime } from "date-fns-tz";
 import { z } from "zod";
 import { protectedProcedure } from "../trpc";
 
@@ -14,8 +15,12 @@ export const newMembers = protectedProcedure
     const { workspace_id } = user;
     const { from, to } = input;
 
-    const _from = format(from, "yyyy-MM-dd HH:mm:ss");
-    const _to = format(to, "yyyy-MM-dd HH:mm:ss");
+    const timeZone = "Europe/Paris";
+    const fromInParis = toZonedTime(from, timeZone);
+    const toInParis = toZonedTime(to, timeZone);
+
+    const _from = format(fromInParis, "yyyy-MM-dd HH:mm:ss");
+    const _to = format(toInParis, "yyyy-MM-dd HH:mm:ss");
 
     const difference = differenceInDays(_to, _from);
     const previousFrom = subDays(_from, difference);

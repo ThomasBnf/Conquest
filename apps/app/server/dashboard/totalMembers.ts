@@ -19,28 +19,15 @@ export const totalMembers = protectedProcedure
     const fromInParis = toZonedTime(from, timeZone);
     const toInParis = toZonedTime(to, timeZone);
 
-    console.log("fromInParis", fromInParis);
-    console.log("toInParis", toInParis);
-
     const _from = format(fromInParis, "yyyy-MM-dd HH:mm:ss");
     const _to = format(toInParis, "yyyy-MM-dd HH:mm:ss");
-
-    console.log("from", _from);
-    console.log("to", _to);
 
     const difference = differenceInDays(_to, _from);
     const previousFrom = subDays(_from, difference);
     const previousTo = subDays(_to, difference);
 
-    console.log("difference", difference);
-    console.log("previousFrom", previousFrom);
-    console.log("previousTo", previousTo);
-
     const _previousFrom = format(previousFrom, "yyyy-MM-dd HH:mm:ss");
     const _previousTo = format(previousTo, "yyyy-MM-dd HH:mm:ss");
-
-    console.log("previousFrom", _previousFrom);
-    console.log("previousTo", _previousTo);
 
     const result = await client.query({
       query: `
