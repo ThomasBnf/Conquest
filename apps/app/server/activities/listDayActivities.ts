@@ -1,7 +1,7 @@
 import { client } from "@conquest/clickhouse/client";
 import { ActivityWithTypeSchema } from "@conquest/zod/schemas/activity.schema";
-import { endOfDay, startOfDay } from "date-fns";
-import { formatInTimeZone, toZonedTime } from "date-fns-tz";
+import { endOfDay, format, startOfDay } from "date-fns";
+import { toZonedTime } from "date-fns-tz";
 import { z } from "zod";
 import { protectedProcedure } from "../trpc";
 
@@ -19,17 +19,8 @@ export const listDayActivities = protectedProcedure
     const timeZone = "Europe/Paris";
     const dateInParis = toZonedTime(date, timeZone);
 
-    const startDay = formatInTimeZone(
-      startOfDay(dateInParis),
-      timeZone,
-      "yyyy-MM-dd HH:mm:ss",
-    );
-
-    const endDay = formatInTimeZone(
-      endOfDay(dateInParis),
-      timeZone,
-      "yyyy-MM-dd HH:mm:ss",
-    );
+    const startDay = format(startOfDay(dateInParis), "yyyy-MM-dd HH:mm:ss");
+    const endDay = format(endOfDay(dateInParis), "yyyy-MM-dd HH:mm:ss");
 
     const result = await client.query({
       query: `

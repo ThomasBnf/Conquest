@@ -1,6 +1,6 @@
 import { client } from "@conquest/clickhouse/client";
 import { differenceInDays, format, subDays } from "date-fns";
-import { formatInTimeZone, toZonedTime } from "date-fns-tz";
+import { toZonedTime } from "date-fns-tz";
 import { z } from "zod";
 import { protectedProcedure } from "../trpc";
 
@@ -16,19 +16,14 @@ export const totalMembers = protectedProcedure
     const { from, to } = input;
 
     const timeZone = "Europe/Paris";
-
     const fromInParis = toZonedTime(from, timeZone);
     const toInParis = toZonedTime(to, timeZone);
 
     console.log("fromInParis", fromInParis);
     console.log("toInParis", toInParis);
 
-    const _from = formatInTimeZone(
-      fromInParis,
-      timeZone,
-      "yyyy-MM-dd HH:mm:ss",
-    );
-    const _to = formatInTimeZone(toInParis, timeZone, "yyyy-MM-dd HH:mm:ss");
+    const _from = format(fromInParis, "yyyy-MM-dd HH:mm:ss");
+    const _to = format(toInParis, "yyyy-MM-dd HH:mm:ss");
 
     console.log("from", _from);
     console.log("to", _to);
