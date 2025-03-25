@@ -5,9 +5,10 @@ import { TrendingDown, TrendingUp } from "lucide-react";
 type Props = {
   variation: number | undefined;
   isLoading: boolean;
+  inverse?: boolean;
 };
 
-export const Percentage = ({ variation, isLoading }: Props) => {
+export const Percentage = ({ variation, isLoading, inverse }: Props) => {
   if (isLoading) {
     return <Skeleton className="h-[25.5px] w-14 shrink-0" />;
   }
@@ -18,7 +19,7 @@ export const Percentage = ({ variation, isLoading }: Props) => {
 
   if (variation > 0) {
     return (
-      <Badge variant="success" className="gap-1">
+      <Badge variant={inverse ? "destructive" : "success"} className="gap-1">
         {variation.toFixed(0)}%
         <TrendingUp size={14} />
       </Badge>
@@ -27,7 +28,7 @@ export const Percentage = ({ variation, isLoading }: Props) => {
 
   if (variation < 0) {
     return (
-      <Badge variant="destructive" className="gap-1">
+      <Badge variant={inverse ? "success" : "destructive"} className="gap-1">
         {variation.toFixed(0)}%
         <TrendingDown size={14} />
       </Badge>

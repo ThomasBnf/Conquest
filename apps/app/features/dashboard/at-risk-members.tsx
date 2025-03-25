@@ -67,7 +67,7 @@ export const AtRiskMembers = () => {
         )}
         <Tooltip>
           <TooltipTrigger>
-            <Percentage variation={variation} isLoading={isLoading} />
+            <Percentage variation={variation} isLoading={isLoading} inverse />
           </TooltipTrigger>
           <TooltipContent>
             <p>

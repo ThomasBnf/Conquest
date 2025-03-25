@@ -55,7 +55,7 @@ export const ChurnRate = () => {
         )}
         <Tooltip>
           <TooltipTrigger>
-            <Percentage variation={variation} isLoading={isLoading} />
+            <Percentage variation={variation} isLoading={isLoading} inverse />
           </TooltipTrigger>
           <TooltipContent>
             <p>{previous.toFixed(0)}% churn rate in the previous period</p>
