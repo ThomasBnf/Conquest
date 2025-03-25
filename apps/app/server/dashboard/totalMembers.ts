@@ -1,5 +1,6 @@
 import { client } from "@conquest/clickhouse/client";
 import { differenceInDays, format, subDays } from "date-fns";
+import { formatInTimeZone, toZonedTime } from "date-fns-tz";
 import { z } from "zod";
 import { protectedProcedure } from "../trpc";
 
@@ -14,18 +15,37 @@ export const totalMembers = protectedProcedure
     const { workspace_id } = user;
     const { from, to } = input;
 
-    const _from = format(from, "yyyy-MM-dd HH:mm:ss");
-    const _to = format(to, "yyyy-MM-dd HH:mm:ss");
+    const timeZone = "Europe/Paris";
 
-    console.log(_from);
-    console.log(_to);
+    const fromInParis = toZonedTime(from, timeZone);
+    const toInParis = toZonedTime(to, timeZone);
+
+    console.log("fromInParis", fromInParis);
+    console.log("toInParis", toInParis);
+
+    const _from = formatInTimeZone(
+      fromInParis,
+      timeZone,
+      "yyyy-MM-dd HH:mm:ss",
+    );
+    const _to = formatInTimeZone(toInParis, timeZone, "yyyy-MM-dd HH:mm:ss");
+
+    console.log("from", _from);
+    console.log("to", _to);
 
     const difference = differenceInDays(_to, _from);
     const previousFrom = subDays(_from, difference);
     const previousTo = subDays(_to, difference);
 
+    console.log("difference", difference);
+    console.log("previousFrom", previousFrom);
+    console.log("previousTo", previousTo);
+
     const _previousFrom = format(previousFrom, "yyyy-MM-dd HH:mm:ss");
     const _previousTo = format(previousTo, "yyyy-MM-dd HH:mm:ss");
+
+    console.log("previousFrom", _previousFrom);
+    console.log("previousTo", _previousTo);
 
     const result = await client.query({
       query: `
