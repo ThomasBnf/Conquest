@@ -28,7 +28,7 @@ export const PlanDetails = ({ plan }: { plan: Plan }) => (
       </p>
     </div>
     <div className="space-y-3 p-3">
-      <p>{plan.integrations.count}</p>
+      <p className="h-5"> </p>
       <p className="h-5 place-content-center">
         <FeatureCheck isEnabled={plan.features.memberLevel} />
       </p>
