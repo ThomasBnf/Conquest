@@ -4,12 +4,12 @@ export const plans = [
   {
     name: "EXPLORER",
     description: "For small communities",
-    priceMonthly: 34,
-    priceAnnually: 29,
+    priceMonthly: 59,
+    priceAnnually: 49,
     priceIdMonthly:
       process.env.NODE_ENV === "development"
         ? "price_1R3JRgCa7sC12ar1IGHNN0yF"
-        : "price_1R3edCCa7sC12ar1jh9HYefy",
+        : "price_1R6prFCa7sC12ar17Xqa08mM",
     priceIdAnnually:
       process.env.NODE_ENV === "development"
         ? "price_1R3JRrCa7sC12ar1QDd1Bytj"
@@ -23,12 +23,12 @@ export const plans = [
   {
     name: "ACTIVE",
     description: "For active communities",
-    priceMonthly: 69,
-    priceAnnually: 59,
+    priceMonthly: 99,
+    priceAnnually: 85,
     priceIdMonthly:
       process.env.NODE_ENV === "development"
         ? "price_1R3JSFCa7sC12ar1rxPAFqGE"
-        : "price_1R3edvCa7sC12ar1LWAhGpDo",
+        : "price_1R6puICa7sC12ar1r0UQH46a",
     priceIdAnnually:
       process.env.NODE_ENV === "development"
         ? "price_1R3JSOCa7sC12ar1B7u13ua9"
@@ -70,8 +70,8 @@ export const plans = [
 export const plansFeatures: Plan[] = [
   {
     name: "EXPLORER",
-    priceMonthly: 34,
-    priceAnnually: 29,
+    priceMonthly: 59,
+    priceAnnually: 49,
     seats: 1,
     members: "Up to 5,000",
     integrations: {
@@ -91,8 +91,8 @@ export const plansFeatures: Plan[] = [
   },
   {
     name: "ACTIVE",
-    priceMonthly: 69,
-    priceAnnually: 59,
+    priceMonthly: 99,
+    priceAnnually: 85,
     seats: 2,
     members: "Up to 30,000",
     integrations: {
