@@ -1,24 +1,14 @@
-import { Logo } from "@conquest/ui/brand/logo";
-import { Discord } from "@conquest/ui/icons/Discord";
-import { Discourse } from "@conquest/ui/icons/Discourse";
-import { Github } from "@conquest/ui/icons/Github";
-import { Linkedin } from "@conquest/ui/icons/Linkedin";
-import { Livestorm } from "@conquest/ui/icons/Livestorm";
-import { Slack } from "@conquest/ui/icons/Slack";
-import { Twitter } from "@conquest/ui/icons/Twitter";
-import { OrbitingCircles } from "@conquest/ui/orbiting-circles";
-
 export const Integrations = () => {
   return (
-    <section className="flex flex-col items-start gap-4 text-balance px-4 py-24">
+    <section className="flex flex-col justify-center gap-4 text-balance px-4 py-16">
       <h2 className="font-medium text-3xl">
-        Your tools. <br /> Your data. <br /> Instantly connected.
+        Integrates everywhere your company lives
       </h2>
       <p className="text-base text-muted-foreground">
-        Built to connect. Designed to save you time. Retrieve historical &
-        real-time data with zero effort.
+        Get a 360-degree view of member engagement - not just within your
+        community, but across all your tools.
       </p>
-      <div className="relative flex h-[500px] w-full flex-col items-center justify-center overflow-hidden">
+      {/* <div className="relative flex h-[500px] w-full flex-col items-center justify-center overflow-hidden">
         <Logo size={48} />
         <OrbitingCircles>
           <Slack size={48} />
@@ -31,7 +21,7 @@ export const Integrations = () => {
           <Livestorm size={48} />
           <Github size={48} />
         </OrbitingCircles>
-      </div>
+      </div> */}
     </section>
   );
 };

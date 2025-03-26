@@ -16,6 +16,12 @@ export const DISCOURSE_CHANNELS = [
   },
   {
     external_id: randomUUID(),
+    name: "Product feedback",
+    slug: "/product-feedback",
+    source: "Discourse" as const,
+  },
+  {
+    external_id: randomUUID(),
     name: "Help & Questions",
     slug: "/help-questions",
     source: "Discourse" as const,

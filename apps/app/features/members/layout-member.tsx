@@ -25,15 +25,10 @@ export const LayoutMember = ({
     id: memberId,
   });
 
-  const {
-    data: profiles,
-    isLoading: isLoadingProfiles,
-    failureReason,
-  } = trpc.profiles.list.useQuery({
-    member_id: memberId,
-  });
-
-  console.log(failureReason);
+  const { data: profiles, isLoading: isLoadingProfiles } =
+    trpc.profiles.list.useQuery({
+      member_id: memberId,
+    });
 
   if (isLoading || isLoadingProfiles) return <IsLoading />;
   if (!member) return redirect(`/${slug}/members`);

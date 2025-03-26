@@ -1,25 +1,38 @@
 import { cn } from "@conquest/ui/cn";
 import "@conquest/ui/globals.css";
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import localFont from "next/font/local";
 
-const inter = Inter({ subsets: ["latin"] });
-
-const TASA = localFont({
+const Telegraf = localFont({
   src: [
     {
-      path: "../fonts/TASAExplorer-Medium.otf",
+      path: "../fonts/PPTelegraf-Regular.otf",
       weight: "400",
       style: "medium",
     },
     {
-      path: "../fonts/TASAExplorer-Bold.otf",
+      path: "../fonts/PPTelegraf-Bold.otf",
       weight: "700",
       style: "bold",
     },
   ],
-  variable: "--font-tasa",
+  variable: "--font-telegraf",
+});
+
+const Suisse = localFont({
+  src: [
+    {
+      path: "../fonts/SuisseIntl-Medium.otf",
+      weight: "400",
+      style: "medium",
+    },
+    {
+      path: "../fonts/SuisseIntl-Regular.otf",
+      weight: "400",
+      style: "regular",
+    },
+  ],
+  variable: "--font-suisse",
 });
 
 export const metadata: Metadata = {
@@ -35,7 +48,11 @@ export default async function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={cn("min-h-dvh font-sans", TASA.variable, inter.className)}
+        className={cn(
+          "min-h-dvh font-sans",
+          Telegraf.variable,
+          Suisse.variable,
+        )}
       >
         {children}
       </body>

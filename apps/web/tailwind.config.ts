@@ -14,7 +14,8 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        tasa: ["var(--font-tasa)"],
+        telegraf: ["var(--font-telegraf)"],
+        suisse: ["var(--font-suisse)"],
       },
       animation: {
         orbit: "orbit calc(var(--duration)*1s) linear infinite",

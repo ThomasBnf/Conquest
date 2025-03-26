@@ -1,18 +1,20 @@
-import { Company } from "@/components/Company";
 import { HeroSection } from "@/components/HeroSection";
 import { MainLayout } from "@/components/MainLayout";
-import { Problem } from "@/components/Problem";
-import { Solution } from "@/components/Solution";
-import { Integrations } from "@/components/Integrations";
+import { Benefits } from "@/components/v1/Benefits";
+import { CTA } from "@/components/v1/CTA";
+import { HowItWorks } from "@/components/v1/HowItWorks";
+import { Problem } from "@/components/v1/Problem";
+import { UseCases } from "@/components/v1/UseCases";
 
 export default function Home() {
   return (
     <MainLayout>
       <HeroSection />
       <Problem />
-      <Solution />
-      <Integrations />
-      <Company />
+      <Benefits />
+      <HowItWorks />
+      <UseCases />
+      <CTA />
     </MainLayout>
   );
 }

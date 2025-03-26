@@ -1,53 +1,106 @@
-import { Button } from "@conquest/ui/button";
-import { ArrowRight } from "lucide-react";
+import { Discord } from "@conquest/ui/icons/Discord";
+import { Discourse } from "@conquest/ui/icons/Discourse";
+import { Github } from "@conquest/ui/icons/Github";
+import { Linkedin } from "@conquest/ui/icons/Linkedin";
+import { Livestorm } from "@conquest/ui/icons/Livestorm";
+import { Slack } from "@conquest/ui/icons/Slack";
 
-const items = [
+const icons = [
   {
-    id: 1,
-    title: "All your member details, finally connected.",
-    text: "Forget manual tracking. Conquest automatically gathers first name, job title, emails, location, and IDs from Slack, Discord, Discourse, LinkedIn, and more—all in one place.",
+    icon: Discord,
+    name: "Discord",
   },
   {
-    id: 2,
-    title: "See everything, everywhere.",
-    text: "Track every interaction across Slack, LinkedIn, Discord, Discourse, and Livestorm. Messages, replies, likes, event participation—every touchpoint in one unified timeline.",
+    icon: Discourse,
+    name: "Discourse",
   },
   {
-    id: 3,
-    title: "No more gut feeling.",
-    text: "Understand your community with real-time engagement metrics and detailed insights. See who’s active, who’s slipping away, and where to take action.",
+    icon: Github,
+    name: "Github",
   },
   {
-    id: 4,
-    title: "Identify champions. Activate lurkers.",
-    text: "Categorize your members into precise engagement levels so you always know who to focus on—and how.",
+    icon: Linkedin,
+    name: "Linkedin",
+  },
+  {
+    icon: Livestorm,
+    name: "Livestorm",
+  },
+  {
+    icon: Slack,
+    name: "Slack",
   },
 ];
 
 export const Solution = () => {
   return (
-    <section className="flex flex-col items-start gap-4 text-balance bg-sidebar px-4 py-24">
-      <h2 className="font-medium text-3xl">
-        From scattered data to strategic action.
-      </h2>
-      <p className="text-base text-muted-foreground">
-        Conquest gives you the clarity and control to turn community signals
-        into business results.
-      </p>
-      <div className="mt-6 space-y-4">
-        {items.map((item) => (
-          <div
-            key={item.id}
-            className="flex flex-col rounded-md border bg-background p-4 shadow-sm"
-          >
-            <p className="font-medium text-base">{item.title}</p>
-            <p className="text-base text-muted-foreground">{item.text}</p>
-          </div>
-        ))}
+    <section className="flex flex-col gap-10 px-4 py-16">
+      <div>
+        <h2 className="mt-4 text-balance font-bold font-telegraf text-3xl">
+          Finally, a CRM built for community.
+        </h2>
       </div>
-      <Button size="md">
-        Sign up for free <ArrowRight size={16} />
-      </Button>
+      <div className="flex flex-col gap-10">
+        <Aggregator />
+        <Focus />
+        <Actions />
+      </div>
     </section>
   );
 };
+
+export const Aggregator = () => (
+  <div className="space-y-4">
+    <div className="space-y-2">
+      <div className="flex space-x-2">
+        {icons.slice(0, 3).map((icon) => (
+          <div
+            key={icon.name}
+            className="flex-1 rounded-md border bg-sidebar p-3 shadow-sm"
+          >
+            <icon.icon size={24} />
+            <p className="mt-2 font-medium">{icon.name}</p>
+          </div>
+        ))}
+      </div>
+      <div className="flex space-x-2">
+        {icons.slice(3, 6).map((icon) => (
+          <div
+            key={icon.name}
+            className="flex-1 rounded-md border bg-sidebar p-3 shadow-sm"
+          >
+            <icon.icon size={24} />
+            <p className="mt-2 font-medium">{icon.name}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+    <h3 className="font-bold font-telegraf text-xl">
+      A single source of truth
+    </h3>
+  </div>
+);
+
+export const Focus = () => (
+  <div className="space-y-4">
+    <img
+      src="./members-scoring.png"
+      alt="Members scoring"
+      className="w-full rounded-md border"
+    />
+    <h3 className="font-bold font-telegraf text-xl">
+      Understand what active means
+    </h3>
+  </div>
+);
+
+export const Actions = () => (
+  <div className="space-y-4">
+    <img
+      src="./actions-on-members.png"
+      alt="Pulse score"
+      className="w-full rounded-md"
+    />
+    <h3 className="font-bold font-telegraf text-xl">Know who to focus on</h3>
+  </div>
+);

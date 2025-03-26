@@ -1,7 +1,12 @@
+"use client";
+
 import { AnimatedGroup } from "@conquest/ui/animated-group";
-import { Button } from "@conquest/ui/button";
+import { Button, buttonVariants } from "@conquest/ui/button";
 import { TextAnimate } from "@conquest/ui/text-animate";
+import { ArrowRight } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 const transitionVariants = {
   item: {
@@ -24,20 +29,26 @@ const transitionVariants = {
 };
 
 export const HeroSection = () => {
+  const router = useRouter();
+
+  const onDemo = () => {
+    router.push("https://cal.com/audrey-godard-conquest/30min");
+  };
+
   return (
-    <section className="flex flex-col gap-4 text-balance bg-sidebar px-4 pt-24 pb-6 text-center">
+    <section className="flex flex-col items-center gap-4 text-balance bg-sidebar px-4 pt-32 pb-12 text-center">
       <TextAnimate
         as="h1"
         animation="blurInUp"
-        className="font-bold font-tasa text-5xl"
+        className="max-w-3xl font-bold font-telegraf text-4xl lg:text-6xl"
       >
-        Your community is powerful.
+        Your community is powerful. Prove it.
       </TextAnimate>
       <TextAnimate
         as="p"
         animation="blurInUp"
         delay={0.5}
-        className="text-lg text-muted-foreground"
+        className="font-suisse text-lg text-muted-foreground"
       >
         Track, measure and prove your community's impact. All in one place.
       </TextAnimate>
@@ -55,11 +66,15 @@ export const HeroSection = () => {
         }}
         className="mt-4 flex justify-center gap-2 "
       >
-        <Button key="1" size="md">
-          Sign up for free
-        </Button>
-        <Button key="2" variant="outline" size="md">
-          Get a demo
+        <Link
+          href="https://app.useconquest.com/auth/signup"
+          className={buttonVariants({ variant: "brand", size: "md" })}
+        >
+          Start free trial
+          <ArrowRight size={16} />
+        </Link>
+        <Button key="2" variant="outline" size="md" onClick={onDemo}>
+          Book a demo
         </Button>
       </AnimatedGroup>
       <TextAnimate
@@ -68,7 +83,7 @@ export const HeroSection = () => {
         delay={0.9}
         className="text-muted-foreground"
       >
-        Free 14 day trial • No CC required
+        Free 14-day free trial • No CC required
       </TextAnimate>
       <AnimatedGroup
         variants={{
@@ -83,15 +98,13 @@ export const HeroSection = () => {
           ...transitionVariants,
         }}
       >
-        <div className="mt-6 rounded border bg-background p-1">
-          <Image
-            src="/hero-image.png"
-            alt="app screen"
-            width="2700"
-            height="1440"
-            className="rounded"
-          />
-        </div>
+        <Image
+          src="/hero-image.png"
+          alt="app screen"
+          width={2700}
+          height={1440}
+          className="mt-6 max-w-5xl rounded-md border p-1"
+        />
       </AnimatedGroup>
     </section>
   );

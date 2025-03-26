@@ -15,11 +15,11 @@ export const Company = () => {
   return (
     <section className="flex flex-col items-start gap-4 text-balance bg-[#1E1F20] px-4 py-24">
       <h2 className="font-medium text-3xl text-white">
-        Designed for the whole company
+        Make your community a top priority across your company.
       </h2>
       <p className="text-base text-primary-foreground/70">
-        Built to connect. Designed to save you time. Retrieve historical &
-        real-time data with zero effort.
+        Collaborate more closely with your teams, where the magic of growth
+        happens.
       </p>
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         {items.map((item) => (
