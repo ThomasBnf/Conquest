@@ -20,8 +20,12 @@ export const FilterMenu = ({ filter }: Props) => {
   const [open, setOpen] = useState(false);
   const { onUpdateFilter } = useFilters();
 
+  console.log(filter);
+
   const hasChannel = filter.activity_types.some((activityType) =>
-    ["Slack", "Discord", "Discourse"].includes(activityType.key),
+    ["slack", "discord", "discourse"].some((channel) =>
+      activityType.key.startsWith(channel),
+    ),
   );
 
   const onUpdateDisplay = (
