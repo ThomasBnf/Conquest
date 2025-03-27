@@ -1,8 +1,8 @@
 import { client } from "@conquest/clickhouse/client";
-import { addHours, differenceInDays, format, subDays } from "date-fns";
+import { differenceInDays, format, subDays } from "date-fns";
+import { toZonedTime } from "date-fns-tz";
 import { z } from "zod";
 import { protectedProcedure } from "../trpc";
-import { toZonedTime } from "date-fns-tz";
 
 export const atRiskMembers = protectedProcedure
   .input(
@@ -42,7 +42,7 @@ export const atRiskMembers = protectedProcedure
           LEFT JOIN level l ON m.level_id = l.id
           WHERE 
             m.workspace_id = '${workspace_id}'
-            AND l.number >= 3
+            AND l.number >= 4
             AND m.id NOT IN (
               SELECT member_id 
               FROM activity 

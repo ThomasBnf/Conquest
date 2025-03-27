@@ -137,7 +137,7 @@ const AtRiskMembersSheet = ({
         <SheetHeader>
           <SheetTitle>At risk members</SheetTitle>
           <SheetDescription>
-            Active members (above level 3) who have not been active in the
+            Active members (min level 4) who have not been active in the
             selected period.
           </SheetDescription>
         </SheetHeader>
