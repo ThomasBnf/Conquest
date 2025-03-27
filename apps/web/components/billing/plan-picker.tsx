@@ -26,7 +26,7 @@ export const PlanPicker = ({ period, setPeriod }: Props) => {
     if (priceId.includes("custom")) return;
 
     router.push(
-      `https://conquest.ngrok.app/auth/signup?plan=${plan}&priceId=${priceId}`,
+      `https://app.useconquest.com/auth/signup?plan=${plan}&priceId=${priceId}`,
     );
   };
 
