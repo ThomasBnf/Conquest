@@ -1,5 +1,5 @@
-import type { Plan, PlanPeriod } from "./types";
 import { cn } from "@conquest/ui/cn";
+import type { Plan, PlanPeriod } from "./types";
 
 export const PlanHeader = ({
   plan,
@@ -8,7 +8,7 @@ export const PlanHeader = ({
   const isAnnually = period === "annually";
 
   return (
-    <div className="flex h-full max-h-[120px] flex-1 flex-col justify-between p-3">
+    <div className="flex h-full max-h-[120px] min-w-48 flex-1 flex-col justify-between p-3">
       <p className="font-medium text-lg capitalize">
         {plan.name.slice(0, 1).toUpperCase() + plan.name.slice(1).toLowerCase()}
       </p>

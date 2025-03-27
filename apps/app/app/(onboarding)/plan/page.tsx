@@ -15,14 +15,14 @@ export default function Page() {
   const { data: session, update } = useSession();
   const { user } = session ?? {};
   const [period, setPeriod] = useState<PlanPeriod>("monthly");
-  const [loading, setLoading] = useState<Plan | null>(null);
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   const { mutateAsync } = trpc.users.update.useMutation({
     onSuccess: () => update(),
     onError: (error) => {
       toast.error(error.message);
-      setLoading(null);
+      setLoading(false);
     },
   });
 
@@ -31,7 +31,7 @@ export default function Page() {
       onSuccess: () => update(),
       onError: (error) => {
         toast.error(error.message);
-        setLoading(null);
+        setLoading(false);
       },
     });
 
@@ -39,7 +39,7 @@ export default function Page() {
     onSuccess: () => router.push("/settings/integrations"),
     onError: (error) => {
       toast.error(error.message);
-      setLoading(null);
+      setLoading(false);
     },
   });
 
@@ -52,7 +52,7 @@ export default function Page() {
   }) => {
     if (!user) return;
 
-    setLoading(plan);
+    setLoading(true);
     await createCustomer({ plan, priceId });
     await mutateAsync({ id: user.id, onboarding: new Date() });
     await createContact({ user });
@@ -70,6 +70,7 @@ export default function Page() {
           setPeriod={setPeriod}
           onSelectPlan={onComplete}
           loading={loading}
+          workspace={user?.workspace}
           trial
         />
       </BillingPage>

@@ -103,7 +103,7 @@ export const HeroSection = () => {
           alt="app screen"
           width={2700}
           height={1440}
-          className="mt-6 max-w-5xl rounded-md border p-1"
+          className="mt-6 rounded-md border p-1 lg:max-w-5xl"
         />
       </AnimatedGroup>
     </section>

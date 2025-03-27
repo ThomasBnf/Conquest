@@ -40,32 +40,27 @@ export const HowItWorks = () => {
       <Heading>Integrates everywhere your community lives</Heading>
       <SubHeading>No-code integrations that make your life easier </SubHeading>
       <Container className="grid grid-cols-1 gap-4 lg:grid-cols-5">
-        <div className="col-span-2 rounded-md border bg-sidebar p-8">
-          <img src="/connect.svg" alt="connect" width={32} height={32} />
-          <div className="space-y-1">
-            <h3 className="mt-8 font-semibold text-gradient text-xl">
-              Connect your tools
-            </h3>
-            <p className="text-balance text-base text-muted-foreground">
-              Seamlessly connect Conquest with all your tools and your SaaS to
-              better identify all behaviors.
-            </p>
+        <div className="col-span-1 rounded-md border bg-sidebar pb-4 md:col-span-2">
+          <div className="p-8">
+            <img src="/connect.svg" alt="connect" width={32} height={32} />
+            <div className="space-y-1">
+              <h3 className="mt-8 font-semibold text-gradient text-xl">
+                Connect your tools
+              </h3>
+              <p className="text-balance text-base text-muted-foreground">
+                Seamlessly connect Conquest with all your tools and your SaaS to
+                better identify all behaviors.
+              </p>
+            </div>
           </div>
-          <div className="mt-4 flex flex-wrap items-center gap-2">
-            {integrations.map((integration) => (
-              <div
-                key={integration.source}
-                className="flex items-center gap-2 rounded-md border bg-background p-4 shadow-sm"
-              >
-                {integration.logo}
-                <p className="font-medium text-base leading-tight">
-                  {integration.source}
-                </p>
-              </div>
-            ))}
-          </div>
+          <Image
+            src="/integrations.png"
+            alt="integrations"
+            width={2700}
+            height={1440}
+          />
         </div>
-        <div className="col-span-1 border bg-sidebar p-8 lg:col-span-3">
+        <div className="col-span-1 flex flex-col justify-between rounded-md border bg-sidebar p-8 lg:col-span-3">
           <div className="col-span-2">
             <img src="/database.svg" alt="Collect" width={32} height={32} />
             <h3 className="mt-6 font-semibold text-gradient text-xl">
@@ -75,6 +70,14 @@ export const HowItWorks = () => {
               Retrieve historical and future data from your tools and associate
               it with your members to never miss any interactions.
             </p>
+          </div>
+          <div className="flex h-full items-center py-8">
+            <Image
+              src="/data-collection.png"
+              alt="Data collection"
+              width={2700}
+              height={1440}
+            />
           </div>
         </div>
         <div className="col-span-1 rounded-md border bg-sidebar lg:col-span-5">

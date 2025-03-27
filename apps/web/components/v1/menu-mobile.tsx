@@ -1,15 +1,20 @@
 "use client";
 
 import { LogoType } from "@conquest/ui/brand/logo-type";
-import { Button, buttonVariants } from "@conquest/ui/button";
+import { buttonVariants } from "@conquest/ui/button";
 import { cn } from "@conquest/ui/cn";
+import { useIsMobile } from "@conquest/ui/hooks/use-mobile";
 import { Separator } from "@conquest/ui/separator";
-import Lottie, { type LottieRefCurrentProps } from "lottie-react";
+import { type LottieRefCurrentProps } from "lottie-react";
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useRef, useState } from "react";
-import menu from "../public/menu.json";
+import menu from "../../public/menu.json";
+
+const Lottie = dynamic(() => import("lottie-react"), { ssr: false });
 
 export const MenuBar = () => {
+  const isMobile = useIsMobile();
   const lottieRef = useRef<LottieRefCurrentProps>(null);
   const [direction, setDirection] = useState(1);
   const [open, setOpen] = useState(false);
@@ -30,16 +35,39 @@ export const MenuBar = () => {
       <div className="fixed inset-x z-20 flex w-full items-center justify-between px-4 py-3 backdrop-blur-md">
         <LogoType width={120} height={24} />
         <div className="flex items-center gap-4">
-          <Button variant="ghost">Login</Button>
-          <Button variant="outline">Signup</Button>
-          <Lottie
-            lottieRef={lottieRef}
-            animationData={menu}
-            className="size-8 cursor-pointer"
-            loop={false}
-            autoplay={false}
-            onClick={handleClick}
-          />
+          {!isMobile && (
+            <>
+              <Link
+                href="/pricing"
+                className={buttonVariants({ variant: "ghost" })}
+              >
+                Pricing
+              </Link>
+              <Separator orientation="vertical" className="h-4" />
+            </>
+          )}
+          <Link
+            href="https://app.useconquest.com/auth/login"
+            className={buttonVariants({ variant: "ghost" })}
+          >
+            Login
+          </Link>
+          <Link
+            href="https://app.useconquest.com/auth/signup"
+            className={buttonVariants({ variant: "outline" })}
+          >
+            Signup
+          </Link>
+          {isMobile && (
+            <Lottie
+              lottieRef={lottieRef}
+              animationData={menu}
+              className="size-8 cursor-pointer"
+              loop={false}
+              autoplay={false}
+              onClick={handleClick}
+            />
+          )}
         </div>
       </div>
       <div
@@ -52,22 +80,22 @@ export const MenuBar = () => {
         <div className="flex h-full flex-col p-4">
           <div className="flex flex-col divide-y">
             <Link
-              href="/features"
+              href="/pricing"
               className={cn(
                 buttonVariants({ variant: "ghost", size: "lg" }),
                 "justify-start rounded-none text-base",
               )}
             >
-              Features
+              Pricing
             </Link>
             <Link
-              href="/integrations"
+              href="https://join.slack.com/t/useconquest/shared_invite/zt-2x4fg4fut-7k0G3_D649TkfPc5WIPdgA"
               className={cn(
                 buttonVariants({ variant: "ghost", size: "lg" }),
                 "justify-start rounded-none text-base",
               )}
             >
-              Integrations
+              Community
             </Link>
             <Link
               href="/documentation"
@@ -77,15 +105,6 @@ export const MenuBar = () => {
               )}
             >
               Documentation
-            </Link>
-            <Link
-              href="/pricing"
-              className={cn(
-                buttonVariants({ variant: "ghost", size: "lg" }),
-                "justify-start rounded-none text-base",
-              )}
-            >
-              Pricing
             </Link>
           </div>
         </div>

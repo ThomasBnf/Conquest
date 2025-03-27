@@ -17,8 +17,8 @@ export const PlansTable = ({ period, setPeriod }: Props) => {
         <p className="font-medium text-lg">Compare all features</p>
         <PeriodToggle period={period} setPeriod={setPeriod} />
       </div>
-      <div className="flex h-full justify-between divide-x overflow-hidden rounded-md border">
-        <div className="divide-y bg-sidebar">
+      <div className="flex h-full justify-between divide-x overflow-auto rounded-md border">
+        <div className="shrink-0 divide-y bg-sidebar">
           <div className="flex flex-col justify-between p-3 pb-10">
             <p className="font-medium text-lg capitalize">Plans</p>
             <p>

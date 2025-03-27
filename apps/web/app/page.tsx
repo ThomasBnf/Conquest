@@ -1,4 +1,4 @@
-import { HeroSection } from "@/components/HeroSection";
+import { HeroSection } from "@/components/v1/HeroSection";
 import { MainLayout } from "@/components/MainLayout";
 import { Benefits } from "@/components/v1/Benefits";
 import { CTA } from "@/components/v1/CTA";

@@ -12,8 +12,8 @@ export const CTA = () => {
           From community blind spot to 20/20 vision
         </Heading>
         <SubHeading className="text-lg text-white">
-          Start your 14-day free trial and see how Conquest can transform your
-          community.
+          Start your 14-day free trial and see how Conquest can help you prove
+          your community value.
         </SubHeading>
         <Link
           href="https://app.conquest.com/auth/signup"

@@ -1,49 +1,20 @@
 import { Button } from "@conquest/ui/button";
 import { cn } from "@conquest/ui/cn";
-import {
-  Dialog,
-  DialogBody,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@conquest/ui/dialog";
-import { ScrollArea } from "@conquest/ui/scroll-area";
 import type { Plan } from "@conquest/zod/enum/plan.enum";
-import type { Workspace } from "@conquest/zod/schemas/workspace.schema";
-import { Check, Loader2 } from "lucide-react";
-import { type Dispatch, type SetStateAction, useState } from "react";
+import { Check } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { type Dispatch, type SetStateAction } from "react";
 import { PeriodToggle } from "./period-toggle";
 import { plans } from "./plans";
-import { PlansTable } from "./plans-table";
 import type { PlanPeriod } from "./types";
 
 type Props = {
   period: PlanPeriod;
   setPeriod: Dispatch<SetStateAction<PlanPeriod>>;
-  loading: boolean;
-  onSelectPlan: ({
-    plan,
-    priceId,
-  }: {
-    plan: Plan;
-    priceId: string;
-  }) => void;
-  trial?: boolean;
-  workspace: Workspace | undefined;
 };
 
-export const PlanPicker = ({
-  period,
-  setPeriod,
-  onSelectPlan,
-  loading,
-  trial,
-  workspace,
-}: Props) => {
-  const [open, setOpen] = useState(false);
-
-  const { plan: currentPlan, is_past_due } = workspace ?? {};
+export const PlanPicker = ({ period, setPeriod }: Props) => {
+  const router = useRouter();
 
   const onClick = ({
     plan,
@@ -54,7 +25,9 @@ export const PlanPicker = ({
   }) => {
     if (priceId.includes("custom")) return;
 
-    onSelectPlan({ plan, priceId });
+    router.push(
+      `https://conquest.ngrok.app/auth/signup?plan=${plan}&priceId=${priceId}`,
+    );
   };
 
   return (
@@ -63,28 +36,7 @@ export const PlanPicker = ({
         <p className="font-medium text-lg">Compare plans</p>
         <PeriodToggle period={period} setPeriod={setPeriod} />
       </div>
-      {trial && (
-        <Dialog open={open} onOpenChange={setOpen}>
-          <DialogTrigger asChild>
-            <Button variant="link" className="px-0 text-muted-foreground">
-              Compare all features
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="max-w-3xl">
-            <DialogHeader>
-              <DialogTitle>Plans</DialogTitle>
-            </DialogHeader>
-            <DialogBody className="h-full overflow-hidden p-0">
-              <ScrollArea className="max-h-[calc(100dvh-5rem)] px-4">
-                <div className="py-4">
-                  <PlansTable period={period} setPeriod={setPeriod} />
-                </div>
-              </ScrollArea>
-            </DialogBody>
-          </DialogContent>
-        </Dialog>
-      )}
-      <div className="flex w-full flex-1 items-end gap-2">
+      <div className="flex w-full flex-1 flex-col items-end gap-2 md:flex-row">
         {plans.map((plan) => (
           <div
             key={plan.name}
@@ -131,12 +83,6 @@ export const PlanPicker = ({
               </div>
               <Button
                 variant={plan.popular ? "default" : "outline"}
-                disabled={
-                  (!is_past_due &&
-                    currentPlan === plan.name &&
-                    currentPlan === plan.name) ||
-                  loading
-                }
                 onClick={() =>
                   onClick({
                     plan: plan.name as Plan,
@@ -147,37 +93,11 @@ export const PlanPicker = ({
                   })
                 }
               >
-                {loading ? (
-                  <Loader2
-                    size={16}
-                    className={cn(
-                      "animate-spin",
-                      plan.popular ? "text-white" : "text-muted-foreground",
-                    )}
-                  />
-                ) : (
-                  <>
-                    {!is_past_due && currentPlan === plan.name ? (
-                      <span>Current plan</span>
-                    ) : (
-                      <span>
-                        {trial ? (
-                          "Start a 14-day trial"
-                        ) : (
-                          <span className="capitalize">
-                            Start {plan.name.toLowerCase()}
-                          </span>
-                        )}
-                      </span>
-                    )}
-                  </>
-                )}
+                Start a 14-day trial
               </Button>
-              {trial && (
-                <p className="text-center text-muted-foreground text-xs">
-                  No credit card required
-                </p>
-              )}
+              <p className="text-center text-muted-foreground text-xs">
+                No credit card required
+              </p>
               <div className="mt-4">
                 <p className="font-medium">{plan.description}</p>
                 <div className="mt-2 flex flex-col gap-2">

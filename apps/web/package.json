@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@conquest/billing": "workspace:*",
     "@conquest/ui": "workspace:*",
     "lottie-react": "^2.4.1",
     "next": "15.2.3",

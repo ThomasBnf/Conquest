@@ -24,13 +24,20 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowRightIcon, Loader2 } from "lucide-react";
 import { signIn } from "next-auth/react";
 import Link from "next/link";
-import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { EmailSuccess } from "./email-success";
 
-export const SignupForm = () => {
+type Props = {
+  plan?: string;
+  priceId?: string;
+};
+
+export const SignupForm = ({ plan, priceId }: Props) => {
   const [loading, setLoading] = useState(false);
   const [sentTo, setSentTo] = useState("");
+  const router = useRouter();
 
   const form = useForm<SignupSchema>({
     resolver: zodResolver(SignupSchema),
@@ -50,6 +57,14 @@ export const SignupForm = () => {
       redirectTo: env.NEXT_PUBLIC_BASE_URL,
     });
   };
+
+  useEffect(() => {
+    if (plan && priceId) {
+      localStorage.setItem("plan", plan);
+      localStorage.setItem("priceId", priceId);
+      router.replace("/auth/signup");
+    }
+  }, [form, plan, priceId]);
 
   if (sentTo) {
     return (

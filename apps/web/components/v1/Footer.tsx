@@ -11,7 +11,7 @@ export const Footer = () => {
     <Section>
       <Container className="flex-col">
         <LogoType width={150} height={30} />
-        <nav className="mt-16 flex w-full items-start justify-between gap-20">
+        <nav className="mt-16 flex w-full flex-col items-start justify-between gap-20 md:flex-row">
           <div className="flex gap-32">
             <div className="flex flex-col">
               <Label className="mb-6 text-base">Links</Label>

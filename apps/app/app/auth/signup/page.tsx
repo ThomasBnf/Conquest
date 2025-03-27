@@ -1,5 +1,14 @@
 import { SignupForm } from "@/features/auth/signup-form";
 
-export default function Page() {
-  return <SignupForm />;
+type Props = {
+  searchParams: {
+    plan?: string;
+    priceId?: string;
+  };
+};
+
+export default async function Page({ searchParams }: Props) {
+  const { plan, priceId } = searchParams;
+
+  return <SignupForm plan={plan} priceId={priceId} />;
 }

@@ -6,13 +6,17 @@ import { PlansTable } from "@/features/billing/plans-table";
 import type { PlanPeriod } from "@/features/billing/types";
 import { trpc } from "@/server/client";
 import type { Plan } from "@conquest/zod/enum/plan.enum";
+import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 
 export default function Page() {
+  const { data: session } = useSession();
+  const { workspace } = session?.user ?? {};
+
   const [period, setPeriod] = useState<PlanPeriod>("monthly");
-  const [loading, setLoading] = useState<Plan | null>(null);
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   const { mutateAsync } = trpc.stripe.createCheckoutSession.useMutation({
@@ -22,7 +26,7 @@ export default function Page() {
     },
     onError: (error) => {
       toast.error(error.message);
-      setLoading(null);
+      setLoading(false);
     },
   });
 
@@ -33,7 +37,7 @@ export default function Page() {
     plan: Plan;
     priceId: string;
   }) => {
-    setLoading(plan);
+    setLoading(true);
     await mutateAsync({ plan, priceId });
   };
 
@@ -47,6 +51,7 @@ export default function Page() {
         setPeriod={setPeriod}
         loading={loading}
         onSelectPlan={onSelectPlan}
+        workspace={workspace}
       />
       <PlansTable period={period} setPeriod={setPeriod} />
     </BillingPage>

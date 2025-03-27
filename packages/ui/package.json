@@ -10,14 +10,7 @@
     "format": "biome --write .",
     "typecheck": "tsc --noEmit"
   },
-  "devDependencies": {
-    "autoprefixer": "^10.4.20",
-    "postcss": "^8.4.43",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "tailwindcss": "^3.4.10",
-    "typescript": "^5.5.4"
-  },
+
   "exports": {
     "./*": "./src/components/*.tsx",
     "./cn": "./src/utils/cn.ts",
@@ -64,6 +57,14 @@
     "tailwind-merge": "^2.5.2",
     "tailwindcss-animate": "^1.0.7",
     "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.43",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "tailwindcss": "^3.4.10",
+    "typescript": "^5.5.4"
   },
   "peerDependencies": {
     "@conquest/tsconfig": "workspace:*"
