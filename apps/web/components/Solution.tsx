@@ -4,6 +4,7 @@ import { Github } from "@conquest/ui/icons/Github";
 import { Linkedin } from "@conquest/ui/icons/Linkedin";
 import { Livestorm } from "@conquest/ui/icons/Livestorm";
 import { Slack } from "@conquest/ui/icons/Slack";
+import Image from "next/image";
 
 const icons = [
   {
@@ -83,7 +84,7 @@ export const Aggregator = () => (
 
 export const Focus = () => (
   <div className="space-y-4">
-    <img
+    <Image
       src="./members-scoring.png"
       alt="Members scoring"
       className="w-full rounded-md border"
@@ -96,7 +97,7 @@ export const Focus = () => (
 
 export const Actions = () => (
   <div className="space-y-4">
-    <img
+    <Image
       src="./actions-on-members.png"
       alt="Pulse score"
       className="w-full rounded-md"

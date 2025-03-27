@@ -42,7 +42,7 @@ export const HowItWorks = () => {
       <Container className="grid grid-cols-1 gap-4 lg:grid-cols-5">
         <div className="col-span-1 rounded-md border bg-sidebar pb-4 md:col-span-2">
           <div className="p-8">
-            <img src="/connect.svg" alt="connect" width={32} height={32} />
+            <Image src="/connect.svg" alt="connect" width={32} height={32} />
             <div className="space-y-1">
               <h3 className="mt-8 font-semibold text-gradient text-xl">
                 Connect your tools
@@ -62,7 +62,7 @@ export const HowItWorks = () => {
         </div>
         <div className="col-span-1 flex flex-col justify-between rounded-md border bg-sidebar p-8 lg:col-span-3">
           <div className="col-span-2">
-            <img src="/database.svg" alt="Collect" width={32} height={32} />
+            <Image src="/database.svg" alt="Collect" width={32} height={32} />
             <h3 className="mt-6 font-semibold text-gradient text-xl">
               Collect data
             </h3>
@@ -83,7 +83,7 @@ export const HowItWorks = () => {
         <div className="col-span-1 rounded-md border bg-sidebar lg:col-span-5">
           <div className="grid gap-12 p-6 lg:grid-cols-5 lg:p-8">
             <div className="col-span-2">
-              <img src="/analyze.svg" alt="Analyze" width={32} height={32} />
+              <Image src="/analyze.svg" alt="Analyze" width={32} height={32} />
               <h3 className="mt-6 font-semibold text-gradient text-xl">
                 Analyze member activity
               </h3>

@@ -1,4 +1,5 @@
 import { Separator } from "@conquest/ui/separator";
+import Image from "next/image";
 
 export const Features = () => {
   return (
@@ -19,7 +20,7 @@ export const Features = () => {
             Activities are not equal. Assign points, add conditions based on
             activity impact.
           </p>
-          <img
+          <Image
             src="./activity-type.png"
             alt="Editing activity type"
             className="mt-4 rounded-md border bg-background p-2"
@@ -33,7 +34,7 @@ export const Features = () => {
           <p className="text-base text-muted-foreground">
             Categorize your members beyond activity by intent, persona, stage.
           </p>
-          <img
+          <Image
             src="./tags.png"
             alt="Tags picker"
             className="mt-4 rounded-md border bg-background"
@@ -48,7 +49,7 @@ export const Features = () => {
             Scores every member based on recent activities, so you can re-engage
             lurkers, and spot rising ambassadors.
           </p>
-          <img
+          <Image
             src="./members-scoring.png"
             alt="Members table with scoring"
             className="mt-4 rounded-md border bg-background"
@@ -62,7 +63,7 @@ export const Features = () => {
           <p className="text-base text-muted-foreground">
             Build lists that drive programs, rewards and outreach.
           </p>
-          <img
+          <Image
             src="./filters.png"
             alt="Filters"
             className="mt-4 rounded-md border bg-background"
