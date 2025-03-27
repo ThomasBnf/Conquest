@@ -12,7 +12,6 @@
   "dependencies": {
     "@auth/core": "^0.37.4",
     "@clickhouse/client-web": "^1.10.1",
-    "@conquest/billing": "workspace:*",
     "@conquest/clickhouse": "workspace:*",
     "@conquest/db": "workspace:*",
     "@conquest/emails": "workspace:*",
