@@ -8,7 +8,7 @@ type Props = {
 };
 
 export default async function Page({ searchParams }: Props) {
-  const { plan, priceId } = searchParams;
+  const { plan, priceId } = await searchParams;
 
   return <SignupForm plan={plan} priceId={priceId} />;
 }
