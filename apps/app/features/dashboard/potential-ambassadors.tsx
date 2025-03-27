@@ -135,7 +135,7 @@ const PotentialAmbassadorsSheet = ({
         <SheetHeader>
           <SheetTitle>Potential ambassadors</SheetTitle>
           <SheetDescription>
-            Contributor members (above level 7) with activities in the selected
+            Contributor members (min level 7) with activities in the selected
             period.
           </SheetDescription>
         </SheetHeader>
