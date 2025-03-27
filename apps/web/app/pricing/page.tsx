@@ -7,7 +7,7 @@ import type { PlanPeriod } from "@/components/billing/types";
 import { useState } from "react";
 
 export default function Pricing() {
-  const [period, setPeriod] = useState<PlanPeriod>("monthly");
+  const [period, setPeriod] = useState<PlanPeriod>("annually");
 
   return (
     <MainLayout>

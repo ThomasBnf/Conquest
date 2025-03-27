@@ -14,7 +14,7 @@ import { toast } from "sonner";
 export default function Page() {
   const { data: session, update } = useSession();
   const { user } = session ?? {};
-  const [period, setPeriod] = useState<PlanPeriod>("monthly");
+  const [period, setPeriod] = useState<PlanPeriod>("annually");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
