@@ -62,6 +62,7 @@ export const listFilteredMembers = async ({
           m.last_activity,
           m.created_at as created_at,
           m.updated_at as updated_at,
+          m.deleted_at as deleted_at,
           l.number,
           ${profileJoin ? "p.attributes" : ""}
         FROM member m
