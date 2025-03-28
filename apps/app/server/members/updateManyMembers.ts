@@ -17,4 +17,8 @@ export const updateManyMembers = protectedProcedure
       values: members,
       format: "JSON",
     });
+
+    await client.query({
+      query: "OPTIMIZE TABLE member FINAL;",
+    });
   });
