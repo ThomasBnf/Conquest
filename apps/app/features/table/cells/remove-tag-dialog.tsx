@@ -21,7 +21,7 @@ import {
 import { CompanySchema } from "@conquest/zod/schemas/company.schema";
 import { MemberSchema } from "@conquest/zod/schemas/member.schema";
 import type { Table } from "@tanstack/react-table";
-import { Loader2 } from "lucide-react";
+import { Loader2, Trash2 } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 
@@ -83,6 +83,7 @@ export const RemoveTagDialog = <TData,>({ table }: Props<TData>) => {
       const updatedCompanies = companies.map((company) => ({
         ...company,
         tags: company.tags.filter((tag) => !selectedTags.includes(tag)),
+        updated_at: new Date(),
       }));
 
       updateManyCompanies({ companies: updatedCompanies });
@@ -94,6 +95,7 @@ export const RemoveTagDialog = <TData,>({ table }: Props<TData>) => {
       const updatedMembers = members.map((member) => ({
         ...member,
         tags: member.tags.filter((tag) => !selectedTags.includes(tag)),
+        updated_at: new Date(),
       }));
 
       updateManyMembers({ members: updatedMembers });
@@ -103,7 +105,10 @@ export const RemoveTagDialog = <TData,>({ table }: Props<TData>) => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="dark">Remove tag</Button>
+        <Button variant="outline">
+          <Trash2 size={16} />
+          Remove tag
+        </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>

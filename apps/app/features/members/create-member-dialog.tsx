@@ -22,29 +22,29 @@ import {
 import { Input } from "@conquest/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2, Plus } from "lucide-react";
+import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { type MemberForm, MemberFormSchema } from "./schema/member-form.schema";
 
 export const CreateMemberDialog = () => {
+  const { slug } = useParams();
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const utils = trpc.useUtils();
+  const router = useRouter();
 
   const { mutateAsync } = trpc.members.post.useMutation({
-    onSuccess: () => {
+    onSuccess: ({ id }) => {
       utils.members.list.invalidate();
       utils.members.count.invalidate();
-      toast.success("Member created");
-      form.reset();
+      router.push(`/${slug}/members/${id}/analytics`);
     },
     onError: () => {
-      toast.error("Failed to create member");
-    },
-    onSettled: () => {
       setOpen(false);
       setLoading(false);
+      toast.error("Failed to create member");
     },
   });
 
@@ -65,7 +65,7 @@ export const CreateMemberDialog = () => {
       <DialogTrigger asChild>
         <Button>
           <Plus size={16} />
-          Add Member
+          New
         </Button>
       </DialogTrigger>
       <DialogContent aria-describedby="dialog-description">
@@ -75,7 +75,7 @@ export const CreateMemberDialog = () => {
             className="flex flex-col"
           >
             <DialogHeader>
-              <DialogTitle>Add Member</DialogTitle>
+              <DialogTitle>New member</DialogTitle>
             </DialogHeader>
             <DialogBody>
               <FormField
@@ -128,7 +128,7 @@ export const CreateMemberDialog = () => {
                 {loading ? (
                   <Loader2 className="size-4 animate-spin" />
                 ) : (
-                  "Add Member"
+                  "Create member"
                 )}
               </Button>
             </DialogFooter>

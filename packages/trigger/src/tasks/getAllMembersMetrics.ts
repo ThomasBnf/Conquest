@@ -1,12 +1,13 @@
 import { listActivities } from "@conquest/clickhouse/activities/listActivities";
+import { client } from "@conquest/clickhouse/client";
 import { getLevel } from "@conquest/clickhouse/helpers/getLevel";
 import { getPulseScore } from "@conquest/clickhouse/helpers/getPulseScore";
 import { listLevels } from "@conquest/clickhouse/levels/listLevels";
 import { createManyLogs } from "@conquest/clickhouse/logs/createManyLogs";
 import { deleteAllLogs } from "@conquest/clickhouse/logs/deleteAllLogs";
 import { listMembers } from "@conquest/clickhouse/members/listMembers";
-import { updateMember } from "@conquest/clickhouse/members/updateMember";
 import type { Log } from "@conquest/zod/schemas/logs.schema";
+import { Member } from "@conquest/zod/schemas/member.schema";
 import { type Context, logger, runs, schemaTask } from "@trigger.dev/sdk/v3";
 import {
   eachWeekOfInterval,
@@ -26,6 +27,9 @@ export const getAllMembersMetrics = schemaTask({
   run: async ({ workspace_id }, { ctx }) => {
     await hasTasksRunning({ ctx, workspace_id });
 
+    const updatedMembers: Member[] = [];
+    const logs: Log[] = [];
+
     const levels = await listLevels({ workspace_id });
     const members = await listMembers({ workspace_id });
     const activities = await listActivities({ workspace_id, period: 365 });
@@ -43,8 +47,6 @@ export const getAllMembersMetrics = schemaTask({
     );
 
     for (const [index, member] of members.entries()) {
-      const logs: Log[] = [];
-
       const memberActivities = activities?.filter(
         (activity) => activity.member_id === member.id,
       );
@@ -75,16 +77,33 @@ export const getAllMembersMetrics = schemaTask({
       await createManyLogs({ logs });
       const { pulse, level_id } = logs.at(-1) ?? {};
 
-      await updateMember({
+      updatedMembers.push({
         ...member,
         first_activity: memberActivities?.at(-1)?.created_at ?? null,
         last_activity: memberActivities?.at(0)?.created_at ?? null,
         pulse: pulse ?? 0,
         level_id: level_id ?? null,
+        updated_at: new Date(),
       });
 
       logger.info(`${index}`, { member });
     }
+
+    await client.insert({
+      table: "log",
+      values: logs,
+      format: "JSON",
+    });
+
+    await client.insert({
+      table: "member",
+      values: updatedMembers,
+      format: "JSON",
+    });
+
+    await client.query({
+      query: "OPTIMIZE TABLE member FINAL;",
+    });
   },
 });
 

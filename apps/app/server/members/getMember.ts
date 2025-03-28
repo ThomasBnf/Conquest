@@ -6,11 +6,10 @@ export const getMember = protectedProcedure
   .input(
     z.object({
       id: z.string(),
-      source: z.string().optional(),
     }),
   )
   .query(async ({ input }) => {
-    const { id, source } = input;
+    const { id } = input;
 
     return await _getMember({ id });
   });

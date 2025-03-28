@@ -1,7 +1,6 @@
 import { cn } from "@conquest/ui/cn";
 import { ScrollArea, ScrollBar } from "@conquest/ui/scroll-area";
 import { type Table, flexRender } from "@tanstack/react-table";
-import { ActionMenu } from "./action-menu";
 import { DataTablePagination } from "./data-table-pagination";
 import { TableSkeleton } from "./table-skeletton";
 
@@ -96,7 +95,6 @@ export const DataTable = <TData,>({
             ))}
           </div>
         </div>
-        <ActionMenu table={table} />
         <ScrollBar orientation="horizontal" />
         <ScrollBar orientation="vertical" />
       </ScrollArea>

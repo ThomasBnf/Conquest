@@ -67,7 +67,7 @@ export const CreateCompanyDialog = () => {
       <DialogTrigger asChild>
         <Button>
           <Plus size={16} />
-          Add Company
+          New
         </Button>
       </DialogTrigger>
       <DialogContent aria-describedby="dialog-description">
@@ -77,7 +77,7 @@ export const CreateCompanyDialog = () => {
             className="flex flex-col"
           >
             <DialogHeader>
-              <DialogTitle>Add Company</DialogTitle>
+              <DialogTitle>New company</DialogTitle>
             </DialogHeader>
             <DialogBody>
               <FormField
@@ -104,7 +104,7 @@ export const CreateCompanyDialog = () => {
                 {loading ? (
                   <Loader2 className="size-4 animate-spin" />
                 ) : (
-                  "Add Company"
+                  "Create company"
                 )}
               </Button>
             </DialogFooter>

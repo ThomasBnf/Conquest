@@ -21,7 +21,7 @@ import {
 import { CompanySchema } from "@conquest/zod/schemas/company.schema";
 import { MemberSchema } from "@conquest/zod/schemas/member.schema";
 import type { Table } from "@tanstack/react-table";
-import { Loader2 } from "lucide-react";
+import { Loader2, Plus } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 
@@ -83,6 +83,7 @@ export const AddTagDialog = <TData,>({ table }: Props<TData>) => {
       const updatedCompanies = companies.map((company) => ({
         ...company,
         tags: [...company.tags, ...selectedTags],
+        updated_at: new Date(),
       }));
 
       updateManyCompanies({ companies: updatedCompanies });
@@ -91,9 +92,14 @@ export const AddTagDialog = <TData,>({ table }: Props<TData>) => {
         rowSelected.map((row) => row.original),
       );
 
-      const updatedMembers = members.map((member) => ({
+      const filteredMembers = members.filter(
+        (member) => !member.tags.some((tag) => selectedTags.includes(tag)),
+      );
+
+      const updatedMembers = filteredMembers.map((member) => ({
         ...member,
         tags: [...member.tags, ...selectedTags],
+        updated_at: new Date(),
       }));
 
       updateManyMembers({ members: updatedMembers });
@@ -103,7 +109,10 @@ export const AddTagDialog = <TData,>({ table }: Props<TData>) => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="dark">Add tag</Button>
+        <Button variant="outline">
+          <Plus size={16} />
+          Add tag
+        </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>

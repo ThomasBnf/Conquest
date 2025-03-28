@@ -30,9 +30,9 @@ export const ActivityTypesList = ({ source, disableHeader = false }: Props) => {
   const { data, isLoading } = trpc.activityTypes.list.useQuery();
 
   if (isLoading) return <Skeleton className="h-[174.5px] w-full" />;
-  if (!data?.length) return <EmptyActivityTypes />;
+  if (!isLoading && !data?.length) return <EmptyActivityTypes />;
 
-  const filteredActivityTypes = data.filter((activityType) => {
+  const activityTypes = data?.filter((activityType) => {
     const matchesSource = source ? activityType.source === source : true;
     const matchesQuery = query
       ? activityType.name.toLowerCase().includes(query.toLowerCase())
@@ -60,7 +60,7 @@ export const ActivityTypesList = ({ source, disableHeader = false }: Props) => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {filteredActivityTypes.map((activityType) => {
+            {activityTypes?.map((activityType) => {
               const { source, name, key, conditions, points } = activityType;
 
               return (

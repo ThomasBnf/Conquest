@@ -6,6 +6,7 @@ import { tableParams } from "@/utils/tableParams";
 import { useQueryStates } from "nuqs";
 import { FiltersList } from "../filters/filters-list";
 import { SaveList } from "../lists/save-list";
+import { ActionsMenu } from "../table/actions-menu";
 import { ColumnVisibility } from "../table/column-visibility";
 import { DataTable } from "../table/data-table";
 import { useTable } from "../table/hooks/useTable";
@@ -43,6 +44,7 @@ export const MembersPage = () => {
           <ColumnVisibility table={table} type="members" />
         </div>
       </div>
+      <ActionsMenu table={table} />
       {data?.length === 0 ? (
         <EmptyTable />
       ) : (
