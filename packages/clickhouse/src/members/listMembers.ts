@@ -17,12 +17,13 @@ export const listMembers = async ({
   const result = await client.query({
     query: `
       SELECT * 
-      FROM member
+      FROM member FINAL
       WHERE workspace_id = '${workspace_id}'
       ${company_id ? `AND company_id = '${company_id}'` : ""}
       ${limit ? `LIMIT ${limit}` : ""}
       ${offset ? `OFFSET ${offset}` : ""}
     `,
+    format: "JSON",
   });
 
   const { data } = await result.json();

@@ -26,6 +26,8 @@ export const getAllMembersMetrics = schemaTask({
         offset,
       });
 
+      if (members.length === 0) break;
+
       await batchMemberMetrics.batchTrigger([
         {
           payload: {

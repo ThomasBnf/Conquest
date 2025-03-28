@@ -5,7 +5,7 @@ export const listAllMembers = async () => {
   const result = await client.query({
     query: `
       SELECT * 
-      FROM member
+      FROM member FINAL
       ORDER BY created_at DESC
     `,
   });

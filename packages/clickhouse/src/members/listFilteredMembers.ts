@@ -64,7 +64,7 @@ export const listFilteredMembers = async ({
           m.updated_at as updated_at,
           l.number,
           ${profileJoin ? "p.attributes" : ""}
-        FROM member m
+        FROM member m FINAL
         LEFT JOIN level l ON m.level_id = l.id
         ${companyJoin ? "LEFT JOIN company c ON m.company_id = c.id" : ""}
         ${

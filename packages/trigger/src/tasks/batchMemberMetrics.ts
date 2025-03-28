@@ -94,9 +94,6 @@ export const batchMemberMetrics = schemaTask({
 
     await client.query({
       query: "OPTIMIZE TABLE member FINAL;",
-      clickhouse_settings: {
-        connect_timeout: 1000 * 60 * 5,
-      },
     });
   },
 });

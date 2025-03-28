@@ -17,7 +17,7 @@ export const listPaginatedMembers = async ({
   const result = await client.query({
     query: `
         SELECT *
-        FROM member
+        FROM member FINAL
         WHERE (
           lower(first_name) LIKE lower('%${search}%')
           OR lower(last_name) LIKE lower('%${search}%')

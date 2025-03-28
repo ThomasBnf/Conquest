@@ -28,7 +28,7 @@ export const countMembers = async ({
   const result = await client.query({
     query: `
         SELECT count(*) as total
-        FROM member AS m
+        FROM member AS m FINAL
         LEFT JOIN level AS l ON m.level_id = l.id
         LEFT JOIN company AS c ON m.company_id = c.id
         ${

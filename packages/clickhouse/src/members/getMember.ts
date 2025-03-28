@@ -9,7 +9,7 @@ export const getMember = async ({ id }: Props) => {
   const result = await client.query({
     query: `
       SELECT * 
-      FROM member
+      FROM member FINAL
       WHERE id = '${id}'
     `,
   });
