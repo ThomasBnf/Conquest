@@ -11,8 +11,7 @@ export const listMembers = async ({ workspace_id, company_id }: Props) => {
     query: `
       SELECT * 
       FROM member
-      WHERE deleted_at IS NULL
-      AND workspace_id = '${workspace_id}'
+      WHERE workspace_id = '${workspace_id}'
       ${company_id ? `AND company_id = '${company_id}'` : ""}
     `,
   });

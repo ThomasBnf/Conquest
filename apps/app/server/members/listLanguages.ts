@@ -9,9 +9,9 @@ export const listLanguages = protectedProcedure.query(
       query: `
         SELECT DISTINCT language
         FROM member
-        WHERE workspace_id = '${workspace_id}'
-        AND deleted_at IS NULL
-        AND language IS NOT NULL; 
+        WHERE 
+          workspace_id = '${workspace_id}'
+          AND language IS NOT NULL; 
       `,
     });
 

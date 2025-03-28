@@ -38,8 +38,7 @@ export const activeMembersTable = protectedProcedure
         INNER JOIN activity a ON m.id = a.member_id
         LEFT JOIN level l ON m.level_id = l.id
         WHERE 
-          m.deleted_at is NULL
-          AND m.workspace_id = '${workspace_id}'
+          m.workspace_id = '${workspace_id}'
           AND a.created_at BETWEEN '${_from}' AND '${_to}'
           AND (
             positionCaseInsensitive(concat(toString(first_name), ' ', toString(last_name)), '${search}') > 0

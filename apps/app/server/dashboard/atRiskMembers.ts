@@ -41,7 +41,6 @@ export const atRiskMembers = protectedProcedure
           FROM member m
           LEFT JOIN level l ON m.level_id = l.id
           WHERE 
-            m.deleted_at is NULL
             AND m.workspace_id = '${workspace_id}'
             AND l.number >= 4
             AND m.id NOT IN (
@@ -57,8 +56,7 @@ export const atRiskMembers = protectedProcedure
           FROM member m
           LEFT JOIN level l ON m.level_id = l.id
           WHERE 
-            m.deleted_at is NULL
-            AND m.workspace_id = '${workspace_id}'
+            m.workspace_id = '${workspace_id}'
             AND l.number >= 4
             AND m.id NOT IN (
               SELECT member_id 

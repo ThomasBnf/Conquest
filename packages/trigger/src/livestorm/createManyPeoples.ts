@@ -7,7 +7,7 @@ import type { Event } from "@conquest/zod/schemas/event.schema";
 import type { LivestormIntegration } from "@conquest/zod/schemas/integration.schema";
 import type { Member } from "@conquest/zod/schemas/member.schema";
 import type { Session } from "@conquest/zod/types/livestorm";
-import { wait } from "@trigger.dev/sdk/v3";
+import { logger, wait } from "@trigger.dev/sdk/v3";
 import { getLocaleByAlpha2 } from "country-locale-map";
 import ISO6391 from "iso-639-1";
 import { listPeopleFromSession } from "./listPeopleFromSession";
@@ -41,7 +41,7 @@ export const createManyPeoples = async ({
     id: session.id,
   });
 
-  console.log("peoples", peoples);
+  logger.info("peoples", { peoples });
 
   await wait.for({ seconds: 0.5 });
 

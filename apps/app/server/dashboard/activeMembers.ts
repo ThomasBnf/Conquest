@@ -39,7 +39,6 @@ export const activeMembers = protectedProcedure
             WHERE 
               a.created_at >= '${_from}' 
               AND a.created_at <= '${_to}'
-              AND m.deleted_at is NULL
               AND m.workspace_id = '${workspace_id}'
           ) as current_count,
           (
@@ -49,7 +48,6 @@ export const activeMembers = protectedProcedure
             WHERE 
               a.created_at >= '${_previousFrom}' 
               AND a.created_at <= '${_previousTo}'
-              AND m.deleted_at is NULL
               AND m.workspace_id = '${workspace_id}'
           ) as previous_count
         SELECT 

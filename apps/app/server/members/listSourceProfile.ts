@@ -11,7 +11,6 @@ export const listSourcesProfile = protectedProcedure.query(
         SELECT DISTINCT attributes.source as source
         FROM profile
         WHERE workspace_id = '${workspace_id}'
-        AND deleted_at IS NULL
         ORDER BY source ASC
       `,
     });

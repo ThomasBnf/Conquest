@@ -40,8 +40,7 @@ export const totalMembers = protectedProcedure
               countIf(created_at <= '${_previousFrom}') as previous_period_start
             FROM member
             WHERE 
-              deleted_at is NULL
-              AND workspace_id = '${workspace_id}'
+              workspace_id = '${workspace_id}'
           ) as count 
         SELECT 
           count.current_period_end as current,

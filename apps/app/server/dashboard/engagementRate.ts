@@ -38,15 +38,13 @@ export const engagementRate = protectedProcedure
               (SELECT count() 
                 FROM member 
                 WHERE 
-                  deleted_at is NULL 
-                  AND workspace_id = '${workspace_id}'
+                   workspace_id = '${workspace_id}'
                   AND created_at <= '${_to}')
             FROM activity a
             JOIN member m ON a.member_id = m.id
             WHERE 
               a.created_at >= '${_from}' 
               AND a.created_at <= '${_to}'
-              AND m.deleted_at is NULL
               AND a.workspace_id = '${workspace_id}'
           ) as current_rate,
           (
@@ -55,15 +53,13 @@ export const engagementRate = protectedProcedure
               (SELECT count() 
                 FROM member 
                 WHERE 
-                  deleted_at is NULL 
-                  AND workspace_id = '${workspace_id}'
+                  workspace_id = '${workspace_id}'
                   AND created_at <= '${_previousTo}')
             FROM activity a
             JOIN member m ON a.member_id = m.id
             WHERE 
               a.created_at >= '${_previousFrom}' 
               AND a.created_at <= '${_previousTo}'
-              AND m.deleted_at is NULL
               AND a.workspace_id = '${workspace_id}'
           ) as previous_rate
         SELECT 

@@ -53,7 +53,6 @@ export const countMembers = async ({
               : "true"
           }
         )
-        AND m.deleted_at IS NULL
         AND m.workspace_id = '${workspace_id}'
         ${filterBy.length > 0 ? `AND (${filterBy.join(operator === "OR" ? " OR " : " AND ")})` : ""}
       `,

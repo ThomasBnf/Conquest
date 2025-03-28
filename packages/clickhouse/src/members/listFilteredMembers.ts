@@ -62,7 +62,6 @@ export const listFilteredMembers = async ({
           m.last_activity,
           m.created_at as created_at,
           m.updated_at as updated_at,
-          m.deleted_at as deleted_at,
           l.number,
           ${profileJoin ? "p.attributes" : ""}
         FROM member m
@@ -84,7 +83,6 @@ export const listFilteredMembers = async ({
           OR positionCaseInsensitive(concat(toString(last_name), ' ', toString(first_name)), '${search}') > 0
           OR positionCaseInsensitive(toString(primary_email), '${search}') > 0
         )
-        AND m.deleted_at IS NULL
         AND m.workspace_id = '${workspace_id}'
         ${filterBy.length > 0 ? `AND (${filtersStr})` : ""}
         ${orderBy}

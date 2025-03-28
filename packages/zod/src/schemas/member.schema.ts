@@ -21,7 +21,6 @@ export const MemberSchema = z.object({
   workspace_id: z.string(),
   first_activity: z.coerce.date().nullable(),
   last_activity: z.coerce.date().nullable(),
-  deleted_at: z.coerce.date().nullable(),
   created_at: z.coerce.date(),
   updated_at: z.coerce.date(),
 });

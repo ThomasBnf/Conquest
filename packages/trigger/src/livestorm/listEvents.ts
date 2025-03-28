@@ -1,4 +1,5 @@
 import { ListEventsSchema } from "@conquest/zod/types/livestorm";
+import { logger } from "@trigger.dev/sdk/v3";
 
 type Props = {
   access_token?: string;
@@ -27,7 +28,7 @@ export const listEvents = async ({ access_token, page, filter }: Props) => {
   );
 
   if (!response.ok) {
-    console.log(await response.json());
+    logger.error("listEvents", { response: await response.json() });
   }
 
   const { data } = ListEventsSchema.parse(await response.json());

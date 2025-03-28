@@ -11,7 +11,6 @@ export const listSourcesMember = protectedProcedure.query(
         SELECT DISTINCT source
         FROM member
         WHERE workspace_id = '${workspace_id}'
-        AND deleted_at IS NULL
         ORDER BY source ASC
       `,
     });

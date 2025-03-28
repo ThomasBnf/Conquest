@@ -23,7 +23,6 @@ export const listPaginatedMembers = async ({
           OR lower(last_name) LIKE lower('%${search}%')
           OR lower(primary_email) LIKE lower('%${search}%')
         )
-        AND deleted_at IS NULL
         AND workspace_id = '${workspace_id}'
         ${cursor ? `AND id > '${cursor}'` : ""}
         ORDER BY first_name ASC

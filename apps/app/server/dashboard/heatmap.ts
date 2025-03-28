@@ -25,8 +25,7 @@ export const heatmap = protectedProcedure
         FROM activity
         JOIN member m ON a.member_id = m.id
         WHERE 
-          m.deleted_at is NULL
-          AND m.workspace_id = '${workspace_id}'
+          m.workspace_id = '${workspace_id}'
           AND created_at >= '${last365days}'
           ${member_id ? `AND member_id = '${member_id}'` : ""}
         GROUP BY date
@@ -34,6 +33,5 @@ export const heatmap = protectedProcedure
     });
 
     const { data } = await result.json();
-    console.log(data);
     return ActivityHeatmapSchema.array().parse(data);
   });

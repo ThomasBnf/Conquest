@@ -20,8 +20,6 @@ export const FilterMenu = ({ filter }: Props) => {
   const [open, setOpen] = useState(false);
   const { onUpdateFilter } = useFilters();
 
-  console.log(filter);
-
   const hasChannel = filter.activity_types.some((activityType) =>
     ["slack", "discord", "discourse"].some((channel) =>
       activityType.key.startsWith(channel),

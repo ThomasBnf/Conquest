@@ -1,6 +1,6 @@
 import { client } from "@conquest/clickhouse/client";
 import { getPulseAndLevel } from "@conquest/clickhouse/members/getPulseAndLevel";
-import { schedules } from "@trigger.dev/sdk/v3";
+import { logger, schedules } from "@trigger.dev/sdk/v3";
 import { endOfHour, format, startOfHour, subHours } from "date-fns";
 
 export const cronHourly = schedules.task({
@@ -29,6 +29,7 @@ export const cronHourly = schedules.task({
     const members = data as Array<{ member_id: string }>;
 
     for (const member of members) {
+      logger.info("member", { member });
       await getPulseAndLevel({ memberId: member.member_id });
     }
   },

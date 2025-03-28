@@ -10,7 +10,6 @@ import {
   type APIThreadList,
   Routes,
 } from "discord-api-types/v10";
-import { createMember } from "./createMember";
 
 type Props = {
   discord: DiscordIntegration;
@@ -75,25 +74,19 @@ export const createManyThreads = async ({ discord }: Props) => {
         if (sticker_items && sticker_items.length > 0) continue;
 
         if (message.id === firstMessage?.id) {
-          const member_id =
-            (await getProfile({ external_id: owner_id, workspace_id }))
-              ?.member_id ??
-            (
-              await createMember({
-                discord,
-                discord_id: owner_id,
-                deleted_at: new Date(),
-              })
-            )?.id;
+          const profile = await getProfile({
+            external_id: owner_id,
+            workspace_id,
+          });
 
-          if (!member_id) continue;
+          if (!profile) continue;
 
           await createActivity({
             external_id: thread.id,
             activity_type_key: "discord:thread",
             title: name,
             message: type === 21 ? (message_content ?? "") : content,
-            member_id,
+            member_id: profile.member_id,
             channel_id: channel.id,
             created_at: new Date(create_timestamp ?? ""),
             updated_at: new Date(create_timestamp ?? ""),
@@ -104,19 +97,19 @@ export const createManyThreads = async ({ discord }: Props) => {
           break;
         }
 
-        const member_id =
-          (await getProfile({ external_id: author_id, workspace_id }))
-            ?.member_id ??
-          (await createMember({ discord, discord_id: author_id }))?.id;
+        const profile = await getProfile({
+          external_id: author_id,
+          workspace_id,
+        });
 
-        if (!member_id) continue;
+        if (!profile) continue;
 
         await createActivity({
           external_id: message.id,
           activity_type_key: "discord:reply_thread",
           message: content,
           reply_to: thread.id,
-          member_id,
+          member_id: profile.member_id,
           channel_id: channel.id,
           created_at: new Date(timestamp),
           updated_at: new Date(timestamp),

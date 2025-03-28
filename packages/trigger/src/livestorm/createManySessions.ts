@@ -1,9 +1,10 @@
 import { createEvent } from "@conquest/db/events/createEvent";
+import { decrypt } from "@conquest/db/utils/decrypt";
 import { EventSchema } from "@conquest/zod/schemas/event.schema";
 import type { LivestormIntegration } from "@conquest/zod/schemas/integration.schema";
 import type { Member } from "@conquest/zod/schemas/member.schema";
 import type { Event, Session } from "@conquest/zod/types/livestorm";
-import { decrypt } from "@conquest/db/utils/decrypt";
+import { logger } from "@trigger.dev/sdk/v3";
 import { createManyPeoples } from "./createManyPeoples";
 import { listEventSessions } from "./listEventSessions";
 
@@ -36,7 +37,7 @@ export const createManySessions = async ({ livestorm, event }: Props) => {
       page: sessionPage,
     });
 
-    console.log("listOfSessions", listOfSessions);
+    logger.info("listOfSessions", { listOfSessions });
 
     if (!listOfSessions?.length) break;
 

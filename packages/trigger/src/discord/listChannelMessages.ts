@@ -5,7 +5,6 @@ import type { Channel } from "@conquest/zod/schemas/channel.schema";
 import type { DiscordIntegration } from "@conquest/zod/schemas/integration.schema";
 import { logger } from "@trigger.dev/sdk/v3";
 import { type APIMessage, Routes } from "discord-api-types/v10";
-import { createMember } from "./createMember";
 
 type Props = {
   discord: DiscordIntegration;
@@ -47,22 +46,15 @@ export const listChannelMessages = async ({
         sticker_items,
       } = message;
       const { author } = message;
-      const discord_id = author.id;
 
       if (author.bot) continue;
 
-      const member_id =
-        (await getProfile({ external_id: discord_id, workspace_id }))
-          ?.member_id ??
-        (
-          await createMember({
-            discord,
-            discord_id,
-            deleted_at: new Date(),
-          })
-        )?.id;
+      const profile = await getProfile({
+        external_id: author.id,
+        workspace_id,
+      });
 
-      if (!member_id || !content || thread || sticker_items) continue;
+      if (!profile || !content || thread || sticker_items) continue;
 
       switch (type) {
         case 0: {
@@ -70,7 +62,7 @@ export const listChannelMessages = async ({
             external_id: id,
             activity_type_key: "discord:message",
             message: content,
-            member_id,
+            member_id: profile.member_id,
             channel_id: channel.id,
             created_at: new Date(timestamp),
             updated_at: new Date(timestamp ?? ""),
@@ -88,7 +80,7 @@ export const listChannelMessages = async ({
             activity_type_key: "discord:reply",
             message: message.content,
             reply_to: message_id,
-            member_id,
+            member_id: profile.member_id,
             channel_id: channel.id,
             created_at: new Date(timestamp),
             updated_at: new Date(timestamp ?? ""),

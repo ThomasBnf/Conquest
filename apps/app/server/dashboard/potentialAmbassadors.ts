@@ -37,8 +37,7 @@ export const potentialAmbassadors = protectedProcedure
             FROM member m
             LEFT JOIN level l ON m.level_id = l.id
             WHERE 
-              m.deleted_at is NULL
-              AND m.workspace_id = '${workspace_id}'
+              m.workspace_id = '${workspace_id}'
               AND l.number >= 7
               AND l.number <= 9
               AND m.id IN (
@@ -54,8 +53,7 @@ export const potentialAmbassadors = protectedProcedure
             FROM member m
             LEFT JOIN level l ON m.level_id = l.id
             WHERE 
-              m.deleted_at is NULL
-              AND m.workspace_id = '${workspace_id}'
+              m.workspace_id = '${workspace_id}'
               AND l.number >= 7
               AND l.number <= 9
               AND m.id IN (
