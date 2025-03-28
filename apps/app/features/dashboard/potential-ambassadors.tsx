@@ -33,10 +33,13 @@ import { PeriodFormatter } from "./period-formatter";
 export const PotentialAmbassadors = () => {
   const [{ from, to }] = useQueryStates(dateParams);
 
-  const { data, isLoading } = trpc.dashboard.potentialAmbassadors.useQuery({
-    from,
-    to,
-  });
+  const { data, isLoading, failureReason } =
+    trpc.dashboard.potentialAmbassadors.useQuery({
+      from,
+      to,
+    });
+
+  console.log(failureReason);
 
   const { current, previous, variation } = data ?? {
     current: 0,
