@@ -34,7 +34,7 @@ export const activeMembersTable = protectedProcedure
     const result = await client.query({
       query: `
         SELECT DISTINCT m.*
-        FROM member m
+        FROM member m FINAL
         INNER JOIN activity a ON m.id = a.member_id
         LEFT JOIN level l ON m.level_id = l.id
         WHERE 

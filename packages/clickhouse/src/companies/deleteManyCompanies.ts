@@ -11,7 +11,7 @@ export const deleteManyCompanies = async ({ ids }: Props) => {
   const result = await client.query({
     query: `
       SELECT *  
-      FROM member
+      FROM member FINAL
       WHERE company_id IN (${parsedIds})
     `,
   });

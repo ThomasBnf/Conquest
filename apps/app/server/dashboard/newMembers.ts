@@ -34,7 +34,7 @@ export const newMembers = protectedProcedure
         WITH 
           (
             SELECT count()
-            FROM member
+            FROM member FINAL
             WHERE 
               created_at >= '${_from}' 
               AND created_at <= '${_to}'
@@ -42,7 +42,7 @@ export const newMembers = protectedProcedure
           ) as current_count,
           (
             SELECT count()
-            FROM member
+            FROM member FINAL
             WHERE 
               created_at >= '${_previousFrom}' 
               AND created_at <= '${_previousTo}'

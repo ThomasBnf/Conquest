@@ -34,7 +34,7 @@ export const potentialAmbassadors = protectedProcedure
         WITH 
           (
             SELECT count(DISTINCT m.id)
-            FROM member m
+            FROM member m FINAL
             LEFT JOIN level l ON m.level_id = l.id
             WHERE 
               m.workspace_id = '${workspace_id}'
@@ -50,7 +50,7 @@ export const potentialAmbassadors = protectedProcedure
           ) as current_count,
           (
             SELECT count(DISTINCT m.id)
-            FROM member m
+            FROM member m FINAL
             LEFT JOIN level l ON m.level_id = l.id
             WHERE 
               m.workspace_id = '${workspace_id}'

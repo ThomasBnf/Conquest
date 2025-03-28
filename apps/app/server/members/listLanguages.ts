@@ -8,7 +8,7 @@ export const listLanguages = protectedProcedure.query(
     const result = await client.query({
       query: `
         SELECT DISTINCT language
-        FROM member
+        FROM member FINAL
         WHERE 
           workspace_id = '${workspace_id}'
           AND language IS NOT NULL; 

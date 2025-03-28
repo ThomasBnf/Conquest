@@ -9,7 +9,7 @@ export const listSourcesMember = protectedProcedure.query(
     const result = await client.query({
       query: `
         SELECT DISTINCT source
-        FROM member
+        FROM member FINAL
         WHERE workspace_id = '${workspace_id}'
         ORDER BY source ASC
       `,

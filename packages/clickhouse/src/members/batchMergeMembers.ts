@@ -15,7 +15,7 @@ export const batchMergeMembers = async ({ members }: Props) => {
     const result = await client.query({
       query: `
         SELECT *
-        FROM member
+        FROM member FINAL
         WHERE 
           primary_email = '${primary_email}'
           AND workspace_id = '${workspace_id}'

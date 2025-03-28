@@ -38,7 +38,7 @@ export const atRiskMembers = protectedProcedure
         FROM
         (
           SELECT count(*) as count
-          FROM member m
+          FROM member m FINAL
           LEFT JOIN level l ON m.level_id = l.id
           WHERE 
             AND m.workspace_id = '${workspace_id}'
@@ -53,7 +53,7 @@ export const atRiskMembers = protectedProcedure
         ) as currentCount,
         (
           SELECT count(*) as count
-          FROM member m
+          FROM member m FINAL
           LEFT JOIN level l ON m.level_id = l.id
           WHERE 
             m.workspace_id = '${workspace_id}'

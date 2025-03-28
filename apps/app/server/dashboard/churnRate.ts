@@ -39,7 +39,7 @@ export const churnRate = protectedProcedure
         FROM
         (
           SELECT count(*) as count
-          FROM member m
+          FROM member m FINAL
           LEFT JOIN level l ON m.level_id = l.id
           WHERE 
             m.workspace_id = '${workspace_id}'
@@ -54,7 +54,7 @@ export const churnRate = protectedProcedure
         ) as currentInactive,
         (
           SELECT count(*) as total
-          FROM member m
+          FROM member m FINAL
           LEFT JOIN level l ON m.level_id = l.id
           WHERE 
             m.workspace_id = '${workspace_id}'
@@ -62,7 +62,7 @@ export const churnRate = protectedProcedure
         ) as currentTotal,
         (
           SELECT count(*) as count
-          FROM member m
+          FROM member m FINAL
           LEFT JOIN level l ON m.level_id = l.id
           WHERE 
             m.workspace_id = '${workspace_id}'
@@ -77,7 +77,7 @@ export const churnRate = protectedProcedure
         ) as previousInactive,
         (
           SELECT count(*) as total
-          FROM member m
+          FROM member m FINAL
           LEFT JOIN level l ON m.level_id = l.id
           WHERE 
             m.workspace_id = '${workspace_id}'

@@ -83,7 +83,7 @@ export const deleteIntegration = async ({ integration }: Props) => {
       query: `
         ALTER TABLE profile DELETE
         WHERE member_id IN (
-          SELECT id FROM member 
+          SELECT id FROM member FINAL
           WHERE source = '${source}'
           AND workspace_id = '${workspace_id}'
         );`,
@@ -109,7 +109,7 @@ export const deleteIntegration = async ({ integration }: Props) => {
     query: `
       ALTER TABLE log DELETE 
       WHERE member_id IN (
-        SELECT id FROM member 
+        SELECT id FROM member FINAL
         WHERE source = '${source}'
         AND workspace_id = '${workspace_id}'
       );`,

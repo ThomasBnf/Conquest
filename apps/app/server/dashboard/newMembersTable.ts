@@ -34,7 +34,7 @@ export const newMembersTable = protectedProcedure
     const result = await client.query({
       query: `
         SELECT m.*
-        FROM member m
+        FROM member m FINAL
         LEFT JOIN level l ON m.level_id = l.id
         WHERE 
           m.workspace_id = '${workspace_id}'

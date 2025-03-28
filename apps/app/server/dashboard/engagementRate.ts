@@ -36,7 +36,7 @@ export const engagementRate = protectedProcedure
             SELECT 
               count(DISTINCT member_id) * 100.0 / 
               (SELECT count() 
-                FROM member 
+                FROM member FINAL
                 WHERE 
                    workspace_id = '${workspace_id}'
                   AND created_at <= '${_to}')
@@ -51,7 +51,7 @@ export const engagementRate = protectedProcedure
             SELECT 
               count(DISTINCT member_id) * 100.0 / 
               (SELECT count() 
-                FROM member 
+                FROM member FINAL
                 WHERE 
                   workspace_id = '${workspace_id}'
                   AND created_at <= '${_previousTo}')
