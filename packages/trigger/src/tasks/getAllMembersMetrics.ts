@@ -1,3 +1,4 @@
+import { client } from "@conquest/clickhouse/client";
 import { listLevels } from "@conquest/clickhouse/levels/listLevels";
 import { deleteAllLogs } from "@conquest/clickhouse/logs/deleteAllLogs";
 import { listMembers } from "@conquest/clickhouse/members/listMembers";
@@ -44,6 +45,10 @@ export const getAllMembersMetrics = schemaTask({
       if (members.length < BATCH_SIZE) break;
       offset += BATCH_SIZE;
     }
+
+    await client.query({
+      query: "OPTIMIZE TABLE member FINAL;",
+    });
   },
 });
 

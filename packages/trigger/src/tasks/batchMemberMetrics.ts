@@ -91,9 +91,5 @@ export const batchMemberMetrics = schemaTask({
       values: updatedMembers,
       format: "JSON",
     });
-
-    await client.query({
-      query: "OPTIMIZE TABLE member FINAL;",
-    });
   },
 });
