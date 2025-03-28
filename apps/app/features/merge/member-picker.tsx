@@ -36,7 +36,7 @@ export const MemberPicker = ({ currentMember, onSelect }: Props) => {
       { getNextPageParam: (lastPage, allPages) => allPages.length * 10 + 10 },
     );
 
-  const members = data?.pages.flatMap((page) => page.map((member) => member));
+  const members = data?.pages.flat();
 
   useEffect(() => {
     if (inView && hasNextPage) fetchNextPage();
