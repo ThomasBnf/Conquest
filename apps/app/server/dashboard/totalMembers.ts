@@ -39,15 +39,17 @@ export const totalMembers = protectedProcedure
               countIf(created_at <= '${_previousTo}') as previous_period_end,
               countIf(created_at <= '${_previousFrom}') as previous_period_start
             FROM member
-            WHERE workspace_id = '${workspace_id}'
-          ) as counts 
+            WHERE 
+              deleted_at is NULL
+              AND workspace_id = '${workspace_id}'
+          ) as count 
         SELECT 
-          counts.current_period_end as current,
-          counts.previous_period_end as previous,
+          count.current_period_end as current,
+          count.previous_period_end as previous,
           CASE
-            WHEN counts.previous_period_end = 0 AND counts.current_period_end > 0 THEN 100
-            WHEN counts.previous_period_end = 0 THEN 0
-            ELSE ((counts.current_period_end - counts.previous_period_end) / counts.previous_period_end) * 100
+            WHEN count.previous_period_end = 0 AND count.current_period_end > 0 THEN 100
+            WHEN count.previous_period_end = 0 THEN 0
+            ELSE ((count.current_period_end - count.previous_period_end) / count.previous_period_end) * 100
           END as variation
       `,
       format: "JSON",

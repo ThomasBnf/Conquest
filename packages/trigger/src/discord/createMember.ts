@@ -8,9 +8,14 @@ import { type APIUser, Routes } from "discord-api-types/v10";
 type Props = {
   discord: DiscordIntegration;
   discord_id: string;
+  deleted_at?: Date;
 };
 
-export const createMember = async ({ discord, discord_id }: Props) => {
+export const createMember = async ({
+  discord,
+  discord_id,
+  deleted_at,
+}: Props) => {
   const { workspace_id } = discord;
 
   try {
@@ -35,6 +40,7 @@ export const createMember = async ({ discord, discord_id }: Props) => {
       last_name: lastName,
       avatar_url: avatarUrl,
       source: "Discord",
+      deleted_at,
       workspace_id,
     });
 

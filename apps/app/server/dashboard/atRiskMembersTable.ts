@@ -1,7 +1,7 @@
 import { client } from "@conquest/clickhouse/client";
 import { orderByParser } from "@conquest/clickhouse/helpers/orderByParser";
 import { MemberSchema } from "@conquest/zod/schemas/member.schema";
-import { addHours, format } from "date-fns";
+import { format } from "date-fns";
 import { toZonedTime } from "date-fns-tz";
 import { z } from "zod";
 import { protectedProcedure } from "../trpc";
@@ -36,8 +36,10 @@ export const atRiskMembersTable = protectedProcedure
         SELECT m.*
         FROM member m
         LEFT JOIN level l ON m.level_id = l.id
-        WHERE m.workspace_id = '${workspace_id}'
-          AND l.number >= 3
+        WHERE 
+          m.deleted_at is NULL
+          AND m.workspace_id = '${workspace_id}'
+          AND l.number >= 4
           AND m.id NOT IN (
             SELECT member_id 
             FROM activity 

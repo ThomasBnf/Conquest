@@ -78,7 +78,13 @@ export const createManyThreads = async ({ discord }: Props) => {
           const member_id =
             (await getProfile({ external_id: owner_id, workspace_id }))
               ?.member_id ??
-            (await createMember({ discord, discord_id: owner_id }))?.id;
+            (
+              await createMember({
+                discord,
+                discord_id: owner_id,
+                deleted_at: new Date(),
+              })
+            )?.id;
 
           if (!member_id) continue;
 

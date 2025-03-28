@@ -37,13 +37,15 @@ export const potentialAmbassadors = protectedProcedure
             FROM member m
             LEFT JOIN level l ON m.level_id = l.id
             WHERE 
-              m.workspace_id = '${workspace_id}'
+              m.deleted_at is NULL
+              AND m.workspace_id = '${workspace_id}'
               AND l.number >= 7
-              AND l.number < 10
+              AND l.number <= 9
               AND m.id IN (
                 SELECT member_id 
                 FROM activity 
-                WHERE workspace_id = '${workspace_id}'
+                WHERE deleted_at is NULL
+                  AND workspace_id = '${workspace_id}'
                   AND created_at BETWEEN '${_from}' AND '${_to}'
               )
           ) as current_count,
@@ -52,13 +54,15 @@ export const potentialAmbassadors = protectedProcedure
             FROM member m
             LEFT JOIN level l ON m.level_id = l.id
             WHERE 
-              m.workspace_id = '${workspace_id}'
+              m.deleted_at is NULL
+              AND m.workspace_id = '${workspace_id}'
               AND l.number >= 7
-              AND l.number < 10
+              AND l.number <= 9
               AND m.id IN (
                 SELECT member_id 
                 FROM activity 
-                WHERE workspace_id = '${workspace_id}'
+                WHERE deleted_at is NULL
+                  AND workspace_id = '${workspace_id}'
                   AND created_at BETWEEN '${_previousFrom}' AND '${_previousTo}'
               )
           ) as previous_count

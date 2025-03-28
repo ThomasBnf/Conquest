@@ -42,12 +42,14 @@ export const churnRate = protectedProcedure
           FROM member m
           LEFT JOIN level l ON m.level_id = l.id
           WHERE 
-            m.workspace_id = '${workspace_id}'
-            AND l.number >= 3
+            m.deleted_at is NULL
+            AND m.workspace_id = '${workspace_id}'
+            AND l.number >= 4
             AND m.id NOT IN (
               SELECT member_id 
               FROM activity 
-              WHERE workspace_id = '${workspace_id}'
+              WHERE 
+                workspace_id = '${workspace_id}'
                 AND created_at BETWEEN '${_from}' AND '${_to}'
             )
         ) as currentInactive,
@@ -56,20 +58,23 @@ export const churnRate = protectedProcedure
           FROM member m
           LEFT JOIN level l ON m.level_id = l.id
           WHERE 
-            m.workspace_id = '${workspace_id}'
-            AND l.number >= 3
+            m.deleted_at is NULL
+            AND m.workspace_id = '${workspace_id}'
+            AND l.number >= 4
         ) as currentTotal,
         (
           SELECT count(*) as count
           FROM member m
           LEFT JOIN level l ON m.level_id = l.id
           WHERE 
-            m.workspace_id = '${workspace_id}'
-            AND l.number >= 3
+            m.deleted_at is NULL
+            AND m.workspace_id = '${workspace_id}'
+            AND l.number >= 4
             AND m.id NOT IN (
               SELECT member_id 
               FROM activity 
-              WHERE workspace_id = '${workspace_id}'
+              WHERE 
+                workspace_id = '${workspace_id}'
                 AND created_at BETWEEN '${_previousFrom}' AND '${_previousTo}'
             )
         ) as previousInactive,
@@ -78,8 +83,9 @@ export const churnRate = protectedProcedure
           FROM member m
           LEFT JOIN level l ON m.level_id = l.id
           WHERE 
-            m.workspace_id = '${workspace_id}'
-            AND l.number >= 3
+            m.deleted_at is NULL
+            AND m.workspace_id = '${workspace_id}'
+            AND l.number >= 4
         ) as previousTotal
       `,
       format: "JSON",

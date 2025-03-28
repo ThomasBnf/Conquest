@@ -78,14 +78,16 @@ export const createCustomer = protectedProcedure
         : null,
     });
 
-    await resend.emails.send({
-      from: "Conquest <hello@useconquest.com>",
-      to: "audrey@useconquest.com",
-      subject: "New User Signup",
-      html: `
+    if (process.env.NODE_ENV === "production") {
+      await resend.emails.send({
+        from: "Conquest <hello@useconquest.com>",
+        to: ["thomas.bnfls@gmail.com", "audrey@useconquest.com"],
+        subject: "New User Signup",
+        html: `
         <p>Email: ${email}</p>
         <p>Workspace: ${workspace.name}</p>
         <p>Plan: ${plan}</p>
-      `,
-    });
+        `,
+      });
+    }
   });

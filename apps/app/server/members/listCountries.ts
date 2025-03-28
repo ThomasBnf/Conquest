@@ -10,6 +10,7 @@ export const listCountries = protectedProcedure.query(
         SELECT DISTINCT country
         FROM member
         WHERE workspace_id = '${workspace_id}'
+        AND deleted_at IS NULL
         AND country IS NOT NULL; 
       `,
     });

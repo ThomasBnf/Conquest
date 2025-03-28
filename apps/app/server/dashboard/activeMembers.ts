@@ -1,8 +1,8 @@
 import { client } from "@conquest/clickhouse/client";
 import { differenceInDays, format, subDays } from "date-fns";
+import { toZonedTime } from "date-fns-tz";
 import { z } from "zod";
 import { protectedProcedure } from "../trpc";
-import { toZonedTime } from "date-fns-tz";
 
 export const activeMembers = protectedProcedure
   .input(
@@ -33,18 +33,24 @@ export const activeMembers = protectedProcedure
       query: `
         WITH 
           (
-            SELECT count(DISTINCT member_id)
-            FROM activity
-            WHERE created_at >= '${_from}' 
-            AND created_at <= '${_to}'
-            AND workspace_id = '${workspace_id}'
+            SELECT count(DISTINCT a.member_id)
+            FROM activity a
+            JOIN member m ON a.member_id = m.id
+            WHERE 
+              a.created_at >= '${_from}' 
+              AND a.created_at <= '${_to}'
+              AND m.deleted_at is NULL
+              AND m.workspace_id = '${workspace_id}'
           ) as current_count,
           (
-            SELECT count(DISTINCT member_id)
-            FROM activity
-            WHERE created_at >= '${_previousFrom}' 
-            AND created_at <= '${_previousTo}'
-            AND workspace_id = '${workspace_id}'
+            SELECT count(DISTINCT a.member_id)
+            FROM activity a
+            JOIN member m ON a.member_id = m.id
+            WHERE 
+              a.created_at >= '${_previousFrom}' 
+              AND a.created_at <= '${_previousTo}'
+              AND m.deleted_at is NULL
+              AND m.workspace_id = '${workspace_id}'
           ) as previous_count
         SELECT 
           current_count as current,

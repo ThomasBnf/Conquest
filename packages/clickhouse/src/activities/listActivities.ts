@@ -33,7 +33,11 @@ export const listActivities = async ({
       FROM activity a
       LEFT JOIN activity_type ON a.activity_type_id = activity_type.id
       ${company_id ? "LEFT JOIN member m ON a.member_id = m.id" : ""}
-      WHERE a.workspace_id = '${workspace_id}'
+      ${
+        company_id
+          ? `WHERE m.deleted_at IS NULL AND a.workspace_id = '${workspace_id}'`
+          : `WHERE a.workspace_id = '${workspace_id}'`
+      }
       ${member_id ? `AND a.member_id = '${member_id}'` : ""}
       ${company_id ? `AND m.company_id = '${company_id}'` : ""}
       ${period ? `AND a.created_at BETWEEN '${format(to, "yyyy-MM-dd HH:mm:ss")}' AND '${format(today, "yyyy-MM-dd HH:mm:ss")}'` : ""}

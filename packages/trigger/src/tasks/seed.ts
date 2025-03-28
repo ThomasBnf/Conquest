@@ -161,6 +161,7 @@ export const seed = schemaTask({
                 id: randomUUID(),
                 activity_type_id: activity_type.id,
                 member_id,
+                event_id: event.id,
                 workspace_id,
                 source: "Livestorm",
                 created_at: faker.date.between({

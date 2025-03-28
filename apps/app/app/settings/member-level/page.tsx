@@ -16,7 +16,7 @@ export default function Page() {
           thresholds for progression
         </p>
         <Link
-          href="https://docs.useconquest.com/levels"
+          href="https://docs.useconquest.com/conquest-pulse/member-level"
           className={cn(
             buttonVariants({ variant: "link" }),
             "mt-1.5 h-fit w-fit p-0",

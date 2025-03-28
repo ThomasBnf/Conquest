@@ -35,16 +35,20 @@ export const newMembers = protectedProcedure
           (
             SELECT count()
             FROM member
-            WHERE created_at >= '${_from}' 
-            AND created_at <= '${_to}'
-            AND workspace_id = '${workspace_id}'
+            WHERE 
+              deleted_at is NULL
+              AND created_at >= '${_from}' 
+              AND created_at <= '${_to}'
+              AND workspace_id = '${workspace_id}'
           ) as current_count,
           (
             SELECT count()
             FROM member
-            WHERE created_at >= '${_previousFrom}' 
-            AND created_at <= '${_previousTo}'
-            AND workspace_id = '${workspace_id}'
+            WHERE 
+              deleted_at is NULL
+              AND created_at >= '${_previousFrom}' 
+              AND created_at <= '${_previousTo}'
+              AND workspace_id = '${workspace_id}'
           ) as previous_count
         SELECT 
           current_count as current,

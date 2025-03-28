@@ -1,7 +1,7 @@
 import { client } from "@conquest/clickhouse/client";
 import { orderByParser } from "@conquest/clickhouse/helpers/orderByParser";
 import { MemberSchema } from "@conquest/zod/schemas/member.schema";
-import { addHours, format } from "date-fns";
+import { format } from "date-fns";
 import { toZonedTime } from "date-fns-tz";
 import { z } from "zod";
 import { protectedProcedure } from "../trpc";
@@ -36,7 +36,9 @@ export const newMembersTable = protectedProcedure
         SELECT m.*
         FROM member m
         LEFT JOIN level l ON m.level_id = l.id
-        WHERE m.workspace_id = '${workspace_id}'
+        WHERE 
+          m.deleted_at is NULL
+          AND m.workspace_id = '${workspace_id}'
           AND m.created_at BETWEEN '${_from}' AND '${_to}'
         AND (
           positionCaseInsensitive(concat(toString(first_name), ' ', toString(last_name)), '${search}') > 0

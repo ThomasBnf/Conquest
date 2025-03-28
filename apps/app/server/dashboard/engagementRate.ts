@@ -1,8 +1,8 @@
 import { client } from "@conquest/clickhouse/client";
-import { addHours, differenceInDays, format, subDays } from "date-fns";
+import { differenceInDays, format, subDays } from "date-fns";
+import { toZonedTime } from "date-fns-tz";
 import { z } from "zod";
 import { protectedProcedure } from "../trpc";
-import { toZonedTime } from "date-fns-tz";
 
 export const engagementRate = protectedProcedure
   .input(
@@ -34,26 +34,42 @@ export const engagementRate = protectedProcedure
         WITH 
           (
             SELECT 
-              round(count(DISTINCT member_id) * 100.0 / 
-              (SELECT count() FROM member WHERE created_at <= '${_to}'), 2)
-            FROM activity
-            WHERE created_at >= '${_from}' 
-            AND created_at <= '${_to}'
-            AND workspace_id = '${workspace_id}'
+              count(DISTINCT member_id) * 100.0 / 
+              (SELECT count() 
+                FROM member 
+                WHERE 
+                  deleted_at is NULL 
+                  AND workspace_id = '${workspace_id}'
+                  AND created_at <= '${_to}')
+            FROM activity a
+            JOIN member m ON a.member_id = m.id
+            WHERE 
+              a.created_at >= '${_from}' 
+              AND a.created_at <= '${_to}'
+              AND m.deleted_at is NULL
+              AND a.workspace_id = '${workspace_id}'
           ) as current_rate,
           (
             SELECT 
-              round(count(DISTINCT member_id) * 100.0 / 
-              (SELECT count() FROM member WHERE created_at <= '${_previousTo}'), 2)
-            FROM activity
-            WHERE created_at >= '${_previousFrom}' 
-            AND created_at <= '${_previousTo}'
-            AND workspace_id = '${workspace_id}'
+              count(DISTINCT member_id) * 100.0 / 
+              (SELECT count() 
+                FROM member 
+                WHERE 
+                  deleted_at is NULL 
+                  AND workspace_id = '${workspace_id}'
+                  AND created_at <= '${_previousTo}')
+            FROM activity a
+            JOIN member m ON a.member_id = m.id
+            WHERE 
+              a.created_at >= '${_previousFrom}' 
+              AND a.created_at <= '${_previousTo}'
+              AND m.deleted_at is NULL
+              AND a.workspace_id = '${workspace_id}'
           ) as previous_rate
         SELECT 
           current_rate as current,
           previous_rate as previous,
-          if(previous_rate = 0, 0, round(current_rate - previous_rate, 2)) as variation
+          if(previous_rate = 0, 0, current_rate - previous_rate) as variation
       `,
       format: "JSON",
     });

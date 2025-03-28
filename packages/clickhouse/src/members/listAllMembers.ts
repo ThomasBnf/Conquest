@@ -6,6 +6,7 @@ export const listAllMembers = async () => {
     query: `
       SELECT * 
       FROM member
+      WHERE deleted_at IS NULL
       ORDER BY created_at DESC
     `,
   });

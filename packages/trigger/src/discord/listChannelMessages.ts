@@ -53,7 +53,14 @@ export const listChannelMessages = async ({
 
       const member_id =
         (await getProfile({ external_id: discord_id, workspace_id }))
-          ?.member_id ?? (await createMember({ discord, discord_id }))?.id;
+          ?.member_id ??
+        (
+          await createMember({
+            discord,
+            discord_id,
+            deleted_at: new Date(),
+          })
+        )?.id;
 
       if (!member_id || !content || thread || sticker_items) continue;
 

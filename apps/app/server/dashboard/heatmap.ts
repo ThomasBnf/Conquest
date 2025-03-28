@@ -23,7 +23,10 @@ export const heatmap = protectedProcedure
           toDate(created_at) as date,
           count() as count
         FROM activity
-        WHERE workspace_id = '${workspace_id}'
+        JOIN member m ON a.member_id = m.id
+        WHERE 
+          m.deleted_at is NULL
+          AND m.workspace_id = '${workspace_id}'
           AND created_at >= '${last365days}'
           ${member_id ? `AND member_id = '${member_id}'` : ""}
         GROUP BY date

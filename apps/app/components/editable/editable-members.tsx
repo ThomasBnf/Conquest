@@ -44,7 +44,7 @@ export const EditableMembers = ({ company }: Props) => {
   });
 
   const { data, hasNextPage, fetchNextPage, isLoading } =
-    trpc.members.getAllMembers.useInfiniteQuery(
+    trpc.members.listPaginated.useInfiniteQuery(
       { search, take: 25 },
       { getNextPageParam: (lastPage) => lastPage[lastPage.length - 1]?.id },
     );

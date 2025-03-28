@@ -17,6 +17,7 @@ export const batchMergeMembers = async ({ members }: Props) => {
         SELECT *
         FROM member
         WHERE primary_email = '${primary_email}'
+        AND deleted_at IS NULL
         AND workspace_id = '${workspace_id}'
       `,
       format: "JSON",

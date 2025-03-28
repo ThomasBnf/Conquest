@@ -37,13 +37,15 @@ export const activeMembersTable = protectedProcedure
         FROM member m
         INNER JOIN activity a ON m.id = a.member_id
         LEFT JOIN level l ON m.level_id = l.id
-        WHERE m.workspace_id = '${workspace_id}'
+        WHERE 
+          m.deleted_at is NULL
+          AND m.workspace_id = '${workspace_id}'
           AND a.created_at BETWEEN '${_from}' AND '${_to}'
-        AND (
-          positionCaseInsensitive(concat(toString(first_name), ' ', toString(last_name)), '${search}') > 0
-          OR positionCaseInsensitive(concat(toString(last_name), ' ', toString(first_name)), '${search}') > 0
-          OR positionCaseInsensitive(toString(primary_email), '${search}') > 0
-        )
+          AND (
+            positionCaseInsensitive(concat(toString(first_name), ' ', toString(last_name)), '${search}') > 0
+            OR positionCaseInsensitive(concat(toString(last_name), ' ', toString(first_name)), '${search}') > 0
+            OR positionCaseInsensitive(toString(primary_email), '${search}') > 0
+          )
         ${orderBy}
         LIMIT ${pageSize}
         OFFSET ${page * pageSize}

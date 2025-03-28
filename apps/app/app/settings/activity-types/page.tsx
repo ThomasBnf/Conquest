@@ -16,7 +16,7 @@ export default function Page() {
           engagement system
         </p>
         <Link
-          href="https://docs.useconquest.com/activity-types"
+          href="https://docs.useconquest.com/conquest-pulse/activity-types"
           className={cn(
             buttonVariants({ variant: "link" }),
             "mt-1.5 h-fit w-fit p-0",

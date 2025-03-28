@@ -16,7 +16,7 @@ export default function Page() {
           community
         </p>
         <Link
-          href="https://docs.useconquest.com/tags"
+          href="https://docs.useconquest.com/workspace/tags"
           className={cn(
             buttonVariants({ variant: "link" }),
             "mt-1.5 h-fit w-fit p-0",

@@ -32,7 +32,7 @@ export const ChurnRate = () => {
           content={
             <div className="flex flex-col gap-2">
               <p>
-                Percentage of active members (level 3+) who had no activity
+                Percentage of active members (min level 4) who had no activity
                 during the selected period.
               </p>
               <div className="flex items-center gap-2 opacity-70">

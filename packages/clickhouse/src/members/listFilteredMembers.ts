@@ -1,42 +1,45 @@
 import { client } from "@conquest/clickhouse/client";
 import { getFilters } from "@conquest/clickhouse/helpers/getFilters";
 import { orderByParser } from "@conquest/clickhouse/helpers/orderByParser";
-import { GroupFiltersSchema } from "@conquest/zod/schemas/filters.schema";
+import { GroupFilters } from "@conquest/zod/schemas/filters.schema";
 import { MemberSchema } from "@conquest/zod/schemas/member.schema";
-import { z } from "zod";
-import { protectedProcedure } from "../trpc";
 
-export const listMembers = protectedProcedure
-  .input(
-    z.object({
-      search: z.string(),
-      id: z.string(),
-      desc: z.boolean(),
-      page: z.number(),
-      pageSize: z.number(),
-      groupFilters: GroupFiltersSchema,
-    }),
-  )
-  .query(async ({ ctx: { user }, input }) => {
-    const { workspace_id } = user;
-    const { search, id, desc, page, pageSize, groupFilters } = input;
-    const { operator } = groupFilters;
+type Props = {
+  search: string;
+  id: string;
+  desc: boolean;
+  page: number;
+  pageSize: number;
+  groupFilters: GroupFilters;
+  workspace_id: string;
+};
 
-    const filterBy = getFilters({ groupFilters });
-    const filtersStr = filterBy.join(operator === "OR" ? " OR " : " AND ");
+export const listFilteredMembers = async ({
+  search,
+  id,
+  desc,
+  page,
+  pageSize,
+  groupFilters,
+  workspace_id,
+}: Props) => {
+  const { operator } = groupFilters;
 
-    const companyJoin = id === "company";
-    const profileJoin = groupFilters.filters.some(
-      (filter) =>
-        filter.field === "profiles" ||
-        filter.field.includes("discourse-") ||
-        filter.field.includes("github-"),
-    );
+  const filterBy = getFilters({ groupFilters });
+  const filtersStr = filterBy.join(operator === "OR" ? " OR " : " AND ");
 
-    const orderBy = orderByParser({ id, desc, type: "members" });
+  const companyJoin = id === "company";
+  const profileJoin = groupFilters.filters.some(
+    (filter) =>
+      filter.field === "profiles" ||
+      filter.field.includes("discourse-") ||
+      filter.field.includes("github-"),
+  );
 
-    const result = await client.query({
-      query: `
+  const orderBy = orderByParser({ id, desc, type: "members" });
+
+  const result = await client.query({
+    query: `
         SELECT 
           m.id as id,
           m.first_name,
@@ -80,16 +83,16 @@ export const listMembers = protectedProcedure
           OR positionCaseInsensitive(concat(toString(last_name), ' ', toString(first_name)), '${search}') > 0
           OR positionCaseInsensitive(toString(primary_email), '${search}') > 0
         )
+        AND m.deleted_at IS NULL
         AND m.workspace_id = '${workspace_id}'
         ${filterBy.length > 0 ? `AND (${filtersStr})` : ""}
         ${orderBy}
         LIMIT ${pageSize}
         OFFSET ${page * pageSize}
       `,
-      format: "JSON",
-    });
-
-    const { data } = await result.json();
-    console.dir(data, { depth: 100 });
-    return MemberSchema.array().parse(data);
+    format: "JSON",
   });
+
+  const { data } = await result.json();
+  return MemberSchema.array().parse(data);
+};
