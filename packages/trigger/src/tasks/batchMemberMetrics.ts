@@ -35,7 +35,7 @@ export const batchMemberMetrics = schemaTask({
       { weekStartsOn: 1 },
     );
 
-    for (const member of members) {
+    for (const [index, member] of members.entries()) {
       const activities = await listActivities({
         member_id: member.id,
         workspace_id: member.workspace_id,
@@ -80,7 +80,7 @@ export const batchMemberMetrics = schemaTask({
         updated_at: new Date(),
       });
 
-      logger.info(`${member.id}`, { member });
+      logger.info(`${index} - ${member.id}`);
     }
 
     await client.insert({

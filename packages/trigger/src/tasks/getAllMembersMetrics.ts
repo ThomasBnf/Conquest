@@ -16,7 +16,7 @@ export const getAllMembersMetrics = schemaTask({
     const levels = await listLevels({ workspace_id });
     await deleteAllLogs({ workspace_id });
 
-    const BATCH_SIZE = 100;
+    const BATCH_SIZE = 200;
     let offset = 0;
 
     while (true) {
@@ -38,7 +38,7 @@ export const getAllMembersMetrics = schemaTask({
         },
       ]);
 
-      logger.info("members", { count: members.length, members });
+      logger.info("members", { count: members.length });
 
       if (members.length < BATCH_SIZE) break;
       offset += BATCH_SIZE;
