@@ -72,7 +72,5 @@ export const listActivities = async ({
     transformFlatActivity(row as Record<string, unknown>),
   ) as ActivityWithType[];
 
-  console.log(activities);
-
   return ActivityWithTypeSchema.array().parse(activities);
 };

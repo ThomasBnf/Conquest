@@ -21,8 +21,9 @@ export const batchMemberMetrics = schemaTask({
   schema: z.object({
     members: z.array(MemberSchema),
     levels: z.array(LevelSchema),
+    workspace_id: z.string(),
   }),
-  run: async ({ members, levels }) => {
+  run: async ({ members, levels, workspace_id }) => {
     const updatedMembers: Member[] = [];
     const logs: Log[] = [];
 
@@ -35,13 +36,9 @@ export const batchMemberMetrics = schemaTask({
       { weekStartsOn: 1 },
     );
 
-    for (const [index, member] of members.entries()) {
-      const activities = await listActivities({
-        member_id: member.id,
-        workspace_id: member.workspace_id,
-        period: 365,
-      });
+    const activities = await listActivities({ workspace_id, period: 365 });
 
+    for (const [index, member] of members.entries()) {
       const memberActivities = activities?.filter(
         (activity) => activity.member_id === member.id,
       );

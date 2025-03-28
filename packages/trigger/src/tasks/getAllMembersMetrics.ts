@@ -31,6 +31,7 @@ export const getAllMembersMetrics = schemaTask({
           payload: {
             members,
             levels,
+            workspace_id,
           },
           options: {
             metadata: { workspace_id },
