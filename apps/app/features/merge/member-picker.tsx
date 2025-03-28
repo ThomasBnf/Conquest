@@ -32,8 +32,8 @@ export const MemberPicker = ({ currentMember, onSelect }: Props) => {
 
   const { data, isLoading, fetchNextPage, hasNextPage } =
     trpc.members.listPaginated.useInfiniteQuery(
-      { search, take: 10 },
-      { getNextPageParam: (lastPage) => lastPage[lastPage.length - 1]?.id },
+      { search, limit: 10 },
+      { getNextPageParam: (lastPage, allPages) => allPages.length * 10 + 10 },
     );
 
   const members = data?.pages.flatMap((page) => page.map((member) => member));

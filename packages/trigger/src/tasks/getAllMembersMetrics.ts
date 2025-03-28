@@ -1,23 +1,9 @@
-import { listActivities } from "@conquest/clickhouse/activities/listActivities";
-import { client } from "@conquest/clickhouse/client";
-import { getLevel } from "@conquest/clickhouse/helpers/getLevel";
-import { getPulseScore } from "@conquest/clickhouse/helpers/getPulseScore";
 import { listLevels } from "@conquest/clickhouse/levels/listLevels";
-import { createManyLogs } from "@conquest/clickhouse/logs/createManyLogs";
 import { deleteAllLogs } from "@conquest/clickhouse/logs/deleteAllLogs";
 import { listMembers } from "@conquest/clickhouse/members/listMembers";
-import type { Log } from "@conquest/zod/schemas/logs.schema";
-import { Member } from "@conquest/zod/schemas/member.schema";
 import { type Context, logger, runs, schemaTask } from "@trigger.dev/sdk/v3";
-import {
-  eachWeekOfInterval,
-  endOfDay,
-  startOfDay,
-  subDays,
-  subWeeks,
-} from "date-fns";
-import { randomUUID } from "node:crypto";
 import { z } from "zod";
+import { batchMemberMetrics } from "./batchMemberMetrics";
 
 export const getAllMembersMetrics = schemaTask({
   id: "get-all-members-metrics",
@@ -27,83 +13,36 @@ export const getAllMembersMetrics = schemaTask({
   run: async ({ workspace_id }, { ctx }) => {
     await hasTasksRunning({ ctx, workspace_id });
 
-    const updatedMembers: Member[] = [];
-    const logs: Log[] = [];
-
     const levels = await listLevels({ workspace_id });
-    const members = await listMembers({ workspace_id });
-    const activities = await listActivities({ workspace_id, period: 365 });
     await deleteAllLogs({ workspace_id });
 
-    logger.info(`Found ${members.length} members`);
+    const BATCH_SIZE = 100;
+    let offset = 0;
 
-    const today = new Date();
-    const startDate = startOfDay(subWeeks(today, 52));
-    const endDate = endOfDay(today);
-
-    const intervals = eachWeekOfInterval(
-      { start: startDate, end: endDate },
-      { weekStartsOn: 1 },
-    );
-
-    for (const [index, member] of members.entries()) {
-      const memberActivities = activities?.filter(
-        (activity) => activity.member_id === member.id,
-      );
-
-      for (const interval of intervals) {
-        const intervalEnd = interval;
-        const intervalStart = subDays(intervalEnd, 90);
-
-        const filteredActivities = memberActivities?.filter(
-          (activity) =>
-            activity.created_at >= intervalStart &&
-            activity.created_at <= intervalEnd,
-        );
-
-        const pulse = getPulseScore({ activities: filteredActivities });
-        const level = getLevel({ levels, pulse });
-
-        logs.push({
-          id: randomUUID(),
-          date: interval,
-          pulse,
-          level_id: level?.id ?? null,
-          member_id: member.id,
-          workspace_id: member.workspace_id,
-        });
-      }
-
-      await createManyLogs({ logs });
-      const { pulse, level_id } = logs.at(-1) ?? {};
-
-      updatedMembers.push({
-        ...member,
-        first_activity: memberActivities?.at(-1)?.created_at ?? null,
-        last_activity: memberActivities?.at(0)?.created_at ?? null,
-        pulse: pulse ?? 0,
-        level_id: level_id ?? null,
-        updated_at: new Date(),
+    while (true) {
+      const members = await listMembers({
+        workspace_id,
+        limit: BATCH_SIZE,
+        offset,
       });
 
-      logger.info(`${index}`, { member });
+      await batchMemberMetrics.batchTrigger([
+        {
+          payload: {
+            members,
+            levels,
+          },
+          options: {
+            metadata: { workspace_id },
+          },
+        },
+      ]);
+
+      logger.info("members", { count: members.length, members });
+
+      if (members.length < BATCH_SIZE) break;
+      offset += BATCH_SIZE;
     }
-
-    await client.insert({
-      table: "log",
-      values: logs,
-      format: "JSON",
-    });
-
-    await client.insert({
-      table: "member",
-      values: updatedMembers,
-      format: "JSON",
-    });
-
-    await client.query({
-      query: "OPTIMIZE TABLE member FINAL;",
-    });
   },
 });
 

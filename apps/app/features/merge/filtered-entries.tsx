@@ -26,7 +26,7 @@ export const FilteredEntries = ({ member }: Props) => {
     switch (key) {
       case "company": {
         return (
-          <div className="space-y-1">
+          <div key={key} className="space-y-1">
             <p className="text-muted-foreground text-xs capitalize">Company</p>
             {value ? (
               <p>{company?.name}</p>
@@ -38,7 +38,7 @@ export const FilteredEntries = ({ member }: Props) => {
       }
       case "source": {
         return (
-          <div className="space-y-1">
+          <div key={key} className="space-y-1">
             <p className="text-muted-foreground text-xs capitalize">Source</p>
             <SourceBadge source={value as Source} />
           </div>
@@ -46,7 +46,7 @@ export const FilteredEntries = ({ member }: Props) => {
       }
       case "first_activity": {
         return (
-          <div className="space-y-1">
+          <div key={key} className="space-y-1">
             <p className="text-muted-foreground text-xs capitalize">
               First activity
             </p>
@@ -60,7 +60,7 @@ export const FilteredEntries = ({ member }: Props) => {
       }
       default:
         return (
-          <div className="space-y-1">
+          <div key={key} className="space-y-1">
             <p className="text-muted-foreground text-xs capitalize">
               {String(key)?.replaceAll("_", " ")}
             </p>

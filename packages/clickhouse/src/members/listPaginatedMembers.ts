@@ -3,16 +3,16 @@ import { MemberSchema } from "@conquest/zod/schemas/member.schema";
 
 type Props = {
   search: string;
-  cursor: string | null | undefined;
-  take: number;
   workspace_id: string;
+  limit?: number;
+  cursor?: string;
 };
 
 export const listPaginatedMembers = async ({
   search,
-  cursor,
-  take,
   workspace_id,
+  limit,
+  cursor,
 }: Props) => {
   const result = await client.query({
     query: `
@@ -24,9 +24,9 @@ export const listPaginatedMembers = async ({
           OR lower(primary_email) LIKE lower('%${search}%')
         )
         AND workspace_id = '${workspace_id}'
-        ${cursor ? `AND id > '${cursor}'` : ""}
         ORDER BY first_name ASC
-        LIMIT ${take}
+        ${limit ? `LIMIT ${limit}` : ""}
+        ${cursor ? `OFFSET ${cursor}` : ""}
     `,
   });
 

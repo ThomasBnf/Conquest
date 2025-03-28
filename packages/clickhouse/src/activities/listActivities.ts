@@ -29,11 +29,11 @@ export const listActivities = async ({
     query: `
       SELECT 
         a.*,
-        activity_type.*
+        at.*
       FROM activity a
-      LEFT JOIN activity_type ON a.activity_type_id = activity_type.id
+      LEFT JOIN activity_type at ON a.activity_type_id = at.id
       ${company_id ? "LEFT JOIN member m ON a.member_id = m.id" : ""}
-      ${company_id ? `WHERE a.workspace_id = '${workspace_id}'` : ""}
+      WHERE a.workspace_id = '${workspace_id}'
       ${member_id ? `AND a.member_id = '${member_id}'` : ""}
       ${company_id ? `AND m.company_id = '${company_id}'` : ""}
       ${period ? `AND a.created_at BETWEEN '${format(to, "yyyy-MM-dd HH:mm:ss")}' AND '${format(today, "yyyy-MM-dd HH:mm:ss")}'` : ""}
@@ -51,8 +51,8 @@ export const listActivities = async ({
     const activityType: Record<string, unknown> = {};
 
     for (const [key, value] of Object.entries(row)) {
-      if (key.startsWith("activity_type.")) {
-        activityType[key.substring(14)] = value;
+      if (key.startsWith("at.")) {
+        activityType[key.substring(3)] = value;
       } else if (
         ["name", "key", "points", "conditions", "deletable"].includes(key)
       ) {
@@ -71,6 +71,8 @@ export const listActivities = async ({
   const activities = data.map((row: unknown) =>
     transformFlatActivity(row as Record<string, unknown>),
   ) as ActivityWithType[];
+
+  console.log(activities);
 
   return ActivityWithTypeSchema.array().parse(activities);
 };

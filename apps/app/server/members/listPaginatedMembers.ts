@@ -6,13 +6,14 @@ export const listPaginatedMembers = protectedProcedure
   .input(
     z.object({
       search: z.string(),
-      cursor: z.string().nullish(),
-      take: z.number(),
+      cursor: z.number().nullish(),
+      limit: z.number().optional(),
+      offset: z.number().optional(),
     }),
   )
   .query(async ({ ctx: { user }, input }) => {
     const { workspace_id } = user;
-    const { search, cursor, take } = input;
+    const { search, limit, cursor } = input;
 
-    return _listPaginatedMembers({ search, cursor, take, workspace_id });
+    return _listPaginatedMembers({ search, workspace_id, limit, cursor });
   });

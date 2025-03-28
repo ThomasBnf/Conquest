@@ -22,12 +22,12 @@ export const heatmap = protectedProcedure
         SELECT 
           toDate(created_at) as date,
           count() as count
-        FROM activity
+        FROM activity a
         JOIN member m ON a.member_id = m.id
         WHERE 
           m.workspace_id = '${workspace_id}'
-          AND created_at >= '${last365days}'
-          ${member_id ? `AND member_id = '${member_id}'` : ""}
+          AND a.created_at >= '${last365days}'
+          ${member_id ? `AND a.member_id = '${member_id}'` : ""}
         GROUP BY date
       `,
     });

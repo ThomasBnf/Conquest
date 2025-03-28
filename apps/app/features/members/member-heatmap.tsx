@@ -10,9 +10,11 @@ type Props = {
 };
 
 export const MemberHeatmap = ({ memberId }: Props) => {
-  const { data, isLoading } = trpc.dashboard.heatmap.useQuery({
+  const { data, isLoading, failureReason } = trpc.dashboard.heatmap.useQuery({
     member_id: memberId,
   });
+
+  console.log(failureReason);
 
   return (
     <div className="flex flex-col">
