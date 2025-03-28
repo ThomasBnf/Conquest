@@ -44,8 +44,8 @@ export const potentialAmbassadors = protectedProcedure
               AND m.id IN (
                 SELECT member_id 
                 FROM activity 
-                WHERE deleted_at is NULL
-                  AND workspace_id = '${workspace_id}'
+                WHERE
+                  workspace_id = '${workspace_id}'
                   AND created_at BETWEEN '${_from}' AND '${_to}'
               )
           ) as current_count,
@@ -61,8 +61,8 @@ export const potentialAmbassadors = protectedProcedure
               AND m.id IN (
                 SELECT member_id 
                 FROM activity 
-                WHERE deleted_at is NULL
-                  AND workspace_id = '${workspace_id}'
+                WHERE
+                  workspace_id = '${workspace_id}'
                   AND created_at BETWEEN '${_previousFrom}' AND '${_previousTo}'
               )
           ) as previous_count
