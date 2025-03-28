@@ -32,7 +32,7 @@ export const MemberPicker = ({ currentMember, onSelect }: Props) => {
 
   const { data, isLoading, fetchNextPage, hasNextPage } =
     trpc.members.listPaginated.useInfiniteQuery(
-      { search, limit: 10 },
+      { search, limit: 25 },
       { getNextPageParam: (lastPage, allPages) => allPages.length * 10 + 10 },
     );
 
