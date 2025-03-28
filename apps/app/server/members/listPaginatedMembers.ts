@@ -8,7 +8,6 @@ export const listPaginatedMembers = protectedProcedure
       search: z.string(),
       cursor: z.number().nullish(),
       limit: z.number().optional(),
-      offset: z.number().optional(),
     }),
   )
   .query(async ({ ctx: { user }, input }) => {

@@ -4,8 +4,8 @@ import { MemberSchema } from "@conquest/zod/schemas/member.schema";
 type Props = {
   search: string;
   workspace_id: string;
+  cursor?: number | null | undefined;
   limit?: number;
-  cursor?: string;
 };
 
 export const listPaginatedMembers = async ({
