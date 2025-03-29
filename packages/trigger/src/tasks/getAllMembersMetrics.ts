@@ -47,10 +47,6 @@ export const getAllMembersMetrics = schemaTask({
       if (members.length < BATCH_SIZE) break;
       offset += BATCH_SIZE;
     }
-
-    await client.query({
-      query: "OPTIMIZE TABLE member FINAL;",
-    });
   },
 });
 
