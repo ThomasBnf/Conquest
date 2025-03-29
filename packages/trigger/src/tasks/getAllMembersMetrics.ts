@@ -1,10 +1,7 @@
 import { client } from "@conquest/clickhouse/client";
-import { listLevels } from "@conquest/clickhouse/levels/listLevels";
-import { deleteAllLogs } from "@conquest/clickhouse/logs/deleteAllLogs";
-import { listMembers } from "@conquest/clickhouse/members/listMembers";
 import { type Context, logger, runs, schemaTask } from "@trigger.dev/sdk/v3";
 import { z } from "zod";
-import { batchMemberMetrics } from "./batchMemberMetrics";
+import { launchBatchMembersMetrics } from "./launchBatchMembersMetrics";
 
 export const getAllMembersMetrics = schemaTask({
   id: "get-all-members-metrics",
@@ -14,55 +11,11 @@ export const getAllMembersMetrics = schemaTask({
   run: async ({ workspace_id }, { ctx }) => {
     await hasTasksRunning({ ctx, workspace_id });
 
-    const levels = await listLevels({ workspace_id });
-    await deleteAllLogs({ workspace_id });
-
-    const BATCH_SIZE = 200;
-    let offset = 0;
-    const batchPromises = [];
-
-    while (true) {
-      const members = await listMembers({
-        workspace_id,
-        limit: BATCH_SIZE,
-        offset,
-      });
-
-      if (members.length === 0) break;
-
-      const batchPromise = batchMemberMetrics.batchTriggerAndWait([
-        {
-          payload: {
-            members,
-            levels,
-            workspace_id,
-          },
-          options: {
-            metadata: { workspace_id },
-          },
-        },
-      ]);
-
-      batchPromises.push(batchPromise);
-      logger.info("members", { count: members.length });
-
-      if (members.length < BATCH_SIZE) break;
-      offset += BATCH_SIZE;
-    }
-
-    // Attendre que tous les lots soient traités
-    const results = await Promise.all(batchPromises);
-
-    logger.info("Tous les lots ont été traités avec succès", {
-      totalBatches: batchPromises.length,
-    });
+    await launchBatchMembersMetrics.triggerAndWait({ workspace_id });
 
     logger.info("Optimizing table member FINAL");
 
-    // Optimiser la table après que tous les traitements soient terminés
-    await client.query({
-      query: "OPTIMIZE TABLE member FINAL;",
-    });
+    await client.query({ query: "OPTIMIZE TABLE member FINAL;" });
 
     logger.info("Table member FINAL optimisée avec succès");
   },
