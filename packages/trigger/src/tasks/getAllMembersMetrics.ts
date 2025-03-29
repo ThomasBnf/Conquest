@@ -19,6 +19,7 @@ export const getAllMembersMetrics = schemaTask({
 
     const BATCH_SIZE = 200;
     let offset = 0;
+    const batchPromises = [];
 
     while (true) {
       const members = await listMembers({
@@ -29,7 +30,7 @@ export const getAllMembersMetrics = schemaTask({
 
       if (members.length === 0) break;
 
-      await batchMemberMetrics.batchTrigger([
+      const batchPromise = batchMemberMetrics.batchTriggerAndWait([
         {
           payload: {
             members,
@@ -42,11 +43,28 @@ export const getAllMembersMetrics = schemaTask({
         },
       ]);
 
+      batchPromises.push(batchPromise);
       logger.info("members", { count: members.length });
 
       if (members.length < BATCH_SIZE) break;
       offset += BATCH_SIZE;
     }
+
+    // Attendre que tous les lots soient traités
+    const results = await Promise.all(batchPromises);
+
+    logger.info("Tous les lots ont été traités avec succès", {
+      totalBatches: batchPromises.length,
+    });
+
+    logger.info("Optimizing table member FINAL");
+
+    // Optimiser la table après que tous les traitements soient terminés
+    await client.query({
+      query: "OPTIMIZE TABLE member FINAL;",
+    });
+
+    logger.info("Table member FINAL optimisée avec succès");
   },
 });
 
