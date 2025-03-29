@@ -21,19 +21,24 @@ import {
 import { CompanySchema } from "@conquest/zod/schemas/company.schema";
 import { MemberSchema } from "@conquest/zod/schemas/member.schema";
 import type { Table } from "@tanstack/react-table";
-import { Loader2, Plus } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 
 type Props<TData> = {
   table: Table<TData>;
+  open: boolean;
+  setOpen: (open: boolean) => void;
 };
 
-export const AddTagDialog = <TData,>({ table }: Props<TData>) => {
+export const AddTagDialog = <TData,>({
+  table,
+  open,
+  setOpen,
+}: Props<TData>) => {
   const { data: tags } = trpc.tags.list.useQuery();
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
-  const [open, setOpen] = useState(false);
 
   const pathname = usePathname();
   const isCompanyPage = pathname.includes("companies");
@@ -108,12 +113,6 @@ export const AddTagDialog = <TData,>({ table }: Props<TData>) => {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button variant="outline">
-          <Plus size={16} />
-          Add tag
-        </Button>
-      </DialogTrigger>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Add tag</DialogTitle>
@@ -151,11 +150,7 @@ export const AddTagDialog = <TData,>({ table }: Props<TData>) => {
             onClick={onConfirm}
             disabled={selectedTags.length === 0 || loading}
           >
-            {loading ? (
-              <Loader2 className="size-4 animate-spin" />
-            ) : (
-              <>Add tag{selectedTags.length > 1 ? "s" : ""}</>
-            )}
+            {loading ? <Loader2 className="size-4 animate-spin" /> : "Add"}
           </Button>
         </DialogFooter>
       </DialogContent>

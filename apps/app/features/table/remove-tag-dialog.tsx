@@ -21,19 +21,24 @@ import {
 import { CompanySchema } from "@conquest/zod/schemas/company.schema";
 import { MemberSchema } from "@conquest/zod/schemas/member.schema";
 import type { Table } from "@tanstack/react-table";
-import { Loader2, Trash2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 
 type Props<TData> = {
   table: Table<TData>;
+  open: boolean;
+  setOpen: (open: boolean) => void;
 };
 
-export const RemoveTagDialog = <TData,>({ table }: Props<TData>) => {
+export const RemoveTagDialog = <TData,>({
+  table,
+  open,
+  setOpen,
+}: Props<TData>) => {
   const { data: tags } = trpc.tags.list.useQuery();
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
-  const [open, setOpen] = useState(false);
 
   const pathname = usePathname();
   const isCompanyPage = pathname.includes("companies");
@@ -104,12 +109,6 @@ export const RemoveTagDialog = <TData,>({ table }: Props<TData>) => {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button variant="outline">
-          <Trash2 size={16} />
-          Remove tag
-        </Button>
-      </DialogTrigger>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Remove tag</DialogTitle>
@@ -147,11 +146,7 @@ export const RemoveTagDialog = <TData,>({ table }: Props<TData>) => {
             onClick={onConfirm}
             disabled={selectedTags.length === 0 || loading}
           >
-            {loading ? (
-              <Loader2 className="size-4 animate-spin" />
-            ) : (
-              <>Remove tag{selectedTags.length > 1 ? "s" : ""}</>
-            )}
+            {loading ? <Loader2 className="size-4 animate-spin" /> : "Remove"}
           </Button>
         </DialogFooter>
       </DialogContent>

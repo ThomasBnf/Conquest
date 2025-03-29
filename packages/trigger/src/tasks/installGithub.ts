@@ -8,6 +8,8 @@ import { Octokit } from "octokit";
 import { z } from "zod";
 import { createManyIssues } from "../github/createManyIssues";
 import { createManyPullRequests } from "../github/createManyPullRequests";
+import { createWebhook } from "../github/createWebhook";
+import { listStargazers } from "../github/listStargazers";
 import { getAllMembersMetrics } from "./getAllMembersMetrics";
 import { integrationSuccessEmail } from "./integrationSuccessEmail";
 
@@ -24,19 +26,15 @@ export const installGithub = schemaTask({
     const decryptedToken = await decrypt({ access_token, iv });
     const octokit = new Octokit({ auth: decryptedToken });
 
-    // await createWebhook({ github, octokit });
-    // const stargazers = await listStargazers({ github, octokit });
+    await createWebhook({ github, octokit });
+    const stargazers = await listStargazers({ github, octokit });
     const issuesMembers = await createManyIssues({ github, octokit });
     const pullRequestsMembers = await createManyPullRequests({
       github,
       octokit,
     });
 
-    const members = [
-      // ...stargazers,
-      ...issuesMembers,
-      ...pullRequestsMembers,
-    ];
+    const members = [...stargazers, ...issuesMembers, ...pullRequestsMembers];
     const uniqueMembers = members.filter(
       (member, index, self) =>
         index === self.findIndex((t) => t.id === member.id),

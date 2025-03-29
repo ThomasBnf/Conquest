@@ -18,7 +18,6 @@ export const installDiscord = schemaTask({
   schema: z.object({
     discord: DiscordIntegrationSchema,
   }),
-
   run: async ({ discord }) => {
     const { workspace_id } = discord;
     logger.info("discord", { discord });

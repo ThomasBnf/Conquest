@@ -1,6 +1,8 @@
+import { getMemberMetrics } from "@conquest/trigger/tasks/getMemberMetrics";
 import type { Member } from "@conquest/zod/schemas/member.schema";
 import { ProfileSchema } from "@conquest/zod/schemas/profile.schema";
 import { client } from "../client";
+import { listLevels } from "../levels/listLevels";
 import { updateMember } from "./updateMember";
 
 type Props = {
@@ -57,7 +59,7 @@ export const mergeMembers = async ({ leftMember, rightMember }: Props) => {
     return [key, rightValue];
   });
 
-  const mergedMember = {
+  const mergedMember: Member = {
     ...Object.fromEntries(mergedEntries),
   };
 
@@ -114,18 +116,27 @@ export const mergeMembers = async ({ leftMember, rightMember }: Props) => {
       DELETE WHERE id = '${leftMember.id}' AND workspace_id = '${workspace_id}'
     `,
   });
+
   await client.query({
     query: `
       ALTER TABLE log
       DELETE WHERE member_id = '${leftMember.id}' AND workspace_id = '${workspace_id}'
     `,
   });
+
   await client.query({
     query: `
       ALTER TABLE log
       DELETE WHERE member_id = '${rightMember.id}' AND workspace_id = '${workspace_id}'
     `,
   });
+
+  const levels = await listLevels({ workspace_id });
+
+  await getMemberMetrics.trigger(
+    { levels, member: mergedMember },
+    { metadata: { workspace_id } },
+  );
 
   return { success: true };
 };

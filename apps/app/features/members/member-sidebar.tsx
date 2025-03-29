@@ -17,13 +17,9 @@ import type { Member } from "@conquest/zod/schemas/member.schema";
 import type { Profile } from "@conquest/zod/schemas/profile.schema";
 import { format } from "date-fns";
 import { TagIcon } from "lucide-react";
-import { DiscordSection } from "./discord-section";
-import { DiscourseSection } from "./discourse-section";
-import { GithubSection } from "./github-section";
 import { LevelBadge } from "./level-badge";
-import { LivestormSection } from "./livestorm-section";
+import { ProfilesParser } from "./profiles-parser";
 import { PulseBadge } from "./pulse-badge";
-import { SlackSection } from "./slack-section";
 
 type Props = {
   member: Member;
@@ -112,11 +108,7 @@ export const MemberSidebar = ({ member, profiles }: Props) => {
           />
         </div>
         <Separator />
-        {hasDiscourseProfile && <DiscourseSection profiles={profiles} />}
-        {hasGithubProfile && <GithubSection profiles={profiles} />}
-        {hasLivestormProfile && <LivestormSection profiles={profiles} />}
-        {hasSlackProfile && <SlackSection profiles={profiles} />}
-        {hasDiscordProfile && <DiscordSection profiles={profiles} />}
+        <ProfilesParser profiles={profiles} />
         <div className="space-y-2 p-4">
           <FieldCard icon="User" label="First name">
             <EditableInput

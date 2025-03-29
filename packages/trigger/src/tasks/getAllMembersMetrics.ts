@@ -1,7 +1,9 @@
-import { client } from "@conquest/clickhouse/client";
+import { listLevels } from "@conquest/clickhouse/levels/listLevels";
+import { deleteAllLogs } from "@conquest/clickhouse/logs/deleteAllLogs";
+import { listMembers } from "@conquest/clickhouse/members/listMembers";
 import { type Context, logger, runs, schemaTask } from "@trigger.dev/sdk/v3";
 import { z } from "zod";
-import { launchBatchMembersMetrics } from "./launchBatchMembersMetrics";
+import { batchMemberMetrics } from "./batchMemberMetrics";
 
 export const getAllMembersMetrics = schemaTask({
   id: "get-all-members-metrics",
@@ -11,13 +13,41 @@ export const getAllMembersMetrics = schemaTask({
   run: async ({ workspace_id }, { ctx }) => {
     await hasTasksRunning({ ctx, workspace_id });
 
-    await launchBatchMembersMetrics.triggerAndWait({ workspace_id });
+    const levels = await listLevels({ workspace_id });
+    await deleteAllLogs({ workspace_id });
 
-    logger.info("Optimizing table member FINAL");
+    const BATCH_SIZE = 200;
+    let offset = 0;
+    const batchPromises = [];
 
-    await client.query({ query: "OPTIMIZE TABLE member FINAL;" });
+    while (true) {
+      const members = await listMembers({
+        workspace_id,
+        limit: BATCH_SIZE,
+        offset,
+      });
 
-    logger.info("Table member FINAL optimisée avec succès");
+      if (members.length === 0) break;
+
+      const batchPromise = batchMemberMetrics.batchTriggerAndWait([
+        {
+          payload: {
+            members,
+            levels,
+            workspace_id,
+          },
+          options: {
+            metadata: { workspace_id },
+          },
+        },
+      ]);
+
+      batchPromises.push(batchPromise);
+      logger.info("members", { count: members.length });
+
+      if (members.length < BATCH_SIZE) break;
+      offset += BATCH_SIZE;
+    }
   },
 });
 

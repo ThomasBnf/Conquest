@@ -7,6 +7,8 @@ export const cronHourly = schedules.task({
   id: "cron-hourly",
   cron: "0 * * * *",
   run: async (_, { ctx }) => {
+    await client.query({ query: "OPTIMIZE TABLE member FINAL;" });
+
     if (ctx.environment.type === "DEVELOPMENT") return;
 
     const now = new Date();

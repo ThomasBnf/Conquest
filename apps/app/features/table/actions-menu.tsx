@@ -8,8 +8,7 @@ import { MemberSchema } from "@conquest/zod/schemas/member.schema";
 import type { Table } from "@tanstack/react-table";
 import { usePathname } from "next/navigation";
 import { toast } from "sonner";
-import { AddTagDialog } from "./cells/add-tag-dialog";
-import { RemoveTagDialog } from "./cells/remove-tag-dialog";
+import { TagDialog } from "./tag-dialog";
 
 type Props<TData> = {
   table: Table<TData>;
@@ -25,7 +24,6 @@ export const ActionsMenu = <TData,>({ table }: Props<TData>) => {
   const hasSomeSelected = table.getIsSomeRowsSelected();
   const hasAllSelected = table.getIsAllRowsSelected();
   const hasSelectedMembers = hasSomeSelected || hasAllSelected;
-  const hasTwoSelected = rowSelected.length === 2;
 
   const { mutateAsync: deleteMembers } =
     trpc.members.deleteManyMembers.useMutation({
@@ -68,21 +66,11 @@ export const ActionsMenu = <TData,>({ table }: Props<TData>) => {
   return (
     <div
       className={cn(
-        "flex shrink-0 items-center gap-2 overflow-hidden px-3 transition-all duration-300 ease-in-out",
+        "flex shrink-0 items-center gap-2 overflow-hidden px-3 transition-all duration-150 ease-in-out",
         hasSelectedMembers ? "h-12 opacity-100" : "h-0 opacity-0",
       )}
     >
-      <AddTagDialog table={table} />
-      <RemoveTagDialog table={table} />
-      {/* {hasTwoSelected && (
-        <>
-          <Separator orientation="vertical" className="h-7" />
-          <Button variant="outline">
-            <Merge size={16} />
-            Merge
-          </Button>
-        </>
-      )} */}
+      <TagDialog table={table} />
       <div className="flex flex-1 items-center justify-end gap-2">
         <Button
           variant="outline"

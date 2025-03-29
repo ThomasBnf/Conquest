@@ -18,18 +18,18 @@ export const TwitterSection = ({ profiles }: Props) => {
 
   if (!profile) return null;
 
-  const twitterProfile = TwitterProfileSchema.parse(profile);
-  const { external_id } = twitterProfile;
+  const twitter = TwitterProfileSchema.parse(profile);
+  const { username } = twitter.attributes;
 
   return (
     <>
       <div className="space-y-2 p-4">
-        <FieldCard icon={<Twitter size={16} />} label="Twitter">
+        <FieldCard icon={<Twitter size={16} />} label="X">
           <EditableLink
-            placeholder="No twitter profile"
-            defaultValue={external_id}
+            placeholder="No X profile"
+            defaultValue={username}
+            href={`https://x.com/${username}`}
             editable={false}
-            redirect={false}
           />
         </FieldCard>
       </div>
