@@ -42,7 +42,7 @@ export const HeroSection = () => {
         animation="blurInUp"
         className="max-w-3xl font-bold font-telegraf text-4xl lg:text-6xl"
       >
-        Your community is powerful. Prove it.
+        Your community is powerful. Now prove it.
       </TextAnimate>
       <TextAnimate
         as="p"
@@ -50,7 +50,7 @@ export const HeroSection = () => {
         delay={0.5}
         className="font-suisse text-lg text-muted-foreground"
       >
-        Track, measure and prove your community's impact. All in one place.
+        Track, measure and prove your community impact. All in one place.
       </TextAnimate>
       <AnimatedGroup
         variants={{
@@ -83,7 +83,7 @@ export const HeroSection = () => {
         delay={0.9}
         className="text-muted-foreground"
       >
-        Free 14-day free trial • No CC required
+        14-day free trial • No CC required
       </TextAnimate>
       <AnimatedGroup
         variants={{
