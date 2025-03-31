@@ -1,11 +1,12 @@
-import type { Plan } from "./types";
+import type { Plan, PlanTable } from "./types";
 
-export const plans = [
+export const plans: Plan[] = [
   {
     name: "EXPLORER",
     description: "For small communities",
     priceMonthly: 59,
     priceAnnually: 49,
+    reduction: 15,
     priceIdMonthly:
       process.env.NODE_ENV === "development"
         ? "price_1R3JRgCa7sC12ar1IGHNN0yF"
@@ -25,6 +26,7 @@ export const plans = [
     description: "For active communities",
     priceMonthly: 99,
     priceAnnually: 85,
+    reduction: 15,
     priceIdMonthly:
       process.env.NODE_ENV === "development"
         ? "price_1R3JSFCa7sC12ar1rxPAFqGE"
@@ -39,19 +41,6 @@ export const plans = [
     api: true,
     popular: true,
   },
-  // {
-  //   name: "CONTRIBUTOR",
-  //   description: "For scaling communities",
-  //   priceMonthly: 299,
-  //   priceAnnually: 254,
-  //   priceIdMonthly: "price_1R3JSnCa7sC12ar1BOXtmeyB",
-  //   priceIdAnnually: "price_1R3JSxCa7sC12ar1VLgC23zc",
-  //   seats: "5 seats",
-  //   members: "Up to 100,000 members",
-  //   integrations: "5 integrations",
-  //   api: true,
-  //   popular: false,
-  // },
   {
     name: "AMBASSADOR",
     description: "For large communities",
@@ -67,11 +56,12 @@ export const plans = [
   },
 ];
 
-export const plansFeatures: Plan[] = [
+export const plansTable: PlanTable[] = [
   {
     name: "EXPLORER",
     priceMonthly: 59,
     priceAnnually: 49,
+    reduction: 15,
     seats: 1,
     members: "Up to 5,000",
     integrations: {
@@ -93,6 +83,7 @@ export const plansFeatures: Plan[] = [
     name: "ACTIVE",
     priceMonthly: 99,
     priceAnnually: 85,
+    reduction: 15,
     seats: 2,
     members: "Up to 30,000",
     integrations: {
@@ -135,6 +126,7 @@ export const plansFeatures: Plan[] = [
     name: "AMBASSADOR",
     priceMonthly: "Custom",
     priceAnnually: "Custom",
+    reduction: null,
     seats: "Custom",
     members: "Custom",
     integrations: {

@@ -1,4 +1,4 @@
-import { sleep } from "@/helpers/sleep";
+import { sleep } from "@/utils/sleep";
 import { createActivity } from "@conquest/clickhouse/activities/createActivity";
 import { deleteActivity } from "@conquest/clickhouse/activities/deleteActivity";
 import { getActivity } from "@conquest/clickhouse/activities/getActivity";

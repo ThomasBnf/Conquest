@@ -10,6 +10,7 @@ export const WorkspaceSchema = z.object({
   company_size: z.string().nullable(),
   plan: PLAN.nullable(),
   stripe_customer_id: z.string().nullable(),
+  price_id: z.string().nullable(),
   trial_end: z.coerce.date().nullable(),
   is_past_due: z.coerce.date().nullable(),
   created_at: z.coerce.date(),

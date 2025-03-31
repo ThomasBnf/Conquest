@@ -1,7 +1,7 @@
-import type { Plan } from "./types";
 import { Check } from "lucide-react";
+import type { PlanTable } from "./types";
 
-export const PlanDetails = ({ plan }: { plan: Plan }) => (
+export const PlanDetails = ({ plan }: { plan: PlanTable }) => (
   <div className="flex h-full flex-1 flex-col divide-y text-muted-foreground">
     <div className="p-3">
       <p>{plan.members}</p>

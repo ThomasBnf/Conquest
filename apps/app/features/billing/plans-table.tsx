@@ -2,7 +2,7 @@ import type { Dispatch, SetStateAction } from "react";
 import { PeriodToggle } from "./period-toggle";
 import { PlanDetails } from "./plan-details";
 import { PlanHeader } from "./plan-header";
-import { plansFeatures } from "./plans";
+import { plansTable } from "./plans";
 import type { PlanPeriod } from "./types";
 
 type Props = {
@@ -19,12 +19,12 @@ export const PlansTable = ({ period, setPeriod }: Props) => {
       </div>
       <div className="flex h-full justify-between divide-x overflow-hidden rounded-md border">
         <div className="divide-y bg-sidebar">
-          <div className="flex flex-col justify-between p-3 pb-10">
+          <div className="flex h-[88px] w-[183px] flex-col justify-between p-3">
             <p className="font-medium text-lg capitalize">Plans</p>
             <p>
               Billing period
               {period === "annually" && (
-                <span className="text-main-400">Save 15%</span>
+                <span className="ml-2 text-main-400">Save 15%</span>
               )}
             </p>
           </div>
@@ -51,7 +51,7 @@ export const PlansTable = ({ period, setPeriod }: Props) => {
           </div>
         </div>
         <div className="flex h-auto flex-1 divide-x">
-          {plansFeatures.map((plan) => (
+          {plansTable.map((plan) => (
             <div key={plan.name} className="flex flex-1 flex-col divide-y">
               <PlanHeader plan={plan} period={period} />
               <PlanDetails plan={plan} />

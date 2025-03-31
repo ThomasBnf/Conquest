@@ -6,6 +6,7 @@ import { PlanPicker } from "@/features/billing/plan-picker";
 import { PlansTable } from "@/features/billing/plans-table";
 import type { PlanPeriod } from "@/features/billing/types";
 import { trpc } from "@/server/client";
+import { getSubscriptionDetails } from "@/utils/getSubscriptionDetails";
 import { Separator } from "@conquest/ui/separator";
 import type { Plan } from "@conquest/zod/enum/plan.enum";
 import { useSession } from "next-auth/react";
@@ -13,17 +14,28 @@ import { useState } from "react";
 import { toast } from "sonner";
 
 export default function Page() {
-  const { data: session } = useSession();
+  const { data: session, update } = useSession();
   const { workspace } = session?.user ?? {};
-  const [period, setPeriod] = useState<PlanPeriod>("annually");
+  const { trial_end, price_id } = workspace ?? {};
+
+  const subscription = getSubscriptionDetails(price_id);
+  const isTrial = trial_end && trial_end < new Date();
+
+  const [period, setPeriod] = useState<PlanPeriod>(
+    subscription?.period ?? "annually",
+  );
   const [loading, setLoading] = useState(false);
 
   const { mutateAsync } = trpc.stripe.updateSubscription.useMutation({
     onSuccess: () => {
       setTimeout(() => {
-        window.location.reload();
-        toast.success("Subscription updated");
-      }, 2000);
+        update();
+        setLoading(false);
+        toast.success(
+          isTrial ? "Your trial plan has been updated" : "Subscription updated",
+          { duration: 5000 },
+        );
+      }, 3000);
     },
     onError: (error) => {
       toast.error(error.message);

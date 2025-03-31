@@ -1,4 +1,4 @@
-import { getPulseScoreDetails } from "@/helpers/getPulseScoreDetails";
+import { getPulseScoreDetails } from "@/utils/getPulseScoreDetails";
 import { trpc } from "@/server/client";
 import { Badge } from "@conquest/ui/badge";
 import { cn } from "@conquest/ui/cn";

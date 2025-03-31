@@ -17,7 +17,7 @@ export const PeriodToggle = ({
       )}
       onClick={() => setPeriod("annually")}
     >
-      <p className="p-2">Annual</p>
+      <p className="p-1.5">Annual</p>
       <div className="w-fit rounded-md border border-main-200 bg-main-100/40 px-1 py-0.5">
         <p className="text-main-500 text-xs">-15%</p>
       </div>
@@ -30,7 +30,7 @@ export const PeriodToggle = ({
       )}
       onClick={() => setPeriod("monthly")}
     >
-      <p className="p-2">Monthly</p>
+      <p className="p-1.5">Monthly</p>
     </button>
   </div>
 );

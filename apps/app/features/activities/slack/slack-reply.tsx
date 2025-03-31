@@ -1,6 +1,6 @@
 import { SourceBadge } from "@/components/badges/source-badge";
-import { parseSlackMessage } from "@/helpers/parse-slack-message";
 import { trpc } from "@/server/client";
+import { parseSlackMessage } from "@/utils/parse-slack-message";
 import { Avatar, AvatarFallback, AvatarImage } from "@conquest/ui/avatar";
 import type { ActivityWithType } from "@conquest/zod/schemas/activity.schema";
 import type { Member } from "@conquest/zod/schemas/member.schema";

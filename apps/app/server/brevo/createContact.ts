@@ -12,6 +12,8 @@ export const createContact = protectedProcedure
     const { user } = input;
     const { id, first_name, last_name, email } = user;
 
+    if (process.env.NODE_ENV === "development") return;
+
     const response = await fetch("https://api.brevo.com/v3/contacts", {
       method: "POST",
       headers: {

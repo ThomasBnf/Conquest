@@ -40,13 +40,15 @@ export const POST = async (request: NextRequest) => {
           return NextResponse.json({ error: "Workspace not found" });
         }
 
-        const { plan } = invoice.subscription_details?.metadata as unknown as {
+        const { plan, price_id } = invoice.subscription_details?.metadata as {
+          price_id: string;
           plan: Plan;
         };
 
         await updateWorkspace({
           id: workspace.id,
           plan,
+          price_id,
           is_past_due: null,
           trial_end: null,
         });
@@ -65,13 +67,15 @@ export const POST = async (request: NextRequest) => {
           return NextResponse.json({ error: "Workspace not found" });
         }
 
-        const { plan } = session.metadata as {
+        const { plan, price_id } = session.metadata as {
           plan: Plan;
+          price_id: string;
         };
 
         await updateWorkspace({
           id: workspace.id,
           plan,
+          price_id,
           is_past_due: null,
         });
 
@@ -89,8 +93,15 @@ export const POST = async (request: NextRequest) => {
           return NextResponse.json({ error: "Workspace not found" });
         }
 
+        const { plan, price_id } = subscription.metadata as {
+          plan: Plan;
+          price_id: string;
+        };
+
         await updateWorkspace({
           id: workspace.id,
+          plan,
+          price_id,
           is_past_due:
             subscription.status === "paused" ||
             subscription.status === "past_due"

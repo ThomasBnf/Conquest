@@ -34,6 +34,8 @@ export const updateSubscription = protectedProcedure
       });
     }
 
+    console.log("currentSubscription", currentSubscription.id);
+
     const subscriptionItemId = currentSubscription.items.data[0]?.id;
 
     if (!subscriptionItemId) {
@@ -42,6 +44,9 @@ export const updateSubscription = protectedProcedure
         message: "Subscription item not found",
       });
     }
+
+    console.log("subscriptionItemId", subscriptionItemId);
+    console.log("priceId", priceId);
 
     await stripe.subscriptions.update(currentSubscription.id, {
       items: [
@@ -53,6 +58,7 @@ export const updateSubscription = protectedProcedure
       ],
       metadata: {
         plan,
+        price_id: priceId,
         workspace_id: id,
       },
     });

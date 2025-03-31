@@ -1,4 +1,5 @@
 import { trpc } from "@/server/client";
+import { getSubscriptionDetails } from "@/utils/getSubscriptionDetails";
 import { Button } from "@conquest/ui/button";
 import { Loader2 } from "lucide-react";
 import { useSession } from "next-auth/react";
@@ -8,9 +9,11 @@ import { toast } from "sonner";
 
 export const ButtonBillingPortal = () => {
   const { data: session } = useSession();
-  const { plan } = session?.user.workspace ?? {};
+  const { plan, price_id } = session?.user.workspace ?? {};
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+
+  const subscription = getSubscriptionDetails(price_id);
 
   const { mutateAsync } = trpc.stripe.createBillingPortal.useMutation({
     onMutate: () => setLoading(true),
@@ -25,7 +28,9 @@ export const ButtonBillingPortal = () => {
     <div className="space-y-2 rounded-md border p-4">
       <p className="text-muted-foreground">
         Current plan:{" "}
-        <span className="font-medium text-foreground">{plan}</span>
+        <span className="font-medium text-foreground">
+          {subscription?.name}
+        </span>
       </p>
       <Button
         onClick={() => mutateAsync({})}
