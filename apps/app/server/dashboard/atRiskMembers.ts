@@ -41,7 +41,7 @@ export const atRiskMembers = protectedProcedure
           FROM member m FINAL
           LEFT JOIN level l ON m.level_id = l.id
           WHERE 
-            AND m.workspace_id = '${workspace_id}'
+            m.workspace_id = '${workspace_id}'
             AND l.number >= 4
             AND m.id NOT IN (
               SELECT member_id 

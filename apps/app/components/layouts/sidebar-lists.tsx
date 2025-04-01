@@ -1,4 +1,3 @@
-import { useUser } from "@/context/userContext";
 import { MenuList } from "@/features/lists/menu-list";
 import { useOpenList } from "@/hooks/useOpenList";
 import { trpc } from "@/server/client";
@@ -9,6 +8,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@conquest/ui/sidebar";
+import { Skeleton } from "@conquest/ui/skeleton";
 import { Plus } from "lucide-react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
@@ -20,7 +20,7 @@ export const SidebarLists = () => {
   const { setOpen } = useOpenList();
   const pathname = usePathname();
 
-  const { data: lists } = trpc.lists.list.useQuery();
+  const { data: lists, isLoading } = trpc.lists.list.useQuery();
 
   return (
     <SidebarGroup>
@@ -37,7 +37,13 @@ export const SidebarLists = () => {
             </Button>
           )}
         </SidebarMenuItem>
-        {lists?.length === 0 ? (
+        {isLoading ? (
+          <>
+            <Skeleton className="h-8 w-full" />
+            <Skeleton className="h-8 w-full" />
+            <Skeleton className="h-8 w-full" />
+          </>
+        ) : lists?.length === 0 ? (
           <SidebarMenu>
             <SidebarMenuItem>
               <SidebarMenuButton
