@@ -1,7 +1,5 @@
 import { trpc } from "@/server/client";
 import { Button } from "@conquest/ui/button";
-import { Calendar } from "@conquest/ui/calendar";
-import { cn } from "@conquest/ui/cn";
 import {
   Dialog,
   DialogBody,
@@ -19,7 +17,6 @@ import {
   FormLabel,
   FormMessage,
 } from "@conquest/ui/form";
-import { Popover, PopoverContent, PopoverTrigger } from "@conquest/ui/popover";
 import {
   Select,
   SelectContent,
@@ -30,8 +27,7 @@ import {
 import { TextField } from "@conquest/ui/text-field";
 import type { Member } from "@conquest/zod/schemas/member.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { format } from "date-fns";
-import { CalendarIcon, Loader2, Plus } from "lucide-react";
+import { Loader2, Plus } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -43,7 +39,6 @@ type Props = {
 
 export const CreateActivityDialog = ({ member }: Props) => {
   const [open, setOpen] = useState(false);
-  const [openCalendar, setOpenCalendar] = useState(false);
   const utils = trpc.useUtils();
 
   const { data } = trpc.activityTypes.list.useQuery();
@@ -118,56 +113,6 @@ export const CreateActivityDialog = ({ member }: Props) => {
                           )}
                         </SelectContent>
                       </Select>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="created_at"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Created at</FormLabel>
-                    <FormControl>
-                      <Popover
-                        open={openCalendar}
-                        onOpenChange={setOpenCalendar}
-                      >
-                        <PopoverTrigger asChild>
-                          <FormControl>
-                            <Button
-                              variant={"outline"}
-                              size="md"
-                              className={cn(
-                                "w-full pl-3 text-left font-normal",
-                                !field.value && "text-muted-foreground",
-                              )}
-                            >
-                              {field.value ? (
-                                format(field.value, "PPP")
-                              ) : (
-                                <span>Pick a date</span>
-                              )}
-                              <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                            </Button>
-                          </FormControl>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0" align="start">
-                          <Calendar
-                            mode="single"
-                            selected={field.value}
-                            onSelect={(date) => {
-                              field.onChange(date);
-                              setOpenCalendar(false);
-                            }}
-                            disabled={(date) =>
-                              date > new Date() || date < new Date("1900-01-01")
-                            }
-                            initialFocus
-                          />
-                        </PopoverContent>
-                      </Popover>
                     </FormControl>
                     <FormMessage />
                   </FormItem>

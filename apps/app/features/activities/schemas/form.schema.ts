@@ -6,7 +6,6 @@ export const FormCreateSchema = z.object({
   message: z.string(),
   member_id: z.string(),
   source: SOURCE,
-  created_at: z.date(),
 });
 
 export type FormCreate = z.infer<typeof FormCreateSchema>;
