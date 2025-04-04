@@ -129,6 +129,7 @@ model list {
     created_at DateTime @default(now())
     updated_at DateTime @updatedAt
 
+    @@index([created_by, workspace_id])
     @@index([id, workspace_id])
 }
 
@@ -172,6 +173,7 @@ model tag {
 
     @@unique([external_id, workspace_id])
     @@index([id, workspace_id])
+    @@index([workspace_id])
 }
 
 model user {
@@ -194,6 +196,9 @@ model user {
 
     accounts Account[]
     sessions Session[]
+
+    @@index([id])
+    @@index([email])
 }
 
 model VerificationToken {
@@ -238,6 +243,7 @@ model workflow {
     updated_at DateTime @updatedAt
 
     @@index([id, workspace_id])
+    @@index([workspace_id])
 }
 
 model workspace {
