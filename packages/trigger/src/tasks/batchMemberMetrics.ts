@@ -77,7 +77,7 @@ export const batchMemberMetrics = schemaTask({
         updated_at: new Date(),
       });
 
-      logger.info(`${index} - ${member.id}`);
+      logger.info(`${index}`, { member });
     }
 
     await client.insert({

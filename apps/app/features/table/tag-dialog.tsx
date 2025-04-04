@@ -1,3 +1,4 @@
+import { useTable } from "@/hooks/useTable";
 import { Button } from "@conquest/ui/button";
 import {
   DropdownMenu,
@@ -6,17 +7,20 @@ import {
   DropdownMenuTrigger,
 } from "@conquest/ui/dropdown-menu";
 import { Separator } from "@conquest/ui/separator";
-import type { Table } from "@tanstack/react-table";
+import { Company } from "@conquest/zod/schemas/company.schema";
+import { Member } from "@conquest/zod/schemas/member.schema";
 import { ChevronDown, Plus, Tag, X } from "lucide-react";
 import { useState } from "react";
 import { AddTagDialog } from "./add-tag-dialog";
 import { RemoveTagDialog } from "./remove-tag-dialog";
 
-type Props<TData> = {
-  table: Table<TData>;
+type Props<TData extends Member | Company> = {
+  table: ReturnType<typeof useTable<TData>>;
 };
 
-export const TagDialog = <TData,>({ table }: Props<TData>) => {
+export const TagDialog = <TData extends Member | Company>({
+  table,
+}: Props<TData>) => {
   const [openAdd, setOpenAdd] = useState(false);
   const [openRemove, setOpenRemove] = useState(false);
 
@@ -40,11 +44,11 @@ export const TagDialog = <TData,>({ table }: Props<TData>) => {
         <DropdownMenuContent align="start">
           <DropdownMenuItem onSelect={() => setOpenAdd(true)}>
             <Plus size={16} />
-            Add tag
+            Add tags
           </DropdownMenuItem>
           <DropdownMenuItem onSelect={() => setOpenRemove(true)}>
             <X size={16} />
-            Remove tag
+            Remove tags
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

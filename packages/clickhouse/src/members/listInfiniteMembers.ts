@@ -2,17 +2,15 @@ import { client } from "@conquest/clickhouse/client";
 import { MemberSchema } from "@conquest/zod/schemas/member.schema";
 
 type Props = {
+  cursor?: number | null | undefined;
   search: string;
   workspace_id: string;
-  cursor?: number | null | undefined;
-  limit?: number;
 };
 
-export const listPaginatedMembers = async ({
+export const listInfiniteMembers = async ({
+  cursor,
   search,
   workspace_id,
-  limit,
-  cursor,
 }: Props) => {
   const result = await client.query({
     query: `
@@ -25,8 +23,7 @@ export const listPaginatedMembers = async ({
         )
         AND workspace_id = '${workspace_id}'
         ORDER BY first_name ASC
-        ${limit ? `LIMIT ${limit}` : ""}
-        ${cursor ? `OFFSET ${cursor}` : ""}
+        ${cursor ? `LIMIT 25 OFFSET ${cursor}` : "LIMIT 25"}
     `,
   });
 

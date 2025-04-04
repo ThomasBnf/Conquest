@@ -6,7 +6,7 @@ import { Activities as ActivitiesIcon } from "@conquest/ui/icons/Activities";
 import { Separator } from "@conquest/ui/separator";
 import type { ActivityWithType } from "@conquest/zod/schemas/activity.schema";
 import { format, isToday, isYesterday } from "date-fns";
-import { type PropsWithChildren, useEffect, useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { useInView } from "react-intersection-observer";
 import { ActivityParser } from "./activity-parser";
 
@@ -17,6 +17,7 @@ type Props = {
   fetchNextPage: () => void;
   hasNextPage: boolean | undefined;
   isLoading: boolean;
+  type: "member" | "company";
   className?: string;
 };
 
@@ -25,8 +26,9 @@ export const Activities = ({
   fetchNextPage,
   hasNextPage,
   isLoading,
+  type,
   className,
-}: PropsWithChildren<Props>) => {
+}: Props) => {
   const { ref, inView } = useInView();
 
   const groupedActivities = useMemo(() => {
@@ -53,7 +55,7 @@ export const Activities = ({
       <EmptyState
         icon={<ActivitiesIcon size={36} />}
         title="No activities found"
-        description="This member has not yet done any activities."
+        description={`This ${type} has not yet done any activities.`}
       />
     );
 

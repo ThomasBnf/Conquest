@@ -9,6 +9,7 @@ import type {
   ActivityHeatmap,
   ActivityWithType,
 } from "@conquest/zod/schemas/activity.schema";
+import { skipToken } from "@tanstack/react-query";
 import {
   addDays,
   format,
@@ -186,8 +187,7 @@ const DayCell = ({
 
   const { data: activities, isLoading } =
     trpc.activities.listDayActivities.useQuery(
-      { date: day, member_id },
-      { enabled: hover && count > 0 },
+      hover && count > 0 ? { date: day, member_id } : skipToken,
     );
 
   return (

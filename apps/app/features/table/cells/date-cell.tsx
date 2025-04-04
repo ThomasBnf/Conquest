@@ -1,17 +1,19 @@
+import { cn } from "@conquest/ui/cn";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@conquest/ui/tooltip";
 import { format, formatDistance } from "date-fns";
 
 type Props = {
   date: Date | undefined | null;
+  className?: string;
 };
 
-export const DateCell = ({ date }: Props) => {
+export const DateCell = ({ date, className }: Props) => {
   if (!date) return;
 
   return (
     <Tooltip>
       <TooltipTrigger>
-        <p className="h-full px-2">{formatDistance(date, new Date())}</p>
+        <p className={cn(className)}>{formatDistance(date, new Date())}</p>
       </TooltipTrigger>
       <TooltipContent side="right">
         <p>{format(date, "PPp")}</p>

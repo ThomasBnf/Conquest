@@ -1,104 +1,103 @@
+import { useTable } from "@/hooks/useTable";
 import { cn } from "@conquest/ui/cn";
 import { ScrollArea, ScrollBar } from "@conquest/ui/scroll-area";
-import { type Table, flexRender } from "@tanstack/react-table";
-import { DataTablePagination } from "./data-table-pagination";
+import { Company } from "@conquest/zod/schemas/company.schema";
+import { Member } from "@conquest/zod/schemas/member.schema";
+import { useEffect } from "react";
+import { useInView } from "react-intersection-observer";
+import { ActionsMenu } from "./settings/actions-menu";
 import { TableSkeleton } from "./table-skeletton";
 
-type Props<TData> = {
-  table: Table<TData>;
-  count: number;
-  isLoading: boolean;
+type Props<TData extends Member | Company> = {
+  table: ReturnType<typeof useTable<TData>>;
 };
 
-export const DataTable = <TData,>({
+export const DataTable = <TData extends Member | Company>({
   table,
-  count,
-  isLoading,
 }: Props<TData>) => {
+  const { ref, inView } = useInView();
+
+  const {
+    data,
+    columns,
+    count,
+    isLoading,
+    fetchNextPage,
+    hasNextPage,
+    columnVisibility,
+    columnOrder,
+  } = table;
+
+  useEffect(() => {
+    if (inView && hasNextPage) fetchNextPage();
+  }, [inView]);
+
   if (isLoading) return <TableSkeleton />;
 
   return (
-    <>
+    <div className="relative flex h-full flex-col overflow-hidden">
       <ScrollArea className="h-full">
-        <div style={{ width: table.getTotalSize() }}>
-          <div className="sticky top-0 left-0 z-20 border-b">
-            {table.getHeaderGroups().map((headerGroup) => (
-              <div key={headerGroup.id} className="flex items-center">
-                {headerGroup.headers.map((header) => {
-                  const { column } = header;
-                  const isPinned = header.column.getIsPinned();
-
-                  return (
-                    <div
-                      key={header.id}
-                      className={cn(
-                        "h-11 border-r bg-sidebar",
-                        isPinned && "sticky z-10",
-                      )}
-                      style={{
-                        width: column.getSize(),
-                        left:
-                          isPinned === "left"
-                            ? `${column.getStart("left")}px`
-                            : undefined,
-                      }}
-                    >
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext(),
-                          )}
-                    </div>
-                  );
-                })}
-              </div>
-            ))}
+        <div className="relative">
+          <div className="sticky top-0 z-20 flex items-center border-b">
+            {columns
+              .filter((column) => !columnVisibility[column.key])
+              .sort((a, b) => {
+                const aIndex = columnOrder.indexOf(a.key);
+                const bIndex = columnOrder.indexOf(b.key);
+                return aIndex - bIndex;
+              })
+              .map((column) => (
+                <div
+                  key={column.key}
+                  className={cn(
+                    "border-r bg-sidebar p-2",
+                    column.isFixed && "sticky left-0",
+                  )}
+                  style={{ width: column.width }}
+                >
+                  {column.header({ table })}
+                </div>
+              ))}
           </div>
           <div>
-            {table.getRowModel().rows.map((row) => (
+            {data?.map((item) => (
               <div
-                key={row.id}
-                className={cn(
-                  "flex items-center",
-                  row.index === table.getRowModel().rows.length - 1 &&
-                    "[&_td]:after:border-b-0",
-                )}
+                key={item.id}
+                className="z-0 flex h-full border-b last:border-b-0"
               >
-                {row.getVisibleCells().map((cell) => {
-                  const { column } = cell;
-                  const isPinned = column.getIsPinned();
-
-                  return (
+                {columns
+                  .filter((column) => !columnVisibility[column.key])
+                  .sort((a, b) => {
+                    const aIndex = columnOrder.indexOf(a.key);
+                    const bIndex = columnOrder.indexOf(b.key);
+                    return aIndex - bIndex;
+                  })
+                  .map((column) => (
                     <div
-                      key={cell.id}
+                      key={column.key}
                       className={cn(
-                        "flex h-11 items-center border-r border-b bg-background",
-                        isPinned && "sticky z-0",
+                        "flex h-11 items-center border-r bg-background ",
+                        column.isFixed && "sticky left-0",
+                        column.key === "tags" ? "p-O" : "px-2",
                       )}
-                      style={{
-                        width: column.getSize(),
-                        left:
-                          isPinned === "left"
-                            ? `${column.getStart("left")}px`
-                            : undefined,
-                      }}
+                      style={{ width: column.width }}
                     >
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext(),
-                      )}
+                      {column.cell({ item, table })}
                     </div>
-                  );
-                })}
+                  ))}
               </div>
             ))}
+            <div ref={ref} />
           </div>
         </div>
-        <ScrollBar orientation="horizontal" />
-        <ScrollBar orientation="vertical" />
+        <ScrollBar orientation="horizontal" className="z-20" />
+        <ScrollBar orientation="vertical" className="z-20" />
       </ScrollArea>
-      <DataTablePagination table={table} count={count} />
-    </>
+      <ActionsMenu table={table} />
+      <p className="space-x-1 border-t px-3 py-2">
+        <span className="font-medium">{count}</span>
+        <span className="text-muted-foreground">Members</span>
+      </p>
+    </div>
   );
 };

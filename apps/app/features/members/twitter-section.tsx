@@ -2,24 +2,14 @@ import { EditableLink } from "@/components/editable/editable-link";
 import { FieldCard } from "@/components/editable/field-card";
 import { Twitter } from "@conquest/ui/icons/Twitter";
 import { Separator } from "@conquest/ui/separator";
-import {
-  type Profile,
-  TwitterProfileSchema,
-} from "@conquest/zod/schemas/profile.schema";
+import { TwitterProfile } from "@conquest/zod/schemas/profile.schema";
 
 type Props = {
-  profiles: Profile[] | undefined;
+  profile: TwitterProfile;
 };
 
-export const TwitterSection = ({ profiles }: Props) => {
-  const profile = profiles?.find(
-    (profile) => profile.attributes.source === "Twitter",
-  );
-
-  if (!profile) return null;
-
-  const twitter = TwitterProfileSchema.parse(profile);
-  const { username } = twitter.attributes;
+export const TwitterSection = ({ profile }: Props) => {
+  const { username } = profile.attributes;
 
   return (
     <>

@@ -49,9 +49,10 @@ export const createMember = async (props: Props) => {
 
   const result = await client.query({
     query: `
-        SELECT * 
-        FROM member FINAL
-        WHERE id = '${id}'`,
+      SELECT * 
+      FROM member FINAL
+      WHERE id = '${id}'
+    `,
   });
 
   const { data } = await result.json();

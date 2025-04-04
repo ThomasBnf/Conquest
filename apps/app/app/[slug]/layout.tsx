@@ -8,8 +8,8 @@ import { redirect } from "next/navigation";
 import type { PropsWithChildren } from "react";
 
 type Props = {
-  children: React.ReactNode;
   params: Promise<{ slug: string }>;
+  children: React.ReactNode;
 };
 
 export default async function Layout({

@@ -40,7 +40,10 @@ export const EditableLanguage = ({ language, onUpdate }: Props) => {
           )}
         </Button>
       </PopoverTrigger>
-      <PopoverContent align="start" className="w-[233px] p-0">
+      <PopoverContent
+        align="start"
+        className="w-[var(--radix-popover-trigger-width)] p-0"
+      >
         <Command>
           <CommandInput placeholder="Search country..." />
           <CommandList>

@@ -1,0 +1,252 @@
+"use client";
+
+import { CountryBadge } from "@/components/badges/country-badge";
+import { LanguageBadge } from "@/components/badges/language-badge";
+import { SourceBadge } from "@/components/badges/source-badge";
+import { LevelBadge } from "@/features/members/level-badge";
+import { PulseBadge } from "@/features/members/pulse-badge";
+import { useTable } from "@/hooks/useTable";
+import { Checkbox } from "@conquest/ui/checkbox";
+import { Member } from "@conquest/zod/schemas/member.schema";
+import { CompanyCell } from "../cells/company-cell";
+import { DateCell } from "../cells/date-cell";
+import { FullNameCell } from "../cells/full-name-cell";
+import { ProfilesCell } from "../cells/profiles-cell";
+import { TagsCell } from "../cells/tags-cell";
+import { ColumnHeader } from "./column-header";
+
+export type Column<TData> = {
+  key: string;
+  header: ({
+    table,
+  }: {
+    table: ReturnType<typeof useTable<TData>>;
+  }) => React.ReactNode;
+  cell: ({
+    item,
+    table,
+  }: {
+    item: TData;
+    table: ReturnType<typeof useTable<TData>>;
+  }) => React.ReactNode;
+  width: number;
+  isFixed?: boolean;
+};
+
+export const membersColumns = (): Column<Member>[] => {
+  return [
+    {
+      key: "name",
+      header: ({ table }) => {
+        const { data, isAllSelected, isSomeSelected, setSelectedRows } = table;
+
+        return (
+          <div className="flex items-center gap-3">
+            <Checkbox
+              checked={isAllSelected || (isSomeSelected && "indeterminate")}
+              onCheckedChange={() => {
+                if (isAllSelected) {
+                  setSelectedRows([]);
+                } else {
+                  setSelectedRows(data ?? []);
+                }
+              }}
+            />
+            <ColumnHeader
+              columnId="name"
+              title="Members"
+              type="string"
+              isFixed
+              table={table}
+            />
+          </div>
+        );
+      },
+      cell: ({ item, table }) => {
+        const { selectedRows, setSelectedRows } = table;
+
+        return (
+          <div className="flex items-center gap-3 overflow-hidden">
+            <Checkbox
+              checked={selectedRows.includes(item)}
+              onCheckedChange={(value) =>
+                setSelectedRows(
+                  value
+                    ? [...selectedRows, item]
+                    : selectedRows.filter((m) => m.id !== item.id),
+                )
+              }
+            />
+            <FullNameCell member={item} />
+          </div>
+        );
+      },
+      width: 300,
+      isFixed: true,
+    },
+    {
+      key: "company",
+      header: ({ table }) => (
+        <ColumnHeader
+          columnId="company"
+          title="Company"
+          type="string"
+          table={table}
+        />
+      ),
+      cell: ({ item }) => <CompanyCell member={item} />,
+      width: 250,
+    },
+    {
+      key: "tags",
+      header: ({ table }) => (
+        <ColumnHeader
+          columnId="tags"
+          title="Tags"
+          type="string"
+          table={table}
+        />
+      ),
+      cell: ({ item }) => <TagsCell data={item} />,
+      width: 250,
+    },
+    {
+      key: "level",
+      header: ({ table }) => (
+        <ColumnHeader
+          columnId="level"
+          title="Level"
+          type="number"
+          table={table}
+        />
+      ),
+      cell: ({ item }) => <LevelBadge member={item} />,
+      width: 200,
+    },
+    {
+      key: "pulse",
+      header: ({ table }) => (
+        <ColumnHeader
+          columnId="pulse"
+          title="Pulse"
+          type="number"
+          table={table}
+        />
+      ),
+      cell: ({ item }) => <PulseBadge member={item} />,
+      width: 200,
+    },
+    {
+      key: "profiles",
+      header: ({ table }) => (
+        <ColumnHeader columnId="profiles" title="Profiles" table={table} />
+      ),
+      cell: ({ item }) => <ProfilesCell member={item} />,
+      width: 250,
+    },
+    {
+      key: "job_title",
+      header: ({ table }) => (
+        <ColumnHeader
+          columnId="job_title"
+          title="Job title"
+          type="string"
+          table={table}
+        />
+      ),
+      cell: ({ item }) => <p className="truncate">{item.job_title}</p>,
+      width: 250,
+    },
+    {
+      key: "primary_email",
+      header: ({ table }) => (
+        <ColumnHeader
+          columnId="primary_email"
+          title="Email"
+          type="string"
+          table={table}
+        />
+      ),
+      cell: ({ item }) => <p className="truncate">{item.primary_email}</p>,
+      width: 250,
+    },
+    {
+      key: "language",
+      header: ({ table }) => (
+        <ColumnHeader
+          columnId="language"
+          title="Language"
+          type="string"
+          table={table}
+        />
+      ),
+      cell: ({ item }) => <LanguageBadge language={item.language} />,
+      width: 250,
+    },
+    {
+      key: "country",
+      header: ({ table }) => (
+        <ColumnHeader
+          columnId="country"
+          title="Country"
+          type="string"
+          table={table}
+        />
+      ),
+      cell: ({ item }) => <CountryBadge country={item.country} />,
+      width: 250,
+    },
+    {
+      key: "first_activity",
+      header: ({ table }) => (
+        <ColumnHeader
+          columnId="first_activity"
+          title="First activity"
+          type="Date"
+          table={table}
+        />
+      ),
+      cell: ({ item }) => <DateCell date={item.first_activity} />,
+      width: 250,
+    },
+    {
+      key: "last_activity",
+      header: ({ table }) => (
+        <ColumnHeader
+          columnId="last_activity"
+          title="Last activity"
+          type="Date"
+          table={table}
+        />
+      ),
+      cell: ({ item }) => <DateCell date={item.last_activity} />,
+      width: 250,
+    },
+    {
+      key: "source",
+      header: ({ table }) => (
+        <ColumnHeader
+          columnId="source"
+          title="Source"
+          type="string"
+          table={table}
+        />
+      ),
+      cell: ({ item }) => <SourceBadge source={item.source} />,
+      width: 250,
+    },
+    {
+      key: "created_at",
+      header: ({ table }) => (
+        <ColumnHeader
+          columnId="created_at"
+          title="Created at"
+          type="Date"
+          table={table}
+        />
+      ),
+      cell: ({ item }) => <DateCell date={item.created_at} />,
+      width: 250,
+    },
+  ];
+};

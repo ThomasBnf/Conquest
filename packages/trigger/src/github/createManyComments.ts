@@ -1,6 +1,5 @@
 import { createActivity } from "@conquest/clickhouse/activities/createActivity";
 import { GithubIntegration } from "@conquest/zod/schemas/integration.schema";
-import { Member } from "@conquest/zod/schemas/member.schema";
 import { Octokit } from "octokit";
 import { checkRateLimit } from "./checkRateLimit";
 import { createGithubMember } from "./createGithubMember";
@@ -18,8 +17,6 @@ export const createManyComments = async ({
 }: Props) => {
   const { details, workspace_id } = github;
   const { owner, repo } = details;
-
-  const createdMembers: Member[] = [];
 
   const { headers, data: comments } = await octokit.rest.issues.listComments({
     owner,
@@ -58,9 +55,5 @@ export const createManyComments = async ({
     });
 
     await checkRateLimit(headers);
-
-    createdMembers.push(member);
   }
-
-  return createdMembers;
 };

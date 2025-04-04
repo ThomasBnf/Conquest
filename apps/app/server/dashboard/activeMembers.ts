@@ -35,7 +35,7 @@ export const activeMembers = protectedProcedure
           (
             SELECT count(DISTINCT a.member_id)
             FROM activity a
-            JOIN member m ON a.member_id = m.id
+            JOIN member m FINAL ON a.member_id = m.id
             WHERE 
               a.created_at >= '${_from}' 
               AND a.created_at <= '${_to}'
@@ -44,7 +44,7 @@ export const activeMembers = protectedProcedure
           (
             SELECT count(DISTINCT a.member_id)
             FROM activity a
-            JOIN member m ON a.member_id = m.id
+            JOIN member m FINAL ON a.member_id = m.id
             WHERE 
               a.created_at >= '${_previousFrom}' 
               AND a.created_at <= '${_previousTo}'

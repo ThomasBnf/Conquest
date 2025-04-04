@@ -1,9 +1,12 @@
 "use client";
 
+import { WorkspaceMenu } from "@/features/workspaces/workspace-menu";
 import { Companies } from "@conquest/ui/icons/Companies";
 import { Dashboard } from "@conquest/ui/icons/Dashboard";
+import { Documentation } from "@conquest/ui/icons/Documentation";
 import { Members } from "@conquest/ui/icons/Members";
-import { WorkspaceMenu } from "@/features/workspaces/workspace-menu";
+import { Settings } from "@conquest/ui/icons/Settings";
+import { SlackCommunity } from "@conquest/ui/icons/Slack-Community";
 import { Separator } from "@conquest/ui/separator";
 import {
   Sidebar,
@@ -21,9 +24,6 @@ import type { Workspace } from "@conquest/zod/schemas/workspace.schema";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Documentation } from "@conquest/ui/icons/Documentation";
-import { Settings } from "@conquest/ui/icons/Settings";
-import { SlackCommunity } from "@conquest/ui/icons/Slack-Community";
 import { LoadingIntegrations } from "../states/loading-integrations";
 import { SidebarLists } from "./sidebar-lists";
 import { TrialCard } from "./trial-card";

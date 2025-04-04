@@ -16,6 +16,7 @@ type Props = HTMLAttributes<HTMLButtonElement> & {
   title: string;
   description: string;
   onConfirm: () => Promise<void>;
+  onCancel?: () => void;
   children?: ReactNode;
 };
 
@@ -23,6 +24,7 @@ export const DeleteDialog = ({
   title,
   description,
   onConfirm,
+  onCancel,
   className,
   children,
 }: Props) => {
@@ -34,6 +36,11 @@ export const DeleteDialog = ({
     await onConfirm();
     setIsOpen(false);
     setLoading(false);
+  };
+
+  const onCancelClick = () => {
+    setIsOpen(false);
+    onCancel?.();
   };
 
   return (
@@ -54,7 +61,7 @@ export const DeleteDialog = ({
           <AlertDialogDescription>{description}</AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogCancel onClick={onCancelClick}>Cancel</AlertDialogCancel>
           <Button variant="destructive" disabled={loading} onClick={onClick}>
             {loading ? (
               <Loader2 className="size-4 animate-spin" />

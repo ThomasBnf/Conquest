@@ -1,55 +1,72 @@
 "use client";
 
 import { QueryInput } from "@/components/custom/query-input";
-import { useMembers } from "@/context/membersContext";
-import { tableParams } from "@/utils/tableParams";
+import { useFilters } from "@/context/filtersContext";
+import { useTable } from "@/hooks/useTable";
+import { trpc } from "@/server/client";
+import { tableMembersParams } from "@/utils/tableParams";
+import { Separator } from "@conquest/ui/separator";
+import { useSession } from "next-auth/react";
 import { useQueryStates } from "nuqs";
 import { FiltersList } from "../filters/filters-list";
 import { SaveList } from "../lists/save-list";
-import { ActionsMenu } from "../table/actions-menu";
-import { ColumnVisibility } from "../table/column-visibility";
+import { membersColumns } from "../table/columns/members-columns";
 import { DataTable } from "../table/data-table";
-import { useTable } from "../table/hooks/useTable";
-import { membersColumns } from "../table/members-columns";
-import { EmptyTable } from "./empty-table";
+import { EmptyTable } from "../table/empty-table-members";
+import { ColumnSettings } from "../table/settings/columnSettings";
 import { ExportListMembers } from "./export-list-members";
 
 export const MembersPage = () => {
-  const [{ search, idMember, descMember }, setParams] =
-    useQueryStates(tableParams);
-  const { data, count, isLoading } = useMembers();
+  const { groupFilters } = useFilters();
+  const { data: session } = useSession();
+  const { user } = session ?? {};
 
-  const { table } = useTable({
-    data: data ?? [],
-    columns: membersColumns,
-    count: count ?? 0,
-    left: ["full_name"],
-    id: idMember,
-    desc: descMember,
-    type: "members",
+  const columns = membersColumns();
+  const params = useQueryStates(tableMembersParams);
+  const [{ search, id, desc }, setParams] = params;
+
+  const { data, isLoading, fetchNextPage } = trpc.members.list.useInfiniteQuery(
+    { search, id, desc, groupFilters },
+    { getNextPageParam: (_, allPages) => allPages.length * 25 },
+  );
+
+  const { data: count } = trpc.members.count.useQuery({
+    search,
+    groupFilters,
+  });
+
+  const members = data?.pages.flat();
+  const hasNextPage = data?.pages.at(-1)?.length === 25;
+
+  const table = useTable({
+    columns,
+    data: members ?? [],
+    fetchNextPage,
+    hasNextPage,
+    isLoading,
+    count,
+    preferences: user?.members_preferences,
   });
 
   return (
-    <div className="flex h-full flex-col divide-y overflow-hidden">
-      <div className="flex h-12 shrink-0 items-center gap-2 px-3">
-        <QueryInput
-          placeholder="Search..."
-          query={search}
-          setQuery={(value) => setParams({ search: value })}
-        />
-        <FiltersList />
-        <div className="ml-auto flex items-center gap-2">
-          <SaveList />
-          <ExportListMembers members={data} />
-          <ColumnVisibility table={table} type="members" />
+    <div className="relative flex h-full flex-col overflow-hidden">
+      <div className="flex h-full flex-col">
+        <div className="flex h-12 shrink-0 items-center gap-2 px-3">
+          <QueryInput
+            placeholder="Search..."
+            query={search}
+            setQuery={(value) => setParams({ search: value })}
+          />
+          <FiltersList />
+          <div className="ml-auto flex items-center gap-2">
+            <SaveList />
+            <ExportListMembers members={members} />
+            <ColumnSettings table={table} />
+          </div>
         </div>
+        <Separator />
+        {members?.length === 0 ? <EmptyTable /> : <DataTable table={table} />}
       </div>
-      <ActionsMenu table={table} />
-      {data?.length === 0 ? (
-        <EmptyTable />
-      ) : (
-        <DataTable table={table} isLoading={isLoading} count={count ?? 0} />
-      )}
     </div>
   );
 };

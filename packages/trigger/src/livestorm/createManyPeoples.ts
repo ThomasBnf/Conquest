@@ -5,7 +5,6 @@ import { getProfile } from "@conquest/clickhouse/profiles/getProfile";
 import { decrypt } from "@conquest/db/utils/decrypt";
 import type { Event } from "@conquest/zod/schemas/event.schema";
 import type { LivestormIntegration } from "@conquest/zod/schemas/integration.schema";
-import type { Member } from "@conquest/zod/schemas/member.schema";
 import type { Session } from "@conquest/zod/types/livestorm";
 import { logger, wait } from "@trigger.dev/sdk/v3";
 import { getLocaleByAlpha2 } from "country-locale-map";
@@ -31,8 +30,6 @@ export const createManyPeoples = async ({
     access_token: access_token,
     iv: access_token_iv,
   });
-
-  const createdMembers: Member[] = [];
 
   await wait.for({ seconds: 0.5 });
 
@@ -79,8 +76,6 @@ export const createManyPeoples = async ({
         workspace_id,
       });
 
-      createdMembers.push(member);
-
       profile = await createProfile({
         external_id: id,
         attributes: {
@@ -123,6 +118,4 @@ export const createManyPeoples = async ({
       workspace_id,
     });
   }
-
-  return createdMembers;
 };

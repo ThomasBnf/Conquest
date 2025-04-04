@@ -9,18 +9,17 @@ import { protectedProcedure } from "../trpc";
 export const newMembersTable = protectedProcedure
   .input(
     z.object({
+      cursor: z.number().nullish(),
       from: z.date(),
       to: z.date(),
       search: z.string(),
       id: z.string(),
       desc: z.boolean(),
-      page: z.number(),
-      pageSize: z.number(),
     }),
   )
   .query(async ({ ctx: { user }, input }) => {
     const { workspace_id } = user;
-    const { from, to, search, id, desc, page, pageSize } = input;
+    const { cursor, from, to, search, id, desc } = input;
 
     const orderBy = orderByParser({ id, desc, type: "members" });
 
@@ -45,8 +44,7 @@ export const newMembersTable = protectedProcedure
           OR positionCaseInsensitive(toString(primary_email), '${search}') > 0
         )
         ${orderBy}
-        LIMIT ${pageSize}
-        OFFSET ${page * pageSize}
+        ${cursor ? `LIMIT 25 OFFSET ${cursor}` : "LIMIT 25"}
       `,
       format: "JSON",
     });

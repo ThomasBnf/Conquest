@@ -6,12 +6,12 @@ import { protectedProcedure } from "../trpc";
 export const mergeMembers = protectedProcedure
   .input(
     z.object({
-      leftMember: MemberSchema,
-      rightMember: MemberSchema,
+      members: MemberSchema.array(),
+      finalMember: MemberSchema,
     }),
   )
   .mutation(async ({ input }) => {
-    const { leftMember, rightMember } = input;
+    const { members, finalMember } = input;
 
-    return await _mergeMembers({ leftMember, rightMember });
+    return await _mergeMembers({ members, finalMember });
   });

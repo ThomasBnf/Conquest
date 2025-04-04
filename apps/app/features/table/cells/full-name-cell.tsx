@@ -1,23 +1,21 @@
 import { trpc } from "@/server/client";
 import { Avatar, AvatarFallback, AvatarImage } from "@conquest/ui/avatar";
-import { buttonVariants } from "@conquest/ui/button";
-import { cn } from "@conquest/ui/cn";
 import { Skeleton } from "@conquest/ui/skeleton";
 import type { Member } from "@conquest/zod/schemas/member.schema";
 import { GithubProfileSchema } from "@conquest/zod/schemas/profile.schema";
 import { skipToken } from "@tanstack/react-query";
-import type { Row } from "@tanstack/react-table";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 
 type Props = {
-  row: Row<Member>;
+  member: Member;
 };
 
-export const FullNameCell = ({ row }: Props) => {
+export const FullNameCell = ({ member }: Props) => {
   const { data: session } = useSession();
   const { slug } = session?.user.workspace ?? {};
-  const { id, first_name, last_name, avatar_url } = row.original;
+
+  const { id, first_name, last_name, avatar_url } = member;
 
   const hasName = !!first_name || !!last_name;
 
@@ -31,7 +29,7 @@ export const FullNameCell = ({ row }: Props) => {
   return (
     <Link
       href={`/${slug}/members/${id}/analytics`}
-      className={cn(buttonVariants({ variant: "ghost" }), "truncate pl-1")}
+      className="group flex items-center gap-2 truncate font-medium"
       prefetch
     >
       <Avatar className="size-6">
@@ -43,9 +41,9 @@ export const FullNameCell = ({ row }: Props) => {
       {isLoading ? (
         <Skeleton className="h-4 w-24" />
       ) : hasName ? (
-        <p className="truncate font-medium">{`${first_name} ${last_name}`}</p>
+        <p className="truncate group-hover:underline">{`${first_name} ${last_name}`}</p>
       ) : (
-        <p className="truncate font-medium">{login}</p>
+        <p className="truncate group-hover:underline">{login}</p>
       )}
     </Link>
   );

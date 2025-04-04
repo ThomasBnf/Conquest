@@ -43,13 +43,14 @@ export const EditableMembers = ({ company }: Props) => {
     },
   });
 
-  const { data, hasNextPage, fetchNextPage, isLoading } =
-    trpc.members.listPaginated.useInfiniteQuery(
-      { search, limit: 25 },
-      { getNextPageParam: (lastPage, allPages) => allPages.length * 10 + 10 },
+  const { data, isLoading, fetchNextPage } =
+    trpc.members.listInfinite.useInfiniteQuery(
+      { search },
+      { getNextPageParam: (_, allPages) => allPages.length * 25 },
     );
 
   const members = data?.pages.flat();
+  const hasNextPage = data?.pages.at(-1)?.length === 25;
 
   const onUpdate = async (memberId: string) => {
     const member = companyMembers?.find((member) => member.id === memberId);
@@ -116,7 +117,10 @@ export const EditableMembers = ({ company }: Props) => {
           </Button>
         )}
       </PopoverTrigger>
-      <PopoverContent align="start" className="w-[233px] p-0">
+      <PopoverContent
+        align="start"
+        className="w-[var(--radix-popover-trigger-width)] p-0"
+      >
         <Command loop shouldFilter={false}>
           <CommandInput
             placeholder="Search..."

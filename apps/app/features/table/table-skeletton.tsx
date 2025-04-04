@@ -1,3 +1,4 @@
+import { cn } from "@conquest/ui/cn";
 import { Skeleton } from "@conquest/ui/skeleton";
 import { v4 as uuid } from "uuid";
 
@@ -6,57 +7,54 @@ export const TableSkeleton = () => {
     <div className="flex flex-col divide-y overflow-hidden">
       <div className="h-full overflow-hidden">
         <div className="flex border-b bg-sidebar">
-          <div className="flex h-11 w-[285px] shrink-0 items-center gap-2 border-r px-3">
-            <Skeleton className="size-4" />
-            <Skeleton className="mx-2 h-4 w-32" />
+          <div className="flex w-[300px] shrink-0 items-center gap-2 border-r p-2">
+            <Skeleton className="size-5" />
+            <Skeleton className="h-6 w-32" />
           </div>
-          <div className="flex divide-x">
-            {Array.from({ length: 6 }, () => (
+          <div className="flex">
+            {Array.from({ length: 12 }, (_, index) => (
               <div
                 key={uuid()}
-                className="flex h-11 w-[250px] shrink-0 items-center px-2"
+                className="flex shrink-0 items-center border-r p-2"
+                style={{ width: [2, 3].includes(index) ? "200px" : "250px" }}
               >
-                <Skeleton className="h-4 w-24" />
+                <Skeleton className="h-6 w-20" />
               </div>
             ))}
           </div>
         </div>
         {Array.from({ length: 50 }, () => (
           <div key={uuid()} className="flex border-b">
-            <div className="flex h-11 w-[285px] shrink-0 items-center gap-4 border-r">
-              <div className="flex items-center gap-4 px-3">
-                <Skeleton className="size-4" />
+            <div className="flex w-[300px] shrink-0 items-center gap-4 border-r">
+              <div className="flex items-center gap-2 p-2">
+                <Skeleton className="size-5" />
                 <div className="flex items-center gap-2">
                   <Skeleton className="size-6" />
-                  <Skeleton className="h-4 w-32" />
+                  <Skeleton className="h-5 w-32" />
                 </div>
               </div>
             </div>
-            <div className="flex divide-x">
-              {Array.from({ length: 6 }, () => (
+            <div className="flex">
+              {Array.from({ length: 12 }, (_, index) => (
                 <div
                   key={uuid()}
-                  className="flex h-11 w-[250px] items-center px-3"
+                  className="flex h-11 items-center border-r p-2"
+                  style={{ width: [2, 3].includes(index) ? "200px" : "250px" }}
                 >
-                  <Skeleton className="h-4 w-24" />
+                  <Skeleton
+                    className={cn(
+                      [2, 3].includes(index) ? "h-[26px] w-28" : "h-5 w-24",
+                      [2, 3].includes(index) && "h-[28px] w-28",
+                    )}
+                  />
                 </div>
               ))}
             </div>
           </div>
         ))}
       </div>
-      <div className="flex h-12 shrink-0 items-center justify-between px-4">
-        <div className="flex items-center gap-2">
-          <Skeleton className="h-5 w-[118px]" />
-          <Skeleton className="h-8 w-[70px]" />
-        </div>
-        <div className="flex items-center gap-2">
-          <Skeleton className="h-5 w-20" />
-          <div className="flex items-center space-x-2">
-            <Skeleton className="size-8" />
-            <Skeleton className="size-8" />
-          </div>
-        </div>
+      <div className="px-3 py-2">
+        <Skeleton className="h-[17px] w-28" />
       </div>
     </div>
   );

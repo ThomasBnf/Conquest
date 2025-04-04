@@ -23,7 +23,7 @@ export const heatmap = protectedProcedure
           toDate(created_at) as date,
           count() as count
         FROM activity a
-        JOIN member m ON a.member_id = m.id
+        JOIN member m FINAL ON a.member_id = m.id
         WHERE 
           m.workspace_id = '${workspace_id}'
           AND a.created_at >= '${last365days}'

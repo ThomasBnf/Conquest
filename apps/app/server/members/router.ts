@@ -7,8 +7,8 @@ import { exportMembers } from "./exportMembers";
 import { getMember } from "./getMember";
 import { listCountries } from "./listCountries";
 import { listFilteredMembers } from "./listFilteredMembers";
+import { listInfiniteMembers } from "./listInfiniteMembers";
 import { listLanguages } from "./listLanguages";
-import { listPaginatedMembers } from "./listPaginatedMembers";
 import { listSourcesProfile } from "./listSourceProfile";
 import { listSourcesMember } from "./listSourcesMember";
 import { mergeMembers } from "./mergeMembers";
@@ -17,7 +17,7 @@ import { updateMember } from "./updateMember";
 
 export const membersRouter = router({
   list: listFilteredMembers,
-  listPaginated: listPaginatedMembers,
+  listInfinite: listInfiniteMembers,
   count: countMembers,
   get: getMember,
   post: createMember,

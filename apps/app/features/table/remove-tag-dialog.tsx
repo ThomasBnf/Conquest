@@ -1,3 +1,4 @@
+import { useTable } from "@/hooks/useTable";
 import { trpc } from "@/server/client";
 import { Button } from "@conquest/ui/button";
 import { Checkbox } from "@conquest/ui/checkbox";
@@ -18,33 +19,27 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@conquest/ui/dialog";
-import { CompanySchema } from "@conquest/zod/schemas/company.schema";
-import { MemberSchema } from "@conquest/zod/schemas/member.schema";
-import type { Table } from "@tanstack/react-table";
+import { Company } from "@conquest/zod/schemas/company.schema";
+import { Member } from "@conquest/zod/schemas/member.schema";
 import { Loader2 } from "lucide-react";
-import { usePathname } from "next/navigation";
 import { useState } from "react";
 
-type Props<TData> = {
-  table: Table<TData>;
+type Props<TData extends Member | Company> = {
   open: boolean;
   setOpen: (open: boolean) => void;
+  table: ReturnType<typeof useTable<TData>>;
 };
 
-export const RemoveTagDialog = <TData,>({
-  table,
+export const RemoveTagDialog = <TData extends Member | Company>({
   open,
   setOpen,
+  table,
 }: Props<TData>) => {
   const { data: tags } = trpc.tags.list.useQuery();
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
-
-  const pathname = usePathname();
-  const isCompanyPage = pathname.includes("companies");
+  const { selectedRows, onReset } = table;
   const utils = trpc.useUtils();
-
-  const rowSelected = table.getSelectedRowModel().rows;
 
   const { mutateAsync: updateManyMembers } =
     trpc.members.updateManyMembers.useMutation({
@@ -53,7 +48,7 @@ export const RemoveTagDialog = <TData,>({
         setSelectedTags([]);
         setOpen(false);
         setLoading(false);
-        table.setRowSelection({});
+        onReset();
       },
     });
 
@@ -64,7 +59,7 @@ export const RemoveTagDialog = <TData,>({
         setSelectedTags([]);
         setOpen(false);
         setLoading(false);
-        table.setRowSelection({});
+        onReset();
       },
     });
 
@@ -80,22 +75,8 @@ export const RemoveTagDialog = <TData,>({
   const onConfirm = async () => {
     setLoading(true);
 
-    if (isCompanyPage) {
-      const companies = CompanySchema.array().parse(
-        rowSelected.map((row) => row.original),
-      );
-
-      const updatedCompanies = companies.map((company) => ({
-        ...company,
-        tags: company.tags.filter((tag) => !selectedTags.includes(tag)),
-        updated_at: new Date(),
-      }));
-
-      updateManyCompanies({ companies: updatedCompanies });
-    } else {
-      const members = MemberSchema.array().parse(
-        rowSelected.map((row) => row.original),
-      );
+    if (selectedRows?.[0] && "first_name" in selectedRows[0]) {
+      const members = selectedRows as Member[];
 
       const updatedMembers = members.map((member) => ({
         ...member,
@@ -103,15 +84,26 @@ export const RemoveTagDialog = <TData,>({
         updated_at: new Date(),
       }));
 
-      updateManyMembers({ members: updatedMembers });
+      await updateManyMembers({ members: updatedMembers });
+      return;
     }
+
+    const companies = selectedRows as Company[];
+
+    const updatedCompanies = companies.map((company) => ({
+      ...company,
+      tags: company.tags.filter((tag) => !selectedTags.includes(tag)),
+      updated_at: new Date(),
+    }));
+
+    await updateManyCompanies({ companies: updatedCompanies });
   };
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Remove tag</DialogTitle>
+          <DialogTitle>Remove tags</DialogTitle>
         </DialogHeader>
         <DialogBody className="p-0">
           <Command>

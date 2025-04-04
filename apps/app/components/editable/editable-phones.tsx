@@ -24,8 +24,13 @@ export const EditablePhones = ({ member }: Props) => {
   const [phones, setPhones] = useState<{ id: string; content: string }[]>(
     member.phones.map((phone) => ({ id: uuid(), content: phone })) ?? [],
   );
+  const utils = trpc.useUtils();
 
-  const { mutateAsync: updateMember } = trpc.members.update.useMutation();
+  const { mutateAsync: updateMember } = trpc.members.update.useMutation({
+    onSuccess: () => {
+      utils.members.get.invalidate({ id: member.id });
+    },
+  });
 
   const onAddPhone = () => {
     setPhones([...phones, { id: uuid(), content: "" }]);
@@ -57,6 +62,7 @@ export const EditablePhones = ({ member }: Props) => {
   const onDeletePhone = (id: string) => {
     const updatedPhones = phones.filter((phone) => phone.id !== id);
     setPhones(updatedPhones);
+
     updateMember({
       ...member,
       phones: updatedPhones.map((phone) => phone.content),
@@ -67,7 +73,7 @@ export const EditablePhones = ({ member }: Props) => {
     <DropdownMenu open={open} onOpenChange={setOpen}>
       <DropdownMenuTrigger asChild className="w-full cursor-pointer">
         {phones.filter((phone) => phone.content !== "").length > 0 ? (
-          <div className="min-h-8 space-y-1 rounded-md p-1 hover:bg-muted-hover">
+          <div className="flex min-h-8 flex-wrap gap-1 rounded-md p-1 hover:bg-muted-hover">
             {phones.map((phone) => {
               if (phone.content === "") return;
               return (
@@ -97,7 +103,10 @@ export const EditablePhones = ({ member }: Props) => {
           </Button>
         )}
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="start">
+      <DropdownMenuContent
+        align="start"
+        className="w-[var(--radix-dropdown-menu-trigger-width)]"
+      >
         {phones.length > 0 && (
           <>
             <div className="space-y-0.5">

@@ -5,21 +5,19 @@ import { GroupFilters } from "@conquest/zod/schemas/filters.schema";
 import { MemberSchema } from "@conquest/zod/schemas/member.schema";
 
 type Props = {
+  cursor: number | null | undefined;
   search: string;
   id: string;
   desc: boolean;
-  page: number;
-  pageSize: number;
   groupFilters: GroupFilters;
   workspace_id: string;
 };
 
 export const listFilteredMembers = async ({
+  cursor,
   search,
   id,
   desc,
-  page,
-  pageSize,
   groupFilters,
   workspace_id,
 }: Props) => {
@@ -86,12 +84,12 @@ export const listFilteredMembers = async ({
         AND m.workspace_id = '${workspace_id}'
         ${filterBy.length > 0 ? `AND (${filtersStr})` : ""}
         ${orderBy}
-        LIMIT ${pageSize}
-        OFFSET ${page * pageSize}
+        ${cursor ? `LIMIT 25 OFFSET ${cursor}` : "LIMIT 25"}
       `,
     format: "JSON",
   });
 
   const { data } = await result.json();
+  console.log(data);
   return MemberSchema.array().parse(data);
 };

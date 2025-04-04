@@ -1,5 +1,4 @@
 import { listChannels } from "@conquest/clickhouse/channels/listChannels";
-import { batchMergeMembers } from "@conquest/clickhouse/members/batchMergeMembers";
 import { deleteIntegration } from "@conquest/db/integrations/deleteIntegration";
 import { updateIntegration } from "@conquest/db/integrations/updateIntegration";
 import { decrypt } from "@conquest/db/utils/decrypt";
@@ -32,14 +31,12 @@ export const installSlack = schemaTask({
     const web = new WebClient(token);
 
     const channels = await listChannels({ source: "Slack", workspace_id });
-    const members = await createListMembers({ web, workspace_id });
+    await createListMembers({ web, workspace_id });
 
     for (const channel of channels) {
       await web.conversations.join({ channel: channel.external_id ?? "" });
       await listMessages({ web, channel, workspace_id });
     }
-
-    await batchMergeMembers({ members });
 
     await getAllMembersMetrics.triggerAndWait(
       { workspace_id },

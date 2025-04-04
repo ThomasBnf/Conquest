@@ -1,5 +1,5 @@
-import { getPulseScoreDetails } from "@/utils/getPulseScoreDetails";
 import { trpc } from "@/server/client";
+import { getPulseScoreDetails } from "@/utils/getPulseScoreDetails";
 import { Badge } from "@conquest/ui/badge";
 import { cn } from "@conquest/ui/cn";
 import { Pulse } from "@conquest/ui/icons/Pulse";

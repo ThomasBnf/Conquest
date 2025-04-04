@@ -1,7 +1,7 @@
 import { LoadingChannels } from "@/components/states/loading-channels";
-import { DISCORD_ACTIVITY_TYPES } from "@conquest/db/constant";
 import { useIntegration } from "@/context/integrationContext";
 import { trpc } from "@/server/client";
+import { DISCORD_ACTIVITY_TYPES } from "@conquest/db/constant";
 import { Button } from "@conquest/ui/button";
 import { Checkbox } from "@conquest/ui/checkbox";
 import { cn } from "@conquest/ui/cn";
@@ -31,8 +31,13 @@ export const DiscordChannels = () => {
   const { mutateAsync: createManyChannels } =
     trpc.channels.postMany.useMutation({});
 
-  const { data: discordChannels, isLoading } =
-    trpc.discord.listChannels.useQuery();
+  const {
+    data: discordChannels,
+    isLoading,
+    failureReason,
+  } = trpc.discord.listChannels.useQuery();
+
+  console.log(failureReason);
 
   const categoriesChannels = discordChannels?.sort(
     (a, b) => a.position - b.position,

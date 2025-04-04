@@ -18,6 +18,7 @@ import { Plus, X } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { useInView } from "react-intersection-observer";
 import { useDebounce } from "use-debounce";
 
 type Props = {
@@ -31,6 +32,7 @@ export const EditableCompany = ({ member, onUpdate }: Props) => {
   const [query, setQuery] = useState("");
   const [search, setSearch] = useDebounce(query, 500);
   const [open, setOpen] = useState(false);
+  const { ref, inView } = useInView();
 
   const router = useRouter();
   const utils = trpc.useUtils();
@@ -39,10 +41,11 @@ export const EditableCompany = ({ member, onUpdate }: Props) => {
     member.company_id ? { id: member.company_id } : skipToken,
   );
 
-  const { data: companies, isLoading } =
-    trpc.companies.getAllCompanies.useQuery({
-      search,
-    });
+  const { data, isLoading, fetchNextPage } =
+    trpc.companies.listInfinite.useInfiniteQuery(
+      { search },
+      { getNextPageParam: (_, allPages) => allPages.length * 10 },
+    );
 
   const { mutateAsync: createCompany } = trpc.companies.post.useMutation({
     onSuccess: () => {
@@ -64,6 +67,13 @@ export const EditableCompany = ({ member, onUpdate }: Props) => {
 
     if (company) onUpdateMemberCompany(company);
   };
+
+  const companies = data?.pages.flat();
+  const hasNextPage = data?.pages.at(-1)?.length === 25;
+
+  useEffect(() => {
+    if (inView && hasNextPage) fetchNextPage();
+  }, [inView]);
 
   useEffect(() => {
     setSearch(query);
@@ -101,7 +111,10 @@ export const EditableCompany = ({ member, onUpdate }: Props) => {
           )}
         </Button>
       </PopoverTrigger>
-      <PopoverContent align="start" className="p-0">
+      <PopoverContent
+        align="start"
+        className="w-[var(--radix-popover-trigger-width)] p-0"
+      >
         <Command loop shouldFilter={false}>
           <CommandInput
             value={query}
@@ -129,6 +142,7 @@ export const EditableCompany = ({ member, onUpdate }: Props) => {
                   </CommandItem>
                 ))
               )}
+              <div ref={ref} />
             </CommandGroup>
             {search && (
               <CommandGroup>

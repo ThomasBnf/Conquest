@@ -1,34 +1,49 @@
 "use client";
 
 import { QueryInput } from "@/components/custom/query-input";
-import { useCompanies } from "@/context/companiesContext";
-import { tableParams } from "@/utils/tableParams";
+import { useTable } from "@/hooks/useTable";
+import { trpc } from "@/server/client";
+import { tableCompaniesParams } from "@/utils/tableParams";
+import { Separator } from "@conquest/ui/separator";
+import { useSession } from "next-auth/react";
 import { useQueryStates } from "nuqs";
-import { ActionsMenu } from "../table/actions-menu";
-import { ColumnVisibility } from "../table/column-visibility";
-import { companiesColumns } from "../table/companies-columns";
+import { companiesColumns } from "../table/columns/companies-columns";
 import { DataTable } from "../table/data-table";
-import { useTable } from "../table/hooks/useTable";
-import { EmptyTable } from "./empty-table";
+import { EmptyTable } from "../table/empty-table-companies";
+import { ColumnSettings } from "../table/settings/columnSettings";
 import { ExportListCompanies } from "./export-list-companies";
 
 export const CompaniesPage = () => {
-  const [{ search, idCompany, descCompany }, setParams] =
-    useQueryStates(tableParams);
-  const { data, count, isLoading } = useCompanies();
+  const { data: session } = useSession();
+  const { user } = session ?? {};
 
-  const { table } = useTable({
-    data: data ?? [],
-    columns: companiesColumns,
-    count: count ?? 0,
-    left: ["name"],
-    id: idCompany,
-    desc: descCompany,
-    type: "companies",
+  const params = useQueryStates(tableCompaniesParams);
+  const [{ search, id, desc }, setParams] = params;
+  const columns = companiesColumns();
+
+  const { data, isLoading, fetchNextPage } =
+    trpc.companies.list.useInfiniteQuery(
+      { search, id, desc },
+      { getNextPageParam: (_, allPages) => allPages.length * 25 },
+    );
+
+  const { data: count } = trpc.companies.count.useQuery({ search });
+
+  const companies = data?.pages.flat();
+  const hasNextPage = data?.pages.at(-1)?.length === 25;
+
+  const table = useTable({
+    columns,
+    data: companies ?? [],
+    fetchNextPage,
+    hasNextPage,
+    isLoading,
+    count,
+    preferences: user?.companies_preferences,
   });
 
   return (
-    <div className="flex h-full flex-col divide-y overflow-hidden">
+    <div className="flex h-full flex-col overflow-hidden">
       <div className="flex h-12 shrink-0 items-center justify-between gap-2 px-3">
         <QueryInput
           placeholder="Search..."
@@ -36,16 +51,12 @@ export const CompaniesPage = () => {
           setQuery={(value) => setParams({ search: value })}
         />
         <div className="flex items-center gap-2">
-          <ExportListCompanies companies={data} />
-          <ColumnVisibility table={table} type="companies" />
+          <ExportListCompanies companies={companies} />
+          <ColumnSettings table={table} />
         </div>
       </div>
-      <ActionsMenu table={table} />
-      {data?.length === 0 ? (
-        <EmptyTable />
-      ) : (
-        <DataTable table={table} count={count ?? 0} isLoading={isLoading} />
-      )}
+      <Separator />
+      {companies?.length === 0 ? <EmptyTable /> : <DataTable table={table} />}
     </div>
   );
 };

@@ -6,6 +6,7 @@ import { EditableCountry } from "@/components/editable/editable-country";
 import { EditableEmails } from "@/components/editable/editable-emails";
 import { EditableInput } from "@/components/editable/editable-input";
 import { EditableLanguage } from "@/components/editable/editable-language";
+import { EditableLink } from "@/components/editable/editable-link";
 import { EditablePhones } from "@/components/editable/editable-phones";
 import { FieldCard } from "@/components/editable/field-card";
 import { TagPicker } from "@/features/tags/tag-picker";
@@ -28,22 +29,6 @@ type Props = {
 
 export const MemberSidebar = ({ member, profiles }: Props) => {
   const utils = trpc.useUtils();
-
-  const hasSlackProfile = profiles?.some(
-    (profile) => profile.attributes.source === "Slack",
-  );
-  const hasDiscordProfile = profiles?.some(
-    (profile) => profile.attributes.source === "Discord",
-  );
-  const hasDiscourseProfile = profiles?.some(
-    (profile) => profile.attributes.source === "Discourse",
-  );
-  const hasGithubProfile = profiles?.some(
-    (profile) => profile.attributes.source === "Github",
-  );
-  const hasLivestormProfile = profiles?.some(
-    (profile) => profile.attributes.source === "Livestorm",
-  );
 
   const { mutateAsync: updateMember } = trpc.members.update.useMutation({
     onSuccess: () => utils.members.get.invalidate(),
@@ -144,10 +129,11 @@ export const MemberSidebar = ({ member, profiles }: Props) => {
             <EditablePhones member={member} />
           </FieldCard>
           <FieldCard icon="Linkedin" label="LinkedIn">
-            <EditableInput
+            <EditableLink
               defaultValue={linkedin_url}
               placeholder="Set linkedIn URL"
               onUpdate={(value) => onUpdateMember("linkedin_url", value)}
+              href={linkedin_url}
             />
           </FieldCard>
         </div>
@@ -165,8 +151,8 @@ export const MemberSidebar = ({ member, profiles }: Props) => {
               onUpdate={(value) => onUpdateMember("country", value)}
             />
           </FieldCard>
-          <FieldCard icon="Code" label="Source">
-            <SourceBadge source={source} className="ml-1 self-center" />
+          <FieldCard icon="Code" label="Source" className="items-center">
+            <SourceBadge source={source} className="ml-1" />
           </FieldCard>
         </div>
         <Separator />

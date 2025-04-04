@@ -64,6 +64,8 @@ export const CreateListDialog = () => {
   };
 
   const onSubmit = async ({ emoji, name }: FormList) => {
+    console.log(name);
+
     await mutateAsync({ emoji, name, groupFilters });
   };
 

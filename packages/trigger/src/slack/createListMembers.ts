@@ -1,7 +1,7 @@
 import { createMember } from "@conquest/clickhouse/members/createMember";
 import { createProfile } from "@conquest/clickhouse/profiles/createProfile";
-import type { Member } from "@conquest/zod/schemas/member.schema";
 import type { WebClient } from "@slack/web-api";
+import { logger } from "@trigger.dev/sdk/v3";
 import ISO6391 from "iso-639-1";
 
 type Props = {
@@ -10,10 +10,9 @@ type Props = {
 };
 
 export const createListMembers = async ({ web, workspace_id }: Props) => {
-  const createdMembers: Member[] = [];
   let cursor: string | undefined;
 
-  do {
+  while (true) {
     const { members, response_metadata } = await web.users.list({
       limit: 100,
       include_locale: true,
@@ -58,13 +57,11 @@ export const createListMembers = async ({ web, workspace_id }: Props) => {
           member_id: createdMember.id,
           workspace_id,
         });
-
-        createdMembers.push(createdMember);
       }
     }
 
     cursor = response_metadata?.next_cursor;
-  } while (cursor);
-
-  return createdMembers;
+    logger.info("cursor", { cursor });
+    if (!cursor) break;
+  }
 };

@@ -1,6 +1,7 @@
 import { client } from "@conquest/clickhouse/client";
 import { z } from "zod";
 import { protectedProcedure } from "../trpc";
+
 export const countCompanies = protectedProcedure
   .input(
     z.object({

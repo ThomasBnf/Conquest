@@ -43,7 +43,7 @@ export const EditableInput = ({
       <div
         className={cn(
           buttonVariants({ variant: "ghost" }),
-          "relative w-full justify-start border border-transparent",
+          "relative w-full cursor-pointer justify-start border border-transparent",
           !value && "text-muted-foreground",
           className,
         )}

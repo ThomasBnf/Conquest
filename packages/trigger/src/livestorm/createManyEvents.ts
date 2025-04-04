@@ -1,6 +1,5 @@
 import { decrypt } from "@conquest/db/utils/decrypt";
 import type { LivestormIntegration } from "@conquest/zod/schemas/integration.schema";
-import type { Member } from "@conquest/zod/schemas/member.schema";
 import type { Event } from "@conquest/zod/types/livestorm";
 import { logger } from "@trigger.dev/sdk/v3";
 import { createManySessions } from "./createManySessions";
@@ -19,7 +18,6 @@ export const createManyEvents = async ({ livestorm }: Props) => {
     iv: access_token_iv,
   });
 
-  const createdMembers: Member[] = [];
   const events: Event[] = [];
 
   let page = 0;
@@ -42,9 +40,6 @@ export const createManyEvents = async ({ livestorm }: Props) => {
   }
 
   for (const event of events) {
-    const members = await createManySessions({ livestorm, event });
-    createdMembers.push(...members);
+    await createManySessions({ livestorm, event });
   }
-
-  return createdMembers;
 };

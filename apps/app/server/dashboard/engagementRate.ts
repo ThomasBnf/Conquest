@@ -41,7 +41,7 @@ export const engagementRate = protectedProcedure
                    workspace_id = '${workspace_id}'
                   AND created_at <= '${_to}')
             FROM activity a
-            JOIN member m ON a.member_id = m.id
+            JOIN member m FINAL ON a.member_id = m.id
             WHERE 
               a.created_at >= '${_from}' 
               AND a.created_at <= '${_to}'
@@ -56,7 +56,7 @@ export const engagementRate = protectedProcedure
                   workspace_id = '${workspace_id}'
                   AND created_at <= '${_previousTo}')
             FROM activity a
-            JOIN member m ON a.member_id = m.id
+            JOIN member m FINAL ON a.member_id = m.id
             WHERE 
               a.created_at >= '${_previousFrom}' 
               AND a.created_at <= '${_previousTo}'

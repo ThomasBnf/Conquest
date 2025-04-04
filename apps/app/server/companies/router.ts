@@ -5,8 +5,9 @@ import { deleteManyCompanies } from "./deleteManyCompanies";
 import { exportCompanies } from "./exportCompanies";
 import { getAllCompanies } from "./getAllCompanies";
 import { getCompany } from "./getCompany";
-import { listCompanies } from "./listCompanies";
 import { listCompanyMembers } from "./listCompanyMembers";
+import { listFilteredCompanies } from "./listFilteredCompanies";
+import { listInfiniteCompanies } from "./listInfiniteCompanies";
 import { updateCompany } from "./updateCompany";
 import { updateManyCompanies } from "./updateManyCompanies";
 
@@ -14,11 +15,12 @@ export const companiesRouter = router({
   getAllCompanies,
   get: getCompany,
   listCompanyMembers,
-  list: listCompanies,
+  list: listFilteredCompanies,
+  listInfinite: listInfiniteCompanies,
   post: createCompany,
   update: updateCompany,
   updateManyCompanies,
   deleteManyCompanies,
-  countCompanies,
+  count: countCompanies,
   export: exportCompanies,
 });

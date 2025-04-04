@@ -6,10 +6,10 @@ import { format, startOfDay, subDays } from "date-fns";
 import { client } from "../client";
 
 type Props = {
+  cursor?: number | null | undefined;
   period?: number;
   member_id?: string;
   company_id?: string;
-  cursor?: number | null | undefined;
   limit?: number;
   workspace_id: string;
 };
@@ -32,7 +32,7 @@ export const listActivities = async ({
         at.*
       FROM activity a
       LEFT JOIN activity_type at ON a.activity_type_id = at.id
-      ${company_id ? "LEFT JOIN member m ON a.member_id = m.id" : ""}
+      ${company_id ? "LEFT JOIN member m FINAL ON a.member_id = m.id" : ""}
       WHERE a.workspace_id = '${workspace_id}'
       ${member_id ? `AND a.member_id = '${member_id}'` : ""}
       ${company_id ? `AND m.company_id = '${company_id}'` : ""}

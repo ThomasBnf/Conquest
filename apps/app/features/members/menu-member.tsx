@@ -1,7 +1,6 @@
 "use client";
 
 import { AlertDialog } from "@/components/custom/alert-dialog";
-import { MergeDialog } from "@/features/merge/merge-dialog";
 import { trpc } from "@/server/client";
 import { Button } from "@conquest/ui/button";
 import {
@@ -12,7 +11,7 @@ import {
   DropdownMenuTrigger,
 } from "@conquest/ui/dropdown-menu";
 import type { Member } from "@conquest/zod/schemas/member.schema";
-import { Copy, Merge, MoreHorizontal, Trash2 } from "lucide-react";
+import { Copy, MoreHorizontal, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -22,7 +21,6 @@ type Props = {
 
 export const MenuMember = ({ member }: Props) => {
   const [open, setOpen] = useState(false);
-  const [mergeOpen, setMergeOpen] = useState(false);
   const utils = trpc.useUtils();
 
   const onCopy = () => {
@@ -32,6 +30,7 @@ export const MenuMember = ({ member }: Props) => {
 
   const { mutateAsync: deleteMember } = trpc.members.delete.useMutation({
     onSuccess: () => {
+      utils.members.get.invalidate();
       utils.members.list.invalidate();
       toast.success("Member deleted");
     },
@@ -50,7 +49,6 @@ export const MenuMember = ({ member }: Props) => {
         open={open}
         setOpen={setOpen}
       />
-      <MergeDialog open={mergeOpen} setOpen={setMergeOpen} member={member} />
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="outline" size="icon">
@@ -58,10 +56,6 @@ export const MenuMember = ({ member }: Props) => {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          <DropdownMenuItem onClick={() => setMergeOpen(true)}>
-            <Merge size={16} />
-            Merge
-          </DropdownMenuItem>
           <DropdownMenuItem onClick={onCopy}>
             <Copy size={16} />
             Copy ID

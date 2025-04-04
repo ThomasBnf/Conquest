@@ -7,6 +7,7 @@ import { usePathname } from "next/navigation";
 export const SaveList = () => {
   const { groupFilters, resetFilters } = useFilters();
   const { setOpen } = useOpenList();
+
   const pathname = usePathname();
   const isListPage = pathname.includes("lists");
 

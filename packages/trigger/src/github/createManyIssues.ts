@@ -1,6 +1,5 @@
 import { createActivity } from "@conquest/clickhouse/activities/createActivity";
 import type { GithubIntegration } from "@conquest/zod/schemas/integration.schema";
-import { Member } from "@conquest/zod/schemas/member.schema";
 import type { Endpoints } from "@octokit/types";
 import { logger } from "@trigger.dev/sdk/v3";
 import { subDays } from "date-fns";
@@ -20,8 +19,6 @@ type Props = {
 export const createManyIssues = async ({ octokit, github }: Props) => {
   const { details, workspace_id } = github;
   const { owner, repo } = details;
-
-  const createdMembers: Member[] = [];
 
   let page = 1;
   const issues: Issue[] = [];
@@ -86,18 +83,12 @@ export const createManyIssues = async ({ octokit, github }: Props) => {
       workspace_id,
     });
 
-    createdMembers.push(member);
-
     if (comments > 0) {
-      const members = await createManyComments({
+      await createManyComments({
         octokit,
         github,
         issue_number: number,
       });
-
-      createdMembers.push(...members);
     }
   }
-
-  return createdMembers;
 };

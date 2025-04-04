@@ -4,138 +4,101 @@ import {
   Dialog,
   DialogBody,
   DialogContent,
+  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
+  DialogTrigger,
 } from "@conquest/ui/dialog";
-import { Separator } from "@conquest/ui/separator";
-import type { Member } from "@conquest/zod/schemas/member.schema";
-import { ArrowLeftRight, Equal, Loader2 } from "lucide-react";
-import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { ScrollArea, ScrollBar } from "@conquest/ui/scroll-area";
+import { Member } from "@conquest/zod/schemas/member.schema";
+import { skipToken } from "@tanstack/react-query";
+import { Loader2, Merge } from "lucide-react";
 import { useState } from "react";
-import { toast } from "sonner";
+import { FinalMemberCard } from "./final-member-card";
 import { MemberCard } from "./member-card";
-import { MemberPicker } from "./member-picker";
 
 type Props = {
-  open: boolean;
-  setOpen: (open: boolean) => void;
-  member: Member;
+  members: Member[];
+  onReset: () => void;
 };
 
-export const MergeDialog = ({ open, setOpen, member }: Props) => {
-  const { data: session } = useSession();
-  const { slug } = session?.user.workspace ?? {};
-  const { first_name, last_name } = member ?? {};
-  const [leftMember, setLeftMember] = useState<Member | null>(null);
-  const [rightMember, setRightMember] = useState(member);
+export const MergeDialog = ({ members, onReset }: Props) => {
+  const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  const router = useRouter();
+  const utils = trpc.useUtils();
 
-  const { mutateAsync: mergeMembers } = trpc.members.merge.useMutation({
-    onSuccess: () => {
-      window.location.reload();
-      toast.success("Members merged");
+  const [finalMember, setFinalMember] = useState<Member>({
+    ...members[0]!,
+    secondary_emails: members.flatMap((member) => member.secondary_emails),
+    phones: members.flatMap((member) => member.phones),
+  });
+
+  const { data: profiles } = trpc.profiles.members.useQuery(
+    members.length > 0 ? { members } : skipToken,
+  );
+
+  const { mutate: mergeMembers } = trpc.members.merge.useMutation({
+    onSuccess: ({ id }) => {
+      onCancel();
+      utils.profiles.list.invalidate({ member_id: id });
+      utils.members.invalidate();
+      setLoading(false);
     },
   });
 
-  const onSelectLeftMember = (member: Member) => setLeftMember(member);
-
-  const onSwitchMembers = () => {
-    if (!leftMember) return;
-    if (!rightMember) return;
-
-    setLeftMember(rightMember);
-    setRightMember(leftMember);
+  const onMerge = async () => {
+    setLoading(true);
+    mergeMembers({ members, finalMember });
   };
 
   const onCancel = () => {
-    setLeftMember(null);
-    setRightMember(member);
     setOpen(false);
-  };
-
-  const onMerge = async () => {
-    if (!leftMember) return;
-    if (!rightMember) return;
-
-    setLoading(true);
-    await mergeMembers({ leftMember, rightMember });
-    router.replace(`/${slug}/members/${rightMember.id}/analytics`);
+    onReset();
   };
 
   return (
-    <Dialog open={open} onOpenChange={() => onCancel()}>
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button variant="outline">
+          <Merge size={16} />
+          Merge
+        </Button>
+      </DialogTrigger>
       <DialogContent className="max-w-[95vw]">
         <DialogHeader>
-          <DialogTitle>
-            Merge {first_name} {last_name}
-          </DialogTitle>
+          <DialogTitle>Merge members</DialogTitle>
+          <DialogDescription>
+            You're about to merge {members.length} members.
+          </DialogDescription>
         </DialogHeader>
-        <DialogBody>
-          <div className="flex items-stretch">
-            <div className="flex w-[calc(67%-24px)] items-stretch">
-              {leftMember ? (
-                <MemberCard member={leftMember} />
-              ) : (
-                <div className="flex aspect-square w-[calc(50%-24px)] flex-col items-center justify-center divide-y rounded-md border">
-                  <MemberPicker
-                    currentMember={member}
-                    onSelect={onSelectLeftMember}
-                  />
-                </div>
-              )}
-              <div className="flex w-12 items-center">
-                <Separator className="flex-1" />
-                <Button
-                  variant={leftMember ? "default" : "outline"}
-                  disabled={!leftMember}
-                  onClick={onSwitchMembers}
-                >
-                  <ArrowLeftRight size={16} />
-                </Button>
-                <Separator className="flex-1" />
-              </div>
-              <MemberCard member={rightMember} />
+        <DialogBody className="flex-row overflow-hidden">
+          <ScrollArea className="flex flex-1">
+            <div className="flex items-start gap-4 overflow-hidden py-4">
+              {members.map((member) => (
+                <MemberCard
+                  key={member.id}
+                  member={member}
+                  profiles={profiles?.filter(
+                    (profile) => profile.member_id === member.id,
+                  )}
+                />
+              ))}
             </div>
-            <div className="flex w-12 items-center">
-              <Separator className="flex-1" />
-              <div className="flex size-6 shrink-0 items-center justify-center rounded-md border">
-                <Equal size={16} className="text-muted-foreground" />
-              </div>
-              <Separator className="flex-1" />
-            </div>
-            <MemberCard
-              member={rightMember}
-              leftMember={leftMember}
-              className="w-[calc(33%-24px)]"
-            />
-          </div>
-          <div className="flex flex-col gap-1 rounded-md border bg-muted p-4">
-            <p className="font-medium text-base">Merge Rules</p>
-            <p>
-              1. We use the right profile attributes as reference{" "}
-              {"(e.g: name, email, job title, etc...)"}
-            </p>
-            <p>
-              2. We use the date of the first activity as the reference for the
-              source and creation date attributes.
-            </p>
-            <p>
-              3. The following attributes will be combined:{" "}
-              {"(e.g: tags, emails, phone numbers, activities)"}
-            </p>
-            <p className="actions-primary mt-2 w-fit rounded bg-foreground px-2 py-1 font-medium text-white">
-              ⚠️ This action cannot be undone.
-            </p>
-          </div>
+            <ScrollBar orientation="horizontal" />
+          </ScrollArea>
+          <FinalMemberCard
+            members={members}
+            allProfiles={profiles}
+            finalMember={finalMember}
+            setFinalMember={setFinalMember}
+          />
         </DialogBody>
         <DialogFooter>
           <Button variant="outline" onClick={onCancel}>
             Cancel
           </Button>
-          <Button disabled={loading || !leftMember} onClick={onMerge}>
+          <Button disabled={loading} onClick={onMerge}>
             {loading ? <Loader2 className="size-4 animate-spin" /> : "Merge"}
           </Button>
         </DialogFooter>

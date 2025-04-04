@@ -2,12 +2,10 @@
 
 import { HeaderSubPage } from "@/components/layouts/header-subpage";
 import { PageLayout } from "@/components/layouts/page-layout";
-import { EmptyState } from "@/components/states/empty-state";
 import { IsLoading } from "@/components/states/is-loading";
 import { Activities } from "@/features/activities/activities";
 import { CompanySidebar } from "@/features/companies/company-sidebar";
 import { trpc } from "@/server/client";
-import { Activities as ActivitiesIcon } from "@conquest/ui/icons/Activities";
 import { ScrollArea } from "@conquest/ui/scroll-area";
 import { skipToken } from "@tanstack/react-query";
 
@@ -26,11 +24,8 @@ export const CompanyPage = ({ companyId }: Props) => {
     fetchNextPage,
     hasNextPage,
   } = trpc.activities.listInfinite.useInfiniteQuery(
-    { company_id: companyId, limit: 25 },
-    {
-      getNextPageParam: (lastPage, allPages) =>
-        lastPage.length === 25 ? allPages.length * 25 : undefined,
-    },
+    { company_id: companyId },
+    { getNextPageParam: (_, allPages) => allPages.length * 25 },
   );
 
   const activities = data?.pages.flat();
@@ -48,13 +43,8 @@ export const CompanyPage = ({ companyId }: Props) => {
             isLoading={_isLoading}
             fetchNextPage={fetchNextPage}
             hasNextPage={hasNextPage}
-          >
-            <EmptyState
-              icon={<ActivitiesIcon size={36} />}
-              title="No activities found"
-              description="This company has no activities"
-            />
-          </Activities>
+            type="company"
+          />
         </ScrollArea>
         <CompanySidebar company={company} />
       </div>

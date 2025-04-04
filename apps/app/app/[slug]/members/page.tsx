@@ -1,25 +1,25 @@
 import { Header } from "@/components/layouts/header";
 import { PageLayout } from "@/components/layouts/page-layout";
-import { MembersProvider } from "@/context/membersContext";
+import { FiltersProvider } from "@/context/filtersContext";
 import { CreateMemberDialog } from "@/features/members/create-member-dialog";
 import { MembersPage } from "@/features/members/members-page";
-import { loaderTable } from "@/utils/tableParams";
+import { loaderTableMembers } from "@/utils/tableParams";
 
 type Props = {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 };
 
 export default async function Page({ searchParams }: Props) {
-  await loaderTable(searchParams);
+  await loaderTableMembers(searchParams);
 
   return (
     <PageLayout>
       <Header title="Members">
         <CreateMemberDialog />
       </Header>
-      <MembersProvider>
+      <FiltersProvider>
         <MembersPage />
-      </MembersProvider>
+      </FiltersProvider>
     </PageLayout>
   );
 }

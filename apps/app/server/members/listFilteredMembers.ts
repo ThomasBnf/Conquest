@@ -6,24 +6,22 @@ import { protectedProcedure } from "../trpc";
 export const listFilteredMembers = protectedProcedure
   .input(
     z.object({
+      cursor: z.number().nullish(),
       search: z.string(),
       id: z.string(),
       desc: z.boolean(),
-      page: z.number(),
-      pageSize: z.number(),
       groupFilters: GroupFiltersSchema,
     }),
   )
   .query(async ({ ctx: { user }, input }) => {
     const { workspace_id } = user;
-    const { search, id, desc, page, pageSize, groupFilters } = input;
+    const { cursor, search, id, desc, groupFilters } = input;
 
     return _listFilteredMembers({
+      cursor,
       search,
       id,
       desc,
-      page,
-      pageSize,
       groupFilters,
       workspace_id,
     });

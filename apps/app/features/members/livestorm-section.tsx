@@ -2,29 +2,26 @@ import { EditableLink } from "@/components/editable/editable-link";
 import { FieldCard } from "@/components/editable/field-card";
 import { Livestorm } from "@conquest/ui/icons/Livestorm";
 import { Separator } from "@conquest/ui/separator";
-import {
-  LivestormProfileSchema,
-  type Profile,
-} from "@conquest/zod/schemas/profile.schema";
+import { LivestormProfile } from "@conquest/zod/schemas/profile.schema";
+import { MenuProfile } from "./menu-profile";
 
 type Props = {
-  profiles: Profile[] | undefined;
+  profile: LivestormProfile;
 };
 
-export const LivestormSection = ({ profiles }: Props) => {
-  const profile = profiles?.find(
-    (profile) => profile.attributes.source === "Livestorm",
-  );
-
-  if (!profile) return null;
-
-  const livestormProfile = LivestormProfileSchema.parse(profile);
-  const { external_id } = livestormProfile;
+export const LivestormSection = ({ profile }: Props) => {
+  const { external_id } = profile;
 
   return (
     <>
-      <div className="space-y-2 p-4">
-        <FieldCard icon={<Livestorm size={16} />} label="Livestorm">
+      <div className="flex flex-col gap-2 p-4">
+        <div className="mb-2 flex items-center justify-between">
+          <div className="flex items-center gap-2 text-muted-foreground">
+            <Livestorm size={16} /> <p>Livestorm</p>
+          </div>
+          <MenuProfile profile={profile} />
+        </div>
+        <FieldCard icon="User" label="Id">
           <EditableLink
             placeholder="No livestorm profile"
             defaultValue={external_id}

@@ -1,4 +1,4 @@
-import { Profile } from "@conquest/zod/schemas/profile.schema";
+import { DiscordProfile, DiscourseProfile, GithubProfile, LivestormProfile, Profile, SlackProfile, TwitterProfile } from "@conquest/zod/schemas/profile.schema";
 import { DiscordSection } from "./discord-section";
 import { DiscourseSection } from "./discourse-section";
 import { GithubSection } from "./github-section";
@@ -18,17 +18,17 @@ export const ProfilesParser = ({ profiles }: Props) => {
 
         switch (source) {
           case "Discord":
-            return <DiscordSection profiles={profiles} />;
+            return <DiscordSection key={profile.id} profile={profile as DiscordProfile} />;
           case "Discourse":
-            return <DiscourseSection profiles={profiles} />;
+            return <DiscourseSection key={profile.id} profile={profile as DiscourseProfile} />;
           case "Github":
-            return <GithubSection profiles={profiles} />;
+            return <GithubSection key={profile.id} profile={profile as GithubProfile} />;
           case "Livestorm":
-            return <LivestormSection profiles={profiles} />;
+            return <LivestormSection key={profile.id} profile={profile as LivestormProfile} />;
           case "Slack":
-            return <SlackSection profiles={profiles} />;
+            return <SlackSection key={profile.id} profile={profile as SlackProfile} />;
           case "Twitter":
-            return <TwitterSection profiles={profiles} />;
+            return <TwitterSection key={profile.id} profile={profile as TwitterProfile} />;
         }
       })}
     </>

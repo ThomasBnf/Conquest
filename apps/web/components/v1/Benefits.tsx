@@ -11,7 +11,7 @@ export const Benefits = () => {
       </Badge>
       <Heading>Understand your community in seconds</Heading>
       <SubHeading>Gather every single event and gain visibility</SubHeading>
-      <Container className="flex-col gap-2">
+      <Container className="flex-col gap-4">
         <div className="relative grid min-h-[450px] grid-cols-12 justify-between gap-4 overflow-hidden rounded-md border bg-sidebar shadow-sm max-lg:p-6 md:gap-10 lg:p-8">
           <div className="col-span-12 md:col-span-5">
             <Badge variant="secondary" className="mb-4 h-7 shadow-sm">

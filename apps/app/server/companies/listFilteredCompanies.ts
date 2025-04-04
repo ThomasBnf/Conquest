@@ -4,19 +4,18 @@ import { CompanySchema } from "@conquest/zod/schemas/company.schema";
 import { z } from "zod";
 import { protectedProcedure } from "../trpc";
 
-export const listCompanies = protectedProcedure
+export const listFilteredCompanies = protectedProcedure
   .input(
     z.object({
+      cursor: z.number().nullish(),
       search: z.string(),
       id: z.string(),
       desc: z.boolean(),
-      page: z.number(),
-      pageSize: z.number(),
     }),
   )
   .query(async ({ ctx: { user }, input }) => {
     const { workspace_id } = user;
-    const { search, id, desc, page, pageSize } = input;
+    const { cursor, search, id, desc } = input;
 
     const searchParsed = search.toLowerCase().trim();
     const orderBy = orderByParser({ id, desc, type: "companies" });
@@ -30,8 +29,7 @@ export const listCompanies = protectedProcedure
         )
         AND c.workspace_id = '${workspace_id}'
         ${orderBy}
-        LIMIT ${pageSize}
-        OFFSET ${page * pageSize}
+        ${cursor ? `LIMIT 25 OFFSET ${cursor}` : "LIMIT 25"}
       `,
     });
 

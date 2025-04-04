@@ -9,16 +9,16 @@ export const orderByParser = ({ id, desc, type }: Props) => {
 
   if (type === "members") {
     switch (id) {
-      case "full_name":
+      case "name":
         return `ORDER BY m.first_name ${direction}, m.last_name ${direction}`;
       case "company":
         return `ORDER BY c.name ${direction}`;
       case "tags":
         return `ORDER BY m.tags ${direction}`;
       case "level":
-        return `ORDER BY l.number ${direction}, pulse ${direction}`;
+        return `ORDER BY l.number ${direction}, m.pulse ${direction}, m.id ${direction}`;
       case "pulse":
-        return `ORDER BY l.number ${direction}, m.pulse ${direction}`;
+        return `ORDER BY l.number ${direction}, m.pulse ${direction}, m.id ${direction}`;
       case "job_title":
         return `ORDER BY m.job_title ${direction}`;
       case "emails":

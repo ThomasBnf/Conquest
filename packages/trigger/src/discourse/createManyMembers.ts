@@ -3,7 +3,6 @@ import { getPulseAndLevel } from "@conquest/clickhouse/members/getPulseAndLevel"
 import { createProfile } from "@conquest/clickhouse/profiles/createProfile";
 import { decrypt } from "@conquest/db/utils/decrypt";
 import type { DiscourseIntegration } from "@conquest/zod/schemas/integration.schema";
-import type { Member } from "@conquest/zod/schemas/member.schema";
 import { DiscourseProfileSchema } from "@conquest/zod/schemas/profile.schema";
 import type { Tag } from "@conquest/zod/schemas/tag.schema";
 import {
@@ -37,7 +36,6 @@ export const createManyMembers = async ({
   });
 
   let members: AdminListUsers[] = [];
-  const createdMembers: Member[] = [];
 
   let page = 0;
   let hasMore = true;
@@ -159,8 +157,6 @@ export const createManyMembers = async ({
         workspace_id,
       });
 
-      createdMembers.push(member);
-
       const profile = await createProfile({
         external_id: String(id),
         attributes: {
@@ -202,6 +198,4 @@ export const createManyMembers = async ({
     if (data.directory_items.length < 50) _hasMore = false;
     _page += 1;
   }
-
-  return createdMembers;
 };

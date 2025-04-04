@@ -26,6 +26,7 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import {
   type FormCreate,
   FormCreateSchema,
@@ -41,9 +42,20 @@ export const CreateCompanyDialog = () => {
   const { mutateAsync } = trpc.companies.post.useMutation({
     onSuccess: (data) => {
       const { id } = data ?? {};
-      router.push(`/${slug}/companies/${id}`);
-      setLoading(false);
+      toast("Company has been created", {
+        action: {
+          label: "Open",
+          onClick: () => router.push(`/${slug}/companies/${id}`),
+        },
+        duration: 5000,
+      });
+    },
+    onError: () => {
+      toast.error("Failed to create company");
+    },
+    onSettled: () => {
       setOpen(false);
+      setLoading(false);
       form.reset();
     },
   });

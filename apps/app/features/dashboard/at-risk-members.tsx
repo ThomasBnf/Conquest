@@ -2,9 +2,10 @@
 
 import { TooltipInfo } from "@/components/badges/tooltip-info";
 import { QueryInput } from "@/components/custom/query-input";
+import { useTable } from "@/hooks/useTable";
 import { trpc } from "@/server/client";
 import { dateParams } from "@/utils/dateParams";
-import { tableParams } from "@/utils/tableParams";
+import { tableMembersParams } from "@/utils/tableParams";
 import { Button } from "@conquest/ui/button";
 import { Separator } from "@conquest/ui/separator";
 import {
@@ -19,13 +20,13 @@ import { Skeleton } from "@conquest/ui/skeleton";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@conquest/ui/tooltip";
 import { skipToken } from "@tanstack/react-query";
 import { PanelRight, TriangleAlert } from "lucide-react";
+import { useSession } from "next-auth/react";
 import { useQueryStates } from "nuqs";
 import { useState } from "react";
 import { ExportListMembers } from "../members/export-list-members";
-import { ColumnVisibility } from "../table/column-visibility";
+import { membersColumns } from "../table/columns/members-columns";
 import { DataTable } from "../table/data-table";
-import { useTable } from "../table/hooks/useTable";
-import { membersColumns } from "../table/members-columns";
+import { ColumnSettings } from "../table/settings/columnSettings";
 import { Percentage } from "./percentage";
 import { PeriodFormatter } from "./period-formatter";
 
@@ -59,7 +60,7 @@ export const AtRiskMembers = () => {
         <AtRiskMembersSheet count={current} loading={isLoading} />
       </div>
       <Separator />
-      <div className="flex flex-1 flex-col items-center justify-center gap-2 py-4">
+      <div className="flex flex-1 flex-col items-center justify-center gap-2 py-8">
         {isLoading ? (
           <Skeleton className="h-10 w-16" />
         ) : (
@@ -89,47 +90,38 @@ const AtRiskMembersSheet = ({
   count: number;
   loading: boolean;
 }) => {
+  const { data: session } = useSession();
+  const { user } = session ?? {};
   const [open, setOpen] = useState(false);
   const [{ from, to }] = useQueryStates(dateParams);
-  const [{ search, idMember, descMember, page, pageSize }, setParams] =
-    useQueryStates(tableParams);
+  const columns = membersColumns();
 
-  const { data, isLoading } = trpc.dashboard.atRiskMembersTable.useQuery(
-    open
-      ? {
-          from,
-          to,
-          search,
-          id: idMember,
-          desc: descMember,
-          page,
-          pageSize,
-        }
-      : skipToken,
-  );
+  const params = useQueryStates(tableMembersParams);
+  const [{ search, id, desc }, setParams] = params;
 
-  const { table } = useTable({
-    data: data ?? [],
-    columns: membersColumns,
-    count: count ?? 0,
-    left: ["full_name"],
-    id: idMember,
-    desc: descMember,
-    type: "members",
+  const { data, isLoading, fetchNextPage } =
+    trpc.dashboard.atRiskMembersTable.useInfiniteQuery(
+      open ? { from, to, search, id, desc } : skipToken,
+      { getNextPageParam: (_, allPages) => allPages.length * 25 },
+    );
+
+  const members = data?.pages.flat();
+  const hasNextPage = data?.pages.at(-1)?.length === 25;
+
+  const table = useTable({
+    columns,
+    data: members ?? [],
+    fetchNextPage,
+    hasNextPage,
+    isLoading,
+    count,
+    preferences: user?.members_preferences,
   });
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
-        <Button
-          variant="outline"
-          size="icon"
-          disabled={loading}
-          onClick={() => {
-            table.setPageIndex(0);
-            setParams({ page: 0 });
-          }}
-        >
+        <Button variant="outline" size="icon" disabled={loading}>
           <PanelRight size={16} />
         </Button>
       </SheetTrigger>
@@ -149,11 +141,11 @@ const AtRiskMembersSheet = ({
               setQuery={(value) => setParams({ search: value })}
             />
             <div className="ml-auto flex items-center gap-2">
-              <ExportListMembers members={data} />
-              <ColumnVisibility table={table} type="members" />
+              <ExportListMembers members={members} />
+              <ColumnSettings table={table} />
             </div>
           </div>
-          <DataTable table={table} isLoading={isLoading} count={count ?? 0} />
+          <DataTable table={table} />
         </div>
       </SheetContent>
     </Sheet>

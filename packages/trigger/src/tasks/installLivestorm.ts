@@ -1,4 +1,3 @@
-import { batchMergeMembers } from "@conquest/clickhouse/members/batchMergeMembers";
 import { deleteIntegration } from "@conquest/db/integrations/deleteIntegration";
 import { updateIntegration } from "@conquest/db/integrations/updateIntegration";
 import { decrypt } from "@conquest/db/utils/decrypt";
@@ -44,9 +43,7 @@ export const installLivestorm = schemaTask({
       });
     }
 
-    const members = await createManyEvents({ livestorm });
-
-    await batchMergeMembers({ members });
+    await createManyEvents({ livestorm });
 
     await getAllMembersMetrics.triggerAndWait(
       { workspace_id },

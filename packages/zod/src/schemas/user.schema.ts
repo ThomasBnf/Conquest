@@ -7,7 +7,6 @@ import { WorkspaceSchema } from "./workspace.schema";
 export const PreferencesSchema = z.object({
   id: z.string(),
   desc: z.boolean(),
-  pageSize: z.number(),
   groupFilters: GroupFiltersSchema,
   columnVisibility: z.record(z.string(), z.boolean()),
   columnOrder: z.array(z.string()),

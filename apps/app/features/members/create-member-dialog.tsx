@@ -39,12 +39,21 @@ export const CreateMemberDialog = () => {
     onSuccess: ({ id }) => {
       utils.members.list.invalidate();
       utils.members.count.invalidate();
-      router.push(`/${slug}/members/${id}/analytics`);
+      toast("Member has been created", {
+        action: {
+          label: "Open",
+          onClick: () => router.push(`/${slug}/members/${id}/analytics`),
+        },
+        duration: 5000,
+      });
     },
     onError: () => {
+      toast.error("Failed to create member");
+    },
+    onSettled: () => {
       setOpen(false);
       setLoading(false);
-      toast.error("Failed to create member");
+      form.reset();
     },
   });
 

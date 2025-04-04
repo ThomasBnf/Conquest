@@ -25,8 +25,6 @@ export const DiscordForm = () => {
     },
   });
 
-  const { mutateAsync: createEvent } = trpc.brevo.createEvent.useMutation();
-
   const { submit, run } = useRealtimeTaskTrigger<typeof installDiscord>(
     "install-discord",
     { accessToken: discord?.trigger_token },
@@ -37,14 +35,6 @@ export const DiscordForm = () => {
 
     setLoading(true);
     await mutateAsync({ id: discord.id, status: "SYNCING" });
-    await createEvent({
-      email: session.user.email,
-      event: "install_community",
-      eventData: {
-        community_id: discord.id,
-        source: "Discord",
-      },
-    });
     submit({ discord });
   };
 

@@ -4,35 +4,34 @@ import { trpc } from "@/server/client";
 import { Discourse } from "@conquest/ui/icons/Discourse";
 import { Separator } from "@conquest/ui/separator";
 import { DiscourseDetailsSchema } from "@conquest/zod/schemas/integration.schema";
-import type { Profile } from "@conquest/zod/schemas/profile.schema";
-import { DiscourseProfileSchema } from "@conquest/zod/schemas/profile.schema";
+import { DiscourseProfile } from "@conquest/zod/schemas/profile.schema";
+import { MenuProfile } from "./menu-profile";
 
 type Props = {
-  profiles: Profile[] | undefined;
+  profile: DiscourseProfile;
 };
 
-export const DiscourseSection = ({ profiles }: Props) => {
-  const profile = profiles?.find(
-    (profile) => profile.attributes.source === "Discourse",
-  );
-
-  if (!profile) return null;
-
+export const DiscourseSection = ({ profile }: Props) => {
   const source = "Discourse";
   const { data: discourse } = trpc.integrations.bySource.useQuery({ source });
+
   const details = discourse
     ? DiscourseDetailsSchema.parse(discourse?.details)
     : null;
-  const { community_url, user_fields } = details ?? {};
 
-  const discourseProfile = DiscourseProfileSchema.parse(profile);
-  const { attributes } = discourseProfile;
-  const { username, custom_fields } = attributes;
+  const { community_url, user_fields } = details ?? {};
+  const { username, custom_fields } = profile.attributes;
 
   return (
     <>
-      <div className="space-y-2 p-4">
-        <FieldCard icon={<Discourse size={14} />} label="Discourse">
+      <div className="flex flex-col gap-2 p-4">
+        <div className="mb-2 flex items-center justify-between">
+          <div className="flex items-center gap-2 text-muted-foreground">
+            <Discourse size={16} /> <p>Discourse</p>
+          </div>
+          <MenuProfile profile={profile} />
+        </div>
+        <FieldCard icon="User" label="Username">
           <EditableLink
             placeholder="No discourse profile"
             defaultValue={username}

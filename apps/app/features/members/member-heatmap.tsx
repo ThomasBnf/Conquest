@@ -16,6 +16,11 @@ export const MemberHeatmap = ({ memberId }: Props) => {
 
   console.log(failureReason);
 
+  const totalActivities = data?.reduce(
+    (acc, curr) => acc + Number(curr.count),
+    0,
+  );
+
   return (
     <div className="flex flex-col">
       <div className="flex items-center gap-2">
@@ -23,9 +28,14 @@ export const MemberHeatmap = ({ memberId }: Props) => {
         <IconDoc url="https://docs.useconquest.com/member-heatmap" />
       </div>
       <div className="flex items-center gap-1 text-muted-foreground">
-        {isLoading ? <Skeleton className="h-4 w-6" /> : <p>{data?.length}</p>}
+        {isLoading ? (
+          <Skeleton className="h-4 w-6" />
+        ) : (
+          <p>{totalActivities}</p>
+        )}
         <p>
-          {data?.length === 1 ? "activity" : "activities"} in the last 365 days
+          {totalActivities === 1 ? "activity" : "activities"} in the last 365
+          days
         </p>
       </div>
       <Heatmap activities={data} member_id={memberId} />

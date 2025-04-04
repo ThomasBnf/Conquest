@@ -1,4 +1,3 @@
-import { batchMergeMembers } from "@conquest/clickhouse/members/batchMergeMembers";
 import { discourseClient } from "@conquest/db/discourse";
 import { deleteIntegration } from "@conquest/db/integrations/deleteIntegration";
 import { updateIntegration } from "@conquest/db/integrations/updateIntegration";
@@ -10,7 +9,6 @@ import { createManyMembers } from "../discourse/createManyMembers";
 import { createManyTags } from "../discourse/createManyTags";
 import { getAllMembersMetrics } from "./getAllMembersMetrics";
 import { integrationSuccessEmail } from "./integrationSuccessEmail";
-
 export const installDiscourse = schemaTask({
   id: "install-discourse",
   machine: "small-2x",
@@ -33,13 +31,11 @@ export const installDiscourse = schemaTask({
 
     const tags = await createManyTags({ client, workspace_id });
 
-    const members = await createManyMembers({
+    await createManyMembers({
       discourse,
       client,
       tags,
     });
-
-    await batchMergeMembers({ members });
 
     await getAllMembersMetrics.triggerAndWait(
       { workspace_id },

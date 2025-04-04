@@ -33,7 +33,7 @@ export const MenuBar = () => {
   return (
     <>
       <div className="fixed inset-x z-20 flex w-full items-center justify-between px-4 py-3 backdrop-blur-md">
-        <Link href="https://app.useconquest.com">
+        <Link href="https://useconquest.com">
           <LogoType width={120} height={24} />
         </Link>
         <div className="flex items-center gap-4">

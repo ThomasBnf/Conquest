@@ -2,30 +2,26 @@ import { EditableLink } from "@/components/editable/editable-link";
 import { FieldCard } from "@/components/editable/field-card";
 import { Github } from "@conquest/ui/icons/Github";
 import { Separator } from "@conquest/ui/separator";
-import {
-  GithubProfileSchema,
-  type Profile,
-} from "@conquest/zod/schemas/profile.schema";
+import { GithubProfile } from "@conquest/zod/schemas/profile.schema";
+import { MenuProfile } from "./menu-profile";
 
 type Props = {
-  profiles: Profile[] | undefined;
+  profile: GithubProfile;
 };
 
-export const GithubSection = ({ profiles }: Props) => {
-  const profile = profiles?.find(
-    (profile) => profile.attributes.source === "Github",
-  );
-
-  if (!profile) return null;
-
-  const githubProfile = GithubProfileSchema.parse(profile);
-  const { attributes } = githubProfile;
-  const { source, login, ...fields } = attributes;
+export const GithubSection = ({ profile }: Props) => {
+  const { login, ...fields } = profile.attributes;
 
   return (
     <>
-      <div className="space-y-2 p-4">
-        <FieldCard icon={<Github size={14} />} label="Github">
+      <div className="flex flex-col gap-2 p-4">
+        <div className="mb-2 flex items-center justify-between">
+          <div className="flex items-center gap-2 text-muted-foreground">
+            <Github size={16} /> <p>Github</p>
+          </div>
+          <MenuProfile profile={profile} />
+        </div>
+        <FieldCard icon="User" label="Login">
           <EditableLink
             placeholder="No github profile"
             defaultValue={login}

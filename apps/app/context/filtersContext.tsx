@@ -21,17 +21,17 @@ type filtersContext = {
 const FiltersContext = createContext<filtersContext>({} as filtersContext);
 
 type Props = {
-  defaultGroupFilters?: GroupFilters;
+  initialGroupFilters?: GroupFilters;
   children: React.ReactNode;
 };
 
-export const FiltersProvider = ({ defaultGroupFilters, children }: Props) => {
+export const FiltersProvider = ({ initialGroupFilters, children }: Props) => {
   const { data: session, update } = useSession();
   const { user } = session ?? {};
   const { members_preferences } = user ?? {};
 
   const [groupFilters, setGroupFilters] = useState<GroupFilters>(
-    defaultGroupFilters ??
+    initialGroupFilters ??
       members_preferences?.groupFilters ?? {
         filters: [],
         operator: "AND",

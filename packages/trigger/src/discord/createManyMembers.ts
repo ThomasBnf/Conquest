@@ -25,13 +25,16 @@ export const createManyMembers = async ({ discord, tags }: Props) => {
       }`,
     )) as APIGuildMember[];
 
-    logger.info("members", { members });
+    logger.info("members", { count: members.length, members });
 
     for (const member of members) {
       const { user, joined_at, roles } = member;
       const { id, username, avatar, global_name, bot } = user;
 
-      if (bot) continue;
+      if (bot) {
+        logger.info("bot", { user });
+        continue;
+      }
 
       const firstName = global_name?.split(" ")[0];
       const lastName = global_name?.split(" ")[1];

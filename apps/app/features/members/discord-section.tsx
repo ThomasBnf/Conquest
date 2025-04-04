@@ -2,24 +2,14 @@ import { EditableLink } from "@/components/editable/editable-link";
 import { FieldCard } from "@/components/editable/field-card";
 import { Discord } from "@conquest/ui/icons/Discord";
 import { Separator } from "@conquest/ui/separator";
-import {
-  DiscordProfileSchema,
-  type Profile,
-} from "@conquest/zod/schemas/profile.schema";
+import { DiscordProfile } from "@conquest/zod/schemas/profile.schema";
 
 type Props = {
-  profiles: Profile[] | undefined;
+  profile: DiscordProfile;
 };
 
-export const DiscordSection = ({ profiles }: Props) => {
-  const profile = profiles?.find(
-    (profile) => profile.attributes.source === "Discord",
-  );
-
-  if (!profile) return null;
-
-  const discordProfile = DiscordProfileSchema.parse(profile);
-  const { external_id, attributes } = discordProfile;
+export const DiscordSection = ({ profile }: Props) => {
+  const { external_id, attributes } = profile;
   const { username } = attributes;
 
   return (

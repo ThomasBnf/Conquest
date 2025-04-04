@@ -73,7 +73,7 @@ export const getMemberMetrics = schemaTask({
 
     const { pulse, level_id } = logs.at(-1) ?? {};
 
-    await updateMember({
+    return await updateMember({
       ...member,
       first_activity: activities?.at(-1)?.created_at ?? null,
       last_activity: activities?.at(0)?.created_at ?? null,

@@ -21,8 +21,13 @@ type Props = {
 
 export const EditableEmails = ({ member }: Props) => {
   const [open, setOpen] = useState(false);
+  const utils = trpc.useUtils();
 
-  const { mutateAsync: updateMember } = trpc.members.update.useMutation();
+  const { mutateAsync: updateMember } = trpc.members.update.useMutation({
+    onSuccess: () => {
+      utils.members.get.invalidate({ id: member.id });
+    },
+  });
 
   const memberEmails = [
     member.primary_email,
@@ -76,7 +81,7 @@ export const EditableEmails = ({ member }: Props) => {
     <DropdownMenu open={open} onOpenChange={setOpen}>
       <DropdownMenuTrigger asChild className="w-full cursor-pointer">
         {emails.filter((email) => email.content !== "").length > 0 ? (
-          <div className="min-h-8 space-y-1 rounded-md p-1 hover:bg-muted-hover">
+          <div className="flex min-h-8 flex-wrap gap-1 rounded-md p-1 hover:bg-muted-hover">
             {emails.map((email) => {
               if (email.content === "") return;
               return (
@@ -97,7 +102,10 @@ export const EditableEmails = ({ member }: Props) => {
           </Button>
         )}
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
+      <DropdownMenuContent
+        align="start"
+        className="w-[var(--radix-dropdown-menu-trigger-width)]"
+      >
         {emails.length > 0 && (
           <>
             <div className="space-y-0.5">

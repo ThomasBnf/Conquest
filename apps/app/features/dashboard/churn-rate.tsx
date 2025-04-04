@@ -47,7 +47,7 @@ export const ChurnRate = () => {
         />
       </div>
       <Separator />
-      <div className="flex flex-1 flex-col items-center justify-center gap-2 py-4">
+      <div className="flex flex-1 flex-col items-center justify-center gap-2 py-8">
         {isLoading ? (
           <Skeleton className="h-10 w-16" />
         ) : (

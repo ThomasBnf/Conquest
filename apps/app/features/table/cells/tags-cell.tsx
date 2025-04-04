@@ -2,7 +2,7 @@ import { useFilters } from "@/context/filtersContext";
 import { TagBadge } from "@/features/tags/tag-badge";
 import { useClickOutside } from "@/hooks/useClickOutside";
 import { trpc } from "@/server/client";
-import { tableParams } from "@/utils/tableParams";
+import { tableCompaniesParams, tableMembersParams } from "@/utils/tableParams";
 import { Checkbox } from "@conquest/ui/checkbox";
 import { cn } from "@conquest/ui/cn";
 import {
@@ -14,66 +14,99 @@ import {
   CommandList,
 } from "@conquest/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@conquest/ui/popover";
-import type { Member } from "@conquest/zod/schemas/member.schema";
-import type { Row } from "@tanstack/react-table";
+import { Company } from "@conquest/zod/schemas/company.schema";
+import { Member } from "@conquest/zod/schemas/member.schema";
 import { useQueryStates } from "nuqs";
 import { useEffect, useRef, useState } from "react";
 
-type Props = {
-  row: Row<Member>;
+type Props<TData extends Member | Company> = {
+  data: TData;
+  className?: string;
 };
 
-export const TagsCell = ({ row }: Props) => {
-  const { data: tags } = trpc.tags.list.useQuery();
+export const TagsCell = <TData extends Member | Company>({
+  data,
+  className,
+}: Props<TData>) => {
   const { groupFilters } = useFilters();
-  const [{ search, idMember, descMember, page, pageSize }] =
-    useQueryStates(tableParams);
-
-  const memberTags = row.original.tags;
-
+  const { data: tags } = trpc.tags.list.useQuery();
   const [height, setHeight] = useState(0);
   const [open, setOpen] = useState(false);
+
+  const isMember = "first_name" in data;
+  const [{ search, id, desc }] = useQueryStates(
+    isMember ? tableMembersParams : tableCompaniesParams,
+  );
 
   const utils = trpc.useUtils();
   const ref = useRef<HTMLDivElement>(null);
   const refDiv = useRef<HTMLDivElement>(null);
 
-  const queryParams = {
-    search,
-    id: idMember,
-    desc: descMember,
-    page,
-    pageSize,
-    groupFilters,
-  };
-
   const { mutateAsync: updateMember } = trpc.members.update.useMutation({
     onMutate: async (newData) => {
       await utils.members.list.cancel();
-      const prevData = utils.members.list.getData();
+      const prevData = utils.members.list.getInfiniteData();
 
-      utils.members.list.setData(queryParams, (old) =>
-        old?.map((member) =>
-          member.id === newData.id ? { ...member, tags: newData.tags } : member,
-        ),
+      utils.members.list.setInfiniteData(
+        { search, id, desc, groupFilters },
+        (old) => {
+          if (!old) return;
+
+          const newPages = old.pages.map((page) =>
+            page.map((member) =>
+              member.id === newData.id
+                ? { ...member, tags: newData.tags }
+                : member,
+            ),
+          );
+
+          return {
+            ...old,
+            pages: newPages,
+          };
+        },
       );
 
       return { prevData };
     },
-    onError(_, __, ctx) {
-      utils.members.list.setData(queryParams, ctx?.prevData);
+  });
+
+  const { mutateAsync: updateCompany } = trpc.companies.update.useMutation({
+    onMutate: async (newData) => {
+      await utils.companies.list.cancel();
+      const prevData = utils.companies.list.getInfiniteData();
+
+      utils.companies.list.setInfiniteData({ search, id, desc }, (old) => {
+        if (!old) return;
+
+        const newPages = old.pages.map((page) =>
+          page.map((company) =>
+            company.id === newData.id
+              ? { ...company, tags: newData.tags }
+              : company,
+          ),
+        );
+
+        return {
+          ...old,
+          pages: newPages,
+        };
+      });
+
+      return { prevData };
     },
   });
 
   const onSelect = async (tagId: string) => {
-    const hasTag = memberTags.includes(tagId);
+    const hasTag = data.tags.includes(tagId);
+    const newTags = hasTag
+      ? data.tags.filter((id) => id !== tagId)
+      : [...data.tags, tagId];
 
-    if (hasTag) {
-      const newTags = memberTags.filter((id) => id !== tagId);
-      await updateMember({ ...row.original, tags: newTags });
+    if ("first_name" in data) {
+      await updateMember({ ...data, tags: newTags });
     } else {
-      const newTags = [...memberTags, tagId];
-      await updateMember({ ...row.original, tags: newTags });
+      await updateCompany({ ...data, tags: newTags });
     }
   };
 
@@ -89,23 +122,10 @@ export const TagsCell = ({ row }: Props) => {
     if (ref.current) {
       setHeight(ref.current.offsetHeight);
     }
-  }, [memberTags]);
-
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        setOpen(false);
-      }
-    };
-
-    if (open) {
-      document.addEventListener("keydown", handleKeyDown);
-      return () => document.removeEventListener("keydown", handleKeyDown);
-    }
-  }, [open]);
+  }, [data.tags]);
 
   return (
-    <div ref={refDiv} className="flex h-full w-full">
+    <div ref={refDiv} className={cn("flex h-full w-full", className)}>
       <Popover open={open}>
         <PopoverTrigger
           className={cn(
@@ -119,10 +139,10 @@ export const TagsCell = ({ row }: Props) => {
             className={cn(
               "flex h-full w-full items-center gap-1 p-2 hover:bg-muted",
               open &&
-                "relative z-20 h-fit min-h-full w-[300px] flex-wrap bg-muted ring-1 ring-main-400",
+                "absolute top-0 z-20 h-fit min-h-full w-[300px] flex-wrap bg-muted ring-1 ring-main-400",
             )}
           >
-            {memberTags?.map((tag) => (
+            {data.tags?.map((tag) => (
               <TagBadge
                 key={tag}
                 tag={tags?.find((t) => t.id === tag)}
@@ -134,8 +154,8 @@ export const TagsCell = ({ row }: Props) => {
         </PopoverTrigger>
         <PopoverContent
           portal={false}
-          className="w-[calc(var(--radix-popover-trigger-width)_+_2px)] shrink-0 rounded-t-none p-0"
-          sideOffset={height - 42}
+          className="w-[300px] shrink-0 rounded-t-none p-0 shadow-lg"
+          sideOffset={height - 41}
           alignOffset={-1}
           align="start"
         >
@@ -145,7 +165,7 @@ export const TagsCell = ({ row }: Props) => {
               <CommandEmpty>No tags found.</CommandEmpty>
               <CommandGroup>
                 {tags
-                  ?.filter((tag) => !memberTags.includes(tag.id))
+                  ?.filter((tag) => !data.tags.includes(tag.id))
                   ?.map((tag) => (
                     <CommandItem
                       key={tag.id}

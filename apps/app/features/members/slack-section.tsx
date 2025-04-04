@@ -4,16 +4,14 @@ import { trpc } from "@/server/client";
 import { Slack } from "@conquest/ui/icons/Slack";
 import { Separator } from "@conquest/ui/separator";
 import { SlackIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
-import {
-  type Profile,
-  SlackProfileSchema,
-} from "@conquest/zod/schemas/profile.schema";
+import { SlackProfile } from "@conquest/zod/schemas/profile.schema";
+import { MenuProfile } from "./menu-profile";
 
 type Props = {
-  profiles: Profile[] | undefined;
+  profile: SlackProfile;
 };
 
-export const SlackSection = ({ profiles }: Props) => {
+export const SlackSection = ({ profile }: Props) => {
   const { data } = trpc.integrations.bySource.useQuery({ source: "Slack" });
 
   if (!data) return null;
@@ -21,19 +19,17 @@ export const SlackSection = ({ profiles }: Props) => {
   const slack = SlackIntegrationSchema.parse(data);
   const { url } = slack.details;
 
-  const profile = profiles?.find(
-    (profile) => profile.attributes.source === "Slack",
-  );
-
-  if (!profile) return null;
-
-  const slackProfile = SlackProfileSchema.parse(profile);
-  const { external_id } = slackProfile;
-
+  const { external_id } = profile;
   return (
     <>
-      <div className="space-y-2 p-4">
-        <FieldCard icon={<Slack size={14} />} label="Slack">
+      <div className="flex flex-col gap-2 p-4">
+        <div className="mb-2 flex items-center justify-between">
+          <div className="flex items-center gap-2 text-muted-foreground">
+            <Slack size={16} /> <p>Slack</p>
+          </div>
+          <MenuProfile profile={profile} />
+        </div>
+        <FieldCard icon="User" label="Id">
           <EditableLink
             placeholder="No slack profile"
             defaultValue={external_id}
