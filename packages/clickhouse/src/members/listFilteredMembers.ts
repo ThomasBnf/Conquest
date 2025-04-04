@@ -90,6 +90,5 @@ export const listFilteredMembers = async ({
   });
 
   const { data } = await result.json();
-  console.log(data);
   return MemberSchema.array().parse(data);
 };
