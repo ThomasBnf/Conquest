@@ -128,6 +128,12 @@ export const FinalMemberCard = ({
               }
               case "primary_email": {
                 const { primary_email } = finalMember;
+                const hasPrimaryEmail = members.some(
+                  (member) => member.primary_email !== "",
+                );
+
+                if (!hasPrimaryEmail) return;
+
                 return (
                   <RadioGroup
                     key={key}
