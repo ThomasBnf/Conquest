@@ -8,7 +8,9 @@ import { trpc } from "@/server/client";
 import { Duplicate } from "@conquest/ui/icons/Duplicate";
 
 export default function Page() {
-  const { data } = trpc.duplicate.list.useQuery();
+  const { data, failureReason } = trpc.duplicate.list.useQuery();
+
+  console.log(failureReason);
 
   return (
     <PageLayout>
