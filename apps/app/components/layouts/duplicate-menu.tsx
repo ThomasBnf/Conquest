@@ -21,7 +21,12 @@ export const DuplicateMenu = () => {
 
   return (
     <SidebarMenuItem>
-      <SidebarMenuButton asChild tooltip="Duplicates" isActive={isActive}>
+      <SidebarMenuButton
+        asChild
+        tooltip="Duplicates"
+        isActive={isActive}
+        className="pr-1"
+      >
         <Link href={`/${slug}/duplicates`} prefetch>
           <Duplicate size={18} />
           <span>Duplicates</span>
