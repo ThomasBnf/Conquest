@@ -29,13 +29,11 @@ export default function Page() {
   return (
     <PageLayout>
       <Header title="Duplicates" />
-      <div className="flex flex-1 flex-col gap-4 p-4">
-        <div className="flex flex-col overflow-auto">
-          {duplicates?.map((duplicate) => (
-            <DuplicateCard key={duplicate.id} duplicate={duplicate} />
-          ))}
-          <div ref={ref} />
-        </div>
+      <div className="flex h-full flex-col gap-4 overflow-auto">
+        {duplicates?.map((duplicate) => (
+          <DuplicateCard key={duplicate.id} duplicate={duplicate} />
+        ))}
+        <div ref={ref} />
       </div>
     </PageLayout>
   );
