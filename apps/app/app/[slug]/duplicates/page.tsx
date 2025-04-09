@@ -13,14 +13,14 @@ export default function Page() {
   const { data, fetchNextPage, failureReason } =
     trpc.duplicate.list.useInfiniteQuery(
       {},
-      { getNextPageParam: (_, allPages) => allPages.length * 25 },
+      { getNextPageParam: (_, allPages) => allPages.length * 10 },
     );
 
   console.log("failureReason", failureReason);
 
   const duplicates = data?.pages.flat();
   console.log("duplicates", duplicates);
-  const hasNextPage = data?.pages.at(-1)?.length === 25;
+  const hasNextPage = data?.pages.at(-1)?.length === 10;
 
   useEffect(() => {
     if (inView && hasNextPage) fetchNextPage();

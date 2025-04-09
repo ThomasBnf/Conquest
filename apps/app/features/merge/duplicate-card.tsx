@@ -26,9 +26,7 @@ export const DuplicateCard = ({ duplicate }: Props) => {
   console.log("members", failureReason);
 
   const { data: profiles, failureReason: profilesFailureReason } =
-    trpc.profiles.members.useQuery(
-      members ? { members: members ?? [] } : skipToken,
-    );
+    trpc.profiles.members.useQuery(members ? { members } : skipToken);
 
   console.log("profiles", profilesFailureReason);
 
