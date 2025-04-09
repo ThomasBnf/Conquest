@@ -19,13 +19,18 @@ export const DuplicateCard = ({ duplicate }: Props) => {
   const [finalMember, setFinalMember] = useState<Member | null>(null);
   const utils = trpc.useUtils();
 
-  const { data: members } = trpc.members.listById.useQuery({
+  const { data: members, failureReason } = trpc.members.listById.useQuery({
     ids: duplicate.member_ids,
   });
 
-  const { data: profiles } = trpc.profiles.members.useQuery(
-    members ? { members: members ?? [] } : skipToken,
-  );
+  console.log("members", failureReason);
+
+  const { data: profiles, failureReason: profilesFailureReason } =
+    trpc.profiles.members.useQuery(
+      members ? { members: members ?? [] } : skipToken,
+    );
+
+  console.log("profiles", profilesFailureReason);
 
   const { mutate: mergeMembers } = trpc.duplicate.merge.useMutation({
     onSuccess: (data) => {
