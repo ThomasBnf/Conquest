@@ -7,18 +7,18 @@ type Props = {
 };
 
 export const listDuplicates = async ({ cursor, workspace_id }: Props) => {
-  console.log(cursor);
+  const pageSize = 25;
+  const skip = cursor ? cursor * pageSize : 0;
 
   const duplicates = await prisma.duplicate.findMany({
     where: {
       workspace_id,
       state: "PENDING",
     },
-    skip: cursor ?? undefined,
-    take: cursor ? 25 : undefined,
+    skip,
+    take: pageSize,
     orderBy: {
       created_at: "desc",
-      id: "asc",
     },
   });
 
