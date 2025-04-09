@@ -105,7 +105,7 @@ export const MemberCard = ({ member, profiles, className }: Props) => {
                         <DialogHeader>
                           <DialogTitle>{`${first_name} ${last_name}`}</DialogTitle>
                         </DialogHeader>
-                        <DialogBody className="flex items-center justify-center">
+                        <DialogBody className="mb-0.5 flex items-center justify-center">
                           <Avatar className="size-96">
                             <AvatarImage src={avatar_url} />
                             <AvatarFallback className="text-sm">
