@@ -12,12 +12,11 @@ export const DuplicateMenu = () => {
 
   const pathname = usePathname();
   const isActive = pathname.startsWith(`/${slug}/duplicates`);
+  const isDuplicatePage = pathname.startsWith(`/${slug}/duplicates`);
 
-  const { data, isLoading, failureReason } = trpc.duplicate.list.useQuery();
+  const { data, isLoading } = trpc.duplicate.list.useQuery();
 
-  console.log(failureReason);
-
-  if (isLoading || data?.length === 0) return;
+  if ((isLoading || data?.length === 0) && !isDuplicatePage) return;
 
   return (
     <SidebarMenuItem>

@@ -7,21 +7,76 @@ import { Slack } from "@conquest/ui/icons/Slack";
 import { Twitter } from "@conquest/ui/icons/Twitter";
 import { Profile } from "@conquest/zod/schemas/profile.schema";
 
-export const ProfileIconParser = ({ profile }: { profile: Profile }) => {
-  switch (profile.attributes.source) {
+type Props = {
+  profile: Profile;
+  displayUsername?: boolean;
+};
+
+export const ProfileIconParser = ({
+  profile,
+  displayUsername = false,
+}: Props) => {
+  const { source } = profile.attributes;
+  const IconComponent = getIconComponent(source);
+
+  if (!displayUsername) {
+    return (
+      <div className="rounded-md border p-1">
+        <IconComponent size={16} />
+      </div>
+    );
+  }
+
+  const username = getUsernameBySource(profile);
+
+  return (
+    <div className="flex w-fit items-center gap-1.5 rounded-md border p-1">
+      <IconComponent size={16} />
+      <p className="truncate">{username}</p>
+    </div>
+  );
+};
+
+const getIconComponent = (source: string) => {
+  switch (source) {
     case "Discord":
-      return <Discord size={16} />;
+      return Discord;
     case "Discourse":
-      return <Discourse size={16} />;
+      return Discourse;
     case "Github":
-      return <Github size={16} />;
+      return Github;
     case "Livestorm":
-      return <Livestorm size={16} />;
+      return Livestorm;
     case "Linkedin":
-      return <Linkedin size={16} />;
+      return Linkedin;
     case "Slack":
-      return <Slack size={16} />;
+      return Slack;
     case "Twitter":
-      return <Twitter size={16} />;
+      return Twitter;
+    default:
+      return Discord;
+  }
+};
+
+const getUsernameBySource = (profile: Profile) => {
+  const { source } = profile.attributes;
+
+  switch (source) {
+    case "Discord":
+      return profile.attributes.username;
+    case "Discourse":
+      return profile.attributes.username;
+    case "Github":
+      return profile.attributes.login;
+    case "Livestorm":
+      return profile.external_id;
+    case "Linkedin":
+      return profile.external_id;
+    case "Slack":
+      return profile.external_id;
+    case "Twitter":
+      return profile.attributes.username;
+    default:
+      return null;
   }
 };

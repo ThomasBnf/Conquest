@@ -7,6 +7,7 @@ import { cn } from "@conquest/ui/cn";
 import type { Member } from "@conquest/zod/schemas/member.schema";
 import { Profile } from "@conquest/zod/schemas/profile.schema";
 import { skipToken } from "@tanstack/react-query";
+import { format } from "date-fns";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { LevelBadge } from "../members/level-badge";
@@ -36,6 +37,8 @@ export const MemberCard = ({ member, profiles, className }: Props) => {
     country,
     language,
     phones,
+    created_at,
+    first_activity,
   } = member;
 
   const entries = [
@@ -68,13 +71,30 @@ export const MemberCard = ({ member, profiles, className }: Props) => {
             case "avatar_url": {
               return (
                 <div key={`${key}-${id}`}>
-                  <Avatar className="size-9">
-                    <AvatarImage src={avatar_url} />
-                    <AvatarFallback className="text-sm">
-                      {first_name?.charAt(0).toUpperCase()}
-                      {last_name?.charAt(0).toUpperCase()}
-                    </AvatarFallback>
-                  </Avatar>
+                  <div className="flex items-center gap-2">
+                    <Avatar className="size-9">
+                      <AvatarImage src={avatar_url} />
+                      <AvatarFallback className="text-sm">
+                        {first_name?.charAt(0).toUpperCase()}
+                        {last_name?.charAt(0).toUpperCase()}
+                      </AvatarFallback>
+                    </Avatar>
+                    {first_activity ? (
+                      <div>
+                        <p className="text-muted-foreground text-xs">
+                          First activity
+                        </p>
+                        <p>{format(first_activity, "PPp")}</p>
+                      </div>
+                    ) : (
+                      <div>
+                        <p className="text-muted-foreground text-xs">
+                          Created at
+                        </p>
+                        <p>{format(created_at, "PPp")}</p>
+                      </div>
+                    )}
+                  </div>
                   <div className="mt-2 flex items-center gap-2">
                     <LevelBadge member={member} />
                     <PulseBadge member={member} />
@@ -163,18 +183,17 @@ export const MemberCard = ({ member, profiles, className }: Props) => {
         {profiles && profiles.length > 0 && (
           <div className="space-y-2">
             <p className="text-muted-foreground text-xs">Profiles</p>
-            <div className="flex items-center gap-2">
+            <div className="space-y-1">
               {profiles
                 ?.sort((a, b) =>
                   a.attributes.source.localeCompare(b.attributes.source),
                 )
                 .map((profile) => (
-                  <div
+                  <ProfileIconParser
                     key={profile.id}
-                    className="rounded-md border bg-background p-1"
-                  >
-                    <ProfileIconParser profile={profile} />
-                  </div>
+                    profile={profile}
+                    displayUsername
+                  />
                 ))}
             </div>
           </div>

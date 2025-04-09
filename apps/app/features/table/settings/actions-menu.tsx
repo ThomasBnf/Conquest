@@ -1,4 +1,5 @@
 import { DeleteDialog } from "@/components/custom/delete-dialog";
+import { MergeDialog } from "@/features/merge/merge-dialog";
 import { TagDialog } from "@/features/table/tag-dialog";
 import { useTable } from "@/hooks/useTable";
 import { trpc } from "@/server/client";
@@ -67,9 +68,9 @@ export const ActionsMenu = <TData extends Member | Company>({
             onReset={onReset}
           />
         )}
-        {/* {!isCompanyPage && has2Selected && (
+        {!isCompanyPage && has2Selected && (
           <MergeDialog members={selectedRows as Member[]} onReset={onReset} />
-        )} */}
+        )}
         <div className="flex flex-1 items-center justify-end gap-1.5">
           <Separator orientation="vertical" className="h-7" />
           <DeleteDialog

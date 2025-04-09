@@ -17,16 +17,16 @@ import { getUniqueValues } from "./helpers/getUniqueValues";
 
 type Props = {
   members: Member[];
-  allProfiles: Profile[] | undefined;
   finalMember: Member | null;
   setFinalMember: (member: Member) => void;
+  profiles: Profile[] | undefined;
 };
 
 export const FinalMemberCard = ({
   members,
-  allProfiles,
   finalMember,
   setFinalMember,
+  profiles,
 }: Props) => {
   const [isMaximized, setIsMaximized] = useState(false);
 
@@ -67,6 +67,12 @@ export const FinalMemberCard = ({
           {keys.map((key) => {
             switch (key) {
               case "avatar_url": {
+                const hasAvatarUrl = members.some(
+                  (member) => member.avatar_url !== "",
+                );
+
+                if (!hasAvatarUrl) return;
+
                 return (
                   <RadioGroup
                     key={key}
@@ -447,18 +453,17 @@ export const FinalMemberCard = ({
           })}
           <div className="space-y-2">
             <p className="text-muted-foreground text-xs">Profiles</p>
-            <div className="flex items-center gap-2">
-              {allProfiles
+            <div className="space-y-1">
+              {profiles
                 ?.sort((a, b) =>
                   a.attributes.source.localeCompare(b.attributes.source),
                 )
                 .map((profile) => (
-                  <div
+                  <ProfileIconParser
                     key={profile.id}
-                    className="rounded-md border bg-background p-1"
-                  >
-                    <ProfileIconParser profile={profile} />
-                  </div>
+                    profile={profile}
+                    displayUsername
+                  />
                 ))}
             </div>
           </div>

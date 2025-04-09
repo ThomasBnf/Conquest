@@ -84,9 +84,9 @@ export const DuplicateCard = ({ duplicate }: Props) => {
         </ScrollArea>
         <FinalMemberCard
           members={members}
-          allProfiles={profiles}
           finalMember={finalMember}
           setFinalMember={setFinalMember}
+          profiles={profiles}
         />
       </div>
       <div className="flex items-center justify-end gap-2 bg-sidebar p-2">

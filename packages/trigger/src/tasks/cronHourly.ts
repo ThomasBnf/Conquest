@@ -2,6 +2,7 @@ import { client } from "@conquest/clickhouse/client";
 import { getPulseAndLevel } from "@conquest/clickhouse/members/getPulseAndLevel";
 import { logger, schedules } from "@trigger.dev/sdk/v3";
 import { endOfHour, format, startOfHour, subHours } from "date-fns";
+import { checkDuplicates } from "./checkDuplicates";
 
 export const cronHourly = schedules.task({
   id: "cron-hourly",
@@ -35,6 +36,6 @@ export const cronHourly = schedules.task({
       await getPulseAndLevel({ memberId: member.member_id });
     }
 
-    // await checkDuplicates.trigger({});
+    await checkDuplicates.trigger({});
   },
 });

@@ -12,6 +12,7 @@ import {
 } from "@conquest/ui/dialog";
 import { ScrollArea, ScrollBar } from "@conquest/ui/scroll-area";
 import { Member } from "@conquest/zod/schemas/member.schema";
+import { Profile } from "@conquest/zod/schemas/profile.schema";
 import { skipToken } from "@tanstack/react-query";
 import { Loader2, Merge } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -27,9 +28,8 @@ type Props = {
 export const MergeDialog = ({ members, onReset }: Props) => {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  const utils = trpc.useUtils();
-
   const [finalMember, setFinalMember] = useState<Member | null>(null);
+  const utils = trpc.useUtils();
 
   const { data: profiles } = trpc.profiles.members.useQuery(
     members.length > 0 ? { members } : skipToken,
@@ -95,9 +95,9 @@ export const MergeDialog = ({ members, onReset }: Props) => {
             </ScrollArea>
             <FinalMemberCard
               members={members}
-              allProfiles={profiles}
               finalMember={finalMember}
               setFinalMember={setFinalMember}
+              profiles={profiles}
             />
           </div>
         </DialogBody>

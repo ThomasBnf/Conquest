@@ -26,12 +26,7 @@ export const ProfilesCell = ({ member }: Props) => {
             a.attributes.source.localeCompare(b.attributes.source),
           )
           .map((profile) => (
-            <div
-              key={profile.id}
-              className="rounded-md border bg-background p-1"
-            >
-              <ProfileIconParser profile={profile} />
-            </div>
+            <ProfileIconParser key={profile.id} profile={profile} />
           ))
       )}
     </div>
