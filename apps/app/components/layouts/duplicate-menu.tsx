@@ -14,9 +14,14 @@ export const DuplicateMenu = () => {
   const isActive = pathname.startsWith(`/${slug}/duplicates`);
   const isDuplicatePage = pathname.startsWith(`/${slug}/duplicates`);
 
-  const { data, isLoading } = trpc.duplicate.list.useQuery();
+  const { data, isLoading } = trpc.duplicate.list.useInfiniteQuery(
+    {},
+    { getNextPageParam: (_, allPages) => allPages.length * 25 },
+  );
 
-  if ((isLoading || data?.length === 0) && !isDuplicatePage) return;
+  const duplicates = data?.pages.flat();
+
+  if ((isLoading || duplicates?.length === 0) && !isDuplicatePage) return;
 
   return (
     <SidebarMenuItem>
@@ -25,7 +30,7 @@ export const DuplicateMenu = () => {
           <Duplicate size={18} />
           <span>Duplicates</span>
           <Badge variant="secondary" className="ml-auto">
-            {data?.length}
+            {duplicates?.length}
           </Badge>
         </Link>
       </SidebarMenuButton>
