@@ -34,7 +34,7 @@ export default function Page() {
           {duplicates?.map((duplicate) => (
             <DuplicateCard key={duplicate.id} duplicate={duplicate} />
           ))}
-          <div ref={ref} className="h-4" />
+          <div ref={ref} />
         </div>
       </div>
     </PageLayout>
