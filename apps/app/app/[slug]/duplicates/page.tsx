@@ -19,6 +19,7 @@ export default function Page() {
   console.log(failureReason);
 
   const duplicates = data?.pages.flat();
+  console.log(duplicates);
   const hasNextPage = data?.pages.at(-1)?.length === 25;
 
   useEffect(() => {

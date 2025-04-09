@@ -12,6 +12,5 @@ export const listDuplicate = protectedProcedure
     const { workspace_id } = ctx.user;
     const { cursor } = input;
 
-    if (!cursor) return [];
     return _listDuplicates({ cursor, workspace_id });
   });
