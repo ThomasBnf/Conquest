@@ -7,18 +7,19 @@ type Props = {
 };
 
 export const listMembersProfiles = async ({ members }: Props) => {
-  const memberIdsFormatted = members
-    .map((member) => `'${member.id}'`)
-    .join(", ");
+  const ids = members.map((member) => `'${member.id}'`).join(", ");
+
+  console.log("ids", ids);
 
   const result = await client.query({
     query: `
         SELECT *
         FROM profile
-        WHERE member_id IN (${memberIdsFormatted})
+        WHERE member_id IN (${ids})
         `,
   });
 
   const { data } = await result.json();
+  console.log("data", data);
   return ProfileSchema.array().parse(data);
 };
