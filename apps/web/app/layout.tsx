@@ -1,5 +1,6 @@
 import { cn } from "@conquest/ui/cn";
 import "@conquest/ui/globals.css";
+import { Analytics } from "@vercel/analytics/react";
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 
@@ -55,6 +56,7 @@ export default async function RootLayout({
         )}
       >
         {children}
+        <Analytics />
       </body>
     </html>
   );
