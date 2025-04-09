@@ -14,6 +14,10 @@ export const listDuplicates = async ({ cursor, workspace_id }: Props) => {
     },
     skip: cursor,
     take: 25,
+    orderBy: {
+      created_at: "desc",
+      id: "asc",
+    },
   });
 
   return DuplicateSchema.array().parse(duplicates);
