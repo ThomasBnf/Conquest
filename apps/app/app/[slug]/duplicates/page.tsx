@@ -13,7 +13,7 @@ export default function Page() {
   return (
     <PageLayout>
       <Header title="Duplicates" />
-      {data?.length ? (
+      {data && data.length > 0 ? (
         <div className="flex flex-1 flex-col gap-4 p-4">
           <div className="flex flex-col overflow-auto">
             {data.map((duplicate) => (
