@@ -3,11 +3,21 @@ import { LanguageBadge } from "@/components/badges/language-badge";
 import { trpc } from "@/server/client";
 import { ProfileIconParser } from "@/utils/profile-icon-parser";
 import { Avatar, AvatarFallback, AvatarImage } from "@conquest/ui/avatar";
+import { Button } from "@conquest/ui/button";
 import { cn } from "@conquest/ui/cn";
+import {
+  Dialog,
+  DialogBody,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@conquest/ui/dialog";
 import type { Member } from "@conquest/zod/schemas/member.schema";
 import { Profile } from "@conquest/zod/schemas/profile.schema";
 import { skipToken } from "@tanstack/react-query";
 import { format } from "date-fns";
+import { ExternalLink } from "lucide-react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { LevelBadge } from "../members/level-badge";
@@ -58,13 +68,22 @@ export const MemberCard = ({ member, profiles, className }: Props) => {
   );
 
   return (
-    <Link
-      href={`/${slug}/members/${id}/analytics`}
+    <div
       className={cn(
-        "flex h-fit w-80 shrink-0 flex-col divide-y rounded-md border bg-background hover:bg-sidebar",
+        "relative flex h-fit w-80 shrink-0 flex-col rounded-md border bg-background hover:bg-sidebar",
         className,
       )}
     >
+      <Link
+        href={`/${slug}/members/${id}/analytics`}
+        className="absolute top-2 right-2"
+        prefetch
+        scroll
+      >
+        <Button variant="outline" size="icon">
+          <ExternalLink size={16} />
+        </Button>
+      </Link>
       <div className="flex flex-1 flex-col gap-4 p-4">
         {entries.map(([key, value]) => {
           switch (key) {
@@ -72,13 +91,31 @@ export const MemberCard = ({ member, profiles, className }: Props) => {
               return (
                 <div key={`${key}-${id}`}>
                   <div className="flex items-center gap-2">
-                    <Avatar className="size-9">
-                      <AvatarImage src={avatar_url} />
-                      <AvatarFallback className="text-sm">
-                        {first_name?.charAt(0).toUpperCase()}
-                        {last_name?.charAt(0).toUpperCase()}
-                      </AvatarFallback>
-                    </Avatar>
+                    <Dialog>
+                      <DialogTrigger asChild className="cursor-zoom-in">
+                        <Avatar className="size-9">
+                          <AvatarImage src={avatar_url} />
+                          <AvatarFallback className="text-sm">
+                            {first_name?.charAt(0).toUpperCase()}
+                            {last_name?.charAt(0).toUpperCase()}
+                          </AvatarFallback>
+                        </Avatar>
+                      </DialogTrigger>
+                      <DialogContent className="max-w-fit">
+                        <DialogHeader>
+                          <DialogTitle>{`${first_name} ${last_name}`}</DialogTitle>
+                        </DialogHeader>
+                        <DialogBody className="flex items-center justify-center">
+                          <Avatar className="size-96">
+                            <AvatarImage src={avatar_url} />
+                            <AvatarFallback className="text-sm">
+                              {first_name?.charAt(0).toUpperCase()}
+                              {last_name?.charAt(0).toUpperCase()}
+                            </AvatarFallback>
+                          </Avatar>
+                        </DialogBody>
+                      </DialogContent>
+                    </Dialog>
                     {first_activity ? (
                       <div>
                         <p className="text-muted-foreground text-xs">
@@ -199,6 +236,6 @@ export const MemberCard = ({ member, profiles, className }: Props) => {
           </div>
         )}
       </div>
-    </Link>
+    </div>
   );
 };
