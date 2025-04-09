@@ -48,6 +48,8 @@ export const EditableLink = ({
     }
   };
 
+  console.log(value);
+
   if (!isFocus) {
     return (
       <div
@@ -65,7 +67,7 @@ export const EditableLink = ({
           onClick={() => editable && setIsFocus(true)}
         >
           <span className="truncate">
-            {value === "" || value === null ? placeholder : value}
+            {!value || value === "" || value === null ? placeholder : value}
           </span>
         </Button>
         {isHover && value && (

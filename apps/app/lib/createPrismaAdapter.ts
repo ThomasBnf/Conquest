@@ -95,12 +95,13 @@ export const createAuthPrismaAdapter = (
     if (!userAndSession) return null;
 
     const { user, ...session } = userAndSession;
+    const { id, last_activity_at } = user;
 
     const oneHourAgo = subHours(new Date(), 1);
 
-    if (user.last_activity_at && isBefore(user.last_activity_at, oneHourAgo)) {
+    if (last_activity_at && isBefore(last_activity_at, oneHourAgo)) {
       await prisma.user.update({
-        where: { id: user.id },
+        where: { id },
         data: { last_activity_at: new Date() },
       });
     }

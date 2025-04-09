@@ -74,40 +74,39 @@ export const CompanySidebar = ({ company }: Props) => {
       </div>
       <Separator />
       <ScrollArea className="flex-1">
-        <div className="space-y-2 p-4">
-          <p className="text-muted-foreground text-xs">COMPANY DETAILS</p>
-          <FieldCard icon="Building2" label="Name">
+        <div className="space-y-4 p-4">
+          <FieldCard label="Name">
             <EditableInput
               defaultValue={name}
               placeholder="Set name"
               onUpdate={(value) => onUpdateCompany("name", value)}
             />
           </FieldCard>
-          <FieldCard icon="Users" label="Members">
+          <FieldCard label="Members">
             <EditableMembers company={company} />
           </FieldCard>
-          <FieldCard icon="Globe" label="Domain">
+          <FieldCard label="Domain">
             <EditableInput
               defaultValue={domain}
               placeholder="Set domain"
               onUpdate={(value) => onUpdateCompany("domain", value)}
             />
           </FieldCard>
-          <FieldCard icon="Briefcase" label="Industry">
+          <FieldCard label="Industry">
             <EditableInput
               defaultValue={industry}
               placeholder="Set industry"
               onUpdate={(value) => onUpdateCompany("industry", value)}
             />
           </FieldCard>
-          <FieldCard icon="Users" label="Employees">
+          <FieldCard label="Employees">
             <EditableInput
               defaultValue={employees?.toString() ?? ""}
               placeholder="Set employees"
               onUpdate={(value) => onUpdateCompany("employees", value)}
             />
           </FieldCard>
-          <FieldCard icon="MapPin" label="Address">
+          <FieldCard label="Address">
             <EditableAddress
               address={address}
               onUpdate={(value) => onUpdateCompany("address", value)}
@@ -115,14 +114,14 @@ export const CompanySidebar = ({ company }: Props) => {
           </FieldCard>
         </div>
         <Separator />
-        <div className="space-y-2 p-4">
-          <FieldCard icon="CalendarCheck" label="Founded at">
+        <div className="space-y-4 p-4">
+          <FieldCard label="Founded at">
             <EditableDate
               defaultValue={founded_at ? format(founded_at, "PPp") : undefined}
               onUpdate={(value) => onUpdateCompany("founded_at", value)}
             />
           </FieldCard>
-          <FieldCard icon="CalendarPlus" label="Created at">
+          <FieldCard label="Created at">
             <p className="h-8 place-content-center pl-0.5">
               <span className="px-[7px]">{format(created_at, "PPp")}</span>
             </p>

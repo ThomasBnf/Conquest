@@ -13,6 +13,7 @@
     "@clickhouse/client": "^1.10.1",
     "@clickhouse/client-web": "^1.10.1",
     "@conquest/env": "workspace:*",
+    "@conquest/trigger": "workspace:*",
     "@conquest/zod": "workspace:*",
     "@discordjs/rest": "^2.4.2",
     "@slack/web-api": "^7.6.0",

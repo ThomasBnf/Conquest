@@ -9,6 +9,7 @@ import { createManyIssues } from "../github/createManyIssues";
 import { createManyPullRequests } from "../github/createManyPullRequests";
 import { createWebhook } from "../github/createWebhook";
 import { listStargazers } from "../github/listStargazers";
+import { checkDuplicates } from "./checkDuplicates";
 import { getAllMembersMetrics } from "./getAllMembersMetrics";
 import { integrationSuccessEmail } from "./integrationSuccessEmail";
 
@@ -35,6 +36,7 @@ export const installGithub = schemaTask({
       { metadata: { workspace_id } },
     );
 
+    await checkDuplicates.triggerAndWait({ workspace_id });
     await integrationSuccessEmail.trigger({ integration: github });
   },
   onSuccess: async ({ github }) => {

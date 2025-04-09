@@ -349,7 +349,7 @@ export async function POST(request: NextRequest) {
       first_name: first_name ?? "",
       last_name: last_name ?? "",
       primary_email: email,
-      secondary_emails,
+      emails: [...(member.emails ?? []), email, ...(secondary_emails ?? [])],
       avatar_url,
       job_title: title ?? "",
       created_at: new Date(),

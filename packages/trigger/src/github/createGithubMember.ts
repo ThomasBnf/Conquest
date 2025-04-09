@@ -51,6 +51,7 @@ export const createGithubMember = async ({
     first_name: firstName,
     last_name: lastName,
     primary_email: email ?? "",
+    emails: [email ?? ""],
     avatar_url,
     source: "Github",
     created_at,

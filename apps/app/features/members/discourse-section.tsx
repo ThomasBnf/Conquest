@@ -31,7 +31,7 @@ export const DiscourseSection = ({ profile }: Props) => {
           </div>
           <MenuProfile profile={profile} />
         </div>
-        <FieldCard icon="User" label="Username">
+        <FieldCard label="Username">
           <EditableLink
             placeholder="No discourse profile"
             defaultValue={username}
@@ -46,7 +46,7 @@ export const DiscourseSection = ({ profile }: Props) => {
           if (!key) return null;
 
           return (
-            <FieldCard key={id} icon="User" label={key}>
+            <FieldCard key={id} label={key}>
               <p className="h-full place-content-center truncate px-2">
                 {value}
               </p>

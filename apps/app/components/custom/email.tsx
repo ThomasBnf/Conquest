@@ -1,58 +1,60 @@
-import { Button } from "@conquest/ui/button";
 import { Input } from "@conquest/ui/input";
-import { X } from "lucide-react";
-import { useState } from "react";
+import { Member } from "@conquest/zod/schemas/member.schema";
+import { KeyboardEvent as ReactKeyboardEvent, useState } from "react";
+import { toast } from "sonner";
 
 type Props = {
-  email: { id: string; content: string };
-  hasEmails: boolean;
-  setOpen: (open: boolean) => void;
-  onChangeEmail: ({ id, email }: { id: string; email: string }) => void;
-  onDeleteEmail: (email: string) => void;
+  member: Member;
+  onUpdate: (field: keyof Member, value: string | string[]) => void;
+  onCancel: () => void;
 };
 
-export const Email = ({
-  email,
-  hasEmails,
-  setOpen,
-  onChangeEmail,
-  onDeleteEmail,
-}: Props) => {
-  const [value, setValue] = useState(email.content);
+export const Email = ({ member, onUpdate, onCancel }: Props) => {
+  const [email, setEmail] = useState("");
+
+  const onConfirm = () => {
+    if (!email.trim()) return;
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) return toast.error("Invalid email format");
+
+    const formattedEmail = email.trim().toLowerCase();
+
+    const updatedEmails = [...member.emails, formattedEmail];
+    onUpdate("emails", updatedEmails);
+
+    if (member.emails.length === 0) {
+      onUpdate("primary_email", formattedEmail);
+    }
+
+    setEmail("");
+  };
+
+  const onBlur = () => {
+    onCancel();
+    onConfirm();
+  };
+
+  const onKeyDown = (event: ReactKeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "Enter") {
+      onCancel();
+      onConfirm();
+    }
+
+    if (event.key === "Escape") {
+      onCancel();
+    }
+  };
 
   return (
-    <div className="group flex h-8 items-center justify-between gap-1 px-2">
-      {email.content ? (
-        <p className="truncate">{email.content}</p>
-      ) : (
-        <Input
-          autoFocus
-          placeholder="Set Email"
-          variant="transparent"
-          className="h-8 px-0"
-          value={value}
-          onChange={(event) => setValue(event.target.value)}
-          onKeyDown={(event) => {
-            if (event.key === "Enter") {
-              if (value === "") return;
-              onChangeEmail({ id: email.id, email: value });
-              setOpen(false);
-            }
-            if (event.key === "Escape") {
-              setOpen(false);
-              onDeleteEmail(email.id);
-            }
-          }}
-        />
-      )}
-      <Button
-        variant="outline"
-        size="icon_sm"
-        className="ml-auto shrink-0 opacity-0 group-hover:opacity-100"
-        onClick={() => onDeleteEmail(email.id)}
-      >
-        <X size={16} />
-      </Button>
-    </div>
+    <Input
+      autoFocus
+      placeholder="Add email"
+      className="h-8"
+      value={email}
+      onChange={(event) => setEmail(event.target.value)}
+      onBlur={onBlur}
+      onKeyDown={onKeyDown}
+    />
   );
 };

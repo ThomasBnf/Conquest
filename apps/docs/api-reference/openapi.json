@@ -1419,7 +1419,7 @@
                   "nullable": true,
                   "example": "thomas@useconquest.com"
                 },
-                "secondary_emails": {
+                "emails": {
                   "type": "array",
                   "items": {
                     "type": "string",

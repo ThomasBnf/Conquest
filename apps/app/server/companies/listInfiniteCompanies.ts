@@ -24,6 +24,7 @@ export const listInfiniteCompanies = protectedProcedure
           ${searchParsed ? `positionCaseInsensitive(c.name, '${searchParsed}') > 0` : "true"}
         )
         AND c.workspace_id = '${workspace_id}'
+        ORDER BY c.name ASC, c.id ASC
         ${cursor ? `LIMIT 25 OFFSET ${cursor}` : "LIMIT 25"}
       `,
     });

@@ -1,4 +1,12 @@
-import { DiscordProfile, DiscourseProfile, GithubProfile, LivestormProfile, Profile, SlackProfile, TwitterProfile } from "@conquest/zod/schemas/profile.schema";
+import {
+  DiscordProfile,
+  DiscourseProfile,
+  GithubProfile,
+  LivestormProfile,
+  Profile,
+  SlackProfile,
+  TwitterProfile,
+} from "@conquest/zod/schemas/profile.schema";
 import { DiscordSection } from "./discord-section";
 import { DiscourseSection } from "./discourse-section";
 import { GithubSection } from "./github-section";
@@ -18,17 +26,47 @@ export const ProfilesParser = ({ profiles }: Props) => {
 
         switch (source) {
           case "Discord":
-            return <DiscordSection key={profile.id} profile={profile as DiscordProfile} />;
+            return (
+              <DiscordSection
+                key={profile.id}
+                profile={profile as DiscordProfile}
+              />
+            );
           case "Discourse":
-            return <DiscourseSection key={profile.id} profile={profile as DiscourseProfile} />;
+            return (
+              <DiscourseSection
+                key={profile.id}
+                profile={profile as DiscourseProfile}
+              />
+            );
           case "Github":
-            return <GithubSection key={profile.id} profile={profile as GithubProfile} />;
+            return (
+              <GithubSection
+                key={profile.id}
+                profile={profile as GithubProfile}
+              />
+            );
           case "Livestorm":
-            return <LivestormSection key={profile.id} profile={profile as LivestormProfile} />;
+            return (
+              <LivestormSection
+                key={profile.id}
+                profile={profile as LivestormProfile}
+              />
+            );
           case "Slack":
-            return <SlackSection key={profile.id} profile={profile as SlackProfile} />;
+            return (
+              <SlackSection
+                key={profile.id}
+                profile={profile as SlackProfile}
+              />
+            );
           case "Twitter":
-            return <TwitterSection key={profile.id} profile={profile as TwitterProfile} />;
+            return (
+              <TwitterSection
+                key={profile.id}
+                profile={profile as TwitterProfile}
+              />
+            );
         }
       })}
     </>

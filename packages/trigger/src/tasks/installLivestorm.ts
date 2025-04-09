@@ -7,6 +7,7 @@ import { z } from "zod";
 import { createManyEvents } from "../livestorm/createManyEvents";
 import { createWebhook } from "../livestorm/createWebhook";
 import { getRefreshToken } from "../livestorm/getRefreshToken";
+import { checkDuplicates } from "./checkDuplicates";
 import { getAllMembersMetrics } from "./getAllMembersMetrics";
 import { integrationSuccessEmail } from "./integrationSuccessEmail";
 
@@ -50,6 +51,7 @@ export const installLivestorm = schemaTask({
       { metadata: { workspace_id } },
     );
 
+    await checkDuplicates.triggerAndWait({ workspace_id });
     await integrationSuccessEmail.trigger({ integration: livestorm });
   },
   onSuccess: async ({ livestorm }) => {

@@ -8,6 +8,7 @@ import { schemaTask } from "@trigger.dev/sdk/v3";
 import { z } from "zod";
 import { createListMembers } from "../slack/createListMembers";
 import { listMessages } from "../slack/listMessages";
+import { checkDuplicates } from "./checkDuplicates";
 import { getAllMembersMetrics } from "./getAllMembersMetrics";
 import { integrationSuccessEmail } from "./integrationSuccessEmail";
 
@@ -43,6 +44,7 @@ export const installSlack = schemaTask({
       { metadata: { workspace_id } },
     );
 
+    await checkDuplicates.triggerAndWait({ workspace_id });
     await integrationSuccessEmail.trigger({ integration: slack });
   },
   onSuccess: async ({ slack }) => {

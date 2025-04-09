@@ -24,12 +24,12 @@ export const SlackSection = ({ profile }: Props) => {
     <>
       <div className="flex flex-col gap-2 p-4">
         <div className="mb-2 flex items-center justify-between">
-          <div className="flex items-center gap-2 text-muted-foreground">
-            <Slack size={16} /> <p>Slack</p>
+          <div className="flex items-center gap-2">
+            <Slack size={14} /> <p>Slack</p>
           </div>
           <MenuProfile profile={profile} />
         </div>
-        <FieldCard icon="User" label="Id">
+        <FieldCard label="Id">
           <EditableLink
             placeholder="No slack profile"
             defaultValue={external_id}

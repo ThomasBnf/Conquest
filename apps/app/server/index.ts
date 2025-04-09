@@ -8,6 +8,7 @@ import { dashboardRouter } from "./dashboard/router";
 import { dbRouter } from "./db/router";
 import { discordRouter } from "./discord/router";
 import { discourseRouter } from "./discourse/router";
+import { duplicateRouter } from "./duplicate/router";
 import { eventsRouter } from "./events/router";
 import { githubRouter } from "./github/router";
 import { integrationsRouter } from "./integrations/router";
@@ -34,6 +35,7 @@ export const appRouter = router({
   db: dbRouter,
   discord: discordRouter,
   discourse: discourseRouter,
+  duplicate: duplicateRouter,
   events: eventsRouter,
   github: githubRouter,
   integrations: integrationsRouter,

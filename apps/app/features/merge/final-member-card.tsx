@@ -1,3 +1,5 @@
+import { CountryBadge } from "@/components/badges/country-badge";
+import { LanguageBadge } from "@/components/badges/language-badge";
 import { ProfileIconParser } from "@/utils/profile-icon-parser";
 import { Avatar, AvatarFallback, AvatarImage } from "@conquest/ui/avatar";
 import { Button } from "@conquest/ui/button";
@@ -11,11 +13,12 @@ import { Profile } from "@conquest/zod/schemas/profile.schema";
 import { Maximize2, Minimize2 } from "lucide-react";
 import { useState } from "react";
 import { CompanyKey } from "./company-key";
+import { getUniqueValues } from "./helpers/getUniqueValues";
 
 type Props = {
   members: Member[];
   allProfiles: Profile[] | undefined;
-  finalMember: Member;
+  finalMember: Member | null;
   setFinalMember: (member: Member) => void;
 };
 
@@ -25,22 +28,30 @@ export const FinalMemberCard = ({
   finalMember,
   setFinalMember,
 }: Props) => {
-  const [isMaximized, setIsMaximized] = useState(true);
+  const [isMaximized, setIsMaximized] = useState(false);
 
   const keys = [
     "avatar_url",
     "full_name",
-    "primary_email",
+    "emails",
     "company_id",
     "job_title",
     "linkedin_url",
-    "secondary_emails",
     "phones",
+    "country",
+    "language",
   ];
 
+  if (!finalMember) return null;
+
   return (
-    <div className="my-4 flex w-80 flex-col rounded-md border">
-      <div className="flex items-center justify-between p-2">
+    <div
+      className={cn(
+        "flex h-full min-w-80 shrink-0 flex-col overflow-hidden rounded-md border",
+        isMaximized ? "h-[50vh]" : "h-fit max-h-[80vh]",
+      )}
+    >
+      <div className="flex items-center justify-between bg-sidebar p-2">
         <p className="font-medium">Final member</p>
         <Button
           variant="outline"
@@ -51,8 +62,8 @@ export const FinalMemberCard = ({
         </Button>
       </div>
       <Separator />
-      <ScrollArea className={cn(isMaximized ? "h-fit max-h-[80vh]" : "h-96")}>
-        <div className="flex flex-col gap-4 p-4">
+      <ScrollArea>
+        <div className="flex h-full w-fit flex-col gap-4 p-4">
           {keys.map((key) => {
             switch (key) {
               case "avatar_url": {
@@ -65,18 +76,18 @@ export const FinalMemberCard = ({
                     }
                   >
                     {members.map((member) => {
-                      const { first_name, last_name, avatar_url } = member;
+                      const { id, first_name, last_name, avatar_url } = member;
 
                       return (
                         <div
-                          key={avatar_url}
+                          key={`${id}-${avatar_url}`}
                           className="flex items-center gap-2"
                         >
                           <RadioGroupItem
                             value={avatar_url}
                             checked={finalMember?.avatar_url === avatar_url}
                           />
-                          <Avatar key={avatar_url} className="size-9">
+                          <Avatar className="size-9">
                             <AvatarImage src={avatar_url} />
                             <AvatarFallback className="text-sm">
                               <AvatarFallback className="text-sm">
@@ -95,6 +106,16 @@ export const FinalMemberCard = ({
                 const { first_name, last_name } = finalMember;
                 const full_name = `${first_name} ${last_name}`;
 
+                const uniqueFullNames = members.reduce<
+                  Array<{ id: string; fullName: string }>
+                >((acc, member) => {
+                  const memberFullName = `${member.first_name} ${member.last_name}`;
+                  if (!acc.some((item) => item.fullName === memberFullName)) {
+                    acc.push({ id: member.id, fullName: memberFullName });
+                  }
+                  return acc;
+                }, []);
+
                 return (
                   <RadioGroup
                     key={key}
@@ -103,63 +124,71 @@ export const FinalMemberCard = ({
                       setFinalMember({
                         ...finalMember,
                         first_name: value.split(" ")[0] ?? "",
-                        last_name: value.split(" ")[1] ?? "",
+                        last_name: value.split(" ").slice(1).join(" ") ?? "",
                       })
                     }
                   >
                     <p className="text-muted-foreground text-xs">Full name</p>
 
-                    {members.map((member) => {
-                      const { first_name, last_name } = member;
-                      const full_name = `${first_name} ${last_name}`;
-
-                      return (
-                        <div
-                          key={full_name}
-                          className="flex items-center gap-2"
-                        >
-                          <RadioGroupItem value={full_name} />
-                          <p key={full_name}>{full_name}</p>
-                        </div>
-                      );
-                    })}
+                    {uniqueFullNames.map(({ id, fullName }) => (
+                      <div
+                        key={`${id}-${fullName}`}
+                        className="flex items-center gap-2"
+                      >
+                        <RadioGroupItem value={fullName} />
+                        <p>{fullName}</p>
+                      </div>
+                    ))}
                   </RadioGroup>
                 );
               }
-              case "primary_email": {
-                const { primary_email } = finalMember;
-                const hasPrimaryEmail = members.some(
-                  (member) => member.primary_email !== "",
+              case "emails": {
+                const hasEmails = members.some(
+                  (member) => member.emails.length > 0,
                 );
 
-                if (!hasPrimaryEmail) return;
+                if (!hasEmails) return;
 
                 return (
-                  <RadioGroup
-                    key={key}
-                    value={primary_email}
-                    onValueChange={(value) =>
-                      setFinalMember({ ...finalMember, primary_email: value })
-                    }
-                  >
-                    <p className="text-muted-foreground text-xs">
-                      Primary email
-                    </p>
+                  <div key={key} className="space-y-2">
+                    <p className="text-muted-foreground text-xs">Emails</p>
+                    <div className="space-y-1">
+                      {members.map((member, memberIndex) => {
+                        const { id, emails } = member;
 
-                    {members.map((member) => {
-                      const { primary_email } = member;
+                        if (emails.length === 0) return;
 
-                      return (
-                        <div
-                          key={primary_email}
-                          className="flex items-center gap-2"
-                        >
-                          <RadioGroupItem value={primary_email} />
-                          <p key={primary_email}>{primary_email}</p>
-                        </div>
-                      );
-                    })}
-                  </RadioGroup>
+                        return (
+                          <div
+                            key={`member-${memberIndex}`}
+                            className="space-y-1"
+                          >
+                            {emails.map((email) => (
+                              <div
+                                key={`${id}-${email}`}
+                                className="flex items-center gap-2"
+                              >
+                                <Checkbox
+                                  checked={finalMember.emails.includes(email)}
+                                  onCheckedChange={(value) => {
+                                    setFinalMember({
+                                      ...finalMember,
+                                      emails: value
+                                        ? [...finalMember.emails, email]
+                                        : finalMember.emails.filter(
+                                            (e) => e !== email,
+                                          ),
+                                    });
+                                  }}
+                                />
+                                <p>{email}</p>
+                              </div>
+                            ))}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
                 );
               }
               case "company_id": {
@@ -168,6 +197,11 @@ export const FinalMemberCard = ({
                 );
 
                 if (!hasCompanyId) return null;
+
+                const uniqueCompanyIds = getUniqueValues({
+                  items: members,
+                  field: "company_id",
+                });
 
                 return (
                   <RadioGroup
@@ -178,12 +212,12 @@ export const FinalMemberCard = ({
                   >
                     <p className="text-muted-foreground text-xs">Company</p>
 
-                    {members.map((member) => {
-                      const { company_id } = member;
+                    {uniqueCompanyIds.map((member) => {
+                      const { id, company_id } = member;
 
                       return (
                         <CompanyKey
-                          key={company_id}
+                          key={`${id}-${company_id}`}
                           company_id={company_id}
                           finalMember={finalMember}
                           setFinalMember={setFinalMember}
@@ -202,6 +236,11 @@ export const FinalMemberCard = ({
 
                 if (!hasJobTitle) return;
 
+                const uniqueJobTitles = getUniqueValues({
+                  items: members,
+                  field: "job_title",
+                });
+
                 return (
                   <RadioGroup
                     key={key}
@@ -212,18 +251,18 @@ export const FinalMemberCard = ({
                   >
                     <p className="text-muted-foreground text-xs">Job title</p>
 
-                    {members.map((member) => {
-                      const { job_title } = member;
+                    {uniqueJobTitles.map((member) => {
+                      const { id, job_title } = member;
 
                       if (job_title === "") return;
 
                       return (
                         <div
-                          key={job_title}
+                          key={`${id}-${job_title}`}
                           className="flex items-center gap-2"
                         >
                           <RadioGroupItem value={job_title} />
-                          <p key={job_title}>{job_title}</p>
+                          <p>{job_title}</p>
                         </div>
                       );
                     })}
@@ -239,6 +278,11 @@ export const FinalMemberCard = ({
 
                 if (!hasLinkedinUrl) return;
 
+                const uniqueLinkedinUrls = getUniqueValues({
+                  items: members,
+                  field: "linkedin_url",
+                });
+
                 return (
                   <RadioGroup
                     key={key}
@@ -250,73 +294,22 @@ export const FinalMemberCard = ({
                     <p className="text-muted-foreground text-xs">
                       LinkedIn URL
                     </p>
-
-                    {members.map((member) => {
-                      const { linkedin_url } = member;
+                    {uniqueLinkedinUrls.map((member) => {
+                      const { id, linkedin_url } = member;
 
                       if (linkedin_url === "") return;
 
                       return (
                         <div
-                          key={linkedin_url}
-                          className="flex items-center gap-2 overflow-hidden"
+                          key={`${id}-${linkedin_url}`}
+                          className="flex items-center gap-2 overflow-hidden truncate"
                         >
                           <RadioGroupItem value={linkedin_url} />
-                          <p key={linkedin_url} className="truncate">
-                            {linkedin_url}
-                          </p>
+                          <p key={linkedin_url}>{linkedin_url}</p>
                         </div>
                       );
                     })}
                   </RadioGroup>
-                );
-              }
-              case "secondary_emails": {
-                const hasSecondaryEmails = members.some(
-                  (member) => member.secondary_emails.length > 0,
-                );
-
-                if (!hasSecondaryEmails) return;
-
-                return (
-                  <div key={key} className="space-y-2">
-                    <p className="text-muted-foreground text-xs">
-                      Secondary emails
-                    </p>
-                    {members.map((member, memberIndex) => {
-                      const { secondary_emails } = member;
-
-                      if (secondary_emails.length === 0) return;
-
-                      return (
-                        <div key={`member-${memberIndex}`}>
-                          {secondary_emails.map((email) => (
-                            <div
-                              key={email}
-                              className="flex items-center gap-2"
-                            >
-                              <Checkbox
-                                checked={finalMember.secondary_emails.includes(
-                                  email,
-                                )}
-                                onCheckedChange={(value) => {
-                                  setFinalMember({
-                                    ...finalMember,
-                                    secondary_emails: value
-                                      ? [...finalMember.secondary_emails, email]
-                                      : finalMember.secondary_emails.filter(
-                                          (e) => e !== email,
-                                        ),
-                                  });
-                                }}
-                              />
-                              <p>{email}</p>
-                            </div>
-                          ))}
-                        </div>
-                      );
-                    })}
-                  </div>
                 );
               }
               case "phones": {
@@ -329,38 +322,125 @@ export const FinalMemberCard = ({
                 return (
                   <div key={key} className="space-y-2">
                     <p className="text-muted-foreground text-xs">Phones</p>
-                    {members.map((member, memberIndex) => {
-                      const { phones } = member;
+                    <div className="space-y-1">
+                      {members.map((member, memberIndex) => {
+                        const { id, phones } = member;
 
-                      if (phones.length === 0) return;
+                        if (phones.length === 0) return;
+
+                        return (
+                          <div
+                            key={`member-${memberIndex}`}
+                            className="space-y-1"
+                          >
+                            {phones.map((phone) => (
+                              <div
+                                key={`${id}-${phone}`}
+                                className="flex items-center gap-2"
+                              >
+                                <Checkbox
+                                  checked={finalMember.phones.includes(phone)}
+                                  onCheckedChange={(value) => {
+                                    setFinalMember({
+                                      ...finalMember,
+                                      phones: value
+                                        ? [...finalMember.phones, phone]
+                                        : finalMember.phones.filter(
+                                            (p) => p !== phone,
+                                          ),
+                                    });
+                                  }}
+                                />
+                                <p>{phone}</p>
+                              </div>
+                            ))}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                );
+              }
+              case "country": {
+                const { country } = finalMember;
+
+                const hasCountry = members.some(
+                  (member) => member.country !== "",
+                );
+
+                if (!hasCountry) return;
+
+                const uniqueCountries = getUniqueValues({
+                  items: members,
+                  field: "country",
+                });
+
+                return (
+                  <RadioGroup
+                    key={key}
+                    value={country}
+                    onValueChange={(value) =>
+                      setFinalMember({ ...finalMember, country: value })
+                    }
+                  >
+                    <p className="text-muted-foreground text-xs">Country</p>
+                    {uniqueCountries.map((member) => {
+                      const { id, country } = member;
+
+                      if (country === "") return;
 
                       return (
-                        <div key={`member-${memberIndex}`}>
-                          {phones.map((phone) => (
-                            <div
-                              key={phone}
-                              className="flex items-center gap-2"
-                            >
-                              <Checkbox
-                                checked={finalMember.phones.includes(phone)}
-                                onCheckedChange={(value) => {
-                                  setFinalMember({
-                                    ...finalMember,
-                                    phones: value
-                                      ? [...finalMember.phones, phone]
-                                      : finalMember.phones.filter(
-                                          (p) => p !== phone,
-                                        ),
-                                  });
-                                }}
-                              />
-                              <p>{phone}</p>
-                            </div>
-                          ))}
+                        <div
+                          key={`${id}-${country}`}
+                          className="flex items-center gap-2 overflow-hidden"
+                        >
+                          <RadioGroupItem value={country} />
+                          <CountryBadge country={country} />
                         </div>
                       );
                     })}
-                  </div>
+                  </RadioGroup>
+                );
+              }
+              case "language": {
+                const { language } = finalMember;
+
+                const hasLanguage = members.some(
+                  (member) => member.language !== "",
+                );
+
+                if (!hasLanguage) return;
+
+                const uniqueLanguages = getUniqueValues({
+                  items: members,
+                  field: "language",
+                });
+
+                return (
+                  <RadioGroup
+                    key={key}
+                    value={language}
+                    onValueChange={(value) =>
+                      setFinalMember({ ...finalMember, language: value })
+                    }
+                  >
+                    <p className="text-muted-foreground text-xs">Language</p>
+                    {uniqueLanguages.map((member) => {
+                      const { id, language } = member;
+
+                      if (language === "") return;
+
+                      return (
+                        <div
+                          key={`${id}-${language}`}
+                          className="flex items-center gap-2 overflow-hidden"
+                        >
+                          <RadioGroupItem value={language} />
+                          <LanguageBadge language={language} />
+                        </div>
+                      );
+                    })}
+                  </RadioGroup>
                 );
               }
             }

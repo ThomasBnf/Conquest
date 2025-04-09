@@ -55,7 +55,10 @@ export const EditableDate = ({ defaultValue, onUpdate }: Props) => {
           </Button>
         )}
       </PopoverTrigger>
-      <PopoverContent align="end" className="w-auto p-0">
+      <PopoverContent
+        align="start"
+        className="w-[var(--radix-popover-width)] p-0"
+      >
         <div className="flex gap-2 px-3 pt-3">
           <Select
             value={date ? format(date, "MMMM") : undefined}

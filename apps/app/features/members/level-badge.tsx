@@ -13,7 +13,7 @@ export const LevelBadge = ({ member, isBadge = true }: Props) => {
   const { data, isLoading } = trpc.levels.list.useQuery();
   const level = data?.find((level) => level.id === member?.level_id);
 
-  if (isLoading) return <Skeleton className="h-[26px] w-28" />;
+  if (isLoading) return <Skeleton className="h-6 w-28" />;
 
   const LevelInfo = (
     <div className="flex items-center">

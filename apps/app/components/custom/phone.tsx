@@ -1,60 +1,57 @@
-import { PhoneInput } from "@/components/custom/phone-input";
-import { Button } from "@conquest/ui/button";
-import { X } from "lucide-react";
-import { useState } from "react";
+import { Member } from "@conquest/zod/schemas/member.schema";
+import { KeyboardEvent, useState } from "react";
+import { toast } from "sonner";
+import { PhoneInput } from "./phone-input";
 
 type Props = {
-  phone: { id: string; content: string };
-  setOpen: (isOpen: boolean) => void;
-  onChangePhone: ({ id, phone }: { id: string; phone: string }) => void;
-  onDeletePhone: (phone: string) => void;
+  member: Member;
+  onUpdate: (field: keyof Member, value: string | string[]) => void;
+  onCancel: () => void;
 };
 
-export const Phone = ({
-  phone,
-  setOpen,
-  onChangePhone,
-  onDeletePhone,
-}: Props) => {
-  const [value, setValue] = useState(phone.content);
+export const Phone = ({ member, onUpdate, onCancel }: Props) => {
+  const [phone, setPhone] = useState("");
+
+  const onConfirm = () => {
+    if (!phone || !phone.trim()) return;
+
+    const formattedPhone = phone.trim();
+
+    if (member.phones.includes(formattedPhone)) {
+      return toast.error("This phone number already exists");
+    }
+
+    const updatedPhones = [...member.phones, formattedPhone];
+    onUpdate("phones", updatedPhones);
+
+    setPhone("");
+  };
+
+  const onBlur = () => {
+    onCancel();
+    onConfirm();
+  };
+
+  const onKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "Enter") {
+      onCancel();
+      onConfirm();
+    }
+
+    if (event.key === "Escape") {
+      onCancel();
+    }
+  };
 
   return (
-    <div className="group flex h-8 items-center justify-between gap-1">
-      {phone.content ? (
-        <p className="truncate pl-1">{phone.content}</p>
-      ) : (
-        <PhoneInput
-          autoFocus
-          defaultCountry="FR"
-          className="h-8 w-full px-0"
-          value={value}
-          onChange={(value) => setValue(value)}
-          onKeyDown={(event) => {
-            if (event.key === "Enter") {
-              setOpen(false);
-              setTimeout(() => {
-                if (value === "") {
-                  onDeletePhone(phone.id);
-                } else {
-                  onChangePhone({ id: phone.id, phone: value });
-                }
-              }, 100);
-            }
-            if (event.key === "Escape") {
-              setOpen(false);
-              onDeletePhone(phone.id);
-            }
-          }}
-        />
-      )}
-      <Button
-        variant="outline"
-        size="icon_sm"
-        className="mr-1 shrink-0"
-        onClick={() => onDeletePhone(phone.id)}
-      >
-        <X size={16} />
-      </Button>
-    </div>
+    <PhoneInput
+      autoFocus
+      placeholder="Add phone"
+      defaultCountry="FR"
+      value={phone}
+      onChange={(event) => setPhone(event)}
+      onBlur={onBlur}
+      onKeyDown={onKeyDown}
+    />
   );
 };

@@ -3,7 +3,7 @@ import * as React from "react";
 import { cn } from "../utils/cn";
 
 const inputVariants = cva(
-  "flex h-10 w-full bg-background p-2 text-sm focus:outline-none file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-sm placeholder:text-muted-foreground focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50",
+  "flex w-full bg-background text-sm focus:outline-none file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-sm placeholder:text-muted-foreground focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50",
   {
     variants: {
       variant: {
@@ -12,8 +12,8 @@ const inputVariants = cva(
         transparent: "bg-transparent",
       },
       h: {
-        default: "h-10",
-        sm: "h-9",
+        default: "h-10 px-3",
+        sm: "h-8 px-2",
       },
     },
     defaultVariants: {

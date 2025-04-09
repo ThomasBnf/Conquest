@@ -1,3 +1,4 @@
+import { checkDuplicates } from "@conquest/trigger/tasks/checkDuplicates";
 import { type Member, MemberSchema } from "@conquest/zod/schemas/member.schema";
 import { v4 as uuid } from "uuid";
 import { client } from "../client";
@@ -38,6 +39,7 @@ export const createMember = async (props: Props) => {
         ...props,
         id,
         primary_email: formattedEmail,
+        emails: [formattedEmail],
         phones: formattedPhones,
         first_activity: null,
         last_activity: null,
@@ -54,6 +56,8 @@ export const createMember = async (props: Props) => {
       WHERE id = '${id}'
     `,
   });
+
+  checkDuplicates.trigger({ workspace_id });
 
   const { data } = await result.json();
   return MemberSchema.parse(data[0]);

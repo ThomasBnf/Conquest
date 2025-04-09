@@ -21,7 +21,7 @@ export const LivestormSection = ({ profile }: Props) => {
           </div>
           <MenuProfile profile={profile} />
         </div>
-        <FieldCard icon="User" label="Id">
+        <FieldCard label="Id">
           <EditableLink
             placeholder="No livestorm profile"
             defaultValue={external_id}

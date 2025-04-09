@@ -1,6 +1,7 @@
 import { listActivities } from "../activities/listActivities";
+import { getLevel } from "../helpers/getLevel";
 import { getPulseScore } from "../helpers/getPulseScore";
-import { getLevel } from "../levels/getLevel";
+import { listLevels } from "../levels/listLevels";
 import { getMember } from "./getMember";
 import { updateMember } from "./updateMember";
 
@@ -14,6 +15,7 @@ export const getPulseAndLevel = async ({ memberId }: Props) => {
   if (!member) return;
 
   const { id, workspace_id } = member;
+  const levels = await listLevels({ workspace_id });
 
   const activities = await listActivities({
     period: 90,
@@ -21,12 +23,12 @@ export const getPulseAndLevel = async ({ memberId }: Props) => {
     workspace_id,
   });
 
-  const pulseScore = getPulseScore({ activities });
-  const level = await getLevel({ pulse: pulseScore, workspace_id });
+  const pulse = getPulseScore({ activities });
+  const level = getLevel({ levels, pulse });
 
   await updateMember({
     ...member,
-    pulse: pulseScore,
+    pulse,
     level_id: level?.id ?? null,
     last_activity: activities?.at(-1)?.created_at ?? null,
   });

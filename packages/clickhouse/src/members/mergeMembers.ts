@@ -1,35 +1,33 @@
+import { prisma } from "@conquest/db/prisma";
 import { getMemberMetrics } from "@conquest/trigger/tasks/getMemberMetrics";
+import { Duplicate } from "@conquest/zod/schemas/duplicate.schema";
 import type { Member } from "@conquest/zod/schemas/member.schema";
 import { MemberSchema } from "@conquest/zod/schemas/member.schema";
 import { ProfileSchema } from "@conquest/zod/schemas/profile.schema";
+import { getOldestMember } from "../../../../apps/app/features/merge/helpers/getOldestMember";
 import { client } from "../client";
 import { listLevels } from "../levels/listLevels";
 import { updateMember } from "./updateMember";
 
 type Props = {
-  members: Member[];
-  finalMember: Member;
+  duplicate?: Duplicate;
+  members: Member[] | undefined;
+  finalMember: Member | null;
 };
 
-export const mergeMembers = async ({ members, finalMember }: Props) => {
+export const mergeMembers = async ({
+  duplicate,
+  members,
+  finalMember,
+}: Props) => {
+  if (!members || !finalMember) return;
+
   const { workspace_id } = finalMember;
   const allMembers = [...members, finalMember];
 
-  const oldestMember =
-    allMembers.reduce(
-      (oldest, current) => {
-        if (!oldest) return current;
+  const oldestMember = getOldestMember({ members: allMembers, finalMember });
 
-        if (current.first_activity && oldest.first_activity) {
-          return current.first_activity < oldest.first_activity
-            ? current
-            : oldest;
-        }
-
-        return current.created_at < oldest.created_at ? current : oldest;
-      },
-      null as Member | null,
-    ) ?? finalMember;
+  if (!oldestMember) return;
 
   const mergedEntries = Object.entries(finalMember).map(([key, value]) => {
     if (key === "id") {
@@ -146,6 +144,15 @@ export const mergeMembers = async ({ members, finalMember }: Props) => {
     { levels, member: mergeMember },
     { metadata: { workspace_id: workspace_id } },
   );
+
+  if (duplicate) {
+    await prisma.duplicate.update({
+      where: { id: duplicate.id },
+      data: {
+        state: "APPROVED",
+      },
+    });
+  }
 
   return mergeMember;
 };

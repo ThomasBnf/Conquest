@@ -1,5 +1,6 @@
 import { trpc } from "@/server/client";
-import { Button } from "@conquest/ui/button";
+import { Button, buttonVariants } from "@conquest/ui/button";
+import { cn } from "@conquest/ui/cn";
 import {
   Command,
   CommandEmpty,
@@ -8,15 +9,22 @@ import {
   CommandItem,
   CommandList,
 } from "@conquest/ui/command";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@conquest/ui/dropdown-menu";
 import { Popover, PopoverContent, PopoverTrigger } from "@conquest/ui/popover";
+import { Separator } from "@conquest/ui/separator";
 import { Skeleton } from "@conquest/ui/skeleton";
 import type { Company } from "@conquest/zod/schemas/company.schema";
 import type { Member } from "@conquest/zod/schemas/member.schema";
 import { skipToken } from "@tanstack/react-query";
 import { CommandLoading } from "cmdk";
-import { Plus, X } from "lucide-react";
+import { Building2, Ellipsis, Plus } from "lucide-react";
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useInView } from "react-intersection-observer";
 import { useDebounce } from "use-debounce";
@@ -32,9 +40,9 @@ export const EditableCompany = ({ member, onUpdate }: Props) => {
   const [query, setQuery] = useState("");
   const [search, setSearch] = useDebounce(query, 500);
   const [open, setOpen] = useState(false);
+  const [openMenu, setOpenMenu] = useState(false);
   const { ref, inView } = useInView();
 
-  const router = useRouter();
   const utils = trpc.useUtils();
 
   const { data: company } = trpc.companies.get.useQuery(
@@ -44,7 +52,7 @@ export const EditableCompany = ({ member, onUpdate }: Props) => {
   const { data, isLoading, fetchNextPage } =
     trpc.companies.listInfinite.useInfiniteQuery(
       { search },
-      { getNextPageParam: (_, allPages) => allPages.length * 10 },
+      { getNextPageParam: (_, allPages) => allPages.length * 25 },
     );
 
   const { mutateAsync: createCompany } = trpc.companies.post.useMutation({
@@ -81,35 +89,54 @@ export const EditableCompany = ({ member, onUpdate }: Props) => {
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild className="w-full">
-        <Button
-          variant="ghost"
-          className="justify-start text-muted-foreground"
-          onClick={() => setOpen(true)}
-        >
-          {company?.name ? (
-            <div
-              className="flex h-6 items-center gap-2 rounded-md border border-main-200 bg-background px-1.5 text-main-400"
-              onClick={(e) => {
-                e.stopPropagation();
-                router.push(`/${slug}/companies/${member?.company_id}`);
-              }}
+      <PopoverTrigger asChild className="group w-full">
+        {company?.name ? (
+          <div
+            className={cn(
+              buttonVariants({ variant: "ghost" }),
+              "flex cursor-pointer items-center justify-between gap-2 px-2",
+            )}
+          >
+            <Link
+              href={`/${slug}/companies/${company.id}`}
+              className="group/company flex h-8 items-center gap-2 truncate"
+              prefetch
             >
-              {company.name}
-              {open && (
-                <X
-                  size={16}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onUpdateMemberCompany(null);
-                  }}
-                />
-              )}
-            </div>
-          ) : (
-            " Set company"
-          )}
-        </Button>
+              <Building2 size={16} className="shrink-0 text-muted-foreground" />
+              <p className="truncate group-hover/company:underline">
+                {company.name}
+              </p>
+            </Link>
+            <DropdownMenu open={openMenu} onOpenChange={setOpenMenu}>
+              <DropdownMenuTrigger
+                asChild
+                className={cn(
+                  "shrink-0 transition-opacity",
+                  openMenu
+                    ? "opacity-100"
+                    : "opacity-0 group-hover:opacity-100",
+                )}
+              >
+                <Button variant="outline" size="icon_sm">
+                  <Ellipsis size={16} />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => onUpdateMemberCompany(null)}>
+                  Remove
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        ) : (
+          <Button
+            variant="ghost"
+            className="justify-start text-muted-foreground"
+          >
+            <Building2 size={16} />
+            Set company
+          </Button>
+        )}
       </PopoverTrigger>
       <PopoverContent
         align="start"
@@ -145,23 +172,26 @@ export const EditableCompany = ({ member, onUpdate }: Props) => {
               <div ref={ref} />
             </CommandGroup>
             {search && (
-              <CommandGroup>
-                <CommandItem asChild>
-                  <Button
-                    variant="ghost"
-                    className="w-full text-left"
-                    onClick={onCreateCompany}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter" && open) {
-                        onCreateCompany();
-                      }
-                    }}
-                  >
-                    <Plus size={16} className="shrink-0" />
-                    <span className="truncate">Create "{search}"</span>
-                  </Button>
-                </CommandItem>
-              </CommandGroup>
+              <>
+                <Separator />
+                <CommandGroup>
+                  <CommandItem asChild>
+                    <Button
+                      variant="ghost"
+                      className="w-full text-left"
+                      onClick={onCreateCompany}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" && open) {
+                          onCreateCompany();
+                        }
+                      }}
+                    >
+                      <Plus size={16} className="shrink-0" />
+                      <span className="truncate">Create "{search}"</span>
+                    </Button>
+                  </CommandItem>
+                </CommandGroup>
+              </>
             )}
           </CommandList>
         </Command>

@@ -6,7 +6,7 @@ export const MemberSchema = z.object({
   first_name: z.string(),
   last_name: z.string(),
   primary_email: z.string(),
-  secondary_emails: z.array(z.string()),
+  emails: z.array(z.string()),
   phones: z.array(z.string()),
   job_title: z.string(),
   avatar_url: z.string(),

@@ -40,6 +40,7 @@ export const createListMembers = async ({ web, workspace_id }: Props) => {
           first_name,
           last_name,
           primary_email: email,
+          emails: [email],
           phones: phone ? [phone] : [],
           avatar_url: image_1024,
           job_title: title,

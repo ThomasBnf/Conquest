@@ -68,6 +68,7 @@ export const createManyPeoples = async ({
         first_name,
         last_name,
         primary_email: email,
+        emails: [email],
         avatar_url: avatar_link ?? "",
         country: ip_country_code ?? "",
         language,

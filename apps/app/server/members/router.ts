@@ -9,15 +9,16 @@ import { listCountries } from "./listCountries";
 import { listFilteredMembers } from "./listFilteredMembers";
 import { listInfiniteMembers } from "./listInfiniteMembers";
 import { listLanguages } from "./listLanguages";
+import { listMembersById } from "./listMembersById";
 import { listSourcesProfile } from "./listSourceProfile";
 import { listSourcesMember } from "./listSourcesMember";
-import { mergeMembers } from "./mergeMembers";
 import { updateManyMembers } from "./updateManyMembers";
 import { updateMember } from "./updateMember";
 
 export const membersRouter = router({
   list: listFilteredMembers,
   listInfinite: listInfiniteMembers,
+  listById: listMembersById,
   count: countMembers,
   get: getMember,
   post: createMember,
@@ -26,7 +27,6 @@ export const membersRouter = router({
   deleteManyMembers,
   delete: deleteMember,
   export: exportMembers,
-  merge: mergeMembers,
   listLanguages,
   listCountries,
   listSourcesMember,

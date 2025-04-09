@@ -28,12 +28,6 @@ type Props = {
 };
 
 export const MemberSidebar = ({ member, profiles }: Props) => {
-  const utils = trpc.useUtils();
-
-  const { mutateAsync: updateMember } = trpc.members.update.useMutation({
-    onSuccess: () => utils.members.get.invalidate(),
-  });
-
   const {
     id,
     first_name,
@@ -48,6 +42,26 @@ export const MemberSidebar = ({ member, profiles }: Props) => {
     last_activity,
     created_at,
   } = member ?? {};
+  const utils = trpc.useUtils();
+
+  const { mutateAsync: updateMember } = trpc.members.update.useMutation({
+    onMutate: (updatedMember) => {
+      const { id } = updatedMember;
+
+      utils.members.get.cancel({ id });
+      const previousMember = utils.members.get.getData({ id });
+
+      utils.members.get.setData({ id }, updatedMember);
+
+      return { previousMember };
+    },
+    onError: (_, __, context) => {
+      utils.members.get.setData({ id }, context?.previousMember);
+    },
+    onSettled: () => {
+      utils.members.get.invalidate({ id });
+    },
+  });
 
   const onUpdateMember = async (
     field: keyof Member,
@@ -58,7 +72,7 @@ export const MemberSidebar = ({ member, profiles }: Props) => {
   };
 
   return (
-    <div className="flex h-full w-full max-w-sm shrink-0 flex-col overflow-hidden bg-sidebar">
+    <div className="flex h-full w-full max-w-96 shrink-0 flex-col overflow-hidden bg-sidebar">
       <ScrollArea>
         <div className="space-y-4 p-4">
           <div className="flex items-center gap-2">
@@ -94,41 +108,47 @@ export const MemberSidebar = ({ member, profiles }: Props) => {
         </div>
         <Separator />
         <ProfilesParser profiles={profiles} />
-        <div className="space-y-2 p-4">
-          <FieldCard icon="User" label="First name">
+        <div className="space-y-4 p-4">
+          <FieldCard label="First name">
             <EditableInput
               defaultValue={first_name}
               placeholder="Set first name"
               onUpdate={(value) => onUpdateMember("first_name", value)}
             />
           </FieldCard>
-          <FieldCard icon="User" label="Last name">
+          <FieldCard label="Last name">
             <EditableInput
               defaultValue={last_name}
               placeholder="Set last name"
               onUpdate={(value) => onUpdateMember("last_name", value)}
             />
           </FieldCard>
-          <FieldCard icon="Building2" label="Company">
+          <FieldCard label="Company">
             <EditableCompany
               member={member}
               onUpdate={(value) => onUpdateMember("company_id", value)}
             />
           </FieldCard>
-          <FieldCard icon="Briefcase" label="Job title">
+          <FieldCard label="Job title">
             <EditableInput
               defaultValue={job_title}
               placeholder="Set job title"
               onUpdate={(value) => onUpdateMember("job_title", value)}
             />
           </FieldCard>
-          <FieldCard icon="Mail" label="Emails" className="items-start">
-            <EditableEmails member={member} />
+          <FieldCard label="Emails" className="items-start">
+            <EditableEmails
+              member={member}
+              onUpdate={(field, value) => onUpdateMember(field, value)}
+            />
           </FieldCard>
-          <FieldCard icon="Phone" label="Phones">
-            <EditablePhones member={member} />
+          <FieldCard label="Phones">
+            <EditablePhones
+              member={member}
+              onUpdate={(field, value) => onUpdateMember(field, value)}
+            />
           </FieldCard>
-          <FieldCard icon="Linkedin" label="LinkedIn">
+          <FieldCard label="LinkedIn">
             <EditableLink
               defaultValue={linkedin_url}
               placeholder="Set linkedIn URL"
@@ -138,44 +158,42 @@ export const MemberSidebar = ({ member, profiles }: Props) => {
           </FieldCard>
         </div>
         <Separator />
-        <div className="space-y-2 p-4">
-          <FieldCard icon="Languages" label="Language">
+        <div className="space-y-4 p-4">
+          <FieldCard label="Language">
             <EditableLanguage
               language={language}
               onUpdate={(value) => onUpdateMember("language", value)}
             />
           </FieldCard>
-          <FieldCard icon="Flag" label="Country">
+          <FieldCard label="Country">
             <EditableCountry
               country={country}
               onUpdate={(value) => onUpdateMember("country", value)}
             />
           </FieldCard>
-          <FieldCard icon="Code" label="Source" className="items-center">
-            <SourceBadge source={source} className="ml-1" />
+          <FieldCard label="Source">
+            <SourceBadge source={source} className="ml-2" />
           </FieldCard>
         </div>
         <Separator />
-        <div className="space-y-2 p-4">
+        <div className="space-y-4 p-4">
           {first_activity && (
-            <FieldCard icon="Calendar" label="First activity">
-              <p className="h-8 place-content-center pl-0.5">
-                <span className="px-[7px]">
-                  {format(first_activity, "PPp")}
-                </span>
+            <FieldCard label="First activity">
+              <p className="h-8 place-content-center pl-2">
+                {format(first_activity, "PPp")}
               </p>
             </FieldCard>
           )}
           {last_activity && (
-            <FieldCard icon="CalendarSearch" label="Last activity">
-              <p className="h-8 place-content-center pl-0.5">
-                <span className="px-[7px]">{format(last_activity, "PPp")}</span>
+            <FieldCard label="Last activity">
+              <p className="h-8 place-content-center pl-2">
+                {format(last_activity, "PPp")}
               </p>
             </FieldCard>
           )}
-          <FieldCard icon="CalendarPlus" label="Created at">
-            <p className="h-8 place-content-center pl-0.5">
-              <span className="px-[7px]">{format(created_at, "PPp")}</span>
+          <FieldCard label="Created at">
+            <p className="h-8 place-content-center pl-2">
+              {format(created_at, "PPp")}
             </p>
           </FieldCard>
         </div>

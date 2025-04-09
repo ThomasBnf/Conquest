@@ -14,8 +14,9 @@ import { ScrollArea, ScrollBar } from "@conquest/ui/scroll-area";
 import { Member } from "@conquest/zod/schemas/member.schema";
 import { skipToken } from "@tanstack/react-query";
 import { Loader2, Merge } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FinalMemberCard } from "./final-member-card";
+import { getFinalMember } from "./helpers/getFinalMember";
 import { MemberCard } from "./member-card";
 
 type Props = {
@@ -28,22 +29,22 @@ export const MergeDialog = ({ members, onReset }: Props) => {
   const [loading, setLoading] = useState(false);
   const utils = trpc.useUtils();
 
-  const [finalMember, setFinalMember] = useState<Member>({
-    ...members[0]!,
-    secondary_emails: members.flatMap((member) => member.secondary_emails),
-    phones: members.flatMap((member) => member.phones),
-  });
+  const [finalMember, setFinalMember] = useState<Member | null>(null);
 
   const { data: profiles } = trpc.profiles.members.useQuery(
     members.length > 0 ? { members } : skipToken,
   );
 
-  const { mutate: mergeMembers } = trpc.members.merge.useMutation({
-    onSuccess: ({ id }) => {
-      onCancel();
-      utils.profiles.list.invalidate({ member_id: id });
-      utils.members.invalidate();
-      setLoading(false);
+  const { mutate: mergeMembers } = trpc.duplicate.merge.useMutation({
+    onSuccess: (data) => {
+      const { id } = data ?? {};
+
+      if (id) {
+        onCancel();
+        utils.profiles.list.invalidate({ member_id: id });
+        utils.members.invalidate();
+        setLoading(false);
+      }
     },
   });
 
@@ -56,6 +57,10 @@ export const MergeDialog = ({ members, onReset }: Props) => {
     setOpen(false);
     onReset();
   };
+
+  useEffect(() => {
+    setFinalMember(getFinalMember({ members }));
+  }, [members]);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -72,27 +77,29 @@ export const MergeDialog = ({ members, onReset }: Props) => {
             You're about to merge {members.length} members.
           </DialogDescription>
         </DialogHeader>
-        <DialogBody className="flex-row overflow-hidden">
-          <ScrollArea className="flex flex-1">
-            <div className="flex items-start gap-4 overflow-hidden py-4">
-              {members.map((member) => (
-                <MemberCard
-                  key={member.id}
-                  member={member}
-                  profiles={profiles?.filter(
-                    (profile) => profile.member_id === member.id,
-                  )}
-                />
-              ))}
-            </div>
-            <ScrollBar orientation="horizontal" />
-          </ScrollArea>
-          <FinalMemberCard
-            members={members}
-            allProfiles={profiles}
-            finalMember={finalMember}
-            setFinalMember={setFinalMember}
-          />
+        <DialogBody>
+          <div className="flex items-center justify-between py-4 pr-4">
+            <ScrollArea className="h-fit">
+              <div className="flex flex-1 gap-4 p-4">
+                {members.map((member) => (
+                  <MemberCard
+                    key={member.id}
+                    member={member}
+                    profiles={profiles?.filter(
+                      (profile) => profile.member_id === member.id,
+                    )}
+                  />
+                ))}
+              </div>
+              <ScrollBar orientation="horizontal" />
+            </ScrollArea>
+            <FinalMemberCard
+              members={members}
+              allProfiles={profiles}
+              finalMember={finalMember}
+              setFinalMember={setFinalMember}
+            />
+          </div>
         </DialogBody>
         <DialogFooter>
           <Button variant="outline" onClick={onCancel}>

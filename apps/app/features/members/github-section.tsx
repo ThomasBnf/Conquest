@@ -10,7 +10,7 @@ type Props = {
 };
 
 export const GithubSection = ({ profile }: Props) => {
-  const { login, ...fields } = profile.attributes;
+  const { login, source, ...fields } = profile.attributes;
 
   return (
     <>
@@ -21,7 +21,7 @@ export const GithubSection = ({ profile }: Props) => {
           </div>
           <MenuProfile profile={profile} />
         </div>
-        <FieldCard icon="User" label="Login">
+        <FieldCard label="Login">
           <EditableLink
             placeholder="No github profile"
             defaultValue={login}
@@ -34,7 +34,7 @@ export const GithubSection = ({ profile }: Props) => {
           if (!value) return null;
 
           return (
-            <FieldCard key={key} icon="User" label={formattedKey}>
+            <FieldCard key={key} label={formattedKey}>
               <p className="h-full place-content-center truncate px-2">
                 {value}
               </p>

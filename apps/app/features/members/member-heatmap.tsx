@@ -10,11 +10,9 @@ type Props = {
 };
 
 export const MemberHeatmap = ({ memberId }: Props) => {
-  const { data, isLoading, failureReason } = trpc.dashboard.heatmap.useQuery({
+  const { data, isLoading } = trpc.dashboard.heatmap.useQuery({
     member_id: memberId,
   });
-
-  console.log(failureReason);
 
   const totalActivities = data?.reduce(
     (acc, curr) => acc + Number(curr.count),

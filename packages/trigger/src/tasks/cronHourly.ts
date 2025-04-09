@@ -7,9 +7,9 @@ export const cronHourly = schedules.task({
   id: "cron-hourly",
   cron: "0 * * * *",
   run: async (_, { ctx }) => {
-    await client.query({ query: "OPTIMIZE TABLE member FINAL;" });
-
     if (ctx.environment.type === "DEVELOPMENT") return;
+
+    await client.query({ query: "OPTIMIZE TABLE member FINAL;" });
 
     const now = new Date();
     const start = startOfHour(subHours(now, 1));
@@ -20,10 +20,10 @@ export const cronHourly = schedules.task({
 
     const result = await client.query({
       query: `
-        SELECT DISTINCT member_id
-        FROM activity
-        WHERE created_at >= '${startFormatted}'
-        AND created_at <= '${endFormatted}'
+      SELECT DISTINCT member_id
+      FROM activity
+      WHERE created_at >= '${startFormatted}'
+      AND created_at <= '${endFormatted}'
       `,
     });
 
@@ -34,5 +34,7 @@ export const cronHourly = schedules.task({
       logger.info("member", { member });
       await getPulseAndLevel({ memberId: member.member_id });
     }
+
+    // await checkDuplicates.trigger({});
   },
 });

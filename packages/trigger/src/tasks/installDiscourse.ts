@@ -7,8 +7,10 @@ import { schemaTask } from "@trigger.dev/sdk/v3";
 import { z } from "zod";
 import { createManyMembers } from "../discourse/createManyMembers";
 import { createManyTags } from "../discourse/createManyTags";
+import { checkDuplicates } from "./checkDuplicates";
 import { getAllMembersMetrics } from "./getAllMembersMetrics";
 import { integrationSuccessEmail } from "./integrationSuccessEmail";
+
 export const installDiscourse = schemaTask({
   id: "install-discourse",
   machine: "small-2x",
@@ -42,6 +44,7 @@ export const installDiscourse = schemaTask({
       { metadata: { workspace_id } },
     );
 
+    await checkDuplicates.triggerAndWait({ workspace_id });
     await integrationSuccessEmail.trigger({ integration: discourse });
   },
   onSuccess: async ({ discourse }) => {

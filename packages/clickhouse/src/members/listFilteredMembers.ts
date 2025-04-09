@@ -43,7 +43,7 @@ export const listFilteredMembers = async ({
           m.first_name,
           m.last_name, 
           m.primary_email,
-          m.secondary_emails,
+          m.emails,
           m.phones,
           m.job_title,
           m.avatar_url,

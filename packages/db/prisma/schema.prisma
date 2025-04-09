@@ -8,6 +8,24 @@ datasource db {
     directUrl = env("DIRECT_URL")
 }
 
+enum PLAN {
+    EXPLORER
+    ACTIVE
+    CONTRIBUTOR
+    AMBASSADOR
+}
+
+enum REASON {
+    EMAIL
+    NAME
+    USERNAME
+}
+
+enum ROLE {
+    STAFF
+    ADMIN
+}
+
 enum SOURCE {
     Api
     Discourse
@@ -27,16 +45,10 @@ enum STATUS {
     DISCONNECTED
 }
 
-enum PLAN {
-    EXPLORER
-    ACTIVE
-    CONTRIBUTOR
-    AMBASSADOR
-}
-
-enum ROLE {
-    STAFF
-    ADMIN
+enum STATE {
+    PENDING
+    APPROVED
+    REJECTED
 }
 
 model Account {
@@ -70,6 +82,20 @@ model api_key {
     created_at DateTime @default(now())
 
     @@index([id])
+    @@index([workspace_id])
+}
+
+model duplicate {
+    id           String    @id @default(uuid())
+    member_ids   String[]
+    reason       REASON
+    state        STATE
+    workspace_id String
+    workspace    workspace @relation(fields: [workspace_id], references: [id], onDelete: Cascade)
+
+    created_at DateTime @default(now())
+    updated_at DateTime @updatedAt
+
     @@index([workspace_id])
 }
 
@@ -247,16 +273,17 @@ model workflow {
 }
 
 model workspace {
-    id                 String    @id @default(uuid())
-    name               String
-    slug               String    @unique
-    source             String?
-    company_size       String?
-    plan               PLAN?
-    stripe_customer_id String?
-    price_id           String?
-    trial_end          DateTime?
-    is_past_due        DateTime?
+    id                         String    @id @default(uuid())
+    name                       String
+    slug                       String    @unique
+    source                     String?
+    company_size               String?
+    plan                       PLAN?
+    stripe_customer_id         String?
+    price_id                   String?
+    trial_end                  DateTime?
+    is_past_due                DateTime?
+    last_duplicates_checked_at DateTime?
 
     api_keys     api_key[]
     events       event[]
@@ -268,8 +295,9 @@ model workspace {
     webhooks     webhook[]
     workflows    workflow[]
 
-    created_at DateTime @default(now())
-    updated_at DateTime @updatedAt
+    created_at DateTime    @default(now())
+    updated_at DateTime    @updatedAt
+    duplicate  duplicate[]
 
     @@index([id])
 }

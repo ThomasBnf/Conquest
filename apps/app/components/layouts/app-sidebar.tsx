@@ -102,6 +102,7 @@ export const AppSidebar = ({ workspace }: Props) => {
                 </SidebarMenuButton>
               </SidebarMenuItem>
             ))}
+            {/* <DuplicateMenu /> */}
           </SidebarMenu>
         </SidebarGroup>
         {state === "expanded" && <SidebarLists />}

@@ -8,6 +8,7 @@
     "../trigger/src/queries/createManyPullRequests.ts",
     "../trigger/src/queries/createWebhook.ts",
     "../trigger/src/queries/listAndDeleteWebhooks.ts",
-    "../trigger/src/queries/listStargazers.ts"
+    "../trigger/src/queries/listStargazers.ts",
+    "../../apps/app/features/merge/helpers/getFinalMember.ts"
   ]
 }

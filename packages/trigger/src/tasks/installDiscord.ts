@@ -9,6 +9,7 @@ import { createManyMembers } from "../discord/createManyMembers";
 import { createManyTags } from "../discord/createManyTags";
 import { createManyThreads } from "../discord/createManyThreads";
 import { listChannelMessages } from "../discord/listChannelMessages";
+import { checkDuplicates } from "./checkDuplicates";
 import { getAllMembersMetrics } from "./getAllMembersMetrics";
 import { integrationSuccessEmail } from "./integrationSuccessEmail";
 
@@ -48,6 +49,7 @@ export const installDiscord = schemaTask({
       { metadata: { workspace_id } },
     );
 
+    await checkDuplicates.triggerAndWait({ workspace_id });
     await integrationSuccessEmail.trigger({ integration: discord });
   },
   onSuccess: async ({ discord }) => {

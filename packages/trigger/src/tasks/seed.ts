@@ -72,6 +72,7 @@ export const seed = schemaTask({
               first_name,
               last_name,
               primary_email: primary_email.toLowerCase(),
+              emails: [primary_email.toLowerCase()],
               phones: [faker.phone.number({ style: "international" })],
               job_title: faker.person.jobTitle(),
               avatar_url: faker.image.avatar(),
