@@ -48,7 +48,7 @@ export const FinalMemberCard = ({
     <div
       className={cn(
         "flex h-full min-w-80 shrink-0 flex-col overflow-hidden rounded-md border",
-        isMaximized ? "h-[50vh]" : "h-fit max-h-[80vh]",
+        isMaximized ? "h-fit max-h-[50vh]" : "h-fit max-h-[80vh]",
       )}
     >
       <div className="flex items-center justify-between bg-sidebar p-2">

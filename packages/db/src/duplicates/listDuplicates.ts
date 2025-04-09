@@ -8,7 +8,7 @@ type Props = {
 
 export const listDuplicates = async ({ cursor, workspace_id }: Props) => {
   const pageSize = 10;
-  const skip = cursor ? cursor * pageSize : 0;
+  const skip = cursor ? cursor : 0;
 
   console.log("skip", skip);
   console.log("pageSize", pageSize);
