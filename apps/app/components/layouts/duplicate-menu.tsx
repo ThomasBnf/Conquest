@@ -16,7 +16,8 @@ export const DuplicateMenu = () => {
 
   const { data: count, isLoading } = trpc.duplicate.count.useQuery();
 
-  if ((!isLoading || count === 0) && !isDuplicatePage) return;
+  if (isLoading) return;
+  if (count === 0 && !isDuplicatePage) return;
 
   return (
     <SidebarMenuItem>
