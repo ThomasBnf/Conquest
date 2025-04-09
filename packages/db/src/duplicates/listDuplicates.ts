@@ -25,7 +25,5 @@ export const listDuplicates = async ({ cursor, workspace_id }: Props) => {
     },
   });
 
-  console.log("duplicates", duplicates);
-
   return DuplicateSchema.array().parse(duplicates);
 };

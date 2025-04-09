@@ -10,16 +10,12 @@ import { useInView } from "react-intersection-observer";
 export default function Page() {
   const { ref, inView } = useInView();
 
-  const { data, fetchNextPage, failureReason } =
-    trpc.duplicate.list.useInfiniteQuery(
-      {},
-      { getNextPageParam: (_, allPages) => allPages.length * 10 },
-    );
-
-  console.log("failureReason", failureReason);
+  const { data, fetchNextPage } = trpc.duplicate.list.useInfiniteQuery(
+    {},
+    { getNextPageParam: (_, allPages) => allPages.length * 10 },
+  );
 
   const duplicates = data?.pages.flat();
-  console.log("duplicates", duplicates);
   const hasNextPage = data?.pages.at(-1)?.length === 10;
 
   useEffect(() => {
