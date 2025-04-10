@@ -239,15 +239,18 @@ const checkSignature = async (request: NextRequest, bodyRaw: string) => {
     const { name } = repository;
 
     const signature = request.headers.get("x-hub-signature-256");
+    console.log("signature", signature);
     if (!signature) return false;
 
     const secret = env.GITHUB_WEBHOOK_SECRET;
+    console.log("secret", secret);
 
     const expectedSignature = createHmac("sha256", secret)
       .update(Buffer.from(bodyRaw, "utf8"))
       .digest("hex");
 
-    console.log(expectedSignature);
+    console.log("expectedSignature", expectedSignature);
+
     if (signature !== `sha256=${expectedSignature}`) {
       return false;
     }
@@ -262,6 +265,8 @@ const checkSignature = async (request: NextRequest, bodyRaw: string) => {
         },
       },
     });
+
+    console.log("integration", integration);
 
     if (!integration) return false;
     return GithubIntegrationSchema.parse(integration);
