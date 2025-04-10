@@ -9,8 +9,6 @@ type Props = {
 export const listMembersProfiles = async ({ members }: Props) => {
   const ids = members.map((member) => `'${member.id}'`).join(", ");
 
-  console.log("ids", ids);
-
   const result = await client.query({
     query: `
         SELECT *
@@ -20,6 +18,5 @@ export const listMembersProfiles = async ({ members }: Props) => {
   });
 
   const { data } = await result.json();
-  console.log("data", data);
   return ProfileSchema.array().parse(data);
 };

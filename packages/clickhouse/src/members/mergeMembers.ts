@@ -4,8 +4,8 @@ import { Duplicate } from "@conquest/zod/schemas/duplicate.schema";
 import type { Member } from "@conquest/zod/schemas/member.schema";
 import { MemberSchema } from "@conquest/zod/schemas/member.schema";
 import { ProfileSchema } from "@conquest/zod/schemas/profile.schema";
-import { getOldestMember } from "../../../../apps/app/features/merge/helpers/getOldestMember";
 import { client } from "../client";
+import { getOldestMember } from "../helpers/getOldestMember";
 import { listLevels } from "../levels/listLevels";
 import { updateMember } from "./updateMember";
 
@@ -71,8 +71,6 @@ export const mergeMembers = async ({
   });
 
   const mergeMember = MemberSchema.parse(Object.fromEntries(mergedEntries));
-
-  console.log(mergeMember);
 
   const otherMembers = allMembers.filter(
     (member) => member.id !== mergeMember.id,
@@ -145,13 +143,31 @@ export const mergeMembers = async ({
     { metadata: { workspace_id: workspace_id } },
   );
 
+  const memberIds = members.map((m) => m.id);
+  console.log(memberIds);
+
   if (duplicate) {
     await prisma.duplicate.update({
       where: { id: duplicate.id },
-      data: {
-        state: "APPROVED",
+      data: { state: "APPROVED" },
+    });
+  } else {
+    const duplicates = await prisma.duplicate.findMany({
+      where: {
+        workspace_id,
       },
     });
+
+    const filteredDuplicates = duplicates.filter((duplicate) =>
+      duplicate.member_ids.some((id) => memberIds.includes(id)),
+    );
+
+    if (filteredDuplicates.length > 0) {
+      await prisma.duplicate.updateMany({
+        where: { id: { in: filteredDuplicates.map((d) => d.id) } },
+        data: { state: "APPROVED" },
+      });
+    }
   }
 
   return mergeMember;

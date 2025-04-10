@@ -4,6 +4,7 @@ import { trpc } from "@/server/client";
 import { ProfileIconParser } from "@/utils/profile-icon-parser";
 import { Avatar, AvatarFallback, AvatarImage } from "@conquest/ui/avatar";
 import { Button } from "@conquest/ui/button";
+import { Checkbox } from "@conquest/ui/checkbox";
 import { cn } from "@conquest/ui/cn";
 import {
   Dialog,
@@ -13,8 +14,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@conquest/ui/dialog";
-import type { Member } from "@conquest/zod/schemas/member.schema";
-import { Profile } from "@conquest/zod/schemas/profile.schema";
+import { Skeleton } from "@conquest/ui/skeleton";
+import type { MemberWithProfiles } from "@conquest/zod/schemas/member.schema";
 import { skipToken } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { ExternalLink } from "lucide-react";
@@ -24,16 +25,17 @@ import { LevelBadge } from "../members/level-badge";
 import { PulseBadge } from "../members/pulse-badge";
 
 type Props = {
-  member: Member | null;
-  profiles: Profile[] | undefined;
-  className?: string;
+  memberChecked: {
+    member: MemberWithProfiles;
+    checked: boolean;
+  };
+  onCheckChange: (id: string, checked: boolean) => void;
 };
 
-export const MemberCard = ({ member, profiles, className }: Props) => {
+export const MemberCard = ({ memberChecked, onCheckChange }: Props) => {
   const { data: session } = useSession();
   const { slug } = session?.user?.workspace ?? {};
-
-  if (!member) return null;
+  const { member, checked } = memberChecked;
 
   const {
     id,
@@ -49,11 +51,11 @@ export const MemberCard = ({ member, profiles, className }: Props) => {
     phones,
     created_at,
     first_activity,
+    profiles,
   } = member;
 
   const entries = [
     ["avatar_url", avatar_url],
-    ["full_name", `${first_name} ${last_name}`],
     ["emails", emails],
     ["company", company_id],
     ["job_title", job_title],
@@ -63,27 +65,33 @@ export const MemberCard = ({ member, profiles, className }: Props) => {
     ["language", language],
   ];
 
-  const { data: company } = trpc.companies.get.useQuery(
+  const { data: company, isLoading } = trpc.companies.get.useQuery(
     company_id ? { id: company_id } : skipToken,
   );
 
   return (
     <div
       className={cn(
-        "relative flex h-fit w-80 shrink-0 flex-col rounded-md border bg-background hover:bg-sidebar",
-        className,
+        "flex h-fit w-80 shrink-0 flex-col divide-y rounded-md border",
+        checked ? "bg-sidebar" : "bg-background",
       )}
     >
-      <Link
-        href={`/${slug}/members/${id}/analytics`}
-        className="absolute top-2 right-2"
-        prefetch
-        scroll
-      >
-        <Button variant="outline" size="icon">
-          <ExternalLink size={16} />
-        </Button>
-      </Link>
+      <div className="flex items-center justify-between py-2 pr-2 pl-4">
+        <div
+          className="flex cursor-pointer items-center gap-2 overflow-hidden"
+          onClick={() => onCheckChange(id, !checked)}
+        >
+          <Checkbox checked={checked} />
+          <p className="truncate font-medium">
+            {first_name} {last_name}
+          </p>
+        </div>
+        <Link href={`/${slug}/members/${id}/analytics`} prefetch>
+          <Button variant="outline" size="icon">
+            <ExternalLink size={16} />
+          </Button>
+        </Link>
+      </div>
       <div className="flex flex-1 flex-col gap-4 p-4">
         {entries.map(([key, value]) => {
           switch (key) {
@@ -139,15 +147,6 @@ export const MemberCard = ({ member, profiles, className }: Props) => {
                 </div>
               );
             }
-            case "full_name": {
-              if (value === "") return;
-              return (
-                <div key={`${key}-${id}`} className="space-y-1">
-                  <p className="text-muted-foreground text-xs">Full name</p>
-                  <p>{value}</p>
-                </div>
-              );
-            }
             case "emails": {
               const emails = value as string[];
               if (emails.length === 0) return;
@@ -165,7 +164,11 @@ export const MemberCard = ({ member, profiles, className }: Props) => {
                   <p className="text-muted-foreground text-xs capitalize">
                     Company
                   </p>
-                  <p>{company?.name}</p>
+                  {isLoading ? (
+                    <Skeleton className="h-5 w-24" />
+                  ) : (
+                    <p>{company?.name}</p>
+                  )}
                 </div>
               );
             }
@@ -220,7 +223,7 @@ export const MemberCard = ({ member, profiles, className }: Props) => {
         {profiles && profiles.length > 0 && (
           <div className="space-y-2">
             <p className="text-muted-foreground text-xs">Profiles</p>
-            <div className="space-y-1">
+            <div className="flex flex-col gap-1">
               {profiles
                 ?.sort((a, b) =>
                   a.attributes.source.localeCompare(b.attributes.source),

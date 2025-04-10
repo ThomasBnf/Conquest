@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { SOURCE } from "../enum/source.enum";
+import { ProfileSchema } from "./profile.schema";
 
 export const MemberSchema = z.object({
   id: z.string().uuid(),
@@ -25,4 +26,9 @@ export const MemberSchema = z.object({
   updated_at: z.coerce.date(),
 });
 
+export const MemberWithProfilesSchema = MemberSchema.extend({
+  profiles: z.array(ProfileSchema),
+});
+
 export type Member = z.infer<typeof MemberSchema>;
+export type MemberWithProfiles = z.infer<typeof MemberWithProfilesSchema>;

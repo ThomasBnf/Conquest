@@ -1,6 +1,5 @@
 import { Header } from "@/components/layouts/header";
 import { PageLayout } from "@/components/layouts/page-layout";
-import { FiltersProvider } from "@/context/filtersContext";
 import { CreateMemberDialog } from "@/features/members/create-member-dialog";
 import { MembersPage } from "@/features/members/members-page";
 import { loaderTableMembers } from "@/utils/tableParams";
@@ -17,9 +16,7 @@ export default async function Page({ searchParams }: Props) {
       <Header title="Members">
         <CreateMemberDialog />
       </Header>
-      <FiltersProvider>
-        <MembersPage />
-      </FiltersProvider>
+      <MembersPage />
     </PageLayout>
   );
 }

@@ -3,34 +3,42 @@ import { trpc } from "@/server/client";
 import { Button } from "@conquest/ui/button";
 import { ScrollArea, ScrollBar } from "@conquest/ui/scroll-area";
 import { Duplicate } from "@conquest/zod/schemas/duplicate.schema";
-import { Member } from "@conquest/zod/schemas/member.schema";
-import { skipToken } from "@tanstack/react-query";
+import {
+  Member,
+  MemberWithProfiles,
+} from "@conquest/zod/schemas/member.schema";
 import { Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { FinalMemberCard } from "./final-member-card";
 import { MemberCard } from "./member-card";
+import { SkeletonDuplicate } from "./skeleton-duplicate";
 
 type Props = {
   duplicate: Duplicate;
+  onReset?: () => void;
 };
 
-export const DuplicateCard = ({ duplicate }: Props) => {
+export const DuplicateCard = ({ duplicate, onReset }: Props) => {
+  const { member_ids } = duplicate;
   const [loading, setLoading] = useState(false);
+  const [loadingIgnore, setLoadingIgnore] = useState(false);
   const [finalMember, setFinalMember] = useState<Member | null>(null);
+  const [membersChecked, setMembersChecked] = useState<
+    {
+      member: MemberWithProfiles;
+      checked: boolean;
+    }[]
+  >([]);
   const utils = trpc.useUtils();
 
-  const { data: members, failureReason } = trpc.members.listById.useQuery({
-    ids: duplicate.member_ids,
-  });
+  const { data, isLoading, failureReason } =
+    trpc.members.listWithProfiles.useQuery({
+      ids: member_ids,
+    });
 
-  console.log("members", failureReason);
+  console.log(failureReason);
 
-  const { data: profiles, failureReason: profilesFailureReason } =
-    trpc.profiles.members.useQuery(members ? { members } : skipToken);
-
-  console.log("profiles", profilesFailureReason);
-
-  const { mutate: mergeMembers } = trpc.duplicate.merge.useMutation({
+  const { mutateAsync: mergeMembers } = trpc.duplicate.merge.useMutation({
     onSuccess: (data) => {
       const { id } = data ?? {};
 
@@ -48,53 +56,76 @@ export const DuplicateCard = ({ duplicate }: Props) => {
   const { mutate: ignoreDuplicate } = trpc.duplicate.ignore.useMutation({
     onSuccess: () => {
       utils.duplicate.invalidate();
-      setLoading(false);
+      setLoadingIgnore(false);
     },
   });
 
   const onMerge = async () => {
     setLoading(true);
-    mergeMembers({ duplicate, members, finalMember });
+    const members = membersChecked.map(({ member }) => member);
+    await mergeMembers({ members, finalMember });
+    onReset?.();
   };
 
   const onIgnore = async () => {
-    setLoading(true);
+    setLoadingIgnore(true);
     ignoreDuplicate({ duplicate });
+    onReset?.();
+  };
+
+  const onCheckChange = (id: string, checked: boolean) => {
+    setMembersChecked((prev) => {
+      const newMembersChecked = prev.map((item) =>
+        item.member.id === id ? { ...item, checked } : item,
+      );
+
+      const checkedMembers = newMembersChecked
+        .filter((item) => item.checked)
+        .map((item) => item.member);
+
+      setFinalMember(getFinalMember({ members: checkedMembers }));
+
+      return newMembersChecked;
+    });
   };
 
   useEffect(() => {
-    if (members) setFinalMember(getFinalMember({ members }));
-  }, [members]);
+    if (data) {
+      setMembersChecked(data.map((member) => ({ member, checked: true })));
+      setFinalMember(getFinalMember({ members: data }));
+    }
+  }, [data]);
 
-  if (!members || !profiles) return null;
+  if (isLoading) return <SkeletonDuplicate />;
 
   return (
-    <div className="divide-y overflow-hidden rounded-md border">
+    <div className="divide-y overflow-hidden rounded-md border bg-background">
       <div className="flex items-center justify-between py-4 pr-4">
         <ScrollArea className="h-fit">
           <div className="flex flex-1 gap-4 p-4">
-            {members.map((member) => (
+            {membersChecked.map(({ member, checked }) => (
               <MemberCard
                 key={member.id}
-                member={member}
-                profiles={profiles?.filter(
-                  (profile) => profile.member_id === member.id,
-                )}
+                memberChecked={{ member, checked }}
+                onCheckChange={onCheckChange}
               />
             ))}
           </div>
           <ScrollBar orientation="horizontal" />
         </ScrollArea>
         <FinalMemberCard
-          members={members}
+          membersChecked={membersChecked}
           finalMember={finalMember}
           setFinalMember={setFinalMember}
-          profiles={profiles}
         />
       </div>
       <div className="flex items-center justify-end gap-2 bg-sidebar p-2">
-        <Button variant="outline" onClick={onIgnore} disabled={loading}>
-          Ignore
+        <Button variant="outline" onClick={onIgnore} disabled={loadingIgnore}>
+          {loadingIgnore ? (
+            <Loader2 size={16} className="animate-spin" />
+          ) : (
+            "Ignore"
+          )}
         </Button>
         <Button onClick={onMerge} disabled={loading}>
           {loading ? <Loader2 size={16} className="animate-spin" /> : "Merge"}

@@ -1,3 +1,4 @@
+import { Badge } from "@conquest/ui/badge";
 import { Discord } from "@conquest/ui/icons/Discord";
 import { Discourse } from "@conquest/ui/icons/Discourse";
 import { Github } from "@conquest/ui/icons/Github";
@@ -21,19 +22,19 @@ export const ProfileIconParser = ({
 
   if (!displayUsername) {
     return (
-      <div className="rounded-md border p-1">
+      <Badge variant="secondary">
         <IconComponent size={16} />
-      </div>
+      </Badge>
     );
   }
 
   const username = getUsernameBySource(profile);
 
   return (
-    <div className="flex w-fit items-center gap-1.5 rounded-md border p-1">
+    <Badge variant="secondary">
       <IconComponent size={16} />
       <p className="truncate">{username}</p>
-    </div>
+    </Badge>
   );
 };
 

@@ -1,5 +1,5 @@
+import { getOldestMember } from "@conquest/clickhouse/helpers/getOldestMember";
 import { Member } from "@conquest/zod/schemas/member.schema";
-import { getOldestMember } from "./getOldestMember";
 
 type Props = {
   members: Member[];
