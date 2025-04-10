@@ -244,8 +244,10 @@ const checkSignature = async (request: NextRequest, bodyRaw: string) => {
     const secret = env.GITHUB_WEBHOOK_SECRET;
 
     const expectedSignature = createHmac("sha256", secret)
-      .update(bodyRaw)
+      .update(Buffer.from(bodyRaw, "utf8"))
       .digest("hex");
+
+    console.log(expectedSignature);
     if (signature !== `sha256=${expectedSignature}`) {
       return false;
     }

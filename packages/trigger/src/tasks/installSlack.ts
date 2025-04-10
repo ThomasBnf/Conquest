@@ -7,6 +7,7 @@ import { WebClient } from "@slack/web-api";
 import { schemaTask } from "@trigger.dev/sdk/v3";
 import { z } from "zod";
 import { createListMembers } from "../slack/createListMembers";
+import { listMessages } from "../slack/listMessages";
 import { checkDuplicates } from "./checkDuplicates";
 import { getAllMembersMetrics } from "./getAllMembersMetrics";
 import { integrationSuccessEmail } from "./integrationSuccessEmail";
@@ -33,10 +34,10 @@ export const installSlack = schemaTask({
     const channels = await listChannels({ source: "Slack", workspace_id });
     await createListMembers({ web, workspace_id });
 
-    // for (const channel of channels) {
-    //   await web.conversations.join({ channel: channel.external_id ?? "" });
-    //   await listMessages({ web, channel, workspace_id });
-    // }
+    for (const channel of channels) {
+      await web.conversations.join({ channel: channel.external_id ?? "" });
+      await listMessages({ web, channel, workspace_id });
+    }
 
     await getAllMembersMetrics.triggerAndWait(
       { workspace_id },

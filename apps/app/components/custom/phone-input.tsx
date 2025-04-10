@@ -31,7 +31,6 @@ const PhoneInput: React.ForwardRefExoticComponent<PhoneInputProps> =
       const containerRef = React.useRef<HTMLDivElement>(null);
 
       const handleBlur = (event: React.FocusEvent<HTMLInputElement>) => {
-        // Vérifie si le nouvel élément focus est dans notre composant
         if (containerRef.current?.contains(event.relatedTarget as Node)) {
           return;
         }
