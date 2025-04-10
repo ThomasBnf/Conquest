@@ -23,7 +23,6 @@ export async function POST(request: NextRequest) {
   const bodyRaw = await request.text();
   const headers = request.headers;
   const body = JSON.parse(bodyRaw) as WebhookEvent;
-  console.log("body", body);
   const type = headers.get("x-github-event");
   console.log("type", type);
 
@@ -32,12 +31,17 @@ export async function POST(request: NextRequest) {
   if (!github) return NextResponse.json({ status: 200 });
 
   const { details, workspace_id } = github;
+  console.log("details", details);
   const { access_token, iv, repo } = details;
+  console.log("access_token", access_token);
+  console.log("iv", iv);
+  console.log("repo", repo);
 
   const decryptedToken = await decrypt({ access_token, iv });
   console.log("decryptedToken", decryptedToken);
   const octokit = new Octokit({ auth: decryptedToken });
   console.log("octokit", octokit);
+
   try {
     switch (type) {
       case "star": {
