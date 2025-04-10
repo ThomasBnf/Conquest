@@ -36,6 +36,7 @@ export default async function Page({ searchParams }: Props) {
   const { access_token, scope } = data;
 
   const encryptedAccessToken = await encrypt(access_token);
+
   await createIntegration({
     external_id: null,
     details: {

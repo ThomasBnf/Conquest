@@ -1,6 +1,5 @@
 import { client } from "@conquest/clickhouse/client";
 import { env } from "@conquest/env";
-import { listAndDeleteWebhooks } from "@conquest/trigger/github/listAndDeleteWebhooks";
 import { listSubscriptions } from "@conquest/trigger/linkedin/listSubscriptions";
 import { removeWebhook } from "@conquest/trigger/linkedin/removeWebhook";
 import { deleteWebhook } from "@conquest/trigger/livestorm/deleteWebhook";
@@ -13,7 +12,6 @@ import {
   LivestormIntegrationSchema,
 } from "@conquest/zod/schemas/integration.schema";
 import { WebClient } from "@slack/web-api";
-import { Octokit } from "octokit";
 import { deleteManyEvents } from "../events/deleteManyEvents";
 import { deleteManyPosts } from "../posts/deleteManyPosts";
 import { prisma } from "../prisma";
@@ -74,10 +72,10 @@ export const deleteIntegration = async ({ integration }: Props) => {
     const github = GithubIntegrationSchema.parse(integration);
     const { access_token, iv } = github.details;
 
-    const decryptedToken = await decrypt({ access_token, iv });
-    const octokit = new Octokit({ auth: decryptedToken });
+    // const decryptedToken = await decrypt({ access_token, iv });
+    // const octokit = new Octokit({ auth: decryptedToken });
 
-    await listAndDeleteWebhooks({ octokit, github });
+    // await listAndDeleteWebhooks({ octokit, github });
 
     client.query({
       query: `
