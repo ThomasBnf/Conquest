@@ -31,13 +31,8 @@ export const DiscordChannels = () => {
   const { mutateAsync: createManyChannels } =
     trpc.channels.postMany.useMutation({});
 
-  const {
-    data: discordChannels,
-    isLoading,
-    failureReason,
-  } = trpc.discord.listChannels.useQuery();
-
-  console.log(failureReason);
+  const { data: discordChannels, isLoading } =
+    trpc.discord.listChannels.useQuery();
 
   const categoriesChannels = discordChannels?.sort(
     (a, b) => a.position - b.position,

@@ -45,8 +45,6 @@ export const PlanPicker = ({
 
   const { price_id, is_past_due } = workspace ?? {};
 
-  console.log(price_id);
-
   const onClick = ({
     plan,
     priceId,

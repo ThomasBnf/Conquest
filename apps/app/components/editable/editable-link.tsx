@@ -48,8 +48,6 @@ export const EditableLink = ({
     }
   };
 
-  console.log(value);
-
   if (!isFocus) {
     return (
       <div

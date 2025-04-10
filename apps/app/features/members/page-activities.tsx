@@ -26,8 +26,6 @@ export const PageActivities = ({ slug, memberId }: Props) => {
     { getNextPageParam: (_, allPages) => allPages.length * 25 },
   );
 
-  console.log(data);
-
   const activities = data?.pages.flat();
 
   if (isLoading || _isLoading) return <IsLoading />;

@@ -31,12 +31,9 @@ export const DuplicateCard = ({ duplicate, onReset }: Props) => {
   >([]);
   const utils = trpc.useUtils();
 
-  const { data, isLoading, failureReason } =
-    trpc.members.listWithProfiles.useQuery({
-      ids: member_ids,
-    });
-
-  console.log(failureReason);
+  const { data, isLoading } = trpc.members.listWithProfiles.useQuery({
+    ids: member_ids,
+  });
 
   const { mutateAsync: mergeMembers } = trpc.duplicate.merge.useMutation({
     onSuccess: (data) => {

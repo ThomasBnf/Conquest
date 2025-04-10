@@ -144,7 +144,6 @@ export const mergeMembers = async ({
   );
 
   const memberIds = members.map((m) => m.id);
-  console.log(memberIds);
 
   if (duplicate) {
     await prisma.duplicate.update({
