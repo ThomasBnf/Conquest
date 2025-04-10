@@ -28,6 +28,7 @@ export async function POST(request: NextRequest) {
   console.log("type", type);
 
   const github = await checkSignature(request, bodyRaw);
+  console.log("github", github);
   if (!github) return NextResponse.json({ status: 200 });
 
   const { details, workspace_id } = github;
