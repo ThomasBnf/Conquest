@@ -23,7 +23,7 @@ export const EditEmail = ({ member, email, onUpdate }: Props) => {
 
   const [value, setValue] = useState(email);
   const [editing, setEditing] = useState(false);
-  const [open, setOpen] = useState("");
+  const [open, setOpen] = useState(false);
 
   const validateEmail = (email: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -89,17 +89,12 @@ export const EditEmail = ({ member, email, onUpdate }: Props) => {
               <Star size={16} className="text-yellow-500" />
             </Button>
           )}
-          <DropdownMenu
-            open={open === value}
-            onOpenChange={(isOpen) => setOpen(isOpen ? value : "")}
-          >
+          <DropdownMenu open={open} onOpenChange={setOpen}>
             <DropdownMenuTrigger
               asChild
               className={cn(
                 "transition-opacity",
-                open === value
-                  ? "opacity-100"
-                  : "opacity-0 group-hover:opacity-100",
+                open ? "opacity-100" : "opacity-0 group-hover:opacity-100",
               )}
             >
               <Button variant="outline" size="icon_sm">

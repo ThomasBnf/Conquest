@@ -147,7 +147,7 @@ export const createManyMembers = async ({
         first_name: firstName,
         last_name: lastName,
         primary_email: email,
-        emails: [email ?? ""],
+        emails: email ? [email] : [],
         avatar_url: avatarUrl,
         language,
         country,
