@@ -187,7 +187,7 @@ const DayCell = ({
 
   const { data: activities, isLoading } =
     trpc.activities.listDayActivities.useQuery(
-      hover && count > 0 ? { date: day, member_id } : skipToken,
+      hover ? { date: day, member_id } : skipToken,
     );
 
   return (
