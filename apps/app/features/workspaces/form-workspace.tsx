@@ -89,7 +89,7 @@ export const FormWorkspace = () => {
               control={form.control}
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Slug</FormLabel>
+                  <FormLabel>Workspace URL</FormLabel>
                   <FormControl>
                     <div
                       className={cn(

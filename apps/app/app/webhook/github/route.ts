@@ -24,23 +24,18 @@ export async function POST(request: NextRequest) {
   const headers = request.headers;
   const body = JSON.parse(bodyRaw) as WebhookEvent;
   const type = headers.get("x-github-event");
-  console.log("type", type);
+
+  console.log(body);
 
   const github = await checkSignature(request, bodyRaw);
-  console.log("github", github);
   if (!github) return NextResponse.json({ status: 200 });
 
   const { details, workspace_id } = github;
-  console.log("details", details);
   const { access_token, iv, repo } = details;
-  console.log("access_token", access_token);
-  console.log("iv", iv);
-  console.log("repo", repo);
 
   const decryptedToken = await decrypt({ access_token, iv });
   console.log("decryptedToken", decryptedToken);
   const octokit = new Octokit({ auth: decryptedToken });
-  console.log("octokit", octokit);
 
   try {
     switch (type) {
@@ -181,7 +176,6 @@ export async function POST(request: NextRequest) {
       }
       case "issue_comment": {
         const event = body as IssueCommentEvent;
-        console.log("event", event);
         const { action, sender, issue, comment } = event;
         const { id: commentId, body: message } = comment;
         const { number } = issue;
@@ -211,7 +205,7 @@ export async function POST(request: NextRequest) {
           }
           case "edited": {
             const activity = await getActivity({
-              external_id: String(number),
+              external_id: String(commentId),
               workspace_id,
             });
 
@@ -227,6 +221,7 @@ export async function POST(request: NextRequest) {
             break;
           }
           case "deleted": {
+            console.log("deleted", event);
             await deleteActivity({
               external_id: String(commentId),
               workspace_id,

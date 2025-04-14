@@ -187,14 +187,18 @@ const DayCell = ({
 
   const { data: activities, isLoading } =
     trpc.activities.listDayActivities.useQuery(
-      hover ? { date: day, member_id } : skipToken,
+      hover === true ? { date: day, member_id } : skipToken,
     );
+
+  console.log(hover);
+  console.log(activities);
 
   return (
     <Tooltip>
       <TooltipTrigger
         onMouseEnter={() => setHover(true)}
         onMouseLeave={() => setHover(false)}
+        asChild
       >
         <div
           className={cn(
