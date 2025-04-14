@@ -44,6 +44,10 @@
   ],
   "navigation": [
     {
+      "group": "Changelog",
+      "pages": ["changelog"]
+    },
+    {
       "group": "Getting Started",
       "pages": [
         "introduction",
