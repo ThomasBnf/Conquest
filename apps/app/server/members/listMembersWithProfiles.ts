@@ -56,7 +56,10 @@ export const listMembersWithProfiles = protectedProcedure
         membersMap.set(memberId, memberWithoutProfiles);
       }
 
-      if (memberData["profile.id"]) {
+      if (
+        memberData["profile.id"] &&
+        memberData["profile.id"] !== "00000000-0000-0000-0000-000000000000"
+      ) {
         const profile: Record<string, unknown> = {};
 
         for (const [key, value] of Object.entries(memberData)) {

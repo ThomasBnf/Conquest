@@ -142,44 +142,30 @@ export const FinalMemberCard = ({
 
               if (!hasEmails) return;
 
+              const uniqueEmails = [
+                ...new Set(members.flatMap((member) => member.emails)),
+              ];
+
               return (
                 <div key={key} className="space-y-2">
                   <p className="text-muted-foreground text-xs">Emails</p>
                   <div className="space-y-1">
-                    {members.map((member, memberIndex) => {
-                      const { id, emails } = member;
-
-                      if (emails.length === 0) return;
-
-                      return (
-                        <div
-                          key={`member-${memberIndex}`}
-                          className="space-y-1"
-                        >
-                          {emails.map((email) => (
-                            <div
-                              key={`${id}-${email}`}
-                              className="flex items-center gap-2"
-                            >
-                              <Checkbox
-                                checked={finalMember.emails.includes(email)}
-                                onCheckedChange={(value) => {
-                                  setFinalMember({
-                                    ...finalMember,
-                                    emails: value
-                                      ? [...finalMember.emails, email]
-                                      : finalMember.emails.filter(
-                                          (e) => e !== email,
-                                        ),
-                                  });
-                                }}
-                              />
-                              <p>{email}</p>
-                            </div>
-                          ))}
-                        </div>
-                      );
-                    })}
+                    {uniqueEmails.map((email) => (
+                      <div key={email} className="flex items-center gap-2">
+                        <Checkbox
+                          checked={finalMember.emails.includes(email)}
+                          onCheckedChange={(value) => {
+                            setFinalMember({
+                              ...finalMember,
+                              emails: value
+                                ? [...finalMember.emails, email]
+                                : finalMember.emails.filter((e) => e !== email),
+                            });
+                          }}
+                        />
+                        <p>{email}</p>
+                      </div>
+                    ))}
                   </div>
                 </div>
               );
@@ -310,44 +296,30 @@ export const FinalMemberCard = ({
 
               if (!hasPhones) return;
 
+              const uniquePhones = [
+                ...new Set(members.flatMap((member) => member.phones)),
+              ];
+
               return (
                 <div key={key} className="space-y-2">
                   <p className="text-muted-foreground text-xs">Phones</p>
                   <div className="space-y-1">
-                    {members.map((member, memberIndex) => {
-                      const { id, phones } = member;
-
-                      if (phones.length === 0) return;
-
-                      return (
-                        <div
-                          key={`member-${memberIndex}`}
-                          className="space-y-1"
-                        >
-                          {phones.map((phone) => (
-                            <div
-                              key={`${id}-${phone}`}
-                              className="flex items-center gap-2"
-                            >
-                              <Checkbox
-                                checked={finalMember.phones.includes(phone)}
-                                onCheckedChange={(value) => {
-                                  setFinalMember({
-                                    ...finalMember,
-                                    phones: value
-                                      ? [...finalMember.phones, phone]
-                                      : finalMember.phones.filter(
-                                          (p) => p !== phone,
-                                        ),
-                                  });
-                                }}
-                              />
-                              <p>{phone}</p>
-                            </div>
-                          ))}
-                        </div>
-                      );
-                    })}
+                    {uniquePhones.map((phone) => (
+                      <div key={phone} className="flex items-center gap-2">
+                        <Checkbox
+                          checked={finalMember.phones.includes(phone)}
+                          onCheckedChange={(value) => {
+                            setFinalMember({
+                              ...finalMember,
+                              phones: value
+                                ? [...finalMember.phones, phone]
+                                : finalMember.phones.filter((p) => p !== phone),
+                            });
+                          }}
+                        />
+                        <p>{phone}</p>
+                      </div>
+                    ))}
                   </div>
                 </div>
               );
