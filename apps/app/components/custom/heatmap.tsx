@@ -190,9 +190,6 @@ const DayCell = ({
       hover === true ? { date: day, member_id } : skipToken,
     );
 
-  console.log(hover);
-  console.log(activities);
-
   return (
     <Tooltip>
       <TooltipTrigger
