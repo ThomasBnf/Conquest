@@ -96,7 +96,9 @@ export const DataTable = <TData extends Member | Company>({
       <ActionsMenu table={table} />
       <p className="space-x-1 border-t px-3 py-2">
         <span className="font-medium">{count}</span>
-        <span className="text-muted-foreground">Members</span>
+        <span className="text-muted-foreground">
+          Member{count === 1 ? "" : "s"}
+        </span>
       </p>
     </div>
   );
