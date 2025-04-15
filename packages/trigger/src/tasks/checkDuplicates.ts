@@ -119,7 +119,7 @@ export const checkDuplicates = schemaTask({
         logger.info("pulse", { duplicate: duplicate.id, total_pulse });
 
         if (duplicate) {
-          if (total_pulse === duplicate.total_pulse) return;
+          if (total_pulse === duplicate.total_pulse) continue;
 
           await prisma.duplicate.update({
             where: {
