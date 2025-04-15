@@ -103,11 +103,15 @@ export const checkDuplicates = schemaTask({
 
         if (!duplicate) continue;
 
+        const memberIds = member_ids.map((id) => `'${id}'`).join(",");
+
+        logger.info("memberIds", { memberIds });
+
         const result = await client.query({
           query: `
             SELECT sum(pulse) 
             FROM member FINAL
-            WHERE id IN (${member_ids.map((id) => `'${id}'`).join(",")})
+            WHERE id IN (${memberIds})
           `,
         });
 
