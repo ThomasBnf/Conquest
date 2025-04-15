@@ -26,13 +26,14 @@ export const listFilteredMembers = async ({
   const filterBy = getFilters({ groupFilters });
   const filtersStr = filterBy.join(operator === "OR" ? " OR " : " AND ");
 
-  const companyJoin = id === "company";
-  const profileJoin = groupFilters.filters.some(
-    (filter) =>
-      filter.field === "profiles" ||
-      filter.field.includes("discourse-") ||
-      filter.field.includes("github-"),
-  );
+  const profileJoin =
+    groupFilters.filters.some(
+      (filter) =>
+        search ||
+        filter.field === "profiles" ||
+        filter.field.includes("discourse-") ||
+        filter.field.includes("github-"),
+    ) || search;
 
   const orderBy = orderByParser({ id, desc, type: "members" });
 
@@ -64,7 +65,7 @@ export const listFilteredMembers = async ({
           ${profileJoin ? "p.attributes" : ""}
         FROM member m FINAL
         LEFT JOIN level l ON m.level_id = l.id
-        ${companyJoin ? "LEFT JOIN company c ON m.company_id = c.id" : ""}
+        LEFT JOIN company c ON m.company_id = c.id
         ${
           profileJoin
             ? `LEFT JOIN (
@@ -76,11 +77,15 @@ export const listFilteredMembers = async ({
               ) p ON m.id = p.member_id`
             : ""
         }
-        WHERE (
-          positionCaseInsensitive(concat(toString(first_name), ' ', toString(last_name)), '${search}') > 0
-          OR positionCaseInsensitive(concat(toString(last_name), ' ', toString(first_name)), '${search}') > 0
-          OR positionCaseInsensitive(toString(primary_email), '${search}') > 0
-        )
+        ${
+          search
+            ? `WHERE (
+                concat(first_name, ' ', last_name) LIKE '%${search}%'
+                OR primary_email LIKE '%${search}%'
+                ${search ? `OR arrayExists(attr -> attr.source = 'Github' AND position(lower(toString(attr.login)), lower('${search}')) > 0, p.attributes)` : ""}
+              )`
+            : ""
+        }
         AND m.workspace_id = '${workspace_id}'
         ${filterBy.length > 0 ? `AND (${filtersStr})` : ""}
         ${orderBy}

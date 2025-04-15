@@ -8,6 +8,7 @@ import { tableMembersParams } from "@/utils/tableParams";
 import { Separator } from "@conquest/ui/separator";
 import { useSession } from "next-auth/react";
 import { useQueryStates } from "nuqs";
+import { useMemo } from "react";
 import { FiltersList } from "../filters/filters-list";
 import { SaveList } from "../lists/save-list";
 import { membersColumns } from "../table/columns/members-columns";
@@ -21,7 +22,7 @@ export const MembersPage = () => {
   const { data: session } = useSession();
   const { user } = session ?? {};
 
-  const columns = membersColumns();
+  const columns = useMemo(() => membersColumns(), []);
   const params = useQueryStates(tableMembersParams);
   const [{ search, id, desc }, setParams] = params;
 

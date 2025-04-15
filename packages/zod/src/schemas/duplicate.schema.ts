@@ -7,6 +7,7 @@ export const DuplicateSchema = z.object({
   member_ids: z.array(z.string()),
   reason: REASON,
   state: STATE,
+  total_pulse: z.number(),
   workspace_id: z.string(),
   created_at: z.coerce.date(),
   updated_at: z.coerce.date(),

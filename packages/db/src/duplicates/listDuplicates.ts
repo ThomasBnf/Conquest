@@ -18,7 +18,7 @@ export const listDuplicates = async ({ cursor, workspace_id }: Props) => {
     skip,
     take: pageSize,
     orderBy: {
-      created_at: "desc",
+      total_pulse: "desc",
     },
   });
 

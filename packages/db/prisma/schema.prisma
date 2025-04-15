@@ -90,6 +90,7 @@ model duplicate {
     member_ids   String[]
     reason       REASON
     state        STATE
+    total_pulse  Int       @default(0)
     workspace_id String
     workspace    workspace @relation(fields: [workspace_id], references: [id], onDelete: Cascade)
 
@@ -273,17 +274,16 @@ model workflow {
 }
 
 model workspace {
-    id                         String    @id @default(uuid())
-    name                       String
-    slug                       String    @unique
-    source                     String?
-    company_size               String?
-    plan                       PLAN?
-    stripe_customer_id         String?
-    price_id                   String?
-    trial_end                  DateTime?
-    is_past_due                DateTime?
-    last_duplicates_checked_at DateTime?
+    id                 String    @id @default(uuid())
+    name               String
+    slug               String    @unique
+    source             String?
+    company_size       String?
+    plan               PLAN?
+    stripe_customer_id String?
+    price_id           String?
+    trial_end          DateTime?
+    is_past_due        DateTime?
 
     api_keys     api_key[]
     events       event[]

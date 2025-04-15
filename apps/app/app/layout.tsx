@@ -24,6 +24,9 @@ export default async function RootLayout({
 
   return (
     <html lang="en" suppressHydrationWarning>
+      {/* <head>
+        <script src="https://unpkg.com/react-scan/dist/auto.global.js" />
+      </head> */}
       <body className={cn("h-dvh overflow-hidden", inter.className)}>
         <SessionProvider session={session}>
           <Providers>{children}</Providers>

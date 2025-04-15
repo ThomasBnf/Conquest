@@ -13,7 +13,6 @@ export const WorkspaceSchema = z.object({
   price_id: z.string().nullable(),
   trial_end: z.coerce.date().nullable(),
   is_past_due: z.coerce.date().nullable(),
-  last_duplicates_checked_at: z.coerce.date().nullable(),
   created_at: z.coerce.date(),
   updated_at: z.coerce.date(),
 }) satisfies z.ZodType<WorkspacePrisma>;

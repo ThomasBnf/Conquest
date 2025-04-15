@@ -14,7 +14,7 @@ export const checkDuplicates = schemaTask({
       const result = await client.query({
         query: `
           SELECT
-            'EMAIL' AS duplicate_type,
+            'EMAIL' AS reason,
             m.primary_email AS value,
             groupArray(m.id) AS member_ids
           FROM member m FINAL
@@ -25,7 +25,7 @@ export const checkDuplicates = schemaTask({
           UNION ALL
           
           SELECT
-            'NAME' AS duplicate_type,
+            'NAME' AS reason,
             concat(m.first_name, ' ', m.last_name) AS value,
             groupArray(m.id) AS member_ids
           FROM member m FINAL
@@ -36,7 +36,7 @@ export const checkDuplicates = schemaTask({
           UNION ALL
 
           SELECT
-            'USERNAME' AS duplicate_type,
+            'USERNAME' AS reason,
             username AS value,
             groupArray(member_id) AS member_ids
           FROM (
@@ -76,7 +76,7 @@ export const checkDuplicates = schemaTask({
 
       const { data } = (await result.json()) as {
         data: {
-          duplicate_type: string;
+          reason: REASON;
           value: string;
           member_ids: string[];
         }[];
@@ -84,42 +84,54 @@ export const checkDuplicates = schemaTask({
 
       logger.info("data", { data });
 
-      const currentDuplicates = await prisma.duplicate.findMany({
-        where: {
-          workspace_id,
-        },
-      });
+      for (const item of data) {
+        const { member_ids, reason } = item;
 
-      logger.info("currentDuplicates", { currentDuplicates });
+        const duplicate = await prisma.duplicate.findFirst({
+          where: {
+            member_ids: {
+              equals: member_ids,
+            },
+            workspace_id,
+          },
+        });
 
-      const filteredDuplicates = data.filter(
-        (duplicate) =>
-          !currentDuplicates.some((currentDuplicate) =>
-            currentDuplicate.member_ids.some((id) =>
-              duplicate.member_ids.includes(id),
-            ),
-          ),
-      );
+        const result = await client.query({
+          query: `
+            SELECT sum(pulse) 
+            FROM member FINAL
+            WHERE id IN (${member_ids.map((id) => `'${id}'`).join(",")})
+          `,
+          format: "JSON",
+        });
 
-      logger.info("filteredDuplicates", { filteredDuplicates });
+        const { data: pulse } = (await result.json()) as {
+          data: {
+            sum: number;
+          }[];
+        };
 
-      if (filteredDuplicates.length > 0) {
-        await prisma.duplicate.createMany({
-          data: filteredDuplicates.map((duplicate) => ({
-            member_ids: duplicate.member_ids,
-            reason: duplicate.duplicate_type as REASON,
+        const total_pulse = pulse[0]?.sum ?? 0;
+
+        await prisma.duplicate.upsert({
+          where: {
+            id: duplicate?.id,
+            state: {
+              not: "APPROVED",
+            },
+          },
+          update: {
+            total_pulse,
+          },
+          create: {
+            total_pulse,
+            member_ids,
+            reason,
             state: "PENDING",
             workspace_id,
-          })),
+          },
         });
       }
-
-      await prisma.workspace.update({
-        where: { id: workspace_id },
-        data: {
-          last_duplicates_checked_at: new Date(),
-        },
-      });
     }
   },
 });
