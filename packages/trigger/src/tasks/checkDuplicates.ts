@@ -1,4 +1,5 @@
 import { client } from "@conquest/clickhouse/client";
+import { listAllDuplicates } from "@conquest/db/duplicates/listAllDuplicates";
 import { REASON, prisma } from "@conquest/db/prisma";
 import { listWorkspaces } from "@conquest/db/workspaces/listWorkspaces";
 import { logger, schemaTask } from "@trigger.dev/sdk/v3";
@@ -84,18 +85,17 @@ export const checkDuplicates = schemaTask({
 
       logger.info("data", { data });
 
+      const duplicates = await listAllDuplicates({ workspace_id });
+
       for (const item of data) {
         logger.info("item", { item });
         const { member_ids, reason } = item;
 
-        const duplicate = await prisma.duplicate.findFirst({
-          where: {
-            member_ids: {
-              equals: member_ids,
-            },
-            workspace_id,
-          },
-        });
+        const duplicate = duplicates.find((duplicate) =>
+          duplicate.member_ids.every((id) => member_ids.includes(id)),
+        );
+
+        if (!duplicate) continue;
 
         const result = await client.query({
           query: `
@@ -114,24 +114,26 @@ export const checkDuplicates = schemaTask({
 
         const total_pulse = pulse[0]?.sum ?? 0;
 
-        await prisma.duplicate.upsert({
-          where: {
-            id: duplicate?.id,
-            state: {
-              not: "APPROVED",
+        if (duplicate) {
+          await prisma.duplicate.update({
+            where: {
+              id: duplicate.id,
             },
-          },
-          update: {
-            total_pulse,
-          },
-          create: {
-            total_pulse,
-            member_ids,
-            reason,
-            state: "PENDING",
-            workspace_id,
-          },
-        });
+            data: {
+              total_pulse,
+            },
+          });
+        } else {
+          await prisma.duplicate.create({
+            data: {
+              total_pulse,
+              member_ids,
+              reason,
+              state: "PENDING",
+              workspace_id,
+            },
+          });
+        }
       }
     }
   },
