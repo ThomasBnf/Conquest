@@ -12,6 +12,8 @@ export const checkDuplicates = schemaTask({
     for (const workspace of workspaces) {
       const { id: workspace_id } = workspace;
 
+      logger.info(workspace_id);
+
       const result = await client.query({
         query: `
           SELECT
@@ -83,12 +85,9 @@ export const checkDuplicates = schemaTask({
         }[];
       };
 
-      logger.info("data", { data });
-
       const duplicates = await listAllDuplicates({ workspace_id });
 
       for (const item of data) {
-        logger.info("item", { item });
         const { member_ids, reason } = item;
 
         const duplicate = duplicates.find((duplicate) =>
@@ -106,11 +105,14 @@ export const checkDuplicates = schemaTask({
           format: "JSON",
         });
 
-        const { data: pulse } = (await result.json()) as {
+        const json = await result.json();
+        const { data: pulse } = json as {
           data: {
             sum: number;
           }[];
         };
+
+        logger.info("pulse", { json });
 
         const total_pulse = pulse[0]?.sum ?? 0;
 
