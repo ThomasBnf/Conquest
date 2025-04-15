@@ -82,7 +82,6 @@ export const listFilteredMembers = async ({
             ? `WHERE (
                 concat(first_name, ' ', last_name) LIKE '%${search}%'
                 OR primary_email LIKE '%${search}%'
-                ${search ? `OR arrayExists(attr -> attr.source = 'Github' AND position(lower(toString(attr.login)), lower('${search}')) > 0, p.attributes)` : ""}
               )`
             : ""
         }
