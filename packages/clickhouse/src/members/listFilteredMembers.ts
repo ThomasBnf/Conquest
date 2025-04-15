@@ -23,6 +23,7 @@ export const listFilteredMembers = async ({
 }: Props) => {
   const { operator } = groupFilters;
 
+  const searchParsed = search?.toLowerCase().trim();
   const filterBy = getFilters({ groupFilters });
   const filtersStr = filterBy.join(operator === "OR" ? " OR " : " AND ");
 
@@ -80,8 +81,8 @@ export const listFilteredMembers = async ({
         ${
           search
             ? `WHERE (
-                concat(first_name, ' ', last_name) LIKE '%${search}%'
-                OR primary_email LIKE '%${search}%'
+                concat(first_name, ' ', last_name) LIKE '%${searchParsed}%'
+                OR primary_email LIKE '%${searchParsed}%'
               )`
             : ""
         }

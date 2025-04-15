@@ -44,13 +44,12 @@ export const countMembers = async ({
         }
         WHERE (
           ${
-            searchParsed
-              ? `
-            positionCaseInsensitive(concat(COALESCE(m.first_name, ''), ' ', COALESCE(m.last_name, '')), '${searchParsed}') > 0
-            OR positionCaseInsensitive(concat(COALESCE(m.last_name, ''), ' ', COALESCE(m.first_name, '')), '${searchParsed}') > 0
-            OR positionCaseInsensitive(m.primary_email, '${searchParsed}') > 0
-          `
-              : "true"
+            search
+              ? `WHERE (
+                concat(first_name, ' ', last_name) LIKE '%${searchParsed}%'
+                OR primary_email LIKE '%${searchParsed}%'
+              )`
+              : ""
           }
         )
         AND m.workspace_id = '${workspace_id}'
