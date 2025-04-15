@@ -116,7 +116,7 @@ export const checkDuplicates = schemaTask({
         };
 
         const total_pulse = pulse[0]?.sum ?? 0;
-        logger.info("pulse", { duplicate: duplicate.id, total_pulse });
+        logger.info(`${total_pulse}`);
 
         if (duplicate) {
           if (total_pulse === duplicate.total_pulse) continue;
