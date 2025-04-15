@@ -92,11 +92,14 @@ export const checkDuplicates = schemaTask({
       logger.info("duplicates", { duplicates });
 
       for (const item of data) {
+        logger.info("item", { member_ids: item.member_ids });
         const { member_ids, reason } = item;
 
         const duplicate = duplicates.find((duplicate) =>
           duplicate.member_ids.every((id) => member_ids.includes(id)),
         );
+
+        logger.info("duplicate", { duplicate });
 
         if (!duplicate) continue;
 
@@ -106,7 +109,6 @@ export const checkDuplicates = schemaTask({
             FROM member FINAL
             WHERE id IN (${member_ids.map((id) => `'${id}'`).join(",")})
           `,
-          format: "JSON",
         });
 
         const { data: pulse } = (await result.json()) as {
@@ -115,8 +117,9 @@ export const checkDuplicates = schemaTask({
           }[];
         };
 
+        logger.info("pulse", { pulse });
+
         const total_pulse = pulse[0]?.sum ?? 0;
-        logger.info(`${total_pulse}`);
 
         if (duplicate) {
           if (total_pulse === duplicate.total_pulse) continue;
