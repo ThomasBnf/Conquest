@@ -85,7 +85,11 @@ export const checkDuplicates = schemaTask({
         }[];
       };
 
+      logger.info("data", { data });
+
       const duplicates = await listAllDuplicates({ workspace_id });
+
+      logger.info("duplicates", { duplicates });
 
       for (const item of data) {
         const { member_ids, reason } = item;
@@ -115,6 +119,8 @@ export const checkDuplicates = schemaTask({
         logger.info("pulse", { duplicate: duplicate.id, total_pulse });
 
         if (duplicate) {
+          if (total_pulse === duplicate.total_pulse) return;
+
           await prisma.duplicate.update({
             where: {
               id: duplicate.id,
