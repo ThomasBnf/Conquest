@@ -78,15 +78,16 @@ export const listFilteredMembers = async ({
               ) p ON m.id = p.member_id`
             : ""
         }
+        WHERE m.workspace_id = '${workspace_id}'
         ${
           search
-            ? `WHERE (
+            ? `AND (
                 concat(first_name, ' ', last_name) LIKE '%${searchParsed}%'
                 OR primary_email LIKE '%${searchParsed}%'
+                OR arrayExists(attr -> attr.source = 'Github' AND position(lower(toString(attr.login)), lower('${searchParsed}')) > 0, p.attributes)
               )`
             : ""
         }
-        AND m.workspace_id = '${workspace_id}'
         ${filterBy.length > 0 ? `AND (${filtersStr})` : ""}
         ${orderBy}
         ${cursor ? `LIMIT 25 OFFSET ${cursor}` : "LIMIT 25"}

@@ -42,15 +42,15 @@ export const countMembers = async ({
               ) p ON m.id = p.member_id`
             : ""
         }
+        WHERE m.workspace_id = '${workspace_id}'
         ${
           search
-            ? `WHERE (
+            ? `AND (
                 concat(first_name, ' ', last_name) LIKE '%${searchParsed}%'
                 OR primary_email LIKE '%${searchParsed}%'
               )`
             : ""
         }
-        AND m.workspace_id = '${workspace_id}'
         ${filterBy.length > 0 ? `AND (${filterBy.join(operator === "OR" ? " OR " : " AND ")})` : ""}
       `,
   });
