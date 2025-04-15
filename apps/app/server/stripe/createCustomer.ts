@@ -45,9 +45,6 @@ export const createCustomer = protectedProcedure
           missing_payment_method: "cancel",
         },
       },
-      ...(process.env.NODE_ENV === "production" && {
-        promotion_code: "promo_1R7FrOCa7sC12ar1uAj264Th",
-      }),
       trial_period_days: 14,
     });
 
