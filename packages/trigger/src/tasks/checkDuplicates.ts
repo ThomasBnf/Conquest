@@ -105,16 +105,14 @@ export const checkDuplicates = schemaTask({
           format: "JSON",
         });
 
-        const json = await result.json();
-        const { data: pulse } = json as {
+        const { data: pulse } = (await result.json()) as {
           data: {
             sum: number;
           }[];
         };
 
-        logger.info("pulse", { json });
-
         const total_pulse = pulse[0]?.sum ?? 0;
+        logger.info("pulse", { duplicate: duplicate.id, total_pulse });
 
         if (duplicate) {
           await prisma.duplicate.update({
