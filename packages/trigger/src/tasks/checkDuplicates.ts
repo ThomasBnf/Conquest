@@ -85,6 +85,7 @@ export const checkDuplicates = schemaTask({
       logger.info("data", { data });
 
       for (const item of data) {
+        logger.info("item", { item });
         const { member_ids, reason } = item;
 
         const duplicate = await prisma.duplicate.findFirst({
