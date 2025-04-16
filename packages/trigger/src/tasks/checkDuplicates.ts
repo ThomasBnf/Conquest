@@ -94,9 +94,11 @@ export const checkDuplicates = schemaTask({
       for (const item of data) {
         const { member_ids, reason } = item;
 
-        const duplicate = duplicates.find((duplicate) =>
-          duplicate.member_ids.every((id) => member_ids.includes(id)),
-        );
+        const duplicate = duplicates.find((duplicate) => {
+          const sortedExisting = [...duplicate.member_ids].sort();
+          const sortedNew = [...member_ids].sort();
+          return JSON.stringify(sortedExisting) === JSON.stringify(sortedNew);
+        });
 
         const memberIds = member_ids.map((id) => `'${id}'`).join(",");
 
