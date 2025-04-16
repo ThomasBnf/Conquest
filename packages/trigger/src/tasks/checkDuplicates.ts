@@ -85,27 +85,20 @@ export const checkDuplicates = schemaTask({
         }[];
       };
 
-      logger.info("data", { data });
-
       const duplicates = await listAllDuplicates({ workspace_id });
 
-      logger.info("duplicates", { duplicates });
-
       for (const item of data) {
-        logger.info("item", { member_ids: item.member_ids });
         const { member_ids, reason } = item;
 
         const duplicate = duplicates.find((duplicate) =>
           duplicate.member_ids.every((id) => member_ids.includes(id)),
         );
 
-        logger.info("duplicate", { duplicate });
-
         if (!duplicate) continue;
 
         const memberIds = member_ids.map((id) => `'${id}'`).join(",");
 
-        logger.info("memberIds", { memberIds });
+        console.log(memberIds);
 
         const result = await client.query({
           query: `
@@ -121,7 +114,7 @@ export const checkDuplicates = schemaTask({
           }[];
         };
 
-        logger.info("pulse", { pulse });
+        console.log(pulse);
 
         const total_pulse = pulse[0]?.sum ?? 0;
 
