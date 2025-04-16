@@ -17,12 +17,13 @@ export const countMembers = async ({
 
   const filterBy = getFilters({ groupFilters });
 
-  const profileJoin = groupFilters.filters.some(
-    (filter) =>
-      filter.field === "profiles" ||
-      filter.field.includes("discourse-") ||
-      filter.field.includes("github-"),
-  );
+  const profileJoin =
+    groupFilters.filters.some(
+      (filter) =>
+        filter.field === "profiles" ||
+        filter.field.includes("discourse-") ||
+        filter.field.includes("github-"),
+    ) || search;
 
   const result = await client.query({
     query: `
@@ -47,7 +48,7 @@ export const countMembers = async ({
             ? `AND (
                 positionCaseInsensitive(concat(first_name, ' ', last_name), LOWER(trim('${search}'))) > 0
                 OR positionCaseInsensitive(primary_email, LOWER(trim('${search}'))) > 0
-                OR arrayExists(attr -> attr.source = 'Github' AND positionCaseInsensitive(toString(attr.login), LOWER(trim('${search}'))) > 0, p.attributes)
+                ${profileJoin ? `OR arrayExists(attr -> attr.source = 'Github' AND positionCaseInsensitive(toString(attr.login), LOWER(trim('${search}'))) > 0, p.attributes)` : ""}
               )`
             : ""
         }
