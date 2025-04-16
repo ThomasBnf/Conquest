@@ -15,7 +15,6 @@ export const countMembers = async ({
 }: Props) => {
   const { operator } = groupFilters;
 
-  const searchParsed = search?.toLowerCase().trim();
   const filterBy = getFilters({ groupFilters });
 
   const profileJoin = groupFilters.filters.some(
@@ -46,8 +45,9 @@ export const countMembers = async ({
         ${
           search
             ? `AND (
-                concat(first_name, ' ', last_name) LIKE '%${searchParsed}%'
-                OR primary_email LIKE '%${searchParsed}%'
+                LOWER(trim(concat(first_name, ' ', last_name))) = LOWER(trim('${search}'))
+                OR LOWER(primary_email) LIKE LOWER(trim('%${search}%'))
+                OR arrayExists(attr -> attr.source = 'Github' AND position(lower(toString(attr.login)), '${search}') > 0, p.attributes)
               )`
             : ""
         }

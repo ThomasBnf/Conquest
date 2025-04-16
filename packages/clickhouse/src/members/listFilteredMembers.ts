@@ -23,7 +23,6 @@ export const listFilteredMembers = async ({
 }: Props) => {
   const { operator } = groupFilters;
 
-  const searchParsed = search?.toLowerCase().trim();
   const filterBy = getFilters({ groupFilters });
   const filtersStr = filterBy.join(operator === "OR" ? " OR " : " AND ");
 
@@ -82,9 +81,9 @@ export const listFilteredMembers = async ({
         ${
           search
             ? `AND (
-                LOWER(trim(concat(first_name, ' ', last_name))) = LOWER('${searchParsed}')
-                OR LOWER(primary_email) LIKE LOWER('%${searchParsed}%')
-                OR arrayExists(attr -> attr.source = 'Github' AND position(lower(toString(attr.login)), '${searchParsed}') > 0, p.attributes)
+                LOWER(trim(concat(first_name, ' ', last_name))) = LOWER(trim('${search}'))
+                OR LOWER(primary_email) LIKE LOWER(trim('%${search}%'))
+                OR arrayExists(attr -> attr.source = 'Github' AND position(lower(toString(attr.login)), '${search}') > 0, p.attributes)
               )`
             : ""
         }
