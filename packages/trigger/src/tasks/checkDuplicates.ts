@@ -114,13 +114,13 @@ export const checkDuplicates = schemaTask({
 
         const { data: pulse } = (await result.json()) as {
           data: {
-            sum: number;
+            "sum(pulse)": string;
           }[];
         };
 
-        console.log(pulse);
+        const total_pulse = pulse[0] ? Number(pulse[0]["sum(pulse)"]) : 0;
 
-        const total_pulse = pulse[0]?.sum ?? 0;
+        console.log(total_pulse);
 
         if (duplicate) {
           if (total_pulse === duplicate.total_pulse) continue;
