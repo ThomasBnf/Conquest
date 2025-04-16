@@ -111,6 +111,8 @@ export const mergeMembers = async ({
     updated_at: new Date(),
   }));
 
+  console.log(profilesValues);
+
   await client.insert({
     table: "profile",
     values: profilesValues,
