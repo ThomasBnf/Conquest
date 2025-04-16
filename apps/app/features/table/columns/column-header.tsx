@@ -131,7 +131,7 @@ export const ColumnHeader = <TData extends Member | Company>({
             </>
           )}
           {!isFixed && (
-            <DropdownMenuItem onClick={() => onVisibilityChange(id)}>
+            <DropdownMenuItem onClick={() => onVisibilityChange(columnId)}>
               <EyeOff size={16} className="text-muted-foreground" />
               <p>Hide</p>
             </DropdownMenuItem>

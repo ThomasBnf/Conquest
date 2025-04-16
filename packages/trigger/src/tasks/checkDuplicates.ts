@@ -123,7 +123,8 @@ export const checkDuplicates = schemaTask({
         console.log(total_pulse);
 
         if (duplicate) {
-          if (total_pulse === duplicate.total_pulse) continue;
+          const reasons = new Set([...duplicate.reason.split(","), reason]);
+          const updatedReason = Array.from(reasons).join(",") as REASON;
 
           await prisma.duplicate.update({
             where: {
@@ -131,6 +132,7 @@ export const checkDuplicates = schemaTask({
             },
             data: {
               total_pulse,
+              reason: updatedReason,
             },
           });
         } else {
