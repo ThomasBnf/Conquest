@@ -150,6 +150,7 @@ export const MemberCard = ({ memberChecked, onCheckChange }: Props) => {
             case "emails": {
               const emails = value as string[];
               if (emails.length === 0) return;
+
               return (
                 <div key={`${key}-${id}`} className="space-y-1">
                   <p className="text-muted-foreground text-xs">Emails</p>

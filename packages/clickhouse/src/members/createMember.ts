@@ -38,7 +38,7 @@ export const createMember = async (props: Props) => {
         ...props,
         id,
         primary_email: formattedEmail,
-        emails: [formattedEmail],
+        emails: formattedEmail ? [formattedEmail] : [],
         phones: formattedPhones,
         first_activity: null,
         last_activity: null,
