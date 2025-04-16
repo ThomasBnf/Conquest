@@ -113,11 +113,13 @@ export const mergeMembers = async ({
 
   console.log(profilesValues);
 
-  await client.insert({
+  const resultProfiles = await client.insert({
     table: "profile",
     values: profilesValues,
     format: "JSON",
   });
+
+  console.log(resultProfiles);
 
   await client.query({
     query: "OPTIMIZE TABLE profile FINAL",
