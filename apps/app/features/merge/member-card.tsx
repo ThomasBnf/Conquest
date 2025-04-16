@@ -76,9 +76,9 @@ export const MemberCard = ({ memberChecked, onCheckChange }: Props) => {
         checked ? "bg-sidebar" : "bg-background",
       )}
     >
-      <div className="flex items-center justify-between py-2 pr-2 pl-4">
+      <div className="flex items-center justify-between overflow-hidden py-2 pr-2 pl-4">
         <div
-          className="flex cursor-pointer items-center gap-2 overflow-hidden"
+          className="flex cursor-pointer items-center gap-2"
           onClick={() => onCheckChange(id, !checked)}
         >
           <Checkbox checked={checked} />
@@ -92,7 +92,7 @@ export const MemberCard = ({ memberChecked, onCheckChange }: Props) => {
           </Button>
         </Link>
       </div>
-      <div className="flex flex-1 flex-col gap-4 p-4">
+      <div className="flex flex-1 flex-col gap-4 truncate p-4">
         {entries.map(([key, value]) => {
           switch (key) {
             case "avatar_url": {

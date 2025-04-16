@@ -68,8 +68,6 @@ export const listDayActivities = protectedProcedure
       transformFlatActivity(row as Record<string, unknown>),
     );
 
-    console.log(activities);
-
     if (!activities?.length) return [];
     return ActivityWithTypeSchema.array().parse(activities);
   });

@@ -84,7 +84,7 @@ export const listFilteredMembers = async ({
             ? `AND (
                 concat(first_name, ' ', last_name) LIKE '%${searchParsed}%'
                 OR primary_email LIKE '%${searchParsed}%'
-                OR arrayExists(attr -> attr.source = 'Github' AND position(lower(toString(attr.login)), lower('${searchParsed}')) > 0, p.attributes)
+                OR arrayExists(attr -> attr.source = 'Github' AND position(lower(toString(attr.login)), '${searchParsed}') > 0, p.attributes)
               )`
             : ""
         }
@@ -96,5 +96,6 @@ export const listFilteredMembers = async ({
   });
 
   const { data } = await result.json();
+  console.log(data);
   return MemberSchema.array().parse(data);
 };

@@ -31,9 +31,9 @@ export const ProfileIconParser = ({
   const username = getUsernameBySource(profile);
 
   return (
-    <Badge variant="secondary">
+    <Badge variant="secondary" className="truncate">
       <IconComponent size={16} />
-      <p className="truncate">{username}</p>
+      <p>{username}</p>
     </Badge>
   );
 };

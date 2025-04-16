@@ -34,7 +34,6 @@ export async function POST(request: NextRequest) {
   const { access_token, iv, repo } = details;
 
   const decryptedToken = await decrypt({ access_token, iv });
-  console.log("decryptedToken", decryptedToken);
   const octokit = new Octokit({ auth: decryptedToken });
 
   try {

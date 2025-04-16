@@ -40,7 +40,6 @@ export const QueryInput = ({
 
   useEffect(() => {
     if (value) {
-      console.log(value);
       setParams({ search: value });
     }
   }, [value]);
