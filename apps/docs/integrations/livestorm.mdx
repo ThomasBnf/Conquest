@@ -6,6 +6,10 @@ description: "Connect your Livestorm workspace to access all your webinar sessio
 The Conquest Livestorm integration enables you to connect your Livestorm workspace and access all your webinar sessions and participant data.
 Track registrations, attendance, co-hosting information from your webinars in one centralized place.
 
+<Note>
+  We only collect events from the last 365 days.
+</Note>
+
 ## Data collection
 
 The integration collects information about:
@@ -13,21 +17,15 @@ The integration collects information about:
 ### Members
 
 * **Full Name**
-
 * **Email**
-
 * **Avatar** if provided
-
 * **Locale**
 
 ### Events
 
 * **Sessions details**
-
 * **Registrants**
-
 * **Co-hosts**
-
 * **Attendees**
 
 ## Activity Types
@@ -38,54 +36,37 @@ When you connect your Livestorm workspace, activity types are automatically gene
   Activity weights can be customized to fit your community's scoring system.
 </Tip>
 
-* **Co-host a webinar** - 10 weight
-
-* **Attend a webinar** - 8 weight
-
-* **Register for a webinar** - 5 weight
+* **Co-host a webinar**
+* **Attend a webinar**
+* **Register for a webinar**
 
 ## Real-Time Updates
 
 Once connected, Conquest syncs the following events in real-time:
 
 * **Member registration**
-
 * **Member attendance**
-
 * **Member co-hosting**
 
-## Merging Members
-
-<Tip>
-  When new Livestorm activity occurs, we automatically:
-
-  1. Check if the member exists in your Conquest workspace
-
-  2. Create a new member if  doesn't exist
-
-  3. Merge with an existing member if we find a matching email
-</Tip>
 
 ## Setup guide
 
 <Steps>
   <Step title="Connect Your Workspace">
     1. Navigate to **Settings** > **Integrations**.
-
     2. Select **Livestorm**.
-
     3. Click **"Enable"** to start the connection process.
 
     <Frame>
-      ![Livestorm Connection](/images/livestorm-enable.png)
+      ![Livestorm Connection](/images/livestorm/enable.png)
     </Frame>
   </Step>
 
   <Step title="Authorize Access">
-    Complete the OAuth process on Discord.
+    Complete the OAuth process on Livestorm.
 
     <Tip>
-      You must be an admin of the Discord server.
+      You must be an admin of the Livestorm workspace.
     </Tip>
   </Step>
 
@@ -97,18 +78,17 @@ Once connected, Conquest syncs the following events in real-time:
     </Tip>
 
     <Frame>
-      ![Livestorm filter events](/images/livestorm-filter-events.png)
+      ![Livestorm filter events](/images/livestorm/filter.png)
     </Frame>
-
-    Then, click **"Let's Start"** to begin events collection
   </Step>
+  
+  <Step title="Configure Activity Types">
+    Conquest automatically generates activity types based on the data collected.
+    You can customize points for each activity type according to their importance in your community.
 
-  <Step title="Data Collection">
-    Conquest will begin importing historical data.
-
-    {/* <Frame>
-          ![Discord Collect](/images/discord-collect.png)
-        </Frame> */}
+    <Frame>
+      ![Livestorm activity types](/images/livestorm/activity-types.png)
+    </Frame>
   </Step>
 </Steps>
 

@@ -3,7 +3,7 @@ title: "Slack Integration"
 description: "Connect and manage your Slack community data with Conquest."
 ---
 
-The Conquest Slack integration enables you to access and manage community data from your workspace. Gain insights into member activities, message history, and shared content, all in one place. -<u> A REVOIR</u>
+The Conquest Slack integration enables you to access and manage community data from your workspace. Gain insights into member activities, message history, and shared content, all in one place.
 
 <Note>
   If you are in free plan, you will only be able to collect data from the last 90 days.
@@ -16,15 +16,10 @@ The integration collects information about:
 ### Members
 
 * **Full Name**
-
 * **Email**
-
 * **Job Title** if provided
-
 * **Phone** if provided
-
 * **Avatar** if provided
-
 * **Locale**
 
 <Note>
@@ -34,9 +29,7 @@ The integration collects information about:
 ### Conversations
 
 * **Messages** from public channels
-
 * **Replies** from public channels
-
 * **Reactions** from public channels
 
 
@@ -48,39 +41,18 @@ When you connect your Slack workspace, activity types are automatically generate
   Activity weights can be customized to fit your community's scoring system.
 </Tip>
 
-* **Invitation** - 7 weight
-
-* **Write a post** - 6 weight
-
-* **Reply to post** - 5 weight
-
-* **Join Slack community** - 4 weight
-
-* **Add reaction** - 0 weight
+* **Write a post**
+* **Reply to post**
+* **Add reaction**
 
 ## Real-Time Updates
 
 Once connected, Conquest syncs the following events in real-time:
 
 * **Members joining the workspace**
-
-* **Messages, replies, reactions, and files shared in public channels**
-
+* **Messages, replies, reactions in public channels**
 * **Creation, updates, and deletion of public channels**
-
 * **App uninstallation**
-
-## Merging Members
-
-<Tip>
-  When new Slack activity occurs, we automatically:
-
-  1. Check if the member exists in your Conquest workspace
-
-  2. Merge with an existing member if we find a matching email
-
-  3. Create a new member if none exists
-</Tip>
 
 ## Setup guide
 
@@ -93,7 +65,7 @@ Once connected, Conquest syncs the following events in real-time:
     3. Click **"Enable"** to start the connection process.
 
     <Frame>
-      ![Slack Connection](/images/slack-enable.png)
+      ![Slack Connection](/images/slack/enable.png)
     </Frame>
   </Step>
 
@@ -105,7 +77,7 @@ Once connected, Conquest syncs the following events in real-time:
     </Tip>
 
     <Frame>
-      ![Slack OAuth](/images/slack-oauth.png)
+      ![Slack OAuth](/images/slack/oauth.png)
     </Frame>
   </Step>
 
@@ -117,7 +89,7 @@ Once connected, Conquest syncs the following events in real-time:
     </Tip>
 
     <Frame>
-      ![Slack Channels](/images/slack-channels.png)
+      ![Slack Channels](/images/slack/channels.png)
     </Frame>
 
     1. Select the channels you want to collect data from
@@ -125,15 +97,12 @@ Once connected, Conquest syncs the following events in real-time:
     2. Click **"Let's Start"**
   </Step>
 
-  <Step title="Data Collection">
-    Conquest will begin importing historical data.
-
-    <Note>
-      If you are in free plan, you will only be able to collect data from the last 90 days.
-    </Note>
+  <Step title="Configure Activity Types">
+    Conquest automatically generates activity types based on the data collected.
+    You can add conditions on specific channels to fit your community's scoring system.
 
     <Frame>
-      ![Slack Collecting](/images/slack-collecting.png)
+      ![Slack activity types](/images/slack/activity-types.png)
     </Frame>
   </Step>
 </Steps>
@@ -147,8 +116,8 @@ Once connected, Conquest syncs the following events in real-time:
 <AccordionGroup>
   <Accordion title="Why my Slack workspace is not visible?">
     * Confirm that you are an admin of the Slack workspace
-
     * Ensure you are logged into the correct Slack account
+    * Check if the workspace is already connected to Conquest in other workspace
   </Accordion>
 </AccordionGroup>
 
