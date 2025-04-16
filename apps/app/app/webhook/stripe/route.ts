@@ -1,8 +1,10 @@
 import { stripe } from "@/lib/stripe";
+import { prisma } from "@conquest/db/prisma";
 import { getWorkspaceStripe } from "@conquest/db/workspaces/getWorkspaceStripe";
 import { updateWorkspace } from "@conquest/db/workspaces/updateWorkspace";
 import { env } from "@conquest/env";
 import type { Plan } from "@conquest/zod/enum/plan.enum";
+import { isBefore } from "date-fns";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import type Stripe from "stripe";
@@ -45,12 +47,20 @@ export const POST = async (request: NextRequest) => {
           plan: Plan;
         };
 
-        await updateWorkspace({
-          id: workspace.id,
-          plan,
-          price_id,
-          is_past_due: null,
-          trial_end: null,
+        const { trial_end } = workspace;
+
+        const isTrialEnded = trial_end && isBefore(trial_end, new Date());
+
+        await prisma.workspace.update({
+          where: {
+            id: workspace.id,
+          },
+          data: {
+            plan,
+            price_id,
+            trial_end: isTrialEnded ? null : trial_end,
+            is_past_due: null,
+          },
         });
 
         break;
@@ -72,11 +82,20 @@ export const POST = async (request: NextRequest) => {
           price_id: string;
         };
 
-        await updateWorkspace({
-          id: workspace.id,
-          plan,
-          price_id,
-          is_past_due: null,
+        const { trial_end } = workspace;
+
+        const isTrialEnded = trial_end && isBefore(trial_end, new Date());
+
+        await prisma.workspace.update({
+          where: {
+            id: workspace.id,
+          },
+          data: {
+            plan,
+            price_id,
+            trial_end: isTrialEnded ? null : trial_end,
+            is_past_due: null,
+          },
         });
 
         break;
@@ -98,15 +117,28 @@ export const POST = async (request: NextRequest) => {
           price_id: string;
         };
 
-        await updateWorkspace({
-          id: workspace.id,
-          plan,
-          price_id,
-          is_past_due:
-            subscription.status === "paused" ||
-            subscription.status === "past_due"
-              ? new Date()
+        const { trial_end } = subscription;
+        const hasTrial = trial_end !== null;
+        const isTrialEnded = hasTrial && isBefore(trial_end, new Date());
+
+        await prisma.workspace.update({
+          where: {
+            id: workspace.id,
+          },
+          data: {
+            plan,
+            price_id,
+            trial_end: hasTrial
+              ? isTrialEnded
+                ? null
+                : new Date(trial_end * 1000)
               : null,
+            is_past_due:
+              subscription.status === "paused" ||
+              subscription.status === "past_due"
+                ? new Date()
+                : null,
+          },
         });
 
         break;

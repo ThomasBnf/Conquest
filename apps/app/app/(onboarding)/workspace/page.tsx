@@ -42,6 +42,9 @@ export default function Page() {
   const router = useRouter();
 
   const { mutateAsync: mutateWorkspace } = trpc.workspaces.update.useMutation({
+    onMutate: () => {
+      setLoading(true);
+    },
     onSuccess: () => {
       router.push("/questions");
     },
@@ -59,7 +62,6 @@ export default function Page() {
     if (!user) return;
 
     const formattedSlug = slugify(slug, { decamelize: false });
-    setLoading(true);
 
     await mutateWorkspace({
       id: user.workspace_id,

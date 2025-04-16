@@ -10,38 +10,52 @@ import { getSubscriptionDetails } from "@/utils/getSubscriptionDetails";
 import { Separator } from "@conquest/ui/separator";
 import type { Plan } from "@conquest/zod/enum/plan.enum";
 import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 
 export default function Page() {
   const { data: session, update } = useSession();
   const { workspace } = session?.user ?? {};
-  const { trial_end, price_id } = workspace ?? {};
+  const { stripe_customer_id, price_id } = workspace ?? {};
+  const router = useRouter();
 
   const subscription = getSubscriptionDetails(price_id);
-  const isTrial = trial_end && trial_end < new Date();
 
   const [period, setPeriod] = useState<PlanPeriod>(
     subscription?.period ?? "annually",
   );
   const [loading, setLoading] = useState(false);
 
-  const { mutateAsync } = trpc.stripe.updateSubscription.useMutation({
-    onSuccess: () => {
-      setTimeout(() => {
-        update();
-        setLoading(false);
-        toast.success(
-          isTrial ? "Your trial plan has been updated" : "Subscription updated",
-          { duration: 5000 },
-        );
-      }, 3000);
+  const { mutateAsync } = trpc.stripe.createCheckoutSession.useMutation({
+    onMutate: () => {
+      setLoading(true);
+    },
+    onSuccess: (url) => {
+      if (!url) return;
+      router.push(url);
+      update();
     },
     onError: (error) => {
       toast.error(error.message);
       setLoading(false);
     },
   });
+
+  const { mutateAsync: updateSubscription } =
+    trpc.stripe.updateSubscription.useMutation({
+      onMutate: () => {
+        setLoading(true);
+      },
+      onSuccess: () => {
+        update();
+        toast.success("Subscription updated");
+      },
+      onError: (error) => {
+        setLoading(false);
+        toast.error(error.message);
+      },
+    });
 
   const onSelectPlan = async ({
     plan,
@@ -50,8 +64,11 @@ export default function Page() {
     plan: Plan;
     priceId: string;
   }) => {
-    setLoading(true);
-    await mutateAsync({ plan, priceId });
+    if (stripe_customer_id) {
+      await updateSubscription({ plan, priceId });
+    } else {
+      await mutateAsync({ plan, priceId });
+    }
   };
 
   return (
@@ -60,16 +77,20 @@ export default function Page() {
       description="Update your payment information or switch plans according to your needs"
       displayTrial={false}
     >
-      <div className="mt-6 grid grid-cols-2 gap-12">
-        <div>
-          <p className="font-medium text-lg">Manage your subscription</p>
-          <p className="text-muted-foreground">
-            Get your invoices, payment history, or cancel your subscription.
-          </p>
-        </div>
-        <ButtonBillingPortal />
-      </div>
-      <Separator className="my-4" />
+      {stripe_customer_id && (
+        <>
+          <div className="mt-6 grid grid-cols-2 gap-12">
+            <div>
+              <p className="font-medium text-lg">Manage your subscription</p>
+              <p className="text-muted-foreground">
+                Get your invoices, payment history, or cancel your subscription.
+              </p>
+            </div>
+            <ButtonBillingPortal />
+          </div>
+          <Separator className="my-4" />
+        </>
+      )}
       <PlanPicker
         period={period}
         setPeriod={setPeriod}

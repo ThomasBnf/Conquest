@@ -3,6 +3,7 @@ import { AppSidebar } from "@/components/layouts/app-sidebar";
 import { FiltersProvider } from "@/context/filtersContext";
 import { CreateListDialog } from "@/features/lists/create-list-dialog";
 import { SidebarProvider } from "@conquest/ui/sidebar";
+import { isBefore } from "date-fns";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import type { PropsWithChildren } from "react";
@@ -26,8 +27,9 @@ export default async function Layout({
 
   if (user && !user.onboarding) redirect("/");
 
-  const { is_past_due } = workspace;
-  if (is_past_due) redirect("/billing");
+  const { trial_end, is_past_due } = workspace;
+  const trialEnded = trial_end && isBefore(trial_end, new Date());
+  if (trialEnded || is_past_due) redirect("/billing");
 
   if (slug !== workspace.slug) redirect(`/${workspace.slug}`);
 

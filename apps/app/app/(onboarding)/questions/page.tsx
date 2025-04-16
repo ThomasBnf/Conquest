@@ -29,7 +29,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@conquest/ui/select";
-import { Plan } from "@conquest/zod/enum/plan.enum";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowRightIcon, Loader2 } from "lucide-react";
 import { useSession } from "next-auth/react";
@@ -41,39 +40,20 @@ import { toast } from "sonner";
 export default function Page() {
   const { data: session, update } = useSession();
   const { user } = session ?? {};
-
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
-  const { mutateAsync: mutateWorkspace } = trpc.workspaces.update.useMutation({
-    onError: (error) => {
-      setLoading(false);
-      toast.error(error.message);
+  const { mutateAsync } = trpc.workspaces.update.useMutation({
+    onMutate: () => {
+      setLoading(true);
     },
-  });
-
-  const { mutateAsync } = trpc.users.update.useMutation({
-    onSuccess: () => update(),
-    onError: (error) => {
-      toast.error(error.message);
-      setLoading(false);
+    onSuccess: () => {
+      update();
+      router.push("/welcome");
     },
-  });
-
-  const { mutateAsync: createCustomer } =
-    trpc.stripe.createCustomer.useMutation({
-      onSuccess: () => update(),
-      onError: (error) => {
-        toast.error(error.message);
-        setLoading(false);
-      },
-    });
-
-  const { mutateAsync: createContact } = trpc.brevo.createContact.useMutation({
-    onSuccess: () => router.push("/settings/integrations"),
     onError: (error) => {
-      toast.error(error.message);
       setLoading(false);
+      toast.error(error.message);
     },
   });
 
@@ -83,29 +63,12 @@ export default function Page() {
 
   const onSubmit = async ({ company_size, source }: Questions) => {
     if (!user) return;
-    setLoading(true);
 
-    const plan = localStorage.getItem("plan") as Plan;
-    const priceId = localStorage.getItem("priceId") as string;
-
-    await mutateWorkspace({
+    await mutateAsync({
       id: user.workspace_id,
       company_size,
       source,
     });
-
-    if (plan && priceId) {
-      await createCustomer({ plan, priceId });
-      await mutateAsync({ id: user.id, onboarding: new Date() });
-      await createContact({ user });
-
-      localStorage.removeItem("plan");
-      localStorage.removeItem("priceId");
-
-      return router.push(`/${session?.user.workspace.slug}`);
-    }
-
-    router.push("/plan");
   };
 
   return (

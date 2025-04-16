@@ -1,15 +1,24 @@
-import type { Workspace } from "@conquest/zod/schemas/workspace.schema";
+import {
+  type Workspace,
+  WorkspaceSchema,
+} from "@conquest/zod/schemas/workspace.schema";
+import { addDays } from "date-fns";
 import { prisma } from "../prisma";
 
 type Props = {
   id: string;
-} & Partial<Workspace>;
+} & Omit<Partial<Workspace>, "trial_end">;
 
 export const updateWorkspace = async ({ id, ...data }: Props) => {
-  await prisma.workspace.update({
+  const workspace = await prisma.workspace.update({
     where: {
       id,
     },
-    data,
+    data: {
+      ...data,
+      trial_end: addDays(new Date(), 14),
+    },
   });
+
+  return WorkspaceSchema.parse(workspace);
 };

@@ -34,9 +34,8 @@ export const updateSubscription = protectedProcedure
       });
     }
 
-    console.log("currentSubscription", currentSubscription.id);
-
     const subscriptionItemId = currentSubscription.items.data[0]?.id;
+    const { trial_end } = currentSubscription;
 
     if (!subscriptionItemId) {
       throw new TRPCError({
@@ -44,9 +43,6 @@ export const updateSubscription = protectedProcedure
         message: "Subscription item not found",
       });
     }
-
-    console.log("subscriptionItemId", subscriptionItemId);
-    console.log("priceId", priceId);
 
     await stripe.subscriptions.update(currentSubscription.id, {
       items: [
@@ -56,6 +52,7 @@ export const updateSubscription = protectedProcedure
           quantity: 1,
         },
       ],
+      trial_end: trial_end ?? undefined,
       metadata: {
         plan,
         price_id: priceId,

@@ -21,7 +21,10 @@ export const createAuthPrismaAdapter = (
       throw Error("Provider did not forward email but it is required");
     }
 
-    const workspace = await createWorkspace({ name: "", slug: uuid() });
+    const workspace = await createWorkspace({
+      name: "",
+      slug: uuid(),
+    });
 
     const user = await prisma.user.create({
       data: {

@@ -38,6 +38,9 @@ export default function Page() {
   const router = useRouter();
 
   const { mutateAsync } = trpc.users.update.useMutation({
+    onMutate: () => {
+      setLoading(true);
+    },
     onSuccess: () => {
       update();
       router.push("/workspace");
@@ -54,8 +57,6 @@ export default function Page() {
 
   const onSubmit = async ({ first_name, last_name }: UserForm) => {
     if (!user) return;
-
-    setLoading(true);
 
     await mutateAsync({
       id: user.id,
