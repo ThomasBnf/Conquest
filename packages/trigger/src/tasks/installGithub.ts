@@ -7,6 +7,7 @@ import { Octokit } from "octokit";
 import { z } from "zod";
 import { createManyIssues } from "../github/createManyIssues";
 import { createManyPullRequests } from "../github/createManyPullRequests";
+import { createWebhook } from "../github/createWebhook";
 import { listStargazers } from "../github/listStargazers";
 import { checkDuplicates } from "./checkDuplicates";
 import { getAllMembersMetrics } from "./getAllMembersMetrics";
@@ -25,7 +26,7 @@ export const installGithub = schemaTask({
     const decryptedToken = await decrypt({ access_token, iv });
     const octokit = new Octokit({ auth: decryptedToken });
 
-    // await createWebhook({ github, octokit });
+    await createWebhook({ github, octokit });
     await listStargazers({ github, octokit });
     await createManyIssues({ github, octokit });
     await createManyPullRequests({ github, octokit });
