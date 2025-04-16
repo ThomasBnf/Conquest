@@ -82,8 +82,8 @@ export const listFilteredMembers = async ({
         ${
           search
             ? `AND (
-                concat(first_name, ' ', last_name) LIKE '%${searchParsed}%'
-                OR primary_email LIKE '%${searchParsed}%'
+                LOWER(trim(concat(first_name, ' ', last_name))) = LOWER('${searchParsed}')
+                OR LOWER(primary_email) LIKE LOWER('%${searchParsed}%')
                 OR arrayExists(attr -> attr.source = 'Github' AND position(lower(toString(attr.login)), '${searchParsed}') > 0, p.attributes)
               )`
             : ""

@@ -85,7 +85,11 @@ export const checkDuplicates = schemaTask({
         }[];
       };
 
+      console.log(data);
+
       const duplicates = await listAllDuplicates({ workspace_id });
+
+      logger.info("duplicates", { duplicates });
 
       for (const item of data) {
         const { member_ids, reason } = item;
@@ -93,8 +97,6 @@ export const checkDuplicates = schemaTask({
         const duplicate = duplicates.find((duplicate) =>
           duplicate.member_ids.every((id) => member_ids.includes(id)),
         );
-
-        if (!duplicate) continue;
 
         const memberIds = member_ids.map((id) => `'${id}'`).join(",");
 
