@@ -108,6 +108,7 @@ export const mergeMembers = async ({
   const profilesValues = profiles.map((profile) => ({
     ...profile,
     member_id: mergeMember.id,
+    updated_at: new Date(),
   }));
 
   await client.insert({

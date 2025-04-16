@@ -21,7 +21,7 @@ export const checkDuplicates = schemaTask({
             m.primary_email AS value,
             groupArray(m.id) AS member_ids
           FROM member m FINAL
-          WHERE m.primary_email != '' AND m.workspace_id = '${workspace_id}'
+          WHERE m.primary_email != '' AND m.primary_email IS NOT NULL AND length(trim(m.primary_email)) > 0 AND m.workspace_id = '${workspace_id}'
           GROUP BY m.primary_email
           HAVING count() > 1
           
