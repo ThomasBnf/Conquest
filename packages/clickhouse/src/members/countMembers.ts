@@ -45,9 +45,9 @@ export const countMembers = async ({
         ${
           search
             ? `AND (
-                LOWER(trim(concat(first_name, ' ', last_name))) = LOWER(trim('${search}'))
-                OR LOWER(primary_email) LIKE LOWER(trim('%${search}%'))
-                OR arrayExists(attr -> attr.source = 'Github' AND position(lower(toString(attr.login)), '${search}') > 0, p.attributes)
+                positionCaseInsensitive(concat(first_name, ' ', last_name), LOWER(trim('${search}'))) > 0
+                OR positionCaseInsensitive(primary_email, LOWER(trim('${search}'))) > 0
+                OR arrayExists(attr -> attr.source = 'Github' AND positionCaseInsensitive(toString(attr.login), LOWER(trim('${search}'))) > 0, p.attributes)
               )`
             : ""
         }
