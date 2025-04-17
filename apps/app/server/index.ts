@@ -15,6 +15,7 @@ import { integrationsRouter } from "./integrations/router";
 import { levelsRouter } from "./levels/router";
 import { listsRouter } from "./lists/router";
 import { logsRouter } from "./logs/router";
+import { memberInWorkspaceRouter } from "./memberInWorkspace/router";
 import { membersRouter } from "./members/router";
 import { profilesRouter } from "./profiles/router";
 import { slackRouter } from "./slack/router";
@@ -43,6 +44,7 @@ export const appRouter = router({
   lists: listsRouter,
   logs: logsRouter,
   members: membersRouter,
+  memberInWorkspace: memberInWorkspaceRouter,
   profiles: profilesRouter,
   slack: slackRouter,
   stripe: stripeRouter,

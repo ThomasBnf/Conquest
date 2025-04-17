@@ -221,11 +221,26 @@ model user {
     created_at DateTime @default(now())
     updated_at DateTime @updatedAt
 
-    accounts Account[]
-    sessions Session[]
+    accounts          Account[]
+    sessions          Session[]
+    memberInWorkspace memberInWorkspace[]
 
     @@index([id])
     @@index([email])
+}
+
+model memberInWorkspace {
+    id           String    @id @default(uuid())
+    user_id      String
+    user         user      @relation(fields: [user_id], references: [id], onDelete: Cascade)
+    workspace_id String
+    workspace    workspace @relation(fields: [workspace_id], references: [id], onDelete: Cascade)
+
+    created_at DateTime @default(now())
+    updated_at DateTime @updatedAt
+
+    @@index([user_id])
+    @@index([workspace_id])
 }
 
 model VerificationToken {
@@ -285,19 +300,20 @@ model workspace {
     trial_end          DateTime?
     is_past_due        DateTime?
 
-    api_keys     api_key[]
-    events       event[]
-    integrations integration[]
-    lists        list[]
-    post         post[]
-    tags         tag[]
-    user         user[]
-    webhooks     webhook[]
-    workflows    workflow[]
+    api_keys          api_key[]
+    events            event[]
+    integrations      integration[]
+    lists             list[]
+    post              post[]
+    tags              tag[]
+    user              user[]
+    webhooks          webhook[]
+    workflows         workflow[]
+    duplicates        duplicate[]
+    memberInWorkspace memberInWorkspace[]
 
-    created_at DateTime    @default(now())
-    updated_at DateTime    @updatedAt
-    duplicate  duplicate[]
+    created_at DateTime @default(now())
+    updated_at DateTime @updatedAt
 
     @@index([id])
 }

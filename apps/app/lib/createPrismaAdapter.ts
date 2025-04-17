@@ -35,6 +35,13 @@ export const createAuthPrismaAdapter = (
       },
     });
 
+    await prisma.memberInWorkspace.create({
+      data: {
+        user_id: user.id,
+        workspace_id: workspace.id,
+      },
+    });
+
     await client.insert({
       table: "level",
       values: LEVELS.map((level) => ({

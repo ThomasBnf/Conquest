@@ -1,12 +1,19 @@
+import { trpc } from "@/server/client";
 import { Avatar, AvatarFallback, AvatarImage } from "@conquest/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@conquest/ui/dropdown-menu";
 import { LogOut } from "@conquest/ui/icons/LogOut";
 import { Settings } from "@conquest/ui/icons/Settings";
+import { Switch } from "@conquest/ui/icons/Switch";
+import { ScrollArea } from "@conquest/ui/scroll-area";
 import {
   SidebarMenu,
   SidebarMenuButton,
@@ -15,8 +22,8 @@ import {
   useSidebar,
 } from "@conquest/ui/sidebar";
 import type { Workspace } from "@conquest/zod/schemas/workspace.schema";
-import { ChevronsUpDown } from "lucide-react";
-import { signOut } from "next-auth/react";
+import { Check, ChevronsUpDown } from "lucide-react";
+import { signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
 type Props = {
@@ -24,9 +31,26 @@ type Props = {
 };
 
 export const WorkspaceMenu = ({ workspace }: Props) => {
-  const { name } = workspace ?? {};
+  const { data: session } = useSession();
+  const { id, name } = workspace ?? {};
   const { state } = useSidebar();
   const router = useRouter();
+
+  const { data: workspaces } = trpc.memberInWorkspace.list.useQuery();
+  const { mutateAsync } = trpc.users.update.useMutation();
+
+  const onSwitchWorkspace = async (workspace: Workspace) => {
+    if (!session?.user) return;
+
+    const { id: workspace_id, slug } = workspace;
+
+    await mutateAsync({
+      id: session.user.id,
+      workspace_id,
+    });
+
+    router.push(`/${slug}`);
+  };
 
   const onSignOut = () => {
     signOut({ redirectTo: "/auth/login" });
@@ -51,11 +75,33 @@ export const WorkspaceMenu = ({ workspace }: Props) => {
               <ChevronsUpDown className="!size-3.5" />
             </SidebarMenuButton>
           </DropdownMenuTrigger>
-          <DropdownMenuContent className="w-40" align="start">
+          <DropdownMenuContent className="w-52" align="start">
             <DropdownMenuItem onClick={() => router.push("/settings")}>
               <Settings size={18} />
               Settings
             </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuSub>
+              <DropdownMenuSubTrigger>
+                <Switch size={18} className="mr-2" />
+                Switch workspace
+              </DropdownMenuSubTrigger>
+              <DropdownMenuSubContent className="max-h-64 overflow-y-auto">
+                <ScrollArea className="h-full">
+                  {workspaces?.map((workspace) => (
+                    <DropdownMenuItem
+                      key={workspace.id}
+                      onClick={() => onSwitchWorkspace(workspace)}
+                    >
+                      {workspace.name}
+                      {id === workspace.id && (
+                        <Check size={16} className="ml-auto" />
+                      )}
+                    </DropdownMenuItem>
+                  ))}
+                </ScrollArea>
+              </DropdownMenuSubContent>
+            </DropdownMenuSub>
             <DropdownMenuItem onClick={onSignOut}>
               <LogOut size={18} />
               Logout
