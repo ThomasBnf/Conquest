@@ -1,5 +1,6 @@
 import { trpc } from "@/server/client";
 import { Avatar, AvatarFallback, AvatarImage } from "@conquest/ui/avatar";
+import { cn } from "@conquest/ui/cn";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -88,8 +89,12 @@ export const WorkspaceMenu = ({ workspace }: Props) => {
                 <Switch size={18} className="mr-2" />
                 Switch workspace
               </DropdownMenuSubTrigger>
-              <DropdownMenuSubContent className="max-h-64">
-                <ScrollArea className="h-full">
+              <DropdownMenuSubContent>
+                <ScrollArea
+                  className={cn(
+                    workspaces && workspaces?.length > 8 ? "max-h-64" : "h-fit",
+                  )}
+                >
                   {workspaces?.map((workspace) => (
                     <DropdownMenuItem
                       key={workspace.id}
