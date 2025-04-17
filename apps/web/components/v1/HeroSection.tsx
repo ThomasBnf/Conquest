@@ -1,7 +1,7 @@
 "use client";
 
 import { AnimatedGroup } from "@conquest/ui/animated-group";
-import { Button, buttonVariants } from "@conquest/ui/button";
+import { buttonVariants } from "@conquest/ui/button";
 import { TextAnimate } from "@conquest/ui/text-animate";
 import { ArrowRight } from "lucide-react";
 import Image from "next/image";
@@ -30,10 +30,6 @@ const transitionVariants = {
 
 export const HeroSection = () => {
   const router = useRouter();
-
-  const onDemo = () => {
-    router.push("https://cal.com/audrey-godard-conquest/30min");
-  };
 
   return (
     <section className="flex flex-col items-center gap-4 text-balance bg-sidebar px-4 pt-32 pb-12 text-center">
@@ -70,12 +66,15 @@ export const HeroSection = () => {
           href="https://app.useconquest.com/auth/signup"
           className={buttonVariants({ variant: "brand", size: "md" })}
         >
-          Start free trial
+          Try for free
           <ArrowRight size={16} />
         </Link>
-        <Button key="2" variant="outline" size="md" onClick={onDemo}>
+        <Link
+          href="https://cal.com/audrey-godard-conquest/30min"
+          className={buttonVariants({ variant: "outline", size: "md" })}
+        >
           Book a demo
-        </Button>
+        </Link>
       </AnimatedGroup>
       <TextAnimate
         as="p"

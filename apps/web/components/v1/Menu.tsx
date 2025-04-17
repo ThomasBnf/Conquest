@@ -30,6 +30,25 @@ export const Menu = () => {
     setDirection((prev) => prev * -1);
   };
 
+  const links = [
+    {
+      href: "/pricing",
+      label: "Pricing",
+    },
+    {
+      href: "/integrations",
+      label: "Integrations",
+    },
+    {
+      href: "https://join.slack.com/t/useconquest/shared_invite/zt-2x4fg4fut-7k0G3_D649TkfPc5WIPdgA",
+      label: "Community",
+    },
+    {
+      href: "/documentation",
+      label: "Documentation",
+    },
+  ];
+
   return (
     <>
       <div className="fixed inset-x z-20 flex w-full items-center justify-between px-4 py-3 backdrop-blur-md">
@@ -39,25 +58,15 @@ export const Menu = () => {
         <div className="flex items-center gap-4">
           {!isMobile && (
             <>
-              <Link
-                href="/pricing"
-                className={buttonVariants({ variant: "ghost" })}
-              >
-                Pricing
-              </Link>
-              {/* <Link
-                href="/integrations"
-                className={buttonVariants({ variant: "ghost" })}
-              >
-                Integrations
-              </Link> */}
-              <Link
-                href="https://docs.useconquest.com"
-                target="_blank"
-                className={buttonVariants({ variant: "ghost" })}
-              >
-                Documentation
-              </Link>
+              {links.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className={buttonVariants({ variant: "ghost" })}
+                >
+                  {link.label}
+                </Link>
+              ))}
               <Separator orientation="vertical" className="h-4" />
             </>
           )}
@@ -92,34 +101,30 @@ export const Menu = () => {
         )}
       >
         <Separator />
-        <div className="flex h-full flex-col p-4">
+        <div className="flex h-full flex-col">
           <div className="flex flex-col divide-y">
+            {links.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={cn(
+                  buttonVariants({ variant: "ghost", size: "lg" }),
+                  "justify-start rounded-none px-4 text-base",
+                )}
+              >
+                {link.label}
+              </Link>
+            ))}
+          </div>
+          <div className="mt-auto flex flex-col gap-2 p-4">
             <Link
-              href="/pricing"
+              href="https://cal.com/audrey-godard-conquest/30min"
               className={cn(
-                buttonVariants({ variant: "ghost", size: "lg" }),
-                "justify-start rounded-none text-base",
+                buttonVariants({ variant: "outline", size: "md" }),
+                "w-full",
               )}
             >
-              Pricing
-            </Link>
-            <Link
-              href="https://join.slack.com/t/useconquest/shared_invite/zt-2x4fg4fut-7k0G3_D649TkfPc5WIPdgA"
-              className={cn(
-                buttonVariants({ variant: "ghost", size: "lg" }),
-                "justify-start rounded-none text-base",
-              )}
-            >
-              Community
-            </Link>
-            <Link
-              href="/documentation"
-              className={cn(
-                buttonVariants({ variant: "ghost", size: "lg" }),
-                " justify-start rounded-none text-base",
-              )}
-            >
-              Documentation
+              Book a demo
             </Link>
           </div>
         </div>

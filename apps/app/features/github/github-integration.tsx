@@ -39,7 +39,7 @@ export const GithubIntegration = ({ error }: Props) => {
         error={error}
         integration={github}
         docUrl="https://docs.useconquest.com/integrations/github"
-        description="Connect your Github organization to get a complete overview of your members and community activity."
+        description="Connect your GitHub repository to track stargazers, issues, and pull requests."
         source="Github"
         onEnable={onEnable}
       >
