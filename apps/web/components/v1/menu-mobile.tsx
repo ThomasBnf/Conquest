@@ -45,6 +45,13 @@ export const MenuBar = () => {
               >
                 Pricing
               </Link>
+              <Link
+                href="https://docs.useconquest.com"
+                target="_blank"
+                className={buttonVariants({ variant: "ghost" })}
+              >
+                Documentation
+              </Link>
               <Separator orientation="vertical" className="h-4" />
             </>
           )}
