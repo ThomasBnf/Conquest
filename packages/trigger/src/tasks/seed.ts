@@ -21,7 +21,7 @@ export const seed = schemaTask({
       query: `
         SELECT *
         FROM member FINAL
-        WHERE workspace_id = ${workspace_id}
+        WHERE workspace_id = '${workspace_id}'
       `,
     });
 
