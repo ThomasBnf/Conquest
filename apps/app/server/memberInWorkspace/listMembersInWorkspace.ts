@@ -20,7 +20,9 @@ export const listMembersInWorkspace = protectedProcedure.query(
         workspace: true,
       },
       orderBy: {
-        created_at: "desc",
+        workspace: {
+          name: "asc",
+        },
       },
     });
 
