@@ -13,7 +13,7 @@ import menu from "../../public/menu.json";
 
 const Lottie = dynamic(() => import("lottie-react"), { ssr: false });
 
-export const MenuBar = () => {
+export const Menu = () => {
   const isMobile = useIsMobile();
   const lottieRef = useRef<LottieRefCurrentProps>(null);
   const [direction, setDirection] = useState(1);
@@ -45,6 +45,12 @@ export const MenuBar = () => {
               >
                 Pricing
               </Link>
+              {/* <Link
+                href="/integrations"
+                className={buttonVariants({ variant: "ghost" })}
+              >
+                Integrations
+              </Link> */}
               <Link
                 href="https://docs.useconquest.com"
                 target="_blank"

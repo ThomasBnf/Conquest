@@ -8,7 +8,11 @@ export const listMembersInWorkspace = protectedProcedure.query(
     const { role } = user;
 
     if (role === "STAFF") {
-      const workspaces = await prisma.workspace.findMany();
+      const workspaces = await prisma.workspace.findMany({
+        orderBy: {
+          name: "asc",
+        },
+      });
       return WorkspaceSchema.array().parse(workspaces);
     }
 
