@@ -54,8 +54,9 @@ export default function Page() {
           <h1 className="max-w-3xl font-bold font-telegraf text-4xl lg:text-6xl">
             Integrations
           </h1>
-          <p className="max-w-xl font-suisse text-lg text-muted-foreground">
-            Connect Conquest to your favorite tools and services in one click.
+          <p className="max-w-xl text-balance font-suisse text-lg text-muted-foreground">
+            No dev required – Connect your community and tools to Conquest in
+            just 5 clicks
           </p>
           <div className="mt-4 flex items-center gap-2">
             <Link
@@ -76,8 +77,10 @@ export default function Page() {
       </section>
       <section className="mx-auto grid w-full max-w-5xl gap-4 px-4 pt-24 md:grid-cols-2">
         {integrations.map((integration) => (
-          <div
+          <Link
             key={integration.name}
+            href={integration.documentation}
+            target="_blank"
             className="rounded-md border p-4 shadow-sm transition-all hover:scale-[1.02]"
           >
             {integration.logo}
@@ -87,7 +90,7 @@ export default function Page() {
             <p className="text-base text-muted-foreground">
               {integration.description}
             </p>
-          </div>
+          </Link>
         ))}
       </section>
     </MainLayout>
