@@ -86,7 +86,7 @@ export const WorkspaceMenu = ({ workspace }: Props) => {
                 <Switch size={18} className="mr-2" />
                 Switch workspace
               </DropdownMenuSubTrigger>
-              <DropdownMenuSubContent className="max-h-64 overflow-y-auto">
+              <DropdownMenuSubContent className="max-h-64">
                 <ScrollArea className="h-full">
                   {workspaces?.map((workspace) => (
                     <DropdownMenuItem
