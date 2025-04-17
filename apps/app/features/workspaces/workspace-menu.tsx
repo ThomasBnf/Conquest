@@ -35,6 +35,7 @@ export const WorkspaceMenu = ({ workspace }: Props) => {
   const { id, name } = workspace ?? {};
   const { state } = useSidebar();
   const router = useRouter();
+  const utils = trpc.useUtils();
 
   const { data: workspaces } = trpc.memberInWorkspace.list.useQuery();
   const { mutateAsync } = trpc.users.update.useMutation();
@@ -49,6 +50,7 @@ export const WorkspaceMenu = ({ workspace }: Props) => {
       workspace_id,
     });
 
+    utils.invalidate();
     router.push(`/${slug}`);
   };
 
