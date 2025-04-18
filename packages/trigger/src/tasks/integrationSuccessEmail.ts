@@ -1,10 +1,10 @@
 import { resend } from "@conquest/db/resend";
 import { getUserById } from "@conquest/db/users/getUserById";
-import { SuccessIntegrationEmail } from "@conquest/emails/SuccessIntegrationEmail";
 import { env } from "@conquest/env";
 import { IntegrationSchema } from "@conquest/zod/schemas/integration.schema";
 import { schemaTask } from "@trigger.dev/sdk/v3";
 import { z } from "zod";
+import { SuccessIntegrationEmail } from "../../../emails/src/SuccessIntegrationEmail";
 
 export const integrationSuccessEmail = schemaTask({
   id: "integration-success-email",

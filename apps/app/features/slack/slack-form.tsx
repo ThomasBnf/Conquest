@@ -23,8 +23,6 @@ export const SlackForm = () => {
     },
   });
 
-  const { mutateAsync: createEvent } = trpc.brevo.createEvent.useMutation();
-
   const { submit, run } = useRealtimeTaskTrigger<typeof installSlack>(
     "install-slack",
     { accessToken: slack?.trigger_token },
@@ -35,14 +33,6 @@ export const SlackForm = () => {
 
     setLoading(true);
     await mutateAsync({ id: slack.id, status: "SYNCING" });
-    await createEvent({
-      email: session.user.email,
-      event: "install_community",
-      eventData: {
-        community_id: slack.id,
-        source: "Slack",
-      },
-    });
     submit({ slack });
   };
 

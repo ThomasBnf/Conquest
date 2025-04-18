@@ -9,6 +9,7 @@ import { client } from "@conquest/clickhouse/client";
 import { PrismaClientKnownRequestError } from "@conquest/db/enum";
 import type { Prisma } from "@conquest/db/types";
 import { createWorkspace } from "@conquest/db/workspaces/createWorkspace";
+import { createContact } from "@conquest/emails/brevo/createContact";
 import { UserSchema } from "@conquest/zod/schemas/user.schema";
 import { isBefore, subHours } from "date-fns";
 import { v4 as uuid } from "uuid";
@@ -26,14 +27,16 @@ export const createAuthPrismaAdapter = (
       slug: uuid(),
     });
 
-    const user = await prisma.user.create({
-      data: {
-        email,
-        avatar_url: image ?? null,
-        emailVerified: new Date(),
-        workspace_id: workspace.id,
-      },
-    });
+    const user = UserSchema.parse(
+      await prisma.user.create({
+        data: {
+          email,
+          avatar_url: image ?? null,
+          emailVerified: new Date(),
+          workspace_id: workspace.id,
+        },
+      }),
+    );
 
     await prisma.memberInWorkspace.create({
       data: {
@@ -50,6 +53,8 @@ export const createAuthPrismaAdapter = (
       })),
       format: "JSON",
     });
+
+    await createContact({ user });
 
     return user as AdapterUser;
   },

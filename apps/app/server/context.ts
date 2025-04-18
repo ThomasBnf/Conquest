@@ -1,8 +1,7 @@
-import { auth } from "@/auth";
-import { headers } from "next/headers";
+import { getCacheAuth } from "@/cache/getCacheAuth";
 
 export const createContext = async () => {
-  const session = await auth();
+  const session = await getCacheAuth();
 
   return { session };
 };

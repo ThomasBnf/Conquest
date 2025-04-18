@@ -26,8 +26,6 @@ export const DiscourseForm = () => {
     },
   });
 
-  const { mutateAsync: createEvent } = trpc.brevo.createEvent.useMutation();
-
   const { submit, run, error } = useRealtimeTaskTrigger<
     typeof installDiscourse
   >("install-discourse", {
@@ -39,14 +37,6 @@ export const DiscourseForm = () => {
 
     setLoading(true);
     await mutateAsync({ id: discourse.id, status: "SYNCING" });
-    await createEvent({
-      email: session.user.email,
-      event: "install_community",
-      eventData: {
-        community_id: discourse.id,
-        source: "Discourse",
-      },
-    });
     submit({ discourse });
   };
 

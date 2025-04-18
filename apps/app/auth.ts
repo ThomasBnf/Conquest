@@ -1,6 +1,5 @@
 import { prisma } from "@conquest/db/prisma";
 import { resend } from "@conquest/db/resend";
-import { SignupEmail } from "@conquest/emails/SignupEmail";
 import { env } from "@conquest/env";
 import {
   type UserWithWorkspace,
@@ -10,6 +9,7 @@ import type { DefaultSession } from "next-auth";
 import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import Resend from "next-auth/providers/resend";
+import { SignupEmail } from "../../packages/emails/src/SignupEmail";
 import { createAuthPrismaAdapter } from "./lib/createPrismaAdapter";
 
 declare module "next-auth" {
