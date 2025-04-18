@@ -7,6 +7,7 @@ import type {
 } from "@auth/core/adapters";
 import { client } from "@conquest/clickhouse/client";
 import { PrismaClientKnownRequestError } from "@conquest/db/enum";
+import { resend } from "@conquest/db/resend";
 import type { Prisma } from "@conquest/db/types";
 import { createWorkspace } from "@conquest/db/workspaces/createWorkspace";
 import { createContact } from "@conquest/emails/brevo/createContact";
@@ -54,7 +55,18 @@ export const createAuthPrismaAdapter = (
       format: "JSON",
     });
 
+    if (process.env.NODE_ENV === "development") return user as AdapterUser;
+
     await createContact({ user });
+    await resend.emails.send({
+      from: "Conquest <hello@useconquest.com>",
+      to: ["audrey@useconquest.com", "thomas.bnfls@gmail.com"],
+      subject: "🚨 New user onboarding",
+      html: `
+        <p>New user onboarding: ${user.email}</p>
+        <p>Workspace: ${workspace.name}</p>
+      `,
+    });
 
     return user as AdapterUser;
   },

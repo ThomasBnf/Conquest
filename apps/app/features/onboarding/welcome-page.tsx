@@ -8,6 +8,7 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
+import { StepsIndicator } from "./steps-indicator";
 
 export const WelcomePage = () => {
   const { data: session, update } = useSession();
@@ -59,6 +60,7 @@ export const WelcomePage = () => {
           )}
         </Button>
       </div>
+      <StepsIndicator step={4} />
     </>
   );
 };
