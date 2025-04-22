@@ -47,10 +47,6 @@ export const POST = async (request: NextRequest) => {
           plan: Plan;
         };
 
-        const { trial_end } = workspace;
-
-        const isTrialEnded = trial_end && isBefore(trial_end, new Date());
-
         await prisma.workspace.update({
           where: {
             id: workspace.id,
@@ -58,7 +54,6 @@ export const POST = async (request: NextRequest) => {
           data: {
             plan,
             price_id,
-            trial_end: isTrialEnded ? null : trial_end,
             is_past_due: null,
           },
         });
