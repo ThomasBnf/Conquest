@@ -1,6 +1,5 @@
 import { trpc } from "@/server/client";
 import { Avatar, AvatarFallback, AvatarImage } from "@conquest/ui/avatar";
-import { cn } from "@conquest/ui/cn";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,7 +13,6 @@ import {
 import { LogOut } from "@conquest/ui/icons/LogOut";
 import { Settings } from "@conquest/ui/icons/Settings";
 import { Switch } from "@conquest/ui/icons/Switch";
-import { ScrollArea } from "@conquest/ui/scroll-area";
 import {
   SidebarMenu,
   SidebarMenuButton,
@@ -90,23 +88,17 @@ export const WorkspaceMenu = ({ workspace }: Props) => {
                 Switch workspace
               </DropdownMenuSubTrigger>
               <DropdownMenuSubContent>
-                <ScrollArea
-                  className={cn(
-                    workspaces && workspaces?.length > 8 ? "max-h-64" : "h-fit",
-                  )}
-                >
-                  {workspaces?.map((workspace) => (
-                    <DropdownMenuItem
-                      key={workspace.id}
-                      onClick={() => onSwitchWorkspace(workspace)}
-                    >
-                      {workspace.name}
-                      {id === workspace.id && (
-                        <Check size={16} className="ml-auto" />
-                      )}
-                    </DropdownMenuItem>
-                  ))}
-                </ScrollArea>
+                {workspaces?.map((workspace) => (
+                  <DropdownMenuItem
+                    key={workspace.id}
+                    onClick={() => onSwitchWorkspace(workspace)}
+                  >
+                    {workspace.name}
+                    {id === workspace.id && (
+                      <Check size={16} className="ml-auto" />
+                    )}
+                  </DropdownMenuItem>
+                ))}
               </DropdownMenuSubContent>
             </DropdownMenuSub>
             <DropdownMenuItem onClick={onSignOut}>
