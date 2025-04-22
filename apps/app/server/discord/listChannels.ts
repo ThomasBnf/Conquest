@@ -37,8 +37,6 @@ export const listChannels = protectedProcedure.query(
       Routes.guildChannels(external_id),
     )) as APIGuildCategoryChannel[];
 
-    console.log(channels);
-
     const filteredChannels = channels.filter((channel) => {
       if (EXCLUDED_CHANNEL_TYPES.includes(channel.type)) return false;
 
