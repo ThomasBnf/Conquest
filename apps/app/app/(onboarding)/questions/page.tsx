@@ -139,7 +139,7 @@ export default function Page() {
                   <Loader2 className="size-4 animate-spin" />
                 ) : (
                   <>
-                    Suivant
+                    Next
                     <ArrowRightIcon size={16} />
                   </>
                 )}

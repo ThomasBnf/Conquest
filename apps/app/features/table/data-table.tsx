@@ -2,17 +2,18 @@ import { useTable } from "@/hooks/useTable";
 import { cn } from "@conquest/ui/cn";
 import { ScrollArea, ScrollBar } from "@conquest/ui/scroll-area";
 import { Company } from "@conquest/zod/schemas/company.schema";
-import { Member } from "@conquest/zod/schemas/member.schema";
+import { FullMember } from "@conquest/zod/schemas/member.schema";
 import { useEffect } from "react";
 import { useInView } from "react-intersection-observer";
+import { LoadMore } from "./load-more";
 import { ActionsMenu } from "./settings/actions-menu";
 import { TableSkeleton } from "./table-skeletton";
 
-type Props<TData extends Member | Company> = {
+type Props<TData extends FullMember | Company> = {
   table: ReturnType<typeof useTable<TData>>;
 };
 
-export const DataTable = <TData extends Member | Company>({
+export const DataTable = <TData extends FullMember | Company>({
   table,
 }: Props<TData>) => {
   const { ref, inView } = useInView();
@@ -87,7 +88,7 @@ export const DataTable = <TData extends Member | Company>({
                   ))}
               </div>
             ))}
-            <div ref={ref} />
+            <LoadMore hasNextPage={hasNextPage} ref={ref} />
           </div>
         </div>
         <ScrollBar orientation="horizontal" className="z-20" />

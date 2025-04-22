@@ -2,7 +2,8 @@ import { client } from "@conquest/clickhouse/client";
 import { getFilters } from "@conquest/clickhouse/helpers/getFilters";
 import { orderByParser } from "@conquest/clickhouse/helpers/orderByParser";
 import { GroupFilters } from "@conquest/zod/schemas/filters.schema";
-import { MemberSchema } from "@conquest/zod/schemas/member.schema";
+import { FullMemberSchema } from "@conquest/zod/schemas/member.schema";
+import { cleanPrefix } from "../helpers/cleanPrefix";
 
 type Props = {
   cursor: number | null | undefined;
@@ -25,58 +26,26 @@ export const listFilteredMembers = async ({
 
   const filterBy = getFilters({ groupFilters });
   const filtersStr = filterBy.join(operator === "OR" ? " OR " : " AND ");
-
-  const profileJoin =
-    groupFilters.filters.some(
-      (filter) =>
-        search ||
-        filter.field === "profiles" ||
-        filter.field.includes("discourse-") ||
-        filter.field.includes("github-"),
-    ) || search;
-
   const orderBy = orderByParser({ id, desc, type: "members" });
 
   const result = await client.query({
     query: `
         SELECT 
-          m.id as id,
-          m.first_name,
-          m.last_name, 
-          m.primary_email,
-          m.emails,
-          m.phones,
-          m.job_title,
-          m.avatar_url,
-          m.country,
-          m.language,
-          m.tags as tags,
-          m.linkedin_url,
-          m.level_id,
-          m.pulse,
-          m.source as source,
-          m.company_id,
-          m.workspace_id as workspace_id,
-          m.first_activity,
-          m.last_activity,
-          m.created_at as created_at,
-          m.updated_at as updated_at,
-          l.number,
-          ${profileJoin ? "p.attributes" : ""}
+          m.*,
+          c.name as company,
+          l.number as level,
+          l.name as level_name,
+          p.attributes
         FROM member m FINAL
         LEFT JOIN level l ON m.level_id = l.id
         LEFT JOIN company c ON m.company_id = c.id
-        ${
-          profileJoin
-            ? `LEFT JOIN (
-                SELECT 
-                  member_id,
-                  groupArray(attributes) as attributes
-                FROM profile
-                GROUP BY member_id
-              ) p ON m.id = p.member_id`
-            : ""
-        }
+        LEFT JOIN (
+          SELECT 
+            member_id,
+            groupArray(attributes) as attributes
+          FROM profile
+          GROUP BY member_id
+        ) p ON m.id = p.member_id
         WHERE m.workspace_id = '${workspace_id}'
         ${
           search
@@ -95,5 +64,6 @@ export const listFilteredMembers = async ({
   });
 
   const { data } = await result.json();
-  return MemberSchema.array().parse(data);
+  const cleanData = cleanPrefix("m.", data);
+  return FullMemberSchema.array().parse(cleanData);
 };

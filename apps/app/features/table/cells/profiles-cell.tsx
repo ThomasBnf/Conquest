@@ -1,34 +1,53 @@
-import { trpc } from "@/server/client";
-import { ProfileIconParser } from "@/utils/profile-icon-parser";
-import { Skeleton } from "@conquest/ui/skeleton";
-import type { Member } from "@conquest/zod/schemas/member.schema";
+import { Badge } from "@conquest/ui/badge";
+import { Discord } from "@conquest/ui/icons/Discord";
+import { Discourse } from "@conquest/ui/icons/Discourse";
+import { Github } from "@conquest/ui/icons/Github";
+import { Linkedin } from "@conquest/ui/icons/Linkedin";
+import { Livestorm } from "@conquest/ui/icons/Livestorm";
+import { Slack } from "@conquest/ui/icons/Slack";
+import { Twitter } from "@conquest/ui/icons/Twitter";
+import type { FullMember } from "@conquest/zod/schemas/member.schema";
 
 type Props = {
-  member: Member;
+  member: FullMember;
 };
 
 export const ProfilesCell = ({ member }: Props) => {
-  const { data, isLoading } = trpc.profiles.list.useQuery({
-    member_id: member.id,
-  });
-
   return (
     <div className="flex items-center gap-1">
-      {isLoading ? (
-        <div className="flex items-center gap-1">
-          <Skeleton className="size-7" />
-          <Skeleton className="size-7" />
-          <Skeleton className="size-7" />
-        </div>
-      ) : (
-        data
-          ?.sort((a, b) =>
-            a.attributes.source.localeCompare(b.attributes.source),
-          )
-          .map((profile) => (
-            <ProfileIconParser key={profile.id} profile={profile} />
-          ))
-      )}
+      {member.attributes
+        ?.sort((a, b) => a.source.localeCompare(b.source))
+        .map((profile) => {
+          const { source } = profile;
+          const IconComponent = getIconComponent(source);
+
+          return (
+            <Badge key={source} variant="secondary">
+              <IconComponent size={16} />
+            </Badge>
+          );
+        })}
     </div>
   );
+};
+
+const getIconComponent = (source: string) => {
+  switch (source) {
+    case "Discord":
+      return Discord;
+    case "Discourse":
+      return Discourse;
+    case "Github":
+      return Github;
+    case "Livestorm":
+      return Livestorm;
+    case "Linkedin":
+      return Linkedin;
+    case "Slack":
+      return Slack;
+    case "Twitter":
+      return Twitter;
+    default:
+      return Discord;
+  }
 };

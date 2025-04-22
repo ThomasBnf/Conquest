@@ -3,12 +3,12 @@
 import { CountryBadge } from "@/components/badges/country-badge";
 import { LanguageBadge } from "@/components/badges/language-badge";
 import { SourceBadge } from "@/components/badges/source-badge";
-import { LevelBadge } from "@/features/members/level-badge";
 import { PulseBadge } from "@/features/members/pulse-badge";
 import { useTable } from "@/hooks/useTable";
+import { Badge } from "@conquest/ui/badge";
 import { Checkbox } from "@conquest/ui/checkbox";
-import { Member } from "@conquest/zod/schemas/member.schema";
-import { CompanyCell } from "../cells/company-cell";
+import { Level } from "@conquest/ui/icons/Level";
+import { FullMember } from "@conquest/zod/schemas/member.schema";
 import { DateCell } from "../cells/date-cell";
 import { FullNameCell } from "../cells/full-name-cell";
 import { ProfilesCell } from "../cells/profiles-cell";
@@ -33,7 +33,7 @@ export type Column<TData> = {
   isFixed?: boolean;
 };
 
-export const membersColumns = (): Column<Member>[] => {
+export const membersColumns = (): Column<FullMember>[] => {
   return [
     {
       key: "name",
@@ -94,7 +94,7 @@ export const membersColumns = (): Column<Member>[] => {
           table={table}
         />
       ),
-      cell: ({ item }) => <CompanyCell member={item} />,
+      cell: ({ item }) => <p className="truncate">{item.company}</p>,
       width: 250,
     },
     {
@@ -120,7 +120,18 @@ export const membersColumns = (): Column<Member>[] => {
           table={table}
         />
       ),
-      cell: ({ item }) => <LevelBadge member={item} />,
+      cell: ({ item }) => (
+        <Badge variant="secondary">
+          <Level size={18} />
+          {item.level ? (
+            <p>
+              {item.level} • {item.level_name}
+            </p>
+          ) : (
+            <p className="text-muted-foreground">No level</p>
+          )}
+        </Badge>
+      ),
       width: 200,
     },
     {

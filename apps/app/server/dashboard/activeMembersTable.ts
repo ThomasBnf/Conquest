@@ -1,6 +1,7 @@
 import { client } from "@conquest/clickhouse/client";
+import { cleanPrefix } from "@conquest/clickhouse/helpers/cleanPrefix";
 import { orderByParser } from "@conquest/clickhouse/helpers/orderByParser";
-import { MemberSchema } from "@conquest/zod/schemas/member.schema";
+import { FullMemberSchema } from "@conquest/zod/schemas/member.schema";
 import { format } from "date-fns";
 import { toZonedTime } from "date-fns-tz";
 import { z } from "zod";
@@ -32,18 +33,35 @@ export const activeMembersTable = protectedProcedure
 
     const result = await client.query({
       query: `
-        SELECT DISTINCT m.*
+        SELECT DISTINCT
+          m.*,
+          c.name as company,
+          l.number as level,
+          l.name as level_name,
+          p.attributes,
         FROM member m FINAL
-        INNER JOIN activity a ON m.id = a.member_id
+        LEFT JOIN activity a ON m.id = a.member_id
         LEFT JOIN level l ON m.level_id = l.id
+        LEFT JOIN company c ON m.company_id = c.id
+        LEFT JOIN (
+          SELECT 
+            member_id,
+            groupArray(attributes) as attributes
+          FROM profile
+          GROUP BY member_id
+        ) p ON m.id = p.member_id
         WHERE 
           m.workspace_id = '${workspace_id}'
           AND a.created_at BETWEEN '${_from}' AND '${_to}'
-          AND (
-            positionCaseInsensitive(concat(toString(first_name), ' ', toString(last_name)), '${search}') > 0
-            OR positionCaseInsensitive(concat(toString(last_name), ' ', toString(first_name)), '${search}') > 0
-            OR positionCaseInsensitive(toString(primary_email), '${search}') > 0
-          )
+          ${
+            search
+              ? `AND (
+                positionCaseInsensitive(concat(first_name, ' ', last_name), LOWER(trim('${search}'))) > 0
+                OR positionCaseInsensitive(primary_email, LOWER(trim('${search}'))) > 0
+                OR arrayExists(attr -> attr.source = 'Github' AND positionCaseInsensitive(toString(attr.login), LOWER(trim('${search}'))) > 0, p.attributes)
+              )`
+              : ""
+          }
         ${orderBy}
         ${cursor ? `LIMIT 25 OFFSET ${cursor}` : "LIMIT 25"}
       `,
@@ -51,26 +69,6 @@ export const activeMembersTable = protectedProcedure
     });
 
     const { data } = await result.json();
-
-    const transformFlatActivity = (row: Record<string, unknown>) => {
-      const result: Record<string, unknown> = {};
-      const activityType: Record<string, unknown> = {};
-
-      for (const [key, value] of Object.entries(row)) {
-        if (key.startsWith("m.")) {
-          result[key.substring(2)] = value;
-        } else {
-          result[key] = value;
-        }
-      }
-
-      result.activity_type = activityType;
-      return result;
-    };
-
-    const members = data.map((row: unknown) =>
-      transformFlatActivity(row as Record<string, unknown>),
-    );
-
-    return MemberSchema.array().parse(members);
+    const cleanData = cleanPrefix("m.", data);
+    return FullMemberSchema.array().parse(cleanData);
   });

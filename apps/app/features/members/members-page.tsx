@@ -31,12 +31,10 @@ export const MembersPage = () => {
     { getNextPageParam: (_, allPages) => allPages.length * 25 },
   );
 
-  const { data: count, failureReason } = trpc.members.count.useQuery({
+  const { data: count } = trpc.members.count.useQuery({
     search,
     groupFilters,
   });
-
-  if (failureReason) console.error(failureReason);
 
   const members = data?.pages.flat();
   const hasNextPage = data?.pages.at(-1)?.length === 25;

@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { SOURCE } from "../enum/source.enum";
-import { ProfileSchema } from "./profile.schema";
+import { ProfileAttributesSchema, ProfileSchema } from "./profile.schema";
 
 export const MemberSchema = z.object({
   id: z.string().uuid(),
@@ -30,5 +30,13 @@ export const MemberWithProfilesSchema = MemberSchema.extend({
   profiles: z.array(ProfileSchema),
 });
 
+export const FullMemberSchema = MemberSchema.extend({
+  company: z.string(),
+  level: z.number(),
+  level_name: z.string().optional(),
+  attributes: z.array(ProfileAttributesSchema),
+});
+
 export type Member = z.infer<typeof MemberSchema>;
 export type MemberWithProfiles = z.infer<typeof MemberWithProfilesSchema>;
+export type FullMember = z.infer<typeof FullMemberSchema>;
