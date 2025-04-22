@@ -51,35 +51,17 @@ export const checkDuplicates = schemaTask({
             groupArray(member_id) AS member_ids
           FROM (
               SELECT 
+                  p.member_id,
                   JSONExtractString(toString(p.attributes), 'username') AS username,
-                  p.member_id
+                  JSONExtractString(toString(p.attributes), 'source') AS source
               FROM profile p FINAL
               WHERE 
-                JSONExtractString(toString(p.attributes), 'source') = 'Discord' 
-                AND JSONExtractString(toString(p.attributes), 'username') != ''
-                AND p.workspace_id = '${workspace_id}'
-
-              UNION ALL
-
-              SELECT 
-                  JSONExtractString(toString(p.attributes), 'username') AS username,
-                  p.member_id
-              FROM profile p FINAL
-              WHERE 
-                JSONExtractString(toString(p.attributes), 'source') = 'Discourse'
-                AND JSONExtractString(toString(p.attributes), 'username') != ''
-                AND p.workspace_id = '${workspace_id}'
-
-              UNION ALL
-
-              SELECT 
-                  JSONExtractString(toString(p.attributes), 'login') AS username,
-                  p.member_id
-              FROM profile p FINAL
-              WHERE 
-                JSONExtractString(toString(p.attributes), 'source') = 'Github'
-                AND JSONExtractString(toString(p.attributes), 'login') != ''
-                AND p.workspace_id = '${workspace_id}'
+                p.workspace_id = '${workspace_id}'
+                AND (
+                  (JSONExtractString(toString(p.attributes), 'source') = 'Discord' AND JSONExtractString(toString(p.attributes), 'username') != '')
+                  OR (JSONExtractString(toString(p.attributes), 'source') = 'Discourse' AND JSONExtractString(toString(p.attributes), 'username') != '')
+                  OR (JSONExtractString(toString(p.attributes), 'source') = 'Github' AND JSONExtractString(toString(p.attributes), 'login') != '')
+                )
           )
           GROUP BY username
           HAVING count() > 1
