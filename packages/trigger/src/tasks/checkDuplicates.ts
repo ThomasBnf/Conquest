@@ -21,7 +21,11 @@ export const checkDuplicates = schemaTask({
             m.primary_email AS value,
             groupArray(m.id) AS member_ids
           FROM member m FINAL
-          WHERE m.primary_email != '' AND m.primary_email IS NOT NULL AND length(trim(m.primary_email)) > 0 AND m.workspace_id = '${workspace_id}'
+          WHERE 
+            m.primary_email != '' 
+            AND m.primary_email IS NOT NULL 
+            AND length(trim(m.primary_email)) > 0 
+            AND m.workspace_id = '${workspace_id}'
           GROUP BY m.primary_email
           HAVING count() > 1
           
@@ -32,7 +36,10 @@ export const checkDuplicates = schemaTask({
             concat(m.first_name, ' ', m.last_name) AS value,
             groupArray(m.id) AS member_ids
           FROM member m FINAL
-          WHERE m.first_name != '' AND m.last_name != '' AND m.workspace_id = '${workspace_id}'
+          WHERE 
+            m.first_name != ''
+            AND m.last_name != ''
+            AND m.workspace_id = '${workspace_id}'
           GROUP BY m.first_name, m.last_name
           HAVING count() > 1
 
@@ -47,9 +54,10 @@ export const checkDuplicates = schemaTask({
                   JSONExtractString(toString(p.attributes), 'username') AS username,
                   p.member_id
               FROM profile p FINAL
-              WHERE JSONExtractString(toString(p.attributes), 'source') = 'Discord' 
-              AND JSONExtractString(toString(p.attributes), 'username') != ''
-              AND p.workspace_id = '${workspace_id}'
+              WHERE 
+                JSONExtractString(toString(p.attributes), 'source') = 'Discord' 
+                AND JSONExtractString(toString(p.attributes), 'username') != ''
+                AND p.workspace_id = '${workspace_id}'
 
               UNION ALL
 
@@ -57,9 +65,10 @@ export const checkDuplicates = schemaTask({
                   JSONExtractString(toString(p.attributes), 'username') AS username,
                   p.member_id
               FROM profile p FINAL
-              WHERE JSONExtractString(toString(p.attributes), 'source') = 'Discourse'
-              AND JSONExtractString(toString(p.attributes), 'username') != ''
-              AND p.workspace_id = '${workspace_id}'
+              WHERE 
+                JSONExtractString(toString(p.attributes), 'source') = 'Discourse'
+                AND JSONExtractString(toString(p.attributes), 'username') != ''
+                AND p.workspace_id = '${workspace_id}'
 
               UNION ALL
 
@@ -67,9 +76,10 @@ export const checkDuplicates = schemaTask({
                   JSONExtractString(toString(p.attributes), 'login') AS username,
                   p.member_id
               FROM profile p FINAL
-              WHERE JSONExtractString(toString(p.attributes), 'source') = 'Github'
-              AND JSONExtractString(toString(p.attributes), 'login') != ''
-              AND p.workspace_id = '${workspace_id}'
+              WHERE 
+                JSONExtractString(toString(p.attributes), 'source') = 'Github'
+                AND JSONExtractString(toString(p.attributes), 'login') != ''
+                AND p.workspace_id = '${workspace_id}'
           )
           GROUP BY username
           HAVING count() > 1
@@ -84,8 +94,6 @@ export const checkDuplicates = schemaTask({
           member_ids: string[];
         }[];
       };
-
-      console.log(data);
 
       const duplicates = await listAllDuplicates({ workspace_id });
 
@@ -102,8 +110,6 @@ export const checkDuplicates = schemaTask({
 
         const memberIds = member_ids.map((id) => `'${id}'`).join(",");
 
-        console.log(memberIds);
-
         const result = await client.query({
           query: `
             SELECT sum(pulse) 
@@ -119,8 +125,6 @@ export const checkDuplicates = schemaTask({
         };
 
         const total_pulse = pulse[0] ? Number(pulse[0]["sum(pulse)"]) : 0;
-
-        console.log(total_pulse);
 
         if (duplicate) {
           if (total_pulse === duplicate.total_pulse) continue;

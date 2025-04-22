@@ -104,6 +104,16 @@ export const mergeMembers = async ({
 
   const { data } = await result.json();
   const profiles = ProfileSchema.array().parse(data);
+  const profilesIds = profiles.map((p) => `'${p.id}'`).join(", ");
+
+  await client.query({
+    query: `
+      ALTER TABLE profile
+      DELETE 
+      WHERE id IN (${profilesIds})
+      AND workspace_id = '${workspace_id}'
+     `,
+  });
 
   const profilesValues = profiles.map((profile) => ({
     ...profile,
@@ -111,18 +121,10 @@ export const mergeMembers = async ({
     updated_at: new Date(),
   }));
 
-  console.log(profilesValues);
-
-  const resultProfiles = await client.insert({
+  await client.insert({
     table: "profile",
     values: profilesValues,
     format: "JSON",
-  });
-
-  console.log(resultProfiles);
-
-  await client.query({
-    query: "OPTIMIZE TABLE profile FINAL",
   });
 
   await updateMember({ ...mergeMember });
