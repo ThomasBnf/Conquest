@@ -25,7 +25,6 @@ import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { LoadingIntegrations } from "../states/loading-integrations";
-import { DuplicateMenu } from "./duplicate-menu";
 import { SidebarLists } from "./sidebar-lists";
 import { TrialCard } from "./trial-card";
 
@@ -103,7 +102,7 @@ export const AppSidebar = ({ workspace }: Props) => {
                 </SidebarMenuButton>
               </SidebarMenuItem>
             ))}
-            <DuplicateMenu />
+            {/* <DuplicateMenu /> */}
           </SidebarMenu>
         </SidebarGroup>
         {state === "expanded" && <SidebarLists />}

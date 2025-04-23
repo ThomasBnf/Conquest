@@ -39,7 +39,7 @@ export const createAuthPrismaAdapter = (
       }),
     );
 
-    await prisma.memberInWorkspace.create({
+    await prisma.userInWorkspace.create({
       data: {
         user_id: user.id,
         workspace_id: workspace.id,

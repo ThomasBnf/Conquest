@@ -36,7 +36,7 @@ export const WorkspaceMenu = ({ workspace }: Props) => {
   const router = useRouter();
   const utils = trpc.useUtils();
 
-  const { data: workspaces } = trpc.memberInWorkspace.list.useQuery();
+  const { data: workspaces } = trpc.userInWorkspace.list.useQuery();
   const { mutateAsync } = trpc.users.update.useMutation();
 
   const onSwitchWorkspace = async (workspace: Workspace) => {

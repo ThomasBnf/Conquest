@@ -2,7 +2,7 @@ import { prisma } from "@conquest/db/prisma";
 import { WorkspaceSchema } from "@conquest/zod/schemas/workspace.schema";
 import { protectedProcedure } from "../trpc";
 
-export const listMembersInWorkspace = protectedProcedure.query(
+export const listUsersInWorkspace = protectedProcedure.query(
   async ({ ctx }) => {
     const { user } = ctx;
     const { role } = user;
@@ -16,7 +16,7 @@ export const listMembersInWorkspace = protectedProcedure.query(
       return WorkspaceSchema.array().parse(workspaces);
     }
 
-    const membersInWorkspace = await prisma.memberInWorkspace.findMany({
+    const usersInWorkspace = await prisma.userInWorkspace.findMany({
       where: {
         user_id: user.id,
       },
@@ -30,7 +30,7 @@ export const listMembersInWorkspace = protectedProcedure.query(
       },
     });
 
-    const workspaces = membersInWorkspace.map((member) => member.workspace);
+    const workspaces = usersInWorkspace.map((user) => user.workspace);
     return WorkspaceSchema.array().parse(workspaces);
   },
 );

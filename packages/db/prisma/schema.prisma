@@ -139,10 +139,6 @@ model integration {
     @@index([external_id])
 }
 
-model invitation {
-    id String @id @default(uuid())
-}
-
 model list {
     id           String @id @default(uuid())
     emoji        String
@@ -221,15 +217,15 @@ model user {
     created_at DateTime @default(now())
     updated_at DateTime @updatedAt
 
-    accounts          Account[]
-    sessions          Session[]
-    memberInWorkspace memberInWorkspace[]
+    accounts        Account[]
+    sessions        Session[]
+    userInWorkspace userInWorkspace[]
 
     @@index([id])
     @@index([email])
 }
 
-model memberInWorkspace {
+model userInWorkspace {
     id           String    @id @default(uuid())
     user_id      String
     user         user      @relation(fields: [user_id], references: [id], onDelete: Cascade)
@@ -240,6 +236,18 @@ model memberInWorkspace {
     updated_at DateTime @updatedAt
 
     @@index([user_id])
+    @@index([workspace_id])
+}
+
+model userInvitation {
+    id           String    @id @default(uuid())
+    email        String
+    workspace_id String
+    workspace    workspace @relation(fields: [workspace_id], references: [id], onDelete: Cascade)
+
+    created_at DateTime @default(now())
+    updated_at DateTime @updatedAt
+
     @@index([workspace_id])
 }
 
@@ -300,20 +308,21 @@ model workspace {
     trial_end          DateTime?
     is_past_due        DateTime?
 
-    api_keys          api_key[]
-    events            event[]
-    integrations      integration[]
-    lists             list[]
-    post              post[]
-    tags              tag[]
-    user              user[]
-    webhooks          webhook[]
-    workflows         workflow[]
-    duplicates        duplicate[]
-    memberInWorkspace memberInWorkspace[]
+    api_keys        api_key[]
+    events          event[]
+    integrations    integration[]
+    lists           list[]
+    post            post[]
+    tags            tag[]
+    user            user[]
+    webhooks        webhook[]
+    workflows       workflow[]
+    duplicates      duplicate[]
+    userInWorkspace userInWorkspace[]
 
-    created_at DateTime @default(now())
-    updated_at DateTime @updatedAt
+    created_at     DateTime         @default(now())
+    updated_at     DateTime         @updatedAt
+    userInvitation userInvitation[]
 
     @@index([id])
 }

@@ -14,12 +14,13 @@ import { integrationsRouter } from "./integrations/router";
 import { levelsRouter } from "./levels/router";
 import { listsRouter } from "./lists/router";
 import { logsRouter } from "./logs/router";
-import { memberInWorkspaceRouter } from "./memberInWorkspace/router";
+import { userInWorkspaceRouter } from "./userInWorkspace/router";
 import { membersRouter } from "./members/router";
 import { profilesRouter } from "./profiles/router";
 import { slackRouter } from "./slack/router";
 import { stripeRouter } from "./stripe/router";
 import { tagsRouter } from "./tags/router";
+import { teamRouter } from "./team/router";
 import { router } from "./trpc";
 import { usersRouter } from "./users/router";
 import { workspacesRouter } from "./workspaces/router";
@@ -42,11 +43,12 @@ export const appRouter = router({
   lists: listsRouter,
   logs: logsRouter,
   members: membersRouter,
-  memberInWorkspace: memberInWorkspaceRouter,
+  userInWorkspace: userInWorkspaceRouter,
   profiles: profilesRouter,
   slack: slackRouter,
   stripe: stripeRouter,
   tags: tagsRouter,
+  team: teamRouter,
   users: usersRouter,
   workspaces: workspacesRouter,
 });

@@ -14,7 +14,6 @@
     "/v1/activities": {
       "get": {
         "description": "List all activities from your workspace",
-        "security": [{ "bearerAuth": [] }],
         "parameters": [
           {
             "name": "page",
@@ -43,126 +42,6 @@
             "content": {
               "application/json": {
                 "schema": { "$ref": "#/components/schemas/Activities" }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/error.BAD_REQUEST" }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/error.UNAUTHORIZED" }
-              }
-            }
-          },
-          "404": {
-            "description": "Not Found",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/error.NOT_FOUND" }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/v1/activities/{member_id}": {
-      "get": {
-        "description": "List all activities from a member",
-        "security": [{ "bearerAuth": [] }],
-        "parameters": [
-          {
-            "in": "path",
-            "name": "member_id",
-            "schema": {
-              "type": "string"
-            },
-            "required": true
-          },
-          {
-            "name": "page",
-            "in": "query",
-            "description": "The page number to return",
-            "schema": {
-              "type": "integer",
-              "format": "int32",
-              "default": 1
-            }
-          },
-          {
-            "name": "page_size",
-            "in": "query",
-            "description": "The number of results to return per page",
-            "schema": {
-              "type": "integer",
-              "format": "int32",
-              "default": 10
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful response",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/Member" }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/error.BAD_REQUEST"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/error.UNAUTHORIZED" }
-              }
-            }
-          },
-          "404": {
-            "description": "Not Found",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/error.NOT_FOUND" }
-              }
-            }
-          }
-        }
-      },
-      "post": {
-        "description": "Create a new activity attached to a member",
-        "security": [{ "bearerAuth": [] }],
-        "parameters": [
-          {
-            "in": "path",
-            "name": "member_id",
-            "schema": {
-              "type": "string"
-            },
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful response",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/Activity" }
               }
             }
           },
@@ -1163,12 +1042,6 @@
     }
   },
   "components": {
-    "securitySchemes": {
-      "bearerAuth": {
-        "type": "http",
-        "scheme": "bearer"
-      }
-    },
     "schemas": {
       "Activities": {
         "type": "object",
@@ -1188,37 +1061,31 @@
                 },
                 "external_id": {
                   "type": "string",
-                  "nullable": true,
                   "example": "ext_123"
                 },
                 "title": {
                   "type": "string",
-                  "nullable": true,
                   "example": "Activity Title"
                 },
                 "message": {
                   "type": "string",
                   "example": "This is an activity message"
                 },
-                "thread_id": {
-                  "type": "string",
-                  "nullable": true,
-                  "example": "thread_123"
-                },
                 "reply_to": {
                   "type": "string",
-                  "nullable": true,
                   "example": "cm5fkwwup0006dntb34yzw7dd"
                 },
                 "react_to": {
                   "type": "string",
-                  "nullable": true,
                   "example": "cm5fkwwup0006dntb34yzw7dd"
                 },
                 "invite_to": {
                   "type": "string",
-                  "nullable": true,
                   "example": "cm5fkwwup0006dntb34yzw7dd"
+                },
+                "source": {
+                  "type": "string",
+                  "example": "Slack"
                 },
                 "activity_type_id": {
                   "type": "string",
@@ -1275,37 +1142,31 @@
               },
               "external_id": {
                 "type": "string",
-                "nullable": true,
                 "example": "ext_123"
               },
               "title": {
                 "type": "string",
-                "nullable": true,
                 "example": "Activity Title"
               },
               "message": {
                 "type": "string",
                 "example": "This is an activity message"
               },
-              "thread_id": {
-                "type": "string",
-                "nullable": true,
-                "example": "thread_123"
-              },
               "reply_to": {
                 "type": "string",
-                "nullable": true,
                 "example": "cm5fkwwup0006dntb34yzw7dd"
               },
               "react_to": {
                 "type": "string",
-                "nullable": true,
                 "example": "cm5fkwwup0006dntb34yzw7dd"
               },
               "invite_to": {
                 "type": "string",
-                "nullable": true,
                 "example": "cm5fkwwup0006dntb34yzw7dd"
+              },
+              "source": {
+                "type": "string",
+                "example": "Slack"
               },
               "activity_type_id": {
                 "type": "string",
@@ -1359,164 +1220,167 @@
             "items": {
               "type": "object",
               "properties": {
-                "id": {
-                  "type": "string",
-                  "format": "uuid",
-                  "example": "cm5fkwwup0006dntb34yzw7dd"
-                },
-                "discord_id": {
-                  "type": "string",
-                  "nullable": true,
-                  "example": "123456789"
-                },
-                "discord_username": {
-                  "type": "string",
-                  "nullable": true,
-                  "example": "user#1234"
-                },
-                "discourse_id": {
-                  "type": "string",
-                  "nullable": true,
-                  "example": "123"
-                },
-                "discourse_username": {
-                  "type": "string",
-                  "nullable": true,
-                  "example": "thomas-bonfils"
-                },
-                "linkedin_id": {
-                  "type": "string",
-                  "nullable": true,
-                  "example": "iuHQSczlaW"
-                },
-                "linkedin_url": {
-                  "type": "string",
-                  "nullable": true,
-                  "example": "https://linkedin.com/in/username"
-                },
-                "livestorm_id": {
-                  "type": "string",
-                  "nullable": true,
-                  "example": "02a51b3b-3d6b-448c-91bb-48f0d12702c1"
-                },
-                "slack_id": {
-                  "type": "string",
-                  "nullable": true,
-                  "example": "U0512345678"
-                },
-                "first_name": {
-                  "type": "string",
-                  "nullable": true,
-                  "example": "Thomas"
-                },
-                "last_name": {
-                  "type": "string",
-                  "nullable": true,
-                  "example": "Bonfils"
-                },
-                "primary_email": {
-                  "type": "string",
-                  "nullable": true,
-                  "example": "thomas@useconquest.com"
-                },
-                "emails": {
-                  "type": "array",
-                  "items": {
+                "type": "object",
+                "properties": {
+                  "id": {
                     "type": "string",
-                    "example": "support@useconquest.com"
-                  }
-                },
-                "phones": {
-                  "type": "array",
-                  "items": {
-                    "type": "string",
-                    "example": "+33 6 12 34 56 78"
-                  }
-                },
-                "job_title": {
-                  "type": "string",
-                  "nullable": true,
-                  "example": "Software Engineer"
-                },
-                "avatar_url": {
-                  "type": "string",
-                  "nullable": true,
-                  "example": "https://example.com/avatar.jpg"
-                },
-                "locale": {
-                  "type": "string",
-                  "nullable": true,
-                  "example": "FR"
-                },
-                "tags": {
-                  "type": "array",
-                  "items": {
-                    "type": "string",
+                    "format": "uuid",
                     "example": "cm5fkwwup0006dntb34yzw7dd"
-                  }
-                },
-                "level": { "type": "number", "example": 6 },
-                "pulse": { "type": "number", "example": 203 },
-                "presence": { "type": "number", "example": 6 },
-                "source": { "type": "string", "example": "Slack" },
-                "logs": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "properties": {
-                      "date": {
-                        "type": "string",
-                        "example": "2025-01-01T00:00:00Z"
-                      },
-                      "pulse": { "type": "number", "example": 203 },
-                      "presence": { "type": "number", "example": 6 },
-                      "level": { "type": "number", "example": 6 },
-                      "max_weight": { "type": "number", "example": 4 },
-                      "max_weight_activity": {
-                        "type": "string",
-                        "example": "Slack - Write a post"
+                  },
+                  "discord_id": {
+                    "type": "string",
+                    "nullable": true,
+                    "example": "123456789"
+                  },
+                  "discord_username": {
+                    "type": "string",
+                    "nullable": true,
+                    "example": "user#1234"
+                  },
+                  "discourse_id": {
+                    "type": "string",
+                    "nullable": true,
+                    "example": "123"
+                  },
+                  "discourse_username": {
+                    "type": "string",
+                    "nullable": true,
+                    "example": "thomas-bonfils"
+                  },
+                  "linkedin_id": {
+                    "type": "string",
+                    "nullable": true,
+                    "example": "iuHQSczlaW"
+                  },
+                  "linkedin_url": {
+                    "type": "string",
+                    "nullable": true,
+                    "example": "https://linkedin.com/in/username"
+                  },
+                  "livestorm_id": {
+                    "type": "string",
+                    "nullable": true,
+                    "example": "02a51b3b-3d6b-448c-91bb-48f0d12702c1"
+                  },
+                  "slack_id": {
+                    "type": "string",
+                    "nullable": true,
+                    "example": "U0512345678"
+                  },
+                  "first_name": {
+                    "type": "string",
+                    "nullable": true,
+                    "example": "Thomas"
+                  },
+                  "last_name": {
+                    "type": "string",
+                    "nullable": true,
+                    "example": "Bonfils"
+                  },
+                  "primary_email": {
+                    "type": "string",
+                    "nullable": true,
+                    "example": "thomas@useconquest.com"
+                  },
+                  "secondary_emails": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "example": "support@useconquest.com"
+                    }
+                  },
+                  "phones": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "example": "+33 6 12 34 56 78"
+                    }
+                  },
+                  "job_title": {
+                    "type": "string",
+                    "nullable": true,
+                    "example": "Software Engineer"
+                  },
+                  "avatar_url": {
+                    "type": "string",
+                    "nullable": true,
+                    "example": "https://example.com/avatar.jpg"
+                  },
+                  "locale": {
+                    "type": "string",
+                    "nullable": true,
+                    "example": "FR"
+                  },
+                  "tags": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "example": "cm5fkwwup0006dntb34yzw7dd"
+                    }
+                  },
+                  "level": { "type": "number", "example": 6 },
+                  "pulse": { "type": "number", "example": 203 },
+                  "presence": { "type": "number", "example": 6 },
+                  "source": { "type": "string", "example": "Slack" },
+                  "logs": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "date": {
+                          "type": "string",
+                          "example": "2025-01-01T00:00:00Z"
+                        },
+                        "pulse": { "type": "number", "example": 203 },
+                        "presence": { "type": "number", "example": 6 },
+                        "level": { "type": "number", "example": 6 },
+                        "max_weight": { "type": "number", "example": 4 },
+                        "max_weight_activity": {
+                          "type": "string",
+                          "example": "Slack - Write a post"
+                        }
                       }
                     }
+                  },
+                  "custom_fields": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/CustomField"
+                    }
+                  },
+                  "company_id": {
+                    "type": "string",
+                    "format": "uuid",
+                    "nullable": true,
+                    "example": "cm5fkwwup0006dntb34yzw7dd"
+                  },
+                  "workspace_id": {
+                    "type": "string",
+                    "format": "uuid",
+                    "example": "cm5fkwwup0006dntb34yzw7dd"
+                  },
+                  "first_activity": {
+                    "type": "string",
+                    "format": "date-time",
+                    "nullable": true,
+                    "example": "2025-01-01T00:00:00Z"
+                  },
+                  "last_activity": {
+                    "type": "string",
+                    "format": "date-time",
+                    "nullable": true,
+                    "example": "2025-01-01T00:00:00Z"
+                  },
+                  "created_at": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2025-01-01T00:00:00Z"
+                  },
+                  "updated_at": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2025-01-01T00:00:00Z"
                   }
-                },
-                "custom_fields": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/CustomField"
-                  }
-                },
-                "company_id": {
-                  "type": "string",
-                  "format": "uuid",
-                  "nullable": true,
-                  "example": "cm5fkwwup0006dntb34yzw7dd"
-                },
-                "workspace_id": {
-                  "type": "string",
-                  "format": "uuid",
-                  "example": "cm5fkwwup0006dntb34yzw7dd"
-                },
-                "first_activity": {
-                  "type": "string",
-                  "format": "date-time",
-                  "nullable": true,
-                  "example": "2025-01-01T00:00:00Z"
-                },
-                "last_activity": {
-                  "type": "string",
-                  "format": "date-time",
-                  "nullable": true,
-                  "example": "2025-01-01T00:00:00Z"
-                },
-                "created_at": {
-                  "type": "string",
-                  "format": "date-time",
-                  "example": "2025-01-01T00:00:00Z"
-                },
-                "updated_at": {
-                  "type": "string",
-                  "format": "date-time",
-                  "example": "2025-01-01T00:00:00Z"
                 }
               }
             }
@@ -1803,7 +1667,7 @@
           "page": { "type": "number", "example": 1 },
           "page_size": { "type": "number", "example": 10 },
           "total_companies": { "type": "number", "example": 1235 },
-          "companies": {
+          "members": {
             "type": "array",
             "items": {
               "type": "object",

@@ -6,6 +6,7 @@ import { Billing } from "@conquest/ui/icons/Billing";
 import { General } from "@conquest/ui/icons/General";
 import { Integration } from "@conquest/ui/icons/Integration";
 import { Level } from "@conquest/ui/icons/Level";
+import { Members } from "@conquest/ui/icons/Members";
 import { Tags } from "@conquest/ui/icons/Tags";
 import { User } from "@conquest/ui/icons/User";
 import {
@@ -57,6 +58,12 @@ export const SettingsSidebar = () => {
           href: "/settings/billing",
           isActive: pathname === "/settings/billing",
         },
+        // {
+        //   icon: <Members size={18} />,
+        //   label: "Team",
+        //   href: "/settings/team",
+        //   isActive: pathname === "/settings/team",
+        // },
       ],
     },
     {
