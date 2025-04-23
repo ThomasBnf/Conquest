@@ -104,17 +104,6 @@ const livestormEnv = {
   },
 };
 
-const posthogEnv = {
-  client: {
-    NEXT_PUBLIC_POSTHOG_KEY: z.string(),
-    NEXT_PUBLIC_POSTHOG_HOST: z.string(),
-  },
-  runtimeEnv: {
-    NEXT_PUBLIC_POSTHOG_KEY: process.env.NEXT_PUBLIC_POSTHOG_KEY,
-    NEXT_PUBLIC_POSTHOG_HOST: process.env.NEXT_PUBLIC_POSTHOG_HOST,
-  },
-};
-
 const resendEnv = {
   server: {
     RESEND_API_KEY: z.string(),
@@ -189,7 +178,6 @@ export const env = createEnv({
     ...githubEnv.client,
     ...linkedinEnv.client,
     ...livestormEnv.client,
-    ...posthogEnv.client,
     ...slackEnv.client,
     ...stripeEnv.client,
   },
@@ -199,7 +187,6 @@ export const env = createEnv({
     ...githubEnv.runtimeEnv,
     ...linkedinEnv.runtimeEnv,
     ...livestormEnv.runtimeEnv,
-    ...posthogEnv.runtimeEnv,
     ...slackEnv.runtimeEnv,
     ...stripeEnv.runtimeEnv,
   },

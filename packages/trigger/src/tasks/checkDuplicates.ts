@@ -27,7 +27,7 @@ export const checkDuplicates = schemaTask({
             AND length(trim(m.primary_email)) > 0 
             AND m.workspace_id = '${workspace_id}'
           GROUP BY m.primary_email
-          HAVING count() > 1
+          HAVING count(DISTINCT m.id) > 1
           
           UNION ALL
           
@@ -41,7 +41,7 @@ export const checkDuplicates = schemaTask({
             AND m.last_name != ''
             AND m.workspace_id = '${workspace_id}'
           GROUP BY m.first_name, m.last_name
-          HAVING count() > 1
+          HAVING count(DISTINCT m.id) > 1
 
           UNION ALL
 
@@ -51,20 +51,35 @@ export const checkDuplicates = schemaTask({
             groupArray(member_id) AS member_ids
           FROM (
               SELECT 
-                  p.member_id,
                   JSONExtractString(toString(p.attributes), 'username') AS username,
-                  JSONExtractString(toString(p.attributes), 'source') AS source
+                  p.member_id
               FROM profile p FINAL
-              WHERE 
-                p.workspace_id = '${workspace_id}'
-                AND (
-                  (JSONExtractString(toString(p.attributes), 'source') = 'Discord' AND JSONExtractString(toString(p.attributes), 'username') != '')
-                  OR (JSONExtractString(toString(p.attributes), 'source') = 'Discourse' AND JSONExtractString(toString(p.attributes), 'username') != '')
-                  OR (JSONExtractString(toString(p.attributes), 'source') = 'Github' AND JSONExtractString(toString(p.attributes), 'login') != '')
-                )
+              WHERE JSONExtractString(toString(p.attributes), 'source') = 'Discord' 
+              AND JSONExtractString(toString(p.attributes), 'username') != ''
+              AND p.workspace_id = '${workspace_id}'
+
+              UNION ALL
+
+              SELECT 
+                  JSONExtractString(toString(p.attributes), 'username') AS username,
+                  p.member_id
+              FROM profile p FINAL
+              WHERE JSONExtractString(toString(p.attributes), 'source') = 'Discourse'
+              AND JSONExtractString(toString(p.attributes), 'username') != ''
+              AND p.workspace_id = '${workspace_id}'
+
+              UNION ALL
+
+              SELECT 
+                  JSONExtractString(toString(p.attributes), 'login') AS username,
+                  p.member_id
+              FROM profile p FINAL
+              WHERE JSONExtractString(toString(p.attributes), 'source') = 'Github'
+              AND JSONExtractString(toString(p.attributes), 'login') != ''
+              AND p.workspace_id = '${workspace_id}'
           )
           GROUP BY username
-          HAVING count() > 1
+          HAVING count(DISTINCT member_id) > 1
         `,
         format: "JSON",
       });
