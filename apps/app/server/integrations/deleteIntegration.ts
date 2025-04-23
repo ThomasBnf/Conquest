@@ -12,5 +12,6 @@ export const deleteIntegration = protectedProcedure
   .mutation(async ({ input }) => {
     const { integration } = input;
 
-    return await _deleteIntegration.trigger({ integration });
+    await _deleteIntegration.trigger({ integration });
+    return { success: true };
   });
