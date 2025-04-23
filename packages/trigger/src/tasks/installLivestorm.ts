@@ -1,4 +1,4 @@
-import { deleteIntegration } from "@conquest/db/integrations/deleteIntegration";
+import { deleteIntegration } from "./deleteIntegration";
 import { updateIntegration } from "@conquest/db/integrations/updateIntegration";
 import { decrypt } from "@conquest/db/utils/decrypt";
 import { LivestormIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
@@ -65,6 +65,6 @@ export const installLivestorm = schemaTask({
     });
   },
   onFailure: async ({ livestorm }) => {
-    await deleteIntegration({ integration: livestorm });
+    await deleteIntegration.trigger({ integration: livestorm });
   },
 });

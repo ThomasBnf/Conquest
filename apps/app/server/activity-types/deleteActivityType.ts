@@ -15,11 +15,11 @@ export const deleteActivityType = protectedProcedure
 
     await client.query({
       query: `
-        DELETE FROM activity 
-        WHERE activity_type_id = '${id}'
+        ALTER TABLE activity 
+        DELETE WHERE activity_type_id = '${id}'
         AND workspace_id = '${workspace_id}'
       `,
     });
 
-    return await _deleteActivityType({ id });
+    await _deleteActivityType({ id });
   });

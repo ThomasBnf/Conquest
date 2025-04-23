@@ -1,4 +1,4 @@
-import { deleteIntegration as _deleteIntegration } from "@conquest/db/integrations/deleteIntegration";
+import { deleteIntegration as _deleteIntegration } from "@conquest/trigger/tasks/deleteIntegration";
 import { IntegrationSchema } from "@conquest/zod/schemas/integration.schema";
 import { z } from "zod";
 import { protectedProcedure } from "../trpc";
@@ -12,5 +12,5 @@ export const deleteIntegration = protectedProcedure
   .mutation(async ({ input }) => {
     const { integration } = input;
 
-    return await _deleteIntegration({ integration });
+    return await _deleteIntegration.trigger({ integration });
   });

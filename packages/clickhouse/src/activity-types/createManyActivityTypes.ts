@@ -24,8 +24,6 @@ export const createManyActivityTypes = async (props: Props) => {
     id: uuid(),
     ...rest,
     workspace_id,
-    created_at: new Date(),
-    updated_at: new Date(),
   }));
 
   return await client.insert({

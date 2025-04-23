@@ -63,6 +63,12 @@ export const seed = schemaTask({
       const languageCode = locale?.split("_")[0] ?? "";
       language = languageCode ? ISO6391.getName(languageCode) : "";
 
+      const created_at = faker.date
+        .recent({ days: 180 })
+        .toISOString()
+        .replace("T", " ")
+        .substring(0, 19);
+
       inserts.push(
         client.insert({
           table: "member",
@@ -79,7 +85,7 @@ export const seed = schemaTask({
               country,
               language,
               source: "Discourse",
-              created_at: faker.date.recent({ days: 180 }),
+              created_at,
               workspace_id,
             },
           ],
@@ -154,6 +160,15 @@ export const seed = schemaTask({
         );
         if (!activity_type) continue;
 
+        const created_at = faker.date
+          .between({
+            from: event.started_at,
+            to: event.ended_at ?? new Date(),
+          })
+          .toISOString()
+          .replace("T", " ")
+          .substring(0, 19);
+
         activityInserts.push(
           client.insert({
             table: "activity",
@@ -165,10 +180,7 @@ export const seed = schemaTask({
                 event_id: event.id,
                 workspace_id,
                 source: "Livestorm",
-                created_at: faker.date.between({
-                  from: event.started_at,
-                  to: event.ended_at ?? new Date(),
-                }),
+                created_at,
               },
             ],
             format: "JSON",
@@ -216,6 +228,12 @@ export const seed = schemaTask({
       for (let i = 0; i < NUM_ACTIVITIES; i++) {
         const type = faker.helpers.arrayElement(discourseActivityTypes);
 
+        const created_at = faker.date
+          .recent({ days: 365 })
+          .toISOString()
+          .replace("T", " ")
+          .substring(0, 19);
+
         discourseActivityInserts.push(
           client.insert({
             table: "activity",
@@ -226,7 +244,7 @@ export const seed = schemaTask({
                 member_id,
                 workspace_id,
                 source: "Discourse",
-                created_at: faker.date.recent({ days: 365 }),
+                created_at,
               },
             ],
             format: "JSON",
@@ -249,6 +267,12 @@ export const seed = schemaTask({
         const type = faker.helpers.arrayElement(githubActivityTypes);
         const channel = faker.helpers.arrayElement(channels);
 
+        const created_at = faker.date
+          .recent({ days: 365 })
+          .toISOString()
+          .replace("T", " ")
+          .substring(0, 19);
+
         githubActivityInserts.push(
           client.insert({
             table: "activity",
@@ -260,7 +284,7 @@ export const seed = schemaTask({
                 channel_id: channel.id,
                 workspace_id,
                 source: "Github",
-                created_at: faker.date.recent({ days: 365 }),
+                created_at,
               },
             ],
             format: "JSON",

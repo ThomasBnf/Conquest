@@ -42,64 +42,44 @@ export const listChannels = protectedProcedure.query(
       Routes.guildChannels(external_id),
     )) as APIGuildCategoryChannel[];
 
+    console.dir(channels, { depth: null });
+
     const filteredChannels = channels.filter((channel) => {
       if (EXCLUDED_CHANNEL_TYPES.includes(channel.type)) return false;
+
+      // Include categories
       if (channel.type === ChannelType.GuildCategory) return true;
 
       const everyoneRole = roles.find((role) => role.name === "@everyone");
-      const conquestRole = roles.find(
-        (role) => role.name === "conquest-sandbox",
-      );
 
-      const { permission_overwrites } = channel;
+      // If no permission_overwrites, the channel is public
+      if (
+        !channel.permission_overwrites ||
+        channel.permission_overwrites.length === 0
+      ) {
+        return true;
+      }
 
-      const basePermissions = BigInt(everyoneRole?.permissions ?? 0);
-      const VIEW_CHANNEL = BigInt(1) << BigInt(10);
-      const READ_MESSAGE_HISTORY = BigInt(1) << BigInt(16);
-
-      // Start with base permissions check
-      let canViewChannel = (basePermissions & VIEW_CHANNEL) !== 0n;
-      let canReadHistory = (basePermissions & READ_MESSAGE_HISTORY) !== 0n;
-
-      const everyonePermission = permission_overwrites?.find(
+      // Check if @everyone role has restrictions
+      const everyoneOverwrite = channel.permission_overwrites.find(
         (overwrite) => overwrite.id === everyoneRole?.id,
       );
 
-      const conquestPermission = permission_overwrites?.find(
-        (overwrite) => overwrite.id === conquestRole?.id,
-      );
-
-      if (everyonePermission) {
-        const everyoneAllow = BigInt(everyonePermission.allow ?? 0);
-        const everyoneDeny = BigInt(everyonePermission.deny ?? 0);
-
-        // Check if @everyone denies permissions
-        const isViewDenied = (everyoneDeny & VIEW_CHANNEL) !== 0n;
-        const isHistoryDenied = (everyoneDeny & READ_MESSAGE_HISTORY) !== 0n;
-
-        // Update permissions based on @everyone role
-        canViewChannel = isViewDenied
-          ? false
-          : (everyoneAllow & VIEW_CHANNEL) !== 0n || canViewChannel;
-        canReadHistory = isHistoryDenied
-          ? false
-          : (everyoneAllow & READ_MESSAGE_HISTORY) !== 0n || canReadHistory;
-
-        // If permissions are denied by @everyone, check if conquest role explicitly allows them
-        if (conquestPermission) {
-          const conquestAllow = BigInt(conquestPermission.allow ?? 0);
-
-          if (isViewDenied) {
-            canViewChannel = (conquestAllow & VIEW_CHANNEL) !== 0n;
-          }
-          if (isHistoryDenied) {
-            canReadHistory = (conquestAllow & READ_MESSAGE_HISTORY) !== 0n;
-          }
-        }
+      // If no specific restriction for @everyone, the channel is public
+      if (!everyoneOverwrite) {
+        return true;
       }
 
-      // Return true only if both permissions are granted
-      return canViewChannel && canReadHistory;
+      const VIEW_CHANNEL = BigInt(1) << BigInt(10);
+      const READ_MESSAGE_HISTORY = BigInt(1) << BigInt(16);
+
+      // Check if read permissions are explicitly denied
+      const denyBits = BigInt(everyoneOverwrite.deny ?? 0);
+      const isViewDenied = (denyBits & VIEW_CHANNEL) !== 0n;
+      const isHistoryDenied = (denyBits & READ_MESSAGE_HISTORY) !== 0n;
+
+      // The channel is public if no read permission is denied
+      return !isViewDenied && !isHistoryDenied;
     });
 
     return filteredChannels;

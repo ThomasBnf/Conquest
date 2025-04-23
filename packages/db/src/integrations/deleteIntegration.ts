@@ -1,19 +1,15 @@
 import { client } from "@conquest/clickhouse/client";
 import { env } from "@conquest/env";
-import { listSubscriptions } from "@conquest/trigger/linkedin/listSubscriptions";
-import { removeWebhook } from "@conquest/trigger/linkedin/removeWebhook";
 import { deleteWebhook } from "@conquest/trigger/livestorm/deleteWebhook";
 import { getRefreshToken } from "@conquest/trigger/livestorm/getRefreshToken";
 import { listWebhooks } from "@conquest/trigger/livestorm/listWebhooks";
 import {
   GithubIntegrationSchema,
   type Integration,
-  LinkedInIntegrationSchema,
   LivestormIntegrationSchema,
 } from "@conquest/zod/schemas/integration.schema";
 import { WebClient } from "@slack/web-api";
 import { deleteManyEvents } from "../events/deleteManyEvents";
-import { deleteManyPosts } from "../posts/deleteManyPosts";
 import { prisma } from "../prisma";
 import { decrypt } from "../utils/decrypt";
 
@@ -24,6 +20,32 @@ type Props = {
 export const deleteIntegration = async ({ integration }: Props) => {
   const { workspace_id, details } = integration;
   const { source } = details;
+
+  if (source === "Discord") {
+    await prisma.tag.deleteMany({
+      where: { source, workspace_id },
+    });
+  }
+
+  if (source === "Github") {
+    const github = GithubIntegrationSchema.parse(integration);
+    const { access_token, iv } = github.details;
+
+    // const decryptedToken = await decrypt({ access_token, iv });
+    // const octokit = new Octokit({ auth: decryptedToken });
+
+    // await listAndDeleteWebhooks({ octokit, github });
+
+    client.query({
+      query: `
+        ALTER TABLE profile DELETE
+        WHERE member_id IN (
+          SELECT id FROM member FINAL
+          WHERE source = '${source}'
+          AND workspace_id = '${workspace_id}'
+        );`,
+    });
+  }
 
   if (source === "Livestorm") {
     const livestorm = LivestormIntegrationSchema.parse(integration);
@@ -53,38 +75,6 @@ export const deleteIntegration = async ({ integration }: Props) => {
       token,
       client_id: env.NEXT_PUBLIC_SLACK_CLIENT_ID,
       client_secret: env.SLACK_CLIENT_SECRET,
-    });
-  }
-
-  if (source === "Linkedin") {
-    const linkedin = LinkedInIntegrationSchema.parse(integration);
-
-    await deleteManyPosts({ workspace_id });
-
-    const { subscriptions } = await listSubscriptions({ linkedin });
-
-    if (subscriptions.elements.length > 0) {
-      await removeWebhook({ linkedin });
-    }
-  }
-
-  if (source === "Github") {
-    const github = GithubIntegrationSchema.parse(integration);
-    const { access_token, iv } = github.details;
-
-    // const decryptedToken = await decrypt({ access_token, iv });
-    // const octokit = new Octokit({ auth: decryptedToken });
-
-    // await listAndDeleteWebhooks({ octokit, github });
-
-    client.query({
-      query: `
-        ALTER TABLE profile DELETE
-        WHERE member_id IN (
-          SELECT id FROM member FINAL
-          WHERE source = '${source}'
-          AND workspace_id = '${workspace_id}'
-        );`,
     });
   }
 

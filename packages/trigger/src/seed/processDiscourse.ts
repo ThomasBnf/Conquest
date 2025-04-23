@@ -73,7 +73,7 @@ export const processDiscourse = async ({
       created_by: user.id,
       workspace_id,
       trigger_token: "1234567890",
-      expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+      expires_at: new Date(),
     },
   });
 

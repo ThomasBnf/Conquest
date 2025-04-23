@@ -1,5 +1,4 @@
 import { listChannels } from "@conquest/clickhouse/channels/listChannels";
-import { deleteIntegration } from "@conquest/db/integrations/deleteIntegration";
 import { updateIntegration } from "@conquest/db/integrations/updateIntegration";
 import { decrypt } from "@conquest/db/utils/decrypt";
 import { SlackIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
@@ -9,6 +8,7 @@ import { z } from "zod";
 import { createListMembers } from "../slack/createListMembers";
 import { listMessages } from "../slack/listMessages";
 import { checkDuplicates } from "./checkDuplicates";
+import { deleteIntegration } from "./deleteIntegration";
 import { getAllMembersMetrics } from "./getAllMembersMetrics";
 import { integrationSuccessEmail } from "./integrationSuccessEmail";
 
@@ -58,6 +58,6 @@ export const installSlack = schemaTask({
     });
   },
   onFailure: async ({ slack }) => {
-    await deleteIntegration({ integration: slack });
+    await deleteIntegration.trigger({ integration: slack });
   },
 });

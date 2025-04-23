@@ -1,4 +1,3 @@
-import { deleteIntegration } from "@conquest/db/integrations/deleteIntegration";
 import { updateIntegration } from "@conquest/db/integrations/updateIntegration";
 import { decrypt } from "@conquest/db/utils/decrypt";
 import { GithubIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
@@ -10,12 +9,13 @@ import { createManyPullRequests } from "../github/createManyPullRequests";
 import { createWebhook } from "../github/createWebhook";
 import { listStargazers } from "../github/listStargazers";
 import { checkDuplicates } from "./checkDuplicates";
+import { deleteIntegration } from "./deleteIntegration";
 import { getAllMembersMetrics } from "./getAllMembersMetrics";
 import { integrationSuccessEmail } from "./integrationSuccessEmail";
 
 export const installGithub = schemaTask({
   id: "install-github",
-  machine: "small-2x",
+  machine: "medium-1x",
   schema: z.object({
     github: GithubIntegrationSchema,
   }),
@@ -50,6 +50,6 @@ export const installGithub = schemaTask({
     });
   },
   onFailure: async ({ github }) => {
-    await deleteIntegration({ integration: github });
+    await deleteIntegration.trigger({ integration: github });
   },
 });

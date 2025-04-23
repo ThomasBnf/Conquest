@@ -1,5 +1,4 @@
 import { discourseClient } from "@conquest/db/discourse";
-import { deleteIntegration } from "@conquest/db/integrations/deleteIntegration";
 import { updateIntegration } from "@conquest/db/integrations/updateIntegration";
 import { decrypt } from "@conquest/db/utils/decrypt";
 import { DiscourseIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
@@ -8,6 +7,7 @@ import { z } from "zod";
 import { createManyMembers } from "../discourse/createManyMembers";
 import { createManyTags } from "../discourse/createManyTags";
 import { checkDuplicates } from "./checkDuplicates";
+import { deleteIntegration } from "./deleteIntegration";
 import { getAllMembersMetrics } from "./getAllMembersMetrics";
 import { integrationSuccessEmail } from "./integrationSuccessEmail";
 
@@ -58,6 +58,6 @@ export const installDiscourse = schemaTask({
     });
   },
   onFailure: async ({ discourse }) => {
-    await deleteIntegration({ integration: discourse });
+    await deleteIntegration.trigger({ integration: discourse });
   },
 });
