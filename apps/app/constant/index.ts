@@ -97,7 +97,6 @@ export const EUROPEAN_COUNTRIES = [
 ];
 
 export const DISCORD_PERMISSIONS = "66560";
-export const DISCORD_SCOPES = "bot";
 
 export const LINKEDIN_SCOPES =
   "r_organization_social,r_organization_social_feed,rw_organization_admin";

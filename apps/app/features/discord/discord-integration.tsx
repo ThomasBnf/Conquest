@@ -1,6 +1,6 @@
 "use client";
 
-import { DISCORD_PERMISSIONS, DISCORD_SCOPES } from "@/constant";
+import { DISCORD_PERMISSIONS } from "@/constant";
 import { useIntegration } from "@/context/integrationContext";
 import { env } from "@conquest/env";
 import { Discord } from "@conquest/ui/icons/Discord";
@@ -29,10 +29,11 @@ export const DiscordIntegration = ({ error }: Props) => {
       client_id: env.NEXT_PUBLIC_DISCORD_CLIENT_ID,
       permissions: DISCORD_PERMISSIONS,
       redirect_uri: `${env.NEXT_PUBLIC_BASE_URL}/connect/discord`,
-      scope: DISCORD_SCOPES,
     });
 
-    router.push(`https://discord.com/oauth2/authorize?${params.toString()}`);
+    router.push(
+      `https://discord.com/oauth2/authorize?${params.toString()}&scope=bot+messages.read`,
+    );
   };
 
   return (
