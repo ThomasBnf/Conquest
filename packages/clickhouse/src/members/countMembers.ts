@@ -22,6 +22,8 @@ export const countMembers = async ({
         SELECT 
           count(*) as total
         FROM member m FINAL
+        LEFT JOIN level l ON m.level_id = l.id
+        LEFT JOIN company c ON m.company_id = c.id
         LEFT JOIN (
           SELECT 
             member_id,
