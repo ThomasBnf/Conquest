@@ -123,7 +123,7 @@ const ActiveMembersSheet = ({
         <SheetHeader>
           <SheetTitle>Active members</SheetTitle>
           <SheetDescription>
-            Members who have been active in the selected period.
+            Members with activities in the selected period.
           </SheetDescription>
         </SheetHeader>
         <div className="flex h-full flex-col divide-y overflow-hidden rounded-md border">

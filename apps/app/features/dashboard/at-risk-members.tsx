@@ -53,7 +53,7 @@ export const AtRiskMembers = () => {
           </div>
           <p className="font-medium text-base">At risk members</p>
           <TooltipInfo
-            content=" Active members (above level 3) who have not been active in the
+            content="Active members (above level 3) with no activity in the
             selected period."
           />
         </div>
