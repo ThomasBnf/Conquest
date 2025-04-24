@@ -19,7 +19,7 @@ export const listRepositories = protectedProcedure.query(
     );
 
     const { details } = github;
-    const { access_token, iv } = details;
+    const { access_token, iv, installation_id } = details;
 
     const token = await decrypt({ access_token, iv });
 
@@ -30,16 +30,18 @@ export const listRepositories = protectedProcedure.query(
     let page = 1;
 
     while (true) {
-      const { data } = await octokit.rest.repos.listForAuthenticatedUser({
-        per_page: 100,
-        sort: "full_name",
-        direction: "asc",
-        page,
-      });
+      const { data } =
+        await octokit.rest.apps.listInstallationReposForAuthenticatedUser({
+          installation_id,
+          per_page: 100,
+          sort: "full_name",
+          direction: "asc",
+          page,
+        });
 
-      repositories.push(...data);
+      repositories.push(...data.repositories);
 
-      if (data.length < 100) break;
+      if (data.repositories.length < 100) break;
       page++;
     }
 

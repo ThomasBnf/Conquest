@@ -62,10 +62,7 @@ export const DataTable = <TData extends FullMember | Company>({
           </div>
           <div>
             {data?.map((item) => (
-              <div
-                key={item.id}
-                className="z-0 flex h-full border-b last:border-b-0"
-              >
+              <div key={item.id} className="z-0 flex h-full border-b">
                 {columns
                   .filter((column) => !columnVisibility[column.key])
                   .sort((a, b) => {

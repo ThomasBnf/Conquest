@@ -1,10 +1,9 @@
 import { LoadingRepositories } from "@/components/states/loading-repositories";
-import { GITHUB_ACTIVITY_TYPES } from "@conquest/db/constant";
 import { useIntegration } from "@/context/integrationContext";
 import { trpc } from "@/server/client";
+import { GITHUB_ACTIVITY_TYPES } from "@conquest/db/constant";
 import { Button } from "@conquest/ui/button";
 import { cn } from "@conquest/ui/cn";
-import { Input } from "@conquest/ui/input";
 import { Label } from "@conquest/ui/label";
 import { RadioGroup, RadioGroupItem } from "@conquest/ui/radio-group";
 import type { Endpoints } from "@octokit/types";
@@ -18,13 +17,10 @@ export const GithubRepo = () => {
   const { github, setStep } = useIntegration();
   const [loading, setLoading] = useState(false);
   const [repository, setRepository] = useState<Repository | null>(null);
-  const [search, setSearch] = useState("");
 
   const utils = trpc.useUtils();
-  const { data, isLoading } = trpc.github.listRepositories.useQuery();
-  const repositories = data?.filter((repo) =>
-    repo.name.toLowerCase().includes(search.toLowerCase()),
-  );
+  const { data: repositories, isLoading } =
+    trpc.github.listRepositories.useQuery();
 
   const { mutateAsync } = trpc.integrations.update.useMutation({
     onSuccess: () => {
@@ -74,12 +70,6 @@ export const GithubRepo = () => {
 
   return (
     <>
-      <Input
-        placeholder="Search for a repository"
-        className="mb-2"
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-      />
       <RadioGroup className="gap-2">
         {repositories?.map((repo) => (
           <div

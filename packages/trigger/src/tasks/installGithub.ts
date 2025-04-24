@@ -9,7 +9,6 @@ import { createManyPullRequests } from "../github/createManyPullRequests";
 import { createWebhook } from "../github/createWebhook";
 import { listStargazers } from "../github/listStargazers";
 import { checkDuplicates } from "./checkDuplicates";
-import { deleteIntegration } from "./deleteIntegration";
 import { getAllMembersMetrics } from "./getAllMembersMetrics";
 import { integrationSuccessEmail } from "./integrationSuccessEmail";
 
@@ -49,10 +48,10 @@ export const installGithub = schemaTask({
       workspace_id,
     });
   },
-  onFailure: async ({ github }) => {
-    await deleteIntegration.trigger({
-      integration: github,
-      deleteIntegration: true,
-    });
-  },
+  // onFailure: async ({ github }) => {
+  //   await deleteIntegration.trigger({
+  //     integration: github,
+  //     deleteIntegration: true,
+  //   });
+  // },
 });
