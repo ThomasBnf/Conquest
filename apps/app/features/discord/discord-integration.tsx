@@ -32,7 +32,7 @@ export const DiscordIntegration = ({ error }: Props) => {
     });
 
     router.push(
-      `https://discord.com/oauth2/authorize?${params.toString()}&scope=bot+messages.read`,
+      `https://discord.com/oauth2/authorize?${params.toString()}bot+messages.read+guilds.channels.read`,
     );
   };
 
