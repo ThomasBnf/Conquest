@@ -55,10 +55,6 @@ const client = new Client({
   partials: [Partials.Message, Partials.Channel, Partials.Reaction],
 });
 
-client.once(Events.ClientReady, (readyClient) => {
-  console.log(`Ready! Logged in as ${readyClient.user.tag}`);
-});
-
 client.on(Events.GuildMemberAdd, async (member) => {
   console.dir(member, { depth: 100 });
   const { user, guild } = member;

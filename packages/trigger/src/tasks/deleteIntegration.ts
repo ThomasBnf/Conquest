@@ -10,11 +10,12 @@ import {
 } from "@conquest/zod/schemas/integration.schema";
 import { WebClient } from "@slack/web-api";
 import { schemaTask } from "@trigger.dev/sdk/v3";
+import { Octokit } from "octokit";
 import { z } from "zod";
+import { listAndDeleteWebhooks } from "../github/listAndDeleteWebhooks";
 import { deleteWebhook } from "../livestorm/deleteWebhook";
 import { getRefreshToken } from "../livestorm/getRefreshToken";
 import { listWebhooks } from "../livestorm/listWebhooks";
-
 export const deleteIntegration = schemaTask({
   id: "delete-integration",
   machine: "small-2x",
@@ -34,12 +35,12 @@ export const deleteIntegration = schemaTask({
 
     if (source === "Github") {
       const github = GithubIntegrationSchema.parse(integration);
-      //   const { access_token, iv } = github.details;
+      const { access_token, iv } = github.details;
 
-      // const decryptedToken = await decrypt({ access_token, iv });
-      // const octokit = new Octokit({ auth: decryptedToken });
+      const decryptedToken = await decrypt({ access_token, iv });
+      const octokit = new Octokit({ auth: decryptedToken });
 
-      // await listAndDeleteWebhooks({ octokit, github });
+      await listAndDeleteWebhooks({ octokit, github });
 
       client.query({
         query: `

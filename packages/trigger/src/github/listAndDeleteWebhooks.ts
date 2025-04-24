@@ -1,7 +1,7 @@
 import { env } from "@conquest/env";
-import { GithubIntegration } from "@conquest/zod/schemas/integration.schema";
+import type { GithubIntegration } from "@conquest/zod/schemas/integration.schema";
 import { logger } from "@trigger.dev/sdk/v3";
-import { Octokit } from "octokit";
+import type { Octokit } from "octokit";
 
 type Props = {
   octokit: Octokit;
@@ -12,30 +12,32 @@ export const listAndDeleteWebhooks = async ({ octokit, github }: Props) => {
   const { details } = github;
   const { owner, repo } = details;
 
-  const response = await octokit.rest.repos.listWebhooks({
-    owner,
-    repo,
-  });
-
-  if (response.status !== 200) {
-    logger.error("Error listing webhooks", { response });
-    return;
-  }
-
-  const webhooks = response.data;
-
-  const filteredWebhooks = webhooks.filter(
-    (webhook) =>
-      webhook.config.url === `${env.NEXT_PUBLIC_BASE_URL}/webhook/github`,
-  );
-
-  for (const webhook of filteredWebhooks) {
-    const { id } = webhook;
-
-    await octokit.rest.repos.deleteWebhook({
+  try {
+    const response = await octokit.rest.repos.listWebhooks({
       owner,
       repo,
-      hook_id: id,
     });
+
+    if (response.status !== 200) {
+      logger.error("Error listing webhooks", { response });
+      return;
+    }
+
+    const filteredWebhooks = response.data.filter(
+      (webhook) =>
+        webhook.config.url === `${env.NEXT_PUBLIC_BASE_URL}/webhook/github`,
+    );
+
+    for (const webhook of filteredWebhooks) {
+      const { id } = webhook;
+
+      await octokit.rest.repos.deleteWebhook({
+        owner,
+        repo,
+        hook_id: id,
+      });
+    }
+  } catch (error) {
+    logger.error("Failed to fetch webhooks", { error, owner, repo });
   }
 };
