@@ -31,18 +31,20 @@ export default async function Page({ searchParams }: Props) {
     }),
   });
 
+  const data = await response.json();
+
   if (!response.ok) {
-    return redirect("settings/integrations/discord?error=invalid_code");
+    console.log(data);
+    return redirect("/settings/integrations/discord?error=invalid_code");
   }
 
-  const data = await response.json();
   const { access_token, expires_in, refresh_token, guild } = data;
   const { id, name } = guild;
 
   const integration = await getIntegration({ external_id: id });
 
   if (integration) {
-    return redirect("settings/integrations/discord?error=already_connected");
+    return redirect("/settings/integrations/discord?error=already_connected");
   }
 
   const encryptedAccessToken = await encrypt(access_token);

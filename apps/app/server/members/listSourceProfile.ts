@@ -8,8 +8,8 @@ export const listSourcesProfile = protectedProcedure.query(
 
     const result = await client.query({
       query: `
-        SELECT DISTINCT attributes.source as source
-        FROM profile
+        SELECT DISTINCT toString(attributes.source) as source
+        FROM profile FINAL
         WHERE workspace_id = '${workspace_id}'
         ORDER BY source ASC
       `,

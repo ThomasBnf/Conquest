@@ -58,6 +58,9 @@ export const installDiscourse = schemaTask({
     });
   },
   onFailure: async ({ discourse }) => {
-    await deleteIntegration.trigger({ integration: discourse });
+    await deleteIntegration.trigger({
+      integration: discourse,
+      deleteIntegration: true,
+    });
   },
 });

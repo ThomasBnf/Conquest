@@ -58,6 +58,9 @@ export const installSlack = schemaTask({
     });
   },
   onFailure: async ({ slack }) => {
-    await deleteIntegration.trigger({ integration: slack });
+    await deleteIntegration.trigger({
+      integration: slack,
+      deleteIntegration: true,
+    });
   },
 });

@@ -99,10 +99,13 @@ export const IntegrationProvider = ({
     trpc.integrations.delete.useMutation({
       onSuccess: () => {
         toast.success(`${source} disconnected`);
-        utils.invalidate();
+        utils.integrations.bySource.invalidate({ source });
       },
       onError: (error) => {
         toast.error(error.message);
+      },
+      onSettled: () => {
+        setLoading(false);
       },
     });
 

@@ -34,7 +34,7 @@ export default async function Page({ searchParams }: Props) {
   const data = await response.json();
 
   if (!response.ok) {
-    return redirect("settings/integrations/livestorm?error=invalid_code");
+    return redirect("/settings/integrations/livestorm?error=invalid_code");
   }
 
   const { access_token, expires_in, refresh_token, scope } = data;

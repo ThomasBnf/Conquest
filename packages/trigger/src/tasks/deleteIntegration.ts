@@ -20,8 +20,9 @@ export const deleteIntegration = schemaTask({
   machine: "small-2x",
   schema: z.object({
     integration: IntegrationSchema,
+    deleteIntegration: z.boolean(),
   }),
-  run: async ({ integration }) => {
+  run: async ({ integration, deleteIntegration }) => {
     const { workspace_id, details } = integration;
     const { source } = details;
 
@@ -82,13 +83,14 @@ export const deleteIntegration = schemaTask({
       });
     }
 
-    await prisma.$transaction(async (tx) => {
-      await tx.tag.deleteMany({
-        where: { source, workspace_id },
-      });
-      await tx.integration.delete({
+    if (deleteIntegration) {
+      await prisma.integration.delete({
         where: { id: integration.id },
       });
+    }
+
+    await prisma.tag.deleteMany({
+      where: { source, workspace_id },
     });
 
     client.query({

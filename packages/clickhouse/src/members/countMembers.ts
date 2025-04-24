@@ -19,15 +19,23 @@ export const countMembers = async ({
 
   const result = await client.query({
     query: `
-        SELECT count(*) as total
+        SELECT 
+          count(*) as total
         FROM member m FINAL
+        LEFT JOIN (
+          SELECT 
+            member_id,
+            groupArray(attributes) as attributes
+          FROM profile
+          GROUP BY member_id
+        ) p ON m.id = p.member_id
         WHERE m.workspace_id = '${workspace_id}'
         ${
           search
             ? `AND (
                 positionCaseInsensitive(concat(first_name, ' ', last_name), LOWER(trim('${search}'))) > 0
                 OR positionCaseInsensitive(primary_email, LOWER(trim('${search}'))) > 0
-                OR arrayExists(attr -> attr.source = 'Github' AND positionCaseInsensitive(toString(attr.login), LOWER(trim('${search}'))) > 0, p.profiles)
+                OR arrayExists(attr -> attr.source = 'Github' AND positionCaseInsensitive(toString(attr.login), LOWER(trim('${search}'))) > 0, p.attributes)
               )`
             : ""
         }

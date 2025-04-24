@@ -1,3 +1,4 @@
+import { prisma } from "@conquest/db/prisma";
 import { deleteIntegration as _deleteIntegration } from "@conquest/trigger/tasks/deleteIntegration";
 import { IntegrationSchema } from "@conquest/zod/schemas/integration.schema";
 import { z } from "zod";
@@ -12,6 +13,10 @@ export const deleteIntegration = protectedProcedure
   .mutation(async ({ input }) => {
     const { integration } = input;
 
-    await _deleteIntegration.trigger({ integration });
+    await prisma.integration.delete({
+      where: { id: integration.id },
+    });
+
+    await _deleteIntegration.trigger({ integration, deleteIntegration: false });
     return { success: true };
   });
