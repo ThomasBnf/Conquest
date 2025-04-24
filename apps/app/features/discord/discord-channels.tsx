@@ -84,7 +84,10 @@ export const DiscordChannels = () => {
           Please select only{" "}
           <span className="font-semibold">public channels</span>.
           <br />
-          Private or restricted channels cannot be properly imported.
+          Private or restricted channels cannot be properly imported. <br />
+          <span className="font-semibold">
+            They will be removed from Conquest.
+          </span>
         </p>
         <Button
           variant="outline"
