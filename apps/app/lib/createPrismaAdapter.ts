@@ -62,10 +62,7 @@ export const createAuthPrismaAdapter = (
       from: "Conquest <hello@useconquest.com>",
       to: ["audrey@useconquest.com", "thomas.bnfls@gmail.com"],
       subject: "🚨 New user onboarding",
-      html: `
-        <p>New user onboarding: ${user.email}</p>
-        <p>Workspace: ${workspace.name}</p>
-      `,
+      html: `<p>New user onboarding: ${user.email}</p>`,
     });
 
     return user as AdapterUser;
