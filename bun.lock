@@ -187,7 +187,6 @@
         "country-locale-map": "^1.9.9",
         "date-fns": "^4.1.0",
         "discord-api-types": "^0.37.115",
-        "discord.js": "^14.18.0",
         "discourse2": "^1.1.23",
         "iso-639-1": "^3.1.5",
         "resend": "^4.1.1",
@@ -201,6 +200,7 @@
       "name": "@conquest/emails",
       "dependencies": {
         "@react-email/components": "^0.0.24",
+        "@react-email/render": "1.0.6",
         "@react-email/tailwind": "^0.1.0",
         "resend": "^4.1.1",
       },
@@ -3232,6 +3232,8 @@
     "@asyncapi/parser/ajv-formats": ["ajv-formats@2.1.1", "", { "dependencies": { "ajv": "^8.0.0" } }, "sha512-Wx0Kx52hxE7C18hkMEggYlEifqWZtYaRgouJor+WMdPnQyEK13vgEWyVNup7SoeeoLMsr4kf5h6dOW11I15MUA=="],
 
     "@asyncapi/parser/node-fetch": ["node-fetch@2.6.7", "", { "dependencies": { "whatwg-url": "^5.0.0" }, "peerDependencies": { "encoding": "^0.1.0" }, "optionalPeers": ["encoding"] }, "sha512-ZjMPFEfVx5j+y2yF35Kzx5sF7kDzxuDj6ziH4FFbOp87zKDZNx8yExJIb05OGF4Nlt9IHFIMBkRl41VdvcNdbQ=="],
+
+    "@babel/core/@babel/parser": ["@babel/parser@7.27.0", "", { "dependencies": { "@babel/types": "^7.27.0" }, "bin": "./bin/babel-parser.js" }, "sha512-iaepho73/2Pz7w2eMS0Q5f83+0RKI7i4xmiYeBmDzfRVbQtTOG7Ts0S4HzJVsTMGI9keU8rNfuZr8DKfSt7Yyg=="],
 
     "@babel/core/semver": ["semver@6.3.1", "", { "bin": { "semver": "bin/semver.js" } }, "sha512-BR7VvDCVHO+q2xBEWskxS6DJE1qRnb7DxzUrogb71CWoSficBxYsiAGd+Kl0mmq/MprG9yArRkyrQxTO6XjMzA=="],
 

@@ -3,7 +3,8 @@ import { getUserById } from "@conquest/db/users/getUserById";
 import { SuccessIntegrationEmail } from "@conquest/emails/templates/SuccessIntegrationEmail";
 import { env } from "@conquest/env";
 import { IntegrationSchema } from "@conquest/zod/schemas/integration.schema";
-import { schemaTask } from "@trigger.dev/sdk/v3";
+import { render } from "@react-email/components";
+import { logger, schemaTask } from "@trigger.dev/sdk/v3";
 import { z } from "zod";
 
 export const integrationSuccessEmail = schemaTask({
@@ -22,11 +23,19 @@ export const integrationSuccessEmail = schemaTask({
 
     const url = `${env.NEXT_PUBLIC_BASE_URL}/settings/integrations/${source?.toLowerCase()}`;
 
-    await resend.emails.send({
-      from: "Conquest <noreply@useconquest.com>",
-      to: email ?? "",
-      subject: `Your ${source} integration is ready`,
-      react: SuccessIntegrationEmail({ source, url }),
+    if (!email) return;
+
+    const html = await render(SuccessIntegrationEmail({ source, url }), {
+      pretty: true,
     });
+
+    const { data, error } = await resend.emails.send({
+      from: "Conquest <noreply@useconquest.com>",
+      to: email,
+      subject: `Your ${source} integration is ready`,
+      html,
+    });
+
+    logger.info("Email sent", { data, error });
   },
 });
