@@ -1,6 +1,6 @@
 "use client";
 
-import { DISCORD_PERMISSIONS } from "@/constant";
+import { DISCORD_PERMISSIONS, DISCORD_SCOPES } from "@/constant";
 import { useIntegration } from "@/context/integrationContext";
 import { env } from "@conquest/env";
 import { Discord } from "@conquest/ui/icons/Discord";
@@ -32,7 +32,7 @@ export const DiscordIntegration = ({ error }: Props) => {
     });
 
     router.push(
-      `https://discord.com/oauth2/authorize?${params.toString()}&scope=bot+messages.read+guilds.channels.read+guilds.members.read`,
+      `https://discord.com/oauth2/authorize?${params.toString()}&scope=${DISCORD_SCOPES}`,
     );
   };
 

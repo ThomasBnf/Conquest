@@ -29,72 +29,79 @@ export const listChannelMessages = async ({
       ...(before ? { before } : {}),
     });
 
-    const messages = (await discordClient.get(
-      `${Routes.channelMessages(external_id)}?${params.toString()}`,
-    )) as APIMessage[];
+    try {
+      const messages = (await discordClient.get(
+        `${Routes.channelMessages(external_id)}?${params.toString()}`,
+      )) as APIMessage[];
 
-    logger.info("messages", { messages });
+      logger.info("messages", { messages });
 
-    for (const message of messages) {
-      const {
-        id,
-        type,
-        content,
-        thread,
-        message_reference,
-        timestamp,
-        sticker_items,
-      } = message;
-      const { author } = message;
+      for (const message of messages) {
+        const {
+          id,
+          type,
+          content,
+          thread,
+          message_reference,
+          timestamp,
+          sticker_items,
+        } = message;
+        const { author } = message;
 
-      if (author.bot) continue;
+        if (author.bot) continue;
 
-      const profile = await getProfile({
-        external_id: author.id,
-        workspace_id,
-      });
+        const profile = await getProfile({
+          external_id: author.id,
+          workspace_id,
+        });
 
-      if (!profile || !content || thread || sticker_items) continue;
+        if (!profile || !content || thread || sticker_items) continue;
 
-      switch (type) {
-        case 0: {
-          await createActivity({
-            external_id: id,
-            activity_type_key: "discord:message",
-            message: content,
-            member_id: profile.member_id,
-            channel_id: channel.id,
-            created_at: new Date(timestamp),
-            updated_at: new Date(timestamp ?? ""),
-            source: "Discord",
-            workspace_id,
-          });
+        switch (type) {
+          case 0: {
+            await createActivity({
+              external_id: id,
+              activity_type_key: "discord:message",
+              message: content,
+              member_id: profile.member_id,
+              channel_id: channel.id,
+              created_at: new Date(timestamp),
+              updated_at: new Date(timestamp ?? ""),
+              source: "Discord",
+              workspace_id,
+            });
 
-          break;
-        }
-        case 19: {
-          const { message_id } = message_reference ?? {};
+            break;
+          }
+          case 19: {
+            const { message_id } = message_reference ?? {};
 
-          await createActivity({
-            external_id: message.id,
-            activity_type_key: "discord:reply",
-            message: message.content,
-            reply_to: message_id,
-            member_id: profile.member_id,
-            channel_id: channel.id,
-            created_at: new Date(timestamp),
-            updated_at: new Date(timestamp ?? ""),
-            source: "Discord",
-            workspace_id,
-          });
+            await createActivity({
+              external_id: message.id,
+              activity_type_key: "discord:reply",
+              message: message.content,
+              reply_to: message_id,
+              member_id: profile.member_id,
+              channel_id: channel.id,
+              created_at: new Date(timestamp),
+              updated_at: new Date(timestamp ?? ""),
+              source: "Discord",
+              workspace_id,
+            });
 
-          break;
+            break;
+          }
         }
       }
+
+      before = messages.at(-1)?.id;
+      if (messages.length < 100) break;
+    } catch (error) {
+      const { name } = error as Error;
+      if (name === "DiscordAPIError[50001]") {
+        logger.error("listChannelMessages - Missing access", { channel });
+        break;
+      }
     }
-
-    before = messages.at(-1)?.id;
-
-    if (messages.length < 100) break;
   }
 };

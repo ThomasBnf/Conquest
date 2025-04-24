@@ -79,7 +79,13 @@ export const DiscordChannels = () => {
   return (
     <div className="space-y-4">
       <div>
-        <p className="mb-2 font-medium text-base">Channels</p>
+        <p className="font-medium text-base">Channels</p>
+        <p className="mb-4">
+          Please select only{" "}
+          <span className="font-semibold">public channels</span>.
+          <br />
+          Private or restricted channels cannot be properly imported.
+        </p>
         <Button
           variant="outline"
           size="xs"
