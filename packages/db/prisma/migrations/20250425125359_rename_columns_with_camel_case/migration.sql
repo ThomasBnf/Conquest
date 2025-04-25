@@ -42,7 +42,7 @@ SELECT
   "scope",
   "id_token",
   "session_state"
-FROM "account";
+FROM "accounts";
 
 
 CREATE TABLE "ApiKey" (
