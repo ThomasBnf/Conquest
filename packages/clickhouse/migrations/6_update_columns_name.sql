@@ -1,6 +1,6 @@
 SET allow_experimental_json_type=1;
 
-CREATE TABLE IF NOT EXISTS newActivity
+CREATE TABLE IF NOT EXISTS Activity
 (
     id UUID DEFAULT generateUUIDv4(),
     externalId String,
@@ -22,17 +22,9 @@ ENGINE = MergeTree()
 PARTITION BY workspaceId
 ORDER BY (workspaceId, externalId, id, createdAt);
 
-INSERT INTO newActivity SELECT * FROM activity;
+INSERT INTO Activity SELECT * FROM activity;
 
-RENAME TABLE activity TO activity_old;
-RENAME TABLE newActivity TO activity;
-
-DROP TABLE activity_old;
-
-
-
-
-CREATE TABLE IF NOT EXISTS newActivityType
+CREATE TABLE IF NOT EXISTS ActivityType
 (
     id UUID DEFAULT generateUUIDv4(),
     name String,
@@ -49,14 +41,9 @@ ENGINE = ReplacingMergeTree(updatedAt)
 PARTITION BY workspaceId
 ORDER BY (workspaceId, id);
 
-INSERT INTO newActivityType SELECT * FROM activity_type;
+INSERT INTO ActivityType SELECT * FROM activity_type;
 
-RENAME TABLE activity_type TO activityType_old;
-RENAME TABLE newActivityType TO activityType;
-
-DROP TABLE activityType_old;
-
-CREATE TABLE IF NOT EXISTS newChannel
+CREATE TABLE IF NOT EXISTS Channel
 (
     id UUID DEFAULT generateUUIDv4(),
     externalId String,
@@ -71,14 +58,9 @@ ENGINE = MergeTree()
 PARTITION BY workspaceId
 ORDER BY (workspaceId, externalId, id);
 
-INSERT INTO newChannel SELECT * FROM channel;
+INSERT INTO Channel SELECT * FROM channel;
 
-RENAME TABLE channel TO channel_old;
-RENAME TABLE newChannel TO channel;
-
-DROP TABLE channel_old;
-
-CREATE TABLE IF NOT EXISTS newCompany
+CREATE TABLE IF NOT EXISTS Company
 (
     id UUID DEFAULT generateUUIDv4(),
     name String,
@@ -98,14 +80,9 @@ ENGINE = MergeTree()
 PARTITION BY workspaceId
 ORDER BY (workspaceId, id);
 
-INSERT INTO newCompany SELECT * FROM company;
+INSERT INTO Company SELECT * FROM company;
 
-RENAME TABLE company TO company_old;
-RENAME TABLE newCompany TO company;
-
-DROP TABLE company_old;
-
-CREATE TABLE IF NOT EXISTS newLevel
+CREATE TABLE IF NOT EXISTS Level
 (
     id UUID DEFAULT generateUUIDv4(),
     name String,
@@ -120,14 +97,9 @@ ENGINE = MergeTree()
 PARTITION BY workspaceId
 ORDER BY (workspaceId, id);
 
-INSERT INTO newLevel SELECT * FROM level;
+INSERT INTO Level SELECT * FROM level;
 
-RENAME TABLE level TO level_old;
-RENAME TABLE newLevel TO level;
-
-DROP TABLE level_old;
-
-CREATE TABLE IF NOT EXISTS newLog
+CREATE TABLE IF NOT EXISTS Log
 (
     id UUID DEFAULT generateUUIDv4(),
     date DateTime,
@@ -140,14 +112,9 @@ ENGINE = MergeTree()
 PARTITION BY toYYYYMM(date)
 ORDER BY (memberId, date, id);
 
-INSERT INTO newLog SELECT * FROM log;
+INSERT INTO Log SELECT * FROM log;
 
-RENAME TABLE log TO log_old;
-RENAME TABLE newLog TO log;
-
-DROP TABLE log_old;
-
-CREATE TABLE IF NOT EXISTS newMember
+CREATE TABLE IF NOT EXISTS Member
 (
     id UUID DEFAULT generateUUIDv4(),
     firstName String,
@@ -175,14 +142,9 @@ ENGINE = ReplacingMergeTree(updatedAt)
 PARTITION BY workspaceId
 ORDER BY (workspaceId, id);
 
-INSERT INTO newMember SELECT * FROM member;
+INSERT INTO Member SELECT * FROM member;
 
-RENAME TABLE member TO member_old;
-RENAME TABLE newMember TO member;
-
-DROP TABLE member_old;
-
-CREATE TABLE IF NOT EXISTS newProfile
+CREATE TABLE IF NOT EXISTS Profile
 (
     id UUID DEFAULT generateUUIDv4(),
     externalId String,
@@ -196,9 +158,4 @@ ENGINE = ReplacingMergeTree(updatedAt)
 PARTITION BY workspaceId
 ORDER BY (workspaceId, memberId, id);
 
-INSERT INTO newProfile SELECT * FROM profile;
-
-RENAME TABLE profile TO profile_old;
-RENAME TABLE newProfile TO profile;
-
-DROP TABLE profile_old;
+INSERT INTO Profile SELECT * FROM profile;
