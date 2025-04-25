@@ -105,7 +105,7 @@ model Event {
     title      String
     startedAt  DateTime
     endedAt    DateTime?
-    source     String
+    source     SOURCE
 
     workspaceId String
     workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
@@ -267,7 +267,7 @@ model Workspace {
     slug             String    @unique
     source           String?
     companySize      String?
-    plan             PLAN      @default(ACTIVE)
+    plan             PLAN?     @default(ACTIVE)
     stripeCustomerId String?
     priceId          String?
     trialEnd         DateTime?
