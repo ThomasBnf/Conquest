@@ -145,7 +145,7 @@ INSERT INTO "List" (
   "id", "emoji", "name", "groupFilters", "createdBy", "workspaceId", "createdAt", "updatedAt"
 )
 SELECT
-  "id", "emoji", "name", "group_filters", "created_by", "workspace_id", "created_at", "updated_at"
+  "id", "emoji", "name", "groupFilters", "created_by", "workspace_id", "created_at", "updated_at"
 FROM "list";
 
 
