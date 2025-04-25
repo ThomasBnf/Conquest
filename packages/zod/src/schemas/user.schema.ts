@@ -1,4 +1,4 @@
-import type { user as UserPrisma } from "@prisma/client";
+import type { User as UserPrisma } from "@prisma/client";
 import { z } from "zod";
 import { ROLE } from "../enum/role.enum";
 import { GroupFiltersSchema } from "./filters.schema";

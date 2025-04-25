@@ -8,7 +8,7 @@ type Props = {
 };
 
 export const createApiKey = async ({ name, workspaceId }: Props) => {
-  const apiKey = await prisma.api_key.create({
+  const apiKey = await prisma.apiKey.create({
     data: {
       name,
       token: randomUUID(),

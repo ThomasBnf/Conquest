@@ -6,7 +6,7 @@ type Props = {
 };
 
 export const listApiKeys = async ({ workspaceId }: Props) => {
-  const apiKeys = await prisma.api_key.findMany({
+  const apiKeys = await prisma.apiKey.findMany({
     where: {
       workspaceId,
     },
