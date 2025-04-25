@@ -34,7 +34,6 @@ SELECT
   "user_id",
   "type",
   "provider",
-  "providerAccountId",
   "refresh_token",
   "access_token",
   "expires_at",
