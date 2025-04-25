@@ -87,8 +87,8 @@ model ApiKey {
 model Duplicate {
     id          String    @id @default(uuid())
     memberIds   String[]
-    reason      REASON?
-    state       STATE?
+    reason      REASON
+    state       STATE
     totalPulse  Int       @default(0)
     workspaceId String
     workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
