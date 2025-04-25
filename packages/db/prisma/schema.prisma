@@ -87,8 +87,8 @@ model ApiKey {
 model Duplicate {
     id          String    @id @default(uuid())
     memberIds   String[]
-    reason      String
-    state       String
+    reason      REASON?
+    state       STATE?
     totalPulse  Int       @default(0)
     workspaceId String
     workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
@@ -121,7 +121,7 @@ model Integration {
     id           String    @id @default(uuid())
     externalId   String?   @unique
     connectedAt  DateTime?
-    status       String
+    status       STATUS?
     details      Json
     triggerToken String
     expiresAt    DateTime
@@ -189,7 +189,7 @@ model User {
     lastName             String?
     avatarUrl            String?
     onboarding           DateTime?
-    role                 String
+    role                 ROLE      @default(ADMIN)
     lastActivityAt       DateTime  @updatedAt
     membersPreferences   Json      @default("{\"id\":\"level\",\"desc\":true,\"groupFilters\":{\"filters\":[],\"operator\":\"AND\"},\"columnVisibility\":{},\"columnOrder\":[]}")
     companiesPreferences Json      @default("{\"id\":\"name\",\"desc\":false,\"groupFilters\":{\"filters\":[],\"operator\":\"AND\"},\"columnVisibility\":{},\"columnOrder\":[]}")
@@ -267,7 +267,7 @@ model Workspace {
     slug             String    @unique
     source           String?
     companySize      String?
-    plan             String?
+    plan             PLAN      @default(ACTIVE)
     stripeCustomerId String?
     priceId          String?
     trialEnd         DateTime?
