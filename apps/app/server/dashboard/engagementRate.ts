@@ -61,7 +61,7 @@ export const engagementRate = protectedProcedure
               a.createdAt >= '${_previousFrom}' 
               AND a.createdAt <= '${_previousTo}'
               AND a.workspaceId = '${workspaceId}'
-          ) as previous_rate
+          ) as previousRate
         SELECT 
           currentRate as current,
           previousRate as previous,

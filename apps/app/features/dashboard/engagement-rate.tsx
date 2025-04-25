@@ -13,10 +13,13 @@ import { PeriodFormatter } from "./period-formatter";
 export const EngagementRate = () => {
   const [{ from, to }] = useQueryStates(dateParams);
 
-  const { data, isLoading } = trpc.dashboard.engagementRate.useQuery({
-    from,
-    to,
-  });
+  const { data, isLoading, failureReason } =
+    trpc.dashboard.engagementRate.useQuery({
+      from,
+      to,
+    });
+
+  console.log("failureReason", failureReason);
 
   const { current, previous, variation } = data ?? {
     current: 0,
