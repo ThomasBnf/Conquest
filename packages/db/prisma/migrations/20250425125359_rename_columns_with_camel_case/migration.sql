@@ -157,14 +157,6 @@ CREATE TABLE "Session" (
   CONSTRAINT "Session_pkey" PRIMARY KEY ("id")
 );
 
-INSERT INTO "Session" (
-  "id", "sessionToken", "userId", "expires"
-)
-SELECT
-  "id", "session_token", "user_id", "expires"
-FROM "sessions";
-
-
 CREATE TABLE "Tag" (
   "id" TEXT NOT NULL,
   "externalId" TEXT,
