@@ -23,6 +23,8 @@ export const getIntegrationBySource = async ({
     },
   });
 
+  console.log("integration", integration);
+
   if (!integration) return null;
   return IntegrationSchema.parse(integration);
 };
