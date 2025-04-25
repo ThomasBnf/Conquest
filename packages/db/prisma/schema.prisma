@@ -66,12 +66,14 @@ model Account {
     session_state     String?
 
     user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    @@unique([provider, providerAccountId])
 }
 
 model ApiKey {
     id    String @id @default(uuid())
     name  String
-    token String
+    token String @unique
 
     workspaceId String
     workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
@@ -94,7 +96,7 @@ model Duplicate {
 
 model Event {
     id         String    @id @default(uuid())
-    externalId String
+    externalId String    @unique
     title      String
     startedAt  DateTime
     endedAt    DateTime?
@@ -109,7 +111,7 @@ model Event {
 
 model Integration {
     id           String    @id @default(uuid())
-    externalId   String?
+    externalId   String?   @unique
     connectedAt  DateTime?
     status       STATUS
     details      Json
@@ -141,7 +143,7 @@ model List {
 
 model Session {
     id           String   @id @default(cuid())
-    sessionToken String
+    sessionToken String   @unique
     userId       String
     expires      DateTime
     user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -159,11 +161,13 @@ model Tag {
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
+
+    @@unique([externalId, workspaceId])
 }
 
 model User {
     id                   String    @id @default(cuid())
-    email                String
+    email                String    @unique
     emailVerified        DateTime? @map("email_verified")
     firstName            String?
     lastName             String?
@@ -210,6 +214,8 @@ model VerificationToken {
     identifier String
     token      String
     expires    DateTime
+
+    @@unique([identifier, token])
 }
 
 model Workflow {
@@ -231,7 +237,7 @@ model Workflow {
 model Workspace {
     id               String    @id @default(uuid())
     name             String
-    slug             String
+    slug             String    @unique
     source           String?
     companySize      String?
     plan             PLAN?

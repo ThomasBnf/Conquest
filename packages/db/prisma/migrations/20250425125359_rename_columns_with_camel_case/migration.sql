@@ -333,3 +333,20 @@ ALTER TABLE "Tag" ADD CONSTRAINT "tag_workspace_id_fkey" FOREIGN KEY ("workspace
 ALTER TABLE "User" ADD CONSTRAINT "user_workspace_id_fkey" FOREIGN KEY ("workspaceId") REFERENCES "Workspace"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 ALTER TABLE "Workflow" ADD CONSTRAINT "workflow_workspace_id_fkey" FOREIGN KEY ("workspaceId") REFERENCES "Workspace"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+
+CREATE UNIQUE INDEX "accounts_provider_provider_account_id_key" ON "Accounts"("provider", "provider_account_id");
+
+CREATE UNIQUE INDEX "api_key_token_key" ON "ApiKey"("token");
+
+CREATE UNIQUE INDEX "event_external_id_key" ON "Event"("externalId");
+
+CREATE UNIQUE INDEX "integration_external_id_key" ON "Integration"("externalId");
+
+CREATE UNIQUE INDEX "sessions_session_token_key" ON "Sessions"("sessionToken");
+
+CREATE UNIQUE INDEX "tag_external_id_workspace_id_key" ON "Tag"("externalId", "workspaceId");
+
+CREATE UNIQUE INDEX "verification_tokens_identifier_token_key" ON "VerificationTokens"("identifier", "token");
+
+CREATE UNIQUE INDEX "workspace_slug_key" ON "Workspace"("slug");
