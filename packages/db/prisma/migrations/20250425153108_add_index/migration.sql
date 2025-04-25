@@ -1,8 +1,6 @@
 /*
   Warnings:
 
-  - The `role` column on the `User` table would be dropped and recreated. This will lead to data loss if there is data in the column.
-  - The `plan` column on the `Workspace` table would be dropped and recreated. This will lead to data loss if there is data in the column.
   - You are about to drop the `VerificationTokens` table. If the table is not empty, all the data it contains will be lost.
   - You are about to drop the `accounts` table. If the table is not empty, all the data it contains will be lost.
   - You are about to drop the `api_key` table. If the table is not empty, all the data it contains will be lost.
@@ -20,10 +18,6 @@
   - You are about to drop the `webhook` table. If the table is not empty, all the data it contains will be lost.
   - You are about to drop the `workflow` table. If the table is not empty, all the data it contains will be lost.
   - You are about to drop the `workspace` table. If the table is not empty, all the data it contains will be lost.
-  - A unique constraint covering the columns `[email]` on the table `User` will be added. If there are existing duplicate values, this will fail.
-  - Changed the type of `source` on the `Event` table. No cast exists, the column would be dropped and recreated, which cannot be done if there is data, since the column is required.
-  - Changed the type of `status` on the `Integration` table. No cast exists, the column would be dropped and recreated, which cannot be done if there is data, since the column is required.
-  - Changed the type of `source` on the `Tag` table. No cast exists, the column would be dropped and recreated, which cannot be done if there is data, since the column is required.
 
 */
 -- DropForeignKey
@@ -82,16 +76,12 @@ ALTER COLUMN "updatedAt" SET DATA TYPE TIMESTAMP(3);
 -- AlterTable
 ALTER TABLE "Event" ALTER COLUMN "startedAt" SET DATA TYPE TIMESTAMP(3),
 ALTER COLUMN "endedAt" SET DATA TYPE TIMESTAMP(3),
-DROP COLUMN "source",
-ADD COLUMN     "source" "SOURCE" NOT NULL,
 ALTER COLUMN "createdAt" SET DATA TYPE TIMESTAMP(3),
 ALTER COLUMN "updatedAt" DROP DEFAULT,
 ALTER COLUMN "updatedAt" SET DATA TYPE TIMESTAMP(3);
 
 -- AlterTable
 ALTER TABLE "Integration" ALTER COLUMN "connectedAt" SET DATA TYPE TIMESTAMP(3),
-DROP COLUMN "status",
-ADD COLUMN     "status" "STATUS" NOT NULL,
 ALTER COLUMN "details" SET DATA TYPE JSONB,
 ALTER COLUMN "expiresAt" SET DATA TYPE TIMESTAMP(3),
 ALTER COLUMN "createdAt" SET DATA TYPE TIMESTAMP(3),
@@ -108,17 +98,14 @@ ALTER COLUMN "updatedAt" SET DATA TYPE TIMESTAMP(3);
 ALTER TABLE "Session" ALTER COLUMN "expires" SET DATA TYPE TIMESTAMP(3);
 
 -- AlterTable
-ALTER TABLE "Tag" DROP COLUMN "source",
-ADD COLUMN     "source" "SOURCE" NOT NULL,
-ALTER COLUMN "createdAt" SET DATA TYPE TIMESTAMP(3),
+ALTER TABLE "Tag" ALTER COLUMN "createdAt" SET DATA TYPE TIMESTAMP(3),
 ALTER COLUMN "updatedAt" DROP DEFAULT,
 ALTER COLUMN "updatedAt" SET DATA TYPE TIMESTAMP(3);
 
 -- AlterTable
 ALTER TABLE "User" ALTER COLUMN "email_verified" SET DATA TYPE TIMESTAMP(3),
 ALTER COLUMN "onboarding" SET DATA TYPE TIMESTAMP(3),
-DROP COLUMN "role",
-ADD COLUMN     "role" "ROLE" NOT NULL DEFAULT 'ADMIN',
+ALTER COLUMN "role" DROP DEFAULT,
 ALTER COLUMN "lastActivityAt" DROP DEFAULT,
 ALTER COLUMN "lastActivityAt" SET DATA TYPE TIMESTAMP(3),
 ALTER COLUMN "membersPreferences" SET DATA TYPE JSONB,
@@ -146,9 +133,7 @@ ALTER COLUMN "updatedAt" DROP DEFAULT,
 ALTER COLUMN "updatedAt" SET DATA TYPE TIMESTAMP(3);
 
 -- AlterTable
-ALTER TABLE "Workspace" DROP COLUMN "plan",
-ADD COLUMN     "plan" "PLAN",
-ALTER COLUMN "trialEnd" SET DATA TYPE TIMESTAMP(3),
+ALTER TABLE "Workspace" ALTER COLUMN "trialEnd" SET DATA TYPE TIMESTAMP(3),
 ALTER COLUMN "isPastDue" SET DATA TYPE TIMESTAMP(3),
 ALTER COLUMN "createdAt" SET DATA TYPE TIMESTAMP(3),
 ALTER COLUMN "updatedAt" DROP DEFAULT,
@@ -250,9 +235,6 @@ CREATE INDEX "Tag_id_workspaceId_idx" ON "Tag"("id", "workspaceId");
 
 -- CreateIndex
 CREATE INDEX "Tag_workspaceId_idx" ON "Tag"("workspaceId");
-
--- CreateIndex
-CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
 
 -- CreateIndex
 CREATE INDEX "User_id_idx" ON "User"("id");

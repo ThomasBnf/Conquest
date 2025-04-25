@@ -105,7 +105,7 @@ model Event {
     title      String
     startedAt  DateTime
     endedAt    DateTime?
-    source     SOURCE
+    source     String
 
     workspaceId String
     workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
@@ -121,7 +121,7 @@ model Integration {
     id           String    @id @default(uuid())
     externalId   String?   @unique
     connectedAt  DateTime?
-    status       STATUS
+    status       String
     details      Json
     triggerToken String
     expiresAt    DateTime
@@ -168,7 +168,7 @@ model Tag {
     externalId String?
     name       String
     color      String
-    source     SOURCE
+    source     String
 
     workspaceId String
     workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
@@ -183,13 +183,13 @@ model Tag {
 
 model User {
     id                   String    @id @default(cuid())
-    email                String    @unique
+    email                String
     emailVerified        DateTime? @map("email_verified")
     firstName            String?
     lastName             String?
     avatarUrl            String?
     onboarding           DateTime?
-    role                 ROLE      @default(ADMIN)
+    role                 String
     lastActivityAt       DateTime  @updatedAt
     membersPreferences   Json      @default("{\"id\":\"level\",\"desc\":true,\"groupFilters\":{\"filters\":[],\"operator\":\"AND\"},\"columnVisibility\":{},\"columnOrder\":[]}")
     companiesPreferences Json      @default("{\"id\":\"name\",\"desc\":false,\"groupFilters\":{\"filters\":[],\"operator\":\"AND\"},\"columnVisibility\":{},\"columnOrder\":[]}")
@@ -267,7 +267,7 @@ model Workspace {
     slug             String    @unique
     source           String?
     companySize      String?
-    plan             PLAN?
+    plan             String?
     stripeCustomerId String?
     priceId          String?
     trialEnd         DateTime?
