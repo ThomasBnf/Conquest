@@ -1,4 +1,4 @@
-CREATE TABLE "Accounts" (
+CREATE TABLE "Account" (
   "id" TEXT NOT NULL,
   "userId" TEXT NOT NULL,
   "type" TEXT NOT NULL,
@@ -12,10 +12,10 @@ CREATE TABLE "Accounts" (
   "id_token" TEXT,
   "session_state" TEXT,
 
-  CONSTRAINT "Accounts_pkey" PRIMARY KEY ("id")
+  CONSTRAINT "Account_pkey" PRIMARY KEY ("id")
 );
 
-INSERT INTO "Accounts" (
+INSERT INTO "Account" (
   "id",
   "userId",
   "type",
