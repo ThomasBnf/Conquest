@@ -7,8 +7,8 @@ type Props = {
 export const countDuplicates = async ({ workspaceId }: Props) => {
   const duplicates = await prisma.duplicate.count({
     where: {
-      workspaceId,
       state: "PENDING",
+      workspaceId,
     },
   });
 

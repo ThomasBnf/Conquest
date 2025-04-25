@@ -79,19 +79,24 @@ model ApiKey {
     workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
 
     createdAt DateTime @default(now())
+
+    @@index([id])
+    @@index([workspaceId])
 }
 
 model Duplicate {
     id          String    @id @default(uuid())
     memberIds   String[]
-    reason      REASON
-    state       STATE
+    reason      String
+    state       String
     totalPulse  Int       @default(0)
     workspaceId String
     workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
+
+    @@index([workspaceId])
 }
 
 model Event {
@@ -107,6 +112,9 @@ model Event {
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
+
+    @@index([id, workspaceId])
+    @@index([source, workspaceId])
 }
 
 model Integration {
@@ -125,6 +133,9 @@ model Integration {
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
+
+    @@index([id, workspaceId])
+    @@index([externalId])
 }
 
 model List {
@@ -139,6 +150,9 @@ model List {
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
+
+    @@index([createdBy, workspaceId])
+    @@index([id, workspaceId])
 }
 
 model Session {
@@ -163,6 +177,8 @@ model Tag {
     updatedAt DateTime @updatedAt
 
     @@unique([externalId, workspaceId])
+    @@index([id, workspaceId])
+    @@index([workspaceId])
 }
 
 model User {
@@ -186,6 +202,9 @@ model User {
     accounts        Account[]
     sessions        Session[]
     userInWorkspace UserInWorkspace[]
+
+    @@index([id])
+    @@index([email])
 }
 
 model UserInWorkspace {
@@ -197,6 +216,9 @@ model UserInWorkspace {
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
+
+    @@index([userId])
+    @@index([workspaceId])
 }
 
 model UserInvitation {
@@ -207,6 +229,8 @@ model UserInvitation {
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
+
+    @@index([workspaceId])
 }
 
 model VerificationToken {
@@ -232,6 +256,9 @@ model Workflow {
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
+
+    @@index([id, workspaceId])
+    @@index([workspaceId])
 }
 
 model Workspace {
@@ -259,4 +286,6 @@ model Workspace {
     createdAt       DateTime         @default(now())
     updatedAt       DateTime         @updatedAt
     userInvitations UserInvitation[]
+
+    @@index([id])
 }
