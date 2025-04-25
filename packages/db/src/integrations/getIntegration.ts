@@ -2,17 +2,17 @@ import { IntegrationSchema } from "@conquest/zod/schemas/integration.schema";
 import { prisma } from "../prisma";
 
 type Props = {
-  external_id: string | null | undefined;
-  workspace_id?: string;
+  externalId: string | null | undefined;
+  workspaceId?: string;
 };
 
-export const getIntegration = async ({ external_id, workspace_id }: Props) => {
-  if (!external_id) return null;
+export const getIntegration = async ({ externalId, workspaceId }: Props) => {
+  if (!externalId) return null;
 
   const integration = await prisma.integration.findUnique({
     where: {
-      external_id,
-      workspace_id,
+      externalId,
+      workspaceId,
     },
   });
 

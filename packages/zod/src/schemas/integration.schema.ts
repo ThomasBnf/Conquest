@@ -3,36 +3,36 @@ import { STATUS } from "../enum/status.enum";
 
 const BaseSchema = z.object({
   id: z.string().uuid(),
-  external_id: z.string().nullable(),
+  externalId: z.string().nullable(),
   status: STATUS,
-  trigger_token: z.string(),
-  expires_at: z.coerce.date(),
-  connected_at: z.coerce.date().nullable(),
-  created_by: z.string(),
-  run_id: z.string().nullable(),
-  workspace_id: z.string().uuid(),
-  created_at: z.coerce.date(),
-  updated_at: z.coerce.date(),
+  triggerToken: z.string(),
+  expiresAt: z.coerce.date(),
+  connectedAt: z.coerce.date().nullable(),
+  createdBy: z.string(),
+  runId: z.string().nullable(),
+  workspaceId: z.string().uuid(),
+  createdAt: z.coerce.date(),
+  updatedAt: z.coerce.date(),
 });
 
 export const SlackDetailsSchema = z.object({
   source: z.literal("Slack"),
   name: z.string(),
   url: z.string(),
-  access_token: z.string(),
-  access_token_iv: z.string(),
-  user_token: z.string(),
-  user_token_iv: z.string(),
+  accessToken: z.string(),
+  accessTokenIv: z.string(),
+  userToken: z.string(),
+  userTokenIv: z.string(),
   scopes: z.string(),
-  user_scopes: z.string(),
+  userScopes: z.string(),
 });
 
 export const DiscourseDetailsSchema = z.object({
   source: z.literal("Discourse"),
-  community_url: z.string(),
-  api_key: z.string(),
-  api_key_iv: z.string(),
-  user_fields: z
+  communityUrl: z.string(),
+  apiKey: z.string(),
+  apiKeyIv: z.string(),
+  userFields: z
     .array(z.object({ id: z.string(), name: z.string() }))
     .optional(),
 });
@@ -40,11 +40,11 @@ export const DiscourseDetailsSchema = z.object({
 export const DiscordDetailsSchema = z.object({
   source: z.literal("Discord"),
   name: z.string(),
-  access_token: z.string(),
-  access_token_iv: z.string(),
-  expires_in: z.number(),
-  refresh_token: z.string(),
-  refresh_token_iv: z.string(),
+  accessToken: z.string(),
+  accessTokenIv: z.string(),
+  expiresIn: z.number(),
+  refreshToken: z.string(),
+  refreshTokenIv: z.string(),
   scopes: z.string(),
   permissions: z.string(),
 });
@@ -52,20 +52,20 @@ export const DiscordDetailsSchema = z.object({
 export const LinkedInDetailsSchema = z.object({
   source: z.literal("Linkedin"),
   name: z.string(),
-  access_token: z.string(),
+  accessToken: z.string(),
   iv: z.string(),
   scopes: z.string(),
-  user_id: z.string(),
+  userId: z.string(),
 });
 
 export const LivestormDetailsSchema = z.object({
   source: z.literal("Livestorm"),
   name: z.string(),
-  access_token: z.string(),
-  access_token_iv: z.string(),
-  refresh_token: z.string(),
-  refresh_token_iv: z.string(),
-  expires_in: z.number(),
+  accessToken: z.string(),
+  accessTokenIv: z.string(),
+  refreshToken: z.string(),
+  refreshTokenIv: z.string(),
+  expiresIn: z.number(),
   scope: z.string(),
   filter: z.string().optional(),
 });
@@ -73,9 +73,9 @@ export const LivestormDetailsSchema = z.object({
 export const GithubDetailsSchema = z.object({
   source: z.literal("Github"),
   repo: z.string(),
-  access_token: z.string(),
+  accessToken: z.string(),
   iv: z.string(),
-  installation_id: z.coerce.number(),
+  installationId: z.coerce.number(),
   scope: z.string(),
   owner: z.string(),
 });

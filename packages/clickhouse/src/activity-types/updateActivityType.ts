@@ -5,17 +5,17 @@ type Props = { id: string } & Partial<ActivityType>;
 
 export const updateActivityType = async (props: Props) => {
   await client.insert({
-    table: "activity_type",
+    table: "activityType",
     values: [
       {
         ...props,
-        updated_at: new Date(),
+        updatedAt: new Date(),
       },
     ],
     format: "JSON",
   });
 
   await client.query({
-    query: "OPTIMIZE TABLE activity_type FINAL;",
+    query: "OPTIMIZE TABLE activityType FINAL;",
   });
 };

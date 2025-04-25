@@ -10,7 +10,7 @@ import { toast } from "sonner";
 
 export const TrialCard = () => {
   const { data: session } = useSession();
-  const { trial_end, is_past_due } = session?.user.workspace ?? {};
+  const { trialEnd, isPastDue } = session?.user.workspace ?? {};
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
@@ -23,16 +23,16 @@ export const TrialCard = () => {
     },
   });
 
-  if (is_past_due) return;
-  if (!trial_end) return;
-  const differenceInDay = differenceInDays(trial_end, new Date());
+  if (isPastDue) return;
+  if (!trialEnd) return;
+  const differenceInDay = differenceInDays(trialEnd, new Date());
 
   return (
     <Button
       variant="ghost"
       size="default"
       className="justify-between rounded-none border-t"
-      onClick={() => mutateAsync({ payment_method_update: true })}
+      onClick={() => mutateAsync({ paymentMethodUpdate: true })}
       disabled={loading}
     >
       {differenceInDay} days left on trial

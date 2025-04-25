@@ -25,19 +25,19 @@ export const PulseBadge = ({
   const [hover, setHover] = useState(false);
 
   const { data: levels } = trpc.levels.list.useQuery();
-  const level = levels?.find((level) => level.id === member?.level_id);
+  const level = levels?.find((level) => level.id === member?.levelId);
   const { from, to } = level ?? {};
 
   const { data: channels } = trpc.channels.list.useQuery({});
   const { data: activities, isLoading } = trpc.activities.list.useQuery(
-    hover ? { member_id: member?.id } : skipToken,
+    hover ? { memberId: member?.id } : skipToken,
   );
 
   const today = new Date();
   const filteredActivities = activities?.filter(
     (activity) =>
-      activity.created_at >= startOfDay(subDays(today, 90)) &&
-      activity.created_at <= endOfHour(subHours(today, 1)),
+      activity.createdAt >= startOfDay(subDays(today, 90)) &&
+      activity.createdAt <= endOfHour(subHours(today, 1)),
   );
 
   const pulseScore = getPulseScoreDetails({

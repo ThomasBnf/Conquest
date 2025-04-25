@@ -31,17 +31,17 @@ type Props = {
 };
 
 export const ActivityParser = ({ activity }: Props) => {
-  const { member_id } = activity;
-  const { key } = activity.activity_type;
+  const { memberId } = activity;
+  const { key } = activity.activityType;
 
-  const { data: member } = trpc.members.get.useQuery({ id: member_id });
+  const { data: member } = trpc.members.get.useQuery({ id: memberId });
 
   const { data } = trpc.integrations.bySource.useQuery({ source: "Github" });
   const github = data ? GithubIntegrationSchema.parse(data) : null;
 
-  const { first_name, last_name, avatar_url } = member ?? {};
-  const { activity_type, message, created_at } = activity;
-  const { source } = activity_type;
+  const { firstName, lastName, avatarUrl } = member ?? {};
+  const { activityType, message, createdAt } = activity;
+  const { source } = activityType;
 
   switch (key) {
     case "discord:thread": {
@@ -116,22 +116,22 @@ export const ActivityParser = ({ activity }: Props) => {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Avatar className="size-6">
-              <AvatarImage src={avatar_url ?? ""} />
+              <AvatarImage src={avatarUrl ?? ""} />
               <AvatarFallback className="text-sm">
-                {first_name?.charAt(0).toUpperCase()}
-                {last_name?.charAt(0).toUpperCase()}
+                {firstName?.charAt(0).toUpperCase()}
+                {lastName?.charAt(0).toUpperCase()}
               </AvatarFallback>
             </Avatar>
             <p className="text-muted-foreground">
               <span className="font-medium text-foreground">
-                {first_name} {last_name}
+                {firstName} {lastName}
               </span>{" "}
               {message}
             </p>
-            <p> - {activity_type.name}</p>
+            <p> - {activityType.name}</p>
             <SourceBadge source={source} />
             <p className="text-muted-foreground">
-              {format(created_at, "HH:mm")}
+              {format(createdAt, "HH:mm")}
             </p>
           </div>
           <ActivityMenu activity={activity} />

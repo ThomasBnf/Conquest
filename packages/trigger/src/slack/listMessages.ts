@@ -8,17 +8,17 @@ import { listReplies } from "./listReplies";
 type Props = {
   web: WebClient;
   channel: Channel;
-  workspace_id: string;
+  workspaceId: string;
 };
 
-export const listMessages = async ({ web, channel, workspace_id }: Props) => {
+export const listMessages = async ({ web, channel, workspaceId }: Props) => {
   let cursor: string | undefined;
 
   do {
     const oneYearAgo = Math.floor(getUnixTime(subYears(new Date(), 1)));
 
     const result = await web.conversations.history({
-      channel: channel.external_id ?? "",
+      channel: channel.externalId ?? "",
       limit: 100,
       cursor,
       oldest: oneYearAgo.toString(),
@@ -34,22 +34,22 @@ export const listMessages = async ({ web, channel, workspace_id }: Props) => {
       if (subtype === "channel_join") continue;
 
       const profile = await getProfile({
-        external_id: user,
-        workspace_id,
+        externalId: user,
+        workspaceId,
       });
 
       if (!profile) continue;
 
       const activity = await createActivity({
-        external_id: ts,
-        activity_type_key: "slack:message",
+        externalId: ts,
+        activityTypeKey: "slack:message",
         message: text,
-        member_id: profile.member_id,
-        channel_id: channel.id,
-        created_at: new Date(Number(ts) * 1000),
-        updated_at: new Date(Number(ts) * 1000),
+        memberId: profile.memberId,
+        channelId: channel.id,
+        createdAt: new Date(Number(ts) * 1000),
+        updatedAt: new Date(Number(ts) * 1000),
         source: "Slack",
-        workspace_id,
+        workspaceId,
       });
 
       if (reactions?.length) {
@@ -58,22 +58,22 @@ export const listMessages = async ({ web, channel, workspace_id }: Props) => {
 
           for (const user of reaction.users ?? []) {
             const profile = await getProfile({
-              external_id: user,
-              workspace_id,
+              externalId: user,
+              workspaceId,
             });
 
             if (!profile) continue;
 
             await createActivity({
-              activity_type_key: "slack:reaction",
+              activityTypeKey: "slack:reaction",
               message: name,
-              react_to: activity?.external_id,
-              member_id: profile.member_id,
-              channel_id: channel.id,
-              created_at: new Date(Number(ts) * 1000),
-              updated_at: new Date(Number(ts) * 1000),
+              reactTo: activity?.externalId,
+              memberId: profile.memberId,
+              channelId: channel.id,
+              createdAt: new Date(Number(ts) * 1000),
+              updatedAt: new Date(Number(ts) * 1000),
               source: "Slack",
-              workspace_id,
+              workspaceId,
             });
           }
         }
@@ -83,7 +83,7 @@ export const listMessages = async ({ web, channel, workspace_id }: Props) => {
         await listReplies({
           web,
           channel,
-          reply_to: message.thread_ts,
+          replyTo: message.thread_ts,
         });
       }
     }

@@ -7,12 +7,12 @@ export const WorkflowSchema = z.object({
   name: z.string(),
   description: z.string(),
   published: z.boolean(),
-  last_run_at: z.coerce.date(),
+  lastRunAt: z.coerce.date(),
   nodes: z.array(NodeSchema),
   edges: z.array(EdgeSchema),
-  workspace_id: z.string(),
-  created_at: z.coerce.date(),
-  updated_at: z.coerce.date(),
+  workspaceId: z.string(),
+  createdAt: z.coerce.date(),
+  updatedAt: z.coerce.date(),
 });
 
 export type Workflow = z.infer<typeof WorkflowSchema>;

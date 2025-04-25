@@ -5,14 +5,14 @@ import { protectedProcedure } from "../trpc";
 export const getActivity = protectedProcedure
   .input(
     z.object({
-      external_id: z.string().nullable(),
+      externalId: z.string().nullable(),
     }),
   )
   .query(async ({ ctx: { user }, input }) => {
-    const { workspace_id } = user;
-    const { external_id } = input;
+    const { workspaceId } = user;
+    const { externalId } = input;
 
-    if (!external_id) return null;
+    if (!externalId) return null;
 
-    return await _getActivity({ external_id, workspace_id });
+    return await _getActivity({ externalId, workspaceId });
   });

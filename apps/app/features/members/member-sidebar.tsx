@@ -30,17 +30,17 @@ type Props = {
 export const MemberSidebar = ({ member, profiles }: Props) => {
   const {
     id,
-    first_name,
-    last_name,
-    job_title,
-    avatar_url,
+    firstName,
+    lastName,
+    jobTitle,
+    avatarUrl,
     country,
     language,
     source,
-    linkedin_url,
-    first_activity,
-    last_activity,
-    created_at,
+    linkedinUrl,
+    firstActivity,
+    lastActivity,
+    createdAt,
   } = member ?? {};
   const utils = trpc.useUtils();
 
@@ -77,15 +77,15 @@ export const MemberSidebar = ({ member, profiles }: Props) => {
         <div className="space-y-4 p-4">
           <div className="flex items-center gap-2">
             <Avatar className="size-9">
-              <AvatarImage src={avatar_url ?? ""} />
+              <AvatarImage src={avatarUrl ?? ""} />
               <AvatarFallback className="text-sm">
-                {first_name?.charAt(0).toUpperCase()}
-                {last_name?.charAt(0).toUpperCase()}
+                {firstName?.charAt(0).toUpperCase()}
+                {lastName?.charAt(0).toUpperCase()}
               </AvatarFallback>
             </Avatar>
             <div className="flex flex-col truncate">
               <p className="font-medium text-base leading-tight">
-                {first_name} {last_name}
+                {firstName} {lastName}
               </p>
               <p className="text-muted-foreground">{id}</p>
             </div>
@@ -111,29 +111,29 @@ export const MemberSidebar = ({ member, profiles }: Props) => {
         <div className="space-y-4 p-4">
           <FieldCard label="First name">
             <EditableInput
-              defaultValue={first_name}
+              defaultValue={firstName}
               placeholder="Set first name"
-              onUpdate={(value) => onUpdateMember("first_name", value)}
+              onUpdate={(value) => onUpdateMember("firstName", value)}
             />
           </FieldCard>
           <FieldCard label="Last name">
             <EditableInput
-              defaultValue={last_name}
+              defaultValue={lastName}
               placeholder="Set last name"
-              onUpdate={(value) => onUpdateMember("last_name", value)}
+              onUpdate={(value) => onUpdateMember("lastName", value)}
             />
           </FieldCard>
           <FieldCard label="Company">
             <EditableCompany
               member={member}
-              onUpdate={(value) => onUpdateMember("company_id", value)}
+              onUpdate={(value) => onUpdateMember("companyId", value)}
             />
           </FieldCard>
           <FieldCard label="Job title">
             <EditableInput
-              defaultValue={job_title}
+              defaultValue={jobTitle}
               placeholder="Set job title"
-              onUpdate={(value) => onUpdateMember("job_title", value)}
+              onUpdate={(value) => onUpdateMember("jobTitle", value)}
             />
           </FieldCard>
           <FieldCard label="Emails" className="items-start">
@@ -150,10 +150,10 @@ export const MemberSidebar = ({ member, profiles }: Props) => {
           </FieldCard>
           <FieldCard label="LinkedIn">
             <EditableLink
-              defaultValue={linkedin_url}
+              defaultValue={linkedinUrl}
               placeholder="Set linkedIn URL"
-              onUpdate={(value) => onUpdateMember("linkedin_url", value)}
-              href={linkedin_url}
+              onUpdate={(value) => onUpdateMember("linkedinUrl", value)}
+              href={linkedinUrl}
             />
           </FieldCard>
         </div>
@@ -177,23 +177,23 @@ export const MemberSidebar = ({ member, profiles }: Props) => {
         </div>
         <Separator />
         <div className="space-y-4 p-4">
-          {first_activity && (
+          {firstActivity && (
             <FieldCard label="First activity">
               <p className="h-8 place-content-center pl-2">
-                {format(first_activity, "PPp")}
+                {format(firstActivity, "PPp")}
               </p>
             </FieldCard>
           )}
-          {last_activity && (
+          {lastActivity && (
             <FieldCard label="Last activity">
               <p className="h-8 place-content-center pl-2">
-                {format(last_activity, "PPp")}
+                {format(lastActivity, "PPp")}
               </p>
             </FieldCard>
           )}
           <FieldCard label="Created at">
             <p className="h-8 place-content-center pl-2">
-              {format(created_at, "PPp")}
+              {format(createdAt, "PPp")}
             </p>
           </FieldCard>
         </div>

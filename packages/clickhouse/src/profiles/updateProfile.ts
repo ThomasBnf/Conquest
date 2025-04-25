@@ -9,7 +9,7 @@ export const updateProfile = async (props: Props) => {
     values: [
       {
         ...props,
-        updated_at: new Date(),
+        updatedAt: new Date(),
       },
     ],
     format: "JSON",

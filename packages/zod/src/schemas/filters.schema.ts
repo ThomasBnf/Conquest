@@ -13,7 +13,7 @@ export const NumberOperatorSchema = z.enum([
   ">",
   ">=",
   "equal",
-  "not equal",
+  "not_equal",
   "<=",
   "<",
 ]);
@@ -47,22 +47,22 @@ export const FilterSelectSchema = FilterBaseSchema.extend({
 
 export const FilterDateSchema = FilterBaseSchema.extend({
   type: z.literal("date"),
-  field: z.literal("created_at"),
+  field: z.literal("createdAt"),
   operator: DateOperatorSchema,
-  dynamic_date: DynamicDateSchema.optional(),
+  dynamicDate: DynamicDateSchema.optional(),
   days: z.number().default(1),
 });
 
 export const FilterTextSchema = FilterBaseSchema.extend({
   type: z.literal("text"),
-  field: z.enum(["job_title", "email", "phones"]).or(z.string()),
+  field: z.enum(["jobTitle", "email", "phones"]).or(z.string()),
   operator: BaseOperatorSchema,
   value: z.string().default(""),
 });
 
 export const FilterNumberSchema = FilterBaseSchema.extend({
   type: z.literal("number"),
-  field: z.enum(["pulse", "level", "github-followers"]),
+  field: z.enum(["pulse", "level", "githubFollowers"]),
   operator: NumberOperatorSchema,
   value: z.number().min(0).default(1),
 });
@@ -76,9 +76,9 @@ export const FilterLevelSchema = FilterBaseSchema.extend({
 
 export const FilterActivitySchema = FilterBaseSchema.extend({
   type: z.literal("activity"),
-  field: z.enum(["activity_type"]),
-  who: z.enum(["who_did", "who_did_not"]),
-  activity_types: z
+  field: z.enum(["activityType"]),
+  who: WhoOptionsSchema,
+  activityTypes: z
     .object({
       key: z.string(),
       name: z.string(),
@@ -92,11 +92,11 @@ export const FilterActivitySchema = FilterBaseSchema.extend({
       label: z.string(),
     })
     .array(),
-  dynamic_date: DynamicDateSchema.optional(),
+  dynamicDate: DynamicDateSchema.optional(),
   days: z.number().default(1),
-  display_count: z.boolean(),
-  display_date: z.boolean(),
-  display_channel: z.boolean(),
+  displayCount: z.boolean(),
+  displayDate: z.boolean(),
+  displayChannel: z.boolean(),
 });
 
 export const FilterSchema = z.discriminatedUnion("type", [

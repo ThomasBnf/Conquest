@@ -24,7 +24,7 @@ export const ConnectedCard = ({
   children,
 }: PropsWithChildren<Props>) => {
   const { deleteIntegration } = useIntegration();
-  const { status, connected_at } = integration ?? {};
+  const { status, connectedAt } = integration ?? {};
   const [open, setOpen] = useState(false);
 
   const onDisconnect = async () => {
@@ -54,9 +54,9 @@ export const ConnectedCard = ({
           <div className=" flex items-end justify-between">
             <div>
               <p className="font-medium">{name}</p>
-              {connected_at && (
+              {connectedAt && (
                 <p className="text-muted-foreground">
-                  Connected on {format(connected_at, "PPp")}
+                  Connected on {format(connectedAt, "PPp")}
                 </p>
               )}
             </div>

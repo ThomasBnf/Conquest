@@ -10,11 +10,11 @@ export const getIntegrationBySource = protectedProcedure
     }),
   )
   .query(async ({ ctx: { user }, input }) => {
-    const { workspace_id } = user;
+    const { workspaceId } = user;
     const { source } = input;
 
     return await _getIntegrationBySource({
       source,
-      workspace_id,
+      workspaceId,
     });
   });

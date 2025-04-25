@@ -8,13 +8,13 @@ export const CompanySchema = z.object({
   address: z.string(),
   domain: z.string(),
   employees: z.coerce.number().nullable(),
-  founded_at: z.coerce.date().nullable(),
-  logo_url: z.string(),
+  foundedAt: z.coerce.date().nullable(),
+  logoUrl: z.string(),
   tags: z.array(z.string()),
   source: SOURCE,
-  workspace_id: z.string(),
-  created_at: z.coerce.date(),
-  updated_at: z.coerce.date(),
+  workspaceId: z.string(),
+  createdAt: z.coerce.date(),
+  updatedAt: z.coerce.date(),
 });
 
 export type Company = z.infer<typeof CompanySchema>;

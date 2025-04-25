@@ -135,7 +135,7 @@ export const companiesColumns = (): Column<Company>[] => {
           table={table}
         />
       ),
-      cell: ({ item }) => <DateCell date={item.founded_at} />,
+      cell: ({ item }) => <DateCell date={item.foundedAt} />,
       width: 250,
     },
     {
@@ -161,7 +161,7 @@ export const companiesColumns = (): Column<Company>[] => {
           table={table}
         />
       ),
-      cell: ({ item }) => <DateCell date={item.created_at} />,
+      cell: ({ item }) => <DateCell date={item.createdAt} />,
       width: 250,
     },
   ];

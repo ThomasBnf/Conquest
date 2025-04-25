@@ -4,25 +4,25 @@ import { MemberSchema } from "@conquest/zod/schemas/member.schema";
 type Props = {
   cursor?: number | null | undefined;
   search: string;
-  workspace_id: string;
+  workspaceId: string;
 };
 
 export const listInfiniteMembers = async ({
   cursor,
   search,
-  workspace_id,
+  workspaceId,
 }: Props) => {
   const result = await client.query({
     query: `
         SELECT *
         FROM member FINAL
         WHERE (
-          lower(first_name) LIKE lower('%${search}%')
-          OR lower(last_name) LIKE lower('%${search}%')
-          OR lower(primary_email) LIKE lower('%${search}%')
+          lower(firstName) LIKE lower('%${search}%')
+          OR lower(lastName) LIKE lower('%${search}%')
+          OR lower(primaryEmail) LIKE lower('%${search}%')
         )
-        AND workspace_id = '${workspace_id}'
-        ORDER BY first_name ASC
+        AND workspaceId = '${workspaceId}'
+        ORDER BY firstName ASC
         ${cursor ? `LIMIT 25 OFFSET ${cursor}` : "LIMIT 25"}
     `,
   });

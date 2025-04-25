@@ -39,7 +39,7 @@ export const EditableMembers = ({ company }: Props) => {
   const { mutateAsync: updateMember } = trpc.members.update.useMutation({
     onSuccess: () => {
       utils.companies.listCompanyMembers.invalidate({ companyId: company.id });
-      utils.activities.list.invalidate({ company_id: company.id });
+      utils.activities.list.invalidate({ companyId: company.id });
     },
   });
 
@@ -54,13 +54,13 @@ export const EditableMembers = ({ company }: Props) => {
 
   const onUpdate = async (memberId: string) => {
     const member = companyMembers?.find((member) => member.id === memberId);
-    const isInCompany = member?.company_id === company.id;
+    const isInCompany = member?.companyId === company.id;
 
     if (!isInCompany) return;
 
     await updateMember({
       ...member,
-      company_id: isInCompany ? "" : company.id,
+      companyId: isInCompany ? "" : company.id,
     });
 
     toast.success(
@@ -91,7 +91,7 @@ export const EditableMembers = ({ company }: Props) => {
                 }}
               >
                 <span className="truncate">
-                  {member.first_name} {member.last_name}
+                  {member.firstName} {member.lastName}
                 </span>
                 {open && (
                   <div
@@ -141,16 +141,16 @@ export const EditableMembers = ({ company }: Props) => {
                   className="flex items-center gap-2"
                 >
                   <Avatar className="size-7">
-                    <AvatarImage src={member.avatar_url ?? ""} />
+                    <AvatarImage src={member.avatarUrl ?? ""} />
                     <AvatarFallback className="text-sm">
-                      {member.first_name?.charAt(0).toUpperCase()}
-                      {member.last_name?.charAt(0).toUpperCase()}
+                      {member.firstName?.charAt(0).toUpperCase()}
+                      {member.lastName?.charAt(0).toUpperCase()}
                     </AvatarFallback>
                   </Avatar>
                   <div className="flex w-full flex-col text-xs">
-                    {member.first_name} {member.last_name}
+                    {member.firstName} {member.lastName}
                     <span className="text-muted-foreground">
-                      {member.primary_email}
+                      {member.primaryEmail}
                     </span>
                   </div>
                 </CommandItem>

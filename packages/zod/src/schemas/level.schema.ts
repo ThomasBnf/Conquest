@@ -6,9 +6,9 @@ export const LevelSchema = z.object({
   number: z.number(),
   from: z.number(),
   to: z.number().nullable(),
-  workspace_id: z.string(),
-  created_at: z.coerce.date(),
-  updated_at: z.coerce.date(),
+  workspaceId: z.string(),
+  createdAt: z.coerce.date(),
+  updatedAt: z.coerce.date(),
 });
 
 export const LEVEL = z.object({

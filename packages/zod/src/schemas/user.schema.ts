@@ -1,4 +1,4 @@
-import type { user as UserPrisma } from "@prisma/client";
+import type { User as UserPrisma } from "@prisma/client";
 import { z } from "zod";
 import { ROLE } from "../enum/role.enum";
 import { GroupFiltersSchema } from "./filters.schema";
@@ -16,17 +16,17 @@ export const UserSchema = z.object({
   id: z.string(),
   email: z.string().email(),
   emailVerified: z.coerce.date().nullable(),
-  first_name: z.string().nullable(),
-  last_name: z.string().nullable(),
-  avatar_url: z.string().nullable(),
+  firstName: z.string().nullable(),
+  lastName: z.string().nullable(),
+  avatarUrl: z.string().nullable(),
   onboarding: z.coerce.date().nullable(),
   role: ROLE,
-  last_activity_at: z.coerce.date(),
-  members_preferences: PreferencesSchema,
-  companies_preferences: PreferencesSchema,
-  workspace_id: z.string(),
-  created_at: z.coerce.date(),
-  updated_at: z.coerce.date(),
+  lastActivityAt: z.coerce.date(),
+  membersPreferences: PreferencesSchema,
+  companiesPreferences: PreferencesSchema,
+  workspaceId: z.string(),
+  createdAt: z.coerce.date(),
+  updatedAt: z.coerce.date(),
 }) satisfies z.ZodType<UserPrisma>;
 
 export const UserWithWorkspaceSchema = UserSchema.extend({

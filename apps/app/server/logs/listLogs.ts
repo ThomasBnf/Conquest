@@ -5,11 +5,11 @@ import { protectedProcedure } from "../trpc";
 export const listLogs = protectedProcedure
   .input(
     z.object({
-      member_id: z.string(),
+      memberId: z.string(),
     }),
   )
   .query(async ({ input }) => {
-    const { member_id } = input;
+    const { memberId } = input;
 
-    return await _listLogs({ member_id });
+    return await _listLogs({ memberId });
   });

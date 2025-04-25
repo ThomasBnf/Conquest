@@ -8,10 +8,10 @@ type Props = {
 };
 
 export const CompanyCell = ({ member }: Props) => {
-  const { company_id } = member;
+  const { companyId } = member;
 
   const { data, isLoading } = trpc.companies.get.useQuery(
-    company_id ? { id: company_id } : skipToken,
+    companyId ? { id: companyId } : skipToken,
   );
 
   return isLoading ? (

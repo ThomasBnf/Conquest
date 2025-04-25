@@ -13,14 +13,14 @@ export const cronWeekly = schedules.task({
     const members = await listAllMembers();
 
     for (const member of members) {
-      const { level_id, pulse } = member;
+      const { levelId, pulse } = member;
 
       const log: Omit<Log, "id"> = {
         date: startOfWeek(new Date(), { weekStartsOn: 1 }),
         pulse,
-        level_id: level_id ?? null,
-        member_id: member.id,
-        workspace_id: member.workspace_id,
+        levelId: levelId ?? null,
+        memberId: member.id,
+        workspaceId: member.workspaceId,
       };
 
       await createLog({ log });

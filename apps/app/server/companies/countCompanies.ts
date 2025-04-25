@@ -9,7 +9,7 @@ export const countCompanies = protectedProcedure
     }),
   )
   .query(async ({ ctx: { user }, input }) => {
-    const { workspace_id } = user;
+    const { workspaceId } = user;
     const { search } = input;
 
     const searchParsed = search.toLowerCase().trim();
@@ -21,7 +21,7 @@ export const countCompanies = protectedProcedure
         WHERE (
           ${searchParsed ? `positionCaseInsensitive(c.name, '${searchParsed}') > 0` : "true"}
         )
-        AND c.workspace_id = '${workspace_id}'
+        AND c.workspaceId = '${workspaceId}'
       `,
     });
 

@@ -6,22 +6,22 @@ type Props = {
 };
 
 export const MemberDetails = ({ member }: Props) => {
-  const { first_name, last_name, primary_email, avatar_url } = member;
+  const { firstName, lastName, primaryEmail, avatarUrl } = member;
 
   return (
     <div className="flex items-center gap-2">
       <Avatar className="size-7">
-        <AvatarImage src={avatar_url ?? ""} />
+        <AvatarImage src={avatarUrl ?? ""} />
         <AvatarFallback className="text-sm">
-          {first_name?.charAt(0).toUpperCase()}
-          {last_name?.charAt(0).toUpperCase()}
+          {firstName?.charAt(0).toUpperCase()}
+          {lastName?.charAt(0).toUpperCase()}
         </AvatarFallback>
       </Avatar>
       <div className="flex w-full flex-col">
         <p>
-          {first_name} {last_name}
+          {firstName} {lastName}
         </p>
-        <span className="text-muted-foreground text-xs">{primary_email}</span>
+        <span className="text-muted-foreground text-xs">{primaryEmail}</span>
       </div>
     </div>
   );

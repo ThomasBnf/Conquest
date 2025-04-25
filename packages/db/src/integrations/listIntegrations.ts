@@ -2,12 +2,12 @@ import { IntegrationSchema } from "@conquest/zod/schemas/integration.schema";
 import { prisma } from "../prisma";
 
 type Props = {
-  workspace_id: string;
+  workspaceId: string;
 };
 
-export const listIntegrations = async ({ workspace_id }: Props) => {
+export const listIntegrations = async ({ workspaceId }: Props) => {
   const integrations = await prisma.integration.findMany({
-    where: { workspace_id },
+    where: { workspaceId },
   });
 
   const parsedIntegrations = IntegrationSchema.array().parse(integrations);

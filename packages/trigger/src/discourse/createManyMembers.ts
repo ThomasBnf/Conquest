@@ -27,12 +27,12 @@ export const createManyMembers = async ({
   client: DiscourseAPI;
   tags: Tag[];
 }) => {
-  const { workspace_id, details } = discourse;
-  const { community_url, api_key, api_key_iv, user_fields } = details;
+  const { workspaceId, details } = discourse;
+  const { communityUrl, apiKey, apiKeyIv, userFields } = details;
 
   const decryptedApiKey = await decrypt({
-    access_token: api_key,
-    iv: api_key_iv,
+    accessToken: apiKey,
+    iv: apiKeyIv,
   });
 
   let members: AdminListUsers[] = [];
@@ -63,7 +63,7 @@ export const createManyMembers = async ({
   let _hasMore = true;
 
   while (_hasMore) {
-    const fieldsIds = user_fields?.map((field) => field.id);
+    const fieldsIds = userFields?.map((field) => field.id);
     const params = new URLSearchParams({
       period: "all",
       order: "likes_received",
@@ -74,7 +74,7 @@ export const createManyMembers = async ({
       params.set("user_field_ids", fieldsIds.join("|"));
     }
 
-    const url = `${community_url}/directory_items.json?${params.toString()}`;
+    const url = `${communityUrl}/directory_items.json?${params.toString()}`;
 
     const response = await fetch(url, {
       headers: {
@@ -111,7 +111,7 @@ export const createManyMembers = async ({
       }
 
       const [firstName, lastName] = name?.split(" ") ?? [];
-      const avatarUrl = `${community_url}/${avatar_template.replace(
+      const avatarUrl = `${communityUrl}/${avatar_template.replace(
         "{size}",
         "500",
       )}`;
@@ -123,7 +123,7 @@ export const createManyMembers = async ({
       const memberTags = tags
         .filter((tag) =>
           user_badges?.some(
-            (badge) => String(badge.badge_id) === tag.external_id,
+            (badge) => String(badge.badge_id) === tag.externalId,
           ),
         )
         .map((tag) => tag.id);
@@ -136,7 +136,7 @@ export const createManyMembers = async ({
 
       const { email, title, created_at } = filteredMember;
 
-      const custom_fields = Object.entries(user_fields ?? {}).map(
+      const customFields = Object.entries(user_fields ?? {}).map(
         ([id, field]) => ({
           id,
           value: field?.value?.[0] ?? "",
@@ -144,30 +144,30 @@ export const createManyMembers = async ({
       );
 
       const member = await createMember({
-        first_name: firstName,
-        last_name: lastName,
-        primary_email: email,
+        firstName,
+        lastName,
+        primaryEmail: email,
         emails: email ? [email] : [],
-        avatar_url: avatarUrl,
+        avatarUrl,
         language,
         country,
-        job_title: title ?? "",
+        jobTitle: title ?? "",
         tags: memberTags,
-        created_at: new Date(created_at),
+        createdAt: new Date(created_at),
         source: "Discourse",
-        workspace_id,
+        workspaceId,
       });
 
       const profile = await createProfile({
-        external_id: String(id),
+        externalId: String(id),
         attributes: {
           source: "Discourse",
           username: username,
-          custom_fields,
+          customFields,
         },
-        member_id: member.id,
-        created_at: new Date(created_at),
-        workspace_id,
+        memberId: member.id,
+        createdAt: new Date(created_at),
+        workspaceId,
       });
 
       await createManyReactions({

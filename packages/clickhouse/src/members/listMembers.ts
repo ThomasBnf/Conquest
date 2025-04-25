@@ -2,15 +2,15 @@ import { MemberSchema } from "@conquest/zod/schemas/member.schema";
 import { client } from "../client";
 
 type Props = {
-  workspace_id: string;
-  company_id?: string;
+  workspaceId: string;
+  companyId?: string;
   offset?: number;
   limit?: number;
 };
 
 export const listMembers = async ({
-  workspace_id,
-  company_id,
+  workspaceId,
+  companyId,
   offset,
   limit,
 }: Props) => {
@@ -18,8 +18,8 @@ export const listMembers = async ({
     query: `
       SELECT * 
       FROM member FINAL
-      WHERE workspace_id = '${workspace_id}'
-      ${company_id ? `AND company_id = '${company_id}'` : ""}
+      WHERE workspaceId = '${workspaceId}'
+      ${companyId ? `AND companyId = '${companyId}'` : ""}
       ${limit ? `LIMIT ${limit}` : ""}
       ${offset ? `OFFSET ${offset}` : ""}
     `,

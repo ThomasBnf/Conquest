@@ -15,10 +15,10 @@ export const integrationSuccessEmail = schemaTask({
   run: async ({ integration }, { ctx }) => {
     if (ctx.environment.type === "DEVELOPMENT") return;
 
-    const { created_by, details } = integration;
+    const { createdBy, details } = integration;
     const { source } = details;
 
-    const user = await getUserById({ id: created_by });
+    const user = await getUserById({ id: createdBy });
     const { email } = user ?? {};
 
     const url = `${env.NEXT_PUBLIC_BASE_URL}/settings/integrations/${source?.toLowerCase()}`;

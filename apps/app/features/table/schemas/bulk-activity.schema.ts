@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const BulkActivitySchema = z.object({
-  activity_type_key: z.string(),
+  activityTypeKey: z.string(),
   message: z.string(),
 });
 

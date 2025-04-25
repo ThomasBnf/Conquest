@@ -3,8 +3,8 @@ import { client } from "../client";
 
 type Props =
   | {
-      external_id: string;
-      workspace_id: string;
+      externalId: string;
+      workspaceId: string;
     }
   | {
       id: string;
@@ -14,11 +14,11 @@ export const getActivity = async (props: Props) => {
   const params: Record<string, string> = {};
   let where = "";
 
-  if ("external_id" in props) {
-    const { external_id, workspace_id } = props;
-    params.external_id = external_id;
-    params.workspace_id = workspace_id;
-    where = `external_id = '${external_id}' AND workspace_id = '${workspace_id}'`;
+  if ("externalId" in props) {
+    const { externalId, workspaceId } = props;
+    params.externalId = externalId;
+    params.workspaceId = workspaceId;
+    where = `externalId = '${externalId}' AND workspaceId = '${workspaceId}'`;
   } else {
     const { id } = props;
     params.id = id;
@@ -27,11 +27,20 @@ export const getActivity = async (props: Props) => {
 
   const result = await client.query({
     query: `
-      SELECT 
-      a.*,
-      activity_type.*
+     SELECT 
+        a.*,
+        at.id as "activityType.id",
+        at.name as "activityType.name",
+        at.key as "activityType.key",
+        at.points as "activityType.points",
+        at.conditions as "activityType.conditions",
+        at.deletable as "activityType.deletable",
+        at.source as "activityType.source",
+        at.workspaceId as "activityType.workspaceId",
+        at.createdAt as "activityType.createdAt",
+        at.updatedAt as "activityType.updatedAt"
       FROM activity a
-      LEFT JOIN activity_type ON a.activity_type_id = activity_type.id
+      LEFT JOIN activityType at ON a.activityTypeId = at.id
       WHERE ${where}
     `,
   });
@@ -47,18 +56,19 @@ export const getActivity = async (props: Props) => {
     const activityType: Record<string, unknown> = {};
 
     for (const [key, value] of Object.entries(row)) {
-      if (key.startsWith("activity_type.")) {
-        activityType[key.substring(14)] = value;
-      } else if (
-        ["name", "key", "points", "conditions", "deletable"].includes(key)
-      ) {
-        activityType[key] = value;
+      if (key.startsWith("activityType.")) {
+        const cleanKey = key.substring(14);
+        activityType[cleanKey] = value;
       } else {
         result[key] = value;
       }
     }
 
-    result.activity_type = activityType;
+    if (!activityType.id || !activityType.source || !activityType.workspaceId) {
+      return null;
+    }
+
+    result.activityType = activityType;
     return result;
   };
 

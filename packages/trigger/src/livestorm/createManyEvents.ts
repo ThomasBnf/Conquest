@@ -11,11 +11,11 @@ type Props = {
 
 export const createManyEvents = async ({ livestorm }: Props) => {
   const { details } = livestorm;
-  const { access_token, access_token_iv, filter } = details;
+  const { accessToken, accessTokenIv, filter } = details;
 
   const decryptedAccessToken = await decrypt({
-    access_token: access_token,
-    iv: access_token_iv,
+    accessToken,
+    iv: accessTokenIv,
   });
 
   const events: Event[] = [];
@@ -24,7 +24,7 @@ export const createManyEvents = async ({ livestorm }: Props) => {
 
   while (true) {
     const listOfEvents = await listEvents({
-      access_token: decryptedAccessToken,
+      accessToken: decryptedAccessToken,
       page,
       filter,
     });

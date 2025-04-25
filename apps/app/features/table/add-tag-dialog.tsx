@@ -75,7 +75,7 @@ export const AddTagDialog = <TData extends Member | Company>({
   const onConfirm = async () => {
     setLoading(true);
 
-    if (selectedRows?.[0] && "first_name" in selectedRows[0]) {
+    if (selectedRows?.[0] && "firstName" in selectedRows[0]) {
       const members = selectedRows as Member[];
 
       const filteredMembers = members.filter(
@@ -85,7 +85,7 @@ export const AddTagDialog = <TData extends Member | Company>({
       const updatedMembers = filteredMembers.map((member) => ({
         ...member,
         tags: [...member.tags, ...selectedTags],
-        updated_at: new Date(),
+        updatedAt: new Date(),
       }));
 
       await updateManyMembers({ members: updatedMembers });
@@ -97,7 +97,7 @@ export const AddTagDialog = <TData extends Member | Company>({
     const updatedCompanies = companies.map((company) => ({
       ...company,
       tags: [...company.tags, ...selectedTags],
-      updated_at: new Date(),
+      updatedAt: new Date(),
     }));
 
     updateManyCompanies({ companies: updatedCompanies });

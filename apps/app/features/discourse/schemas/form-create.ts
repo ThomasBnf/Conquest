@@ -2,17 +2,17 @@ import { z } from "zod";
 
 export const FieldSchema = z.object({
   id: z.string(),
-  external_id: z.string(),
+  externalId: z.string(),
   name: z.string(),
 });
 
 export const FormCreateSchema = z.object({
-  community_url: z.string(),
-  api_key: z.string(),
-  payload_url: z.boolean(),
-  content_type: z.boolean(),
+  communityUrl: z.string(),
+  apiKey: z.string(),
+  payloadUrl: z.boolean(),
+  contentType: z.boolean(),
   secret: z.boolean(),
-  send_me_everything: z.boolean(),
+  sendMeEverything: z.boolean(),
   active: z.boolean(),
 });
 

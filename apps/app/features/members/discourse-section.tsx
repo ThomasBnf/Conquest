@@ -19,8 +19,8 @@ export const DiscourseSection = ({ profile }: Props) => {
     ? DiscourseDetailsSchema.parse(discourse?.details)
     : null;
 
-  const { community_url, user_fields } = details ?? {};
-  const { username, custom_fields } = profile.attributes;
+  const { communityUrl, userFields } = details ?? {};
+  const { username, customFields } = profile.attributes;
 
   return (
     <>
@@ -35,13 +35,13 @@ export const DiscourseSection = ({ profile }: Props) => {
           <EditableLink
             placeholder="No discourse profile"
             defaultValue={username}
-            href={`${community_url}/u/${username}/summary`}
+            href={`${communityUrl}/u/${username}/summary`}
             editable={false}
           />
         </FieldCard>
-        {custom_fields?.map((user_field) => {
-          const { id, value } = user_field;
-          const key = user_fields?.find((field) => field.id === id)?.name;
+        {customFields?.map((userField) => {
+          const { id, value } = userField;
+          const key = userFields?.find((field) => field.id === id)?.name;
 
           if (!key) return null;
 

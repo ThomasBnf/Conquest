@@ -4,36 +4,36 @@ import { prisma } from "../prisma";
 
 type Props = {
   id: string;
-  external_id?: string;
+  externalId?: string;
   details?: IntegrationDetails;
-  connected_at?: Date;
+  connectedAt?: Date;
   status?: Status;
-  trigger_token?: string;
-  expires_at?: Date;
-  created_by?: string;
-  workspace_id: string;
+  triggerToken?: string;
+  expiresAt?: Date;
+  createdBy?: string;
+  workspaceId: string;
 };
 
 export const updateIntegration = async ({
   id,
-  external_id,
+  externalId,
   details,
-  connected_at,
+  connectedAt,
   status,
-  created_by,
-  workspace_id,
+  createdBy,
+  workspaceId,
 }: Props) => {
   return await prisma.integration.update({
     where: {
       id,
-      workspace_id,
+      workspaceId,
     },
     data: {
-      external_id,
-      connected_at,
+      externalId,
+      connectedAt,
       details,
       status,
-      created_by,
+      createdBy,
     },
   });
 };

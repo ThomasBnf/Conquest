@@ -83,7 +83,7 @@ export const CreateActivityTypeDialog = () => {
         ...conditions.rules,
         {
           id: uuid(),
-          channel_id: "",
+          channelId: "",
           points: 2,
         },
       ],

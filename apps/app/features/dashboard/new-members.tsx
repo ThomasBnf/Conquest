@@ -109,7 +109,7 @@ const NewMembersSheet = ({
     hasNextPage,
     isLoading,
     count,
-    preferences: user?.members_preferences,
+    preferences: user?.membersPreferences,
   });
 
   return (

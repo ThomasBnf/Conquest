@@ -64,7 +64,7 @@ export default function Page() {
     const formattedSlug = slugify(slug, { decamelize: false });
 
     await mutateWorkspace({
-      id: user.workspace_id,
+      id: user.workspaceId,
       name: name.charAt(0).toUpperCase() + name.slice(1),
       slug: formattedSlug,
     });

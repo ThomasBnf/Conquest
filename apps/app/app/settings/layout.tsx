@@ -17,9 +17,9 @@ export default async function Layout({ children }: PropsWithChildren<Props>) {
   const { user } = session;
   if (!user?.onboarding) redirect("/");
 
-  const { trial_end, is_past_due } = user.workspace;
-  const trialEnded = trial_end && isBefore(trial_end, new Date());
-  if (trialEnded || is_past_due) redirect("/billing");
+  const { trialEnd, isPastDue } = user.workspace;
+  const trialEnded = trialEnd && isBefore(trialEnd, new Date());
+  if (trialEnded || isPastDue) redirect("/billing");
 
   return (
     <UserProvider initialUser={user}>

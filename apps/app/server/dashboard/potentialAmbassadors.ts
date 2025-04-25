@@ -12,7 +12,7 @@ export const potentialAmbassadors = protectedProcedure
     }),
   )
   .query(async ({ ctx: { user }, input }) => {
-    const { workspace_id } = user;
+    const { workspaceId } = user;
     const { from, to } = input;
 
     const timeZone = "Europe/Paris";
@@ -35,42 +35,42 @@ export const potentialAmbassadors = protectedProcedure
           (
             SELECT count(DISTINCT m.id)
             FROM member m FINAL
-            LEFT JOIN level l ON m.level_id = l.id
+            LEFT JOIN level l ON m.levelId = l.id
             WHERE 
-              m.workspace_id = '${workspace_id}'
+              m.workspaceId = '${workspaceId}'
               AND l.number >= 7
               AND l.number <= 9
               AND m.id IN (
-                SELECT member_id 
+                SELECT memberId 
                 FROM activity 
                 WHERE
-                  workspace_id = '${workspace_id}'
-                  AND created_at BETWEEN '${_from}' AND '${_to}'
+                  workspaceId = '${workspaceId}'
+                  AND createdAt BETWEEN '${_from}' AND '${_to}'
               )
-          ) as current_count,
+          ) as currentCount,
           (
             SELECT count(DISTINCT m.id)
             FROM member m FINAL
-            LEFT JOIN level l ON m.level_id = l.id
+            LEFT JOIN level l ON m.levelId = l.id
             WHERE 
-              m.workspace_id = '${workspace_id}'
+              m.workspaceId = '${workspaceId}'
               AND l.number >= 7
               AND l.number <= 9
               AND m.id IN (
-                SELECT member_id 
+                SELECT memberId 
                 FROM activity 
                 WHERE
-                  workspace_id = '${workspace_id}'
-                  AND created_at BETWEEN '${_previousFrom}' AND '${_previousTo}'
+                  workspaceId = '${workspaceId}'
+                  AND createdAt BETWEEN '${_previousFrom}' AND '${_previousTo}'
               )
-          ) as previous_count
+          ) as previousCount
         SELECT 
-          current_count as current,
-          previous_count as previous,
+          currentCount as current,
+          previousCount as previous,
           CASE
-            WHEN previous_count = 0 AND current_count > 0 THEN 100
-            WHEN previous_count = 0 THEN 0
-            ELSE ((current_count - previous_count) / previous_count) * 100
+            WHEN previousCount = 0 AND currentCount > 0 THEN 100
+            WHEN previousCount = 0 THEN 0
+            ELSE ((currentCount - previousCount) / previousCount) * 100
           END as variation
       `,
       format: "JSON",

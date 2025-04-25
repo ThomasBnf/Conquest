@@ -4,32 +4,32 @@ type Props =
   | { id: string }
   | {
       username: string;
-      workspace_id: string;
+      workspaceId: string;
     }
   | {
-      external_id: string;
-      workspace_id: string;
+      externalId: string;
+      workspaceId: string;
     };
 
 export const deleteProfile = async (props: Props) => {
   if ("username" in props) {
-    const { username, workspace_id } = props;
+    const { username, workspaceId } = props;
     await client.query({
       query: `
         ALTER TABLE profile
         DELETE WHERE attributes.username = '${username}'
-        AND workspace_id = '${workspace_id}'
+        AND workspaceId = '${workspaceId}'
       `,
     });
   }
 
-  if ("external_id" in props) {
-    const { external_id, workspace_id } = props;
+  if ("externalId" in props) {
+    const { externalId, workspaceId } = props;
     await client.query({
       query: `
         ALTER TABLE profile
-        DELETE WHERE external_id = '${external_id}'
-        AND workspace_id = '${workspace_id}'
+        DELETE WHERE externalId = '${externalId}'
+        AND workspaceId = '${workspaceId}'
       `,
     });
   }

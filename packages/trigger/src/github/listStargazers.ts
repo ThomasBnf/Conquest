@@ -15,7 +15,7 @@ type Props = {
 };
 
 export const listStargazers = async ({ octokit, github }: Props) => {
-  const { details, workspace_id } = github;
+  const { details, workspaceId } = github;
   const { owner, repo } = details;
 
   let page = 1;
@@ -67,8 +67,8 @@ export const listStargazers = async ({ octokit, github }: Props) => {
     const { headers, member } = await createGithubMember({
       octokit,
       id,
-      created_at: new Date(starred_at),
-      workspace_id,
+      createdAt: new Date(starred_at),
+      workspaceId,
     });
 
     await checkRateLimit(headers);
@@ -76,13 +76,13 @@ export const listStargazers = async ({ octokit, github }: Props) => {
     if (!member) continue;
 
     await createActivity({
-      activity_type_key: "github:star",
+      activityTypeKey: "github:star",
       message: `Starred the repository ${repo}`,
-      member_id: member.id,
-      created_at: new Date(starred_at),
-      updated_at: new Date(starred_at),
+      memberId: member.id,
+      createdAt: new Date(starred_at),
+      updatedAt: new Date(starred_at),
       source: "Github",
-      workspace_id,
+      workspaceId,
     });
 
     await checkRateLimit(headers);

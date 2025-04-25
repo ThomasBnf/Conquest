@@ -7,19 +7,14 @@ import { logger } from "@trigger.dev/sdk/v3";
 import { type APIMessage, Routes } from "discord-api-types/v10";
 
 type Props = {
-  discord: DiscordIntegration;
   channel: Channel;
-  workspace_id: string;
+  workspaceId: string;
 };
 
-export const listChannelMessages = async ({
-  discord,
-  channel,
-  workspace_id,
-}: Props) => {
-  const { external_id } = channel;
+export const listChannelMessages = async ({ channel, workspaceId }: Props) => {
+  const { externalId } = channel;
 
-  if (!external_id) return;
+  if (!externalId) return;
 
   let before: string | undefined;
 
@@ -31,7 +26,7 @@ export const listChannelMessages = async ({
 
     try {
       const messages = (await discordClient.get(
-        `${Routes.channelMessages(external_id)}?${params.toString()}`,
+        `${Routes.channelMessages(externalId)}?${params.toString()}`,
       )) as APIMessage[];
 
       logger.info("messages", { messages });
@@ -51,8 +46,8 @@ export const listChannelMessages = async ({
         if (author.bot) continue;
 
         const profile = await getProfile({
-          external_id: author.id,
-          workspace_id,
+          externalId: author.id,
+          workspaceId,
         });
 
         if (!profile || !content || thread || sticker_items) continue;
@@ -60,15 +55,15 @@ export const listChannelMessages = async ({
         switch (type) {
           case 0: {
             await createActivity({
-              external_id: id,
-              activity_type_key: "discord:message",
+              externalId: id,
+              activityTypeKey: "discord:message",
               message: content,
-              member_id: profile.member_id,
-              channel_id: channel.id,
-              created_at: new Date(timestamp),
-              updated_at: new Date(timestamp ?? ""),
+              memberId: profile.memberId,
+              channelId: channel.id,
+              createdAt: new Date(timestamp),
+              updatedAt: new Date(timestamp ?? ""),
               source: "Discord",
-              workspace_id,
+              workspaceId,
             });
 
             break;
@@ -77,16 +72,16 @@ export const listChannelMessages = async ({
             const { message_id } = message_reference ?? {};
 
             await createActivity({
-              external_id: message.id,
-              activity_type_key: "discord:reply",
+              externalId: message.id,
+              activityTypeKey: "discord:reply",
               message: message.content,
-              reply_to: message_id,
-              member_id: profile.member_id,
-              channel_id: channel.id,
-              created_at: new Date(timestamp),
-              updated_at: new Date(timestamp ?? ""),
+              replyTo: message_id,
+              memberId: profile.memberId,
+              channelId: channel.id,
+              createdAt: new Date(timestamp),
+              updatedAt: new Date(timestamp ?? ""),
               source: "Discord",
-              workspace_id,
+              workspaceId,
             });
 
             break;

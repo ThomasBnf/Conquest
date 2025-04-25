@@ -20,7 +20,7 @@ export const updateWorkspace = protectedProcedure
       const slugTaken = await prisma.workspace.findFirst({
         where: {
           slug,
-          id: { not: user.workspace_id },
+          id: { not: user.workspaceId },
         },
       });
 

@@ -7,15 +7,15 @@ import { protectedProcedure } from "../trpc";
 export const createBillingPortal = protectedProcedure
   .input(
     z.object({
-      payment_method_update: z.boolean().optional(),
+      paymentMethodUpdate: z.boolean().optional(),
     }),
   )
   .mutation(async ({ ctx: { user }, input }) => {
     const { workspace } = user;
-    const { stripe_customer_id } = workspace;
-    const { payment_method_update } = input;
+    const { stripeCustomerId } = workspace;
+    const { paymentMethodUpdate } = input;
 
-    if (!stripe_customer_id) {
+    if (!stripeCustomerId) {
       throw new TRPCError({
         code: "INTERNAL_SERVER_ERROR",
         message: "Stripe customer ID not found",
@@ -23,9 +23,9 @@ export const createBillingPortal = protectedProcedure
     }
 
     const portal = await stripe.billingPortal.sessions.create({
-      customer: stripe_customer_id,
+      customer: stripeCustomerId,
       return_url: `${env.NEXT_PUBLIC_BASE_URL}/settings/billing`,
-      ...(payment_method_update && {
+      ...(paymentMethodUpdate && {
         flow_data: { type: "payment_method_update" },
       }),
     });

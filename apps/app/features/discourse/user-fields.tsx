@@ -9,7 +9,7 @@ type Props = {
   onRemoveField: (id: string) => void;
   onChangeField: (
     id: string,
-    key: "external_id" | "name",
+    key: "externalId" | "name",
     value: string,
   ) => void;
 };
@@ -24,10 +24,10 @@ export const UserFields = ({ fields, onRemoveField, onChangeField }: Props) => {
           <Input
             h="sm"
             placeholder="Id"
-            value={field.external_id}
+            value={field.externalId}
             disabled={loading}
             onChange={(e) =>
-              onChangeField(field.id, "external_id", e.target.value)
+              onChangeField(field.id, "externalId", e.target.value)
             }
           />
           <Input

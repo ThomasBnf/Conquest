@@ -10,37 +10,37 @@ export const checkDuplicates = schemaTask({
     const workspaces = await listWorkspaces();
 
     for (const workspace of workspaces) {
-      const { id: workspace_id } = workspace;
+      const { id: workspaceId } = workspace;
 
-      logger.info(workspace_id);
+      logger.info(workspaceId);
 
       const result = await client.query({
         query: `
           SELECT
             'EMAIL' AS reason,
-            m.primary_email AS value,
-            groupArray(m.id) AS member_ids
+            m.primaryEmail AS value,
+            groupArray(m.id) AS memberIds
           FROM member m FINAL
           WHERE 
-            m.primary_email != '' 
-            AND m.primary_email IS NOT NULL 
-            AND length(trim(m.primary_email)) > 0 
-            AND m.workspace_id = '${workspace_id}'
-          GROUP BY m.primary_email
+            m.primaryEmail != '' 
+            AND m.primaryEmail IS NOT NULL 
+            AND length(trim(m.primaryEmail)) > 0 
+            AND m.workspaceId = '${workspaceId}'
+          GROUP BY m.primaryEmail
           HAVING count(DISTINCT m.id) > 1
           
           UNION ALL
           
           SELECT
             'NAME' AS reason,
-            concat(m.first_name, ' ', m.last_name) AS value,
-            groupArray(m.id) AS member_ids
+            concat(m.firstName, ' ', m.lastName) AS value,
+            groupArray(m.id) AS memberIds
           FROM member m FINAL
           WHERE 
-            m.first_name != ''
-            AND m.last_name != ''
-            AND m.workspace_id = '${workspace_id}'
-          GROUP BY m.first_name, m.last_name
+            m.firstName != ''
+            AND m.lastName != ''
+            AND m.workspaceId = '${workspaceId}'
+          GROUP BY m.firstName, m.lastName
           HAVING count(DISTINCT m.id) > 1
 
           UNION ALL
@@ -48,38 +48,38 @@ export const checkDuplicates = schemaTask({
           SELECT
             'USERNAME' AS reason,
             username AS value,
-            groupArray(member_id) AS member_ids
+            groupArray(memberId) AS memberIds
           FROM (
               SELECT 
                   JSONExtractString(toString(p.attributes), 'username') AS username,
-                  p.member_id
+                  p.memberId
               FROM profile p FINAL
               WHERE JSONExtractString(toString(p.attributes), 'source') = 'Discord' 
               AND JSONExtractString(toString(p.attributes), 'username') != ''
-              AND p.workspace_id = '${workspace_id}'
+              AND p.workspaceId = '${workspaceId}'
 
               UNION ALL
 
               SELECT 
                   JSONExtractString(toString(p.attributes), 'username') AS username,
-                  p.member_id
+                  p.memberId
               FROM profile p FINAL
               WHERE JSONExtractString(toString(p.attributes), 'source') = 'Discourse'
               AND JSONExtractString(toString(p.attributes), 'username') != ''
-              AND p.workspace_id = '${workspace_id}'
+              AND p.workspaceId = '${workspaceId}'
 
               UNION ALL
 
               SELECT 
                   JSONExtractString(toString(p.attributes), 'login') AS username,
-                  p.member_id
+                  p.memberId
               FROM profile p FINAL
               WHERE JSONExtractString(toString(p.attributes), 'source') = 'Github'
               AND JSONExtractString(toString(p.attributes), 'login') != ''
-              AND p.workspace_id = '${workspace_id}'
+              AND p.workspaceId = '${workspaceId}'
           )
           GROUP BY username
-          HAVING count(DISTINCT member_id) > 1
+          HAVING count(DISTINCT memberId) > 1
         `,
         format: "JSON",
       });
@@ -88,30 +88,28 @@ export const checkDuplicates = schemaTask({
         data: {
           reason: REASON;
           value: string;
-          member_ids: string[];
+          memberIds: string[];
         }[];
       };
 
-      const duplicates = await listAllDuplicates({ workspace_id });
+      const duplicates = await listAllDuplicates({ workspaceId });
 
       logger.info("duplicates", { duplicates });
 
       for (const item of data) {
-        const { member_ids, reason } = item;
+        const { memberIds, reason } = item;
 
         const duplicate = duplicates.find((duplicate) => {
-          const sortedExisting = [...duplicate.member_ids].sort();
-          const sortedNew = [...member_ids].sort();
+          const sortedExisting = [...duplicate.memberIds].sort();
+          const sortedNew = [...memberIds].sort();
           return JSON.stringify(sortedExisting) === JSON.stringify(sortedNew);
         });
-
-        const memberIds = member_ids.map((id) => `'${id}'`).join(",");
 
         const result = await client.query({
           query: `
             SELECT sum(pulse) 
             FROM member FINAL
-            WHERE id IN (${memberIds})
+            WHERE id IN (${memberIds.map((id) => `'${id}'`).join(",")})
           `,
         });
 
@@ -121,27 +119,27 @@ export const checkDuplicates = schemaTask({
           }[];
         };
 
-        const total_pulse = pulse[0] ? Number(pulse[0]["sum(pulse)"]) : 0;
+        const totalPulse = pulse[0] ? Number(pulse[0]["sum(pulse)"]) : 0;
 
         if (duplicate) {
-          if (total_pulse === duplicate.total_pulse) continue;
+          if (totalPulse === duplicate.totalPulse) continue;
 
           await prisma.duplicate.update({
             where: {
               id: duplicate.id,
             },
             data: {
-              total_pulse,
+              totalPulse,
             },
           });
         } else {
           await prisma.duplicate.create({
             data: {
-              total_pulse,
-              member_ids,
+              totalPulse,
+              memberIds,
               reason,
               state: "PENDING",
-              workspace_id,
+              workspaceId,
             },
           });
         }

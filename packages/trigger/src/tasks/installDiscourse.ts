@@ -18,20 +18,20 @@ export const installDiscourse = schemaTask({
     discourse: DiscourseIntegrationSchema,
   }),
   run: async ({ discourse }) => {
-    const { workspace_id, details } = discourse;
-    const { community_url, api_key, api_key_iv } = details;
+    const { workspaceId, details } = discourse;
+    const { communityUrl, apiKey, apiKeyIv } = details;
 
     const decryptedApiKey = await decrypt({
-      access_token: api_key,
-      iv: api_key_iv,
+      accessToken: apiKey,
+      iv: apiKeyIv,
     });
 
     const client = discourseClient({
-      community_url,
-      api_key: decryptedApiKey,
+      communityUrl,
+      apiKey: decryptedApiKey,
     });
 
-    const tags = await createManyTags({ client, workspace_id });
+    const tags = await createManyTags({ client, workspaceId });
 
     await createManyMembers({
       discourse,
@@ -39,22 +39,18 @@ export const installDiscourse = schemaTask({
       tags,
     });
 
-    await getAllMembersMetrics.triggerAndWait(
-      { workspace_id },
-      { metadata: { workspace_id } },
-    );
-
-    await checkDuplicates.triggerAndWait({ workspace_id });
+    await getAllMembersMetrics.triggerAndWait({ workspaceId });
+    await checkDuplicates.triggerAndWait({ workspaceId });
     await integrationSuccessEmail.trigger({ integration: discourse });
   },
   onSuccess: async ({ discourse }) => {
-    const { id, workspace_id } = discourse;
+    const { id, workspaceId } = discourse;
 
     await updateIntegration({
       id,
-      connected_at: new Date(),
+      connectedAt: new Date(),
       status: "CONNECTED",
-      workspace_id,
+      workspaceId,
     });
   },
   onFailure: async ({ discourse }) => {

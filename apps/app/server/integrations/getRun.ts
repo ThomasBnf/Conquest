@@ -5,13 +5,13 @@ import { protectedProcedure } from "../trpc";
 export const getRun = protectedProcedure
   .input(
     z.object({
-      run_id: z.string().nullable().optional(),
+      runId: z.string().nullable().optional(),
     }),
   )
   .query(async ({ input }) => {
-    const { run_id } = input;
+    const { runId } = input;
 
-    if (!run_id) return null;
+    if (!runId) return null;
 
-    return await _getRun({ run_id });
+    return await _getRun({ runId });
   });

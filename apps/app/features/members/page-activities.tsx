@@ -22,7 +22,7 @@ export const PageActivities = ({ slug, memberId }: Props) => {
     fetchNextPage,
     hasNextPage,
   } = trpc.activities.listInfinite.useInfiniteQuery(
-    { member_id: memberId },
+    { memberId },
     { getNextPageParam: (_, allPages) => allPages.length * 25 },
   );
 

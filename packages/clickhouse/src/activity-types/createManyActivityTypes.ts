@@ -4,7 +4,7 @@ import { v4 as uuid } from "uuid";
 import { client } from "../client";
 
 type Props = {
-  activity_types: {
+  activityTypes: {
     name: string;
     source: Source;
     key: string;
@@ -14,20 +14,20 @@ type Props = {
     };
     deletable: boolean;
   }[];
-  workspace_id: string;
+  workspaceId: string;
 };
 
 export const createManyActivityTypes = async (props: Props) => {
-  const { activity_types, workspace_id } = props;
+  const { activityTypes, workspaceId } = props;
 
-  const values = activity_types.map(({ ...rest }) => ({
+  const values = activityTypes.map(({ ...rest }) => ({
     id: uuid(),
     ...rest,
-    workspace_id,
+    workspaceId,
   }));
 
   return await client.insert({
-    table: "activity_type",
+    table: "activityType",
     values,
     format: "JSON",
   });

@@ -3,8 +3,8 @@ import { protectedProcedure } from "../trpc";
 
 export const listLevels = protectedProcedure.query(
   async ({ ctx: { user } }) => {
-    const { workspace_id } = user;
+    const { workspaceId } = user;
 
-    return await _listLevels({ workspace_id });
+    return await _listLevels({ workspaceId });
   },
 );

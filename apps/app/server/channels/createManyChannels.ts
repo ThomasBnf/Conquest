@@ -8,7 +8,7 @@ export const createManyChannels = protectedProcedure
     z.object({
       channels: z.array(
         z.object({
-          external_id: z.string(),
+          externalId: z.string(),
           name: z.string(),
           slug: z.string().optional(),
           source: SOURCE,
@@ -17,13 +17,14 @@ export const createManyChannels = protectedProcedure
     }),
   )
   .mutation(async ({ ctx: { user }, input }) => {
-    const { workspace_id } = user;
+    const { workspaceId } = user;
     const { channels } = input;
 
     for (const channel of channels) {
       await createChannel({
         ...channel,
-        workspace_id,
+        externalId: channel.externalId,
+        workspaceId,
       });
     }
   });

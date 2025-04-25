@@ -15,12 +15,12 @@ export const FullNameCell = ({ member }: Props) => {
   const { data: session } = useSession();
   const { slug } = session?.user.workspace ?? {};
 
-  const { id, first_name, last_name, avatar_url } = member;
+  const { id, firstName, lastName, avatarUrl } = member;
 
-  const hasName = !!first_name || !!last_name;
+  const hasName = !!firstName || !!lastName;
 
   const { data, isLoading } = trpc.profiles.getBySource.useQuery(
-    !hasName ? { member_id: id, source: "Github" } : skipToken,
+    !hasName ? { memberId: id, source: "Github" } : skipToken,
   );
 
   const profile = data ? GithubProfileSchema.parse(data) : null;
@@ -33,15 +33,15 @@ export const FullNameCell = ({ member }: Props) => {
       prefetch
     >
       <Avatar className="size-6">
-        <AvatarImage src={avatar_url ?? ""} />
+        <AvatarImage src={avatarUrl ?? ""} />
         <AvatarFallback className="text-sm">
-          {first_name?.charAt(0).toUpperCase()}
+          {firstName?.charAt(0).toUpperCase()}
         </AvatarFallback>
       </Avatar>
       {isLoading ? (
         <Skeleton className="h-4 w-24" />
       ) : hasName ? (
-        <p className="truncate group-hover:underline">{`${first_name} ${last_name}`}</p>
+        <p className="truncate group-hover:underline">{`${firstName} ${lastName}`}</p>
       ) : (
         <p className="truncate group-hover:underline">{login}</p>
       )}

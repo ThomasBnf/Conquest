@@ -12,7 +12,7 @@ export const topActivityType = protectedProcedure
     }),
   )
   .query(async ({ ctx: { user }, input }) => {
-    const { workspace_id } = user;
+    const { workspaceId } = user;
     const { from, to } = input;
 
     const timeZone = "Europe/Paris";
@@ -25,18 +25,18 @@ export const topActivityType = protectedProcedure
     const result = await client.query({
       query: `
         SELECT 
-          activity_type.name,
-          activity_type.source,
+          activityType.name,
+          activityType.source,
           COUNT(*) as count
         FROM activity
-        LEFT JOIN activity_type ON activity.activity_type_id = activity_type.id
-        WHERE activity.created_at >= '${_from}' 
-        AND activity.created_at <= '${_to}'
-        AND workspace_id = '${workspace_id}'
-        AND activity_type.name != ''
+        LEFT JOIN activityType ON activity.activityTypeId = activityType.id
+        WHERE activity.createdAt >= '${_from}' 
+        AND activity.createdAt <= '${_to}'
+        AND workspaceId = '${workspaceId}'
+        AND activityType.name != ''
         GROUP BY 
-          activity_type.name,
-          activity_type.source
+          activityType.name,
+          activityType.source
         ORDER BY count DESC
         LIMIT 10
       `,
@@ -46,13 +46,13 @@ export const topActivityType = protectedProcedure
     const { data } = (await result.json()) as {
       data: Array<{
         name: string;
-        "activity_type.source": string;
+        "activityType.source": string;
         count: number;
       }>;
     };
 
     return data.map((item) => ({
-      activity_type: `${item["activity_type.source"]} - ${item.name}`,
+      activityType: `${item["activityType.source"]} - ${item.name}`,
       count: item.count,
     }));
   });

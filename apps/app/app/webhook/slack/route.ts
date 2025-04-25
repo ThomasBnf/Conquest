@@ -64,20 +64,20 @@ export async function POST(req: NextRequest) {
 
   const { type } = event;
 
-  const integration = await getIntegration({ external_id: team_id });
+  const integration = await getIntegration({ externalId: team_id });
 
   if (!integration) return NextResponse.json({ status: 200 });
 
   const slack = SlackIntegrationSchema.parse(integration);
-  const { workspace_id } = slack;
-  const { access_token, access_token_iv } = slack.details;
+  const { workspaceId } = slack;
+  const { accessToken, accessTokenIv } = slack.details;
 
   const token = await decrypt({
-    access_token,
-    iv: access_token_iv,
+    accessToken,
+    iv: accessTokenIv,
   });
 
-  if (!workspace_id || !token) return NextResponse.json({ status: 200 });
+  if (!workspaceId || !token) return NextResponse.json({ status: 200 });
 
   const web = new WebClient(token);
 
@@ -88,7 +88,7 @@ export async function POST(req: NextRequest) {
       await updateIntegration({
         id: integration.id,
         status: "DISCONNECTED",
-        workspace_id,
+        workspaceId,
       });
 
       return NextResponse.json({ status: 200 });
@@ -98,10 +98,10 @@ export async function POST(req: NextRequest) {
       const { name, id } = event.channel;
 
       await createChannel({
-        external_id: id,
+        externalId: id,
         name,
         source: "Slack",
-        workspace_id,
+        workspaceId,
       });
 
       await web.conversations.join({ channel: id });
@@ -113,8 +113,8 @@ export async function POST(req: NextRequest) {
       const { name, id } = event.channel;
 
       const channel = await getChannel({
-        external_id: id,
-        workspace_id,
+        externalId: id,
+        workspaceId,
       });
 
       if (!channel) return NextResponse.json({ status: 200 });
@@ -125,7 +125,7 @@ export async function POST(req: NextRequest) {
 
     case "channel_deleted": {
       const { channel } = event;
-      await deleteChannel({ external_id: channel, workspace_id });
+      await deleteChannel({ externalId: channel, workspaceId });
 
       return NextResponse.json({ status: 200 });
     }
@@ -135,27 +135,27 @@ export async function POST(req: NextRequest) {
       const { channel: channel_id, ts } = item;
 
       const profile = await getProfile({
-        external_id: user,
-        workspace_id,
+        externalId: user,
+        workspaceId,
       });
 
       if (!profile) return NextResponse.json({ status: 200 });
 
       const channel = await getChannel({
-        external_id: channel_id,
-        workspace_id,
+        externalId: channel_id,
+        workspaceId,
       });
 
       if (!channel) return NextResponse.json({ status: 200 });
 
       await createActivity({
-        activity_type_key: "slack:reaction",
+        activityTypeKey: "slack:reaction",
         message: reaction,
-        react_to: ts,
-        member_id: profile.member_id,
-        channel_id: channel.id,
+        reactTo: ts,
+        memberId: profile.memberId,
+        channelId: channel.id,
         source: "Slack",
-        workspace_id,
+        workspaceId,
       });
 
       return NextResponse.json({ status: 200 });
@@ -166,15 +166,15 @@ export async function POST(req: NextRequest) {
       const { ts, channel: channel_id } = item;
 
       const profile = await getProfile({
-        external_id: user,
-        workspace_id,
+        externalId: user,
+        workspaceId,
       });
 
       if (!profile) return NextResponse.json({ status: 200 });
 
       const channel = await getChannel({
-        external_id: channel_id,
-        workspace_id,
+        externalId: channel_id,
+        workspaceId,
       });
 
       if (!channel) return NextResponse.json({ status: 200 });
@@ -182,11 +182,11 @@ export async function POST(req: NextRequest) {
       await client.query({
         query: `
           ALTER TABLE activity
-          DELETE WHERE member_id = '${profile.member_id}'
-          AND channel_id = '${channel.id}' 
-          AND react_to = '${ts}' 
+          DELETE WHERE memberId = '${profile.memberId}'
+          AND channelId = '${channel.id}' 
+          AND reactTo = '${ts}' 
           AND message = '${reaction}'
-          AND workspace_id = '${workspace_id}'
+          AND workspaceId = '${workspaceId}'
         `,
       });
 
@@ -194,25 +194,25 @@ export async function POST(req: NextRequest) {
     }
 
     case "user_change": {
-      const { id: external_id, deleted } = event.user;
+      const { id: externalId, deleted } = event.user;
 
       const profile = await getProfile({
-        external_id,
-        workspace_id,
+        externalId,
+        workspaceId,
       });
 
       if (!profile) return NextResponse.json({ status: 200 });
 
       if (deleted) {
-        await deleteMember({ id: profile.member_id });
+        await deleteMember({ id: profile.memberId });
         break;
       }
 
-      const member = await getMember({ id: profile.member_id });
+      const member = await getMember({ id: profile.memberId });
 
       if (!member) return NextResponse.json({ status: 200 });
 
-      const { user } = await web.users.info({ user: external_id });
+      const { user } = await web.users.info({ user: externalId });
       const { first_name, last_name, email, phone, image_1024, title } =
         user?.profile ?? {};
 
@@ -223,12 +223,12 @@ export async function POST(req: NextRequest) {
 
       await updateMember({
         ...member,
-        first_name: first_name ?? member.first_name,
-        last_name: last_name ?? member.last_name,
-        primary_email: email,
+        firstName: first_name ?? member.firstName,
+        lastName: last_name ?? member.lastName,
+        primaryEmail: email,
         phones: phone ? [phone] : member.phones,
-        avatar_url: image_1024 ?? member.avatar_url,
-        job_title: title ?? member.job_title,
+        avatarUrl: image_1024 ?? member.avatarUrl,
+        jobTitle: title ?? member.jobTitle,
         country,
         language,
       });
@@ -255,31 +255,32 @@ export async function POST(req: NextRequest) {
       const country = locale ? locale.split("-")[1] : "";
 
       const existingProfile = await getProfile({
-        external_id: id,
-        workspace_id,
+        externalId: id,
+        workspaceId,
       });
 
       if (!existingProfile) {
         const createdMember = await createMember({
-          first_name,
-          last_name,
-          primary_email: email,
+          firstName: first_name,
+          lastName: last_name,
+          primaryEmail: email,
+          emails: email ? [email] : [],
           phones: phone ? [phone] : [],
-          avatar_url: image_1024,
-          job_title: title,
+          avatarUrl: image_1024,
+          jobTitle: title,
           language,
           country,
           source: "Slack",
-          workspace_id,
+          workspaceId,
         });
 
         await createProfile({
-          external_id: id,
+          externalId: id,
           attributes: {
             source: "Slack",
           },
-          member_id: createdMember.id,
-          workspace_id,
+          memberId: createdMember.id,
+          workspaceId,
         });
       }
 
@@ -303,26 +304,26 @@ export async function POST(req: NextRequest) {
             const { ts, thread_ts, text } = message as GenericMessageEvent;
 
             const activityWithType = await getActivity({
-              external_id: ts,
-              workspace_id,
+              externalId: ts,
+              workspaceId,
             });
 
             if (!activityWithType) return NextResponse.json({ status: 200 });
 
-            const activityType = await getActivityTypeByKey({
+            const result = await getActivityTypeByKey({
               key: thread_ts ? "slack:reply" : "slack:message",
-              workspace_id,
+              workspaceId,
             });
 
-            if (!activityType) return NextResponse.json({ status: 200 });
+            if (!result) return NextResponse.json({ status: 200 });
 
-            const { activity_type, ...activity } = activityWithType;
+            const { activityType, ...activity } = activityWithType;
 
             await updateActivity({
               ...activity,
-              activity_type_id: activityType.id,
+              activityTypeId: activityType.id,
               message: text ?? "",
-              reply_to: thread_ts ?? "",
+              replyTo: thread_ts ?? "",
             });
 
             return NextResponse.json({ status: 200 });
@@ -332,21 +333,21 @@ export async function POST(req: NextRequest) {
             const { deleted_ts } = event as MessageDeletedEvent;
 
             const channel = await getChannel({
-              external_id: channel_id,
-              workspace_id,
+              externalId: channel_id,
+              workspaceId,
             });
 
             if (!channel) return NextResponse.json({ status: 200 });
 
             await deleteManyActivities({
-              channel_id: channel.id,
-              react_to: deleted_ts,
+              channelId: channel.id,
+              reactTo: deleted_ts,
             });
 
             await deleteActivity({
-              external_id: deleted_ts,
-              channel_id: channel.id,
-              workspace_id,
+              externalId: deleted_ts,
+              channelId: channel.id,
+              workspaceId,
             });
 
             return NextResponse.json({ status: 200 });
@@ -357,28 +358,28 @@ export async function POST(req: NextRequest) {
       }
 
       const profile = await getProfile({
-        external_id: user,
-        workspace_id,
+        externalId: user,
+        workspaceId,
       });
 
       if (!profile) return NextResponse.json({ status: 200 });
 
       const channel = await getChannel({
-        external_id: channel_id,
-        workspace_id,
+        externalId: channel_id,
+        workspaceId,
       });
 
       if (!channel) return NextResponse.json({ status: 200 });
 
       await createActivity({
-        external_id: ts,
-        activity_type_key: thread_ts ? "slack:reply" : "slack:message",
+        externalId: ts,
+        activityTypeKey: thread_ts ? "slack:reply" : "slack:message",
         message: text ?? "",
-        reply_to: thread_ts ?? "",
-        member_id: profile.member_id,
-        channel_id: channel.id,
+        replyTo: thread_ts ?? "",
+        memberId: profile.memberId,
+        channelId: channel.id,
         source: "Slack",
-        workspace_id,
+        workspaceId,
       });
 
       if (!subtype) return NextResponse.json({ status: 200 });

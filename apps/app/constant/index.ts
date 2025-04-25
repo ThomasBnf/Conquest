@@ -22,7 +22,7 @@ export const OPERATORS: Operator[] = [
   ">",
   ">=",
   "equal",
-  "not equal",
+  "not_equal",
   "<=",
   "<",
   "empty",

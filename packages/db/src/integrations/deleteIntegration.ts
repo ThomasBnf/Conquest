@@ -18,20 +18,20 @@ type Props = {
 };
 
 export const deleteIntegration = async ({ integration }: Props) => {
-  const { workspace_id, details } = integration;
+  const { workspaceId, details } = integration;
   const { source } = details;
 
   if (source === "Discord") {
     await prisma.tag.deleteMany({
-      where: { source, workspace_id },
+      where: { source, workspaceId },
     });
   }
 
   if (source === "Github") {
     const github = GithubIntegrationSchema.parse(integration);
-    const { access_token, iv } = github.details;
+    const { accessToken, iv } = github.details;
 
-    // const decryptedToken = await decrypt({ access_token, iv });
+    // const decryptedToken = await decrypt({ accessToken, iv });
     // const octokit = new Octokit({ auth: decryptedToken });
 
     // await listAndDeleteWebhooks({ octokit, github });
@@ -39,10 +39,10 @@ export const deleteIntegration = async ({ integration }: Props) => {
     client.query({
       query: `
         ALTER TABLE profile DELETE
-        WHERE member_id IN (
+        WHERE memberId IN (
           SELECT id FROM member FINAL
           WHERE source = '${source}'
-          AND workspace_id = '${workspace_id}'
+          AND workspaceId = '${workspaceId}'
         );`,
     });
   }
@@ -62,11 +62,11 @@ export const deleteIntegration = async ({ integration }: Props) => {
   }
 
   if (source === "Slack") {
-    const { access_token, access_token_iv } = details;
+    const { accessToken, accessTokenIv } = details;
 
     const token = await decrypt({
-      access_token,
-      iv: access_token_iv,
+      accessToken,
+      iv: accessTokenIv,
     });
 
     const web = new WebClient(token);
@@ -80,7 +80,7 @@ export const deleteIntegration = async ({ integration }: Props) => {
 
   await prisma.$transaction(async (tx) => {
     await tx.tag.deleteMany({
-      where: { source, workspace_id },
+      where: { source, workspaceId },
     });
     await tx.integration.delete({
       where: { id: integration.id },
@@ -91,46 +91,46 @@ export const deleteIntegration = async ({ integration }: Props) => {
     query: `
       ALTER TABLE activity DELETE 
       WHERE source = '${source}'
-      AND workspace_id = '${workspace_id}'`,
+      AND workspaceId = '${workspaceId}'`,
   });
   client.query({
     query: `
       ALTER TABLE log DELETE 
-      WHERE member_id IN (
+      WHERE memberId IN (
         SELECT id FROM member FINAL
         WHERE source = '${source}'
-        AND workspace_id = '${workspace_id}'
+        AND workspaceId = '${workspaceId}'
       );`,
   });
   client.query({
     query: `
-      ALTER TABLE activity_type DELETE 
+      ALTER TABLE activityType DELETE 
       WHERE source = '${source}'
-      AND workspace_id = '${workspace_id}'`,
+      AND workspaceId = '${workspaceId}'`,
   });
   client.query({
     query: `
       ALTER TABLE channel DELETE
       WHERE source = '${source}'
-      AND workspace_id = '${workspace_id}'`,
+      AND workspaceId = '${workspaceId}'`,
   });
   client.query({
     query: `
       ALTER TABLE company DELETE
       WHERE source = '${source}'
-      AND workspace_id = '${workspace_id}'`,
+      AND workspaceId = '${workspaceId}'`,
   });
   client.query({
     query: `
       ALTER TABLE member DELETE
       WHERE source = '${source}'
-      AND workspace_id = '${workspace_id}'`,
+      AND workspaceId = '${workspaceId}'`,
   });
   client.query({
     query: `
       ALTER TABLE profile DELETE
       WHERE JSONExtractString(CAST(attributes AS String), 'source') = '${source}'
-      AND workspace_id = '${workspace_id}'`,
+      AND workspaceId = '${workspaceId}'`,
   });
 
   return { success: true };

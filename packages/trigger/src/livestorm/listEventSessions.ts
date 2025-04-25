@@ -2,14 +2,14 @@ import { ListEventSessionsSchema } from "@conquest/zod/types/livestorm";
 import { startOfDay, subDays } from "date-fns";
 
 type Props = {
-  access_token: string;
-  event_id: string;
+  accessToken: string;
+  eventId: string;
   page: number;
 };
 
 export const listEventSessions = async ({
-  access_token,
-  event_id,
+  accessToken,
+  eventId,
   page,
 }: Props) => {
   const today = startOfDay(new Date());
@@ -22,10 +22,10 @@ export const listEventSessions = async ({
   });
 
   const response = await fetch(
-    `https://api.livestorm.co/v1/events/${event_id}/sessions?${params.toString()}`,
+    `https://api.livestorm.co/v1/events/${eventId}/sessions?${params.toString()}`,
     {
       headers: {
-        Authorization: `Bearer ${access_token}`,
+        Authorization: `Bearer ${accessToken}`,
       },
     },
   );

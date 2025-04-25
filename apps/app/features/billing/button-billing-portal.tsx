@@ -9,11 +9,11 @@ import { toast } from "sonner";
 
 export const ButtonBillingPortal = () => {
   const { data: session } = useSession();
-  const { plan, price_id } = session?.user.workspace ?? {};
+  const { priceId } = session?.user.workspace ?? {};
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
-  const subscription = getSubscriptionDetails(price_id);
+  const subscription = getSubscriptionDetails(priceId);
 
   const { mutateAsync } = trpc.stripe.createBillingPortal.useMutation({
     onMutate: () => setLoading(true),

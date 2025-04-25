@@ -5,12 +5,12 @@ import { protectedProcedure } from "../trpc";
 export const getProfile = protectedProcedure
   .input(
     z.object({
-      external_id: z.string(),
+      externalId: z.string(),
     }),
   )
   .query(async ({ ctx: { user }, input }) => {
-    const { external_id } = input;
-    const { workspace_id } = user;
+    const { externalId } = input;
+    const { workspaceId } = user;
 
-    return await _getProfile({ external_id, workspace_id });
+    return await _getProfile({ externalId, workspaceId });
   });

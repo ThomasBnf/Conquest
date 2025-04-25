@@ -10,7 +10,7 @@ export const listEvents = protectedProcedure
     }),
   )
   .query(async ({ ctx: { user }, input: { source } }) => {
-    const { workspace_id } = user;
+    const { workspaceId } = user;
 
-    return _listEvents({ source, workspace_id });
+    return _listEvents({ source, workspaceId });
   });

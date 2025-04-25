@@ -2,9 +2,9 @@ import { SOURCE } from "@conquest/zod/enum/source.enum";
 import { z } from "zod";
 
 export const FormCreateSchema = z.object({
-  activity_type_key: z.string(),
+  activityTypeKey: z.string(),
   message: z.string(),
-  member_id: z.string(),
+  memberId: z.string(),
   source: SOURCE,
 });
 

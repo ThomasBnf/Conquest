@@ -30,13 +30,13 @@ export const EnableCard = ({
   children,
 }: PropsWithChildren<Props>) => {
   const { loading } = useIntegration();
-  const { status, trigger_token, expires_at } = integration ?? {};
+  const { status, triggerToken, expiresAt } = integration ?? {};
   const router = useRouter();
 
   const isEnabled = status === "ENABLED";
   const isSyncing = status === "SYNCING";
   const isConnected = status === "CONNECTED";
-  const isExpired = expires_at && expires_at < new Date();
+  const isExpired = expiresAt && expiresAt < new Date();
 
   useEffect(() => {
     if (error) {
@@ -61,7 +61,7 @@ export const EnableCard = ({
       }
       router.replace(`/settings/integrations/${source.toLowerCase()}`);
     }
-  }, [expires_at, error]);
+  }, [expiresAt, error]);
 
   if (isConnected) return;
 
@@ -81,7 +81,7 @@ export const EnableCard = ({
             <p>Documentation</p>
           </Link>
         </div>
-        {(!trigger_token || isExpired) && (
+        {(!triggerToken || isExpired) && (
           <Button onClick={onEnable} disabled={loading}>
             {loading ? (
               <Loader2 className="size-4 animate-spin" />

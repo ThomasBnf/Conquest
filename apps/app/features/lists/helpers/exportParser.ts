@@ -21,7 +21,7 @@ export const exportParser = (member: Member) => {
     if (key === "company") continue;
     if (key === "logs") continue;
 
-    if (key === "custom_fields" && typeof value === "object") {
+    if (key === "customFields" && typeof value === "object") {
       transformed[key] = safeStringify(value);
     }
 

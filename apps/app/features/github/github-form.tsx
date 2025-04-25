@@ -25,7 +25,7 @@ export const GithubForm = () => {
 
   const { submit, run } = useRealtimeTaskTrigger<typeof installGithub>(
     "install-github",
-    { accessToken: github?.trigger_token },
+    { accessToken: github?.triggerToken },
   );
 
   const onStart = async () => {

@@ -21,7 +21,7 @@ export const seed = schemaTask({
   run: async ({ user }) => {
     if (user.role !== "STAFF") return;
 
-    const { workspace_id } = user;
+    const { workspaceId } = user;
 
     const { channels, discourseActivityTypes } = await processDiscourse({
       user,
@@ -34,14 +34,14 @@ export const seed = schemaTask({
     const memberIds: string[] = [];
 
     for (let i = 0; i < TOTAL_MEMBERS; i++) {
-      const member_id = randomUUID();
-      memberIds.push(member_id);
+      const memberId = randomUUID();
+      memberIds.push(memberId);
 
-      const first_name = faker.person.firstName();
-      const last_name = faker.person.lastName();
-      const primary_email = faker.internet.email({
-        firstName: first_name,
-        lastName: last_name,
+      const firstName = faker.person.firstName();
+      const lastName = faker.person.lastName();
+      const primaryEmail = faker.internet.email({
+        firstName,
+        lastName,
         provider: faker.company
           .catchPhraseNoun()
           .toLowerCase()
@@ -63,7 +63,7 @@ export const seed = schemaTask({
       const languageCode = locale?.split("_")[0] ?? "";
       language = languageCode ? ISO6391.getName(languageCode) : "";
 
-      const created_at = faker.date
+      const createdAt = faker.date
         .recent({ days: 180 })
         .toISOString()
         .replace("T", " ")
@@ -74,19 +74,19 @@ export const seed = schemaTask({
           table: "member",
           values: [
             {
-              id: member_id,
-              first_name,
-              last_name,
-              primary_email: primary_email.toLowerCase(),
-              emails: [primary_email.toLowerCase()],
+              id: memberId,
+              firstName,
+              lastName,
+              primaryEmail: primaryEmail.toLowerCase(),
+              emails: [primaryEmail.toLowerCase()],
               phones: [faker.phone.number({ style: "international" })],
-              job_title: faker.person.jobTitle(),
-              avatar_url: faker.image.avatar(),
+              jobTitle: faker.person.jobTitle(),
+              avatarUrl: faker.image.avatar(),
               country,
               language,
               source: "Discourse",
-              created_at,
-              workspace_id,
+              createdAt,
+              workspaceId,
             },
           ],
           format: "JSON",
@@ -98,11 +98,11 @@ export const seed = schemaTask({
           table: "profile",
           values: [
             {
-              external_id: randomUUID(),
+              externalId: randomUUID(),
               attributes: {
                 source: "Discourse",
                 username: faker.internet.username(),
-                custom_fields: [
+                customFields: [
                   {
                     id: "1",
                     value: faker.internet.url(),
@@ -117,8 +117,8 @@ export const seed = schemaTask({
                   },
                 ],
               },
-              member_id,
-              workspace_id,
+              memberId: memberId,
+              workspaceId,
             },
           ],
           format: "JSON",
@@ -139,7 +139,7 @@ export const seed = schemaTask({
         max: Math.floor(TOTAL_MEMBERS * 0.3),
       });
 
-      for (const member_id of participatingMembers) {
+      for (const memberId of participatingMembers) {
         const roll = Math.random();
 
         let type:
@@ -155,15 +155,13 @@ export const seed = schemaTask({
           type = "livestorm:register";
         }
 
-        const activity_type = livestormActivityTypes.find(
-          (a) => a.key === type,
-        );
-        if (!activity_type) continue;
+        const activityType = livestormActivityTypes.find((a) => a.key === type);
+        if (!activityType) continue;
 
-        const created_at = faker.date
+        const createdAt = faker.date
           .between({
-            from: event.started_at,
-            to: event.ended_at ?? new Date(),
+            from: event.startedAt,
+            to: event.endedAt ?? new Date(),
           })
           .toISOString()
           .replace("T", " ")
@@ -175,19 +173,19 @@ export const seed = schemaTask({
             values: [
               {
                 id: randomUUID(),
-                activity_type_id: activity_type.id,
-                member_id,
-                event_id: event.id,
-                workspace_id,
+                activityTypeId: activityType.id,
+                memberId,
+                eventId: event.id,
+                workspaceId,
                 source: "Livestorm",
-                created_at,
+                createdAt,
               },
             ],
             format: "JSON",
           }),
         );
 
-        hasLivestormProfile.add(member_id);
+        hasLivestormProfile.add(memberId);
       }
     }
 
@@ -197,18 +195,18 @@ export const seed = schemaTask({
 
     const livestormProfileInserts = [];
 
-    for (const member_id of hasLivestormProfile) {
+    for (const memberId of hasLivestormProfile) {
       livestormProfileInserts.push(
         client.insert({
           table: "profile",
           values: [
             {
-              external_id: randomUUID(),
+              externalId: randomUUID(),
               attributes: {
                 source: "Livestorm",
               },
-              member_id,
-              workspace_id,
+              memberId,
+              workspaceId,
             },
           ],
           format: "JSON",
@@ -222,13 +220,13 @@ export const seed = schemaTask({
 
     const discourseActivityInserts = [];
 
-    for (const member_id of memberIds) {
+    for (const memberId of memberIds) {
       const NUM_ACTIVITIES = getNumActivities();
 
       for (let i = 0; i < NUM_ACTIVITIES; i++) {
         const type = faker.helpers.arrayElement(discourseActivityTypes);
 
-        const created_at = faker.date
+        const createdAt = faker.date
           .recent({ days: 365 })
           .toISOString()
           .replace("T", " ")
@@ -240,11 +238,11 @@ export const seed = schemaTask({
             values: [
               {
                 id: randomUUID(),
-                activity_type_id: type.id,
-                member_id,
-                workspace_id,
+                activityTypeId: type.id,
+                memberId,
+                workspaceId,
                 source: "Discourse",
-                created_at,
+                createdAt,
               },
             ],
             format: "JSON",
@@ -260,14 +258,14 @@ export const seed = schemaTask({
     const githubActivityInserts = [];
     const hasGithubProfile = new Set<string>();
 
-    for (const member_id of memberIds) {
+    for (const memberId of memberIds) {
       const NUM_ACTIVITIES = getNumActivities();
 
       for (let i = 0; i < NUM_ACTIVITIES; i++) {
         const type = faker.helpers.arrayElement(githubActivityTypes);
         const channel = faker.helpers.arrayElement(channels);
 
-        const created_at = faker.date
+        const createdAt = faker.date
           .recent({ days: 365 })
           .toISOString()
           .replace("T", " ")
@@ -279,19 +277,19 @@ export const seed = schemaTask({
             values: [
               {
                 id: randomUUID(),
-                activity_type_id: type.id,
-                member_id,
-                channel_id: channel.id,
-                workspace_id,
+                activityTypeId: type.id,
+                memberId,
+                channelId: channel.id,
+                workspaceId,
                 source: "Github",
-                created_at,
+                createdAt,
               },
             ],
             format: "JSON",
           }),
         );
 
-        hasGithubProfile.add(member_id);
+        hasGithubProfile.add(memberId);
       }
     }
 
@@ -301,13 +299,13 @@ export const seed = schemaTask({
 
     const githubProfileInserts = [];
 
-    for (const member_id of hasGithubProfile) {
+    for (const memberId of hasGithubProfile) {
       githubProfileInserts.push(
         client.insert({
           table: "profile",
           values: [
             {
-              external_id: randomUUID(),
+              externalId: randomUUID(),
               attributes: {
                 source: "Github",
                 login: faker.internet.username(),
@@ -316,8 +314,8 @@ export const seed = schemaTask({
                 location: faker.location.city(),
                 followers: faker.number.int({ min: 0, max: 1000 }),
               },
-              member_id,
-              workspace_id,
+              memberId,
+              workspaceId,
             },
           ],
           format: "JSON",
@@ -329,6 +327,6 @@ export const seed = schemaTask({
 
     logger.info("Finished inserting github profiles");
 
-    await getAllMembersMetrics.trigger({ workspace_id });
+    await getAllMembersMetrics.trigger({ workspaceId });
   },
 });

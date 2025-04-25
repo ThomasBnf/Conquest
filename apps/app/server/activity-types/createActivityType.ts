@@ -5,13 +5,13 @@ import { protectedProcedure } from "../trpc";
 export const createActivityType = protectedProcedure
   .input(FormActivityTypeSchema)
   .mutation(async ({ ctx: { user }, input }) => {
-    const { workspace_id } = user;
+    const { workspaceId } = user;
     const { source, key, conditions } = input;
 
     return await _createActivityType({
       ...input,
       key: `${source.toLowerCase()}:${key}`,
       conditions: { rules: conditions.rules },
-      workspace_id,
+      workspaceId,
     });
   });

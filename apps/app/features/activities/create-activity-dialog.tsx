@@ -58,7 +58,7 @@ export const CreateActivityDialog = ({ member }: Props) => {
   const form = useForm<FormCreate>({
     resolver: zodResolver(FormCreateSchema),
     defaultValues: {
-      member_id: member.id,
+      memberId: member.id,
       source: "Manual",
     },
   });
@@ -84,7 +84,7 @@ export const CreateActivityDialog = ({ member }: Props) => {
             <DialogBody>
               <FormField
                 control={form.control}
-                name="activity_type_key"
+                name="activityTypeKey"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Activity type</FormLabel>
@@ -98,12 +98,12 @@ export const CreateActivityDialog = ({ member }: Props) => {
                         </SelectTrigger>
                         <SelectContent>
                           {activityTypes && activityTypes?.length > 0 ? (
-                            activityTypes?.map((activity_type) => (
+                            activityTypes?.map((activityType) => (
                               <SelectItem
-                                key={activity_type.key}
-                                value={activity_type.key}
+                                key={activityType.key}
+                                value={activityType.key}
                               >
-                                {activity_type.key}
+                                {activityType.key}
                               </SelectItem>
                             ))
                           ) : (

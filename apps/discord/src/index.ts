@@ -63,11 +63,11 @@ client.on(Events.GuildMemberAdd, async (member) => {
   if (bot) return;
 
   const integration = await getIntegration({
-    external_id: guild.id,
+    externalId: guild.id,
   });
 
   if (!integration) return;
-  const { workspace_id } = integration;
+  const { workspaceId } = integration;
 
   const firstName = globalName?.split(" ")[0] ?? "";
   const lastName = globalName?.split(" ")[1] ?? "";
@@ -78,27 +78,27 @@ client.on(Events.GuildMemberAdd, async (member) => {
 
   try {
     const existingProfile = await getProfile({
-      external_id: id,
-      workspace_id,
+      externalId: id,
+      workspaceId,
     });
 
     if (!existingProfile) {
       const createdMember = await createMember({
-        first_name: firstName,
-        last_name: lastName,
-        avatar_url: avatarUrl,
+        firstName,
+        lastName,
+        avatarUrl,
         source: "Discord",
-        workspace_id,
+        workspaceId,
       });
 
       await createProfile({
-        external_id: id,
+        externalId: id,
         attributes: {
           username,
           source: "Discord",
         },
-        member_id: createdMember.id,
-        workspace_id,
+        memberId: createdMember.id,
+        workspaceId,
       });
     }
   } catch (error) {
@@ -112,27 +112,27 @@ client.on(Events.GuildMemberRemove, async (member) => {
   const { id } = user;
 
   const integration = await getIntegration({
-    external_id: guild.id,
+    externalId: guild.id,
   });
 
   if (!integration) return;
-  const { workspace_id } = integration;
+  const { workspaceId } = integration;
 
   try {
     const profile = await getProfile({
-      external_id: id,
-      workspace_id,
+      externalId: id,
+      workspaceId,
     });
 
     if (!profile) return;
 
     await deleteProfile({
-      external_id: id,
-      workspace_id,
+      externalId: id,
+      workspaceId,
     });
 
     await deleteMember({
-      id: profile.member_id,
+      id: profile.memberId,
     });
   } catch (error) {
     console.error("GuildMemberRemove", error);
@@ -150,12 +150,12 @@ client.on(Events.UserUpdate, async (_, user) => {
     ? `https://cdn.discordapp.com/avatars/${id}/${avatar}.webp`
     : "";
 
-  const profile = await getProfile({ external_id: id });
+  const profile = await getProfile({ externalId: id });
 
   if (!profile) return;
 
   const member = await getMember({
-    id: profile.member_id,
+    id: profile.memberId,
   });
 
   if (!member) return;
@@ -163,19 +163,19 @@ client.on(Events.UserUpdate, async (_, user) => {
   try {
     await updateMember({
       ...member,
-      first_name: firstName,
-      last_name: lastName,
-      avatar_url: avatarUrl,
+      firstName,
+      lastName,
+      avatarUrl,
     });
 
     await createProfile({
-      external_id: id,
+      externalId: id,
       attributes: {
         username: username ?? "",
         source: "Discord",
       },
-      member_id: profile.member_id,
-      workspace_id: profile.workspace_id,
+      memberId: profile.memberId,
+      workspaceId: profile.workspaceId,
     });
   } catch (error) {
     console.error("UserUpdate", error);
@@ -187,11 +187,11 @@ client.on(Events.ChannelCreate, async (channel) => {
   const { id, type, guildId, name, permissionOverwrites } = channel;
 
   const integration = await getIntegration({
-    external_id: guildId,
+    externalId: guildId,
   });
 
   if (!integration) return;
-  const { workspace_id } = integration;
+  const { workspaceId } = integration;
 
   const everyonePerms = permissionOverwrites.cache.find(
     (perm) => perm.id === guildId,
@@ -209,10 +209,10 @@ client.on(Events.ChannelCreate, async (channel) => {
   ) {
     try {
       await createChannel({
-        external_id: id,
+        externalId: id,
         name,
         source: "Discord",
-        workspace_id,
+        workspaceId,
       });
     } catch (error) {
       console.error("ChannelCreate", error);
@@ -225,17 +225,17 @@ client.on(Events.ChannelUpdate, async (_, channel) => {
   const { id, name, guildId } = channel as NonThreadGuildBasedChannel;
 
   const integration = await getIntegration({
-    external_id: guildId,
+    externalId: guildId,
   });
 
   if (!integration) return;
-  const { workspace_id } = integration;
+  const { workspaceId } = integration;
 
   try {
     await updateChannel({
-      external_id: id,
+      externalId: id,
       name,
-      workspace_id,
+      workspaceId,
     });
   } catch (error) {
     console.error("ChannelUpdate", error);
@@ -247,16 +247,16 @@ client.on(Events.ChannelDelete, async (channel) => {
   const { id, guildId } = channel as NonThreadGuildBasedChannel;
 
   const integration = await getIntegration({
-    external_id: guildId,
+    externalId: guildId,
   });
 
   if (!integration) return;
-  const { workspace_id } = integration;
+  const { workspaceId } = integration;
 
   try {
     await deleteChannel({
-      external_id: id,
-      workspace_id,
+      externalId: id,
+      workspaceId,
     });
   } catch (error) {
     console.error("ChannelDelete", error);
@@ -266,48 +266,48 @@ client.on(Events.ChannelDelete, async (channel) => {
 client.on(Events.MessageCreate, async (message) => {
   console.dir(message, { depth: 100 });
   const { id, channelId, guildId, type, content, author, reference } = message;
-  const { id: discord_id } = author;
+  const { id: externalId } = author;
 
   if (!guildId || !content) return;
 
   const integration = await getIntegration({
-    external_id: guildId,
+    externalId: guildId,
   });
 
   if (!integration) return;
-  const { workspace_id } = integration;
+  const { workspaceId } = integration;
 
   const profile = await getProfile({
-    external_id: discord_id,
-    workspace_id,
+    externalId,
+    workspaceId,
   });
 
   if (!profile) return;
 
-  const channel = await getChannel({ external_id: channelId, workspace_id });
+  const channel = await getChannel({ externalId: channelId, workspaceId });
 
   if (!channel) {
     await sleep(2000);
 
     const activity = await getActivity({
-      external_id: channelId,
-      workspace_id,
+      externalId: channelId,
+      workspaceId,
     });
 
     if (activity && activity.message === "") {
-      const activityType = await getActivityTypeByKey({
+      const result = await getActivityTypeByKey({
         key: "discord:thread",
-        workspace_id,
+        workspaceId,
       });
 
-      if (!activityType) return;
+      if (!result) return;
 
-      const { activity_type, ...data } = activity;
+      const { activityType, ...data } = activity;
 
       try {
         return await updateActivity({
           ...data,
-          activity_type_id: activityType.id,
+          activityTypeId: activityType.id,
           message: content,
         });
       } catch (error) {
@@ -317,14 +317,14 @@ client.on(Events.MessageCreate, async (message) => {
 
     try {
       await createActivity({
-        external_id: id,
-        activity_type_key: "discord:reply_thread",
+        externalId: id,
+        activityTypeKey: "discord:reply_thread",
         message: content,
-        reply_to: channelId,
-        member_id: profile.member_id,
-        channel_id: activity?.channel_id,
+        replyTo: channelId,
+        memberId: profile.memberId,
+        channelId: activity?.channelId,
         source: "Discord",
-        workspace_id,
+        workspaceId,
       });
     } catch (error) {
       console.error("ThreadReply", error);
@@ -334,13 +334,13 @@ client.on(Events.MessageCreate, async (message) => {
   if (type === 0 && channel) {
     try {
       await createActivity({
-        external_id: id,
-        activity_type_key: "discord:message",
+        externalId: id,
+        activityTypeKey: "discord:message",
         message: content,
-        member_id: profile.member_id,
-        channel_id: channel.id,
+        memberId: profile.memberId,
+        channelId: channel.id,
         source: "Discord",
-        workspace_id,
+        workspaceId,
       });
     } catch (error) {
       console.error("MessageCreate", type, error);
@@ -350,14 +350,14 @@ client.on(Events.MessageCreate, async (message) => {
   if (type === 19 && channel) {
     try {
       await createActivity({
-        external_id: id,
-        activity_type_key: "discord:reply",
+        externalId: id,
+        activityTypeKey: "discord:reply",
         message: content,
-        reply_to: reference?.messageId,
-        member_id: profile.member_id,
-        channel_id: channel.id,
+        replyTo: reference?.messageId,
+        memberId: profile.memberId,
+        channelId: channel.id,
         source: "Discord",
-        workspace_id,
+        workspaceId,
       });
     } catch (error) {
       console.error("MessageCreate", type, error);
@@ -374,20 +374,20 @@ client.on(Events.MessageUpdate, async (message) => {
   if (!guildId) return;
 
   const integration = await getIntegration({
-    external_id: guildId,
+    externalId: guildId,
   });
 
   if (!integration) return;
-  const { workspace_id } = integration;
+  const { workspaceId } = integration;
 
   const activityWithType = await getActivity({
-    external_id: id,
-    workspace_id,
+    externalId: id,
+    workspaceId,
   });
 
   if (!activityWithType) return;
 
-  const { activity_type, ...activity } = activityWithType;
+  const { activityType, ...activity } = activityWithType;
 
   try {
     await updateActivity({
@@ -402,38 +402,38 @@ client.on(Events.MessageUpdate, async (message) => {
 client.on(Events.MessageDelete, async (message) => {
   console.log("MessageDelete", message);
   const { id, guildId, author } = message;
-  const { id: discord_id } = author ?? {};
+  const { id: externalId } = author ?? {};
 
   if (!guildId) return;
 
   const integration = await getIntegration({
-    external_id: guildId,
+    externalId: guildId,
   });
 
   if (!integration) return;
-  const { workspace_id } = integration;
+  const { workspaceId } = integration;
 
-  if (!discord_id) return;
+  if (!externalId) return;
 
   const profile = await getProfile({
-    external_id: discord_id,
-    workspace_id,
+    externalId,
+    workspaceId,
   });
 
   if (!profile) return;
 
   try {
     await deleteActivity({
-      external_id: id,
-      workspace_id,
+      externalId: id,
+      workspaceId,
     });
 
     await clickhouseClient.query({
       query: `
         ALTER TABLE activity
-        DELETE WHERE react_to = '${id}'
-        OR reply_to = '${id}'
-        AND workspace_id = '${workspace_id}'
+        DELETE WHERE reactTo = '${id}'
+        OR replyTo = '${id}'
+        AND workspaceId = '${workspaceId}'
       `,
     });
   } catch (error) {
@@ -448,31 +448,31 @@ client.on(Events.ThreadCreate, async (thread) => {
   if (!guildId || !parentId) return;
 
   const integration = await getIntegration({
-    external_id: guildId,
+    externalId: guildId,
   });
 
   if (!integration) return;
-  const { workspace_id } = integration;
+  const { workspaceId } = integration;
 
   const profile = await getProfile({
-    external_id: ownerId,
-    workspace_id,
+    externalId: ownerId,
+    workspaceId,
   });
   if (!profile) return;
 
-  const channel = await getChannel({ external_id: parentId, workspace_id });
+  const channel = await getChannel({ externalId: parentId, workspaceId });
   if (!channel) return;
 
   try {
     await createActivity({
-      external_id: id,
-      activity_type_key: "discord:thread",
+      externalId: id,
+      activityTypeKey: "discord:thread",
       title: name,
       message: "",
-      member_id: profile.member_id,
-      channel_id: channel.id,
+      memberId: profile.memberId,
+      channelId: channel.id,
       source: "Discord",
-      workspace_id,
+      workspaceId,
     });
   } catch (error) {
     console.error("ThreadCreate", error);
@@ -484,15 +484,15 @@ client.on(Events.ThreadDelete, async (thread) => {
   const { id, guildId, ownerId } = thread;
 
   const integration = await getIntegration({
-    external_id: guildId,
+    externalId: guildId,
   });
 
   if (!integration) return;
-  const { workspace_id } = integration;
+  const { workspaceId } = integration;
 
   const profile = await getProfile({
-    external_id: ownerId,
-    workspace_id,
+    externalId: ownerId,
+    workspaceId,
   });
   if (!profile) return;
 
@@ -500,8 +500,8 @@ client.on(Events.ThreadDelete, async (thread) => {
     const result = await clickhouseClient.query({
       query: `
         SELECT * FROM activity
-        WHERE reply_to = '${id}'
-        AND workspace_id = '${workspace_id}'
+        WHERE replyTo = '${id}'
+        AND workspaceId = '${workspaceId}'
       `,
     });
 
@@ -509,14 +509,14 @@ client.on(Events.ThreadDelete, async (thread) => {
     const activities = ActivitySchema.array().parse(data);
 
     for (const activity of activities) {
-      const { external_id } = activity;
+      const { externalId } = activity;
 
       await clickhouseClient.query({
         query: `
           ALTER TABLE activity
-          DELETE WHERE react_to = '${external_id}'
-          OR reply_to = '${external_id}'
-          AND workspace_id = '${workspace_id}'
+          DELETE WHERE reactTo = '${externalId}'
+          OR replyTo = '${externalId}'
+          AND workspaceId = '${workspaceId}'
         `,
       });
     }
@@ -524,15 +524,15 @@ client.on(Events.ThreadDelete, async (thread) => {
     await clickhouseClient.query({
       query: `
         ALTER TABLE activity
-        DELETE WHERE react_to = '${id}'
-        OR reply_to = '${id}'
-        AND workspace_id = '${workspace_id}'
+        DELETE WHERE reactTo = '${id}'
+        OR replyTo = '${id}'
+        AND workspaceId = '${workspaceId}'
       `,
     });
 
     await deleteActivity({
-      external_id: id,
-      workspace_id,
+      externalId: id,
+      workspaceId,
     });
   } catch (error) {
     console.error("ThreadDelete", error);
@@ -545,20 +545,20 @@ client.on(Events.GuildRoleCreate, async (role) => {
   const { id: guildId } = guild;
 
   const integration = await getIntegration({
-    external_id: guildId,
+    externalId: guildId,
   });
 
   if (!integration) return;
-  const { workspace_id } = integration;
+  const { workspaceId } = integration;
 
   try {
     await prisma.tag.create({
       data: {
-        external_id: id,
+        externalId: id,
         name,
         color: "#99AAB5",
         source: "Discord",
-        workspace_id,
+        workspaceId,
       },
     });
   } catch (error) {
@@ -572,11 +572,11 @@ client.on(Events.GuildRoleUpdate, async (_, role) => {
   const { id: guildId } = guild;
 
   const integration = await getIntegration({
-    external_id: guildId,
+    externalId: guildId,
   });
 
   if (!integration) return;
-  const { workspace_id } = integration;
+  const { workspaceId } = integration;
 
   const hexColor =
     color === 0 ? "#99AAB5" : `#${color.toString(16).padStart(6, "0")}`;
@@ -584,9 +584,9 @@ client.on(Events.GuildRoleUpdate, async (_, role) => {
   try {
     await prisma.tag.update({
       where: {
-        external_id_workspace_id: {
-          external_id: id,
-          workspace_id,
+        externalId_workspaceId: {
+          externalId: id,
+          workspaceId,
         },
       },
       data: {
@@ -605,17 +605,17 @@ client.on(Events.GuildRoleDelete, async (role) => {
   const { id: guildId } = guild;
 
   const integration = await getIntegration({
-    external_id: guildId,
+    externalId: guildId,
   });
 
   if (!integration) return;
-  const { workspace_id } = integration;
+  const { workspaceId } = integration;
 
   try {
     const tag = await prisma.tag.findFirst({
       where: {
-        external_id: id,
-        workspace_id,
+        externalId: id,
+        workspaceId,
       },
     });
 
@@ -623,9 +623,9 @@ client.on(Events.GuildRoleDelete, async (role) => {
 
     await prisma.tag.delete({
       where: {
-        external_id_workspace_id: {
-          external_id: id,
-          workspace_id,
+        externalId_workspaceId: {
+          externalId: id,
+          workspaceId,
         },
       },
     });
@@ -634,7 +634,7 @@ client.on(Events.GuildRoleDelete, async (role) => {
       query: `
         ALTER TABLE member
         UPDATE tags = arrayFilter(x -> x != '${tag.id}', tags)
-        WHERE workspace_id = '${workspace_id}'
+        WHERE workspaceId = '${workspaceId}'
         AND has(tags, '${tag.id}')
       `,
       format: "JSON",
@@ -648,43 +648,43 @@ client.on(Events.MessageReactionAdd, async (reaction, user) => {
   console.log("MessageReactionAdd", reaction, user);
   const { message, emoji } = reaction;
   const { id, guildId, channelId } = message;
-  const { id: discord_id } = user;
+  const { id: externalId } = user;
 
   if (!guildId) return;
 
   const integration = await getIntegration({
-    external_id: guildId,
+    externalId: guildId,
   });
 
   if (!integration) return;
-  const { workspace_id } = integration;
+  const { workspaceId } = integration;
 
   const profile = await getProfile({
-    external_id: discord_id,
-    workspace_id,
+    externalId,
+    workspaceId,
   });
   if (!profile) return;
 
   const channel = await getChannel({
-    external_id: channelId,
-    workspace_id,
+    externalId: channelId,
+    workspaceId,
   });
 
   const thread = await getActivity({
-    external_id: channelId,
-    workspace_id,
+    externalId: channelId,
+    workspaceId,
   });
 
   try {
     await createActivity({
-      activity_type_key: "discord:reaction",
+      activityTypeKey: "discord:reaction",
       message: emoji.name ?? "",
-      react_to: id,
-      member_id: profile.member_id,
+      reactTo: id,
+      memberId: profile.memberId,
       //TO DO: Add thread channel NAME IN Activities
-      channel_id: thread?.channel_id ?? channel?.id,
+      channelId: thread?.channelId ?? channel?.id,
       source: "Discord",
-      workspace_id,
+      workspaceId,
     });
   } catch (error) {
     console.error("MessageReactionAdd", error);
@@ -695,20 +695,20 @@ client.on(Events.MessageReactionRemove, async (reaction, user) => {
   console.log("MessageReactionRemove", reaction, user);
   const { message, emoji } = reaction;
   const { id: messageId, guildId } = message;
-  const { id: discord_id } = user;
+  const { id: externalId } = user;
 
   if (!guildId) return;
 
   const integration = await getIntegration({
-    external_id: guildId,
+    externalId: guildId,
   });
 
   if (!integration) return;
-  const { workspace_id } = integration;
+  const { workspaceId } = integration;
 
   const profile = await getProfile({
-    external_id: discord_id,
-    workspace_id,
+    externalId,
+    workspaceId,
   });
   if (!profile) return;
 
@@ -716,10 +716,10 @@ client.on(Events.MessageReactionRemove, async (reaction, user) => {
     await clickhouseClient.query({
       query: `
         ALTER TABLE activity
-        DELETE WHERE react_to = '${messageId}'
+        DELETE WHERE reactTo = '${messageId}'
         AND message = '${emoji.name}'
-        AND member_id = '${profile.member_id}'
-        AND workspace_id = '${workspace_id}'
+        AND memberId = '${profile.memberId}'
+        AND workspaceId = '${workspaceId}'
       `,
     });
   } catch (error) {

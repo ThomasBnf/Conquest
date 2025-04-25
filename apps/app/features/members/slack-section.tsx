@@ -19,7 +19,8 @@ export const SlackSection = ({ profile }: Props) => {
   const slack = SlackIntegrationSchema.parse(data);
   const { url } = slack.details;
 
-  const { external_id } = profile;
+  const { externalId } = profile;
+
   return (
     <>
       <div className="flex flex-col gap-2 p-4">
@@ -32,8 +33,8 @@ export const SlackSection = ({ profile }: Props) => {
         <FieldCard label="Id">
           <EditableLink
             placeholder="No slack profile"
-            defaultValue={external_id}
-            href={`${url}team/${external_id}`}
+            defaultValue={externalId}
+            href={`${url}team/${externalId}`}
             editable={false}
           />
         </FieldCard>

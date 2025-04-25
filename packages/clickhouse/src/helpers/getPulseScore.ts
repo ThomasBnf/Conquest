@@ -10,15 +10,15 @@ export const getPulseScore = ({ activities }: Props): number => {
   const groupedActivities = activities.reduce<
     Record<string, { count: number; points: number }>
   >((acc, activity) => {
-    const { activity_type, channel_id } = activity;
-    const { key, points, conditions } = activity_type;
+    const { activityType, channelId } = activity;
+    const { key, points, conditions } = activityType;
 
     const activityKey =
-      conditions?.rules?.length > 0 ? `${key}-${channel_id}` : key;
+      conditions?.rules?.length > 0 ? `${key}-${channelId}` : key;
 
     const activityPoints =
       conditions?.rules?.length > 0
-        ? (conditions.rules.find((rule) => rule.channel_id === channel_id)
+        ? (conditions.rules.find((rule) => rule.channelId === channelId)
             ?.points ?? points)
         : points;
 

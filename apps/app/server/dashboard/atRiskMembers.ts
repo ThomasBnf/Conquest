@@ -12,7 +12,7 @@ export const atRiskMembers = protectedProcedure
     }),
   )
   .query(async ({ ctx: { user }, input }) => {
-    const { workspace_id } = user;
+    const { workspaceId } = user;
     const { from, to } = input;
 
     const timeZone = "Europe/Paris";
@@ -39,30 +39,30 @@ export const atRiskMembers = protectedProcedure
         (
           SELECT count(*) as count
           FROM member m FINAL
-          LEFT JOIN level l ON m.level_id = l.id
+          LEFT JOIN level l ON m.levelId = l.id
           WHERE 
-            m.workspace_id = '${workspace_id}'
+            m.workspaceId = '${workspaceId}'
             AND l.number >= 4
             AND m.id NOT IN (
-              SELECT member_id 
+              SELECT memberId 
               FROM activity 
               WHERE 
-                workspace_id = '${workspace_id}'
-                AND created_at BETWEEN '${_from}' AND '${_to}'
+                workspaceId = '${workspaceId}'
+                AND createdAt BETWEEN '${_from}' AND '${_to}'
             )
         ) as currentCount,
         (
           SELECT count(*) as count
           FROM member m FINAL
-          LEFT JOIN level l ON m.level_id = l.id
+          LEFT JOIN level l ON m.levelId = l.id
           WHERE 
-            m.workspace_id = '${workspace_id}'
+            m.workspaceId = '${workspaceId}'
             AND l.number >= 4
             AND m.id NOT IN (
-              SELECT member_id 
+              SELECT memberId 
               FROM activity 
-              WHERE workspace_id = '${workspace_id}'
-                AND created_at BETWEEN '${_previousFrom}' AND '${_previousTo}'
+              WHERE workspaceId = '${workspaceId}'
+                AND createdAt BETWEEN '${_previousFrom}' AND '${_previousTo}'
             )
         ) as previousCount
       `,

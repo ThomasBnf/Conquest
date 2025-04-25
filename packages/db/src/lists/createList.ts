@@ -6,24 +6,24 @@ type Props = {
   emoji: string;
   name: string;
   groupFilters: GroupFilters;
-  workspace_id: string;
-  created_by: string;
+  workspaceId: string;
+  createdBy: string;
 };
 
 export const createList = async ({
   emoji,
   name,
   groupFilters,
-  created_by,
-  workspace_id,
+  createdBy,
+  workspaceId,
 }: Props) => {
   const list = await prisma.list.create({
     data: {
       emoji,
       name,
       groupFilters,
-      created_by,
-      workspace_id,
+      createdBy,
+      workspaceId,
     },
   });
 

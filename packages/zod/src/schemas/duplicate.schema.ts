@@ -4,13 +4,13 @@ import { STATE } from "../enum/state.enum";
 
 export const DuplicateSchema = z.object({
   id: z.string().uuid(),
-  member_ids: z.array(z.string()),
+  memberIds: z.array(z.string()),
   reason: REASON,
   state: STATE,
-  total_pulse: z.number(),
-  workspace_id: z.string(),
-  created_at: z.coerce.date(),
-  updated_at: z.coerce.date(),
+  totalPulse: z.number(),
+  workspaceId: z.string(),
+  createdAt: z.coerce.date(),
+  updatedAt: z.coerce.date(),
 });
 
 export type Duplicate = z.infer<typeof DuplicateSchema>;

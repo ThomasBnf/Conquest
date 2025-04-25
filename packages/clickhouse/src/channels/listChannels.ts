@@ -4,17 +4,17 @@ import { client } from "../client";
 
 type Props = {
   source?: Source;
-  workspace_id: string;
+  workspaceId: string;
 };
 
-export const listChannels = async ({ source, workspace_id }: Props) => {
+export const listChannels = async ({ source, workspaceId }: Props) => {
   const channels = await client.query({
     query: `
       SELECT *
       FROM channel
-      WHERE workspace_id = '${workspace_id}'
+      WHERE workspaceId = '${workspaceId}'
       ${source ? `AND source = '${source}'` : ""}
-      ORDER BY created_at DESC
+      ORDER BY createdAt DESC
     `,
     format: "JSON",
   });

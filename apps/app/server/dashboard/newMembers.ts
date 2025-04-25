@@ -12,7 +12,7 @@ export const newMembers = protectedProcedure
     }),
   )
   .query(async ({ ctx: { user }, input }) => {
-    const { workspace_id } = user;
+    const { workspaceId } = user;
     const { from, to } = input;
 
     const timeZone = "Europe/Paris";
@@ -36,25 +36,25 @@ export const newMembers = protectedProcedure
             SELECT count()
             FROM member FINAL
             WHERE 
-              created_at >= '${_from}' 
-              AND created_at <= '${_to}'
-              AND workspace_id = '${workspace_id}'
-          ) as current_count,
+              createdAt >= '${_from}' 
+              AND createdAt <= '${_to}'
+              AND workspaceId = '${workspaceId}'
+          ) as currentCount,
           (
             SELECT count()
             FROM member FINAL
             WHERE 
-              created_at >= '${_previousFrom}' 
-              AND created_at <= '${_previousTo}'
-              AND workspace_id = '${workspace_id}'
-          ) as previous_count
+              createdAt >= '${_previousFrom}' 
+              AND createdAt <= '${_previousTo}'
+              AND workspaceId = '${workspaceId}'
+          ) as previousCount
         SELECT 
-          current_count as current,
-          previous_count as previous,
+          currentCount as current,
+          previousCount as previous,
           CASE
-            WHEN previous_count = 0 AND current_count > 0 THEN 100
-            WHEN previous_count = 0 THEN 0
-            ELSE ((current_count - previous_count) / previous_count) * 100
+            WHEN previousCount = 0 AND currentCount > 0 THEN 100
+            WHEN previousCount = 0 THEN 0
+            ELSE ((currentCount - previousCount) / previousCount) * 100
           END as variation
       `,
       format: "JSON",

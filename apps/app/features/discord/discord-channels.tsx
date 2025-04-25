@@ -59,7 +59,7 @@ export const DiscordChannels = () => {
     setLoading(true);
 
     const channelsData = selectedChannels?.map(({ id, name }) => ({
-      external_id: id ?? "",
+      externalId: id ?? "",
       name: name ?? "",
       source: "Discord" as const,
     }));
@@ -67,7 +67,7 @@ export const DiscordChannels = () => {
     if (!channelsData) return;
 
     await createManyChannels({ channels: channelsData });
-    await createManyActivityTypes({ activity_types: DISCORD_ACTIVITY_TYPES });
+    await createManyActivityTypes({ activityTypes: DISCORD_ACTIVITY_TYPES });
   };
 
   useEffect(() => {
@@ -126,7 +126,7 @@ export const DiscordChannels = () => {
                     );
 
                     const hasImported = channels?.some(
-                      (channel) => channel.external_id === subChannel.id,
+                      (channel) => channel.externalId === subChannel.id,
                     );
 
                     return (

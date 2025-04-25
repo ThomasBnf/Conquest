@@ -9,12 +9,12 @@ type Props = {
 };
 
 export const createManyTags = async ({ discord }: Props) => {
-  const { external_id, workspace_id } = discord;
+  const { externalId, workspaceId } = discord;
 
-  if (!external_id) return;
+  if (!externalId) return;
 
   const roles = (await discordClient.get(
-    Routes.guildRoles(external_id),
+    Routes.guildRoles(externalId),
   )) as APIRole[];
 
   const tags: Tag[] = [];
@@ -30,11 +30,11 @@ export const createManyTags = async ({ discord }: Props) => {
     const parsedColor = decimalToHex(color);
 
     const tag = await createTag({
-      external_id: id,
+      externalId: id,
       name,
       color: parsedColor,
       source: "Discord",
-      workspace_id: workspace_id,
+      workspaceId,
     });
 
     tags.push(tag);

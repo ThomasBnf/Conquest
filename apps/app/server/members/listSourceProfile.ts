@@ -4,13 +4,13 @@ import { protectedProcedure } from "../trpc";
 
 export const listSourcesProfile = protectedProcedure.query(
   async ({ ctx: { user } }) => {
-    const { workspace_id } = user;
+    const { workspaceId } = user;
 
     const result = await client.query({
       query: `
         SELECT DISTINCT toString(attributes.source) as source
         FROM profile FINAL
-        WHERE workspace_id = '${workspace_id}'
+        WHERE workspaceId = '${workspaceId}'
         ORDER BY source ASC
       `,
     });

@@ -12,14 +12,14 @@ type Props = {
 };
 
 export const createManyInvites = async ({ discourse, profile }: Props) => {
-  const { details, workspace_id } = discourse;
-  const { community_url, api_key, api_key_iv } = details;
-  const { member_id, attributes } = profile;
+  const { details, workspaceId } = discourse;
+  const { communityUrl, apiKey, apiKeyIv } = details;
+  const { memberId, attributes } = profile;
   const { username } = attributes;
 
   const decryptedApiKey = await decrypt({
-    access_token: api_key,
-    iv: api_key_iv,
+    accessToken: apiKey,
+    iv: apiKeyIv,
   });
 
   const today = startOfDay(new Date());
@@ -30,7 +30,7 @@ export const createManyInvites = async ({ discourse, profile }: Props) => {
 
   while (hasMore) {
     const response = await fetch(
-      `${community_url}/u/${username}/invited.json?filter=redeemed${
+      `${communityUrl}/u/${username}/invited.json?filter=redeemed${
         offSet ? `&offset=${offSet}` : ""
       }`,
       {
@@ -63,21 +63,21 @@ export const createManyInvites = async ({ discourse, profile }: Props) => {
       const { redeemed_at, user } = invite;
 
       const invitee = await getProfile({
-        external_id: String(user.id),
-        workspace_id,
+        externalId: String(user.id),
+        workspaceId,
       });
 
       if (!invitee) continue;
 
       await createActivity({
-        activity_type_key: "discourse:invite",
+        activityTypeKey: "discourse:invite",
         message: "invitation accepted",
-        invite_to: invitee.id,
-        member_id: member_id,
-        created_at: new Date(redeemed_at),
-        updated_at: new Date(redeemed_at),
+        inviteTo: invitee.id,
+        memberId,
+        createdAt: new Date(redeemed_at),
+        updatedAt: new Date(redeemed_at),
         source: "Discourse",
-        workspace_id,
+        workspaceId,
       });
     }
     hasMore = invites.length === 40;

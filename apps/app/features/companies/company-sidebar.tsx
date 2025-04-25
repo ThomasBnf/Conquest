@@ -28,9 +28,9 @@ export const CompanySidebar = ({ company }: Props) => {
     industry,
     employees,
     address,
-    founded_at,
-    logo_url,
-    created_at,
+    foundedAt,
+    logoUrl,
+    createdAt,
   } = company;
 
   const onUpdateCompany = async (
@@ -41,7 +41,7 @@ export const CompanySidebar = ({ company }: Props) => {
       | "industry"
       | "employees"
       | "address"
-      | "founded_at",
+      | "foundedAt",
     value: string | Date | string[] | null,
   ) => {
     await mutateAsync({ ...company, [field]: value });
@@ -51,7 +51,7 @@ export const CompanySidebar = ({ company }: Props) => {
     <div className="flex h-full max-w-sm flex-1 flex-col bg-sidebar">
       <div className="flex items-center gap-2 p-4">
         <Avatar className="size-12">
-          <AvatarImage src={logo_url ?? ""} />
+          <AvatarImage src={logoUrl ?? ""} />
           <AvatarFallback className="text-sm">
             {name?.charAt(0).toUpperCase()}
           </AvatarFallback>
@@ -117,13 +117,13 @@ export const CompanySidebar = ({ company }: Props) => {
         <div className="space-y-4 p-4">
           <FieldCard label="Founded at">
             <EditableDate
-              defaultValue={founded_at ? format(founded_at, "PPp") : undefined}
-              onUpdate={(value) => onUpdateCompany("founded_at", value)}
+              defaultValue={foundedAt ? format(foundedAt, "PPp") : undefined}
+              onUpdate={(value) => onUpdateCompany("foundedAt", value)}
             />
           </FieldCard>
           <FieldCard label="Created at">
             <p className="h-8 place-content-center pl-0.5">
-              <span className="px-[7px]">{format(created_at, "PPp")}</span>
+              <span className="px-[7px]">{format(createdAt, "PPp")}</span>
             </p>
           </FieldCard>
         </div>

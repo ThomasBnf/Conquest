@@ -30,10 +30,10 @@ export async function POST(request: NextRequest) {
   const github = await checkSignature(request, bodyRaw);
   if (!github) return NextResponse.json({ status: 200 });
 
-  const { details, workspace_id } = github;
-  const { access_token, iv, repo } = details;
+  const { details, workspaceId } = github;
+  const { accessToken, iv, repo } = details;
 
-  const decryptedToken = await decrypt({ access_token, iv });
+  const decryptedToken = await decrypt({ accessToken, iv });
   const octokit = new Octokit({ auth: decryptedToken });
 
   try {
@@ -48,20 +48,20 @@ export async function POST(request: NextRequest) {
         const { member } = await createGithubMember({
           octokit,
           id,
-          created_at: new Date(starred_at),
-          workspace_id,
+          createdAt: new Date(starred_at),
+          workspaceId,
         });
 
         if (!member) return NextResponse.json({ status: 200 });
 
         await createActivity({
-          activity_type_key: "github:star",
+          activityTypeKey: "github:star",
           message: `Starred the repository ${repo}`,
-          member_id: member.id,
-          created_at: new Date(starred_at),
-          updated_at: new Date(starred_at),
+          memberId: member.id,
+          createdAt: new Date(starred_at),
+          updatedAt: new Date(starred_at),
           source: "Github",
-          workspace_id,
+          workspaceId,
         });
 
         break;
@@ -75,7 +75,7 @@ export async function POST(request: NextRequest) {
         const { member } = await createGithubMember({
           octokit,
           id,
-          workspace_id,
+          workspaceId,
         });
 
         if (!member) return NextResponse.json({ status: 200 });
@@ -83,28 +83,28 @@ export async function POST(request: NextRequest) {
         switch (action) {
           case "opened": {
             await createActivity({
-              external_id: String(number),
-              activity_type_key: "github:issue",
+              externalId: String(number),
+              activityTypeKey: "github:issue",
               title: `#${number} - ${title}`,
               message: message ?? "",
-              member_id: member.id,
-              created_at: new Date(created_at),
-              updated_at: new Date(updated_at),
+              memberId: member.id,
+              createdAt: new Date(created_at),
+              updatedAt: new Date(updated_at),
               source: "Github",
-              workspace_id,
+              workspaceId,
             });
 
             break;
           }
           case "edited": {
             const activity = await getActivity({
-              external_id: String(number),
-              workspace_id,
+              externalId: String(number),
+              workspaceId,
             });
 
             if (!activity) return NextResponse.json({ status: 200 });
 
-            const { activity_type, ...data } = activity;
+            const { activityType, ...data } = activity;
 
             await updateActivity({
               ...data,
@@ -116,8 +116,8 @@ export async function POST(request: NextRequest) {
           }
           case "deleted": {
             await deleteActivity({
-              external_id: String(number),
-              workspace_id,
+              externalId: String(number),
+              workspaceId,
             });
           }
         }
@@ -133,7 +133,7 @@ export async function POST(request: NextRequest) {
         const { member } = await createGithubMember({
           octokit,
           id,
-          workspace_id,
+          workspaceId,
         });
 
         if (!member) return NextResponse.json({ status: 200 });
@@ -141,25 +141,25 @@ export async function POST(request: NextRequest) {
         switch (action) {
           case "opened": {
             await createActivity({
-              activity_type_key: "github:pr",
+              activityTypeKey: "github:pr",
               title: `#${number} - ${title}`,
               message: message ?? "",
-              member_id: member.id,
+              memberId: member.id,
               source: "Github",
-              workspace_id,
+              workspaceId,
             });
 
             break;
           }
           case "edited": {
             const activity = await getActivity({
-              external_id: String(number),
-              workspace_id,
+              externalId: String(number),
+              workspaceId,
             });
 
             if (!activity) return NextResponse.json({ status: 200 });
 
-            const { activity_type, ...data } = activity;
+            const { activityType, ...data } = activity;
 
             await updateActivity({
               ...data,
@@ -183,7 +183,7 @@ export async function POST(request: NextRequest) {
         const { member } = await createGithubMember({
           octokit,
           id,
-          workspace_id,
+          workspaceId,
         });
 
         if (!member) return NextResponse.json({ status: 200 });
@@ -191,26 +191,26 @@ export async function POST(request: NextRequest) {
         switch (action) {
           case "created": {
             await createActivity({
-              external_id: String(commentId),
-              activity_type_key: "github:comment",
+              externalId: String(commentId),
+              activityTypeKey: "github:comment",
               message,
-              member_id: member.id,
-              reply_to: String(number),
+              memberId: member.id,
+              replyTo: String(number),
               source: "Github",
-              workspace_id,
+              workspaceId,
             });
 
             break;
           }
           case "edited": {
             const activity = await getActivity({
-              external_id: String(commentId),
-              workspace_id,
+              externalId: String(commentId),
+              workspaceId,
             });
 
             if (!activity) return NextResponse.json({ status: 200 });
 
-            const { activity_type, ...data } = activity;
+            const { activityType, ...data } = activity;
 
             await updateActivity({
               ...data,
@@ -222,8 +222,8 @@ export async function POST(request: NextRequest) {
           case "deleted": {
             console.log("deleted", event);
             await deleteActivity({
-              external_id: String(commentId),
-              workspace_id,
+              externalId: String(commentId),
+              workspaceId,
             });
           }
         }

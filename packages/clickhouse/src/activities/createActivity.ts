@@ -7,24 +7,24 @@ import { client } from "../client";
 import { getActivity } from "./getActivity";
 
 type Props = {
-  activity_type_key: string;
+  activityTypeKey: string;
   source: Source;
-  workspace_id: string;
+  workspaceId: string;
 } & Partial<Activity>;
 
 export const createActivity = async (props: Props) => {
   const {
-    activity_type_key,
-    activity_type_id,
-    workspace_id,
-    updated_at,
-    created_at,
+    activityTypeKey,
+    activityTypeId,
+    workspaceId,
+    updatedAt,
+    createdAt,
     ...rest
   } = props;
 
   const activityType = await getActivityTypeByKey({
-    key: activity_type_key,
-    workspace_id,
+    key: activityTypeKey,
+    workspaceId,
   });
 
   if (!activityType) throw new Error("Activity type not found");
@@ -37,14 +37,14 @@ export const createActivity = async (props: Props) => {
       {
         ...rest,
         id,
-        activity_type_id: activityType.id,
-        workspace_id,
-        updated_at: format(updated_at ?? new Date(), "yyyy-MM-dd HH:mm:ss"),
-        created_at: format(created_at ?? new Date(), "yyyy-MM-dd HH:mm:ss"),
+        activityTypeId: activityType.id,
+        workspaceId,
+        updatedAt: format(updatedAt ?? new Date(), "yyyy-MM-dd HH:mm:ss"),
+        createdAt: format(createdAt ?? new Date(), "yyyy-MM-dd HH:mm:ss"),
       },
     ],
     format: "JSON",
   });
 
-  return await getActivity({ id, workspace_id });
+  return await getActivity({ id, workspaceId });
 };

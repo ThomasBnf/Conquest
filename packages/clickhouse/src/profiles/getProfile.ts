@@ -3,31 +3,31 @@ import { client } from "../client";
 
 type Props =
   | {
-      external_id: string;
-      workspace_id?: string;
+      externalId: string;
+      workspaceId?: string;
     }
   | {
       username: string;
-      workspace_id: string;
+      workspaceId: string;
     };
 
 export const getProfile = async (props: Props) => {
   const params: Record<string, string> = {};
   let where = "";
 
-  if ("external_id" in props) {
-    const { external_id, workspace_id } = props;
-    params.external_id = external_id;
+  if ("externalId" in props) {
+    const { externalId, workspaceId } = props;
+    params.externalId = externalId;
 
-    where = `external_id = '${external_id}' ${
-      workspace_id ? `AND workspace_id = '${workspace_id}'` : ""
+    where = `externalId = '${externalId}' ${
+      workspaceId ? `AND workspaceId = '${workspaceId}'` : ""
     }`;
   } else {
-    const { username, workspace_id } = props;
+    const { username, workspaceId } = props;
     params.username = username;
-    params.workspace_id = workspace_id;
+    params.workspaceId = workspaceId;
 
-    where = `attributes.username = '${username}' AND workspace_id = '${workspace_id}'`;
+    where = `attributes.username = '${username}' AND workspaceId = '${workspaceId}'`;
   }
 
   const result = await client.query({

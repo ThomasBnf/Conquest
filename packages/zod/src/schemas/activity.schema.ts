@@ -4,24 +4,24 @@ import { ActivityTypeSchema } from "./activity-type.schema";
 
 export const ActivitySchema = z.object({
   id: z.string().uuid(),
-  external_id: z.string(),
+  externalId: z.string(),
   title: z.string(),
   message: z.string(),
-  reply_to: z.string(),
-  react_to: z.string(),
-  invite_to: z.string(),
+  replyTo: z.string(),
+  reactTo: z.string(),
+  inviteTo: z.string(),
   source: SOURCE,
-  activity_type_id: z.string().uuid(),
-  channel_id: z.string().uuid().nullable(),
-  event_id: z.string().uuid().nullable(),
-  member_id: z.string().uuid(),
-  workspace_id: z.string().uuid(),
-  created_at: z.coerce.date(),
-  updated_at: z.coerce.date(),
+  activityTypeId: z.string().uuid(),
+  channelId: z.string().uuid().nullable(),
+  eventId: z.string().uuid().nullable(),
+  memberId: z.string().uuid(),
+  workspaceId: z.string().uuid(),
+  createdAt: z.coerce.date(),
+  updatedAt: z.coerce.date(),
 });
 
 export const ActivityWithTypeSchema = ActivitySchema.extend({
-  activity_type: ActivityTypeSchema,
+  activityType: ActivityTypeSchema,
 });
 
 export const ActivityHeatmapSchema = z.object({

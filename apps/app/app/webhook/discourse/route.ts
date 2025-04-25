@@ -45,7 +45,7 @@ export async function POST(request: NextRequest) {
 
   const { category, topic, post, user, like, user_badge, solved } =
     body as DiscourseWebhook;
-  const { workspace_id } = integration;
+  const { workspaceId } = integration;
 
   if (topic && (event === "topic_created" || event === "topic_recovered")) {
     const { id, created_by, category_id, title } = topic;
@@ -55,27 +55,27 @@ export async function POST(request: NextRequest) {
 
     const profile = await getProfile({
       username,
-      workspace_id,
+      workspaceId,
     });
 
     if (!profile) return NextResponse.json({ status: 200 });
 
     const channel = await getChannel({
-      external_id: String(category_id),
-      workspace_id,
+      externalId: String(category_id),
+      workspaceId,
     });
 
     if (!channel) return NextResponse.json({ status: 200 });
 
     await upsertActivity({
-      external_id: `t/${id}`,
-      activity_type_key: "discourse:topic",
+      externalId: `t/${id}`,
+      activityTypeKey: "discourse:topic",
       title,
       message: "",
-      member_id: profile.member_id,
-      channel_id: channel.id,
+      memberId: profile.memberId,
+      channelId: channel.id,
       source: "Discourse",
-      workspace_id,
+      workspaceId,
     });
   }
 
@@ -84,17 +84,17 @@ export async function POST(request: NextRequest) {
     const { id, title } = topic;
 
     const activity = await getActivity({
-      external_id: `t/${id}`,
-      workspace_id,
+      externalId: `t/${id}`,
+      workspaceId,
     });
 
     if (!activity) return NextResponse.json({ status: 200 });
 
-    const { activity_type, ...data } = activity;
+    const { activityType, ...data } = activity;
 
     await updateActivity({
       ...data,
-      activity_type_id: activity_type.id,
+      activityTypeId: activityType.id,
       title,
     });
   }
@@ -104,14 +104,14 @@ export async function POST(request: NextRequest) {
     const { id } = topic;
 
     await deleteActivity({
-      external_id: `t/${id}`,
-      workspace_id,
+      externalId: `t/${id}`,
+      workspaceId,
     });
 
     await client.query({
       query: `
         ALTER TABLE activity
-        DELETE WHERE react_to LIKE 't/${id}'
+        DELETE WHERE reactTo LIKE 't/${id}'
         OR reply_to LIKE 't/${id}'
       `,
     });
@@ -135,38 +135,38 @@ export async function POST(request: NextRequest) {
 
     const profile = await getProfile({
       username,
-      workspace_id,
+      workspaceId,
     });
 
     if (!profile) return NextResponse.json({ status: 200 });
 
     const channel = await getChannel({
-      external_id: String(category_id),
-      workspace_id,
+      externalId: String(category_id),
+      workspaceId,
     });
 
     if (!channel) return NextResponse.json({ status: 200 });
 
     if (post_number === 1) {
       const activity = await getActivity({
-        external_id: `t/${topic_id}`,
-        workspace_id,
+        externalId: `t/${topic_id}`,
+        workspaceId,
       });
 
       if (!activity) return NextResponse.json({ status: 200 });
 
-      const activityType = await getActivityTypeByKey({
+      const result = await getActivityTypeByKey({
         key: "discourse:topic",
-        workspace_id,
+        workspaceId,
       });
 
-      if (!activityType) return NextResponse.json({ status: 200 });
+      if (!result) return NextResponse.json({ status: 200 });
 
-      const { activity_type, ...data } = activity;
+      const { activityType, ...data } = activity;
 
       await updateActivity({
         ...data,
-        activity_type_id: activityType.id,
+        activityTypeId: activityType.id,
         message: post.cooked,
       });
 
@@ -175,28 +175,28 @@ export async function POST(request: NextRequest) {
 
     if (reply_to_user && reply_to_post_number) {
       await createActivity({
-        external_id: `p/${id}`,
-        activity_type_key: "discourse:reply",
+        externalId: `p/${id}`,
+        activityTypeKey: "discourse:reply",
         message: post.cooked,
-        reply_to: `t/${topic_id}/${reply_to_post_number}`,
-        member_id: profile.member_id,
-        channel_id: channel.id,
+        replyTo: `t/${topic_id}/${reply_to_post_number}`,
+        memberId: profile.memberId,
+        channelId: channel.id,
         source: "Discourse",
-        workspace_id,
+        workspaceId,
       });
 
       return NextResponse.json({ status: 200 });
     }
 
     await createActivity({
-      external_id: `p/${id}`,
-      activity_type_key: "discourse:reply",
-      reply_to: `t/${topic_id}`,
+      externalId: `p/${id}`,
+      activityTypeKey: "discourse:reply",
+      replyTo: `t/${topic_id}`,
       message: post.cooked,
-      member_id: profile.member_id,
-      channel_id: channel.id,
+      memberId: profile.memberId,
+      channelId: channel.id,
       source: "Discourse",
-      workspace_id,
+      workspaceId,
     });
   }
 
@@ -205,24 +205,24 @@ export async function POST(request: NextRequest) {
     const { id, topic_id, post_number } = post;
 
     const activity = await getActivity({
-      external_id: post_number === 1 ? `t/${topic_id}` : `p/${id}`,
-      workspace_id,
+      externalId: post_number === 1 ? `t/${topic_id}` : `p/${id}`,
+      workspaceId,
     });
 
     if (!activity) return NextResponse.json({ status: 200 });
 
-    const activityType = await getActivityTypeByKey({
+    const result = await getActivityTypeByKey({
       key: post_number === 1 ? "discourse:topic" : "discourse:reply",
-      workspace_id,
+      workspaceId,
     });
 
-    if (!activityType) return NextResponse.json({ status: 200 });
+    if (!result) return NextResponse.json({ status: 200 });
 
-    const { activity_type, ...data } = activity;
+    const { activityType, ...data } = activity;
 
     await updateActivity({
       ...data,
-      activity_type_id: activityType.id,
+      activityTypeId: activityType.id,
       message: post.cooked,
     });
   }
@@ -233,14 +233,14 @@ export async function POST(request: NextRequest) {
 
     const profile = await getProfile({
       username,
-      workspace_id,
+      workspaceId,
     });
 
     if (!profile) return NextResponse.json({ status: 200 });
 
     await deleteActivity({
-      external_id: `p/${id}`,
-      workspace_id,
+      externalId: `p/${id}`,
+      workspaceId,
     });
   }
 
@@ -251,69 +251,69 @@ export async function POST(request: NextRequest) {
 
     const profile = await getProfile({
       username,
-      workspace_id,
+      workspaceId,
     });
 
     if (!profile) return NextResponse.json({ status: 200 });
 
     const channel = await getChannel({
-      external_id: String(category_id),
-      workspace_id,
+      externalId: String(category_id),
+      workspaceId,
     });
 
     if (!channel) return NextResponse.json({ status: 200 });
 
     await createActivity({
-      activity_type_key: "discourse:reaction",
+      activityTypeKey: "discourse:reaction",
       message: reactions?.[0]?.id ?? "like",
-      react_to: `t/${topic_id}/${post_number}`,
-      member_id: profile.member_id,
-      channel_id: channel.id,
+      reactTo: `t/${topic_id}/${post_number}`,
+      memberId: profile.memberId,
+      channelId: channel.id,
       source: "Discourse",
-      workspace_id,
+      workspaceId,
     });
   }
 
   if (user && event === "user_confirmed_email") {
     const { id, name, username, email, avatar_template, invited_by } = user;
 
-    const [first_name, last_name] = name.split(" ");
-    const avatar_url = avatar_template.replace("{size}", "500");
+    const [firstName, lastName] = name.split(" ");
+    const avatarUrl = avatar_template.replace("{size}", "500");
 
     const member = await createMember({
-      first_name,
-      last_name,
-      primary_email: email,
-      avatar_url,
-      created_at: new Date(),
+      firstName,
+      lastName,
+      primaryEmail: email,
+      avatarUrl,
       source: "Discourse",
-      workspace_id,
+      workspaceId,
+      createdAt: new Date(),
     });
 
     await createProfile({
-      external_id: String(id),
-      member_id: member.id,
+      externalId: String(id),
+      memberId: member.id,
       attributes: {
         source: "Discourse",
         username,
       },
-      workspace_id,
+      workspaceId,
     });
 
     const inviter = await getProfile({
       username: String(invited_by.username),
-      workspace_id,
+      workspaceId,
     });
 
     if (!inviter) return NextResponse.json({ status: 200 });
 
     await createActivity({
-      activity_type_key: "discourse:invite",
+      activityTypeKey: "discourse:invite",
       message: "invitation accepted",
-      invite_to: member.id,
-      member_id: inviter.member_id,
+      inviteTo: member.id,
+      memberId: inviter.memberId,
       source: "Discourse",
-      workspace_id,
+      workspaceId,
     });
   }
 
@@ -328,44 +328,44 @@ export async function POST(request: NextRequest) {
       title,
     } = user;
 
-    const [first_name, last_name] = name.split(" ");
-    const avatar_url = avatar_template.replace("{size}", "500");
+    const [firstName, lastName] = name.split(" ");
+    const avatarUrl = avatar_template.replace("{size}", "500");
 
     const profile = await getProfile({
       username,
-      workspace_id,
+      workspaceId,
     });
 
     if (!profile) return NextResponse.json({ status: 200 });
 
     const member = await getMember({
-      id: profile.member_id,
+      id: profile.memberId,
     });
 
     if (!member) return NextResponse.json({ status: 200 });
 
     await updateMember({
       ...member,
-      first_name: first_name ?? "",
-      last_name: last_name ?? "",
-      primary_email: email,
+      firstName: firstName ?? "",
+      lastName: lastName ?? "",
+      primaryEmail: email,
       emails: [...(member.emails ?? []), email, ...(secondary_emails ?? [])],
-      avatar_url,
-      job_title: title ?? "",
-      created_at: new Date(),
+      avatarUrl,
+      jobTitle: title ?? "",
+      createdAt: new Date(),
       source: "Discourse",
-      workspace_id,
+      workspaceId,
     });
 
     await updateProfile({
       id: profile.id,
-      external_id: String(id),
-      member_id: member.id,
+      externalId: String(id),
+      memberId: member.id,
       attributes: {
         username,
         source: "Discourse",
       },
-      workspace_id,
+      workspaceId,
     });
   }
 
@@ -374,18 +374,18 @@ export async function POST(request: NextRequest) {
 
     const profile = await getProfile({
       username,
-      workspace_id,
+      workspaceId,
     });
 
     if (!profile) return NextResponse.json({ status: 200 });
 
     await deleteProfile({
       username,
-      workspace_id,
+      workspaceId,
     });
 
     await deleteMember({
-      id: profile.member_id,
+      id: profile.memberId,
     });
   }
 
@@ -393,17 +393,17 @@ export async function POST(request: NextRequest) {
     const { username } = user;
     const profile = await getProfile({
       username,
-      workspace_id,
+      workspaceId,
     });
 
     if (!profile) return NextResponse.json({ status: 200 });
 
     await createActivity({
-      activity_type_key: "discourse:login",
+      activityTypeKey: "discourse:login",
       message: "login",
-      member_id: profile.member_id,
+      memberId: profile.memberId,
       source: "Discourse",
-      workspace_id,
+      workspaceId,
     });
   }
 
@@ -414,18 +414,18 @@ export async function POST(request: NextRequest) {
 
     if (parent_category_id) {
       const parent = await getChannel({
-        external_id: String(parent_category_id),
-        workspace_id,
+        externalId: String(parent_category_id),
+        workspaceId,
       });
 
       channel_name = `${parent?.name} - ${name}`;
     }
 
     await createChannel({
-      external_id: String(id),
+      externalId: String(id),
       name: channel_name,
       source: "Discourse",
-      workspace_id,
+      workspaceId,
     });
   }
 
@@ -435,25 +435,25 @@ export async function POST(request: NextRequest) {
     let channel_name = name;
 
     const channel = await getChannel({
-      external_id: String(id),
-      workspace_id,
+      externalId: String(id),
+      workspaceId,
     });
 
     if (!channel) return NextResponse.json({ status: 200 });
 
     if (parent_category_id) {
       const parent = await getChannel({
-        external_id: String(parent_category_id),
-        workspace_id,
+        externalId: String(parent_category_id),
+        workspaceId,
       });
 
       channel_name = `${parent?.name} - ${name}`;
     }
 
     await updateChannel({
-      external_id: String(id),
+      externalId: String(id),
       name: channel_name,
-      workspace_id,
+      workspaceId,
     });
   }
 
@@ -461,8 +461,8 @@ export async function POST(request: NextRequest) {
     const { id } = category;
 
     const channel = await getChannel({
-      external_id: String(id),
-      workspace_id,
+      externalId: String(id),
+      workspaceId,
     });
 
     if (!channel) return NextResponse.json({ status: 200 });
@@ -470,14 +470,14 @@ export async function POST(request: NextRequest) {
     await client.query({
       query: `
         ALTER TABLE activity
-        DELETE WHERE channel_id = '${channel.id}'
-        AND workspace_id = '${workspace_id}'
+        DELETE WHERE channelId = '${channel.id}'
+        AND workspaceId = '${workspaceId}'
       `,
     });
 
     await deleteChannel({
-      external_id: String(id),
-      workspace_id,
+      externalId: String(id),
+      workspaceId,
     });
   }
 
@@ -485,22 +485,20 @@ export async function POST(request: NextRequest) {
     const { badge_id, user_id } = user_badge;
 
     const profile = await getProfile({
-      external_id: String(user_id),
-      workspace_id,
+      externalId: String(user_id),
+      workspaceId,
     });
 
     if (!profile) return NextResponse.json({ status: 200 });
 
     const member = await getMember({
-      id: profile.member_id,
+      id: profile.memberId,
     });
 
     if (!member) return NextResponse.json({ status: 200 });
 
-    const tags = await listTags({ workspace_id });
-    const existingTag = tags.find(
-      (tag) => tag.external_id === String(badge_id),
-    );
+    const tags = await listTags({ workspaceId });
+    const existingTag = tags.find((tag) => tag.externalId === String(badge_id));
 
     if (existingTag) {
       await updateMember({
@@ -511,14 +509,17 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ status: 200 });
     }
 
-    const { community_url, api_key, api_key_iv } = integration.details;
+    const { communityUrl, apiKey, apiKeyIv } = integration.details;
 
     const decryptedApiKey = await decrypt({
-      access_token: api_key,
-      iv: api_key_iv,
+      accessToken: apiKey,
+      iv: apiKeyIv,
     });
 
-    const client = discourseClient({ community_url, api_key: decryptedApiKey });
+    const client = discourseClient({
+      communityUrl,
+      apiKey: decryptedApiKey,
+    });
 
     const { badges } = await client.adminListBadges();
     const badge = badges.find((badge) => badge.id === badge_id);
@@ -536,11 +537,11 @@ export async function POST(request: NextRequest) {
     const color = colorMap[String(badge_type_id) as keyof typeof colorMap];
 
     const newTag = await createTag({
-      external_id: String(badgeId),
+      externalId: String(badgeId),
       name,
       color,
       source: "Discourse",
-      workspace_id,
+      workspaceId,
     });
 
     await updateMember({
@@ -553,20 +554,20 @@ export async function POST(request: NextRequest) {
     const { badge_id, user_id } = user_badge;
 
     const profile = await getProfile({
-      external_id: String(user_id),
-      workspace_id,
+      externalId: String(user_id),
+      workspaceId,
     });
 
     if (!profile) return NextResponse.json({ status: 200 });
 
     const member = await getMember({
-      id: profile.member_id,
+      id: profile.memberId,
     });
 
     if (!member) return NextResponse.json({ status: 200 });
 
-    const tags = await listTags({ workspace_id });
-    const currentTag = tags.find((tag) => tag.external_id === String(badge_id));
+    const tags = await listTags({ workspaceId });
+    const currentTag = tags.find((tag) => tag.externalId === String(badge_id));
     const userTags = member.tags.filter((tag) => tag !== currentTag?.id);
 
     await updateMember({
@@ -583,38 +584,38 @@ export async function POST(request: NextRequest) {
 
     const profile = await getProfile({
       username,
-      workspace_id,
+      workspaceId,
     });
 
     if (!profile) return NextResponse.json({ status: 200 });
 
     const channel = await getChannel({
-      external_id: String(category_id),
-      workspace_id,
+      externalId: String(category_id),
+      workspaceId,
     });
 
     if (!channel) return NextResponse.json({ status: 200 });
 
     const activity = await getActivity({
-      external_id: `p/${id}`,
-      workspace_id,
+      externalId: `p/${id}`,
+      workspaceId,
     });
 
     if (!activity) return NextResponse.json({ status: 200 });
 
-    const activityType = await getActivityTypeByKey({
+    const result = await getActivityTypeByKey({
       key:
         event === "accepted_solution" ? "discourse:solved" : "discourse:reply",
-      workspace_id,
+      workspaceId,
     });
 
-    if (!activityType) return NextResponse.json({ status: 200 });
+    if (!result) return NextResponse.json({ status: 200 });
 
-    const { activity_type, ...data } = activity;
+    const { activityType, ...data } = activity;
 
     await updateActivity({
       ...data,
-      activity_type_id: activityType.id,
+      activityTypeId: activityType.id,
     });
   }
 

@@ -14,7 +14,7 @@ export const listFilteredMembers = protectedProcedure
     }),
   )
   .query(async ({ ctx: { user }, input }) => {
-    const { workspace_id } = user;
+    const { workspaceId } = user;
     const { cursor, search, id, desc, groupFilters } = input;
 
     return _listFilteredMembers({
@@ -23,6 +23,6 @@ export const listFilteredMembers = protectedProcedure
       id,
       desc,
       groupFilters,
-      workspace_id,
+      workspaceId,
     });
   });

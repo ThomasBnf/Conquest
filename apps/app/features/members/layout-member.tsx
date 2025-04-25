@@ -27,7 +27,7 @@ export const LayoutMember = ({
 
   const { data: profiles, isLoading: isLoadingProfiles } =
     trpc.profiles.list.useQuery({
-      member_id: memberId,
+      memberId,
     });
 
   if (isLoading || isLoadingProfiles) return <IsLoading />;

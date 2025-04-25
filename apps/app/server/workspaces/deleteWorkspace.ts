@@ -4,60 +4,60 @@ import { protectedProcedure } from "../trpc";
 
 export const deleteWorkspace = protectedProcedure.mutation(
   async ({ ctx: { user } }) => {
-    const { workspace_id } = user;
+    const { workspaceId } = user;
 
     await Promise.all([
       client.query({
         query: `
       ALTER TABLE activity DELETE 
-      WHERE workspace_id = '${workspace_id}'`,
+      WHERE workspaceId = '${workspaceId}'`,
       }),
 
       client.query({
         query: `
-      ALTER TABLE activity_type DELETE 
-      WHERE workspace_id = '${workspace_id}'`,
+      ALTER TABLE activityType DELETE 
+      WHERE workspaceId = '${workspaceId}'`,
       }),
 
       client.query({
         query: `
       ALTER TABLE channel DELETE
-      WHERE workspace_id = '${workspace_id}'`,
+      WHERE workspaceId = '${workspaceId}'`,
       }),
 
       client.query({
         query: `
       ALTER TABLE company DELETE
-      WHERE workspace_id = '${workspace_id}'`,
+      WHERE workspaceId = '${workspaceId}'`,
       }),
 
       client.query({
         query: `
       ALTER TABLE level DELETE
-      WHERE workspace_id = '${workspace_id}'`,
+      WHERE workspaceId = '${workspaceId}'`,
       }),
 
       client.query({
         query: `
       ALTER TABLE log DELETE 
-      WHERE workspace_id = '${workspace_id}'`,
+      WHERE workspaceId = '${workspaceId}'`,
       }),
 
       client.query({
         query: `
       ALTER TABLE member DELETE
-      WHERE workspace_id = '${workspace_id}'`,
+      WHERE workspaceId = '${workspaceId}'`,
       }),
 
       client.query({
         query: `
       ALTER TABLE profile DELETE
-      WHERE workspace_id = '${workspace_id}'`,
+      WHERE workspaceId = '${workspaceId}'`,
       }),
     ]);
 
     await prisma.workspace.delete({
-      where: { id: workspace_id },
+      where: { id: workspaceId },
     });
 
     return { success: true };

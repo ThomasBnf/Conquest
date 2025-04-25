@@ -12,7 +12,7 @@ export const engagementRate = protectedProcedure
     }),
   )
   .query(async ({ ctx: { user }, input }) => {
-    const { workspace_id } = user;
+    const { workspaceId } = user;
     const { from, to } = input;
 
     const timeZone = "Europe/Paris";
@@ -34,38 +34,38 @@ export const engagementRate = protectedProcedure
         WITH 
           (
             SELECT 
-              count(DISTINCT member_id) * 100.0 / 
+              count(DISTINCT memberId) * 100.0 / 
               (SELECT count() 
                 FROM member FINAL
                 WHERE 
-                   workspace_id = '${workspace_id}'
-                  AND created_at <= '${_to}')
+                  workspaceId = '${workspaceId}'
+                  AND createdAt <= '${_to}')
             FROM activity a
-            JOIN member m FINAL ON a.member_id = m.id
+            JOIN member m FINAL ON a.memberId = m.id
             WHERE 
-              a.created_at >= '${_from}' 
-              AND a.created_at <= '${_to}'
-              AND a.workspace_id = '${workspace_id}'
-          ) as current_rate,
+              a.createdAt >= '${_from}' 
+              AND a.createdAt <= '${_to}'
+              AND a.workspaceId = '${workspaceId}'
+          ) as currentRate,
           (
             SELECT 
-              count(DISTINCT member_id) * 100.0 / 
+              count(DISTINCT memberId) * 100.0 / 
               (SELECT count() 
                 FROM member FINAL
                 WHERE 
-                  workspace_id = '${workspace_id}'
-                  AND created_at <= '${_previousTo}')
+                  workspaceId = '${workspaceId}'
+                  AND createdAt <= '${_previousTo}')
             FROM activity a
-            JOIN member m FINAL ON a.member_id = m.id
+            JOIN member m FINAL ON a.memberId = m.id
             WHERE 
-              a.created_at >= '${_previousFrom}' 
-              AND a.created_at <= '${_previousTo}'
-              AND a.workspace_id = '${workspace_id}'
+              a.createdAt >= '${_previousFrom}' 
+              AND a.createdAt <= '${_previousTo}'
+              AND a.workspaceId = '${workspaceId}'
           ) as previous_rate
         SELECT 
-          current_rate as current,
-          previous_rate as previous,
-          if(previous_rate = 0, 0, current_rate - previous_rate) as variation
+          currentRate as current,
+          previousRate as previous,
+          if(previousRate = 0, 0, currentRate - previousRate) as variation
       `,
       format: "JSON",
     });

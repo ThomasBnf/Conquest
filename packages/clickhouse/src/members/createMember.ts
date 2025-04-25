@@ -1,4 +1,5 @@
 import { type Member, MemberSchema } from "@conquest/zod/schemas/member.schema";
+import { format } from "date-fns";
 import { v4 as uuid } from "uuid";
 import { client } from "../client";
 import { createCompany } from "../companies/createCompany";
@@ -10,9 +11,10 @@ type Props = Partial<Member>;
 export const createMember = async (props: Props) => {
   const id = uuid();
 
-  const { primary_email, phones, source, workspace_id } = props;
+  const { primaryEmail, phones, source, workspaceId, updatedAt, createdAt } =
+    props;
 
-  const formattedEmail = primary_email?.toLowerCase().trim();
+  const formattedEmail = primaryEmail?.toLowerCase().trim();
   const formattedPhones = phones?.map((phone) => phone.toLowerCase().trim());
   const domain = formattedEmail?.split("@")[1];
 
@@ -26,7 +28,7 @@ export const createMember = async (props: Props) => {
         name: companyName,
         domain: `https://${domain}`,
         source,
-        workspace_id,
+        workspaceId,
       });
     }
   }
@@ -37,12 +39,14 @@ export const createMember = async (props: Props) => {
       {
         ...props,
         id,
-        primary_email: formattedEmail,
+        primaryEmail: formattedEmail,
         emails: formattedEmail ? [formattedEmail] : [],
         phones: formattedPhones,
-        first_activity: null,
-        last_activity: null,
-        company_id: company?.id,
+        firstActivity: null,
+        lastActivity: null,
+        companyId: company?.id,
+        updatedAt: format(updatedAt ?? new Date(), "yyyy-MM-dd HH:mm:ss"),
+        createdAt: format(createdAt ?? new Date(), "yyyy-MM-dd HH:mm:ss"),
       },
     ],
     format: "JSON",

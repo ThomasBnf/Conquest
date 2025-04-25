@@ -11,23 +11,23 @@ export const listMembersWithProfiles = protectedProcedure
   )
   .query(async ({ input, ctx: { user } }) => {
     const { ids } = input;
-    const { workspace_id } = user;
+    const { workspaceId } = user;
 
     const result = await client.query({
       query: `
         SELECT 
           m.*,
           profile.id as "profile.id",
-          profile.external_id as "profile.external_id",
+          profile.externalId as "profile.externalId",
           profile.attributes as "profile.attributes",
-          profile.member_id as "profile.member_id",
-          profile.workspace_id as "profile.workspace_id",
-          profile.created_at as "profile.created_at",
-          profile.updated_at as "profile.updated_at"
+          profile.memberId as "profile.memberId",
+          profile.workspaceId as "profile.workspaceId",
+          profile.createdAt as "profile.createdAt",
+          profile.updatedAt as "profile.updatedAt"
         FROM member m FINAL
-        LEFT JOIN profile ON m.id = profile.member_id
+        LEFT JOIN profile ON m.id = profile.memberId
         WHERE m.id IN (${ids.map((id) => `'${id}'`).join(",")}) 
-        AND m.workspace_id = '${workspace_id}'
+        AND m.workspaceId = '${workspaceId}'
       `,
     });
 

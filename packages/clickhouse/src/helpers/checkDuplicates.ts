@@ -1,37 +1,41 @@
 import { client } from "../client";
 
 type Props = {
-  workspace_id: string;
+  workspaceId: string;
 };
 
-export const checkDuplicates = async ({ workspace_id }: Props) => {
+export const checkDuplicates = async ({ workspaceId }: Props) => {
   const result = await client.query({
     query: `
       SELECT
         'email' AS duplicate_type,
-        m.primary_email AS value,
-        groupArray(m.id) AS member_ids
+        m.primaryEmail AS value,
+        groupArray(m.id) AS memberIds
       FROM member m FINAL
-      WHERE m.primary_email != '' AND m.workspace_id = '${workspace_id}'
-      GROUP BY m.primary_email
+      WHERE m.primaryEmail != '' AND m.workspaceId = '${workspaceId}'
+      GROUP BY m.primaryEmail
       HAVING count() > 1
 
       UNION ALL
 
       SELECT
         'name' AS duplicate_type,
-        concat(m.first_name, ' ', m.last_name) AS value,
-        groupArray(m.id) AS member_ids
+        concat(m.firstName, ' ', m.lastName) AS value,
+        groupArray(m.id) AS memberIds
       FROM member m FINAL
-      WHERE m.first_name != '' AND m.last_name != '' AND m.workspace_id = '${workspace_id}'
-      GROUP BY m.first_name, m.last_name
+      WHERE m.firstName != '' AND m.lastName != '' AND m.workspaceId = '${workspaceId}'
+      GROUP BY m.firstName, m.lastName
       HAVING count() > 1
     `,
     format: "JSON",
   });
 
   const { data } = (await result.json()) as {
-    data: { duplicate_type: string; value: string; member_ids: string[] }[];
+    data: {
+      duplicateType: string;
+      value: string;
+      memberIds: string[];
+    }[];
   };
   return data;
 };

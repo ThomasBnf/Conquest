@@ -2,15 +2,15 @@ import { LevelSchema } from "@conquest/zod/schemas/level.schema";
 import { client } from "../client";
 
 type Props = {
-  workspace_id: string;
+  workspaceId: string;
 };
 
-export const listLevels = async ({ workspace_id }: Props) => {
+export const listLevels = async ({ workspaceId }: Props) => {
   const result = await client.query({
     query: `
       SELECT * 
       FROM level
-      WHERE workspace_id = '${workspace_id}'
+      WHERE workspaceId = '${workspaceId}'
       ORDER BY number DESC
     `,
   });

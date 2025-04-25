@@ -19,42 +19,38 @@ export const installSlack = schemaTask({
     slack: SlackIntegrationSchema,
   }),
   run: async ({ slack }) => {
-    const { workspace_id, details } = slack;
-    const { access_token, access_token_iv } = details;
+    const { workspaceId, details } = slack;
+    const { accessToken, accessTokenIv } = details;
 
-    if (!access_token) return;
+    if (!accessToken) return;
 
     const token = await decrypt({
-      access_token,
-      iv: access_token_iv,
+      accessToken,
+      iv: accessTokenIv,
     });
 
     const web = new WebClient(token);
 
-    const channels = await listChannels({ source: "Slack", workspace_id });
-    await createListMembers({ web, workspace_id });
+    const channels = await listChannels({ source: "Slack", workspaceId });
+    await createListMembers({ web, workspaceId });
 
     for (const channel of channels) {
-      await web.conversations.join({ channel: channel.external_id ?? "" });
-      await listMessages({ web, channel, workspace_id });
+      await web.conversations.join({ channel: channel.externalId ?? "" });
+      await listMessages({ web, channel, workspaceId });
     }
 
-    await getAllMembersMetrics.triggerAndWait(
-      { workspace_id },
-      { metadata: { workspace_id } },
-    );
-
-    await checkDuplicates.triggerAndWait({ workspace_id });
+    await getAllMembersMetrics.triggerAndWait({ workspaceId });
+    await checkDuplicates.triggerAndWait({ workspaceId });
     await integrationSuccessEmail.trigger({ integration: slack });
   },
   onSuccess: async ({ slack }) => {
-    const { id, workspace_id } = slack;
+    const { id, workspaceId } = slack;
 
     await updateIntegration({
       id,
-      connected_at: new Date(),
+      connectedAt: new Date(),
       status: "CONNECTED",
-      workspace_id,
+      workspaceId,
     });
   },
   onFailure: async ({ slack }) => {

@@ -1,11 +1,11 @@
 import { prisma } from "../prisma";
 
 type Props = {
-  workspace_id: string;
+  workspaceId: string;
 };
 
-export const deleteManyPosts = async ({ workspace_id }: Props) => {
+export const deleteManyPosts = async ({ workspaceId }: Props) => {
   await prisma.post.deleteMany({
-    where: { workspace_id },
+    where: { workspaceId },
   });
 };

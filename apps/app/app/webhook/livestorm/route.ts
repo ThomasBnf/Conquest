@@ -25,20 +25,20 @@ export async function POST(request: NextRequest) {
   const { id, attributes, meta } = data;
   const { event, organization_id } = meta.webhook;
 
-  const integration = await getIntegration({ external_id: organization_id });
+  const integration = await getIntegration({ externalId: organization_id });
   if (!integration) return NextResponse.json(200);
 
   const livestorm = LivestormIntegrationSchema.parse(integration);
-  const { workspace_id, details } = livestorm;
-  const { filter, access_token, access_token_iv, expires_in } = details;
+  const { workspaceId, details } = livestorm;
+  const { filter, accessToken, accessTokenIv, expiresIn } = details;
 
-  let accessToken = await decrypt({
-    access_token,
-    iv: access_token_iv,
+  let currentAccessToken = await decrypt({
+    accessToken,
+    iv: accessTokenIv,
   });
 
-  if (expires_in < Date.now()) {
-    accessToken = await getRefreshToken({ livestorm });
+  if (expiresIn < Date.now()) {
+    currentAccessToken = await getRefreshToken({ livestorm });
   }
 
   if (event === "session.created") {
@@ -46,7 +46,7 @@ export async function POST(request: NextRequest) {
     const { event_id } = parsedAttributes;
 
     const event = await getLivestormEvent({
-      accessToken,
+      accessToken: currentAccessToken,
       id: event_id,
     });
 
@@ -59,8 +59,8 @@ export async function POST(request: NextRequest) {
 
     while (true) {
       const listOfSessions = await listEventSessions({
-        access_token: accessToken,
-        event_id,
+        accessToken: currentAccessToken,
+        eventId: event_id,
         page: sessionPage,
       });
 
@@ -77,12 +77,12 @@ export async function POST(request: NextRequest) {
       const { name, estimated_started_at, ended_at } = attributes;
 
       await createEvent({
-        external_id: session.id,
+        externalId: session.id,
         title: name ? `${title} - ${name}` : title,
-        started_at: new Date(estimated_started_at * 1000),
-        ended_at: ended_at ? new Date(ended_at * 1000) : null,
+        startedAt: new Date(estimated_started_at * 1000),
+        endedAt: ended_at ? new Date(ended_at * 1000) : null,
         source: "Livestorm",
-        workspace_id,
+        workspaceId,
       });
     }
 
@@ -111,44 +111,44 @@ export async function POST(request: NextRequest) {
     const languageCode = locale?.split("_")[0] ?? "";
     const language = languageCode ? ISO6391.getName(languageCode) : "";
 
-    let profile = await getProfile({ external_id: id, workspace_id });
+    let profile = await getProfile({ externalId: id, workspaceId });
 
     if (!profile) {
       const member = await createMember({
-        first_name,
-        last_name,
-        primary_email: email,
-        avatar_url: avatar_link ?? "",
+        firstName: first_name,
+        lastName: last_name,
+        primaryEmail: email,
+        avatarUrl: avatar_link ?? "",
         country: ip_country_code ?? "",
         language,
         source: "Livestorm",
-        created_at: new Date(created_at * 1000),
-        workspace_id,
+        createdAt: new Date(created_at * 1000),
+        workspaceId,
       });
 
       profile = await createProfile({
-        external_id: id,
+        externalId: id,
         attributes: {
           source: "Livestorm",
         },
-        member_id: member.id,
-        workspace_id,
+        memberId: member.id,
+        workspaceId,
       });
     }
 
     await createActivity({
-      activity_type_key: "livestorm:register",
-      member_id: profile.member_id,
-      event_id: session.id,
+      activityTypeKey: "livestorm:register",
+      memberId: profile.memberId,
+      eventId: session.id,
       source: "Livestorm",
-      workspace_id,
+      workspaceId,
     });
   }
 
   if (event === "session.ended") {
     const session = await getEvent({ id });
     const peoples = await listPeopleFromSession({
-      access_token: accessToken,
+      accessToken: currentAccessToken,
       id,
     });
 
@@ -171,46 +171,46 @@ export async function POST(request: NextRequest) {
       const languageCode = locale?.split("_")[0] ?? "";
       const language = languageCode ? ISO6391.getName(languageCode) : "";
 
-      let profile = await getProfile({ external_id: id, workspace_id });
+      let profile = await getProfile({ externalId: id, workspaceId });
 
       if (!profile) {
         const member = await createMember({
-          first_name,
-          last_name,
-          primary_email: email,
-          avatar_url: avatar_link ?? "",
+          firstName: first_name,
+          lastName: last_name,
+          primaryEmail: email,
+          avatarUrl: avatar_link ?? "",
           country: ip_country_code ?? "",
           language,
           source: "Livestorm",
-          created_at: new Date(created_at * 1000),
-          workspace_id,
+          createdAt: new Date(created_at * 1000),
+          workspaceId,
         });
 
         profile = await createProfile({
-          external_id: id,
+          externalId: id,
           attributes: {
             source: "Livestorm",
           },
-          member_id: member.id,
-          workspace_id,
+          memberId: member.id,
+          workspaceId,
         });
       }
 
       if (is_guest_speaker) {
         await createActivity({
-          activity_type_key: "livestorm:co-host",
-          member_id: profile.member_id,
-          event_id: session.id,
+          activityTypeKey: "livestorm:co-host",
+          memberId: profile.memberId,
+          eventId: session.id,
           source: "Livestorm",
-          workspace_id,
+          workspaceId,
         });
       } else {
         await createActivity({
-          activity_type_key: "livestorm:attend",
-          member_id: profile.member_id,
-          event_id: session.id,
+          activityTypeKey: "livestorm:attend",
+          memberId: profile.memberId,
+          eventId: session.id,
           source: "Livestorm",
-          workspace_id,
+          workspaceId,
         });
       }
     }

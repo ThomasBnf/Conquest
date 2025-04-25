@@ -10,14 +10,14 @@ export const deleteActivityType = protectedProcedure
     }),
   )
   .mutation(async ({ ctx: { user }, input }) => {
-    const { workspace_id } = user;
+    const { workspaceId } = user;
     const { id } = input;
 
     await client.query({
       query: `
         ALTER TABLE activity 
-        DELETE WHERE activity_type_id = '${id}'
-        AND workspace_id = '${workspace_id}'
+        DELETE WHERE activityTypeId = '${id}'
+        AND workspaceId = '${workspaceId}'
       `,
     });
 

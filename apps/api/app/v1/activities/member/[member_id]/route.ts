@@ -6,12 +6,12 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 
 const paramsSchema = z.object({
-  member_id: z.string(),
+  memberId: z.string(),
 });
 
 const querySchema = z.object({
   page: z.coerce.number().min(1).default(1),
-  page_size: z.coerce.number().min(10).max(100).default(10),
+  pageSize: z.coerce.number().min(10).max(100).default(10),
 });
 
 export const GET = createZodRoute()
@@ -25,38 +25,38 @@ export const GET = createZodRoute()
       );
     }
 
-    return next({ ctx: { workspace_id: result.workspace_id } });
+    return next({ ctx: { workspaceId: result.workspaceId } });
   })
   .params(paramsSchema)
   .query(querySchema)
   .handler(async (_, { ctx, params, query }) => {
-    const { workspace_id } = ctx;
-    const { member_id } = params;
-    const { page, page_size } = query;
+    const { workspaceId } = ctx;
+    const { memberId } = params;
+    const { page, pageSize } = query;
 
     const resultCount = await client.query({
       query: `
         SELECT COUNT(*) as total
         FROM activity
-        WHERE member_id = '${member_id}'
-        AND workspace_id = '${workspace_id}'
+        WHERE memberId = '${memberId}'
+        AND workspaceId = '${workspaceId}'
       `,
       format: "JSON",
     });
 
     const json = await resultCount.json();
     const { data: count } = json as { data: Array<{ total: number }> };
-    const total_activities = Number(count[0]?.total || 0);
+    const totalActivities = Number(count[0]?.total || 0);
 
     const result = await client.query({
       query: `
         SELECT * 
         FROM activity
-        WHERE member_id = '${member_id}'
-        AND workspace_id = '${workspace_id}'
-        ORDER BY created_at DESC
-        LIMIT ${page_size}
-        OFFSET ${(page - 1) * page_size}
+        WHERE memberId = '${memberId}'
+        AND workspaceId = '${workspaceId}'
+        ORDER BY createdAt DESC
+        LIMIT ${pageSize}
+        OFFSET ${(page - 1) * pageSize}
       `,
       format: "JSON",
     });
@@ -66,8 +66,8 @@ export const GET = createZodRoute()
 
     return NextResponse.json({
       page,
-      page_size,
-      total_activities,
+      pageSize,
+      totalActivities,
       activities,
     });
   });

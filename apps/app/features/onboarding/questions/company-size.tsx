@@ -16,7 +16,7 @@ type Props = {
 export const CompanySize = ({ form }: Props) => {
   return (
     <FormField
-      name="company_size"
+      name="companySize"
       control={form.control}
       render={({ field }) => (
         <FormItem>

@@ -13,35 +13,35 @@ type Props = {
 };
 
 export const GithubComment = ({ activity, member, github }: Props) => {
-  const { external_id, reply_to, created_at } = activity;
-  const { source } = activity.activity_type;
-  const { avatar_url, first_name, last_name } = member ?? {};
+  const { externalId, replyTo, createdAt } = activity;
+  const { source } = activity.activityType;
+  const { avatarUrl, firstName, lastName } = member ?? {};
 
   if (!github) return null;
 
   const { details } = github;
   const { owner, repo } = details;
 
-  const link = `https://github.com/${owner}/${repo}/issues/${reply_to}#issuecomment-${external_id}`;
+  const link = `https://github.com/${owner}/${repo}/issues/${replyTo}#issuecomment-${externalId}`;
 
   return (
     <div className="flex items-center justify-between">
       <div className="flex items-center gap-2">
         <Avatar className="size-6">
-          <AvatarImage src={avatar_url ?? ""} />
+          <AvatarImage src={avatarUrl ?? ""} />
           <AvatarFallback className="text-sm">
-            {first_name?.charAt(0).toUpperCase()}
-            {last_name?.charAt(0).toUpperCase()}
+            {firstName?.charAt(0).toUpperCase()}
+            {lastName?.charAt(0).toUpperCase()}
           </AvatarFallback>
         </Avatar>
         <p className="text-muted-foreground">
           <span className="font-medium text-foreground">
-            {first_name} {last_name}
+            {firstName} {lastName}
           </span>{" "}
           commented on an issue
         </p>
         <SourceBadge source={source} transparent onlyIcon />
-        <p className="text-muted-foreground">{format(created_at, "HH:mm")}</p>
+        <p className="text-muted-foreground">{format(createdAt, "HH:mm")}</p>
       </div>
       <ActivityMenu activity={activity} href={link} />
     </div>

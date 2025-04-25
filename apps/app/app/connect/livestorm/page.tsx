@@ -14,7 +14,7 @@ type Props = {
 
 export default async function Page({ searchParams }: Props) {
   const { code } = await searchParams;
-  const { id: userId, workspace_id } = await getCurrentUser();
+  const { id: userId, workspaceId } = await getCurrentUser();
 
   const params = new URLSearchParams({
     code,
@@ -45,7 +45,7 @@ export default async function Page({ searchParams }: Props) {
   const organization_id = included?.at(0)?.id ?? "";
   const organization_name = included?.at(0)?.attributes.name ?? "";
 
-  const integration = await getIntegration({ external_id: organization_id });
+  const integration = await getIntegration({ externalId: organization_id });
 
   if (integration) {
     return redirect("/settings/integrations/livestorm?error=already_connected");
@@ -55,19 +55,19 @@ export default async function Page({ searchParams }: Props) {
   const encryptedRefreshToken = await encrypt(refresh_token);
 
   await createIntegration({
-    external_id: organization_id,
+    externalId: organization_id,
     details: {
       source: "Livestorm",
       name: organization_name,
-      access_token: encryptedAccessToken.token,
-      access_token_iv: encryptedAccessToken.iv,
-      refresh_token: encryptedRefreshToken.token,
-      refresh_token_iv: encryptedRefreshToken.iv,
-      expires_in,
+      accessToken: encryptedAccessToken.token,
+      accessTokenIv: encryptedAccessToken.iv,
+      refreshToken: encryptedRefreshToken.token,
+      refreshTokenIv: encryptedRefreshToken.iv,
+      expiresIn: expires_in,
       scope,
     },
-    created_by: userId,
-    workspace_id,
+    createdBy: userId,
+    workspaceId,
   });
 
   redirect("/settings/integrations/livestorm");

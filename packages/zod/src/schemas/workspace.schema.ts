@@ -1,4 +1,4 @@
-import type { workspace as WorkspacePrisma } from "@prisma/client";
+import type { Workspace as WorkspacePrisma } from "@prisma/client";
 import { z } from "zod";
 import { PLAN } from "../enum/plan.enum";
 
@@ -7,14 +7,14 @@ export const WorkspaceSchema = z.object({
   name: z.string(),
   slug: z.string(),
   source: z.string().nullable(),
-  company_size: z.string().nullable(),
+  companySize: z.string().nullable(),
   plan: PLAN.nullable(),
-  stripe_customer_id: z.string().nullable(),
-  price_id: z.string().nullable(),
-  trial_end: z.coerce.date().nullable(),
-  is_past_due: z.coerce.date().nullable(),
-  created_at: z.coerce.date(),
-  updated_at: z.coerce.date(),
+  stripeCustomerId: z.string().nullable(),
+  priceId: z.string().nullable(),
+  trialEnd: z.coerce.date().nullable(),
+  isPastDue: z.coerce.date().nullable(),
+  createdAt: z.coerce.date(),
+  updatedAt: z.coerce.date(),
 }) satisfies z.ZodType<WorkspacePrisma>;
 
 export type Workspace = z.infer<typeof WorkspaceSchema>;

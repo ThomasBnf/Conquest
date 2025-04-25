@@ -13,12 +13,12 @@ type Props = {
 };
 
 export const createManySessions = async ({ livestorm, event }: Props) => {
-  const { workspace_id, details } = livestorm;
-  const { access_token, access_token_iv } = details;
+  const { workspaceId, details } = livestorm;
+  const { accessToken, accessTokenIv } = details;
 
   const decryptedAccessToken = await decrypt({
-    access_token: access_token,
-    iv: access_token_iv,
+    accessToken,
+    iv: accessTokenIv,
   });
 
   const { attributes } = event;
@@ -29,8 +29,8 @@ export const createManySessions = async ({ livestorm, event }: Props) => {
 
   while (true) {
     const listOfSessions = await listEventSessions({
-      access_token: decryptedAccessToken,
-      event_id: event.id,
+      accessToken: decryptedAccessToken,
+      eventId: event.id,
       page: sessionPage,
     });
 
@@ -49,12 +49,12 @@ export const createManySessions = async ({ livestorm, event }: Props) => {
     const { name, estimated_started_at, ended_at } = attributes;
 
     const createdEvent = await createEvent({
-      external_id: session.id,
+      externalId: session.id,
       title: name ? `${title} - ${name}` : title,
-      started_at: new Date(estimated_started_at * 1000),
-      ended_at: ended_at ? new Date(ended_at * 1000) : null,
+      startedAt: new Date(estimated_started_at * 1000),
+      endedAt: ended_at ? new Date(ended_at * 1000) : null,
       source: "Livestorm",
-      workspace_id,
+      workspaceId,
     });
 
     const event = EventSchema.parse(createdEvent);

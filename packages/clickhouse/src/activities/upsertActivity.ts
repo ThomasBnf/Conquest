@@ -6,54 +6,54 @@ import { getActivity } from "./getActivity";
 import { updateActivity } from "./updateActivity";
 
 type Props = {
-  external_id: string;
-  activity_type_key: string;
+  externalId: string;
+  activityTypeKey: string;
   message: string;
-  member_id: string;
+  memberId: string;
   source: Source;
-  workspace_id: string;
+  workspaceId: string;
 } & Partial<Activity>;
 
 export const upsertActivity = async (props: Props) => {
   const {
-    external_id,
-    activity_type_key,
+    externalId,
+    activityTypeKey,
     message,
-    member_id,
+    memberId,
     source,
-    workspace_id,
+    workspaceId,
     ...data
   } = props;
 
   const activity = await getActivity({
-    external_id,
-    workspace_id,
+    externalId,
+    workspaceId,
   });
 
   if (activity) {
-    const activityType = await getActivityTypeByKey({
-      key: activity_type_key,
-      workspace_id,
+    const result = await getActivityTypeByKey({
+      key: activityTypeKey,
+      workspaceId,
     });
 
-    if (!activityType) {
-      throw new Error(`Activity type ${activity_type_key} not found`);
+    if (!result) {
+      throw new Error(`Activity type ${activityTypeKey} not found`);
     }
 
-    const { activity_type, ...data } = activity;
+    const { activityType, ...data } = activity;
 
     await updateActivity({
       ...data,
-      activity_type_id: activityType.id,
+      activityTypeId: activityType.id,
     });
   } else {
     await createActivity({
-      external_id,
-      activity_type_key,
+      externalId,
+      activityTypeKey,
       message,
-      member_id,
+      memberId,
       source,
-      workspace_id,
+      workspaceId,
       ...data,
     });
   }

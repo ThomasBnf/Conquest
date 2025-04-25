@@ -6,21 +6,21 @@ import { protectedProcedure } from "../trpc";
 
 export const listChannels = protectedProcedure.query(
   async ({ ctx: { user } }) => {
-    const { workspace_id } = user;
+    const { workspaceId } = user;
 
     const slack = SlackIntegrationSchema.parse(
       await getIntegrationBySource({
         source: "Slack",
-        workspace_id,
+        workspaceId,
       }),
     );
 
     const { details } = slack;
-    const { access_token, access_token_iv } = details;
+    const { accessToken, accessTokenIv } = details;
 
     const token = await decrypt({
-      access_token: access_token,
-      iv: access_token_iv,
+      accessToken,
+      iv: accessTokenIv,
     });
 
     const web = new WebClient(token);

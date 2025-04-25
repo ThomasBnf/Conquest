@@ -5,13 +5,13 @@ import { protectedProcedure } from "../trpc";
 export const createTag = protectedProcedure
   .input(FormTagSchema)
   .mutation(async ({ ctx: { user }, input }) => {
-    const { workspace_id } = user;
+    const { workspaceId } = user;
     const { name, color } = input;
 
     return await _createTag({
       name,
       color,
       source: "Manual",
-      workspace_id,
+      workspaceId,
     });
   });

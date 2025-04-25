@@ -11,13 +11,13 @@ export const listMembersById = protectedProcedure
   )
   .query(async ({ input, ctx: { user } }) => {
     const { ids } = input;
-    const { workspace_id } = user;
+    const { workspaceId } = user;
 
     const result = await client.query({
       query: `
         SELECT * FROM member FINAL
         WHERE id IN (${ids.map((id) => `'${id}'`).join(",")}) 
-        AND workspace_id = '${workspace_id}'
+        AND workspaceId = '${workspaceId}'
       `,
     });
 

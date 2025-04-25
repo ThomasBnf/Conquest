@@ -19,7 +19,7 @@ type Props = {
 };
 
 export const DuplicateCard = ({ duplicate, onReset }: Props) => {
-  const { member_ids } = duplicate;
+  const { memberIds } = duplicate;
   const [loading, setLoading] = useState(false);
   const [loadingIgnore, setLoadingIgnore] = useState(false);
   const [finalMember, setFinalMember] = useState<Member | null>(null);
@@ -32,7 +32,7 @@ export const DuplicateCard = ({ duplicate, onReset }: Props) => {
   const utils = trpc.useUtils();
 
   const { data, isLoading } = trpc.members.listWithProfiles.useQuery({
-    ids: member_ids,
+    ids: memberIds,
   });
 
   const { mutateAsync: mergeMembers } = trpc.duplicate.merge.useMutation({
@@ -40,7 +40,7 @@ export const DuplicateCard = ({ duplicate, onReset }: Props) => {
       const { id } = data ?? {};
 
       if (id) {
-        utils.profiles.list.invalidate({ member_id: id });
+        utils.profiles.list.invalidate({ memberId: id });
         utils.members.invalidate();
         utils.duplicate.invalidate();
       }

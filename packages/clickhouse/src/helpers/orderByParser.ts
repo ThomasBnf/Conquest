@@ -10,7 +10,7 @@ export const orderByParser = ({ id, desc, type }: Props) => {
   if (type === "members") {
     switch (id) {
       case "name":
-        return `ORDER BY m.first_name ${direction}, m.last_name ${direction}, m.id ${direction}`;
+        return `ORDER BY m.firstName ${direction}, m.lastName ${direction}, m.id ${direction}`;
       case "company":
         return `ORDER BY c.name ${direction}, m.id ${direction}`;
       case "tags":
@@ -19,18 +19,18 @@ export const orderByParser = ({ id, desc, type }: Props) => {
         return `ORDER BY l.number ${direction}, m.pulse ${direction}, m.id ${direction}`;
       case "pulse":
         return `ORDER BY l.number ${direction}, m.pulse ${direction}, m.id ${direction}`;
-      case "job_title":
-        return `ORDER BY m.job_title ${direction}, m.id ${direction}`;
+      case "jobTitle":
+        return `ORDER BY m.jobTitle ${direction}, m.id ${direction}`;
       case "emails":
-        return `ORDER BY m.primary_email ${direction}, m.id ${direction}`;
-      case "first_activity":
-        return `ORDER BY m.first_activity ${direction}, m.id ${direction}`;
-      case "last_activity":
-        return `ORDER BY m.last_activity ${direction}, m.id ${direction}`;
+        return `ORDER BY m.primaryEmail ${direction}, m.id ${direction}`;
+      case "firstActivity":
+        return `ORDER BY m.firstActivity ${direction}, m.id ${direction}`;
+      case "lastActivity":
+        return `ORDER BY m.lastActivity ${direction}, m.id ${direction}`;
       case "source":
         return `ORDER BY m.source ${direction}, m.id ${direction}`;
-      case "created_at":
-        return `ORDER BY m.created_at ${direction}, m.id ${direction}`;
+      case "createdAt":
+        return `ORDER BY m.createdAt ${direction}, m.id ${direction}`;
     }
   }
 
@@ -45,10 +45,10 @@ export const orderByParser = ({ id, desc, type }: Props) => {
       return `ORDER BY c.industry ${direction}, c.id ${direction}`;
     case "employees":
       return `ORDER BY c.employees ${direction}, c.id ${direction}`;
-    case "founded_at":
-      return `ORDER BY c.founded_at ${direction}, c.id ${direction}`;
-    case "created_at":
-      return `ORDER BY c.created_at ${direction}, c.id ${direction}`;
+    case "foundedAt":
+      return `ORDER BY c.foundedAt ${direction}, c.id ${direction}`;
+    case "createdAt":
+      return `ORDER BY c.createdAt ${direction}, c.id ${direction}`;
     case "source":
       return `ORDER BY c.source ${direction}, c.id ${direction}`;
   }

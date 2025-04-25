@@ -32,17 +32,17 @@ export const createAuthPrismaAdapter = (
       await prisma.user.create({
         data: {
           email,
-          avatar_url: image ?? null,
+          avatarUrl: image ?? null,
           emailVerified: new Date(),
-          workspace_id: workspace.id,
+          workspaceId: workspace.id,
         },
       }),
     );
 
     await prisma.userInWorkspace.create({
       data: {
-        user_id: user.id,
-        workspace_id: workspace.id,
+        userId: user.id,
+        workspaceId: workspace.id,
       },
     });
 
@@ -50,7 +50,7 @@ export const createAuthPrismaAdapter = (
       table: "level",
       values: LEVELS.map((level) => ({
         ...level,
-        workspace_id: workspace.id,
+        workspaceId: workspace.id,
       })),
       format: "JSON",
     });
@@ -119,14 +119,14 @@ export const createAuthPrismaAdapter = (
     if (!userAndSession) return null;
 
     const { user, ...session } = userAndSession;
-    const { id, last_activity_at } = user;
+    const { id, lastActivityAt } = user;
 
     const oneHourAgo = subHours(new Date(), 1);
 
-    if (last_activity_at && isBefore(last_activity_at, oneHourAgo)) {
+    if (lastActivityAt && isBefore(lastActivityAt, oneHourAgo)) {
       await prisma.user.update({
         where: { id },
-        data: { last_activity_at: new Date() },
+        data: { lastActivityAt: new Date() },
       });
     }
 

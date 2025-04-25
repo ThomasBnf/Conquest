@@ -25,18 +25,16 @@ export const getPulseScoreDetails = ({ activities, channels }: Props) => {
   if (!activities || !channels) return {};
 
   return activities
-    .sort(
-      (a, b) => (b.activity_type.points ?? 0) - (a.activity_type.points ?? 0),
-    )
+    .sort((a, b) => (b.activityType.points ?? 0) - (a.activityType.points ?? 0))
     .reduce<Record<string, Record<string, ScoreGroup>>>((acc, activity) => {
-      const { activity_type } = activity;
-      const { source, name, points } = activity_type;
+      const { activityType } = activity;
+      const { source, name, points } = activityType;
 
       const parsedConditions = ActivityTypeRuleSchema.array().parse(
-        activity_type.conditions.rules,
+        activityType.conditions.rules,
       );
       const condition = parsedConditions.find(
-        (condition) => condition.channel_id === activity.channel_id,
+        (condition) => condition.channelId === activity.channelId,
       );
 
       if (!acc[source]) acc[source] = {};
@@ -58,7 +56,7 @@ export const getPulseScoreDetails = ({ activities, channels }: Props) => {
       if (condition) {
         const { points } = condition;
         const conditionKey = channels?.find(
-          (channel) => channel.id === condition.channel_id,
+          (channel) => channel.id === condition.channelId,
         )?.name;
 
         if (!conditionKey) return acc;

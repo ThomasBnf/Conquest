@@ -10,14 +10,14 @@ export const getAllCompanies = protectedProcedure
     }),
   )
   .query(async ({ ctx: { user }, input }) => {
-    const { workspace_id } = user;
+    const { workspaceId } = user;
     const { search } = input;
 
     const companies = await client.query({
       query: `
         SELECT *
         FROM company
-        WHERE workspace_id = '${workspace_id}'
+        WHERE workspaceId = '${workspaceId}'
         ${search ? `AND name ILIKE '%${search}%'` : ""}
         ORDER BY name ASC
       `,

@@ -27,9 +27,9 @@ export default async function Layout({
 
   if (user && !user.onboarding) redirect("/");
 
-  const { trial_end, is_past_due } = workspace;
-  const trialEnded = trial_end && isBefore(trial_end, new Date());
-  if (trialEnded || is_past_due) redirect("/billing");
+  const { trialEnd, isPastDue } = workspace;
+  const trialEnded = trialEnd && isBefore(trialEnd, new Date());
+  if (trialEnded || isPastDue) redirect("/billing");
 
   if (slug !== workspace.slug) redirect(`/${workspace.slug}`);
 

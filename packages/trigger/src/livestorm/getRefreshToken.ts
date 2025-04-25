@@ -9,12 +9,12 @@ type Props = {
 };
 
 export const getRefreshToken = async ({ livestorm }: Props) => {
-  const { id, details, workspace_id } = livestorm;
-  const { refresh_token, refresh_token_iv } = details;
+  const { id, details, workspaceId } = livestorm;
+  const { refreshToken, refreshTokenIv } = details;
 
   const decryptedRefreshToken = await decrypt({
-    access_token: refresh_token,
-    iv: refresh_token_iv,
+    accessToken: refreshToken,
+    iv: refreshTokenIv,
   });
 
   const params = new URLSearchParams({
@@ -43,14 +43,14 @@ export const getRefreshToken = async ({ livestorm }: Props) => {
     id,
     details: {
       ...details,
-      access_token: encryptedAccessToken.token,
-      access_token_iv: encryptedAccessToken.iv,
-      refresh_token: encryptedRefreshToken.token,
-      refresh_token_iv: encryptedRefreshToken.iv,
-      expires_in: data.expires_in,
+      accessToken: encryptedAccessToken.token,
+      accessTokenIv: encryptedAccessToken.iv,
+      refreshToken: encryptedRefreshToken.token,
+      refreshTokenIv: encryptedRefreshToken.iv,
+      expiresIn: data.expires_in,
       scope: data.scope,
     },
-    workspace_id,
+    workspaceId,
   });
 
   return data.access_token;

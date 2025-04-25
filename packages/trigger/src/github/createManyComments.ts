@@ -7,21 +7,21 @@ import { createGithubMember } from "./createGithubMember";
 type Props = {
   octokit: Octokit;
   github: GithubIntegration;
-  issue_number: number;
+  issueNumber: number;
 };
 
 export const createManyComments = async ({
   octokit,
   github,
-  issue_number,
+  issueNumber,
 }: Props) => {
-  const { details, workspace_id } = github;
+  const { details, workspaceId } = github;
   const { owner, repo } = details;
 
   const { headers, data: comments } = await octokit.rest.issues.listComments({
     owner,
     repo,
-    issue_number,
+    issue_number: issueNumber,
   });
 
   await checkRateLimit(headers);
@@ -35,7 +35,7 @@ export const createManyComments = async ({
     const { headers, member } = await createGithubMember({
       octokit,
       id: userId,
-      workspace_id,
+      workspaceId,
     });
 
     await checkRateLimit(headers);
@@ -43,15 +43,15 @@ export const createManyComments = async ({
     if (!member) continue;
 
     await createActivity({
-      external_id: String(commentId),
-      activity_type_key: "github:comment",
+      externalId: String(commentId),
+      activityTypeKey: "github:comment",
       message: body ?? "",
-      member_id: member.id,
-      reply_to: String(issue_number),
-      created_at: new Date(created_at),
-      updated_at: new Date(updated_at),
+      memberId: member.id,
+      replyTo: String(issueNumber),
+      createdAt: new Date(created_at),
+      updatedAt: new Date(updated_at),
       source: "Github",
-      workspace_id,
+      workspaceId,
     });
 
     await checkRateLimit(headers);

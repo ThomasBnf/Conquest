@@ -27,7 +27,7 @@ export const DiscordForm = () => {
 
   const { submit, run } = useRealtimeTaskTrigger<typeof installDiscord>(
     "install-discord",
-    { accessToken: discord?.trigger_token },
+    { accessToken: discord?.triggerToken },
   );
 
   const onStart = async () => {

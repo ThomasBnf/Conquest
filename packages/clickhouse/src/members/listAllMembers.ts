@@ -6,7 +6,7 @@ export const listAllMembers = async () => {
     query: `
       SELECT * 
       FROM member FINAL
-      ORDER BY created_at DESC
+      ORDER BY createdAt DESC
     `,
   });
 

@@ -9,8 +9,8 @@ export const listDuplicate = protectedProcedure
     }),
   )
   .query(async ({ ctx, input }) => {
-    const { workspace_id } = ctx.user;
+    const { workspaceId } = ctx.user;
     const { cursor } = input;
 
-    return _listDuplicates({ cursor, workspace_id });
+    return _listDuplicates({ cursor, workspaceId });
   });

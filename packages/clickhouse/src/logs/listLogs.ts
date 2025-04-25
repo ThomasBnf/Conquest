@@ -2,15 +2,15 @@ import { LogSchema } from "@conquest/zod/schemas/logs.schema";
 import { client } from "../client";
 
 type Props = {
-  member_id: string;
+  memberId: string;
 };
 
-export const listLogs = async ({ member_id }: Props) => {
+export const listLogs = async ({ memberId }: Props) => {
   const result = await client.query({
     query: `
       SELECT * 
       FROM log
-      WHERE member_id = '${member_id}'
+      WHERE memberId = '${memberId}'
       ORDER BY date ASC
     `,
   });

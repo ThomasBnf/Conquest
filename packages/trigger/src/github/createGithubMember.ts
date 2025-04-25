@@ -8,15 +8,15 @@ import type { Octokit } from "octokit";
 type Props = {
   octokit: Octokit;
   id: number;
-  created_at?: Date;
-  workspace_id: string;
+  createdAt?: Date;
+  workspaceId: string;
 };
 
 export const createGithubMember = async ({
   octokit,
   id,
-  created_at,
-  workspace_id,
+  createdAt,
+  workspaceId,
 }: Props) => {
   const response = await octokit.rest.users.getById({ account_id: id });
   const { headers, data } = response;
@@ -24,12 +24,12 @@ export const createGithubMember = async ({
   logger.info("createGithubMember", { response });
 
   const profile = await getProfile({
-    external_id: String(id),
-    workspace_id,
+    externalId: String(id),
+    workspaceId,
   });
 
   if (profile) {
-    const member = await getMember({ id: profile.member_id });
+    const member = await getMember({ id: profile.memberId });
     return { member, headers };
   }
 
@@ -48,18 +48,18 @@ export const createGithubMember = async ({
   const { firstName, lastName } = parseFullName(name);
 
   const member = await createMember({
-    first_name: firstName,
-    last_name: lastName,
-    primary_email: email ?? "",
+    firstName,
+    lastName,
+    primaryEmail: email ?? "",
     emails: email ? [email] : [],
-    avatar_url,
+    avatarUrl: avatar_url,
     source: "Github",
-    created_at,
-    workspace_id,
+    createdAt,
+    workspaceId,
   });
 
   await createProfile({
-    external_id: String(id),
+    externalId: String(id),
     attributes: {
       source: "Github",
       login: login ?? null,
@@ -68,20 +68,20 @@ export const createGithubMember = async ({
       followers: followers ?? 0,
       location: location ?? null,
     },
-    member_id: member.id,
-    created_at,
-    workspace_id,
+    memberId: member.id,
+    createdAt,
+    workspaceId,
   });
 
   if (twitter_username) {
     await createProfile({
-      member_id: member.id,
+      memberId: member.id,
       attributes: {
         source: "Twitter",
         username: twitter_username,
       },
-      created_at,
-      workspace_id,
+      createdAt,
+      workspaceId,
     });
   }
 

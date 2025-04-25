@@ -12,7 +12,7 @@ export const topChannels = protectedProcedure
     }),
   )
   .query(async ({ ctx: { user }, input }) => {
-    const { workspace_id } = user;
+    const { workspaceId } = user;
     const { from, to } = input;
 
     const timeZone = "Europe/Paris";
@@ -29,10 +29,10 @@ export const topChannels = protectedProcedure
           channel.source,
           COUNT(*) as count
         FROM activity
-        LEFT JOIN channel ON activity.channel_id = channel.id
-        WHERE activity.created_at >= '${_from}' 
-        AND activity.created_at <= '${_to}'
-        AND channel.workspace_id = '${workspace_id}'
+        LEFT JOIN channel ON activity.channelId = channel.id
+        WHERE activity.createdAt >= '${_from}' 
+        AND activity.createdAt <= '${_to}'
+        AND channel.workspaceId = '${workspaceId}'
         GROUP BY 
           channel.name,
           channel.source

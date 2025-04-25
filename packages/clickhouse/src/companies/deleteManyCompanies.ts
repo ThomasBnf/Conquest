@@ -12,7 +12,7 @@ export const deleteManyCompanies = async ({ ids }: Props) => {
     query: `
       SELECT *  
       FROM member FINAL
-      WHERE company_id IN (${parsedIds})
+      WHERE companyId IN (${parsedIds})
     `,
   });
 
@@ -21,8 +21,8 @@ export const deleteManyCompanies = async ({ ids }: Props) => {
 
   const updatedMembers = members.map((member) => ({
     ...member,
-    company_id: null,
-    updated_at: new Date(),
+    companyId: null,
+    updatedAt: new Date(),
   }));
 
   await client.insert({

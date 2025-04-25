@@ -11,14 +11,14 @@ export const inviteUsers = protectedProcedure
   .mutation(async ({ ctx, input }) => {
     const { emails } = input;
     const { user } = ctx;
-    const { workspace_id } = user;
+    const { workspaceId } = user;
 
     const parsedEmails = emails.split(",").map((email) => email.trim());
     console.log(parsedEmails);
 
     const users = await prisma.userInWorkspace.findMany({
       where: {
-        workspace_id,
+        workspaceId,
       },
       include: {
         user: true,

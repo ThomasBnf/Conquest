@@ -9,11 +9,11 @@ export const listCompanyMembers = protectedProcedure
     }),
   )
   .query(async ({ ctx: { user }, input }) => {
-    const { workspace_id } = user;
+    const { workspaceId } = user;
     const { companyId } = input;
 
     return await listMembers({
-      workspace_id,
-      company_id: companyId,
+      workspaceId,
+      companyId,
     });
   });

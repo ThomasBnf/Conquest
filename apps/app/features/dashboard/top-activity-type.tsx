@@ -64,7 +64,7 @@ export const TopActivityType = () => {
                 <XAxis type="number" hide />
                 <YAxis
                   type="category"
-                  dataKey="activity_type"
+                  dataKey="activityType"
                   tickLine={false}
                   axisLine={false}
                   hide
@@ -75,7 +75,7 @@ export const TopActivityType = () => {
                 />
                 <Bar dataKey="count" fill="hsl(var(--chart-1))" radius={5}>
                   <LabelList
-                    dataKey="activity_type"
+                    dataKey="activityType"
                     position="insideLeft"
                     offset={10}
                     className="fill-muted-foreground text-xs"

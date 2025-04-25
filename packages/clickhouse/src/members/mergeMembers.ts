@@ -22,7 +22,7 @@ export const mergeMembers = async ({
 }: Props) => {
   if (!members || !finalMember) return;
 
-  const { workspace_id } = finalMember;
+  const { workspaceId } = finalMember;
   const allMembers = [...members, finalMember];
 
   const oldestMember = getOldestMember({ members: allMembers, finalMember });
@@ -43,7 +43,7 @@ export const mergeMembers = async ({
       return [key, oldestMember.source];
     }
 
-    if (key === "level_id") {
+    if (key === "levelId") {
       return [key, null];
     }
 
@@ -51,20 +51,20 @@ export const mergeMembers = async ({
       return [key, 0];
     }
 
-    if (key === "first_activity") {
+    if (key === "firstActivity") {
       return [key, null];
     }
 
-    if (key === "last_activity") {
+    if (key === "lastActivity") {
       return [key, null];
     }
 
-    if (key === "created_at") {
-      return [key, oldestMember.created_at];
+    if (key === "createdAt") {
+      return [key, oldestMember.createdAt];
     }
 
-    if (key === "updated_at") {
-      return [key, oldestMember.updated_at];
+    if (key === "updatedAt") {
+      return [key, oldestMember.updatedAt];
     }
 
     return [key, value];
@@ -82,23 +82,23 @@ export const mergeMembers = async ({
   await client.query({
     query: `
         ALTER TABLE activity
-        UPDATE member_id = '${mergeMember.id}'
-        WHERE member_id IN (${otherMembersIds}) AND workspace_id = '${workspace_id}'
+        UPDATE memberId = '${mergeMember.id}'
+        WHERE memberId IN (${otherMembersIds}) AND workspaceId = '${workspaceId}'
       `,
   });
 
   await client.query({
     query: `
       ALTER TABLE activity
-      UPDATE invite_to = '${mergeMember.id}'
-      WHERE invite_to IN (${otherMembersIds}) AND workspace_id = '${workspace_id}'
+      UPDATE inviteTo = '${mergeMember.id}'
+      WHERE inviteTo IN (${otherMembersIds}) AND workspaceId = '${workspaceId}'
     `,
   });
 
   const result = await client.query({
     query: `
         SELECT * FROM profile
-        WHERE member_id IN (${otherMembersIds}) AND workspace_id = '${workspace_id}'
+        WHERE memberId IN (${otherMembersIds}) AND workspaceId = '${workspaceId}'
       `,
   });
 
@@ -111,14 +111,14 @@ export const mergeMembers = async ({
       ALTER TABLE profile
       DELETE 
       WHERE id IN (${profilesIds})
-      AND workspace_id = '${workspace_id}'
+      AND workspaceId = '${workspaceId}'
      `,
   });
 
   const profilesValues = profiles.map((profile) => ({
     ...profile,
-    member_id: mergeMember.id,
-    updated_at: new Date(),
+    memberId: mergeMember.id,
+    updatedAt: new Date(),
   }));
 
   await client.insert({
@@ -139,15 +139,15 @@ export const mergeMembers = async ({
   await client.query({
     query: `
         ALTER TABLE log
-        DELETE WHERE member_id IN (${allMembersIds})
+        DELETE WHERE memberId IN (${allMembersIds})
       `,
   });
 
-  const levels = await listLevels({ workspace_id });
+  const levels = await listLevels({ workspaceId });
 
   await getMemberMetrics.trigger(
     { levels, member: mergeMember },
-    { metadata: { workspace_id: workspace_id } },
+    { metadata: { workspaceId } },
   );
 
   const memberIds = members.map((m) => m.id);
@@ -160,12 +160,12 @@ export const mergeMembers = async ({
   } else {
     const duplicates = await prisma.duplicate.findMany({
       where: {
-        workspace_id,
+        workspaceId,
       },
     });
 
     const filteredDuplicates = duplicates.filter((duplicate) =>
-      duplicate.member_ids.some((id) => memberIds.includes(id)),
+      duplicate.memberIds.some((id) => memberIds.includes(id)),
     );
 
     if (filteredDuplicates.length > 0) {

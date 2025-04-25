@@ -15,24 +15,24 @@ export const getFinalMember = ({ members }: Props) => {
   const allPhones = members.flatMap((member) => member.phones || []);
   const allTags = members.flatMap((member) => member.tags || []);
 
-  const avatar_url =
-    oldestMember.avatar_url ||
-    members.find((member) => member.avatar_url)?.avatar_url ||
+  const avatarUrl =
+    oldestMember.avatarUrl ||
+    members.find((member) => member.avatarUrl)?.avatarUrl ||
     "";
 
-  const company_id =
-    oldestMember.company_id ||
-    members.find((member) => member.company_id)?.company_id ||
+  const companyId =
+    oldestMember.companyId ||
+    members.find((member) => member.companyId)?.companyId ||
     null;
 
-  const linkedin_url =
-    oldestMember.linkedin_url ||
-    members.find((member) => member.linkedin_url)?.linkedin_url ||
+  const linkedinUrl =
+    oldestMember.linkedinUrl ||
+    members.find((member) => member.linkedinUrl)?.linkedinUrl ||
     "";
 
-  const job_title =
-    oldestMember.job_title ||
-    members.find((member) => member.job_title)?.job_title ||
+  const jobTitle =
+    oldestMember.jobTitle ||
+    members.find((member) => member.jobTitle)?.jobTitle ||
     "";
 
   const country =
@@ -47,15 +47,15 @@ export const getFinalMember = ({ members }: Props) => {
 
   const finalMember: Member = {
     ...oldestMember,
-    avatar_url,
+    avatarUrl,
     emails: [...new Set(allEmails)],
     phones: [...new Set(allPhones)],
     tags: [...new Set(allTags)],
-    job_title,
-    linkedin_url,
+    jobTitle,
+    linkedinUrl,
     country,
     language,
-    company_id,
+    companyId,
   };
 
   return finalMember;

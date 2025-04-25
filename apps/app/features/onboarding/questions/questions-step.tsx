@@ -39,14 +39,14 @@ export const QuestionsStep = ({ setStep }: Props) => {
     resolver: zodResolver(QuestionsSchema),
   });
 
-  const onSubmit = async ({ company_size, source }: Questions) => {
+  const onSubmit = async ({ companySize, source }: Questions) => {
     if (!workspace) return;
 
     setLoading(true);
 
     await mutateWorkspace({
       id: workspace.id,
-      company_size,
+      companySize,
       source,
     });
   };

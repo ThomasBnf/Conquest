@@ -2,7 +2,7 @@ import { client } from "../client";
 
 type Props =
   | { id: string; name: string }
-  | { external_id: string; name: string; workspace_id: string };
+  | { externalId: string; name: string; workspaceId: string };
 
 export const updateChannel = async (props: Props) => {
   if ("id" in props) {
@@ -17,16 +17,16 @@ export const updateChannel = async (props: Props) => {
     });
   }
 
-  if ("external_id" in props) {
-    const { external_id, name, workspace_id } = props;
+  if ("externalId" in props) {
+    const { externalId, name, workspaceId } = props;
 
     await client.query({
       query: `
         ALTER TABLE channel
         UPDATE 
           name = '${name}'
-        WHERE external_id = '${external_id}'
-        AND workspace_id = '${workspace_id}'
+        WHERE externalId = '${externalId}'
+        AND workspaceId = '${workspaceId}'
       `,
     });
   }

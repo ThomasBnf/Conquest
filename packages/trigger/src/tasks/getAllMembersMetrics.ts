@@ -8,13 +8,13 @@ import { batchMemberMetrics } from "./batchMemberMetrics";
 export const getAllMembersMetrics = schemaTask({
   id: "get-all-members-metrics",
   schema: z.object({
-    workspace_id: z.string(),
+    workspaceId: z.string(),
   }),
-  run: async ({ workspace_id }, { ctx }) => {
-    await hasTasksRunning({ ctx, workspace_id });
+  run: async ({ workspaceId }, { ctx }) => {
+    await hasTasksRunning({ ctx, workspaceId });
 
-    const levels = await listLevels({ workspace_id });
-    await deleteAllLogs({ workspace_id });
+    const levels = await listLevels({ workspaceId });
+    await deleteAllLogs({ workspaceId });
 
     const BATCH_SIZE = 200;
     let offset = 0;
@@ -22,7 +22,7 @@ export const getAllMembersMetrics = schemaTask({
 
     while (true) {
       const members = await listMembers({
-        workspace_id,
+        workspaceId,
         limit: BATCH_SIZE,
         offset,
       });
@@ -34,10 +34,10 @@ export const getAllMembersMetrics = schemaTask({
           payload: {
             members,
             levels,
-            workspace_id,
+            workspaceId,
           },
           options: {
-            metadata: { workspace_id },
+            metadata: { workspaceId },
           },
         },
       ]);
@@ -53,8 +53,8 @@ export const getAllMembersMetrics = schemaTask({
 
 export const hasTasksRunning = async ({
   ctx,
-  workspace_id,
-}: { ctx: Context; workspace_id: string }) => {
+  workspaceId,
+}: { ctx: Context; workspaceId: string }) => {
   const allRuns = await runs.list({
     status: "EXECUTING",
     taskIdentifier: "get-all-members-metrics",
@@ -63,7 +63,7 @@ export const hasTasksRunning = async ({
   const currentRunId = ctx.run.id;
   const previousTask = allRuns.data.filter(
     (run) =>
-      run.id !== currentRunId && run.metadata?.workspace_id === workspace_id,
+      run.id !== currentRunId && run.metadata?.workspaceId === workspaceId,
   );
 
   if (previousTask) {

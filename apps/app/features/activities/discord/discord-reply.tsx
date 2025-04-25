@@ -17,34 +17,34 @@ type Props = {
 
 export const DiscordReply = ({ activity, member, isThread }: Props) => {
   const { discord } = useIntegration();
-  const { external_id: guild_id } = discord ?? {};
-  const { external_id, message, reply_to, channel_id, created_at } = activity;
-  const { source } = activity.activity_type;
+  const { externalId: guildId } = discord ?? {};
+  const { externalId, message, replyTo, channelId, createdAt } = activity;
+  const { source } = activity.activityType;
 
-  const { avatar_url, first_name, last_name } = member ?? {};
+  const { avatarUrl, firstName, lastName } = member ?? {};
 
   const { data: channel } = trpc.channels.get.useQuery(
-    channel_id ? { id: channel_id } : skipToken,
+    channelId ? { id: channelId } : skipToken,
   );
 
   const href = isThread
-    ? `https://discord.com/channels/${guild_id}/${reply_to}/${external_id}`
-    : `https://discord.com/channels/${guild_id}/${channel?.external_id}/${external_id}`;
+    ? `https://discord.com/channels/${guildId}/${replyTo}/${externalId}`
+    : `https://discord.com/channels/${guildId}/${channel?.externalId}/${externalId}`;
 
   return (
     <div>
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Avatar className="size-6">
-            <AvatarImage src={avatar_url ?? ""} />
+            <AvatarImage src={avatarUrl ?? ""} />
             <AvatarFallback className="text-sm">
-              {first_name?.charAt(0).toUpperCase()}
-              {last_name?.charAt(0).toUpperCase()}
+              {firstName?.charAt(0).toUpperCase()}
+              {lastName?.charAt(0).toUpperCase()}
             </AvatarFallback>
           </Avatar>
           <p className="text-muted-foreground">
             <span className="font-medium text-foreground">
-              {first_name} {last_name}
+              {firstName} {lastName}
             </span>{" "}
             {isThread ? "replied in thread" : "replied"}
             <span className="font-medium text-foreground">
@@ -53,7 +53,7 @@ export const DiscordReply = ({ activity, member, isThread }: Props) => {
             </span>
           </p>
           <SourceBadge source={source} transparent onlyIcon />
-          <p className="text-muted-foreground">{format(created_at, "HH:mm")}</p>
+          <p className="text-muted-foreground">{format(createdAt, "HH:mm")}</p>
         </div>
         <ActivityMenu activity={activity} href={href} />
       </div>

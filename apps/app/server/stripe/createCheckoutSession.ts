@@ -5,6 +5,7 @@ import { PLAN } from "@conquest/zod/enum/plan.enum";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { protectedProcedure } from "../trpc";
+
 export const createCheckoutSession = protectedProcedure
   .input(
     z.object({
@@ -13,13 +14,13 @@ export const createCheckoutSession = protectedProcedure
     }),
   )
   .mutation(async ({ ctx: { user }, input: { plan, priceId } }) => {
-    const { workspace_id, email, first_name, last_name } = user;
+    const { workspaceId, email, firstName, lastName } = user;
 
     const customer = await stripe.customers.create({
       email,
-      name: `${first_name} ${last_name}`,
+      name: `${firstName} ${lastName}`,
       metadata: {
-        workspace_id,
+        workspaceId,
       },
     });
 
@@ -31,11 +32,11 @@ export const createCheckoutSession = protectedProcedure
     }
 
     const workspace = await updateWorkspace({
-      id: workspace_id,
-      stripe_customer_id: customer.id,
+      id: workspaceId,
+      stripeCustomerId: customer.id,
     });
 
-    const { trial_end } = workspace;
+    const { trialEnd } = workspace;
 
     const session = await stripe.checkout.sessions.create({
       mode: "subscription",
@@ -58,16 +59,14 @@ export const createCheckoutSession = protectedProcedure
       },
       metadata: {
         plan,
-        price_id: priceId,
-        workspace_id,
+        priceId,
+        workspaceId,
       },
       tax_id_collection: {
         enabled: true,
       },
       subscription_data: {
-        trial_end: trial_end
-          ? Math.floor(trial_end.getTime() / 1000)
-          : undefined,
+        trial_end: trialEnd ? Math.floor(trialEnd.getTime() / 1000) : undefined,
       },
       success_url: `${env.NEXT_PUBLIC_BASE_URL}/settings/billing`,
       cancel_url: `${env.NEXT_PUBLIC_BASE_URL}/settings/billing`,

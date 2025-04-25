@@ -43,7 +43,7 @@ export const PlanPicker = ({
 }: Props) => {
   const [open, setOpen] = useState(false);
 
-  const { price_id, is_past_due } = workspace ?? {};
+  const { priceId, isPastDue } = workspace ?? {};
 
   const onClick = ({
     plan,
@@ -132,11 +132,11 @@ export const PlanPicker = ({
               <Button
                 variant={plan.popular ? "default" : "outline"}
                 disabled={
-                  (!is_past_due &&
-                    price_id === plan.priceIdMonthly &&
+                  (!isPastDue &&
+                    priceId === plan.priceIdMonthly &&
                     period === "monthly") ||
-                  (!is_past_due &&
-                    price_id === plan.priceIdAnnually &&
+                  (!isPastDue &&
+                    priceId === plan.priceIdAnnually &&
                     period === "annually") ||
                   loading
                 }
@@ -160,11 +160,11 @@ export const PlanPicker = ({
                   />
                 ) : (
                   <>
-                    {(!is_past_due &&
-                      price_id === plan.priceIdMonthly &&
+                    {(!isPastDue &&
+                      priceId === plan.priceIdMonthly &&
                       period === "monthly") ||
-                    (!is_past_due &&
-                      price_id === plan.priceIdAnnually &&
+                    (!isPastDue &&
+                      priceId === plan.priceIdAnnually &&
                       period === "annually") ? (
                       <span>Current plan</span>
                     ) : (

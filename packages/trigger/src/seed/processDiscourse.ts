@@ -9,31 +9,31 @@ import { randomUUID } from "node:crypto";
 
 export const DISCOURSE_CHANNELS = [
   {
-    external_id: randomUUID(),
+    externalId: randomUUID(),
     name: "General",
     slug: "/general",
     source: "Discourse" as const,
   },
   {
-    external_id: randomUUID(),
+    externalId: randomUUID(),
     name: "Product feedback",
     slug: "/product-feedback",
     source: "Discourse" as const,
   },
   {
-    external_id: randomUUID(),
+    externalId: randomUUID(),
     name: "Help & Questions",
     slug: "/help-questions",
     source: "Discourse" as const,
   },
   {
-    external_id: randomUUID(),
+    externalId: randomUUID(),
     name: "Tools",
     slug: "/tools",
     source: "Discourse" as const,
   },
   {
-    external_id: randomUUID(),
+    externalId: randomUUID(),
     name: "Events",
     slug: "/events",
     source: "Discourse" as const,
@@ -43,12 +43,12 @@ export const DISCOURSE_CHANNELS = [
 export const processDiscourse = async ({
   user,
 }: { user: UserWithWorkspace }) => {
-  const { workspace_id } = user;
+  const { workspaceId } = user;
 
   const discourse = await prisma.integration.create({
     data: {
-      external_id: null,
-      connected_at: new Date(),
+      externalId: null,
+      connectedAt: new Date(),
       status: "CONNECTED",
       details: {
         source: "Discourse",
@@ -70,21 +70,21 @@ export const processDiscourse = async ({
           },
         ],
       },
-      created_by: user.id,
-      workspace_id,
-      trigger_token: "1234567890",
-      expires_at: new Date(),
+      createdBy: user.id,
+      workspaceId,
+      triggerToken: "1234567890",
+      expiresAt: new Date(),
     },
   });
 
   await createManyActivityTypes({
-    activity_types: DISCOURSE_ACTIVITY_TYPES,
-    workspace_id,
+    activityTypes: DISCOURSE_ACTIVITY_TYPES,
+    workspaceId,
   });
 
-  const activity_types = await listActivityTypes({ workspace_id });
-  const filteredActivityTypes = activity_types.filter(
-    (activity_type) => activity_type.source === "Discourse",
+  const activityTypes = await listActivityTypes({ workspaceId });
+  const filteredActivityTypes = activityTypes.filter(
+    (activityType) => activityType.source === "Discourse",
   );
 
   const channels: Channel[] = [];
@@ -93,7 +93,8 @@ export const processDiscourse = async ({
     const createdChannel = ChannelSchema.parse(
       await createChannel({
         ...channel,
-        workspace_id,
+        externalId: channel.externalId,
+        workspaceId,
       }),
     );
 

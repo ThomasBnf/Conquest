@@ -10,10 +10,10 @@ export const exportCompanies = protectedProcedure
     }),
   )
   .mutation(async ({ ctx: { user }, input }) => {
-    const { workspace_id } = user;
+    const { workspaceId } = user;
     const { companies } = input;
 
-    const tags = await listTags({ workspace_id });
+    const tags = await listTags({ workspaceId });
 
     const transformCompanyForExport = async (
       company: z.infer<typeof CompanySchema>,

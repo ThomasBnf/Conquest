@@ -6,18 +6,18 @@ export const listInfiniteActivities = protectedProcedure
   .input(
     z.object({
       cursor: z.number().nullish(),
-      member_id: z.string().optional(),
-      company_id: z.string().optional(),
+      memberId: z.string().optional(),
+      companyId: z.string().optional(),
     }),
   )
   .query(async ({ ctx: { user }, input }) => {
-    const { workspace_id } = user;
-    const { cursor, member_id, company_id } = input;
+    const { workspaceId } = user;
+    const { cursor, memberId, companyId } = input;
 
     return await _listInfiniteActivities({
       cursor,
-      member_id,
-      company_id,
-      workspace_id,
+      memberId,
+      companyId,
+      workspaceId,
     });
   });

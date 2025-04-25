@@ -1,13 +1,13 @@
 import { prisma } from "../prisma";
 
 type Props = {
-  workspace_id: string;
+  workspaceId: string;
 };
 
-export const countDuplicates = async ({ workspace_id }: Props) => {
+export const countDuplicates = async ({ workspaceId }: Props) => {
   const duplicates = await prisma.duplicate.count({
     where: {
-      workspace_id,
+      workspaceId,
       state: "PENDING",
     },
   });

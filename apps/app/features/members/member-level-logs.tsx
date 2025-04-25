@@ -32,13 +32,13 @@ type Props = {
 
 export const MemberLevelLogs = ({ member }: Props) => {
   const { data: logs } = trpc.logs.list.useQuery({
-    member_id: member.id,
+    memberId: member.id,
   });
 
   const { data: levels } = trpc.levels.list.useQuery();
 
   const formattedLogs = logs?.map((log) => {
-    const level = levels?.find((level) => level.id === log.level_id);
+    const level = levels?.find((level) => level.id === log.levelId);
 
     return {
       date: format(log.date, "MMM d, yyyy"),

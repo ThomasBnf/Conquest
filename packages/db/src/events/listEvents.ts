@@ -4,17 +4,17 @@ import { prisma } from "../prisma";
 
 type Props = {
   source: Source;
-  workspace_id: string;
+  workspaceId: string;
 };
 
-export const listEvents = async ({ source, workspace_id }: Props) => {
+export const listEvents = async ({ source, workspaceId }: Props) => {
   const events = await prisma.event.findMany({
     where: {
       source,
-      workspace_id,
+      workspaceId,
     },
     orderBy: {
-      started_at: "desc",
+      startedAt: "desc",
     },
   });
 

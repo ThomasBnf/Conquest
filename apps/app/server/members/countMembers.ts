@@ -11,8 +11,8 @@ export const countMembers = protectedProcedure
     }),
   )
   .query(async ({ ctx: { user }, input }) => {
-    const { workspace_id } = user;
+    const { workspaceId } = user;
     const { search, groupFilters } = input;
 
-    return _countMembers({ search, groupFilters, workspace_id });
+    return _countMembers({ search, groupFilters, workspaceId });
   });

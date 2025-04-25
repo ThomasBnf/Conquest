@@ -18,40 +18,40 @@ export const DiscourseInvite = ({ activity, member }: Props) => {
   const { data: session } = useSession();
   const { slug } = session?.user.workspace ?? {};
 
-  const { created_at, invite_to } = activity;
-  const { source } = activity.activity_type;
+  const { createdAt, inviteTo } = activity;
+  const { source } = activity.activityType;
 
-  const { avatar_url, first_name, last_name } = member ?? {};
+  const { avatarUrl, firstName, lastName } = member ?? {};
 
   const { data: joiner } = trpc.members.get.useQuery(
-    invite_to ? { id: invite_to } : skipToken,
+    inviteTo ? { id: inviteTo } : skipToken,
   );
 
   return (
     <div className="flex items-center justify-between">
       <div className="flex items-center gap-2">
         <Avatar className="size-6">
-          <AvatarImage src={avatar_url ?? ""} />
+          <AvatarImage src={avatarUrl ?? ""} />
           <AvatarFallback className="text-sm">
-            {first_name?.charAt(0).toUpperCase()}
-            {last_name?.charAt(0).toUpperCase()}
+            {firstName?.charAt(0).toUpperCase()}
+            {lastName?.charAt(0).toUpperCase()}
           </AvatarFallback>
         </Avatar>
         <p className="text-muted-foreground">
           <span className="font-medium text-foreground">
-            {first_name} {last_name}
+            {firstName} {lastName}
           </span>{" "}
           invited{" "}
           <Link
             href={`/${slug}/members/${joiner?.id}/analytics`}
             className="font-medium text-foreground hover:underline"
           >
-            {joiner?.first_name} {joiner?.last_name}
+            {joiner?.firstName} {joiner?.lastName}
           </Link>{" "}
           to join the {source === "Discord" ? "server" : "workspace"}
         </p>
         <SourceBadge source={source} transparent onlyIcon />
-        <p className="text-muted-foreground">{format(created_at, "HH:mm")}</p>
+        <p className="text-muted-foreground">{format(createdAt, "HH:mm")}</p>
       </div>
       <ActivityMenu activity={activity} />
     </div>

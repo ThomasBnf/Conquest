@@ -1,5 +1,6 @@
 "use client";
 
+import { LoadingChannels } from "@/components/states/loading-channels";
 import { useIntegration } from "@/context/integrationContext";
 import { trpc } from "@/server/client";
 import { Discourse } from "@conquest/ui/icons/Discourse";
@@ -56,12 +57,16 @@ export const DiscourseIntegration = ({ error }: Props) => {
           <div>
             <p className="mb-2 font-medium">Channels</p>
             <div className="space-y-1">
-              {channels?.map((channel) => (
-                <div key={channel.id} className="flex items-center gap-1">
-                  <Hash size={16} />
-                  <p>{channel.name}</p>
-                </div>
-              ))}
+              {!channels?.length ? (
+                <LoadingChannels />
+              ) : (
+                channels?.map((channel) => (
+                  <div key={channel.id} className="flex items-center gap-1">
+                    <Hash size={16} />
+                    <p>{channel.name}</p>
+                  </div>
+                ))
+              )}
             </div>
           </div>
         </>

@@ -24,7 +24,7 @@ export const getFilters = ({ groupFilters }: Props) => {
       if (filter.type === "text") {
         const { value, operator } = FilterTextSchema.parse(filter);
 
-        if (!value && !["empty", "not_empty"].includes(operator)) {
+        if (!value && !["empty", "notEmpty"].includes(operator)) {
           return "true";
         }
 
@@ -34,7 +34,7 @@ export const getFilters = ({ groupFilters }: Props) => {
             arrayExists(x -> (
               JSONExtractString(x, 'id') = '${customFieldId}' AND 
               position(lower(JSONExtractString(x, 'value')), '${formattedValue}') > 0
-            ), JSONExtractArrayRaw(toJSONString(attr), 'custom_fields'))
+            ), JSONExtractArrayRaw(toJSONString(attr), 'customFields'))
           `;
 
         switch (operator) {
@@ -50,14 +50,14 @@ export const getFilters = ({ groupFilters }: Props) => {
             return `
                 arrayExists(attr -> attr.source = 'Discourse' AND arrayExists(
                   x -> JSONExtractString(x, 'id') = '${customFieldId}' AND (JSONExtractString(x, 'value') = '' OR JSONExtractString(x, 'value') IS NULL),
-                  JSONExtractArrayRaw(toJSONString(attr), 'custom_fields')
+                  JSONExtractArrayRaw(toJSONString(attr), 'customFields')
                 ), p.attributes)
               `.trim();
           case "not_empty":
             return `
                 arrayExists(attr -> attr.source = 'Discourse' AND arrayExists(
                   x -> JSONExtractString(x, 'id') = '${customFieldId}' AND (JSONExtractString(x, 'value') != '' AND JSONExtractString(x, 'value') IS NOT NULL),
-                  JSONExtractArrayRaw(toJSONString(attr), 'custom_fields')
+                  JSONExtractArrayRaw(toJSONString(attr), 'customFields')
                 ), p.attributes)
               `.trim();
           default:
@@ -76,7 +76,7 @@ export const getFilters = ({ groupFilters }: Props) => {
 
         if (
           (value === undefined || value === null) &&
-          !["empty", "not_empty"].includes(operator)
+          !["empty", "notEmpty"].includes(operator)
         ) {
           return "true";
         }
@@ -92,7 +92,7 @@ export const getFilters = ({ groupFilters }: Props) => {
             return `${hasGithub} AND ${condition}`;
           case "equal":
             return `${hasGithub} AND ${condition}`;
-          case "not equal":
+          case "not_equal":
             return `${hasGithub} AND ${condition}`;
           case "<":
             return `${hasGithub} AND ${condition}`;
@@ -108,7 +108,7 @@ export const getFilters = ({ groupFilters }: Props) => {
 
         if (
           (value === undefined || value === null) &&
-          !["empty", "not_empty"].includes(operator)
+          !["empty", "notEmpty"].includes(operator)
         ) {
           return "true";
         }
@@ -136,7 +136,7 @@ export const getFilters = ({ groupFilters }: Props) => {
     if (field === "profiles") {
       const { values, operator } = FilterSelectSchema.parse(filter);
 
-      if (values.length === 0 && !["empty", "not_empty"].includes(operator)) {
+      if (values.length === 0 && !["empty", "notEmpty"].includes(operator)) {
         return "true";
       }
 
@@ -167,7 +167,7 @@ export const getFilters = ({ groupFilters }: Props) => {
     if (field === "tags") {
       const { values, operator } = FilterSelectSchema.parse(filter);
 
-      if (values.length === 0 && !["empty", "not_empty"].includes(operator)) {
+      if (values.length === 0 && !["empty", "notEmpty"].includes(operator)) {
         return "true";
       }
 
@@ -196,7 +196,7 @@ export const getFilters = ({ groupFilters }: Props) => {
     if (field === "phones") {
       const { value, operator } = FilterTextSchema.parse(filter);
 
-      if (!value && !["empty", "not_empty"].includes(operator)) {
+      if (!value && !["empty", "notEmpty"].includes(operator)) {
         return "true";
       }
 
@@ -217,7 +217,7 @@ export const getFilters = ({ groupFilters }: Props) => {
     if (filter.type === "text") {
       const { value, operator, field } = FilterTextSchema.parse(filter);
 
-      if (!value && !["empty", "not_empty"].includes(operator)) {
+      if (!value && !["empty", "notEmpty"].includes(operator)) {
         return "true";
       }
 
@@ -238,7 +238,7 @@ export const getFilters = ({ groupFilters }: Props) => {
     if (filter.type === "select") {
       const { values, operator, field } = FilterSelectSchema.parse(filter);
 
-      if (values.length === 0 && !["empty", "not_empty"].includes(operator)) {
+      if (values.length === 0 && !["empty", "notEmpty"].includes(operator)) {
         return "true";
       }
 
@@ -268,7 +268,7 @@ export const getFilters = ({ groupFilters }: Props) => {
           return `l.number >= ${value}`;
         case "equal":
           return `l.number = ${value}`;
-        case "not equal":
+        case "not_equal":
           return `l.number != ${value}`;
         case "<":
           return `l.number < ${value}`;
@@ -291,7 +291,7 @@ export const getFilters = ({ groupFilters }: Props) => {
           return `m.${field} >= ${value}`;
         case "equal":
           return `m.${field} = ${value}`;
-        case "not equal":
+        case "not_equal":
           return `m.${field} != ${value}`;
         case "<":
           return `m.${field} < ${value}`;
@@ -304,53 +304,51 @@ export const getFilters = ({ groupFilters }: Props) => {
 
     if (filter.type === "activity") {
       const {
-        activity_types,
+        activityTypes,
         who,
         operator,
         value: count,
         channels,
-        dynamic_date,
-        display_count,
-        display_date,
-        display_channel,
+        dynamicDate,
+        displayCount,
+        displayDate,
+        displayChannel,
       } = FilterActivitySchema.parse(filter);
 
-      if (activity_types.length === 0) {
+      if (activityTypes.length === 0) {
         return "true";
       }
 
-      const anyActivity = activity_types.some(
-        (at) => at.key === "any_activity",
-      );
+      const anyActivity = activityTypes.some((at) => at.key === "anyActivity");
 
-      const activityKeys = activity_types.map((at) => `'${at.key}'`).join(",");
+      const activityKeys = activityTypes.map((at) => `'${at.key}'`).join(",");
       const channelIds = channels.map((channel) => `'${channel.id}'`).join(",");
       const operatorParsed = operatorParser(operator);
 
-      const dateCondition = display_date
-        ? `AND a.created_at >= now() - INTERVAL '${dynamic_date}'`
+      const dateCondition = displayDate
+        ? `AND a.createdAt >= now() - INTERVAL '${dynamicDate}'`
         : "";
-      const channelCondition = display_channel
-        ? `AND a.channel_id IN (${channelIds})`
+      const channelCondition = displayChannel
+        ? `AND a.channelId IN (${channelIds})`
         : "";
 
       const subquery = `
-        SELECT member_id
+        SELECT memberId
         FROM (
           SELECT 
-            a.member_id,
-            count(*) as activity_count
+            a.memberId,
+            count(*) as activityCount
           FROM activity a
-          JOIN activity_type at ON a.activity_type_id = at.id
+          JOIN activityType at ON a.activityTypeId = at.id
           WHERE ${anyActivity ? "true" : `at.key IN (${activityKeys})`}
           ${dateCondition}
           ${channelCondition}
-          GROUP BY a.member_id
+          GROUP BY a.memberId
           HAVING ${
             anyActivity
-              ? "activity_count > 0"
-              : display_count
-                ? `activity_count ${operatorParsed} ${count}`
+              ? "activityCount > 0"
+              : displayCount
+                ? `activityCount ${operatorParsed} ${count}`
                 : "true"
           }
         )`;

@@ -27,7 +27,7 @@ export const getAuthenticatedUser = async (request: Request) => {
     };
   }
 
-  const apiKey = await prisma.api_key.findUnique({
+  const apiKey = await prisma.apiKey.findUnique({
     where: {
       token,
     },
@@ -46,5 +46,5 @@ export const getAuthenticatedUser = async (request: Request) => {
     };
   }
 
-  return { workspace_id: apiKey.workspace_id };
+  return { workspaceId: apiKey.workspace.id };
 };

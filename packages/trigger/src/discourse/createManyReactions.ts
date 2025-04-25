@@ -12,14 +12,14 @@ type Props = {
 };
 
 export const createManyReactions = async ({ discourse, profile }: Props) => {
-  const { details, workspace_id } = discourse;
-  const { community_url, api_key, api_key_iv } = details;
-  const { member_id, attributes } = profile;
+  const { details, workspaceId } = discourse;
+  const { communityUrl, apiKey, apiKeyIv } = details;
+  const { memberId, attributes } = profile;
   const { username } = attributes;
 
   const decryptedApiKey = await decrypt({
-    access_token: api_key,
-    iv: api_key_iv,
+    accessToken: apiKey,
+    iv: apiKeyIv,
   });
 
   const today = startOfDay(new Date());
@@ -30,7 +30,7 @@ export const createManyReactions = async ({ discourse, profile }: Props) => {
 
   while (hasMore) {
     const response = await fetch(
-      `${community_url}/discourse-reactions/posts/reactions.json?username=${username}${
+      `${communityUrl}/discourse-reactions/posts/reactions.json?username=${username}${
         before ? `&before_reaction_user_id=${before}` : ""
       }`,
       {
@@ -72,23 +72,23 @@ export const createManyReactions = async ({ discourse, profile }: Props) => {
       if (!category_id) continue;
 
       const channel = await getChannel({
-        external_id: String(category_id),
-        workspace_id,
+        externalId: String(category_id),
+        workspaceId,
       });
 
       if (!channel) continue;
 
       await createActivity({
-        external_id: `r/${id}`,
-        activity_type_key: "discourse:reaction",
+        externalId: `r/${id}`,
+        activityTypeKey: "discourse:reaction",
         message: reaction_value,
-        react_to: `t/${topic_id}/${post.post_number}`,
-        member_id,
-        channel_id: channel.id,
-        created_at: new Date(created_at),
-        updated_at: new Date(created_at),
+        reactTo: `t/${topic_id}/${post.post_number}`,
+        memberId,
+        channelId: channel.id,
+        createdAt: new Date(created_at),
+        updatedAt: new Date(created_at),
         source: "Discourse",
-        workspace_id,
+        workspaceId,
       });
     }
 

@@ -20,10 +20,10 @@ export const installDiscord = schemaTask({
     discord: DiscordIntegrationSchema,
   }),
   run: async ({ discord }) => {
-    const { workspace_id } = discord;
+    const { workspaceId } = discord;
     logger.info("discord", { discord });
 
-    const channels = await listChannels({ workspace_id, source: "Discord" });
+    const channels = await listChannels({ workspaceId, source: "Discord" });
     logger.info("channels", { channels });
 
     const tags = await createManyTags({ discord });
@@ -36,31 +36,26 @@ export const installDiscord = schemaTask({
       logger.info(`CHANNEL - ${channel.name}`);
       await createManyArchivedThreads({ discord, channel });
 
-      if (!channel.external_id) continue;
+      if (!channel.externalId) continue;
 
       await listChannelMessages({
-        discord,
         channel,
-        workspace_id,
+        workspaceId,
       });
     }
 
-    await getAllMembersMetrics.triggerAndWait(
-      { workspace_id },
-      { metadata: { workspace_id } },
-    );
-
-    await checkDuplicates.triggerAndWait({ workspace_id });
+    await getAllMembersMetrics.triggerAndWait({ workspaceId });
+    await checkDuplicates.triggerAndWait({ workspaceId });
     await integrationSuccessEmail.trigger({ integration: discord });
   },
   onSuccess: async ({ discord }) => {
-    const { id, workspace_id } = discord;
+    const { id, workspaceId } = discord;
 
     await updateIntegration({
       id,
-      connected_at: new Date(),
+      connectedAt: new Date(),
       status: "CONNECTED",
-      workspace_id,
+      workspaceId,
     });
   },
   onFailure: async ({ discord }) => {

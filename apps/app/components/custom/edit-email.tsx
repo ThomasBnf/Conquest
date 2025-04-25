@@ -19,7 +19,7 @@ type Props = {
 };
 
 export const EditEmail = ({ member, email, onUpdate }: Props) => {
-  const { primary_email } = member;
+  const { primaryEmail } = member;
 
   const [value, setValue] = useState(email);
   const [editing, setEditing] = useState(false);
@@ -80,11 +80,11 @@ export const EditEmail = ({ member, email, onUpdate }: Props) => {
       >
         <p className="truncate border border-transparent">{value}</p>
         <div className="flex items-center gap-1">
-          {primary_email === email && (
+          {primaryEmail === email && (
             <Button
               variant="ghost"
               size="icon_sm"
-              onClick={() => onUpdate("primary_email", email)}
+              onClick={() => onUpdate("primaryEmail", email)}
             >
               <Star size={16} className="text-yellow-500" />
             </Button>
@@ -102,9 +102,9 @@ export const EditEmail = ({ member, email, onUpdate }: Props) => {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              {primary_email !== email && (
+              {primaryEmail !== email && (
                 <DropdownMenuItem
-                  onClick={() => onUpdate("primary_email", email)}
+                  onClick={() => onUpdate("primaryEmail", email)}
                 >
                   Mark as primary
                 </DropdownMenuItem>

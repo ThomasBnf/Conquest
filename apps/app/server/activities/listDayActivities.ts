@@ -9,12 +9,12 @@ export const listDayActivities = protectedProcedure
   .input(
     z.object({
       date: z.coerce.date(),
-      member_id: z.string().optional(),
+      memberId: z.string().optional(),
     }),
   )
   .query(async ({ ctx: { user }, input }) => {
-    const { workspace_id } = user;
-    const { date, member_id } = input;
+    const { workspaceId } = user;
+    const { date, memberId } = input;
 
     const timeZone = "Europe/Paris";
     const dateInParis = toZonedTime(date, timeZone);
@@ -26,14 +26,14 @@ export const listDayActivities = protectedProcedure
       query: `
         SELECT 
           a.*,
-          activity_type.*
+          activityType.*
         FROM activity a
-        LEFT JOIN activity_type ON a.activity_type_id = activity_type.id
-        WHERE a.workspace_id = '${workspace_id}'
-          AND a.created_at >= '${startDay}'
-          AND a.created_at <= '${endDay}'
-          ${member_id ? `AND a.member_id = '${member_id}'` : ""}
-        ORDER BY a.created_at DESC
+        LEFT JOIN activityType ON a.activityTypeId = activityType.id
+        WHERE a.workspaceId = '${workspaceId}'
+          AND a.createdAt >= '${startDay}'
+          AND a.createdAt <= '${endDay}'
+          ${memberId ? `AND a.memberId = '${memberId}'` : ""}
+        ORDER BY a.createdAt DESC
       `,
       format: "JSON",
     });
@@ -47,7 +47,7 @@ export const listDayActivities = protectedProcedure
       const activityType: Record<string, unknown> = {};
 
       for (const [key, value] of Object.entries(row)) {
-        if (key.startsWith("activity_type.")) {
+        if (key.startsWith("activityType.")) {
           activityType[key.substring(14)] = value;
         } else if (
           ["name", "key", "points", "conditions", "deletable"].includes(key)
@@ -60,7 +60,7 @@ export const listDayActivities = protectedProcedure
         }
       }
 
-      result.activity_type = activityType;
+      result.activityType = activityType;
       return result;
     };
 

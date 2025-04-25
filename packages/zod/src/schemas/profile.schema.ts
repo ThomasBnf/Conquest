@@ -7,11 +7,11 @@ export const CustomFieldSchema = z.object({
 
 export const BaseProfileSchema = z.object({
   id: z.string().uuid(),
-  external_id: z.string().nullable(),
-  member_id: z.string().uuid(),
-  workspace_id: z.string().uuid(),
-  created_at: z.coerce.date(),
-  updated_at: z.coerce.date(),
+  externalId: z.string().nullable(),
+  memberId: z.string().uuid(),
+  workspaceId: z.string().uuid(),
+  createdAt: z.coerce.date(),
+  updatedAt: z.coerce.date(),
 });
 
 export const DiscordAttributesSchema = z.object({
@@ -22,7 +22,7 @@ export const DiscordAttributesSchema = z.object({
 export const DiscourseAttributesSchema = z.object({
   source: z.literal("Discourse"),
   username: z.string(),
-  custom_fields: z.array(CustomFieldSchema).optional(),
+  customFields: z.array(CustomFieldSchema).optional(),
 });
 
 export const GithubAttributesSchema = z.object({

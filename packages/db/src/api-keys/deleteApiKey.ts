@@ -5,7 +5,7 @@ type Props = {
 };
 
 export const deleteApiKey = async ({ id }: Props) => {
-  await prisma.api_key.delete({
+  await prisma.apiKey.delete({
     where: { id },
   });
 };

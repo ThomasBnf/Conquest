@@ -25,7 +25,7 @@ export const DatePicker = ({ filter }: Props) => {
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button variant="outline">in the last {filter.dynamic_date}</Button>
+        <Button variant="outline">in the last {filter.dynamicDate}</Button>
       </PopoverTrigger>
       <PopoverContent align="start" className="p-0">
         <Command>
@@ -38,7 +38,7 @@ export const DatePicker = ({ filter }: Props) => {
                   onSelect={() => {
                     onUpdateFilter({
                       ...filter,
-                      dynamic_date: relative,
+                      dynamicDate: relative,
                     });
                     setOpen(false);
                   }}

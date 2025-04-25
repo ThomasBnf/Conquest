@@ -42,21 +42,21 @@ export const DiscourseApi = () => {
     resolver: zodResolver(FormCreateSchema),
   });
 
-  const onSubmit = async ({ community_url, api_key }: FormCreate) => {
+  const onSubmit = async ({ communityUrl, apiKey }: FormCreate) => {
     if (!discourse) return;
 
     setLoading(true);
 
-    const formattedCommunityUrl = community_url.trim().replace(/\/$/, "");
+    const formattedCommunityUrl = communityUrl.trim().replace(/\/$/, "");
 
     await updateIntegration({
       id: discourse.id,
       details: {
         ...discourse.details,
-        api_key,
-        community_url: formattedCommunityUrl,
-        user_fields: fields.map((field) => ({
-          id: field.external_id,
+        apiKey,
+        communityUrl: formattedCommunityUrl,
+        userFields: fields.map((field) => ({
+          id: field.externalId,
           name: field.name,
         })),
       },
@@ -64,7 +64,7 @@ export const DiscourseApi = () => {
   };
 
   const onAddField = () => {
-    const newField = { id: uuid(), external_id: "", name: "" };
+    const newField = { id: uuid(), externalId: "", name: "" };
     setFields((prev) => [...prev, newField]);
   };
 
@@ -74,7 +74,7 @@ export const DiscourseApi = () => {
 
   const onChangeField = (
     id: string,
-    key: "external_id" | "name",
+    key: "externalId" | "name",
     value: string,
   ) => {
     setFields((prev) =>
@@ -85,7 +85,7 @@ export const DiscourseApi = () => {
   };
 
   useEffect(() => {
-    if (discourse?.details?.community_url) setStep(1);
+    if (discourse?.details?.communityUrl) setStep(1);
   }, [discourse]);
 
   return (
@@ -103,7 +103,7 @@ export const DiscourseApi = () => {
           </div>
           <FormField
             control={form.control}
-            name="community_url"
+            name="communityUrl"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Community URL</FormLabel>
@@ -126,7 +126,7 @@ export const DiscourseApi = () => {
           />
           <FormField
             control={form.control}
-            name="api_key"
+            name="apiKey"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>API Key</FormLabel>
@@ -184,7 +184,7 @@ export const DiscourseApi = () => {
           <div className="space-y-2">
             <FormField
               control={form.control}
-              name="payload_url"
+              name="payloadUrl"
               render={({ field }) => (
                 <FormItem>
                   <FormControl>
@@ -203,7 +203,7 @@ export const DiscourseApi = () => {
             />
             <FormField
               control={form.control}
-              name="content_type"
+              name="contentType"
               render={({ field }) => (
                 <FormItem>
                   <FormControl>
@@ -240,7 +240,7 @@ export const DiscourseApi = () => {
             />
             <FormField
               control={form.control}
-              name="send_me_everything"
+              name="sendMeEverything"
               render={({ field }) => (
                 <FormItem>
                   <FormControl>

@@ -6,16 +6,16 @@ import { client } from "../client";
 
 type Props = {
   cursor?: number | null | undefined;
-  member_id?: string;
-  company_id?: string;
-  workspace_id: string;
+  memberId?: string;
+  companyId?: string;
+  workspaceId: string;
 };
 
 export const listInfiniteActivities = async ({
-  member_id,
-  company_id,
+  memberId,
+  companyId,
   cursor,
-  workspace_id,
+  workspaceId,
 }: Props) => {
   const result = await client.query({
     query: `
@@ -23,12 +23,12 @@ export const listInfiniteActivities = async ({
         a.*,
         at.*
       FROM activity a
-      LEFT JOIN activity_type at ON a.activity_type_id = at.id
-      ${company_id ? "LEFT JOIN member m FINAL ON a.member_id = m.id" : ""}
-      WHERE a.workspace_id = '${workspace_id}'
-      ${member_id ? `AND a.member_id = '${member_id}'` : ""}
-      ${company_id ? `AND m.company_id = '${company_id}'` : ""}
-      ORDER BY a.created_at DESC, a.id DESC
+      LEFT JOIN activityType at ON a.activityTypeId = at.id
+      ${companyId ? "LEFT JOIN member m FINAL ON a.memberId = m.id" : ""}
+      WHERE a.workspaceId = '${workspaceId}'
+      ${memberId ? `AND a.memberId = '${memberId}'` : ""}
+      ${companyId ? `AND m.companyId = '${companyId}'` : ""}
+      ORDER BY a.createdAt DESC, a.id DESC
       ${cursor ? `LIMIT 25 OFFSET ${cursor}` : "LIMIT 25"}
     `,
   });
@@ -54,7 +54,7 @@ export const listInfiniteActivities = async ({
       }
     }
 
-    result.activity_type = activityType;
+    result.activityType = activityType;
     return result;
   };
 

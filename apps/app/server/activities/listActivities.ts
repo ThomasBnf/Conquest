@@ -5,17 +5,17 @@ import { protectedProcedure } from "../trpc";
 export const listActivities = protectedProcedure
   .input(
     z.object({
-      member_id: z.string().optional(),
-      company_id: z.string().optional(),
+      memberId: z.string().optional(),
+      companyId: z.string().optional(),
     }),
   )
   .query(async ({ ctx: { user }, input }) => {
-    const { workspace_id } = user;
-    const { member_id, company_id } = input;
+    const { workspaceId } = user;
+    const { memberId, companyId } = input;
 
     return await _listActivities({
-      member_id,
-      company_id,
-      workspace_id,
+      memberId,
+      companyId,
+      workspaceId,
     });
   });

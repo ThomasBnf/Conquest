@@ -10,38 +10,38 @@ import { randomUUID } from "node:crypto";
 export const processLivestorm = async ({
   user,
 }: { user: UserWithWorkspace }) => {
-  const { workspace_id } = user;
+  const { workspaceId } = user;
 
   const livestorm = await prisma.integration.create({
     data: {
-      external_id: null,
-      connected_at: new Date(),
+      externalId: null,
+      connectedAt: new Date(),
       status: "CONNECTED",
       details: {
         source: "Livestorm",
         name: "Conquest",
-        access_token: faker.string.uuid(),
-        access_token_iv: faker.string.uuid(),
-        refresh_token: faker.string.uuid(),
-        refresh_token_iv: faker.string.uuid(),
-        expires_in: faker.number.int({ min: 3600, max: 86400 }),
+        accessToken: faker.string.uuid(),
+        accessTokenIv: faker.string.uuid(),
+        refreshToken: faker.string.uuid(),
+        refreshTokenIv: faker.string.uuid(),
+        expiresIn: faker.number.int({ min: 3600, max: 86400 }),
         scope: "read:user",
       },
-      created_by: user.id,
-      workspace_id,
-      trigger_token: "1234567890",
-      expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+      createdBy: user.id,
+      workspaceId,
+      triggerToken: "1234567890",
+      expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
     },
   });
 
   await createManyActivityTypes({
-    activity_types: LIVESTORM_ACTIVITY_TYPES,
-    workspace_id,
+    activityTypes: LIVESTORM_ACTIVITY_TYPES,
+    workspaceId,
   });
 
-  const activity_types = await listActivityTypes({ workspace_id });
-  const filteredActivityTypes = activity_types.filter(
-    (activity_type) => activity_type.source === "Livestorm",
+  const activityTypes = await listActivityTypes({ workspaceId });
+  const filteredActivityTypes = activityTypes.filter(
+    (activityType) => activityType.source === "Livestorm",
   );
 
   const events: Event[] = [];
@@ -53,12 +53,12 @@ export const processLivestorm = async ({
 
     const event = await prisma.event.create({
       data: {
-        external_id: randomUUID(),
+        externalId: randomUUID(),
         title: faker.company.catchPhrase(),
-        started_at: start,
-        ended_at: end,
+        startedAt: start,
+        endedAt: end,
         source: "Livestorm",
-        workspace_id,
+        workspaceId,
       },
     });
 

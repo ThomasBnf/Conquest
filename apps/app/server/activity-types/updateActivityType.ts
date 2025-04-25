@@ -12,15 +12,15 @@ export const updateActivityType = protectedProcedure
     }),
   )
   .mutation(async ({ ctx: { user }, input }) => {
-    const { workspace_id } = user;
+    const { workspaceId } = user;
     const { activityType, isIntegrationPage } = input;
 
     await _updateActivityType(activityType);
 
     if (!isIntegrationPage) {
       await getAllMembersMetrics.trigger(
-        { workspace_id },
-        { metadata: { workspace_id } },
+        { workspaceId },
+        { metadata: { workspaceId } },
       );
     }
   });

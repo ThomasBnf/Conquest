@@ -6,12 +6,12 @@ import { protectedProcedure } from "../trpc";
 export const getProfileBySource = protectedProcedure
   .input(
     z.object({
-      member_id: z.string(),
+      memberId: z.string(),
       source: SOURCE,
     }),
   )
   .query(async ({ input }) => {
-    const { member_id, source } = input;
+    const { memberId, source } = input;
 
-    return await _getProfileBySource({ member_id, source });
+    return await _getProfileBySource({ memberId, source });
   });

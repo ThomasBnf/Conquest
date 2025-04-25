@@ -4,12 +4,7 @@ import { prisma } from "../prisma";
 
 type Props = Pick<
   Event,
-  | "external_id"
-  | "title"
-  | "started_at"
-  | "ended_at"
-  | "source"
-  | "workspace_id"
+  "externalId" | "title" | "startedAt" | "endedAt" | "source" | "workspaceId"
 >;
 
 export const createEvent = async (data: Props) => {

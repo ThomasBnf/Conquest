@@ -7,12 +7,12 @@ import { protectedProcedure } from "../trpc";
 export const heatmap = protectedProcedure
   .input(
     z.object({
-      member_id: z.string().optional(),
+      memberId: z.string().optional(),
     }),
   )
   .query(async ({ ctx: { user }, input }) => {
-    const { workspace_id } = user;
-    const { member_id } = input;
+    const { workspaceId } = user;
+    const { memberId } = input;
 
     const today = new Date();
     const last365days = format(subDays(today, 365), "yyyy-MM-dd");
@@ -20,14 +20,14 @@ export const heatmap = protectedProcedure
     const result = await client.query({
       query: `
         SELECT 
-          toDate(created_at) as date,
+          toDate(createdAt) as date,
           count() as count
         FROM activity a
-        JOIN member m FINAL ON a.member_id = m.id
+        JOIN member m FINAL ON a.memberId = m.id
         WHERE 
-          m.workspace_id = '${workspace_id}'
-          AND a.created_at >= '${last365days}'
-          ${member_id ? `AND a.member_id = '${member_id}'` : ""}
+          m.workspaceId = '${workspaceId}'
+          AND a.createdAt >= '${last365days}'
+          ${memberId ? `AND a.memberId = '${memberId}'` : ""}
         GROUP BY date
       `,
     });

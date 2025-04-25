@@ -3,23 +3,23 @@ import { client } from "../client";
 
 type Props =
   | {
-      external_id: string;
-      workspace_id: string;
+      externalId: string;
+      workspaceId: string;
     }
   | {
       id: string;
     };
 
 export const getChannel = async (props: Props) => {
-  if ("external_id" in props) {
-    const { external_id, workspace_id } = props;
+  if ("externalId" in props) {
+    const { externalId, workspaceId } = props;
 
     const result = await client.query({
       query: `
         SELECT *
         FROM channel
-        WHERE external_id = '${external_id}'
-        AND workspace_id = '${workspace_id}'
+        WHERE externalId = '${externalId}'
+        AND workspaceId = '${workspaceId}'
       `,
       format: "JSON",
     });

@@ -13,7 +13,7 @@ type Props = {
 
 export default async function Page({ searchParams }: Props) {
   const { code, installation_id } = await searchParams;
-  const { id: userId, workspace_id } = await getCurrentUser();
+  const { id: userId, workspaceId } = await getCurrentUser();
 
   const response = await fetch("https://github.com/login/oauth/access_token", {
     method: "POST",
@@ -38,18 +38,18 @@ export default async function Page({ searchParams }: Props) {
   const encryptedAccessToken = await encrypt(access_token);
 
   await createIntegration({
-    external_id: null,
+    externalId: null,
     details: {
       source: "Github",
-      access_token: encryptedAccessToken.token,
+      accessToken: encryptedAccessToken.token,
       iv: encryptedAccessToken.iv,
-      installation_id,
+      installationId: installation_id,
       scope,
       repo: "",
       owner: "",
     },
-    created_by: userId,
-    workspace_id,
+    createdBy: userId,
+    workspaceId,
   });
 
   redirect("/settings/integrations/github");

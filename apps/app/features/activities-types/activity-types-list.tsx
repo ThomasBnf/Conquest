@@ -85,7 +85,7 @@ export const ActivityTypesList = ({ source, disableHeader = false }: Props) => {
                           <Label>Conditions</Label>
                           {conditions.rules.map((condition) => (
                             <ConditionCard
-                              key={condition.channel_id}
+                              key={condition.channelId}
                               activityType={activityType}
                               condition={condition}
                             />

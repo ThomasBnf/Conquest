@@ -4,12 +4,12 @@ const ALGORITHM = "AES-GCM" as const;
 const secretKey = env.ENCRYPTION_SECRET;
 
 type DecryptionInput = {
-  access_token: string;
+  accessToken: string;
   iv: string;
 };
 
 export const decrypt = async ({
-  access_token,
+  accessToken,
   iv,
 }: DecryptionInput): Promise<string> => {
   const ivArray = new Uint8Array(
@@ -25,7 +25,7 @@ export const decrypt = async ({
   );
 
   const encryptedBuffer = new Uint8Array(
-    Array.from(atob(access_token)).map((char) => char.charCodeAt(0)),
+    Array.from(atob(accessToken)).map((char) => char.charCodeAt(0)),
   );
 
   const decryptedBuffer = await crypto.subtle.decrypt(

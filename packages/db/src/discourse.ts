@@ -1,13 +1,13 @@
 import Discourse from "discourse2";
 
 type Props = {
-  community_url: string;
-  api_key: string;
+  communityUrl: string;
+  apiKey: string;
 };
 
-export const discourseClient = ({ community_url, api_key }: Props) => {
-  return new Discourse(community_url, {
-    "Api-Key": api_key,
+export const discourseClient = ({ communityUrl, apiKey }: Props) => {
+  return new Discourse(communityUrl, {
+    "Api-Key": apiKey,
     "Api-Username": "system",
   });
 };

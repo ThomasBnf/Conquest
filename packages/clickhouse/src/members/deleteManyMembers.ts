@@ -10,14 +10,14 @@ export const deleteManyMembers = async ({ ids }: Props) => {
   await client.query({
     query: `
       ALTER TABLE profile 
-      DELETE WHERE member_id IN (${parsedIds})
+      DELETE WHERE memberId IN (${parsedIds})
     `,
   });
 
   await client.query({
     query: `
       ALTER TABLE activity
-      DELETE WHERE member_id IN (${parsedIds})
+      DELETE WHERE memberId IN (${parsedIds})
     `,
   });
 

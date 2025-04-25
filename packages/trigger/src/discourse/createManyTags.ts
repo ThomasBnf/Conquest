@@ -4,10 +4,10 @@ import type DiscourseAPI from "discourse2";
 
 export const createManyTags = async ({
   client,
-  workspace_id,
+  workspaceId,
 }: {
   client: DiscourseAPI;
-  workspace_id: string;
+  workspaceId: string;
 }) => {
   const tags: Tag[] = [];
 
@@ -25,11 +25,11 @@ export const createManyTags = async ({
     const color = colorMap[String(badge_type_id) as keyof typeof colorMap];
 
     const createdTag = await createTag({
-      external_id: String(id),
+      externalId: String(id),
       name,
       color,
       source: "Discourse",
-      workspace_id,
+      workspaceId,
     });
 
     tags.push(createdTag);

@@ -2,13 +2,13 @@ import { DuplicateSchema } from "@conquest/zod/schemas/duplicate.schema";
 import { prisma } from "../prisma";
 
 type Props = {
-  workspace_id: string;
+  workspaceId: string;
 };
 
-export const listAllDuplicates = async ({ workspace_id }: Props) => {
+export const listAllDuplicates = async ({ workspaceId }: Props) => {
   const duplicates = await prisma.duplicate.findMany({
     where: {
-      workspace_id,
+      workspaceId,
       state: "PENDING",
     },
   });

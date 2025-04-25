@@ -31,12 +31,12 @@ export const FinalMemberCard = ({
     .map(({ member }) => member);
 
   const keys = [
-    "avatar_url",
-    "full_name",
+    "avatarUrl",
+    "fullName",
     "emails",
-    "company_id",
-    "job_title",
-    "linkedin_url",
+    "companyId",
+    "jobTitle",
+    "linkedinUrl",
     "phones",
     "country",
     "language",
@@ -53,9 +53,9 @@ export const FinalMemberCard = ({
       <div className="flex h-full w-fit flex-col gap-4 p-4">
         {keys.map((key) => {
           switch (key) {
-            case "avatar_url": {
+            case "avatarUrl": {
               const hasAvatarUrl = members.some(
-                (member) => member.avatar_url !== "",
+                (member) => member.avatarUrl !== "",
               );
 
               if (!hasAvatarUrl) return;
@@ -65,27 +65,27 @@ export const FinalMemberCard = ({
                   key={key}
                   className="flex items-center gap-4"
                   onValueChange={(value) =>
-                    setFinalMember({ ...finalMember, avatar_url: value })
+                    setFinalMember({ ...finalMember, avatarUrl: value })
                   }
                 >
                   {members.map((member) => {
-                    const { id, first_name, last_name, avatar_url } = member;
+                    const { id, firstName, lastName, avatarUrl } = member;
 
                     return (
                       <div
-                        key={`${id}-${avatar_url}`}
+                        key={`${id}-${avatarUrl}`}
                         className="flex items-center gap-2"
                       >
                         <RadioGroupItem
-                          value={avatar_url}
-                          checked={finalMember?.avatar_url === avatar_url}
+                          value={avatarUrl}
+                          checked={finalMember?.avatarUrl === avatarUrl}
                         />
                         <Avatar className="size-9">
-                          <AvatarImage src={avatar_url} />
+                          <AvatarImage src={avatarUrl} />
                           <AvatarFallback className="text-sm">
                             <AvatarFallback className="text-sm">
-                              {first_name?.charAt(0).toUpperCase()}
-                              {last_name?.charAt(0).toUpperCase()}
+                              {firstName?.charAt(0).toUpperCase()}
+                              {lastName?.charAt(0).toUpperCase()}
                             </AvatarFallback>
                           </AvatarFallback>
                         </Avatar>
@@ -96,13 +96,13 @@ export const FinalMemberCard = ({
               );
             }
             case "full_name": {
-              const { first_name, last_name } = finalMember;
-              const full_name = `${first_name} ${last_name}`;
+              const { firstName, lastName } = finalMember;
+              const fullName = `${firstName} ${lastName}`;
 
               const uniqueFullNames = members.reduce<
                 Array<{ id: string; fullName: string }>
               >((acc, member) => {
-                const memberFullName = `${member.first_name} ${member.last_name}`;
+                const memberFullName = `${member.firstName} ${member.lastName}`;
                 if (!acc.some((item) => item.fullName === memberFullName)) {
                   acc.push({ id: member.id, fullName: memberFullName });
                 }
@@ -112,12 +112,12 @@ export const FinalMemberCard = ({
               return (
                 <RadioGroup
                   key={key}
-                  value={full_name}
+                  value={fullName}
                   onValueChange={(value) =>
                     setFinalMember({
                       ...finalMember,
-                      first_name: value.split(" ")[0] ?? "",
-                      last_name: value.split(" ").slice(1).join(" ") ?? "",
+                      firstName: value.split(" ")[0] ?? "",
+                      lastName: value.split(" ").slice(1).join(" ") ?? "",
                     })
                   }
                 >
@@ -170,34 +170,34 @@ export const FinalMemberCard = ({
                 </div>
               );
             }
-            case "company_id": {
+            case "companyId": {
               const hasCompanyId = members.some(
-                (member) => member.company_id !== null,
+                (member) => member.companyId !== null,
               );
 
               if (!hasCompanyId) return null;
 
               const uniqueCompanyIds = getUniqueValues({
                 items: members,
-                field: "company_id",
+                field: "companyId",
               });
 
               return (
                 <RadioGroup
                   key={key}
                   onValueChange={(value) =>
-                    setFinalMember({ ...finalMember, company_id: value })
+                    setFinalMember({ ...finalMember, companyId: value })
                   }
                 >
                   <p className="text-muted-foreground text-xs">Company</p>
 
                   {uniqueCompanyIds.map((member) => {
-                    const { id, company_id } = member;
+                    const { id, companyId } = member;
 
                     return (
                       <CompanyKey
-                        key={`${id}-${company_id}`}
-                        company_id={company_id}
+                        key={`${id}-${companyId}`}
+                        companyId={companyId}
                         finalMember={finalMember}
                         setFinalMember={setFinalMember}
                       />
@@ -206,83 +206,83 @@ export const FinalMemberCard = ({
                 </RadioGroup>
               );
             }
-            case "job_title": {
-              const { job_title } = finalMember;
+            case "jobTitle": {
+              const { jobTitle } = finalMember;
 
               const hasJobTitle = members.some(
-                (member) => member.job_title !== "",
+                (member) => member.jobTitle !== "",
               );
 
               if (!hasJobTitle) return;
 
               const uniqueJobTitles = getUniqueValues({
                 items: members,
-                field: "job_title",
+                field: "jobTitle",
               });
 
               return (
                 <RadioGroup
                   key={key}
-                  value={job_title}
+                  value={jobTitle}
                   onValueChange={(value) =>
-                    setFinalMember({ ...finalMember, job_title: value })
+                    setFinalMember({ ...finalMember, jobTitle: value })
                   }
                 >
                   <p className="text-muted-foreground text-xs">Job title</p>
 
                   {uniqueJobTitles.map((member) => {
-                    const { id, job_title } = member;
+                    const { id, jobTitle } = member;
 
-                    if (job_title === "") return;
+                    if (jobTitle === "") return;
 
                     return (
                       <div
-                        key={`${id}-${job_title}`}
+                        key={`${id}-${jobTitle}`}
                         className="flex items-center gap-2"
                       >
-                        <RadioGroupItem value={job_title} />
-                        <p>{job_title}</p>
+                        <RadioGroupItem value={jobTitle} />
+                        <p>{jobTitle}</p>
                       </div>
                     );
                   })}
                 </RadioGroup>
               );
             }
-            case "linkedin_url": {
-              const { linkedin_url } = finalMember;
+            case "linkedinUrl": {
+              const { linkedinUrl } = finalMember;
 
               const hasLinkedinUrl = members.some(
-                (member) => member.linkedin_url !== "",
+                (member) => member.linkedinUrl !== "",
               );
 
               if (!hasLinkedinUrl) return;
 
               const uniqueLinkedinUrls = getUniqueValues({
                 items: members,
-                field: "linkedin_url",
+                field: "linkedinUrl",
               });
 
               return (
                 <RadioGroup
                   key={key}
-                  value={linkedin_url}
+                  value={linkedinUrl}
                   onValueChange={(value) =>
-                    setFinalMember({ ...finalMember, linkedin_url: value })
+                    setFinalMember({ ...finalMember, linkedinUrl: value })
                   }
                 >
                   <p className="text-muted-foreground text-xs">LinkedIn URL</p>
                   {uniqueLinkedinUrls.map((member) => {
-                    const { id, linkedin_url } = member;
+                    const { id, linkedinUrl } = member;
 
-                    if (linkedin_url === "") return;
+                    if (linkedinUrl === "") return;
 
                     return (
                       <div
-                        key={`${id}-${linkedin_url}`}
+                        key={`${id}-${linkedinUrl}`}
                         className="flex items-center gap-2 overflow-hidden truncate"
                       >
-                        <RadioGroupItem value={linkedin_url} />
-                        <p key={linkedin_url}>{linkedin_url}</p>
+                        <RadioGroupItem value={linkedinUrl} />
+                        <p key={linkedinUrl}>{linkedinUrl}</p>
                       </div>
                     );
                   })}

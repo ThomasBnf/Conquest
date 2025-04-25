@@ -1,13 +1,13 @@
 import { prisma } from "@conquest/db/prisma";
 
 type Props = {
-  workspace_id: string;
+  workspaceId: string;
 };
 
-export const listUsers = async ({ workspace_id }: Props) => {
+export const listUsers = async ({ workspaceId }: Props) => {
   const users = await prisma.user.count({
     where: {
-      workspace_id,
+      workspaceId,
     },
   });
 

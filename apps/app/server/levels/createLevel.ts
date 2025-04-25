@@ -5,8 +5,8 @@ import { protectedProcedure } from "../trpc";
 export const createLevel = protectedProcedure
   .input(FormLevelSchema)
   .mutation(async ({ ctx: { user }, input }) => {
-    const { workspace_id } = user;
+    const { workspaceId } = user;
     const { name, number, from, to } = input;
 
-    return _createLevel({ name, number, from, to, workspace_id });
+    return _createLevel({ name, number, from, to, workspaceId });
   });

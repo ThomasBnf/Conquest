@@ -12,7 +12,7 @@ export const activeMembers = protectedProcedure
     }),
   )
   .query(async ({ ctx: { user }, input }) => {
-    const { workspace_id } = user;
+    const { workspaceId } = user;
     const { from, to } = input;
 
     const timeZone = "Europe/Paris";
@@ -33,27 +33,27 @@ export const activeMembers = protectedProcedure
       query: `
         WITH 
           (
-            SELECT count(DISTINCT a.member_id)
+            SELECT count(DISTINCT a.memberId)
             FROM activity a
-            JOIN member m FINAL ON a.member_id = m.id
+            JOIN member m FINAL ON a.memberId = m.id
             WHERE 
-              a.created_at >= '${_from}' 
-              AND a.created_at <= '${_to}'
-              AND m.workspace_id = '${workspace_id}'
-          ) as current_count,
+              a.createdAt >= '${_from}' 
+              AND a.createdAt <= '${_to}'
+              AND m.workspaceId = '${workspaceId}'
+          ) as currentCount,
           (
-            SELECT count(DISTINCT a.member_id)
+            SELECT count(DISTINCT a.memberId)
             FROM activity a
-            JOIN member m FINAL ON a.member_id = m.id
+            JOIN member m FINAL ON a.memberId = m.id
             WHERE 
-              a.created_at >= '${_previousFrom}' 
-              AND a.created_at <= '${_previousTo}'
-              AND m.workspace_id = '${workspace_id}'
-          ) as previous_count
+              a.createdAt >= '${_previousFrom}' 
+              AND a.createdAt <= '${_previousTo}'
+              AND m.workspaceId = '${workspaceId}'
+          ) as previousCount
         SELECT 
-          current_count as current,
-          previous_count as previous,
-          if(previous_count = 0, 0, ((current_count - previous_count) / previous_count) * 100) as variation
+          currentCount as current,
+          previousCount as previous,
+          if(previousCount = 0, 0, ((currentCount - previousCount) / previousCount) * 100) as variation
       `,
       format: "JSON",
     });

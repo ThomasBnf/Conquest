@@ -1,15 +1,15 @@
 import { client } from "../client";
 
 type Props = {
-  workspace_id: string;
+  workspaceId: string;
 };
 
-export const deleteAllLogs = async ({ workspace_id }: Props) => {
+export const deleteAllLogs = async ({ workspaceId }: Props) => {
   await client.query({
     query: `
         ALTER TABLE log
         DELETE
-        WHERE workspace_id = '${workspace_id}'
+        WHERE workspaceId = '${workspaceId}'
     `,
   });
 };

@@ -39,7 +39,7 @@ export const CompaniesPage = () => {
     hasNextPage,
     isLoading,
     count,
-    preferences: user?.companies_preferences,
+    preferences: user?.companiesPreferences,
   });
 
   return (

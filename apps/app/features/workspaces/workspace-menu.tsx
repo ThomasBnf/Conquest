@@ -42,11 +42,11 @@ export const WorkspaceMenu = ({ workspace }: Props) => {
   const onSwitchWorkspace = async (workspace: Workspace) => {
     if (!session?.user) return;
 
-    const { id: workspace_id, slug } = workspace;
+    const { id: workspaceId, slug } = workspace;
 
     await mutateAsync({
       id: session.user.id,
-      workspace_id,
+      workspaceId,
     });
 
     utils.invalidate();

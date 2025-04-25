@@ -25,7 +25,7 @@ export const SlackForm = () => {
 
   const { submit, run } = useRealtimeTaskTrigger<typeof installSlack>(
     "install-slack",
-    { accessToken: slack?.trigger_token },
+    { accessToken: slack?.triggerToken },
   );
 
   const onStart = async () => {

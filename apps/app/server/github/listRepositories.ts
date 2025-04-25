@@ -9,19 +9,19 @@ type Repository = Endpoints["GET /user/repos"]["response"]["data"][number];
 
 export const listRepositories = protectedProcedure.query(
   async ({ ctx: { user } }) => {
-    const { workspace_id } = user;
+    const { workspaceId } = user;
 
     const github = GithubIntegrationSchema.parse(
       await getIntegrationBySource({
         source: "Github",
-        workspace_id,
+        workspaceId,
       }),
     );
 
     const { details } = github;
-    const { access_token, iv, installation_id } = details;
+    const { accessToken, iv, installationId } = details;
 
-    const token = await decrypt({ access_token, iv });
+    const token = await decrypt({ accessToken, iv });
 
     const octokit = new Octokit({ auth: token });
 
@@ -32,7 +32,7 @@ export const listRepositories = protectedProcedure.query(
     while (true) {
       const { data } =
         await octokit.rest.apps.listInstallationReposForAuthenticatedUser({
-          installation_id,
+          installation_id: installationId,
           per_page: 100,
           sort: "full_name",
           direction: "asc",

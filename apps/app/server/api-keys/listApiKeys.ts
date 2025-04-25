@@ -3,8 +3,8 @@ import { listApiKeys as _listApiKeys } from "@conquest/db/api-keys/listApiKeys";
 
 export const listApiKeys = protectedProcedure.query(
   async ({ ctx: { user } }) => {
-    const { workspace_id } = user;
+    const { workspaceId } = user;
 
-    return await _listApiKeys({ workspace_id });
+    return await _listApiKeys({ workspaceId });
   },
 );

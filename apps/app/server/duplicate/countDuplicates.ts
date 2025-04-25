@@ -2,7 +2,7 @@ import { countDuplicates as _countDuplicates } from "@conquest/db/duplicates/cou
 import { protectedProcedure } from "../trpc";
 
 export const countDuplicates = protectedProcedure.query(async ({ ctx }) => {
-  const { workspace_id } = ctx.user;
+  const { workspaceId } = ctx.user;
 
-  return _countDuplicates({ workspace_id });
+  return _countDuplicates({ workspaceId });
 });

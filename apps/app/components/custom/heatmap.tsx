@@ -22,10 +22,10 @@ import { useState } from "react";
 
 type Props = {
   activities: ActivityHeatmap[] | undefined;
-  member_id?: string;
+  memberId?: string;
 };
 
-export const Heatmap = ({ activities, member_id }: Props) => {
+export const Heatmap = ({ activities, memberId }: Props) => {
   const calendar = generateCalendarGrid();
 
   return (
@@ -56,7 +56,7 @@ export const Heatmap = ({ activities, member_id }: Props) => {
                       day={day}
                       count={Number(dayActivity?.count ?? 0)}
                       allActivities={activities}
-                      member_id={member_id}
+                      memberId={memberId}
                     />
                   );
                 })}
@@ -135,11 +135,11 @@ const generateCalendarGrid = () => {
 const summarizeActivities = (activities: ActivityWithType[]) =>
   activities.reduce(
     (acc, activity) => {
-      const key = activity.activity_type.source;
+      const key = activity.activityType.source;
       if (!acc[key]) {
         acc[key] = { count: 0, activities: new Map() };
       }
-      const activityName = activity.activity_type.name;
+      const activityName = activity.activityType.name;
       acc[key].activities.set(
         activityName,
         (acc[key].activities.get(activityName) || 0) + 1,
@@ -175,19 +175,19 @@ const DayCell = ({
   day,
   count,
   allActivities,
-  member_id,
+  memberId,
 }: {
   day: Date;
   count: number;
   allActivities: ActivityHeatmap[] | undefined;
-  member_id?: string;
+  memberId?: string;
 }) => {
   const [hover, setHover] = useState(false);
   const level = getActivityLevel(count, allActivities);
 
   const { data: activities, isLoading } =
     trpc.activities.listDayActivities.useQuery(
-      hover ? { date: day, member_id } : skipToken,
+      hover ? { date: day, memberId } : skipToken,
     );
 
   return (

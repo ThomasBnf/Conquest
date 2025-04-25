@@ -7,26 +7,26 @@ import { protectedProcedure } from "../trpc";
 
 export const listChannels = protectedProcedure.query(
   async ({ ctx: { user } }) => {
-    const { workspace_id } = user;
+    const { workspaceId } = user;
 
     const integration = DiscourseIntegrationSchema.parse(
       await getIntegrationBySource({
         source: "Discourse",
-        workspace_id,
+        workspaceId,
       }),
     );
 
     const { details } = integration;
-    const { community_url, api_key, api_key_iv } = details;
+    const { communityUrl, apiKey, apiKeyIv } = details;
 
     const decryptedApiKey = await decrypt({
-      access_token: api_key,
-      iv: api_key_iv,
+      accessToken: apiKey,
+      iv: apiKeyIv,
     });
 
     const client = discourseClient({
-      api_key: decryptedApiKey,
-      community_url,
+      apiKey: decryptedApiKey,
+      communityUrl,
     });
 
     const { categories } = await client.getSite();

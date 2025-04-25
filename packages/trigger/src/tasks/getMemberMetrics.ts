@@ -24,7 +24,7 @@ export const getMemberMetrics = schemaTask({
     levels: z.array(LevelSchema),
   }),
   run: async ({ member, levels }) => {
-    const { id, workspace_id } = member;
+    const { id, workspaceId } = member;
 
     const today = new Date();
     const startDate = startOfDay(subWeeks(today, 52));
@@ -36,9 +36,9 @@ export const getMemberMetrics = schemaTask({
     );
 
     const activities = await listActivities({
-      member_id: id,
+      memberId: id,
       period: 365,
-      workspace_id,
+      workspaceId,
     });
 
     const logs: Log[] = [];
@@ -49,8 +49,8 @@ export const getMemberMetrics = schemaTask({
 
       const filteredActivities = activities?.filter(
         (activity) =>
-          activity.created_at >= intervalStart &&
-          activity.created_at <= intervalEnd,
+          activity.createdAt >= intervalStart &&
+          activity.createdAt <= intervalEnd,
       );
 
       const pulseScore = getPulseScore({
@@ -63,22 +63,22 @@ export const getMemberMetrics = schemaTask({
         id: randomUUID(),
         date: interval,
         pulse: pulseScore,
-        level_id: level?.id ?? null,
-        member_id: member.id,
-        workspace_id: member.workspace_id,
+        levelId: level?.id ?? null,
+        memberId: member.id,
+        workspaceId: member.workspaceId,
       });
     }
 
     await createManyLogs({ logs });
 
-    const { pulse, level_id } = logs.at(-1) ?? {};
+    const { pulse, levelId } = logs.at(-1) ?? {};
 
     return await updateMember({
       ...member,
-      first_activity: activities?.at(-1)?.created_at ?? null,
-      last_activity: activities?.at(0)?.created_at ?? null,
+      firstActivity: activities?.at(-1)?.createdAt ?? null,
+      lastActivity: activities?.at(0)?.createdAt ?? null,
       pulse: pulse ?? 0,
-      level_id: level_id ?? null,
+      levelId: levelId ?? null,
     });
   },
 });

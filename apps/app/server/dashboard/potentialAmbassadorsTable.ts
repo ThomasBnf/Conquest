@@ -19,7 +19,7 @@ export const potentialAmbassadorsTable = protectedProcedure
     }),
   )
   .query(async ({ ctx: { user }, input }) => {
-    const { workspace_id } = user;
+    const { workspaceId } = user;
     const { cursor, from, to, search, id, desc } = input;
 
     const orderBy = orderByParser({ id, desc, type: "members" });
@@ -37,34 +37,34 @@ export const potentialAmbassadorsTable = protectedProcedure
           m.*,
           c.name as company,
           l.number as level,
-          l.name as level_name,
+          l.name as levelName,
           p.attributes
         FROM member m FINAL
-        LEFT JOIN level l ON m.level_id = l.id
-        LEFT JOIN company c ON m.company_id = c.id
+        LEFT JOIN level l ON m.levelId = l.id
+        LEFT JOIN company c ON m.companyId = c.id
         LEFT JOIN (
           SELECT 
-            member_id,
+            memberId,
             groupArray(attributes) as attributes
           FROM profile
-          GROUP BY member_id
-        ) p ON m.id = p.member_id
+          GROUP BY memberId
+        ) p ON m.id = p.memberId
         WHERE 
-          m.workspace_id = '${workspace_id}'
+          m.workspaceId = '${workspaceId}'
           AND l.number >= 7
           AND l.number <= 9
           AND m.id IN (
-            SELECT member_id 
+            SELECT memberId 
             FROM activity 
             WHERE
-              workspace_id = '${workspace_id}'
-              AND created_at BETWEEN '${_from}' AND '${_to}'
+              workspaceId = '${workspaceId}'
+              AND createdAt BETWEEN '${_from}' AND '${_to}'
           )
           ${
             search
               ? `AND (
-                  positionCaseInsensitive(concat(first_name, ' ', last_name), LOWER(trim('${search}'))) > 0
-                  OR positionCaseInsensitive(primary_email, LOWER(trim('${search}'))) > 0
+                  positionCaseInsensitive(concat(firstName, ' ', lastName), LOWER(trim('${search}'))) > 0
+                  OR positionCaseInsensitive(primaryEmail, LOWER(trim('${search}'))) > 0
                   OR arrayExists(attr -> attr.source = 'Github' AND positionCaseInsensitive(toString(attr.login), LOWER(trim('${search}'))) > 0, p.attributes)
                 )`
               : ""

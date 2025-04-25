@@ -14,13 +14,13 @@ export const getPulseAndLevel = async ({ memberId }: Props) => {
 
   if (!member) return;
 
-  const { id, workspace_id } = member;
-  const levels = await listLevels({ workspace_id });
+  const { id, workspaceId } = member;
+  const levels = await listLevels({ workspaceId });
 
   const activities = await listActivities({
     period: 90,
-    member_id: id,
-    workspace_id,
+    memberId: id,
+    workspaceId,
   });
 
   const pulse = getPulseScore({ activities });
@@ -29,7 +29,7 @@ export const getPulseAndLevel = async ({ memberId }: Props) => {
   await updateMember({
     ...member,
     pulse,
-    level_id: level?.id ?? null,
-    last_activity: activities?.at(-1)?.created_at ?? null,
+    levelId: level?.id ?? null,
+    lastActivity: activities?.at(-1)?.createdAt ?? null,
   });
 };

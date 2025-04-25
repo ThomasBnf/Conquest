@@ -125,7 +125,7 @@ export const membersColumns = (): Column<FullMember>[] => {
           <Level size={18} />
           {item.level ? (
             <p>
-              {item.level} • {item.level_name}
+              {item.level} • {item.levelName}
             </p>
           ) : (
             <p className="text-muted-foreground">No level</p>
@@ -165,7 +165,7 @@ export const membersColumns = (): Column<FullMember>[] => {
           table={table}
         />
       ),
-      cell: ({ item }) => <p className="truncate">{item.job_title}</p>,
+      cell: ({ item }) => <p className="truncate">{item.jobTitle}</p>,
       width: 250,
     },
     {
@@ -178,7 +178,7 @@ export const membersColumns = (): Column<FullMember>[] => {
           table={table}
         />
       ),
-      cell: ({ item }) => <p className="truncate">{item.primary_email}</p>,
+      cell: ({ item }) => <p className="truncate">{item.primaryEmail}</p>,
       width: 250,
     },
     {
@@ -217,7 +217,7 @@ export const membersColumns = (): Column<FullMember>[] => {
           table={table}
         />
       ),
-      cell: ({ item }) => <DateCell date={item.first_activity} />,
+      cell: ({ item }) => <DateCell date={item.firstActivity} />,
       width: 250,
     },
     {
@@ -230,7 +230,7 @@ export const membersColumns = (): Column<FullMember>[] => {
           table={table}
         />
       ),
-      cell: ({ item }) => <DateCell date={item.last_activity} />,
+      cell: ({ item }) => <DateCell date={item.lastActivity} />,
       width: 250,
     },
     {
@@ -256,7 +256,7 @@ export const membersColumns = (): Column<FullMember>[] => {
           table={table}
         />
       ),
-      cell: ({ item }) => <DateCell date={item.created_at} />,
+      cell: ({ item }) => <DateCell date={item.createdAt} />,
       width: 250,
     },
   ];

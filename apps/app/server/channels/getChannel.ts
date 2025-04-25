@@ -9,8 +9,8 @@ export const getChannel = protectedProcedure
     }),
   )
   .query(async ({ ctx: { user }, input }) => {
-    const { workspace_id } = user;
+    const { workspaceId } = user;
     const { id } = input;
 
-    return await _getChannel({ id, workspace_id });
+    return await _getChannel({ id, workspaceId });
   });

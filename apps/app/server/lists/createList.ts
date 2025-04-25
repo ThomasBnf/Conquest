@@ -5,7 +5,7 @@ import { protectedProcedure } from "../trpc";
 export const createList = protectedProcedure
   .input(FormListSchema)
   .mutation(async ({ ctx: { user }, input }) => {
-    const { id, workspace_id } = user;
+    const { id, workspaceId } = user;
 
-    return _createList({ ...input, created_by: id, workspace_id });
+    return _createList({ ...input, createdBy: id, workspaceId });
   });

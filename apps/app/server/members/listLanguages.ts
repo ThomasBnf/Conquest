@@ -3,14 +3,14 @@ import { protectedProcedure } from "../trpc";
 
 export const listLanguages = protectedProcedure.query(
   async ({ ctx: { user } }) => {
-    const { workspace_id } = user;
+    const { workspaceId } = user;
 
     const result = await client.query({
       query: `
         SELECT DISTINCT language
         FROM member FINAL
         WHERE 
-          workspace_id = '${workspace_id}'
+          workspaceId = '${workspaceId}'
           AND language IS NOT NULL; 
       `,
     });

@@ -30,14 +30,14 @@ export const TableTeam = () => {
           >
             <div className="flex h-12 w-full max-w-52 items-center gap-2">
               <Avatar className="size-6">
-                <AvatarImage src={user.avatar_url ?? ""} />
+                <AvatarImage src={user.avatarUrl ?? ""} />
                 <AvatarFallback>
-                  {user.first_name?.charAt(0)}
-                  {user.last_name?.charAt(0)}
+                  {user.firstName?.charAt(0)}
+                  {user.lastName?.charAt(0)}
                 </AvatarFallback>
               </Avatar>
               <p className="font-medium">
-                {user.first_name} {user.last_name}
+                {user.firstName} {user.lastName}
               </p>
             </div>
             <p className="w-full min-w-20 max-w-96 truncate text-muted-foreground">
@@ -45,10 +45,10 @@ export const TableTeam = () => {
             </p>
             <p className="w-24 shrink-0 text-muted-foreground">{user.role}</p>
             <p className="w-24 shrink-0 text-muted-foreground">
-              {format(user.created_at, "MMM dd")}
+              {format(user.createdAt, "MMM dd")}
             </p>
             <p className="w-24 shrink-0 text-muted-foreground">
-              {format(user.last_activity_at, "MMM dd")}
+              {format(user.lastActivityAt, "MMM dd")}
             </p>
           </div>
         ))}

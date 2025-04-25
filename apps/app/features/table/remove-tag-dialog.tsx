@@ -75,13 +75,13 @@ export const RemoveTagDialog = <TData extends Member | Company>({
   const onConfirm = async () => {
     setLoading(true);
 
-    if (selectedRows?.[0] && "first_name" in selectedRows[0]) {
+    if (selectedRows?.[0] && "firstName" in selectedRows[0]) {
       const members = selectedRows as Member[];
 
       const updatedMembers = members.map((member) => ({
         ...member,
         tags: member.tags.filter((tag) => !selectedTags.includes(tag)),
-        updated_at: new Date(),
+        updatedAt: new Date(),
       }));
 
       await updateManyMembers({ members: updatedMembers });
@@ -93,7 +93,7 @@ export const RemoveTagDialog = <TData extends Member | Company>({
     const updatedCompanies = companies.map((company) => ({
       ...company,
       tags: company.tags.filter((tag) => !selectedTags.includes(tag)),
-      updated_at: new Date(),
+      updatedAt: new Date(),
     }));
 
     await updateManyCompanies({ companies: updatedCompanies });

@@ -4,7 +4,7 @@ import { client } from "../client";
 type Props = Company;
 
 export const updateCompany = async (props: Props) => {
-  const { id, workspace_id, updated_at, ...data } = props;
+  const { id, workspaceId, updatedAt, ...data } = props;
   const values = Object.entries(data)
     .map(([key, value]) => `${key} = '${value}'`)
     .join(", ");
@@ -12,7 +12,7 @@ export const updateCompany = async (props: Props) => {
   await client.query({
     query: `
       ALTER TABLE company
-      UPDATE ${values}, updated_at = now()
+      UPDATE ${values}, updatedAt = now()
       WHERE id = '${id}'
     `,
   });

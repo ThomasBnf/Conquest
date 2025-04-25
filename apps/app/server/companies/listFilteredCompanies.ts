@@ -14,7 +14,7 @@ export const listFilteredCompanies = protectedProcedure
     }),
   )
   .query(async ({ ctx: { user }, input }) => {
-    const { workspace_id } = user;
+    const { workspaceId } = user;
     const { cursor, search, id, desc } = input;
 
     const searchParsed = search.toLowerCase().trim();
@@ -27,7 +27,7 @@ export const listFilteredCompanies = protectedProcedure
         WHERE (
           ${searchParsed ? `positionCaseInsensitive(c.name, '${searchParsed}') > 0` : "true"}
         )
-        AND c.workspace_id = '${workspace_id}'
+        AND c.workspaceId = '${workspaceId}'
         ${orderBy}
         ${cursor ? `LIMIT 25 OFFSET ${cursor}` : "LIMIT 25"}
       `,

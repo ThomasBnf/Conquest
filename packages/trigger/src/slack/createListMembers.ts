@@ -6,10 +6,10 @@ import ISO6391 from "iso-639-1";
 
 type Props = {
   web: WebClient;
-  workspace_id: string;
+  workspaceId: string;
 };
 
-export const createListMembers = async ({ web, workspace_id }: Props) => {
+export const createListMembers = async ({ web, workspaceId }: Props) => {
   let cursor: string | undefined;
 
   while (true) {
@@ -37,26 +37,26 @@ export const createListMembers = async ({ web, workspace_id }: Props) => {
         const country = locale ? locale.split("-")[1] : "";
 
         const createdMember = await createMember({
-          first_name,
-          last_name,
-          primary_email: email,
+          firstName: first_name,
+          lastName: last_name,
+          primaryEmail: email,
           emails: [email],
           phones: phone ? [phone] : [],
-          avatar_url: image_1024,
-          job_title: title,
+          avatarUrl: image_1024,
+          jobTitle: title,
           language,
           country,
           source: "Slack",
-          workspace_id,
+          workspaceId,
         });
 
         await createProfile({
-          external_id: id,
+          externalId: id,
           attributes: {
             source: "Slack",
           },
-          member_id: createdMember.id,
-          workspace_id,
+          memberId: createdMember.id,
+          workspaceId,
         });
       }
     }

@@ -1,7 +1,7 @@
 import { LoadingChannels } from "@/components/states/loading-channels";
-import { DISCOURSE_ACTIVITY_TYPES } from "@conquest/db/constant";
 import { useIntegration } from "@/context/integrationContext";
 import { trpc } from "@/server/client";
+import { DISCOURSE_ACTIVITY_TYPES } from "@conquest/db/constant";
 import { Button } from "@conquest/ui/button";
 import { Checkbox } from "@conquest/ui/checkbox";
 import type { Category } from "@conquest/zod/types/discourse";
@@ -112,14 +112,16 @@ export const DiscourseChannels = () => {
     setLoading(true);
 
     const channels = selectedChannels.map((channel) => ({
-      external_id: channel.id.toString(),
+      externalId: channel.id.toString(),
       name: parseChannelName(channel, discourseChannels ?? []),
       slug: channel.slug ?? "",
       source: "Discourse" as const,
     }));
 
     await createManyChannels({ channels });
-    await createManyActivityTypes({ activity_types: DISCOURSE_ACTIVITY_TYPES });
+    await createManyActivityTypes({
+      activityTypes: DISCOURSE_ACTIVITY_TYPES,
+    });
   };
 
   const isChannelIndeterminate = (channel: Category) => {

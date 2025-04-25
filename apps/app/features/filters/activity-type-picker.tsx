@@ -46,20 +46,20 @@ export const ActivityTypePicker = ({ filter }: Props) => {
       {} as Record<string, Record<string, string>>,
     );
 
-  const activityTypesList = filterActivity.activity_types;
+  const activityTypesList = filterActivity.activityTypes;
 
   const onUpdateActivityTypes = (key: string, name: string) => {
-    const isAlreadySelected = filterActivity.activity_types.some(
+    const isAlreadySelected = filterActivity.activityTypes.some(
       (type) => type.key === key,
     );
 
     const updatedActivityTypes = isAlreadySelected
-      ? filterActivity.activity_types.filter((type) => type.key !== key)
-      : [...filterActivity.activity_types, { key, name }];
+      ? filterActivity.activityTypes.filter((type) => type.key !== key)
+      : [...filterActivity.activityTypes, { key, name }];
 
     onUpdateFilter({
       ...filter,
-      activity_types: updatedActivityTypes,
+      activityTypes: updatedActivityTypes,
     });
   };
 
@@ -99,12 +99,12 @@ export const ActivityTypePicker = ({ filter }: Props) => {
               {!isLoading && (
                 <CommandItem
                   onSelect={() =>
-                    onUpdateActivityTypes("any_activity", "Any activity")
+                    onUpdateActivityTypes("anyActivity", "Any activity")
                   }
                 >
                   <Checkbox
-                    checked={filterActivity.activity_types.some(
-                      (type) => type.key === "any_activity",
+                    checked={filterActivity.activityTypes.some(
+                      (type) => type.key === "anyActivity",
                     )}
                     className="mr-2"
                   />
@@ -121,7 +121,7 @@ export const ActivityTypePicker = ({ filter }: Props) => {
                       onSelect={() => onUpdateActivityTypes(key, name)}
                     >
                       <Checkbox
-                        checked={filterActivity.activity_types.some(
+                        checked={filterActivity.activityTypes.some(
                           (type) => type.key === key,
                         )}
                         className="mr-2"

@@ -10,7 +10,7 @@ type Props = {
 };
 
 export const DiscordSection = ({ profile }: Props) => {
-  const { external_id, attributes } = profile;
+  const { externalId, attributes } = profile;
   const { username } = attributes;
 
   return (
@@ -26,7 +26,7 @@ export const DiscordSection = ({ profile }: Props) => {
           <EditableLink
             placeholder="No discord profile"
             defaultValue={username}
-            href={`https://discordapp.com/users/${external_id}`}
+            href={`https://discordapp.com/users/${externalId}`}
             editable={false}
           />
         </FieldCard>

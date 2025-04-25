@@ -20,14 +20,14 @@ export const FilterMenu = ({ filter }: Props) => {
   const [open, setOpen] = useState(false);
   const { onUpdateFilter } = useFilters();
 
-  const hasChannel = filter.activity_types.some((activityType) =>
+  const hasChannel = filter.activityTypes.some((activityType) =>
     ["slack", "discord", "discourse"].some((channel) =>
       activityType.key.startsWith(channel),
     ),
   );
 
   const onUpdateDisplay = (
-    field: "display_count" | "display_date" | "display_channel",
+    field: "displayCount" | "displayDate" | "displayChannel",
   ) => {
     onUpdateFilter({
       ...filter,
@@ -49,30 +49,30 @@ export const FilterMenu = ({ filter }: Props) => {
               <CommandItem
                 onSelect={() => {
                   setOpen(false);
-                  onUpdateDisplay("display_count");
+                  onUpdateDisplay("displayCount");
                 }}
               >
-                <Checkbox checked={filter.display_count} className="mr-2" />
+                <Checkbox checked={filter.displayCount} className="mr-2" />
                 Filter by count
               </CommandItem>
               {hasChannel && (
                 <CommandItem
                   onSelect={() => {
                     setOpen(false);
-                    onUpdateDisplay("display_channel");
+                    onUpdateDisplay("displayChannel");
                   }}
                 >
-                  <Checkbox checked={filter.display_channel} className="mr-2" />
+                  <Checkbox checked={filter.displayChannel} className="mr-2" />
                   Filter by channel
                 </CommandItem>
               )}
               <CommandItem
                 onSelect={() => {
                   setOpen(false);
-                  onUpdateDisplay("display_date");
+                  onUpdateDisplay("displayDate");
                 }}
               >
-                <Checkbox checked={filter.display_date} className="mr-2" />
+                <Checkbox checked={filter.displayDate} className="mr-2" />
                 Filter by date
               </CommandItem>
             </CommandGroup>

@@ -17,7 +17,7 @@ type Props = {
 };
 
 export const createManyIssues = async ({ octokit, github }: Props) => {
-  const { details, workspace_id } = github;
+  const { details, workspaceId } = github;
   const { owner, repo } = details;
 
   let page = 1;
@@ -64,7 +64,7 @@ export const createManyIssues = async ({ octokit, github }: Props) => {
     const { headers, member } = await createGithubMember({
       octokit,
       id: userId,
-      workspace_id,
+      workspaceId,
     });
 
     await checkRateLimit(headers);
@@ -72,22 +72,22 @@ export const createManyIssues = async ({ octokit, github }: Props) => {
     if (!member) continue;
 
     await createActivity({
-      external_id: String(number),
-      activity_type_key: "github:issue",
+      externalId: String(number),
+      activityTypeKey: "github:issue",
       title: `#${number} - ${title}`,
       message: body ?? "",
-      member_id: member?.id,
-      created_at: new Date(created_at),
-      updated_at: new Date(updated_at),
+      memberId: member?.id,
+      createdAt: new Date(created_at),
+      updatedAt: new Date(updated_at),
       source: "Github",
-      workspace_id,
+      workspaceId,
     });
 
     if (comments > 0) {
       await createManyComments({
         octokit,
         github,
-        issue_number: number,
+        issueNumber: number,
       });
     }
   }

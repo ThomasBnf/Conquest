@@ -21,19 +21,19 @@ export const cronHourly = schedules.task({
 
     const result = await client.query({
       query: `
-      SELECT DISTINCT member_id
+      SELECT DISTINCT memberId
       FROM activity
-      WHERE created_at >= '${startFormatted}'
-      AND created_at <= '${endFormatted}'
+      WHERE createdAt >= '${startFormatted}'
+      AND createdAt <= '${endFormatted}'
       `,
     });
 
     const { data } = await result.json();
-    const members = data as Array<{ member_id: string }>;
+    const members = data as Array<{ memberId: string }>;
 
     for (const member of members) {
       logger.info("member", { member });
-      await getPulseAndLevel({ memberId: member.member_id });
+      await getPulseAndLevel({ memberId: member.memberId });
     }
 
     await checkDuplicates.trigger({});

@@ -3,23 +3,23 @@ import { TagSchema } from "@conquest/zod/schemas/tag.schema";
 import { prisma } from "../prisma";
 
 type Props = {
-  external_id?: string;
+  externalId?: string;
   name: string;
   color: string;
   source: Source;
-  workspace_id: string;
+  workspaceId: string;
 };
 
 export const createTag = async (props: Props) => {
-  const { external_id, name, color, source, workspace_id } = props;
+  const { externalId, name, color, source, workspaceId } = props;
 
   const tag = await prisma.tag.create({
     data: {
-      external_id,
+      externalId,
       name,
       color,
       source,
-      workspace_id,
+      workspaceId,
     },
   });
 

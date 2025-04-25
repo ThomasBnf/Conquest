@@ -16,7 +16,7 @@ type Props = {
 
 export default async function Page({ searchParams }: Props) {
   const { error, code } = await searchParams;
-  const { id, workspace_id } = await getCurrentUser();
+  const { id, workspaceId } = await getCurrentUser();
 
   if (error) redirect("/settings/integrations/slack?error=access_denied");
 
@@ -46,7 +46,7 @@ export default async function Page({ searchParams }: Props) {
     return redirect("/settings/integrations/slack?error=invalid_code");
   }
 
-  const integration = await getIntegration({ external_id: team.id });
+  const integration = await getIntegration({ externalId: team.id });
 
   if (integration) {
     return redirect("/settings/integrations/slack?error=already_connected");
@@ -56,20 +56,20 @@ export default async function Page({ searchParams }: Props) {
   const encryptedUserToken = await encrypt(authed_user.access_token);
 
   await createIntegration({
-    external_id: team.id,
+    externalId: team.id,
     details: {
       source: "Slack",
       name: team.name,
       url: team.url.slice(0, -1),
-      access_token: encryptedAccessToken.token,
-      access_token_iv: encryptedAccessToken.iv,
-      user_token: encryptedUserToken.token,
-      user_token_iv: encryptedUserToken.iv,
+      accessToken: encryptedAccessToken.token,
+      accessTokenIv: encryptedAccessToken.iv,
+      userToken: encryptedUserToken.token,
+      userTokenIv: encryptedUserToken.iv,
       scopes: SLACK_SCOPES,
-      user_scopes: SLACK_USER_SCOPES,
+      userScopes: SLACK_USER_SCOPES,
     },
-    created_by: id,
-    workspace_id,
+    createdBy: id,
+    workspaceId,
   });
 
   redirect("/settings/integrations/slack");

@@ -5,7 +5,7 @@ import { protectedProcedure } from "../trpc";
 export const createCompany = protectedProcedure
   .input(FormCreateSchema)
   .mutation(async ({ ctx: { user }, input }) => {
-    const { workspace_id } = user;
+    const { workspaceId } = user;
 
-    return await _createCompany({ ...input, workspace_id });
+    return await _createCompany({ ...input, workspaceId });
   });

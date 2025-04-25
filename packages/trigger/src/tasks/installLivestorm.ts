@@ -1,4 +1,3 @@
-import { deleteIntegration } from "./deleteIntegration";
 import { updateIntegration } from "@conquest/db/integrations/updateIntegration";
 import { decrypt } from "@conquest/db/utils/decrypt";
 import { LivestormIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
@@ -8,6 +7,7 @@ import { createManyEvents } from "../livestorm/createManyEvents";
 import { createWebhook } from "../livestorm/createWebhook";
 import { getRefreshToken } from "../livestorm/getRefreshToken";
 import { checkDuplicates } from "./checkDuplicates";
+import { deleteIntegration } from "./deleteIntegration";
 import { getAllMembersMetrics } from "./getAllMembersMetrics";
 import { integrationSuccessEmail } from "./integrationSuccessEmail";
 
@@ -18,18 +18,18 @@ export const installLivestorm = schemaTask({
     livestorm: LivestormIntegrationSchema,
   }),
   run: async ({ livestorm }) => {
-    const { details, workspace_id } = livestorm;
-    const { access_token, access_token_iv, expires_in } = details;
+    const { details, workspaceId } = livestorm;
+    const { accessToken, accessTokenIv, expiresIn } = details;
 
-    const isExpired = new Date(Date.now() + expires_in * 1000) < new Date();
+    const isExpired = new Date(Date.now() + expiresIn * 1000) < new Date();
 
     const decryptedAccessToken = await decrypt({
-      access_token: access_token,
-      iv: access_token_iv,
+      accessToken,
+      iv: accessTokenIv,
     });
 
-    let accessToken = decryptedAccessToken;
-    if (isExpired) accessToken = await getRefreshToken({ livestorm });
+    let currentAccessToken = decryptedAccessToken;
+    if (isExpired) currentAccessToken = await getRefreshToken({ livestorm });
 
     const webhookEvents = [
       "session.created",
@@ -39,29 +39,25 @@ export const installLivestorm = schemaTask({
 
     for (const event of webhookEvents) {
       await createWebhook({
-        accessToken,
+        accessToken: currentAccessToken,
         event,
       });
     }
 
     await createManyEvents({ livestorm });
 
-    await getAllMembersMetrics.triggerAndWait(
-      { workspace_id },
-      { metadata: { workspace_id } },
-    );
-
-    await checkDuplicates.triggerAndWait({ workspace_id });
+    await getAllMembersMetrics.triggerAndWait({ workspaceId });
+    await checkDuplicates.triggerAndWait({ workspaceId });
     await integrationSuccessEmail.trigger({ integration: livestorm });
   },
   onSuccess: async ({ livestorm }) => {
-    const { id, workspace_id } = livestorm;
+    const { id, workspaceId } = livestorm;
 
     await updateIntegration({
       id,
-      connected_at: new Date(),
+      connectedAt: new Date(),
       status: "CONNECTED",
-      workspace_id,
+      workspaceId,
     });
   },
   onFailure: async ({ livestorm }) => {

@@ -61,12 +61,12 @@ export default function Page() {
     resolver: zodResolver(QuestionsSchema),
   });
 
-  const onSubmit = async ({ company_size, source }: Questions) => {
+  const onSubmit = async ({ companySize, source }: Questions) => {
     if (!user) return;
 
     await mutateAsync({
-      id: user.workspace_id,
-      company_size,
+      id: user.workspaceId,
+      companySize,
       source,
     });
   };
@@ -82,7 +82,7 @@ export default function Page() {
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <CardContent className="space-y-4">
               <FormField
-                name="company_size"
+                name="companySize"
                 control={form.control}
                 render={({ field }) => (
                   <FormItem>

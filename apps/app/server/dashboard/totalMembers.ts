@@ -12,7 +12,7 @@ export const totalMembers = protectedProcedure
     }),
   )
   .query(async ({ ctx: { user }, input }) => {
-    const { workspace_id } = user;
+    const { workspaceId } = user;
     const { from, to } = input;
 
     const timeZone = "Europe/Paris";
@@ -34,21 +34,21 @@ export const totalMembers = protectedProcedure
         WITH 
           (
             SELECT 
-              countIf(created_at <= '${_to}') as current_period_end,
-              countIf(created_at <= '${_from}') as current_period_start,
-              countIf(created_at <= '${_previousTo}') as previous_period_end,
-              countIf(created_at <= '${_previousFrom}') as previous_period_start
+              countIf(createdAt <= '${_to}') as currentPeriodEnd,
+              countIf(createdAt <= '${_from}') as currentPeriodStart,
+              countIf(createdAt <= '${_previousTo}') as previousPeriodEnd,
+              countIf(createdAt <= '${_previousFrom}') as previousPeriodStart
             FROM member FINAL
             WHERE 
-              workspace_id = '${workspace_id}'
+              workspaceId = '${workspaceId}'
           ) as count 
         SELECT 
-          count.current_period_end as current,
-          count.previous_period_end as previous,
+          count.currentPeriodEnd as current,
+          count.previousPeriodEnd as previous,
           CASE
-            WHEN count.previous_period_end = 0 AND count.current_period_end > 0 THEN 100
-            WHEN count.previous_period_end = 0 THEN 0
-            ELSE ((count.current_period_end - count.previous_period_end) / count.previous_period_end) * 100
+            WHEN count.previousPeriodEnd = 0 AND count.currentPeriodEnd > 0 THEN 100
+            WHEN count.previousPeriodEnd = 0 THEN 0
+            ELSE ((count.currentPeriodEnd - count.previousPeriodEnd) / count.previousPeriodEnd) * 100
           END as variation
       `,
       format: "JSON",

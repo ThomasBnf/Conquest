@@ -4,14 +4,14 @@ import { prisma } from "../prisma";
 
 type Props = {
   source: Source;
-  workspace_id: string;
+  workspaceId: string;
 };
 
 export const getIntegrationBySource = async ({
   source,
-  workspace_id,
+  workspaceId,
 }: Props) => {
-  if (!source || !workspace_id) return null;
+  if (!source || !workspaceId) return null;
 
   const integration = await prisma.integration.findFirst({
     where: {
@@ -19,7 +19,7 @@ export const getIntegrationBySource = async ({
         path: ["source"],
         equals: source,
       },
-      workspace_id,
+      workspaceId,
     },
   });
 

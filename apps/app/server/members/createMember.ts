@@ -6,11 +6,11 @@ import { protectedProcedure } from "../trpc";
 export const createMember = protectedProcedure
   .input(MemberFormSchema)
   .mutation(async ({ ctx: { user }, input }) => {
-    const { workspace_id } = user;
+    const { workspaceId } = user;
 
-    const member = await _createMember({ ...input, workspace_id });
+    const member = await _createMember({ ...input, workspaceId });
 
-    checkDuplicates.trigger({ workspace_id });
+    checkDuplicates.trigger({ workspaceId });
 
     return member;
   });

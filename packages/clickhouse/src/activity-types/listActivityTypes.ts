@@ -2,15 +2,15 @@ import { ActivityTypeSchema } from "@conquest/zod/schemas/activity-type.schema";
 import { client } from "../client";
 
 type Props = {
-  workspace_id: string;
+  workspaceId: string;
 };
 
-export const listActivityTypes = async ({ workspace_id }: Props) => {
+export const listActivityTypes = async ({ workspaceId }: Props) => {
   const result = await client.query({
     query: `
       SELECT * 
-      FROM activity_type
-      WHERE workspace_id = '${workspace_id}'
+      FROM activityType
+      WHERE workspaceId = '${workspaceId}'
       ORDER BY points DESC
     `,
   });

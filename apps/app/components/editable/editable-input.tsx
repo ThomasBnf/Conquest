@@ -75,6 +75,7 @@ export const EditableInput = ({
         onCancel();
       }}
       onKeyDown={(event) => onKeyDown(event.key)}
+      className="h-8"
     />
   );
 };

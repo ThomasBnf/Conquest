@@ -8,14 +8,14 @@ import { protectedProcedure } from "../trpc";
 export const createManyActivities = protectedProcedure
   .input(BulkActivitySchema.extend({ members: z.array(MemberSchema) }))
   .mutation(async ({ ctx: { user }, input }) => {
-    const { workspace_id } = user;
-    const { activity_type_key, message, members } = input;
+    const { workspaceId } = user;
+    const { activityTypeKey, message, members } = input;
 
     console.log(members);
 
     const activityType = await getActivityTypeByKey({
-      key: activity_type_key,
-      workspace_id,
+      key: activityTypeKey,
+      workspaceId,
     });
 
     if (!activityType) throw new Error("Activity type not found");
@@ -23,11 +23,11 @@ export const createManyActivities = protectedProcedure
     console.log(activityType);
 
     const activities = members.map((member) => ({
-      activity_type_id: activityType.id,
+      activityTypeId: activityType.id,
       message,
-      member_id: member.id,
+      memberId: member.id,
       source: activityType.source,
-      workspace_id,
+      workspaceId,
     }));
 
     console.log(activities);

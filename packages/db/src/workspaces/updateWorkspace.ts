@@ -7,7 +7,7 @@ import { prisma } from "../prisma";
 
 type Props = {
   id: string;
-} & Omit<Partial<Workspace>, "trial_end">;
+} & Omit<Partial<Workspace>, "trialEnd">;
 
 export const updateWorkspace = async ({ id, ...data }: Props) => {
   const workspace = await prisma.workspace.update({
@@ -16,7 +16,7 @@ export const updateWorkspace = async ({ id, ...data }: Props) => {
     },
     data: {
       ...data,
-      trial_end: addDays(new Date(), 14),
+      trialEnd: addDays(new Date(), 14),
     },
   });
 

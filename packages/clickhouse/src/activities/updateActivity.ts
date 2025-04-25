@@ -5,10 +5,10 @@ type Props = Activity;
 
 export const updateActivity = async ({
   id,
-  external_id,
-  workspace_id,
-  updated_at,
-  created_at,
+  externalId,
+  workspaceId,
+  updatedAt,
+  createdAt,
   ...data
 }: Props) => {
   const values = Object.entries(data)
@@ -18,7 +18,7 @@ export const updateActivity = async ({
   await client.query({
     query: `
       ALTER TABLE activity
-      UPDATE ${values}, updated_at = now()
+      UPDATE ${values}, updatedAt = now()
       WHERE id = '${id}' 
     `,
   });

@@ -25,7 +25,7 @@ export const LivestormForm = () => {
 
   const { submit, run } = useRealtimeTaskTrigger<typeof installLivestorm>(
     "install-livestorm",
-    { accessToken: livestorm?.trigger_token },
+    { accessToken: livestorm?.triggerToken },
   );
 
   const onStart = async () => {

@@ -27,14 +27,14 @@ export const FilterActivity = ({ index, filter }: Props) => {
       )}
       <WhoPicker filter={filter} />
       <ActivityTypePicker filter={filter} />
-      {filter.display_count && (
+      {filter.displayCount && (
         <>
           <OperatorPicker filter={filter} />
           <NumberInput filter={filter} />
         </>
       )}
-      {filter.display_channel && <ChannelsPicker filter={filter} />}
-      {filter.display_date && <DatePicker filter={filter} />}
+      {filter.displayChannel && <ChannelsPicker filter={filter} />}
+      {filter.displayDate && <DatePicker filter={filter} />}
       <FilterMenu filter={filter} />
       <Button
         variant="outline"

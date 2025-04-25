@@ -17,10 +17,10 @@ import { toast } from "sonner";
 export default function Page() {
   const { data: session, update } = useSession();
   const { workspace } = session?.user ?? {};
-  const { stripe_customer_id, price_id } = workspace ?? {};
+  const { stripeCustomerId, priceId } = workspace ?? {};
   const router = useRouter();
 
-  const subscription = getSubscriptionDetails(price_id);
+  const subscription = getSubscriptionDetails(priceId);
 
   const [period, setPeriod] = useState<PlanPeriod>(
     subscription?.period ?? "annually",
@@ -64,7 +64,7 @@ export default function Page() {
     plan: Plan;
     priceId: string;
   }) => {
-    if (stripe_customer_id) {
+    if (stripeCustomerId) {
       await updateSubscription({ plan, priceId });
     } else {
       await mutateAsync({ plan, priceId });
@@ -77,7 +77,7 @@ export default function Page() {
       description="Update your payment information or switch plans according to your needs"
       displayTrial={false}
     >
-      {stripe_customer_id && (
+      {stripeCustomerId && (
         <>
           <div className="mt-6 grid grid-cols-2 gap-12">
             <div>

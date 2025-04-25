@@ -2,23 +2,24 @@ import {
   type ProfileAttributes,
   ProfileSchema,
 } from "@conquest/zod/schemas/profile.schema";
+import { format } from "date-fns";
 import { v4 as uuid } from "uuid";
 import { client } from "../client";
 
 type Props = {
-  external_id?: string | null;
+  externalId?: string | null;
   attributes: ProfileAttributes;
-  member_id: string;
-  created_at?: Date;
-  workspace_id: string;
+  memberId: string;
+  createdAt?: Date;
+  workspaceId: string;
 };
 
 export const createProfile = async ({
-  external_id,
+  externalId,
   attributes,
-  member_id,
-  created_at,
-  workspace_id,
+  memberId,
+  createdAt,
+  workspaceId,
 }: Props) => {
   const id = uuid();
 
@@ -27,11 +28,11 @@ export const createProfile = async ({
     values: [
       {
         id,
-        external_id,
+        externalId,
         attributes,
-        member_id,
-        created_at,
-        workspace_id,
+        memberId,
+        createdAt: format(createdAt ?? new Date(), "yyyy-MM-dd HH:mm:ss"),
+        workspaceId,
       },
     ],
     format: "JSON",

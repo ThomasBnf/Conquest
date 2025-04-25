@@ -7,7 +7,7 @@ type Props = {
 export const deleteActivityType = async ({ id }: Props) => {
   return await client.query({
     query: `
-      ALTER TABLE activity_type
+      ALTER TABLE activityType
       DELETE WHERE id = '${id}'`,
   });
 };

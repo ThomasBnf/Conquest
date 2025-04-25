@@ -4,17 +4,17 @@ import { client } from "../client";
 import { getChannel } from "./getChannel";
 
 type Props = {
-  external_id: string;
+  externalId: string;
   name: string;
   source: Source;
-  workspace_id: string;
+  workspaceId: string;
 };
 
 export const createChannel = async ({
-  external_id,
+  externalId,
   name,
   source,
-  workspace_id,
+  workspaceId,
 }: Props) => {
   const id = uuid();
 
@@ -23,10 +23,10 @@ export const createChannel = async ({
     values: [
       {
         id,
-        external_id,
+        externalId,
         name,
         source,
-        workspace_id,
+        workspaceId,
       },
     ],
     format: "JSON",

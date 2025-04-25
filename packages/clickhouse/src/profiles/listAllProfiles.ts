@@ -2,15 +2,15 @@ import { ProfileSchema } from "@conquest/zod/schemas/profile.schema";
 import { client } from "../client";
 
 type Props = {
-  workspace_id: string;
+  workspaceId: string;
 };
 
-export const listAllProfiles = async ({ workspace_id }: Props) => {
+export const listAllProfiles = async ({ workspaceId }: Props) => {
   const result = await client.query({
     query: `
       SELECT *
       FROM profile
-      WHERE workspace_id = '${workspace_id}'
+      WHERE workspaceId = '${workspaceId}'
     `,
   });
 

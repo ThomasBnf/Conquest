@@ -38,7 +38,7 @@ export const MergeDialog = ({ members, onReset }: Props) => {
   >([]);
   const utils = trpc.useUtils();
 
-  const { data, isLoading } = trpc.members.listWithProfiles.useQuery({
+  const { data } = trpc.members.listWithProfiles.useQuery({
     ids: members.map((member) => member.id),
   });
 
@@ -47,7 +47,7 @@ export const MergeDialog = ({ members, onReset }: Props) => {
       const { id } = data ?? {};
 
       if (id) {
-        utils.profiles.list.invalidate({ member_id: id });
+        utils.profiles.list.invalidate({ memberId: id });
         utils.members.invalidate();
         utils.duplicate.invalidate();
       }

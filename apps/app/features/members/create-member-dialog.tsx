@@ -89,7 +89,7 @@ export const CreateMemberDialog = () => {
             <DialogBody>
               <FormField
                 control={form.control}
-                name="first_name"
+                name="firstName"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>First Name</FormLabel>
@@ -102,7 +102,7 @@ export const CreateMemberDialog = () => {
               />
               <FormField
                 control={form.control}
-                name="last_name"
+                name="lastName"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Last Name</FormLabel>
@@ -115,7 +115,7 @@ export const CreateMemberDialog = () => {
               />
               <FormField
                 control={form.control}
-                name="primary_email"
+                name="primaryEmail"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Email</FormLabel>

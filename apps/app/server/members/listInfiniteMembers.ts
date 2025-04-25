@@ -10,8 +10,8 @@ export const listInfiniteMembers = protectedProcedure
     }),
   )
   .query(async ({ ctx: { user }, input }) => {
-    const { workspace_id } = user;
+    const { workspaceId } = user;
     const { cursor, search } = input;
 
-    return _listInfiniteMembers({ cursor, search, workspace_id });
+    return _listInfiniteMembers({ cursor, search, workspaceId });
   });

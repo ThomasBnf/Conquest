@@ -16,25 +16,25 @@ const EXCLUDED_CHANNEL_TYPES = [
 
 export const listChannels = protectedProcedure.query(
   async ({ ctx: { user } }) => {
-    const { workspace_id } = user;
+    const { workspaceId } = user;
 
     const discord = DiscordIntegrationSchema.parse(
       await getIntegrationBySource({
         source: "Discord",
-        workspace_id,
+        workspaceId,
       }),
     );
 
-    const { external_id, details } = discord;
-    const { expires_in } = details;
+    const { externalId, details } = discord;
+    const { expiresIn } = details;
 
-    const isExpired = new Date(Date.now() + expires_in * 1000) < new Date();
+    const isExpired = new Date(Date.now() + expiresIn * 1000) < new Date();
     if (isExpired) await getRefreshToken({ discord });
 
-    if (!external_id) return [];
+    if (!externalId) return [];
 
     const channels = (await discordClient.get(
-      Routes.guildChannels(external_id),
+      Routes.guildChannels(externalId),
     )) as APIGuildCategoryChannel[];
 
     const filteredChannels = channels.filter((channel) => {

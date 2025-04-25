@@ -35,15 +35,15 @@ export const POST = async (request: NextRequest) => {
         console.log("invoice", invoice);
 
         const workspace = await getWorkspaceStripe({
-          stripe_customer_id: invoice.customer as string,
+          stripeCustomerId: invoice.customer as string,
         });
 
         if (!workspace) {
           return NextResponse.json({ error: "Workspace not found" });
         }
 
-        const { plan, price_id } = invoice.subscription_details?.metadata as {
-          price_id: string;
+        const { plan, priceId } = invoice.subscription_details?.metadata as {
+          priceId: string;
           plan: Plan;
         };
 
@@ -53,8 +53,8 @@ export const POST = async (request: NextRequest) => {
           },
           data: {
             plan,
-            price_id,
-            is_past_due: null,
+            priceId,
+            isPastDue: null,
           },
         });
 
@@ -65,21 +65,21 @@ export const POST = async (request: NextRequest) => {
         console.log("session", session);
 
         const workspace = await getWorkspaceStripe({
-          stripe_customer_id: session.customer as string,
+          stripeCustomerId: session.customer as string,
         });
 
         if (!workspace) {
           return NextResponse.json({ error: "Workspace not found" });
         }
 
-        const { plan, price_id } = session.metadata as {
+        const { plan, priceId } = session.metadata as {
           plan: Plan;
-          price_id: string;
+          priceId: string;
         };
 
-        const { trial_end } = workspace;
+        const { trialEnd } = workspace;
 
-        const isTrialEnded = trial_end && isBefore(trial_end, new Date());
+        const isTrialEnded = trialEnd && isBefore(trialEnd, new Date());
 
         await prisma.workspace.update({
           where: {
@@ -87,9 +87,9 @@ export const POST = async (request: NextRequest) => {
           },
           data: {
             plan,
-            price_id,
-            trial_end: isTrialEnded ? null : trial_end,
-            is_past_due: null,
+            priceId,
+            trialEnd: isTrialEnded ? null : trialEnd,
+            isPastDue: null,
           },
         });
 
@@ -100,16 +100,16 @@ export const POST = async (request: NextRequest) => {
         console.log("subscription", subscription);
 
         const workspace = await getWorkspaceStripe({
-          stripe_customer_id: subscription.customer as string,
+          stripeCustomerId: subscription.customer as string,
         });
 
         if (!workspace) {
           return NextResponse.json({ error: "Workspace not found" });
         }
 
-        const { plan, price_id } = subscription.metadata as {
+        const { plan, priceId } = subscription.metadata as {
           plan: Plan;
-          price_id: string;
+          priceId: string;
         };
 
         const { trial_end } = subscription;
@@ -122,13 +122,13 @@ export const POST = async (request: NextRequest) => {
           },
           data: {
             plan,
-            price_id,
-            trial_end: hasTrial
+            priceId,
+            trialEnd: hasTrial
               ? isTrialEnded
                 ? null
                 : new Date(trial_end * 1000)
               : null,
-            is_past_due:
+            isPastDue:
               subscription.status === "paused" ||
               subscription.status === "past_due"
                 ? new Date()
@@ -143,7 +143,7 @@ export const POST = async (request: NextRequest) => {
         console.log("subscriptionDeleted", subscription);
 
         const workspace = await getWorkspaceStripe({
-          stripe_customer_id: subscription.customer as string,
+          stripeCustomerId: subscription.customer as string,
         });
 
         if (!workspace) {
@@ -152,7 +152,7 @@ export const POST = async (request: NextRequest) => {
 
         await updateWorkspace({
           id: workspace.id,
-          is_past_due: new Date(),
+          isPastDue: new Date(),
         });
 
         break;

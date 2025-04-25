@@ -6,7 +6,7 @@ export const createApiKey = protectedProcedure
   .input(FormCreateSchema)
   .mutation(async ({ ctx: { user }, input }) => {
     const { name } = input;
-    const { workspace_id } = user;
+    const { workspaceId } = user;
 
-    return await _createApiKey({ name, workspace_id });
+    return await _createApiKey({ name, workspaceId });
   });

@@ -11,7 +11,7 @@ type Props = {
 
 export const MemberHeatmap = ({ memberId }: Props) => {
   const { data, isLoading } = trpc.dashboard.heatmap.useQuery({
-    member_id: memberId,
+    memberId,
   });
 
   const totalActivities = data?.reduce(
@@ -36,7 +36,7 @@ export const MemberHeatmap = ({ memberId }: Props) => {
           days
         </p>
       </div>
-      <Heatmap activities={data} member_id={memberId} />
+      <Heatmap activities={data} memberId={memberId} />
     </div>
   );
 };

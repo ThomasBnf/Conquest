@@ -65,110 +65,110 @@ model Account {
     id_token          String? @db.Text
     session_state     String?
 
-    user user @relation(fields: [userId], references: [id], onDelete: Cascade)
+    user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
     @@unique([provider, providerAccountId])
     @@map("accounts")
 }
 
-model api_key {
+model ApiKey {
     id    String @id @default(uuid())
     name  String
     token String @unique
 
-    workspace_id String
-    workspace    workspace @relation(fields: [workspace_id], references: [id], onDelete: Cascade)
+    workspaceId String
+    workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
 
-    created_at DateTime @default(now())
+    createdAt DateTime @default(now())
 
     @@index([id])
-    @@index([workspace_id])
+    @@index([workspaceId])
 }
 
-model duplicate {
-    id           String    @id @default(uuid())
-    member_ids   String[]
-    reason       REASON
-    state        STATE
-    total_pulse  Int       @default(0)
-    workspace_id String
-    workspace    workspace @relation(fields: [workspace_id], references: [id], onDelete: Cascade)
-
-    created_at DateTime @default(now())
-    updated_at DateTime @updatedAt
-
-    @@index([workspace_id])
-}
-
-model event {
+model Duplicate {
     id          String    @id @default(uuid())
-    external_id String    @unique
-    title       String
-    started_at  DateTime
-    ended_at    DateTime?
-    source      SOURCE
+    memberIds   String[]
+    reason      REASON
+    state       STATE
+    totalPulse  Int       @default(0)
+    workspaceId String
+    workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
 
-    workspace_id String
-    workspace    workspace @relation(fields: [workspace_id], references: [id], onDelete: Cascade)
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 
-    created_at DateTime @default(now())
-    updated_at DateTime @updatedAt
-
-    @@index([id, workspace_id])
-    @@index([source, workspace_id])
+    @@index([workspaceId])
 }
 
-model integration {
-    id            String    @id @default(uuid())
-    external_id   String?   @unique
-    connected_at  DateTime?
-    status        STATUS
-    details       Json
-    trigger_token String
-    expires_at    DateTime
-    run_id        String?
-    created_by    String
+model Event {
+    id         String    @id @default(uuid())
+    externalId String    @unique
+    title      String
+    startedAt  DateTime
+    endedAt    DateTime?
+    source     SOURCE
 
-    workspace_id String
-    workspace    workspace @relation(fields: [workspace_id], references: [id], onDelete: Cascade)
+    workspaceId String
+    workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
 
-    created_at DateTime @default(now())
-    updated_at DateTime @updatedAt
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 
-    @@index([id, workspace_id])
-    @@index([external_id])
+    @@index([id, workspaceId])
+    @@index([source, workspaceId])
 }
 
-model list {
+model Integration {
+    id           String    @id @default(uuid())
+    externalId   String?   @unique
+    connectedAt  DateTime?
+    status       STATUS
+    details      Json
+    triggerToken String
+    expiresAt    DateTime
+    runId        String?
+    createdBy    String
+
+    workspaceId String
+    workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@index([id, workspaceId])
+    @@index([externalId])
+}
+
+model List {
     id           String @id @default(uuid())
     emoji        String
     name         String
     groupFilters Json   @default("{\"filters\":[],\"operator\":\"AND\"}")
-    created_by   String
+    createdBy    String
 
-    workspace_id String
-    workspace    workspace @relation(fields: [workspace_id], references: [id], onDelete: Cascade)
+    workspaceId String
+    workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
 
-    created_at DateTime @default(now())
-    updated_at DateTime @updatedAt
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 
-    @@index([created_by, workspace_id])
-    @@index([id, workspace_id])
+    @@index([createdBy, workspaceId])
+    @@index([id, workspaceId])
 }
 
-model post {
-    id          String @id @default(cuid())
-    external_id String
-    content     String
-    author_id   String
+model Post {
+    id         String @id @default(cuid())
+    externalId String
+    content    String
+    authorId   String
 
-    workspace_id String
-    workspace    workspace @relation(fields: [workspace_id], references: [id], onDelete: Cascade)
+    workspaceId String
+    workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
 
-    created_at DateTime @default(now())
+    createdAt DateTime @default(now())
 
-    @@unique([external_id, workspace_id])
-    @@index([external_id, workspace_id])
+    @@unique([externalId, workspaceId])
+    @@index([externalId, workspaceId])
 }
 
 model Session {
@@ -176,79 +176,79 @@ model Session {
     sessionToken String   @unique @map("session_token")
     userId       String   @map("user_id")
     expires      DateTime
-    user         user     @relation(fields: [userId], references: [id], onDelete: Cascade)
+    user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
     @@map("sessions")
 }
 
-model tag {
-    id          String  @id @default(uuid())
-    external_id String?
-    name        String
-    color       String
-    source      SOURCE
+model Tag {
+    id         String  @id @default(uuid())
+    externalId String?
+    name       String
+    color      String
+    source     SOURCE
 
-    workspace_id String
-    workspace    workspace @relation(fields: [workspace_id], references: [id], onDelete: Cascade)
+    workspaceId String
+    workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
 
-    created_at DateTime @default(now())
-    updated_at DateTime @updatedAt
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 
-    @@unique([external_id, workspace_id])
-    @@index([id, workspace_id])
-    @@index([workspace_id])
+    @@unique([externalId, workspaceId])
+    @@index([id, workspaceId])
+    @@index([workspaceId])
 }
 
-model user {
-    id                    String    @id @default(cuid())
-    email                 String    @unique
-    emailVerified         DateTime? @map("email_verified")
-    first_name            String?
-    last_name             String?
-    avatar_url            String?
-    onboarding            DateTime?
-    role                  ROLE      @default(ADMIN)
-    last_activity_at      DateTime  @updatedAt
-    members_preferences   Json      @default("{\"id\":\"level\",\"desc\":true,\"groupFilters\":{\"filters\":[],\"operator\":\"AND\"},\"columnVisibility\":{},\"columnOrder\":[]}")
-    companies_preferences Json      @default("{\"id\":\"name\",\"desc\":false,\"groupFilters\":{\"filters\":[],\"operator\":\"AND\"},\"columnVisibility\":{},\"columnOrder\":[]}")
-    workspace_id          String
-    workspace             workspace @relation(fields: [workspace_id], references: [id], onDelete: Cascade)
+model User {
+    id                   String    @id @default(cuid())
+    email                String    @unique
+    emailVerified        DateTime? @map("email_verified")
+    firstName            String?
+    lastName             String?
+    avatarUrl            String?
+    onboarding           DateTime?
+    role                 ROLE      @default(ADMIN)
+    lastActivityAt       DateTime  @updatedAt
+    membersPreferences   Json      @default("{\"id\":\"level\",\"desc\":true,\"groupFilters\":{\"filters\":[],\"operator\":\"AND\"},\"columnVisibility\":{},\"columnOrder\":[]}")
+    companiesPreferences Json      @default("{\"id\":\"name\",\"desc\":false,\"groupFilters\":{\"filters\":[],\"operator\":\"AND\"},\"columnVisibility\":{},\"columnOrder\":[]}")
+    workspaceId          String
+    workspace            Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
 
-    created_at DateTime @default(now())
-    updated_at DateTime @updatedAt
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 
     accounts        Account[]
     sessions        Session[]
-    userInWorkspace userInWorkspace[]
+    userInWorkspace UserInWorkspace[]
 
     @@index([id])
     @@index([email])
 }
 
-model userInWorkspace {
-    id           String    @id @default(uuid())
-    user_id      String
-    user         user      @relation(fields: [user_id], references: [id], onDelete: Cascade)
-    workspace_id String
-    workspace    workspace @relation(fields: [workspace_id], references: [id], onDelete: Cascade)
+model UserInWorkspace {
+    id          String    @id @default(uuid())
+    userId      String
+    user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+    workspaceId String
+    workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
 
-    created_at DateTime @default(now())
-    updated_at DateTime @updatedAt
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 
-    @@index([user_id])
-    @@index([workspace_id])
+    @@index([userId])
+    @@index([workspaceId])
 }
 
 model userInvitation {
-    id           String    @id @default(uuid())
-    email        String
-    workspace_id String
-    workspace    workspace @relation(fields: [workspace_id], references: [id], onDelete: Cascade)
+    id          String    @id @default(uuid())
+    email       String
+    workspaceId String
+    workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
 
-    created_at DateTime @default(now())
-    updated_at DateTime @updatedAt
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 
-    @@index([workspace_id])
+    @@index([workspaceId])
 }
 
 model VerificationToken {
@@ -261,67 +261,50 @@ model VerificationToken {
     @@map("verification_tokens")
 }
 
-model webhook {
-    id      String @id @default(uuid())
-    trigger String
-    url     String
-    secret  String
-
-    workspace_id String
-    workspace    workspace @relation(fields: [workspace_id], references: [id], onDelete: Cascade)
-
-    created_at DateTime @default(now())
-    updated_at DateTime @updatedAt
-
-    @@index([id, workspace_id])
-    @@index([workspace_id])
-}
-
-model workflow {
+model Workflow {
     id          String    @id @default(uuid())
     name        String
     description String?
     nodes       Json[]
     edges       Json[]
     published   Boolean   @default(false)
-    last_run_at DateTime?
+    lastRunAt   DateTime?
 
-    workspace_id String
-    workspace    workspace @relation(fields: [workspace_id], references: [id], onDelete: Cascade)
+    workspaceId String
+    workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
 
-    created_at DateTime @default(now())
-    updated_at DateTime @updatedAt
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 
-    @@index([id, workspace_id])
-    @@index([workspace_id])
+    @@index([id, workspaceId])
+    @@index([workspaceId])
 }
 
-model workspace {
-    id                 String    @id @default(uuid())
-    name               String
-    slug               String    @unique
-    source             String?
-    company_size       String?
-    plan               PLAN?
-    stripe_customer_id String?
-    price_id           String?
-    trial_end          DateTime?
-    is_past_due        DateTime?
+model Workspace {
+    id               String    @id @default(uuid())
+    name             String
+    slug             String    @unique
+    source           String?
+    companySize      String?
+    plan             PLAN?
+    stripeCustomerId String?
+    priceId          String?
+    trialEnd         DateTime?
+    isPastDue        DateTime?
 
-    api_keys        api_key[]
-    events          event[]
-    integrations    integration[]
-    lists           list[]
-    post            post[]
-    tags            tag[]
-    user            user[]
-    webhooks        webhook[]
-    workflows       workflow[]
-    duplicates      duplicate[]
-    userInWorkspace userInWorkspace[]
+    apiKeys         ApiKey[]
+    events          Event[]
+    integrations    Integration[]
+    lists           List[]
+    post            Post[]
+    tags            Tag[]
+    user            User[]
+    workflows       Workflow[]
+    duplicates      Duplicate[]
+    userInWorkspace UserInWorkspace[]
 
-    created_at     DateTime         @default(now())
-    updated_at     DateTime         @updatedAt
+    createdAt      DateTime         @default(now())
+    updatedAt      DateTime         @updatedAt
     userInvitation userInvitation[]
 
     @@index([id])

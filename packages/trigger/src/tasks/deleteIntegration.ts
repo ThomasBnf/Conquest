@@ -16,6 +16,7 @@ import { listAndDeleteWebhooks } from "../github/listAndDeleteWebhooks";
 import { deleteWebhook } from "../livestorm/deleteWebhook";
 import { getRefreshToken } from "../livestorm/getRefreshToken";
 import { listWebhooks } from "../livestorm/listWebhooks";
+
 export const deleteIntegration = schemaTask({
   id: "delete-integration",
   machine: "small-2x",
@@ -24,20 +25,20 @@ export const deleteIntegration = schemaTask({
     deleteIntegration: z.boolean(),
   }),
   run: async ({ integration, deleteIntegration }) => {
-    const { workspace_id, details } = integration;
+    const { workspaceId, details } = integration;
     const { source } = details;
 
     if (source === "Discord") {
       await prisma.tag.deleteMany({
-        where: { source, workspace_id },
+        where: { source, workspaceId },
       });
     }
 
     if (source === "Github") {
       const github = GithubIntegrationSchema.parse(integration);
-      const { access_token, iv } = github.details;
+      const { accessToken, iv } = github.details;
 
-      const decryptedToken = await decrypt({ access_token, iv });
+      const decryptedToken = await decrypt({ accessToken, iv });
       const octokit = new Octokit({ auth: decryptedToken });
 
       await listAndDeleteWebhooks({ octokit, github });
@@ -45,10 +46,10 @@ export const deleteIntegration = schemaTask({
       client.query({
         query: `
           ALTER TABLE profile DELETE
-          WHERE member_id IN (
+          WHERE memberId IN (
             SELECT id FROM member FINAL
             WHERE source = '${source}'
-            AND workspace_id = '${workspace_id}'
+            AND workspaceId = '${workspaceId}'
           );`,
       });
     }
@@ -68,11 +69,11 @@ export const deleteIntegration = schemaTask({
     }
 
     if (source === "Slack") {
-      const { access_token, access_token_iv } = details;
+      const { accessToken, accessTokenIv } = details;
 
       const token = await decrypt({
-        access_token,
-        iv: access_token_iv,
+        accessToken,
+        iv: accessTokenIv,
       });
 
       const web = new WebClient(token);
@@ -91,53 +92,53 @@ export const deleteIntegration = schemaTask({
     }
 
     await prisma.tag.deleteMany({
-      where: { source, workspace_id },
+      where: { source, workspaceId },
     });
 
     client.query({
       query: `
         ALTER TABLE activity DELETE 
         WHERE source = '${source}'
-        AND workspace_id = '${workspace_id}'`,
+        AND workspaceId = '${workspaceId}'`,
     });
     client.query({
       query: `
         ALTER TABLE log DELETE 
-        WHERE member_id IN (
+        WHERE memberId IN (
           SELECT id FROM member FINAL
           WHERE source = '${source}'
-          AND workspace_id = '${workspace_id}'
+          AND workspaceId = '${workspaceId}'
         );`,
     });
     client.query({
       query: `
-        ALTER TABLE activity_type DELETE 
+        ALTER TABLE activityType DELETE 
         WHERE source = '${source}'
-        AND workspace_id = '${workspace_id}'`,
+        AND workspaceId = '${workspaceId}'`,
     });
     client.query({
       query: `
         ALTER TABLE channel DELETE
         WHERE source = '${source}'
-        AND workspace_id = '${workspace_id}'`,
+        AND workspaceId = '${workspaceId}'`,
     });
     client.query({
       query: `
         ALTER TABLE company DELETE
         WHERE source = '${source}'
-        AND workspace_id = '${workspace_id}'`,
+        AND workspaceId = '${workspaceId}'`,
     });
     client.query({
       query: `
         ALTER TABLE member DELETE
         WHERE source = '${source}'
-        AND workspace_id = '${workspace_id}'`,
+        AND workspaceId = '${workspaceId}'`,
     });
     client.query({
       query: `
         ALTER TABLE profile DELETE
         WHERE JSONExtractString(CAST(attributes AS String), 'source') = '${source}'
-        AND workspace_id = '${workspace_id}'`,
+        AND workspaceId = '${workspaceId}'`,
     });
   },
 });

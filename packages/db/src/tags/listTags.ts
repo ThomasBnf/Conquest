@@ -2,13 +2,13 @@ import { TagSchema } from "@conquest/zod/schemas/tag.schema";
 import { prisma } from "../prisma";
 
 type Props = {
-  workspace_id: string;
+  workspaceId: string;
 };
 
-export const listTags = async ({ workspace_id }: Props) => {
+export const listTags = async ({ workspaceId }: Props) => {
   const tags = await prisma.tag.findMany({
     where: {
-      workspace_id,
+      workspaceId,
     },
     orderBy: {
       name: "asc",

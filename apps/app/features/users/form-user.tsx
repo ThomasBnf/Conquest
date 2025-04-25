@@ -38,8 +38,8 @@ export const FormUser = () => {
   const form = useForm<FormUserSchema>({
     resolver: zodResolver(FormUserSchema),
     defaultValues: {
-      first_name: user?.first_name ?? "",
-      last_name: user?.last_name ?? "",
+      firstName: user?.firstName ?? "",
+      lastName: user?.lastName ?? "",
       email: user?.email,
     },
   });
@@ -61,7 +61,7 @@ export const FormUser = () => {
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField
               control={form.control}
-              name="first_name"
+              name="firstName"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Name</FormLabel>
@@ -74,7 +74,7 @@ export const FormUser = () => {
             />
             <FormField
               control={form.control}
-              name="last_name"
+              name="lastName"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Last Name</FormLabel>

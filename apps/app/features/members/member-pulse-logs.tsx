@@ -30,8 +30,8 @@ type Props = {
 };
 
 export const MemberPulseLogs = ({ member }: Props) => {
-  const { data: logs, failureReason } = trpc.logs.list.useQuery({
-    member_id: member.id,
+  const { data: logs } = trpc.logs.list.useQuery({
+    memberId: member.id,
   });
 
   const formattedLogs = logs?.map((log) => ({

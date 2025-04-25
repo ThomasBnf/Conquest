@@ -6,19 +6,19 @@ import type { WebClient } from "@slack/web-api";
 type Props = {
   web: WebClient;
   channel: Channel;
-  reply_to?: string | null;
+  replyTo?: string | null;
 };
 
-export const listReplies = async ({ web, channel, reply_to }: Props) => {
-  const { workspace_id } = channel;
+export const listReplies = async ({ web, channel, replyTo }: Props) => {
+  const { workspaceId } = channel;
 
   let cursor: string | undefined;
 
   do {
     const { messages, response_metadata } = await web.conversations.replies({
       limit: 100,
-      channel: channel.external_id ?? "",
-      ts: reply_to ?? "",
+      channel: channel.externalId ?? "",
+      ts: replyTo ?? "",
       cursor,
     });
 
@@ -30,23 +30,23 @@ export const listReplies = async ({ web, channel, reply_to }: Props) => {
       if (subtype === "thread_broadcast") continue;
 
       const profile = await getProfile({
-        external_id: user,
-        workspace_id,
+        externalId: user,
+        workspaceId,
       });
 
       if (!profile) continue;
 
       const activity = await createActivity({
-        external_id: ts,
-        activity_type_key: "slack:reply",
+        externalId: ts,
+        activityTypeKey: "slack:reply",
         message: text,
-        reply_to: reply_to ?? "",
-        member_id: profile.member_id,
-        channel_id: channel.id,
-        created_at: new Date(Number(ts) * 1000),
-        updated_at: new Date(Number(ts) * 1000),
+        replyTo: replyTo ?? "",
+        memberId: profile.memberId,
+        channelId: channel.id,
+        createdAt: new Date(Number(ts) * 1000),
+        updatedAt: new Date(Number(ts) * 1000),
         source: "Slack",
-        workspace_id,
+        workspaceId,
       });
 
       if (reactions?.length) {
@@ -55,22 +55,22 @@ export const listReplies = async ({ web, channel, reply_to }: Props) => {
 
           for (const user of reaction.users ?? []) {
             const profile = await getProfile({
-              external_id: user,
-              workspace_id,
+              externalId: user,
+              workspaceId,
             });
 
             if (!profile) continue;
 
             await createActivity({
-              activity_type_key: "slack:reaction",
+              activityTypeKey: "slack:reaction",
               message: name,
-              react_to: activity?.external_id,
-              channel_id: channel.id,
-              member_id: profile.member_id,
-              created_at: new Date(Number(ts) * 1000),
-              updated_at: new Date(Number(ts) * 1000),
+              reactTo: activity?.externalId,
+              channelId: channel.id,
+              memberId: profile.memberId,
+              createdAt: new Date(Number(ts) * 1000),
+              updatedAt: new Date(Number(ts) * 1000),
               source: "Slack",
-              workspace_id,
+              workspaceId,
             });
           }
         }

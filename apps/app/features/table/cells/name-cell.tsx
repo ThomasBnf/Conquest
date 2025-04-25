@@ -10,7 +10,7 @@ type Props = {
 export const NameCell = ({ company }: Props) => {
   const { data: session } = useSession();
   const { slug } = session?.user.workspace ?? {};
-  const { id, name, logo_url } = company;
+  const { id, name, logoUrl } = company;
 
   return (
     <Link
@@ -19,7 +19,7 @@ export const NameCell = ({ company }: Props) => {
       prefetch
     >
       <Avatar className="size-6">
-        <AvatarImage src={logo_url ?? ""} />
+        <AvatarImage src={logoUrl ?? ""} />
         <AvatarFallback className="text-sm">
           {name?.charAt(0).toUpperCase()}
         </AvatarFallback>

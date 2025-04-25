@@ -12,7 +12,7 @@ export const churnRate = protectedProcedure
     }),
   )
   .query(async ({ ctx: { user }, input }) => {
-    const { workspace_id } = user;
+    const { workspaceId } = user;
     const { from, to } = input;
 
     const timeZone = "Europe/Paris";
@@ -40,44 +40,44 @@ export const churnRate = protectedProcedure
         (
           SELECT count(*) as count
           FROM member m FINAL
-          LEFT JOIN level l ON m.level_id = l.id
+          LEFT JOIN level l ON m.levelId = l.id
           WHERE 
-            m.workspace_id = '${workspace_id}'
+            m.workspaceId = '${workspaceId}'
             AND m.id NOT IN (
-              SELECT member_id 
+              SELECT memberId 
               FROM activity 
               WHERE 
-                workspace_id = '${workspace_id}'
-                AND created_at BETWEEN '${_from}' AND '${_to}'
+                workspaceId = '${workspaceId}'
+                AND createdAt BETWEEN '${_from}' AND '${_to}'
             )
         ) as currentInactive,
         (
           SELECT count(*) as total
           FROM member m FINAL
-          LEFT JOIN level l ON m.level_id = l.id
+          LEFT JOIN level l ON m.levelId = l.id
           WHERE 
-            m.workspace_id = '${workspace_id}'
+            m.workspaceId = '${workspaceId}'
         ) as currentTotal,
         (
           SELECT count(*) as count
           FROM member m FINAL
-          LEFT JOIN level l ON m.level_id = l.id
+          LEFT JOIN level l ON m.levelId = l.id
           WHERE 
-            m.workspace_id = '${workspace_id}'
+            m.workspaceId = '${workspaceId}'
             AND m.id NOT IN (
-              SELECT member_id 
+              SELECT memberId 
               FROM activity 
               WHERE 
-                workspace_id = '${workspace_id}'
-                AND created_at BETWEEN '${_previousFrom}' AND '${_previousTo}'
+                workspaceId = '${workspaceId}'
+                AND createdAt BETWEEN '${_previousFrom}' AND '${_previousTo}'
             )
         ) as previousInactive,
         (
           SELECT count(*) as total
           FROM member m FINAL
-          LEFT JOIN level l ON m.level_id = l.id
+          LEFT JOIN level l ON m.levelId = l.id
           WHERE 
-            m.workspace_id = '${workspace_id}'
+            m.workspaceId = '${workspaceId}'
         ) as previousTotal
       `,
       format: "JSON",

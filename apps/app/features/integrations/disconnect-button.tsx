@@ -11,7 +11,7 @@ type Props = {
 export const DisconnectButton = ({ integration }: Props) => {
   const [loading, setLoading] = useState(false);
   const { deleteIntegration } = useIntegration();
-  const { expires_at } = integration ?? {};
+  const { expiresAt } = integration ?? {};
 
   const onDisconnect = async () => {
     if (!integration) return;
@@ -22,10 +22,10 @@ export const DisconnectButton = ({ integration }: Props) => {
   };
 
   useEffect(() => {
-    if (expires_at && expires_at < new Date()) {
+    if (expiresAt && expiresAt < new Date()) {
       onDisconnect();
     }
-  }, [expires_at]);
+  }, [expiresAt]);
 
   return (
     <Button variant="destructive" onClick={onDisconnect} disabled={loading}>

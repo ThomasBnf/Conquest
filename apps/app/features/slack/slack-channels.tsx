@@ -56,7 +56,7 @@ export const SlackChannels = () => {
     );
 
     const channelsData = filteredChannels?.map(({ id, name }) => ({
-      external_id: id ?? "",
+      externalId: id ?? "",
       name: name ?? "",
       source: "Slack" as const,
     }));
@@ -64,7 +64,7 @@ export const SlackChannels = () => {
     if (!channelsData) return;
 
     await createManyChannels({ channels: channelsData });
-    await createManyActivityTypes({ activity_types: SLACK_ACTIVITY_TYPES });
+    await createManyActivityTypes({ activityTypes: SLACK_ACTIVITY_TYPES });
   };
 
   useEffect(() => {

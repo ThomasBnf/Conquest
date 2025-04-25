@@ -26,7 +26,7 @@ export const WorkspaceSchema = z.object({
 
 export const QuestionsSchema = z.object({
   source: SourceSchema,
-  company_size: CompanySizeSchema,
+  companySize: CompanySizeSchema,
 });
 
 export type Workspace = z.infer<typeof WorkspaceSchema>;

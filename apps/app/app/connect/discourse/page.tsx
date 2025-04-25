@@ -3,19 +3,19 @@ import { createIntegration } from "@conquest/db/integrations/createIntegration";
 import { redirect } from "next/navigation";
 
 export default async function Page() {
-  const { id: userId, workspace_id } = await getCurrentUser();
+  const { id: userId, workspaceId } = await getCurrentUser();
 
   await createIntegration({
-    external_id: null,
+    externalId: null,
     details: {
       source: "Discourse",
-      community_url: "",
-      api_key: "",
-      api_key_iv: "",
-      user_fields: [],
+      communityUrl: "",
+      apiKey: "",
+      apiKeyIv: "",
+      userFields: [],
     },
-    created_by: userId,
-    workspace_id,
+    createdBy: userId,
+    workspaceId,
   });
 
   redirect("/settings/integrations/discourse");

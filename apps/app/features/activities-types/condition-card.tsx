@@ -10,10 +10,10 @@ type Props = {
 };
 
 export const ConditionCard = ({ activityType, condition }: Props) => {
-  const { channel_id, points } = condition;
+  const { channelId, points } = condition;
   const { data: channels } = trpc.channels.list.useQuery({});
 
-  const channel = channels?.find((c) => c.id === channel_id);
+  const channel = channels?.find((c) => c.id === channelId);
   return (
     <div className="flex items-center gap-1 text-muted-foreground">
       <p>

@@ -14,16 +14,16 @@ export const updateSubscription = protectedProcedure
   .mutation(async ({ ctx: { user }, input }) => {
     const { workspace } = user;
     const { plan, priceId } = input;
-    const { id, stripe_customer_id } = workspace;
+    const { id, stripeCustomerId } = workspace;
 
-    if (!stripe_customer_id) {
+    if (!stripeCustomerId) {
       throw new TRPCError({
         code: "BAD_REQUEST",
         message: "Customer not found",
       });
     }
     const subscriptions = await stripe.subscriptions.list({
-      customer: stripe_customer_id,
+      customer: stripeCustomerId,
     });
     const currentSubscription = subscriptions.data[0];
 
@@ -55,8 +55,8 @@ export const updateSubscription = protectedProcedure
       trial_end: trial_end ?? undefined,
       metadata: {
         plan,
-        price_id: priceId,
-        workspace_id: id,
+        priceId,
+        workspaceId: id,
       },
     });
   });

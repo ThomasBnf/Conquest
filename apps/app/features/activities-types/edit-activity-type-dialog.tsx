@@ -93,7 +93,7 @@ export const EditActivityTypeDialog = ({
         ...conditions.rules,
         {
           id: uuid(),
-          channel_id: "",
+          channelId: "",
           points: 2,
         },
       ],

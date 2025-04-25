@@ -29,7 +29,7 @@ export const DiscourseForm = () => {
   const { submit, run, error } = useRealtimeTaskTrigger<
     typeof installDiscourse
   >("install-discourse", {
-    accessToken: discourse?.trigger_token,
+    accessToken: discourse?.triggerToken,
   });
 
   const onStart = async () => {

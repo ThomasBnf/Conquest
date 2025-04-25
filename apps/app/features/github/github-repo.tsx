@@ -59,7 +59,9 @@ export const GithubRepo = () => {
       },
     });
 
-    await createManyActivityTypes({ activity_types: GITHUB_ACTIVITY_TYPES });
+    await createManyActivityTypes({
+      activityTypes: GITHUB_ACTIVITY_TYPES,
+    });
   };
 
   useEffect(() => {

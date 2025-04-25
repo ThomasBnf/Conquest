@@ -9,9 +9,9 @@ type Props = {
 };
 
 export const createManyChannels = async ({ integration, channels }: Props) => {
-  const { external_id, workspace_id } = integration;
+  const { externalId, workspaceId } = integration;
 
-  if (!external_id) return;
+  if (!externalId) return;
 
   let createdChannels: Channel[] = [];
 
@@ -19,10 +19,10 @@ export const createManyChannels = async ({ integration, channels }: Props) => {
     const { id, name } = channel;
 
     const createdChannel = await createChannel({
-      external_id: id,
+      externalId: id,
       name,
       source: "Discord",
-      workspace_id,
+      workspaceId,
     });
 
     if (!createdChannel) continue;

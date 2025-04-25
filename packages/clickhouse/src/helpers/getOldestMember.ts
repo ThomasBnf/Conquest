@@ -8,17 +8,15 @@ type Props = {
 export const getOldestMember = ({ members, finalMember }: Props) => {
   const oldestMember = members.reduce(
     (oldest, current) => {
-      if (current.first_activity && !oldest?.first_activity) return current;
-      if (!current.first_activity && oldest?.first_activity) return oldest;
+      if (current.firstActivity && !oldest?.firstActivity) return current;
+      if (!current.firstActivity && oldest?.firstActivity) return oldest;
 
-      if (current.first_activity && oldest?.first_activity) {
-        return current.first_activity < oldest.first_activity
-          ? current
-          : oldest;
+      if (current.firstActivity && oldest?.firstActivity) {
+        return current.firstActivity < oldest.firstActivity ? current : oldest;
       }
 
-      if (!oldest?.created_at) return current;
-      return current.created_at < oldest.created_at ? current : oldest;
+      if (!oldest?.createdAt) return current;
+      return current.createdAt < oldest.createdAt ? current : oldest;
     },
     null as Member | null,
   );

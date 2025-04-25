@@ -2,9 +2,9 @@ import { SOURCE } from "@conquest/zod/enum/source.enum";
 import { z } from "zod";
 
 export const MemberFormSchema = z.object({
-  first_name: z.string().min(1),
-  last_name: z.string().min(1),
-  primary_email: z.string().email(),
+  firstName: z.string().min(1),
+  lastName: z.string().min(1),
+  primaryEmail: z.string().email(),
   source: SOURCE,
 });
 

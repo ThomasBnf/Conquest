@@ -24,7 +24,7 @@ export const CompanyPage = ({ companyId }: Props) => {
     fetchNextPage,
     hasNextPage,
   } = trpc.activities.listInfinite.useInfiniteQuery(
-    { company_id: companyId },
+    { companyId },
     { getNextPageParam: (_, allPages) => allPages.length * 25 },
   );
 

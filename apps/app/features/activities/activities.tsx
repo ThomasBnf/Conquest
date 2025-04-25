@@ -35,7 +35,7 @@ export const Activities = ({
     if (!activities) return {};
 
     return activities?.reduce((acc: Activities, activity) => {
-      const createdAt = format(activity.created_at, "PP");
+      const createdAt = format(activity.createdAt, "PP");
       if (!acc[createdAt]) acc[createdAt] = [];
       acc[createdAt].push(activity);
       return acc;
@@ -76,8 +76,8 @@ export const Activities = ({
           </div>
           <div className="space-y-4">
             {activities.map((activity) => {
-              const { id, activity_type } = activity;
-              const { source } = activity_type;
+              const { id, activityType } = activity;
+              const { source } = activityType;
 
               return (
                 <IntegrationProvider key={id} source={source} loader={false}>

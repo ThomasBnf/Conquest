@@ -3,16 +3,16 @@ import { client } from "../client";
 
 type Props = {
   key: string;
-  workspace_id: string;
+  workspaceId: string;
 };
 
-export const getActivityTypeByKey = async ({ key, workspace_id }: Props) => {
+export const getActivityTypeByKey = async ({ key, workspaceId }: Props) => {
   const result = await client.query({
     query: `
       SELECT * 
-      FROM activity_type
+      FROM activityType
       WHERE key = '${key}'
-      AND workspace_id = '${workspace_id}'
+      AND workspaceId = '${workspaceId}'
     `,
   });
 

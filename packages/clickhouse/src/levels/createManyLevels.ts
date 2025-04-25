@@ -3,13 +3,13 @@ import { client } from "../client";
 
 type Props = {
   levels: LEVEL[];
-  workspace_id: string;
+  workspaceId: string;
 };
 
-export const createManyLevels = async ({ levels, workspace_id }: Props) => {
+export const createManyLevels = async ({ levels, workspaceId }: Props) => {
   const values = levels.map((level) => ({
     ...level,
-    workspace_id,
+    workspaceId,
   }));
 
   await client.insert({

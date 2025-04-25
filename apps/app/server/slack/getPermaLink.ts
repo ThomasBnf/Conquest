@@ -8,36 +8,36 @@ import { protectedProcedure } from "../trpc";
 export const getPermaLink = protectedProcedure
   .input(
     z.object({
-      channel_id: z.string().nullish(),
-      message_ts: z.string().nullable(),
+      channelId: z.string().nullish(),
+      messageTs: z.string().nullable(),
     }),
   )
   .query(async ({ ctx: { user }, input }) => {
-    const { workspace_id } = user;
-    const { channel_id, message_ts } = input;
+    const { workspaceId } = user;
+    const { channelId, messageTs } = input;
 
-    if (!channel_id || !message_ts) return null;
+    if (!channelId || !messageTs) return null;
 
     const slack = SlackIntegrationSchema.parse(
       await getIntegrationBySource({
         source: "Slack",
-        workspace_id,
+        workspaceId,
       }),
     );
 
     const { details } = slack;
-    const { access_token, access_token_iv } = details;
+    const { accessToken, accessTokenIv } = details;
 
     const token = await decrypt({
-      access_token: access_token,
-      iv: access_token_iv,
+      accessToken,
+      iv: accessTokenIv,
     });
 
     const web = new WebClient(token);
 
     const link = await web.chat.getPermalink({
-      channel: channel_id,
-      message_ts,
+      channel: channelId,
+      message_ts: messageTs,
     });
 
     return link.permalink;

@@ -18,7 +18,7 @@ export const FilterPicker = ({ index, filter }: Props) => {
   const { onDeleteFilter } = useFilters();
   const { label, operator } = filter;
 
-  const isEmpty = operator === "empty" || operator === "not_empty";
+  const isEmpty = operator === "not_empty" || operator === "empty";
 
   return (
     <div className="flex items-center gap-1">

@@ -15,31 +15,31 @@ type Props = {
 
 export const DiscordReaction = ({ activity, member }: Props) => {
   const { discord } = useIntegration();
-  const { external_id: guild_id } = discord ?? {};
-  const { message, react_to, channel_id, created_at } = activity;
-  const { source } = activity.activity_type;
+  const { externalId: guildId } = discord ?? {};
+  const { message, reactTo, channelId, createdAt } = activity;
+  const { source } = activity.activityType;
 
-  const { avatar_url, first_name, last_name } = member ?? {};
+  const { avatarUrl, firstName, lastName } = member ?? {};
 
   const { data: channel } = trpc.channels.get.useQuery(
-    channel_id ? { id: channel_id } : skipToken,
+    channelId ? { id: channelId } : skipToken,
   );
 
-  const href = `https://discord.com/channels/${guild_id}/${channel?.external_id}/${react_to}`;
+  const href = `https://discord.com/channels/${guildId}/${channel?.externalId}/${reactTo}`;
 
   return (
     <div className="flex items-center justify-between">
       <div className="flex items-center gap-2">
         <Avatar className="size-6">
-          <AvatarImage src={avatar_url ?? ""} />
+          <AvatarImage src={avatarUrl ?? ""} />
           <AvatarFallback className="text-sm">
-            {first_name?.charAt(0).toUpperCase()}
-            {last_name?.charAt(0).toUpperCase()}
+            {firstName?.charAt(0).toUpperCase()}
+            {lastName?.charAt(0).toUpperCase()}
           </AvatarFallback>
         </Avatar>
         <p className="text-muted-foreground">
           <span className="font-medium text-foreground">
-            {first_name} {last_name}
+            {firstName} {lastName}
           </span>{" "}
           added reaction {message}
           <span className="font-medium text-foreground">
@@ -48,7 +48,7 @@ export const DiscordReaction = ({ activity, member }: Props) => {
           </span>
         </p>
         <SourceBadge source={source} transparent onlyIcon />
-        <p className="text-muted-foreground">{format(created_at, "HH:mm")}</p>
+        <p className="text-muted-foreground">{format(createdAt, "HH:mm")}</p>
       </div>
       <ActivityMenu activity={activity} href={href} />
     </div>

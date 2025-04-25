@@ -3,16 +3,16 @@ import { ProfileSchema } from "@conquest/zod/schemas/profile.schema";
 import { client } from "../client";
 
 type Props = {
-  member_id: string;
+  memberId: string;
   source: Source;
 };
 
-export const getProfileBySource = async ({ member_id, source }: Props) => {
+export const getProfileBySource = async ({ memberId, source }: Props) => {
   const result = await client.query({
     query: `
       SELECT *
       FROM profile
-      WHERE member_id = '${member_id}'
+      WHERE memberId = '${memberId}'
       AND attributes.source = '${source}'
     `,
     format: "JSON",

@@ -15,7 +15,7 @@ type Props = {
 
 export default async function Page({ searchParams }: Props) {
   const { code, error } = await searchParams;
-  const { id: userId, workspace_id } = await getCurrentUser();
+  const { id: userId, workspaceId } = await getCurrentUser();
 
   if (error) redirect("/settings/integrations/discord?error=access_denied");
 
@@ -42,7 +42,7 @@ export default async function Page({ searchParams }: Props) {
   const { access_token, expires_in, refresh_token, guild } = data;
   const { id, name } = guild;
 
-  const integration = await getIntegration({ external_id: id });
+  const integration = await getIntegration({ externalId: id });
 
   if (integration) {
     return redirect("/settings/integrations/discord?error=already_connected");
@@ -52,20 +52,20 @@ export default async function Page({ searchParams }: Props) {
   const encryptedRefreshToken = await encrypt(refresh_token);
 
   await createIntegration({
-    external_id: id,
+    externalId: id,
     details: {
       source: "Discord",
       name,
-      access_token: encryptedAccessToken.token,
-      access_token_iv: encryptedAccessToken.iv,
-      refresh_token: encryptedRefreshToken.token,
-      refresh_token_iv: encryptedRefreshToken.iv,
-      expires_in,
+      accessToken: encryptedAccessToken.token,
+      accessTokenIv: encryptedAccessToken.iv,
+      refreshToken: encryptedRefreshToken.token,
+      refreshTokenIv: encryptedRefreshToken.iv,
+      expiresIn: expires_in,
       scopes: DISCORD_SCOPES,
       permissions: DISCORD_PERMISSIONS,
     },
-    created_by: userId,
-    workspace_id,
+    createdBy: userId,
+    workspaceId,
   });
 
   redirect("/settings/integrations/discord");

@@ -8,14 +8,14 @@ type Props = {
 };
 
 export const getRefreshToken = async ({ discord }: Props) => {
-  const { id, details, workspace_id } = discord;
-  const { refresh_token } = details;
+  const { id, details, workspaceId } = discord;
+  const { refreshToken } = details;
 
   const params = new URLSearchParams({
     client_id: env.NEXT_PUBLIC_DISCORD_CLIENT_ID,
     client_secret: env.DISCORD_CLIENT_SECRET,
     grant_type: "refresh_token",
-    refresh_token,
+    refresh_token: refreshToken,
   });
 
   const response = await fetch("https://discord.com/api/oauth2/token", {
@@ -34,11 +34,11 @@ export const getRefreshToken = async ({ discord }: Props) => {
     id,
     details: {
       ...details,
-      access_token: data.access_token,
-      refresh_token: data.refresh_token,
-      expires_in: data.expires_in,
+      accessToken: data.access_token,
+      refreshToken: data.refresh_token,
+      expiresIn: data.expires_in,
     },
-    workspace_id,
+    workspaceId,
   });
 
   return data.access_token;

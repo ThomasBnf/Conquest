@@ -7,7 +7,7 @@ import { protectedProcedure } from "../trpc";
 export const createManyActivityTypes = protectedProcedure
   .input(
     z.object({
-      activity_types: z.array(
+      activityTypes: z.array(
         z.object({
           name: z.string(),
           source: SOURCE,
@@ -22,11 +22,11 @@ export const createManyActivityTypes = protectedProcedure
     }),
   )
   .mutation(async ({ ctx: { user }, input }) => {
-    const { workspace_id } = user;
-    const { activity_types } = input;
+    const { workspaceId } = user;
+    const { activityTypes } = input;
 
     await _createManyActivityTypes({
-      activity_types,
-      workspace_id,
+      activityTypes,
+      workspaceId,
     });
   });

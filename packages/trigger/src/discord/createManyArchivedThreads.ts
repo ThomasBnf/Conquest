@@ -22,10 +22,10 @@ export const createManyArchivedThreads = async ({
   discord,
   channel,
 }: Props) => {
-  const { workspace_id } = discord;
-  const { id, external_id } = channel;
+  const { workspaceId } = discord;
+  const { id, externalId } = channel;
 
-  if (!external_id) return;
+  if (!externalId) return;
 
   let before: string | undefined = undefined;
 
@@ -37,7 +37,7 @@ export const createManyArchivedThreads = async ({
 
     try {
       const responseThreads = (await discordClient.get(
-        `${Routes.channelThreads(external_id, "public")}?${params.toString()}`,
+        `${Routes.channelThreads(externalId, "public")}?${params.toString()}`,
       )) as APIThreadList;
 
       logger.info("responseThreads", { responseThreads });
@@ -68,8 +68,8 @@ export const createManyArchivedThreads = async ({
           if (messages.length < 100) firstMessage = messages.at(-1);
 
           const channel = await getChannel({
-            external_id: parent_id,
-            workspace_id,
+            externalId: parent_id,
+            workspaceId,
           });
 
           if (!channel) continue;
@@ -92,45 +92,45 @@ export const createManyArchivedThreads = async ({
 
             if (message.id === firstMessage?.id) {
               const profile = await getProfile({
-                external_id: owner_id,
-                workspace_id,
+                externalId: owner_id,
+                workspaceId,
               });
 
               if (!profile) continue;
 
               await createActivity({
-                external_id: thread.id,
-                activity_type_key: "discord:thread",
+                externalId: thread.id,
+                activityTypeKey: "discord:thread",
                 title: name,
                 message: type === 21 ? (message_content ?? "") : content,
-                member_id: profile.member_id,
-                channel_id: channel.id,
-                created_at: new Date(create_timestamp ?? ""),
-                updated_at: new Date(create_timestamp ?? ""),
+                memberId: profile.memberId,
+                channelId: channel.id,
+                createdAt: new Date(create_timestamp ?? ""),
+                updatedAt: new Date(create_timestamp ?? ""),
                 source: "Discord",
-                workspace_id,
+                workspaceId,
               });
               break;
             }
 
             const profile = await getProfile({
-              external_id: author_id,
-              workspace_id,
+              externalId: author_id,
+              workspaceId,
             });
 
             if (!profile) continue;
 
             await createActivity({
-              external_id: message.id,
-              activity_type_key: "discord:reply_thread",
+              externalId: message.id,
+              activityTypeKey: "discord:reply_thread",
               message: content,
-              reply_to: thread.id,
-              member_id: profile.member_id,
-              channel_id: channel.id,
-              created_at: new Date(timestamp),
-              updated_at: new Date(timestamp),
+              replyTo: thread.id,
+              memberId: profile.memberId,
+              channelId: channel.id,
+              createdAt: new Date(timestamp),
+              updatedAt: new Date(timestamp),
               source: "Discord",
-              workspace_id,
+              workspaceId,
             });
           }
 

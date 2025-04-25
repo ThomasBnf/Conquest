@@ -22,19 +22,19 @@ export const createManyPeoples = async ({
   event,
   session,
 }: Props) => {
-  const { workspace_id, details } = livestorm;
-  const { access_token, access_token_iv } = details;
-  const { ended_at } = event;
+  const { workspaceId, details } = livestorm;
+  const { accessToken, accessTokenIv } = details;
+  const { endedAt } = event;
 
   const decryptedAccessToken = await decrypt({
-    access_token: access_token,
-    iv: access_token_iv,
+    accessToken,
+    iv: accessTokenIv,
   });
 
   await wait.for({ seconds: 0.5 });
 
   const peoples = await listPeopleFromSession({
-    access_token: decryptedAccessToken,
+    accessToken: decryptedAccessToken,
     id: session.id,
   });
 
@@ -61,62 +61,62 @@ export const createManyPeoples = async ({
     const languageCode = locale?.split("_")[0] ?? "";
     const language = languageCode ? ISO6391.getName(languageCode) : "";
 
-    let profile = await getProfile({ external_id: id, workspace_id });
+    let profile = await getProfile({ externalId: id, workspaceId });
 
     if (!profile) {
       const member = await createMember({
-        first_name,
-        last_name,
-        primary_email: email,
+        firstName: first_name,
+        lastName: last_name,
+        primaryEmail: email,
         emails: [email],
-        avatar_url: avatar_link ?? "",
+        avatarUrl: avatar_link ?? "",
         country: ip_country_code ?? "",
         language,
         source: "Livestorm",
-        created_at: new Date(created_at * 1000),
-        workspace_id,
+        createdAt: new Date(created_at * 1000),
+        workspaceId,
       });
 
       profile = await createProfile({
-        external_id: id,
+        externalId: id,
         attributes: {
           source: "Livestorm",
         },
-        member_id: member.id,
-        created_at: new Date(created_at * 1000),
-        workspace_id,
+        memberId: member.id,
+        createdAt: new Date(created_at * 1000),
+        workspaceId,
       });
     }
 
-    if (is_guest_speaker && ended_at) {
+    if (is_guest_speaker && endedAt) {
       await createActivity({
-        activity_type_key: "livestorm:co-host",
-        member_id: profile.member_id,
-        event_id: event.id,
-        created_at: ended_at,
+        activityTypeKey: "livestorm:co-host",
+        memberId: profile.memberId,
+        eventId: event.id,
+        createdAt: endedAt,
         source: "Livestorm",
-        workspace_id,
+        workspaceId,
       });
     }
 
-    if (attended && ended_at) {
+    if (attended && endedAt) {
       await createActivity({
-        activity_type_key: "livestorm:attend",
-        member_id: profile.member_id,
-        event_id: event.id,
-        created_at: ended_at,
+        activityTypeKey: "livestorm:attend",
+        memberId: profile.memberId,
+        eventId: event.id,
+        createdAt: endedAt,
         source: "Livestorm",
-        workspace_id,
+        workspaceId,
       });
     }
 
     await createActivity({
-      activity_type_key: "livestorm:register",
-      member_id: profile.member_id,
-      event_id: event.id,
-      created_at: new Date(created_at * 1000),
+      activityTypeKey: "livestorm:register",
+      memberId: profile.memberId,
+      eventId: event.id,
+      createdAt: new Date(created_at * 1000),
       source: "Livestorm",
-      workspace_id,
+      workspaceId,
     });
   }
 };

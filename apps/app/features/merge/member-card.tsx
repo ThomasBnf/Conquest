@@ -39,34 +39,34 @@ export const MemberCard = ({ memberChecked, onCheckChange }: Props) => {
 
   const {
     id,
-    avatar_url,
-    first_name,
-    last_name,
-    company_id,
+    avatarUrl,
+    firstName,
+    lastName,
+    companyId,
     emails,
-    job_title,
-    linkedin_url,
+    jobTitle,
+    linkedinUrl,
     country,
     language,
     phones,
-    created_at,
-    first_activity,
+    createdAt,
+    firstActivity,
     profiles,
   } = member;
 
   const entries = [
-    ["avatar_url", avatar_url],
+    ["avatarUrl", avatarUrl],
     ["emails", emails],
-    ["company", company_id],
-    ["job_title", job_title],
-    ["linkedin_url", linkedin_url],
+    ["company", companyId],
+    ["jobTitle", jobTitle],
+    ["linkedinUrl", linkedinUrl],
     ["phones", phones],
     ["country", country],
     ["language", language],
   ];
 
   const { data: company, isLoading } = trpc.companies.get.useQuery(
-    company_id ? { id: company_id } : skipToken,
+    companyId ? { id: companyId } : skipToken,
   );
 
   return (
@@ -83,7 +83,7 @@ export const MemberCard = ({ memberChecked, onCheckChange }: Props) => {
         >
           <Checkbox checked={checked} />
           <p className="truncate font-medium">
-            {first_name} {last_name}
+            {firstName} {lastName}
           </p>
         </div>
         <Link href={`/${slug}/members/${id}/analytics`} prefetch>
@@ -95,48 +95,48 @@ export const MemberCard = ({ memberChecked, onCheckChange }: Props) => {
       <div className="flex flex-1 flex-col gap-4 truncate p-4">
         {entries.map(([key, value]) => {
           switch (key) {
-            case "avatar_url": {
+            case "avatarUrl": {
               return (
                 <div key={`${key}-${id}`}>
                   <div className="flex items-center gap-2">
                     <Dialog>
                       <DialogTrigger asChild className="cursor-zoom-in">
                         <Avatar className="size-9">
-                          <AvatarImage src={avatar_url} />
+                          <AvatarImage src={avatarUrl} />
                           <AvatarFallback className="text-sm">
-                            {first_name?.charAt(0).toUpperCase()}
-                            {last_name?.charAt(0).toUpperCase()}
+                            {firstName?.charAt(0).toUpperCase()}
+                            {lastName?.charAt(0).toUpperCase()}
                           </AvatarFallback>
                         </Avatar>
                       </DialogTrigger>
                       <DialogContent className="max-w-fit">
                         <DialogHeader>
-                          <DialogTitle>{`${first_name} ${last_name}`}</DialogTitle>
+                          <DialogTitle>{`${firstName} ${lastName}`}</DialogTitle>
                         </DialogHeader>
                         <DialogBody className="mb-0.5 flex items-center justify-center">
                           <Avatar className="size-96">
-                            <AvatarImage src={avatar_url} />
+                            <AvatarImage src={avatarUrl} />
                             <AvatarFallback className="text-sm">
-                              {first_name?.charAt(0).toUpperCase()}
-                              {last_name?.charAt(0).toUpperCase()}
+                              {firstName?.charAt(0).toUpperCase()}
+                              {lastName?.charAt(0).toUpperCase()}
                             </AvatarFallback>
                           </Avatar>
                         </DialogBody>
                       </DialogContent>
                     </Dialog>
-                    {first_activity ? (
+                    {firstActivity ? (
                       <div>
                         <p className="text-muted-foreground text-xs">
                           First activity
                         </p>
-                        <p>{format(first_activity, "PPp")}</p>
+                        <p>{format(firstActivity, "PPp")}</p>
                       </div>
                     ) : (
                       <div>
                         <p className="text-muted-foreground text-xs">
                           Created at
                         </p>
-                        <p>{format(created_at, "PPp")}</p>
+                        <p>{format(createdAt, "PPp")}</p>
                       </div>
                     )}
                   </div>
@@ -173,7 +173,7 @@ export const MemberCard = ({ memberChecked, onCheckChange }: Props) => {
                 </div>
               );
             }
-            case "job_title": {
+            case "jobTitle": {
               if (value === "") return;
               return (
                 <div key={`${key}-${id}`} className="space-y-1">
@@ -182,7 +182,7 @@ export const MemberCard = ({ memberChecked, onCheckChange }: Props) => {
                 </div>
               );
             }
-            case "linkedin_url": {
+            case "linkedinUrl": {
               if (value === "") return;
               return (
                 <div key={`${key}-${id}`} className="space-y-1">

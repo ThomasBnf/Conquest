@@ -46,7 +46,7 @@ export const EditableCompany = ({ member, onUpdate }: Props) => {
   const utils = trpc.useUtils();
 
   const { data: company } = trpc.companies.get.useQuery(
-    member.company_id ? { id: member.company_id } : skipToken,
+    member.companyId ? { id: member.companyId } : skipToken,
   );
 
   const { data, isLoading, fetchNextPage } =

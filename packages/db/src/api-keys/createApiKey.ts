@@ -4,15 +4,15 @@ import { prisma } from "../prisma";
 
 type Props = {
   name: string;
-  workspace_id: string;
+  workspaceId: string;
 };
 
-export const createApiKey = async ({ name, workspace_id }: Props) => {
-  const apiKey = await prisma.api_key.create({
+export const createApiKey = async ({ name, workspaceId }: Props) => {
+  const apiKey = await prisma.apiKey.create({
     data: {
       name,
       token: randomUUID(),
-      workspace_id,
+      workspaceId,
     },
   });
 

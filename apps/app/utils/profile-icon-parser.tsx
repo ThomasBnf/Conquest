@@ -70,11 +70,11 @@ const getUsernameBySource = (profile: Profile) => {
     case "Github":
       return profile.attributes.login;
     case "Livestorm":
-      return profile.external_id;
+      return profile.externalId;
     case "Linkedin":
-      return profile.external_id;
+      return profile.externalId;
     case "Slack":
-      return profile.external_id;
+      return profile.externalId;
     case "Twitter":
       return profile.attributes.username;
     default:

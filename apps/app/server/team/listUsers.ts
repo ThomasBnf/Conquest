@@ -4,11 +4,11 @@ import { protectedProcedure } from "../trpc";
 
 export const listUsers = protectedProcedure.query(async ({ ctx }) => {
   const { user } = ctx;
-  const { workspace_id } = user;
+  const { workspaceId } = user;
 
   const usersInWorkspace = await prisma.userInWorkspace.findMany({
     where: {
-      workspace_id,
+      workspaceId,
     },
     include: {
       user: true,

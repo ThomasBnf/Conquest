@@ -12,15 +12,15 @@ type Props = {
 };
 
 export const createManyMembers = async ({ discord, tags }: Props) => {
-  const { external_id, workspace_id } = discord;
+  const { externalId, workspaceId } = discord;
 
-  if (!external_id) return;
+  if (!externalId) return;
 
   let after: string | undefined;
 
   while (true) {
     const members = (await discordClient.get(
-      `${Routes.guildMembers(external_id)}?limit=100${
+      `${Routes.guildMembers(externalId)}?limit=100${
         after ? `&after=${after}` : ""
       }`,
     )) as APIGuildMember[];
@@ -40,7 +40,7 @@ export const createManyMembers = async ({ discord, tags }: Props) => {
       const lastName = global_name?.split(" ")[1];
 
       const memberTags = tags
-        ?.filter((tag) => roles.includes(tag.external_id ?? ""))
+        ?.filter((tag) => roles.includes(tag.externalId ?? ""))
         .map((tag) => tag.id);
 
       const avatarUrl = avatar
@@ -48,23 +48,23 @@ export const createManyMembers = async ({ discord, tags }: Props) => {
         : "";
 
       const createdMember = await createMember({
-        first_name: firstName,
-        last_name: lastName,
-        avatar_url: avatarUrl,
+        firstName,
+        lastName,
+        avatarUrl,
         tags: memberTags,
-        created_at: new Date(joined_at),
+        createdAt: new Date(joined_at),
         source: "Discord",
-        workspace_id,
+        workspaceId,
       });
 
       await createProfile({
-        external_id: id,
+        externalId: id,
         attributes: {
           source: "Discord",
           username,
         },
-        member_id: createdMember.id,
-        workspace_id,
+        memberId: createdMember.id,
+        workspaceId,
       });
     }
 

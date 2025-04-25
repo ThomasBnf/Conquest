@@ -58,7 +58,9 @@ export const LivestormFilter = () => {
       },
     });
 
-    await createManyActivityTypes({ activity_types: LIVESTORM_ACTIVITY_TYPES });
+    await createManyActivityTypes({
+      activityTypes: LIVESTORM_ACTIVITY_TYPES,
+    });
   };
 
   return (

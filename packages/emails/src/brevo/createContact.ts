@@ -6,9 +6,9 @@ type Props = {
 };
 
 export const createContact = async ({ user }: Props) => {
-  const { id, first_name, last_name, email } = user;
+  const { id, firstName, lastName, email } = user;
 
-  // if (process.env.NODE_ENV === "development") return;
+  if (process.env.NODE_ENV === "development") return;
 
   const response = await fetch("https://api.brevo.com/v3/contacts", {
     method: "POST",
@@ -21,14 +21,13 @@ export const createContact = async ({ user }: Props) => {
       email,
       attributes: {
         EXT_ID: id,
-        PRENOM: first_name,
-        NOM: last_name,
+        PRENOM: firstName,
+        NOM: lastName,
       },
     }),
   });
 
   const contact = await response.json();
-  console.log("CONTACT", contact);
   if (!response.ok) console.log(contact);
 
   await addContactToList({ id: contact.id });

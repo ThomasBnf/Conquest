@@ -28,11 +28,11 @@ type Props = {
 export const FiltersProvider = ({ initialGroupFilters, children }: Props) => {
   const { data: session, update } = useSession();
   const { user } = session ?? {};
-  const { members_preferences } = user ?? {};
+  const { membersPreferences } = user ?? {};
 
   const [groupFilters, setGroupFilters] = useState<GroupFilters>(
     initialGroupFilters ??
-      members_preferences?.groupFilters ?? {
+      membersPreferences?.groupFilters ?? {
         filters: [],
         operator: "AND",
       },
@@ -53,8 +53,8 @@ export const FiltersProvider = ({ initialGroupFilters, children }: Props) => {
 
       mutateAsync({
         id: user.id,
-        members_preferences: {
-          ...user.members_preferences,
+        membersPreferences: {
+          ...user.membersPreferences,
           groupFilters: newGroupFilters,
         },
       });
@@ -76,8 +76,8 @@ export const FiltersProvider = ({ initialGroupFilters, children }: Props) => {
 
       mutateAsync({
         id: user.id,
-        members_preferences: {
-          ...user.members_preferences,
+        membersPreferences: {
+          ...user.membersPreferences,
           groupFilters: newGroupFilters,
         },
       });
@@ -97,8 +97,8 @@ export const FiltersProvider = ({ initialGroupFilters, children }: Props) => {
 
       mutateAsync({
         id: user.id,
-        members_preferences: {
-          ...user.members_preferences,
+        membersPreferences: {
+          ...user.membersPreferences,
           groupFilters: newGroupFilters,
         },
       });
@@ -117,8 +117,8 @@ export const FiltersProvider = ({ initialGroupFilters, children }: Props) => {
 
     mutateAsync({
       id: user.id,
-      members_preferences: {
-        ...user.members_preferences,
+      membersPreferences: {
+        ...user.membersPreferences,
         groupFilters: { filters: [], operator: "AND" },
       },
     });
@@ -135,8 +135,8 @@ export const FiltersProvider = ({ initialGroupFilters, children }: Props) => {
 
       mutateAsync({
         id: user.id,
-        members_preferences: {
-          ...user.members_preferences,
+        membersPreferences: {
+          ...user.membersPreferences,
           groupFilters: newGroupFilters,
         },
       });

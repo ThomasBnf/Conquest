@@ -8,19 +8,19 @@ import { client } from "../client";
 type Props = {
   cursor?: number | null | undefined;
   period?: number;
-  member_id?: string;
-  company_id?: string;
+  memberId?: string;
+  companyId?: string;
   limit?: number;
-  workspace_id: string;
+  workspaceId: string;
 };
 
 export const listActivities = async ({
   period,
-  member_id,
-  company_id,
+  memberId,
+  companyId,
   cursor,
   limit,
-  workspace_id,
+  workspaceId,
 }: Props) => {
   const today = new Date();
   const to = startOfDay(subDays(today, period ?? 0));
@@ -31,13 +31,13 @@ export const listActivities = async ({
         a.*,
         at.*
       FROM activity a
-      LEFT JOIN activity_type at ON a.activity_type_id = at.id
-      ${company_id ? "LEFT JOIN member m FINAL ON a.member_id = m.id" : ""}
-      WHERE a.workspace_id = '${workspace_id}'
-      ${member_id ? `AND a.member_id = '${member_id}'` : ""}
-      ${company_id ? `AND m.company_id = '${company_id}'` : ""}
-      ${period ? `AND a.created_at BETWEEN '${format(to, "yyyy-MM-dd HH:mm:ss")}' AND '${format(today, "yyyy-MM-dd HH:mm:ss")}'` : ""}
-      ORDER BY a.created_at DESC
+      LEFT JOIN activityType at ON a.activityTypeId = at.id
+      ${companyId ? "LEFT JOIN member m FINAL ON a.memberId = m.id" : ""}
+      WHERE a.workspaceId = '${workspaceId}'
+      ${memberId ? `AND a.memberId = '${memberId}'` : ""}
+      ${companyId ? `AND m.companyId = '${companyId}'` : ""}
+      ${period ? `AND a.createdAt BETWEEN '${format(to, "yyyy-MM-dd HH:mm:ss")}' AND '${format(today, "yyyy-MM-dd HH:mm:ss")}'` : ""}
+      ORDER BY a.createdAt DESC
       ${limit ? `LIMIT ${limit}` : ""}
       ${cursor ? `OFFSET ${cursor}` : ""}
     `,
@@ -64,7 +64,7 @@ export const listActivities = async ({
       }
     }
 
-    result.activity_type = activityType;
+    result.activityType = activityType;
     return result;
   };
 

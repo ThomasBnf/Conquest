@@ -32,10 +32,10 @@ export const FilterButton = () => {
     ? DiscourseDetailsSchema.parse(discourse?.details)
     : null;
 
-  const { user_fields } = details ?? {};
+  const { userFields } = details ?? {};
 
   const filtersDiscourse: Filter[] =
-    user_fields?.map((field) => ({
+    userFields?.map((field) => ({
       id: field.id,
       label: field.name,
       type: "text",
@@ -65,7 +65,7 @@ export const FilterButton = () => {
       id: uuid(),
       label: "Followers",
       type: "number",
-      field: "github-followers",
+      field: "githubFollowers",
       operator: ">",
       value: 1,
     },
@@ -129,7 +129,7 @@ export const FilterButton = () => {
                     </CommandItem>
                   ))}
                 </CommandGroup>
-                {user_fields && user_fields?.length > 0 && (
+                {userFields && userFields?.length > 0 && (
                   <CommandGroup heading="Discourse">
                     {filtersDiscourse.map((filter) => (
                       <CommandItem
@@ -177,7 +177,7 @@ const filtersMember: Filter[] = [
     id: uuid(),
     label: "Email",
     type: "text",
-    field: "primary_email",
+    field: "primaryEmail",
     operator: "contains",
     value: "",
   },
@@ -185,7 +185,7 @@ const filtersMember: Filter[] = [
     id: uuid(),
     label: "Job title",
     type: "text",
-    field: "job_title",
+    field: "jobTitle",
     operator: "contains",
     value: "",
   },
@@ -253,15 +253,15 @@ const filtersActivity: Filter[] = [
     who: "who_did",
     label: "Activity type",
     type: "activity",
-    field: "activity_type",
-    activity_types: [],
+    field: "activityType",
+    activityTypes: [],
     operator: ">=",
     value: 1,
     channels: [],
-    dynamic_date: "30 days",
+    dynamicDate: "30 days",
     days: 30,
-    display_count: false,
-    display_date: false,
-    display_channel: false,
+    displayCount: false,
+    displayDate: false,
+    displayChannel: false,
   },
 ];

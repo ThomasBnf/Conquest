@@ -12,10 +12,10 @@ export const exportMembers = protectedProcedure
     }),
   )
   .mutation(async ({ ctx: { user }, input }) => {
-    const { workspace_id } = user;
+    const { workspaceId } = user;
     const { members } = input;
 
-    const tags = await listTags({ workspace_id });
+    const tags = await listTags({ workspaceId });
 
     const transformMemberForExport = async (member: Member) => {
       const transformed: Record<string, string> = {};
@@ -23,7 +23,7 @@ export const exportMembers = protectedProcedure
       for (const [key, value] of Object.entries(member)) {
         if (key === "logs") continue;
 
-        if (key === "level_id") {
+        if (key === "levelId") {
           if (!value) {
             transformed[key] = "";
             continue;
@@ -40,19 +40,19 @@ export const exportMembers = protectedProcedure
           continue;
         }
 
-        if (key === "company_id") {
-          if (!member.company_id) {
+        if (key === "companyId") {
+          if (!member.companyId) {
             transformed[key] = "";
             continue;
           }
 
-          const company = await getCompany({ id: member.company_id });
+          const company = await getCompany({ id: member.companyId });
 
           transformed[key] = company?.name ?? "";
           continue;
         }
 
-        if (key === "custom_fields" && typeof value === "object") {
+        if (key === "customFields" && typeof value === "object") {
           transformed[key] = value ? JSON.stringify(value) : "";
           continue;
         }

@@ -1,16 +1,16 @@
 import { client } from "../client";
 
 type Props = {
-  channel_id: string;
-  react_to: string;
+  channelId: string;
+  reactTo: string;
 };
 
-export const deleteManyActivities = async ({ channel_id, react_to }: Props) => {
+export const deleteManyActivities = async ({ channelId, reactTo }: Props) => {
   await client.query({
     query: `
       ALTER TABLE activity
-      DELETE WHERE channel_id = '${channel_id}'
-      AND react_to = '${react_to}'
+      DELETE WHERE channelId = '${channelId}'
+      AND reactTo = '${reactTo}'
     `,
   });
 };

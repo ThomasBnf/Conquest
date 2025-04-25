@@ -2,16 +2,16 @@ import { APIKeySchema } from "@conquest/zod/schemas/apikey.schema";
 import { prisma } from "../prisma";
 
 type Props = {
-  workspace_id: string;
+  workspaceId: string;
 };
 
-export const listApiKeys = async ({ workspace_id }: Props) => {
-  const apiKeys = await prisma.api_key.findMany({
+export const listApiKeys = async ({ workspaceId }: Props) => {
+  const apiKeys = await prisma.apiKey.findMany({
     where: {
-      workspace_id,
+      workspaceId,
     },
     orderBy: {
-      created_at: "desc",
+      createdAt: "desc",
     },
   });
 

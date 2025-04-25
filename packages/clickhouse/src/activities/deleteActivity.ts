@@ -5,9 +5,9 @@ type Props =
       id: string;
     }
   | {
-      external_id: string;
-      channel_id?: string;
-      workspace_id: string;
+      externalId: string;
+      channelId?: string;
+      workspaceId: string;
     };
 
 export const deleteActivity = async (props: Props) => {
@@ -17,11 +17,11 @@ export const deleteActivity = async (props: Props) => {
     const { id } = props;
     where = `id = '${id}'`;
   } else {
-    const { external_id, channel_id, workspace_id } = props;
-    where = `external_id = '${external_id}' AND workspace_id = '${workspace_id}'`;
+    const { externalId, channelId, workspaceId } = props;
+    where = `externalId = '${externalId}' AND workspaceId = '${workspaceId}'`;
 
-    if (channel_id) {
-      where += ` AND channel_id = '${channel_id}'`;
+    if (channelId) {
+      where += ` AND channelId = '${channelId}'`;
     }
   }
 

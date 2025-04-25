@@ -33,7 +33,7 @@ export const TagsCell = <TData extends Member | Company>({
   const [height, setHeight] = useState(0);
   const [open, setOpen] = useState(false);
 
-  const isMember = "first_name" in data;
+  const isMember = "firstName" in data;
   const [{ search, id, desc }] = useQueryStates(
     isMember ? tableMembersParams : tableCompaniesParams,
   );
@@ -103,7 +103,7 @@ export const TagsCell = <TData extends Member | Company>({
       ? data.tags.filter((id) => id !== tagId)
       : [...data.tags, tagId];
 
-    if ("first_name" in data) {
+    if ("firstName" in data) {
       await updateMember({ ...data, tags: newTags });
     } else {
       await updateCompany({ ...data, tags: newTags });
@@ -154,8 +154,8 @@ export const TagsCell = <TData extends Member | Company>({
         </PopoverTrigger>
         <PopoverContent
           portal={false}
-          className="w-[300px] shrink-0 rounded-t-none p-0 shadow-lg"
-          sideOffset={height - 41}
+          className="w-[302px] shrink-0 rounded-t-none p-0 shadow-lg"
+          sideOffset={height - 43}
           alignOffset={-1}
           align="start"
         >

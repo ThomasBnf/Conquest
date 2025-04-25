@@ -13,7 +13,7 @@ export const listMembersProfiles = async ({ members }: Props) => {
     query: `
         SELECT *
         FROM profile
-        WHERE member_id IN (${ids})
+        WHERE memberId IN (${ids})
         `,
   });
 

@@ -12,7 +12,7 @@ type Props = {
 };
 
 export const createManyActivities = async ({ client, profile }: Props) => {
-  const { attributes, workspace_id } = profile;
+  const { attributes, workspaceId } = profile;
   const { username } = attributes;
 
   const today = startOfDay(new Date());
@@ -55,8 +55,8 @@ export const createManyActivities = async ({ client, profile }: Props) => {
       } = action;
 
       const channel = await getChannel({
-        external_id: String(category_id),
-        workspace_id,
+        externalId: String(category_id),
+        workspaceId,
       });
 
       if (!channel) continue;
@@ -64,67 +64,67 @@ export const createManyActivities = async ({ client, profile }: Props) => {
       switch (action_type) {
         case 1: {
           await createActivity({
-            activity_type_key: "discourse:reaction",
+            activityTypeKey: "discourse:reaction",
             message: "like",
-            react_to: `t/${topic_id}/${post_number}`,
-            member_id: profile.member_id,
-            channel_id: channel?.id,
-            created_at: new Date(created_at),
-            updated_at: new Date(created_at),
+            reactTo: `t/${topic_id}/${post_number}`,
+            memberId: profile.memberId,
+            channelId: channel?.id,
+            createdAt: new Date(created_at),
+            updatedAt: new Date(created_at),
             source: "Discourse",
-            workspace_id,
+            workspaceId,
           });
           break;
         }
         case 4: {
           await createActivity({
-            external_id: `t/${topic_id}`,
-            activity_type_key: "discourse:topic",
+            externalId: `t/${topic_id}`,
+            activityTypeKey: "discourse:topic",
             title,
             message: excerpt,
-            member_id: profile.member_id,
-            channel_id: channel?.id,
-            created_at: new Date(created_at),
-            updated_at: new Date(created_at),
+            memberId: profile.memberId,
+            channelId: channel?.id,
+            createdAt: new Date(created_at),
+            updatedAt: new Date(created_at),
             source: "Discourse",
-            workspace_id,
+            workspaceId,
           });
           break;
         }
         case 5: {
           const activity = await getActivity({
-            external_id: `p/${post_id}`,
-            workspace_id,
+            externalId: `p/${post_id}`,
+            workspaceId,
           });
 
           if (activity) break;
 
           await createActivity({
-            external_id: `p/${post_id}`,
-            activity_type_key: "discourse:reply",
+            externalId: `p/${post_id}`,
+            activityTypeKey: "discourse:reply",
             message: excerpt,
-            reply_to: `t/${topic_id}/${post_number}`,
-            member_id: profile.member_id,
-            channel_id: channel?.id,
-            created_at: new Date(created_at),
-            updated_at: new Date(created_at),
+            replyTo: `t/${topic_id}/${post_number}`,
+            memberId: profile.memberId,
+            channelId: channel?.id,
+            createdAt: new Date(created_at),
+            updatedAt: new Date(created_at),
             source: "Discourse",
-            workspace_id,
+            workspaceId,
           });
           break;
         }
         case 15: {
           await upsertActivity({
-            external_id: `p/${post_id}`,
-            activity_type_key: "discourse:solved",
+            externalId: `p/${post_id}`,
+            activityTypeKey: "discourse:solved",
             message: excerpt,
-            reply_to: `t/${topic_id}/${post_number}`,
-            member_id: profile.member_id,
-            channel_id: channel?.id,
-            created_at: new Date(created_at),
-            updated_at: new Date(created_at),
+            replyTo: `t/${topic_id}/${post_number}`,
+            memberId: profile.memberId,
+            channelId: channel?.id,
+            createdAt: new Date(created_at),
+            updatedAt: new Date(created_at),
             source: "Discourse",
-            workspace_id,
+            workspaceId,
           });
           break;
         }

@@ -5,10 +5,10 @@ import { protectedProcedure } from "../trpc";
 export const createActivity = protectedProcedure
   .input(FormCreateSchema)
   .mutation(async ({ ctx: { user }, input }) => {
-    const { workspace_id } = user;
+    const { workspaceId } = user;
 
     return await _createActivity({
       ...input,
-      workspace_id,
+      workspaceId,
     });
   });

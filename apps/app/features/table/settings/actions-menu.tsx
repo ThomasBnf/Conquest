@@ -20,7 +20,7 @@ export const ActionsMenu = <TData extends Member | Company>({
 }: Props<TData>) => {
   const { data, isSomeSelected, has2Selected, selectedRows, onReset } = table;
   const utils = trpc.useUtils();
-  const isMember = data[0] && "first_name" in data[0];
+  const isMember = data[0] && "firstName" in data[0];
 
   const pathname = usePathname();
   const isCompanyPage = pathname.includes("companies");
@@ -48,7 +48,7 @@ export const ActionsMenu = <TData extends Member | Company>({
   const onDelete = async () => {
     const ids = selectedRows.map((item) => item.id);
 
-    if (data[0] && "first_name" in data[0]) {
+    if (data[0] && "firstName" in data[0]) {
       await deleteMembers({ ids });
       return;
     }

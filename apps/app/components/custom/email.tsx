@@ -24,7 +24,7 @@ export const Email = ({ member, onUpdate, onCancel }: Props) => {
     onUpdate("emails", updatedEmails);
 
     if (member.emails.length === 0) {
-      onUpdate("primary_email", formattedEmail);
+      onUpdate("primaryEmail", formattedEmail);
     }
 
     setEmail("");

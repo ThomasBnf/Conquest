@@ -11,7 +11,7 @@ export const listInfiniteCompanies = protectedProcedure
     }),
   )
   .query(async ({ ctx: { user }, input }) => {
-    const { workspace_id } = user;
+    const { workspaceId } = user;
     const { cursor, search } = input;
 
     const searchParsed = search.toLowerCase().trim();
@@ -23,7 +23,7 @@ export const listInfiniteCompanies = protectedProcedure
         WHERE (
           ${searchParsed ? `positionCaseInsensitive(c.name, '${searchParsed}') > 0` : "true"}
         )
-        AND c.workspace_id = '${workspace_id}'
+        AND c.workspaceId = '${workspaceId}'
         ORDER BY c.name ASC, c.id ASC
         ${cursor ? `LIMIT 25 OFFSET ${cursor}` : "LIMIT 25"}
       `,

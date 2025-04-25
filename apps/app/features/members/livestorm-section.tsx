@@ -10,7 +10,7 @@ type Props = {
 };
 
 export const LivestormSection = ({ profile }: Props) => {
-  const { external_id } = profile;
+  const { externalId } = profile;
 
   return (
     <>
@@ -24,7 +24,7 @@ export const LivestormSection = ({ profile }: Props) => {
         <FieldCard label="Id">
           <EditableLink
             placeholder="No livestorm profile"
-            defaultValue={external_id}
+            defaultValue={externalId}
             editable={false}
             redirect={false}
           />

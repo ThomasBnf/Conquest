@@ -55,13 +55,13 @@ export default function Page() {
     resolver: zodResolver(UserFormSchema),
   });
 
-  const onSubmit = async ({ first_name, last_name }: UserForm) => {
+  const onSubmit = async ({ firstName, lastName }: UserForm) => {
     if (!user) return;
 
     await mutateAsync({
       id: user.id,
-      first_name,
-      last_name,
+      firstName,
+      lastName,
     });
   };
 
@@ -76,7 +76,7 @@ export default function Page() {
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <CardContent className="space-y-4">
               <FormField
-                name="first_name"
+                name="firstName"
                 control={form.control}
                 render={({ field }) => (
                   <FormItem className="flex-1">
@@ -88,7 +88,7 @@ export default function Page() {
                 )}
               />
               <FormField
-                name="last_name"
+                name="lastName"
                 control={form.control}
                 render={({ field }) => (
                   <FormItem className="flex-1">

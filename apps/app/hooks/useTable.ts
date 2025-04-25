@@ -56,7 +56,7 @@ export const useTable = <TData>({
 
     mutate({
       ...user,
-      [isCompanyPage ? "companies_preferences" : "members_preferences"]: {
+      [isCompanyPage ? "companiesPreferences" : "membersPreferences"]: {
         ...preferences,
         columnVisibility: newVisibility,
       },
@@ -70,7 +70,7 @@ export const useTable = <TData>({
 
     mutate({
       ...user,
-      [isCompanyPage ? "companies_preferences" : "members_preferences"]: {
+      [isCompanyPage ? "companiesPreferences" : "membersPreferences"]: {
         ...preferences,
         columnOrder: newOrder,
       },
