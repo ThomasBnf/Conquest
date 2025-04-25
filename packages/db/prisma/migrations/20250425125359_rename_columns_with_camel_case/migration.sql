@@ -31,10 +31,10 @@ INSERT INTO "Accounts" (
 )
 SELECT
   "id",
-  "userId",
+  "user_id",
   "type",
   "provider",
-  "providerAccountId",
+  "provider_account_id",
   "refresh_token",
   "access_token",
   "expires_at",
