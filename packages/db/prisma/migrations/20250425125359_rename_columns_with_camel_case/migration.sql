@@ -1,4 +1,4 @@
-CREATE TABLE "Account" (
+CREATE TABLE "Accounts" (
   "id" TEXT NOT NULL,
   "userId" TEXT NOT NULL,
   "type" TEXT NOT NULL,
@@ -12,10 +12,10 @@ CREATE TABLE "Account" (
   "id_token" TEXT,
   "session_state" TEXT,
 
-  CONSTRAINT "accounts_pkey" PRIMARY KEY ("id")
+  CONSTRAINT "Accounts_pkey" PRIMARY KEY ("id")
 );
 
-INSERT INTO "Account" (
+INSERT INTO "Accounts" (
   "id",
   "userId",
   "type",
@@ -52,7 +52,7 @@ CREATE TABLE "ApiKey" (
   "workspaceId" TEXT NOT NULL,
   "createdAt" TIMESTAMPTZ NOT NULL DEFAULT now(),
 
-  CONSTRAINT "api_key_pkey" PRIMARY KEY ("id")
+  CONSTRAINT "ApiKey_pkey" PRIMARY KEY ("id")
 );
 
 INSERT INTO "ApiKey" ("id", "name", "token", "workspaceId", "createdAt")
@@ -70,7 +70,7 @@ CREATE TABLE "Duplicate" (
   "createdAt" TIMESTAMPTZ NOT NULL DEFAULT now(),
   "updatedAt" TIMESTAMPTZ NOT NULL DEFAULT now(),
 
-  CONSTRAINT "duplicate_pkey" PRIMARY KEY ("id")
+  CONSTRAINT "Duplicate_pkey" PRIMARY KEY ("id")
 );
 
 INSERT INTO "Duplicate" (
@@ -92,7 +92,7 @@ CREATE TABLE "Event" (
   "createdAt" TIMESTAMPTZ NOT NULL DEFAULT now(),
   "updatedAt" TIMESTAMPTZ NOT NULL DEFAULT now(),
 
-  CONSTRAINT "event_pkey" PRIMARY KEY ("id")
+  CONSTRAINT "Event_pkey" PRIMARY KEY ("id")
 );
 
 INSERT INTO "Event" (
@@ -117,7 +117,7 @@ CREATE TABLE "Integration" (
   "createdAt" TIMESTAMPTZ NOT NULL DEFAULT now(),
   "updatedAt" TIMESTAMPTZ NOT NULL DEFAULT now(),
 
-  CONSTRAINT "integration_pkey" PRIMARY KEY ("id")
+  CONSTRAINT "Integration_pkey" PRIMARY KEY ("id")
 );
 
 INSERT INTO "Integration" (
@@ -138,7 +138,7 @@ CREATE TABLE "List" (
   "createdAt" TIMESTAMPTZ NOT NULL DEFAULT now(),
   "updatedAt" TIMESTAMPTZ NOT NULL DEFAULT now(),
 
-  CONSTRAINT "list_pkey" PRIMARY KEY ("id")
+  CONSTRAINT "List_pkey" PRIMARY KEY ("id")
 );
 
 INSERT INTO "List" (
@@ -149,21 +149,21 @@ SELECT
 FROM "list";
 
 
-CREATE TABLE "Session" (
+CREATE TABLE "Sessions" (
   "id" TEXT NOT NULL,
   "sessionToken" TEXT NOT NULL,
   "userId" TEXT NOT NULL,
   "expires" TIMESTAMPTZ NOT NULL,
 
-  CONSTRAINT "session_pkey" PRIMARY KEY ("id")
+  CONSTRAINT "Session_pkey" PRIMARY KEY ("id")
 );
 
-INSERT INTO "Session" (
+INSERT INTO "Sessions" (
   "id", "sessionToken", "userId", "expires"
 )
 SELECT
   "id", "session_token", "user_id", "expires"
-FROM "session";
+FROM "sessions";
 
 
 CREATE TABLE "Tag" (
@@ -176,7 +176,7 @@ CREATE TABLE "Tag" (
   "createdAt" TIMESTAMPTZ NOT NULL DEFAULT now(),
   "updatedAt" TIMESTAMPTZ NOT NULL DEFAULT now(),
 
-  CONSTRAINT "tag_pkey" PRIMARY KEY ("id")
+  CONSTRAINT "Tag_pkey" PRIMARY KEY ("id")
 );
 
 INSERT INTO "Tag" (
@@ -203,7 +203,7 @@ CREATE TABLE "User" (
   "createdAt" TIMESTAMPTZ NOT NULL DEFAULT now(),
   "updatedAt" TIMESTAMPTZ NOT NULL DEFAULT now(),
 
-  CONSTRAINT "user_pkey" PRIMARY KEY ("id")
+  CONSTRAINT "User_pkey" PRIMARY KEY ("id")
 );
 
 INSERT INTO "User" (
@@ -223,7 +223,7 @@ CREATE TABLE "UserInWorkspace" (
   "createdAt" TIMESTAMPTZ NOT NULL DEFAULT now(),
   "updatedAt" TIMESTAMPTZ NOT NULL DEFAULT now(),
 
-  CONSTRAINT "user_in_workspace_pkey" PRIMARY KEY ("id")
+  CONSTRAINT "UserInWorkspace_pkey" PRIMARY KEY ("id")
 );
 
 INSERT INTO "UserInWorkspace" (
@@ -231,7 +231,7 @@ INSERT INTO "UserInWorkspace" (
 )
 SELECT
   "id", "user_id", "workspace_id", "created_at", "updated_at"
-FROM "user_in_workspace";
+FROM "userInWorkspace";
 
 
 CREATE TABLE "UserInvitation" (
@@ -241,7 +241,7 @@ CREATE TABLE "UserInvitation" (
   "createdAt" TIMESTAMPTZ NOT NULL DEFAULT now(),
   "updatedAt" TIMESTAMPTZ NOT NULL DEFAULT now(),
 
-  CONSTRAINT "user_invitation_pkey" PRIMARY KEY ("id")
+  CONSTRAINT "UserInvitation_pkey" PRIMARY KEY ("id")
 );
 
 INSERT INTO "UserInvitation" (
@@ -249,24 +249,24 @@ INSERT INTO "UserInvitation" (
 )
 SELECT
   "id", "email", "workspace_id", "created_at", "updated_at"
-FROM "user_invitation";
+FROM "userInvitation";
 
 
-CREATE TABLE "VerificationToken" (
+CREATE TABLE "VerificationTokens" (
   "id" TEXT NOT NULL,
   "identifier" TEXT NOT NULL,
   "token" TEXT NOT NULL,
   "expires" TIMESTAMPTZ NOT NULL,
 
-  CONSTRAINT "verification_token_pkey" PRIMARY KEY ("id")
+  CONSTRAINT "VerificationTokens_pkey" PRIMARY KEY ("id")
 );
 
-INSERT INTO "VerificationToken" (
+INSERT INTO "VerificationTokens" (
   "id", "identifier", "token", "expires"
 )
 SELECT
   "id", "identifier", "token", "expires"
-FROM "verification_token";
+FROM "verification_tokens";
 
 
 CREATE TABLE "Workflow" (
@@ -281,7 +281,7 @@ CREATE TABLE "Workflow" (
   "createdAt" TIMESTAMPTZ NOT NULL DEFAULT now(),
   "updatedAt" TIMESTAMPTZ NOT NULL DEFAULT now(),
 
-  CONSTRAINT "workflow_pkey" PRIMARY KEY ("id")
+  CONSTRAINT "Workflow_pkey" PRIMARY KEY ("id")
 );
 
 INSERT INTO "Workflow" (
@@ -306,7 +306,7 @@ CREATE TABLE "Workspace" (
   "createdAt" TIMESTAMPTZ NOT NULL DEFAULT now(),
   "updatedAt" TIMESTAMPTZ NOT NULL DEFAULT now(),
 
-  CONSTRAINT "workspace_pkey" PRIMARY KEY ("id")
+  CONSTRAINT "Workspace_pkey" PRIMARY KEY ("id")
 );
 
 INSERT INTO "Workspace" (
@@ -315,3 +315,21 @@ INSERT INTO "Workspace" (
 SELECT
   "id", "name", "slug", "source", "company_size", "plan", "stripe_customer_id", "price_id", "trial_end", "is_past_due", "created_at", "updated_at"
 FROM "workspace";
+
+ALTER TABLE "Accounts" ADD CONSTRAINT "accounts_user_id_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+ALTER TABLE "ApiKey" ADD CONSTRAINT "api_key_workspace_id_fkey" FOREIGN KEY ("workspaceId") REFERENCES "Workspace"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+ALTER TABLE "Event" ADD CONSTRAINT "event_workspace_id_fkey" FOREIGN KEY ("workspaceId") REFERENCES "Workspace"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+ALTER TABLE "Integration" ADD CONSTRAINT "integration_workspace_id_fkey" FOREIGN KEY ("workspaceId") REFERENCES "Workspace"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+ALTER TABLE "List" ADD CONSTRAINT "list_workspace_id_fkey" FOREIGN KEY ("workspaceId") REFERENCES "Workspace"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+ALTER TABLE "Sessions" ADD CONSTRAINT "sessions_user_id_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+ALTER TABLE "Tag" ADD CONSTRAINT "tag_workspace_id_fkey" FOREIGN KEY ("workspaceId") REFERENCES "Workspace"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+ALTER TABLE "User" ADD CONSTRAINT "user_workspace_id_fkey" FOREIGN KEY ("workspaceId") REFERENCES "Workspace"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+ALTER TABLE "Workflow" ADD CONSTRAINT "workflow_workspace_id_fkey" FOREIGN KEY ("workspaceId") REFERENCES "Workspace"("id") ON DELETE CASCADE ON UPDATE CASCADE;
