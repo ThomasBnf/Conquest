@@ -1,4 +1,4 @@
-import type { Workspace as WorkspacePrisma } from "@prisma/client";
+import type { workspace as WorkspacePrisma } from "@prisma/client";
 import { z } from "zod";
 import { PLAN } from "../enum/plan.enum";
 
