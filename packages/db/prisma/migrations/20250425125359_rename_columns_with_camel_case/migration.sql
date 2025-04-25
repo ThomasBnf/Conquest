@@ -297,18 +297,18 @@ ALTER TABLE "User" ADD CONSTRAINT "user_workspace_id_fkey" FOREIGN KEY ("workspa
 ALTER TABLE "Workflow" ADD CONSTRAINT "workflow_workspace_id_fkey" FOREIGN KEY ("workspaceId") REFERENCES "Workspace"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 
-CREATE UNIQUE INDEX "account_provider_provider_account_id_key" ON "Account"("provider", "providerAccountId");
+CREATE UNIQUE INDEX "Account_provider_provider_account_id_key" ON "Account"("provider", "providerAccountId");
 
-CREATE UNIQUE INDEX "api_key_token_key" ON "ApiKey"("token");
+CREATE UNIQUE INDEX "ApiKey_token_key" ON "ApiKey"("token");
 
-CREATE UNIQUE INDEX "event_external_id_key" ON "Event"("externalId");
+CREATE UNIQUE INDEX "Event_external_id_key" ON "Event"("externalId");
 
-CREATE UNIQUE INDEX "integration_external_id_key" ON "Integration"("externalId");
+CREATE UNIQUE INDEX "Integration_external_id_key" ON "Integration"("externalId");
 
-CREATE UNIQUE INDEX "session_session_token_key" ON "Session"("sessionToken");
+CREATE UNIQUE INDEX "Session_session_token_key" ON "Session"("sessionToken");
 
-CREATE UNIQUE INDEX "tag_external_id_workspace_id_key" ON "Tag"("externalId", "workspaceId");
+CREATE UNIQUE INDEX "Tag_external_id_workspace_id_key" ON "Tag"("externalId", "workspaceId");
 
-CREATE UNIQUE INDEX "verification_tokens_identifier_token_key" ON "VerificationTokens"("identifier", "token");
+CREATE UNIQUE INDEX "Verification_tokens_identifier_token_key" ON "VerificationTokens"("identifier", "token");
 
-CREATE UNIQUE INDEX "workspace_slug_key" ON "Workspace"("slug");
+CREATE UNIQUE INDEX "Workspace_slug_key" ON "Workspace"("slug");
