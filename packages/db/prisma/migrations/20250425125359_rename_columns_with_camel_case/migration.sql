@@ -15,35 +15,6 @@ CREATE TABLE "Account" (
   CONSTRAINT "Account_pkey" PRIMARY KEY ("id")
 );
 
-INSERT INTO "Account" (
-  "id",
-  "userId",
-  "type",
-  "provider",
-  "providerAccountId",
-  "refresh_token",
-  "access_token",
-  "expires_at",
-  "token_type",
-  "scope",
-  "id_token",
-  "session_state"
-)
-SELECT
-  "id",
-  "user_id",
-  "type",
-  "provider",
-  "refresh_token",
-  "access_token",
-  "expires_at",
-  "token_type",
-  "scope",
-  "id_token",
-  "session_state"
-FROM "accounts";
-
-
 CREATE TABLE "ApiKey" (
   "id" TEXT NOT NULL,
   "name" TEXT NOT NULL,
