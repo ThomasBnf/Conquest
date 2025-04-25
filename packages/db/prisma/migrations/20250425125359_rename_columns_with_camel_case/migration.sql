@@ -297,7 +297,7 @@ ALTER TABLE "User" ADD CONSTRAINT "user_workspace_id_fkey" FOREIGN KEY ("workspa
 ALTER TABLE "Workflow" ADD CONSTRAINT "workflow_workspace_id_fkey" FOREIGN KEY ("workspaceId") REFERENCES "Workspace"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 
-CREATE UNIQUE INDEX "accounts_provider_provider_account_id_key" ON "Account"("provider", "providerAccountId");
+CREATE UNIQUE INDEX "account_provider_provider_account_id_key" ON "Account"("provider", "providerAccountId");
 
 CREATE UNIQUE INDEX "api_key_token_key" ON "ApiKey"("token");
 
@@ -305,7 +305,7 @@ CREATE UNIQUE INDEX "event_external_id_key" ON "Event"("externalId");
 
 CREATE UNIQUE INDEX "integration_external_id_key" ON "Integration"("externalId");
 
-CREATE UNIQUE INDEX "sessions_session_token_key" ON "Session"("sessionToken");
+CREATE UNIQUE INDEX "session_session_token_key" ON "Session"("sessionToken");
 
 CREATE UNIQUE INDEX "tag_external_id_workspace_id_key" ON "Tag"("externalId", "workspaceId");
 
