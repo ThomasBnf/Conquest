@@ -1,5 +1,5 @@
 RENAME TABLE Activity TO activity;
-RENAME TABLE ActivityType TO activity_type;
+RENAME TABLE ActivityType TO activityType;
 RENAME TABLE Channel TO channel;
 RENAME TABLE Company TO company;
 RENAME TABLE Level TO level;
