@@ -34,7 +34,7 @@ SELECT
   "user_id",
   "type",
   "provider",
-  "provider_account_id",
+  "providerAccountId",
   "refresh_token",
   "access_token",
   "expires_at",
@@ -335,7 +335,7 @@ ALTER TABLE "User" ADD CONSTRAINT "user_workspace_id_fkey" FOREIGN KEY ("workspa
 ALTER TABLE "Workflow" ADD CONSTRAINT "workflow_workspace_id_fkey" FOREIGN KEY ("workspaceId") REFERENCES "Workspace"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 
-CREATE UNIQUE INDEX "accounts_provider_provider_account_id_key" ON "Account"("provider", "provider_account_id");
+CREATE UNIQUE INDEX "accounts_provider_provider_account_id_key" ON "Account"("provider", "providerAccountId");
 
 CREATE UNIQUE INDEX "api_key_token_key" ON "ApiKey"("token");
 
