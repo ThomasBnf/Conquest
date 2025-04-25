@@ -48,7 +48,7 @@ export const listDayActivities = protectedProcedure
 
       for (const [key, value] of Object.entries(row)) {
         if (key.startsWith("activityType.")) {
-          activityType[key.substring(14)] = value;
+          activityType[key.substring(13)] = value;
         } else if (
           ["name", "key", "points", "conditions", "deletable"].includes(key)
         ) {
@@ -67,6 +67,8 @@ export const listDayActivities = protectedProcedure
     const activities = data.map((row: unknown) =>
       transformFlatActivity(row as Record<string, unknown>),
     );
+
+    console.log("activities", activities);
 
     if (!activities?.length) return [];
     return ActivityWithTypeSchema.array().parse(activities);
