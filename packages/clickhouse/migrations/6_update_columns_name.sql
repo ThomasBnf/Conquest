@@ -1,3 +1,5 @@
+SET allow_experimental_json_type=1;
+
 CREATE TABLE IF NOT EXISTS newActivity
 (
     id UUID DEFAULT generateUUIDv4(),
