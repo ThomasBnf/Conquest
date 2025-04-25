@@ -149,7 +149,7 @@ SELECT
 FROM "list";
 
 
-CREATE TABLE "Sessions" (
+CREATE TABLE "Session" (
   "id" TEXT NOT NULL,
   "sessionToken" TEXT NOT NULL,
   "userId" TEXT NOT NULL,
@@ -158,7 +158,7 @@ CREATE TABLE "Sessions" (
   CONSTRAINT "Session_pkey" PRIMARY KEY ("id")
 );
 
-INSERT INTO "Sessions" (
+INSERT INTO "Session" (
   "id", "sessionToken", "userId", "expires"
 )
 SELECT
