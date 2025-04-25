@@ -316,7 +316,7 @@ SELECT
   "id", "name", "slug", "source", "company_size", "plan", "stripe_customer_id", "price_id", "trial_end", "is_past_due", "created_at", "updated_at"
 FROM "workspace";
 
-ALTER TABLE "Accounts" ADD CONSTRAINT "accounts_user_id_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "Account" ADD CONSTRAINT "accounts_user_id_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 ALTER TABLE "ApiKey" ADD CONSTRAINT "api_key_workspace_id_fkey" FOREIGN KEY ("workspaceId") REFERENCES "Workspace"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
@@ -326,7 +326,7 @@ ALTER TABLE "Integration" ADD CONSTRAINT "integration_workspace_id_fkey" FOREIGN
 
 ALTER TABLE "List" ADD CONSTRAINT "list_workspace_id_fkey" FOREIGN KEY ("workspaceId") REFERENCES "Workspace"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
-ALTER TABLE "Sessions" ADD CONSTRAINT "sessions_user_id_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "Session" ADD CONSTRAINT "sessions_user_id_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 ALTER TABLE "Tag" ADD CONSTRAINT "tag_workspace_id_fkey" FOREIGN KEY ("workspaceId") REFERENCES "Workspace"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
@@ -335,7 +335,7 @@ ALTER TABLE "User" ADD CONSTRAINT "user_workspace_id_fkey" FOREIGN KEY ("workspa
 ALTER TABLE "Workflow" ADD CONSTRAINT "workflow_workspace_id_fkey" FOREIGN KEY ("workspaceId") REFERENCES "Workspace"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 
-CREATE UNIQUE INDEX "accounts_provider_provider_account_id_key" ON "Accounts"("provider", "provider_account_id");
+CREATE UNIQUE INDEX "accounts_provider_provider_account_id_key" ON "Account"("provider", "provider_account_id");
 
 CREATE UNIQUE INDEX "api_key_token_key" ON "ApiKey"("token");
 
@@ -343,7 +343,7 @@ CREATE UNIQUE INDEX "event_external_id_key" ON "Event"("externalId");
 
 CREATE UNIQUE INDEX "integration_external_id_key" ON "Integration"("externalId");
 
-CREATE UNIQUE INDEX "sessions_session_token_key" ON "Sessions"("sessionToken");
+CREATE UNIQUE INDEX "sessions_session_token_key" ON "Session"("sessionToken");
 
 CREATE UNIQUE INDEX "tag_external_id_workspace_id_key" ON "Tag"("externalId", "workspaceId");
 
