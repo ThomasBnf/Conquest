@@ -14,12 +14,7 @@ export const DuplicateMenu = () => {
   const isActive = pathname.startsWith(`/${slug}/duplicates`);
   const isDuplicatePage = pathname.startsWith(`/${slug}/duplicates`);
 
-  const {
-    data: count,
-    isLoading,
-    failureReason,
-  } = trpc.duplicate.count.useQuery();
-  console.log("duplicate count", failureReason);
+  const { data: count, isLoading } = trpc.duplicate.count.useQuery();
 
   if (isLoading) return;
   if (count === 0 && !isDuplicatePage) return;
