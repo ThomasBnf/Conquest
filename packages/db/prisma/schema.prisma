@@ -267,7 +267,7 @@ model Workspace {
     slug             String    @unique
     source           String?
     companySize      String?
-    plan             PLAN      @default(ACTIVE)
+    plan             PLAN?     @default(ACTIVE)
     stripeCustomerId String?
     priceId          String?
     trialEnd         DateTime?
