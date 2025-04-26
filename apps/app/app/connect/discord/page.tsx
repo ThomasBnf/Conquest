@@ -35,7 +35,6 @@ export default async function Page({ searchParams }: Props) {
   const data = await response.json();
 
   if (!response.ok) {
-    console.log(data);
     return redirect("/settings/integrations/discord?error=invalid_code");
   }
 

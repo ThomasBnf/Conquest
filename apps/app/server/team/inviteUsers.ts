@@ -14,7 +14,6 @@ export const inviteUsers = protectedProcedure
     const { workspaceId } = user;
 
     const parsedEmails = emails.split(",").map((email) => email.trim());
-    console.log(parsedEmails);
 
     const users = await prisma.userInWorkspace.findMany({
       where: {
@@ -24,6 +23,4 @@ export const inviteUsers = protectedProcedure
         user: true,
       },
     });
-
-    console.log(users);
   });

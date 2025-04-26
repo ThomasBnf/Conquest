@@ -30,10 +30,6 @@ export const LoadingIntegrations = () => {
     trpc.integrations.bySource.useQuery({ source }),
   );
 
-  const failureReasons = integrationQueries.map((query) => query.failureReason);
-
-  console.log("failureReasons", failureReasons);
-
   const syncingIntegrations = integrationQueries
     .map((query, index) => ({
       ...query,

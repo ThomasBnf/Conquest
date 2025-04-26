@@ -11,16 +11,12 @@ export const createManyActivities = protectedProcedure
     const { workspaceId } = user;
     const { activityTypeKey, message, members } = input;
 
-    console.log(members);
-
     const activityType = await getActivityTypeByKey({
       key: activityTypeKey,
       workspaceId,
     });
 
     if (!activityType) throw new Error("Activity type not found");
-
-    console.log(activityType);
 
     const activities = members.map((member) => ({
       activityTypeId: activityType.id,
@@ -29,8 +25,6 @@ export const createManyActivities = protectedProcedure
       source: activityType.source,
       workspaceId,
     }));
-
-    console.log(activities);
 
     await client.insert({
       table: "activity",
