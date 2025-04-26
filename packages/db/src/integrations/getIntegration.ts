@@ -16,6 +16,8 @@ export const getIntegration = async ({ externalId, workspaceId }: Props) => {
     },
   });
 
+  console.log("integration", integration);
+
   if (!integration) return null;
   return IntegrationSchema.parse(integration);
 };
