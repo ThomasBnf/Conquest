@@ -60,6 +60,7 @@ export const MemberSidebar = ({ member, profiles }: Props) => {
     },
     onSettled: () => {
       utils.members.get.invalidate({ id });
+      utils.members.invalidate();
     },
   });
 

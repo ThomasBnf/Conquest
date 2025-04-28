@@ -3,16 +3,17 @@ import { client } from "../client";
 
 type Props = {
   domain: string;
+  workspaceId: string;
 };
 
-export const getCompanyByDomain = async ({ domain }: Props) => {
+export const getCompanyByDomain = async ({ domain, workspaceId }: Props) => {
   const result = await client.query({
     query: `
       SELECT *
       FROM company
       WHERE domain = '${domain}'
+      AND workspaceId = '${workspaceId}'
     `,
-    format: "JSON",
   });
 
   const { data } = await result.json();

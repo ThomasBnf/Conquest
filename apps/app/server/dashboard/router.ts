@@ -3,7 +3,6 @@ import { activeMembers } from "./activeMembers";
 import { activeMembersTable } from "./activeMembersTable";
 import { atRiskMembers } from "./atRiskMembers";
 import { atRiskMembersTable } from "./atRiskMembersTable";
-import { churnRate } from "./churnRate";
 import { engagementRate } from "./engagementRate";
 import { heatmap } from "./heatmap";
 import { newMembers } from "./newMembers";
@@ -25,7 +24,6 @@ export const dashboardRouter = router({
   atRiskMembersTable,
   potentialAmbassadors,
   potentialAmbassadorsTable,
-  churnRate,
   topActivityType,
   topChannels,
   heatmap,

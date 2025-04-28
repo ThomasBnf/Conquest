@@ -6,7 +6,9 @@ import { createCompany } from "../companies/createCompany";
 import { getCompanyByDomain } from "../companies/getCompanyByDomain";
 import { filteredDomain } from "../helpers/filteredDomain";
 
-type Props = Partial<Member>;
+type Props = Partial<Member> & {
+  workspaceId: string;
+};
 
 export const createMember = async (props: Props) => {
   const id = uuid();
@@ -18,7 +20,10 @@ export const createMember = async (props: Props) => {
   const formattedPhones = phones?.map((phone) => phone.toLowerCase().trim());
   const domain = formattedEmail?.split("@")[1];
 
-  let company = await getCompanyByDomain({ domain: `https://${domain}` });
+  let company = await getCompanyByDomain({
+    domain: `https://${domain}`,
+    workspaceId,
+  });
 
   if (!company) {
     const companyName = filteredDomain(domain);

@@ -58,6 +58,7 @@ export const EditableCompany = ({ member, onUpdate }: Props) => {
   const { mutateAsync: createCompany } = trpc.companies.post.useMutation({
     onSuccess: () => {
       utils.companies.list.invalidate();
+      utils.members.invalidate();
       setOpen(false);
       setQuery("");
     },
@@ -78,6 +79,8 @@ export const EditableCompany = ({ member, onUpdate }: Props) => {
 
   const companies = data?.pages.flat();
   const hasNextPage = data?.pages.at(-1)?.length === 25;
+
+  console.log("companies", companies);
 
   useEffect(() => {
     if (inView && hasNextPage) fetchNextPage();

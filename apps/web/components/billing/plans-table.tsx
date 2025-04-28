@@ -24,7 +24,7 @@ export const PlansTable = ({ period, setPeriod }: Props) => {
             <p>
               Billing period
               {period === "annually" && (
-                <span className="text-main-400">Save 15%</span>
+                <span className="ml-2 text-main-400">Save 15%</span>
               )}
             </p>
           </div>

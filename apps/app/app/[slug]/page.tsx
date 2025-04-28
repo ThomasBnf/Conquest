@@ -3,7 +3,6 @@ import { Header } from "@/components/layouts/header";
 import { PageLayout } from "@/components/layouts/page-layout";
 import { ActiveMembers } from "@/features/dashboard/active-members";
 import { AtRiskMembers } from "@/features/dashboard/at-risk-members";
-import { ChurnRate } from "@/features/dashboard/churn-rate";
 import { EngagementRate } from "@/features/dashboard/engagement-rate";
 import { NewMembers } from "@/features/dashboard/new-members";
 import { PotentialAmbassadors } from "@/features/dashboard/potential-ambassadors";
@@ -43,7 +42,6 @@ export default async function Page({ searchParams }: Props) {
           <div className="grid grid-cols-3 gap-3 p-3">
             <AtRiskMembers />
             <PotentialAmbassadors />
-            <ChurnRate />
             <WorkspaceHeatmap className="col-span-3" />
             <div className="col-span-3 grid grid-cols-2 gap-3">
               <TopActivityType />

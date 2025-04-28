@@ -53,7 +53,7 @@ export const PotentialAmbassadors = () => {
             <InfoCircledIcon className="size-4 text-green-500" />
           </div>
           <p className="font-medium text-base">Potential ambassadors</p>
-          <TooltipInfo content=" Contributor members (above level 7) with activities in the selected period." />
+          <TooltipInfo content="Contributor members (min level 7) with activities in the selected period." />
         </div>
         <PotentialAmbassadorsSheet count={current} loading={isLoading} />
       </div>

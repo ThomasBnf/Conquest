@@ -53,7 +53,7 @@ export const AtRiskMembers = () => {
           </div>
           <p className="font-medium text-base">At risk members</p>
           <TooltipInfo
-            content="Active members (above level 3) with no activity in the
+            content="Active members (min level 4) with no activity in the
             selected period."
           />
         </div>
@@ -129,8 +129,8 @@ const AtRiskMembersSheet = ({
         <SheetHeader>
           <SheetTitle>At risk members</SheetTitle>
           <SheetDescription>
-            Active members (min level 4) who have not been active in the
-            selected period.
+            Active members (min level 4) with no activity in the selected
+            period.
           </SheetDescription>
         </SheetHeader>
         <div className="flex h-full flex-col divide-y overflow-hidden rounded-md border">

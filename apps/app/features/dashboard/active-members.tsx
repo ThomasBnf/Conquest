@@ -49,7 +49,7 @@ export const ActiveMembers = () => {
       <div className="flex h-[48px] items-center justify-between bg-sidebar p-3">
         <div className="flex items-center gap-2">
           <p className="font-medium text-lg">Active members</p>
-          <TooltipInfo content="Members who have been active in the selected period." />
+          <TooltipInfo content="Members with at least one activity in the selected period." />
         </div>
         <ActiveMembersSheet count={current} loading={isLoading} />
       </div>
@@ -123,7 +123,7 @@ const ActiveMembersSheet = ({
         <SheetHeader>
           <SheetTitle>Active members</SheetTitle>
           <SheetDescription>
-            Members with activities in the selected period.
+            Members with at least one activity in the selected period.
           </SheetDescription>
         </SheetHeader>
         <div className="flex h-full flex-col divide-y overflow-hidden rounded-md border">
