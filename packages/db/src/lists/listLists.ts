@@ -14,5 +14,11 @@ export const listLists = async ({ userId, workspaceId }: Props) => {
     },
   });
 
-  return ListSchema.array().parse(lists);
+  const safeParse = ListSchema.array().safeParse(lists);
+
+  if (!safeParse.success) {
+    console.error(safeParse.error);
+  }
+
+  return safeParse.data;
 };

@@ -1,13 +1,13 @@
+import { withSentryConfig } from "@sentry/nextjs";
 import type { NextConfig } from "next";
+import { env } from "node:process";
 
 const nextConfig: NextConfig = {
   reactStrictMode: false,
 };
 
-export default nextConfig;
-
-// export default withSentryConfig(nextConfig, {
-//   org: env.SENTRY_ORG,
-//   project: env.SENTRY_PROJECT,
-//   silent: !process.env.CI,
-// });
+export default withSentryConfig(nextConfig, {
+  org: env.SENTRY_ORG,
+  project: env.SENTRY_PROJECT,
+  silent: !process.env.CI,
+});

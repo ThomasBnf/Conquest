@@ -1,6 +1,5 @@
 {
   "name": "api",
-  "private": true,
   "type": "module",
   "scripts": {
     "dev": "dotenv -e ./.env -e ../../.env -- next dev -p 3001 --turbo",
@@ -13,7 +12,7 @@
     "@conquest/db": "workspace:*",
     "@conquest/env": "workspace:*",
     "@conquest/zod": "workspace:*",
-    "next": "14.2.15",
+    "next": "15.2.1",
     "next-zod-route": "^0.2.4",
     "zod": "^3.24.2"
   },

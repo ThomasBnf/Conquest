@@ -1,7 +1,5 @@
 {
   "name": "app",
-  "version": "0.1.0",
-  "private": true,
   "type": "module",
   "scripts": {
     "dev": "dotenv -e ./.env -e ../../.env -- next dev -p 3000 --turbo",
