@@ -19,6 +19,7 @@ import { getIntegration } from "@conquest/db/integrations/getIntegration";
 import { prisma } from "@conquest/db/prisma";
 import { ActivitySchema } from "@conquest/zod/schemas/activity.schema";
 import {
+  ActivityType,
   ChannelType,
   Client,
   Events,
@@ -55,8 +56,21 @@ const client = new Client({
   partials: [Partials.Message, Partials.Channel, Partials.Reaction],
 });
 
+client.once("ready", () => {
+  console.log("Discord bot is ready!");
+
+  client.user?.setPresence({
+    status: "online",
+    activities: [
+      {
+        name: "Conquest",
+        type: ActivityType.Watching,
+      },
+    ],
+  });
+});
+
 client.on(Events.GuildMemberAdd, async (member) => {
-  console.dir(member, { depth: 100 });
   const { user, guild } = member;
   const { id, bot, username, globalName, avatar } = user;
 
@@ -107,7 +121,6 @@ client.on(Events.GuildMemberAdd, async (member) => {
 });
 
 client.on(Events.GuildMemberRemove, async (member) => {
-  console.log("GuildMemberRemove", member);
   const { user, guild } = member;
   const { id } = user;
 
@@ -140,7 +153,6 @@ client.on(Events.GuildMemberRemove, async (member) => {
 });
 
 client.on(Events.UserUpdate, async (_, user) => {
-  console.log("UserUpdate", user);
   const { id, username, globalName, avatar } = user;
 
   const firstName = globalName?.split(" ")[0] ?? "";
@@ -183,7 +195,6 @@ client.on(Events.UserUpdate, async (_, user) => {
 });
 
 client.on(Events.ChannelCreate, async (channel) => {
-  console.log("ChannelCreate", channel);
   const { id, type, guildId, name, permissionOverwrites } = channel;
 
   const integration = await getIntegration({
@@ -221,7 +232,6 @@ client.on(Events.ChannelCreate, async (channel) => {
 });
 
 client.on(Events.ChannelUpdate, async (_, channel) => {
-  console.log("ChannelUpdate", channel);
   const { id, name, guildId } = channel as NonThreadGuildBasedChannel;
 
   const integration = await getIntegration({
@@ -243,7 +253,6 @@ client.on(Events.ChannelUpdate, async (_, channel) => {
 });
 
 client.on(Events.ChannelDelete, async (channel) => {
-  console.log("ChannelDelete", channel);
   const { id, guildId } = channel as NonThreadGuildBasedChannel;
 
   const integration = await getIntegration({
@@ -264,7 +273,6 @@ client.on(Events.ChannelDelete, async (channel) => {
 });
 
 client.on(Events.MessageCreate, async (message) => {
-  console.dir(message, { depth: 100 });
   const { id, channelId, guildId, type, content, author, reference } = message;
   const { id: externalId } = author;
 
@@ -366,7 +374,6 @@ client.on(Events.MessageCreate, async (message) => {
 });
 
 client.on(Events.MessageUpdate, async (message) => {
-  console.log("MessageUpdate", message);
   const { id, guildId, reactions } = message;
   const { message: updatedMessage } = reactions;
   const { content } = updatedMessage;
@@ -400,7 +407,6 @@ client.on(Events.MessageUpdate, async (message) => {
 });
 
 client.on(Events.MessageDelete, async (message) => {
-  console.log("MessageDelete", message);
   const { id, guildId, author } = message;
   const { id: externalId } = author ?? {};
 
@@ -442,7 +448,6 @@ client.on(Events.MessageDelete, async (message) => {
 });
 
 client.on(Events.ThreadCreate, async (thread) => {
-  console.log("ThreadCreate", thread);
   const { id, parentId, guildId, name, ownerId } = thread;
 
   if (!guildId || !parentId) return;
@@ -480,7 +485,6 @@ client.on(Events.ThreadCreate, async (thread) => {
 });
 
 client.on(Events.ThreadDelete, async (thread) => {
-  console.log("ThreadDelete", thread);
   const { id, guildId, ownerId } = thread;
 
   const integration = await getIntegration({
@@ -540,7 +544,6 @@ client.on(Events.ThreadDelete, async (thread) => {
 });
 
 client.on(Events.GuildRoleCreate, async (role) => {
-  console.log("GuildRoleCreate", role);
   const { id, name, guild } = role;
   const { id: guildId } = guild;
 
@@ -567,7 +570,6 @@ client.on(Events.GuildRoleCreate, async (role) => {
 });
 
 client.on(Events.GuildRoleUpdate, async (_, role) => {
-  console.log("GuildRoleUpdate", role);
   const { id, name, guild, color } = role;
   const { id: guildId } = guild;
 
@@ -600,7 +602,6 @@ client.on(Events.GuildRoleUpdate, async (_, role) => {
 });
 
 client.on(Events.GuildRoleDelete, async (role) => {
-  console.log("GuildRoleDelete", role);
   const { id, guild } = role;
   const { id: guildId } = guild;
 
@@ -645,7 +646,6 @@ client.on(Events.GuildRoleDelete, async (role) => {
 });
 
 client.on(Events.MessageReactionAdd, async (reaction, user) => {
-  console.log("MessageReactionAdd", reaction, user);
   const { message, emoji } = reaction;
   const { id, guildId, channelId } = message;
   const { id: externalId } = user;
@@ -692,7 +692,6 @@ client.on(Events.MessageReactionAdd, async (reaction, user) => {
 });
 
 client.on(Events.MessageReactionRemove, async (reaction, user) => {
-  console.log("MessageReactionRemove", reaction, user);
   const { message, emoji } = reaction;
   const { id: messageId, guildId } = message;
   const { id: externalId } = user;
