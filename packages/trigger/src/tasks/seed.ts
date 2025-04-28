@@ -1,8 +1,7 @@
 import { client } from "@conquest/clickhouse/client";
 import { getCompanyByDomain } from "@conquest/clickhouse/companies/getCompanyByDomain";
 import { filteredDomain } from "@conquest/clickhouse/helpers/filteredDomain";
-import { Company } from "@conquest/zod/schemas/company.schema";
-import { Member, MemberSchema } from "@conquest/zod/schemas/member.schema";
+import { MemberSchema } from "@conquest/zod/schemas/member.schema";
 import { UserWithWorkspaceSchema } from "@conquest/zod/schemas/user.schema";
 import { schemaTask } from "@trigger.dev/sdk/v3";
 import { v4 as uuid } from "uuid";
@@ -22,46 +21,20 @@ export const seed = schemaTask({
         SELECT *
         FROM member FINAL
         WHERE primaryEmail != ''
-        AND length(emails) = 0
       `,
     });
 
     const { data } = await result.json();
     const members = MemberSchema.array().parse(data);
 
-    const updatedMembers: Member[] = [];
-
-    for (const member of members) {
-      const { primaryEmail } = member;
-
-      updatedMembers.push({
-        ...member,
-        emails: [primaryEmail],
-        updatedAt: new Date(),
-      });
-    }
-
-    await client.insert({
-      table: "member",
-      values: updatedMembers,
-      format: "JSON",
-    });
-
-    const result2 = await client.query({
+    await client.query({
       query: `
-        SELECT *
-        FROM member FINAL
-        WHERE primaryEmail != ''
+       ALTER TABLE company
+       DELETE WHERE 1=1;
       `,
     });
 
-    const { data: data2 } = await result2.json();
-    const members2 = MemberSchema.array().parse(data2);
-
-    const createdCompanies: Company[] = [];
-    const membersWithCompany: Member[] = [];
-
-    for (const member of members2) {
+    for (const member of members) {
       const { primaryEmail, source, workspaceId } = member;
 
       const formattedEmail = primaryEmail?.toLowerCase().trim();
@@ -72,55 +45,55 @@ export const seed = schemaTask({
       const companyName = filteredDomain(domain);
       if (!companyName) continue;
 
-      let company = await getCompanyByDomain({
+      const company = await getCompanyByDomain({
         domain: `https://${domain}`,
         workspaceId,
       });
 
       if (!company) {
-        company = {
-          id: uuid(),
-          tags: [],
-          logoUrl: "",
-          name: companyName,
-          domain: `https://${domain}`,
-          address: "",
-          industry: "",
-          employees: 0,
-          foundedAt: null,
-          source,
-          workspaceId,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        };
+        const id = uuid();
 
-        createdCompanies.push(company);
+        await client.insert({
+          table: "company",
+          values: [
+            {
+              id,
+              name: companyName,
+              domain: `https://${domain}`,
+              source,
+              workspaceId,
+            },
+          ],
+          format: "JSON",
+        });
+
+        await client.insert({
+          table: "member",
+          values: [
+            {
+              ...member,
+              companyId: id,
+              updatedAt: new Date(),
+            },
+          ],
+          format: "JSON",
+        });
+
+        continue;
       }
 
-      membersWithCompany.push({
-        ...member,
-        companyId: company.id,
+      await client.insert({
+        table: "member",
+        values: [
+          {
+            ...member,
+            companyId: company?.id,
+            updatedAt: new Date(),
+          },
+        ],
+        format: "JSON",
       });
     }
-
-    await client.query({
-      query: `
-       ALTER TABLE company
-       DELETE WHERE 1=1;
-      `,
-    });
-
-    await client.insert({
-      table: "company",
-      values: createdCompanies,
-      format: "JSON",
-    });
-
-    await client.insert({
-      table: "member",
-      values: membersWithCompany,
-      format: "JSON",
-    });
 
     //   const { workspaceId } = user;
 

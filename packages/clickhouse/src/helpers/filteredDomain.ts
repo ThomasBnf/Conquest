@@ -17,6 +17,11 @@ export const filteredDomain = (
   if (domain.includes("zoho")) return;
   if (domain.includes("fastmail")) return;
   if (domain.includes("gmx")) return;
+  if (domain.includes("hey.com")) return;
+  if (domain.includes("me.com")) return;
+  if (domain.includes("pm.me")) return;
+  if (domain.includes("proton.me")) return;
+  if (domain.includes("qq.com")) return;
 
   const companyName = domain.split(".")[0] ?? "";
 
