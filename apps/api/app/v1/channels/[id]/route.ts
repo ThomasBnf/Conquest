@@ -1,7 +1,6 @@
 import { getAuthenticatedUser } from "@/utils/getAuthenticatedUser";
-import { getActivityTypeByKey } from "@conquest/clickhouse/activity-types/getActivityTypeByKey";
 import { client } from "@conquest/clickhouse/client";
-import { ActivitySchema } from "@conquest/zod/schemas/activity.schema";
+import { ChannelSchema } from "@conquest/zod/schemas/channel.schema";
 import { createZodRoute } from "next-zod-route";
 import { NextResponse } from "next/server";
 import { z } from "zod";
@@ -31,7 +30,7 @@ export const GET = createZodRoute()
     const result = await client.query({
       query: `
         SELECT * 
-        FROM activity
+        FROM channel
         WHERE id = '${id}'
         AND workspaceId = '${workspaceId}'
       `,
@@ -39,19 +38,19 @@ export const GET = createZodRoute()
     });
 
     const { data } = await result.json();
-    const activity = ActivitySchema.parse(data[0]);
+    const channel = data[0];
 
-    if (!activity) {
+    if (!channel) {
       return NextResponse.json(
         {
           code: "NOT_FOUND",
-          message: "Activity not found",
+          message: "Channel not found",
         },
         { status: 404 },
       );
     }
 
-    return NextResponse.json({ activity });
+    return NextResponse.json({ channel });
   });
 
 export const PUT = createZodRoute()
@@ -72,52 +71,22 @@ export const PUT = createZodRoute()
       id: z.string(),
     }),
   )
-  .body(
-    ActivitySchema.partial().extend({
-      activityTypeKey: z.string().optional(),
-    }),
-  )
+  .body(ChannelSchema.partial())
   .handler(async (_, { ctx, params, body }) => {
-    const { id } = params;
     const { workspaceId } = ctx;
-    const { activityTypeKey, ...rest } = body;
+    const { id } = params;
 
-    let activityTypeId = null;
-
-    if (activityTypeKey) {
-      const activityType = await getActivityTypeByKey({
-        key: activityTypeKey,
-        workspaceId,
-      });
-
-      if (!activityType) {
-        return NextResponse.json(
-          {
-            code: "NOT_FOUND",
-            message: "Activity type not found",
-          },
-          { status: 404 },
-        );
-      }
-
-      activityTypeId = activityType?.id;
-    }
-
-    const values = Object.entries(rest)
+    const values = Object.entries(body)
       .map(([key, value]) => `${key} = '${value}'`)
       .join(", ");
 
-    const updateQuery = [
-      values,
-      activityTypeId ? `activityTypeId = '${activityTypeId}'` : "",
-      "updatedAt = now()",
-    ]
+    const updateQuery = [values, "updatedAt = now()"]
       .filter(Boolean)
       .join(", ");
 
     await client.query({
       query: `
-          ALTER TABLE activity
+          ALTER TABLE channel
           UPDATE
             ${updateQuery}
           WHERE id = '${id}'
@@ -148,7 +117,7 @@ export const DELETE = createZodRoute()
 
     await client.query({
       query: `
-        ALTER TABLE activity
+        ALTER TABLE channel
         DELETE
         WHERE id = '${id}'
         AND workspaceId = '${workspaceId}'

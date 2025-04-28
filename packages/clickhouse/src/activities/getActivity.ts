@@ -57,7 +57,7 @@ export const getActivity = async (props: Props) => {
 
     for (const [key, value] of Object.entries(row)) {
       if (key.startsWith("activityType.")) {
-        const cleanKey = key.substring(14);
+        const cleanKey = key.substring(13);
         activityType[cleanKey] = value;
       } else {
         result[key] = value;

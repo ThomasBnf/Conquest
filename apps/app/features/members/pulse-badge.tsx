@@ -81,51 +81,53 @@ export const PulseBadge = ({
                 <p>Total activities</p>
                 <p>{filteredActivities?.length}</p>
               </div>
-              {Object.entries(pulseScore).map(([source, activities]) => (
-                <div key={source} className="mt-2">
-                  <p className="mb-2 font-medium">{source}</p>
-                  {Object.entries(activities).map(([name, group]) => (
-                    <div
-                      key={name}
-                      className={cn(
-                        "mb-2 gap-2",
-                        !group.hasChannel &&
-                          "grid grid-cols-[1fr_auto] items-center gap-8",
-                      )}
-                    >
-                      <p className="first-letter:capitalize">{name}</p>
-                      <div className="text-muted/70">
-                        {group.count > 0 && (
-                          <div className="flex items-center justify-between gap-6">
-                            {group.hasChannel && <p>In any channel</p>}
-                            <p className="flex items-baseline gap-1 text-white">
-                              {group.count} <span>x</span> {group.points} pts
-                            </p>
-                          </div>
+              <div className="flex flex-col gap-2">
+                {Object.entries(pulseScore).map(([source, activities]) => (
+                  <div key={source}>
+                    <p className="mb-2 font-medium">{source}</p>
+                    {Object.entries(activities).map(([name, group]) => (
+                      <div
+                        key={name}
+                        className={cn(
+                          "mb-2 gap-2",
+                          !group.hasChannel &&
+                            "grid grid-cols-[1fr_auto] items-center gap-8",
                         )}
-                        {Object.entries(group.conditions ?? {}).map(
-                          ([name, condition]) => (
-                            <div
-                              key={name}
-                              className="flex items-center justify-between gap-6"
-                            >
-                              <p className="flex items-center">
-                                In
-                                <Hash size={16} className="ml-1" />
-                                <span>{name}</span>
-                              </p>
+                      >
+                        <p className="first-letter:capitalize">{name}</p>
+                        <div className="text-muted/70">
+                          {group.count > 0 && (
+                            <div className="flex items-center justify-between gap-6">
+                              {group.hasChannel && <p>In any channel</p>}
                               <p className="flex items-baseline gap-1 text-white">
-                                {condition.count} <span>x</span>{" "}
-                                {condition.points} pts
+                                {group.count} <span>x</span> {group.points} pts
                               </p>
                             </div>
-                          ),
-                        )}
+                          )}
+                          {Object.entries(group.conditions ?? {}).map(
+                            ([name, condition]) => (
+                              <div
+                                key={name}
+                                className="flex items-center justify-between gap-6"
+                              >
+                                <p className="flex items-center">
+                                  In
+                                  <Hash size={16} className="ml-1" />
+                                  <span>{name}</span>
+                                </p>
+                                <p className="flex items-baseline gap-1 text-white">
+                                  {condition.count} <span>x</span>{" "}
+                                  {condition.points} pts
+                                </p>
+                              </div>
+                            ),
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
-              ))}
+                    ))}
+                  </div>
+                ))}
+              </div>
             </div>
           )}
         </TooltipContent>
