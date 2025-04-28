@@ -16,7 +16,7 @@ export const processGithub = async ({ user }: { user: UserWithWorkspace }) => {
       details: {
         source: "Github",
         accessToken: faker.string.uuid(),
-        accessTokenIv: faker.string.uuid(),
+        iv: faker.string.uuid(),
         installationId: faker.number.int({ min: 1, max: 1000 }),
         scope: "read:user",
         repo: "conquest",

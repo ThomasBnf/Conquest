@@ -52,10 +52,10 @@ export const processDiscourse = async ({
       status: "CONNECTED",
       details: {
         source: "Discourse",
-        community_url: "https://community.conquest.com",
-        api_key: "1234567890",
-        api_key_iv: "1234567890",
-        user_fields: [
+        communityUrl: "https://community.conquest.com",
+        apiKey: "1234567890",
+        apiKeyIv: "1234567890",
+        userFields: [
           {
             id: "1",
             name: "Website",

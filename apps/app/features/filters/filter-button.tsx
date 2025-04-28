@@ -65,7 +65,7 @@ export const FilterButton = () => {
       id: uuid(),
       label: "Followers",
       type: "number",
-      field: "githubFollowers",
+      field: "github-followers",
       operator: ">",
       value: 1,
     },
