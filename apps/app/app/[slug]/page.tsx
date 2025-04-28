@@ -39,7 +39,7 @@ export default async function Page({ searchParams }: Props) {
         <Separator />
         <div className="divide-y">
           <p className="bg-sidebar p-4 font-medium text-base">Engagement</p>
-          <div className="grid grid-cols-3 gap-3 p-3">
+          <div className="grid grid-cols-2 gap-3 p-3">
             <AtRiskMembers />
             <PotentialAmbassadors />
             <WorkspaceHeatmap className="col-span-3" />
