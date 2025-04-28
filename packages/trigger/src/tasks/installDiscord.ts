@@ -11,6 +11,7 @@ import { checkDuplicates } from "./checkDuplicates";
 import { deleteIntegration } from "./deleteIntegration";
 import { getAllMembersMetrics } from "./getAllMembersMetrics";
 import { integrationSuccessEmail } from "./integrationSuccessEmail";
+import { createManyMembers } from "../discord/createManyMembers";
 
 export const installDiscord = schemaTask({
   id: "install-discord",
@@ -28,7 +29,7 @@ export const installDiscord = schemaTask({
     const tags = await createManyTags({ discord });
     logger.info("tags", { tags });
 
-    // await createManyMembers({ discord, tags });
+    await createManyMembers({ discord, tags });
     await createManyThreads({ discord });
 
     for (const channel of channels) {
