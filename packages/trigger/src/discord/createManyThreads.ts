@@ -55,7 +55,7 @@ export const createManyThreads = async ({ discord }: Props) => {
           `${Routes.channelMessages(thread.id)}?${params.toString()}`,
         )) as APIMessage[];
 
-        logger.info("messages", { messages });
+        logger.info("Active thread messages", { messages });
 
         if (messages.length < 100) firstMessage = messages.at(-1);
 

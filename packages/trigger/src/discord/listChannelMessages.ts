@@ -30,7 +30,7 @@ export const listChannelMessages = async ({ channel, workspaceId }: Props) => {
         `${Routes.channelMessages(externalId)}?${params.toString()}`,
       )) as APIMessage[];
 
-      logger.info("messages", { messages });
+      logger.info("Channel messages", { messages });
 
       for (const message of messages) {
         const {

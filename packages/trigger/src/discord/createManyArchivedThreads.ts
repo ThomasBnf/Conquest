@@ -75,7 +75,7 @@ export const createManyArchivedThreads = async ({
             `${Routes.channelMessages(thread.id)}?${params.toString()}`,
           )) as APIMessage[];
 
-          logger.info("archived thread messages", { messages });
+          logger.info("Archived thread messages", { messages });
 
           if (messages.length < 100) firstMessage = messages.at(-1);
 
