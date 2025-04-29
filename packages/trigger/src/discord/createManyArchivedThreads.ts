@@ -33,7 +33,7 @@ export const createManyArchivedThreads = async ({
   while (true) {
     const params = new URLSearchParams({
       limit: "100",
-      ...(before ? { before: new Date(before).toISOString() } : {}),
+      ...(before ? { before } : {}),
     });
 
     try {
@@ -47,6 +47,8 @@ export const createManyArchivedThreads = async ({
         count: threads.length,
         threads,
       });
+
+      if (threads.length === 0) break;
 
       for (const thread of threads) {
         const { name, owner_id, thread_metadata } = thread;
@@ -136,6 +138,9 @@ export const createManyArchivedThreads = async ({
         }
       }
 
+      before = threads.at(-1)?.thread_metadata?.create_timestamp;
+      if (threads.length < 100) break;
+
       const lastThread = threads.at(-1);
 
       if (lastThread?.thread_metadata?.create_timestamp) {
@@ -144,9 +149,6 @@ export const createManyArchivedThreads = async ({
         );
         if (isBefore(lastThreadDate, oneYearAgo)) break;
       }
-
-      before = threads.at(-1)?.thread_metadata?.create_timestamp;
-      if (threads.length < 100) break;
     } catch (error) {
       const { name } = error as Error;
       if (name === "DiscordAPIError[50001]") {
