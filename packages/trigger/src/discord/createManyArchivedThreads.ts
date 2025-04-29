@@ -56,13 +56,13 @@ export const createManyArchivedThreads = async ({
 
         if (!owner_id) continue;
 
-        let before: string | undefined = undefined;
+        let beforeMessages: string | undefined = undefined;
         let firstMessage: APIMessage | undefined;
 
         while (true) {
           const params = new URLSearchParams({
             limit: "100",
-            ...(before ? { before } : {}),
+            ...(beforeMessages ? { before: beforeMessages } : {}),
           });
 
           const messages = (await discordClient.get(
@@ -133,7 +133,7 @@ export const createManyArchivedThreads = async ({
             });
           }
 
-          before = messages.at(-1)?.id;
+          beforeMessages = messages.at(-1)?.id;
           if (messages.length < 100) break;
         }
       }
