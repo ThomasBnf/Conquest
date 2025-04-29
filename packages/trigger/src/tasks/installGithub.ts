@@ -46,9 +46,6 @@ export const installGithub = schemaTask({
     });
   },
   onFailure: async ({ github }) => {
-    await deleteIntegration.trigger({
-      integration: github,
-      deleteIntegration: true,
-    });
+    await deleteIntegration.trigger({ integration: github });
   },
 });

@@ -17,6 +17,6 @@ export const deleteIntegration = protectedProcedure
       where: { id: integration.id },
     });
 
-    await _deleteIntegration.trigger({ integration, deleteIntegration: false });
+    await _deleteIntegration.trigger({ integration });
     return { success: true };
   });

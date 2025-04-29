@@ -62,9 +62,6 @@ export const installDiscord = schemaTask({
     });
   },
   onFailure: async ({ discord }) => {
-    await deleteIntegration.trigger({
-      integration: discord,
-      deleteIntegration: true,
-    });
+    await deleteIntegration.trigger({ integration: discord });
   },
 });

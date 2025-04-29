@@ -61,9 +61,6 @@ export const installLivestorm = schemaTask({
     });
   },
   onFailure: async ({ livestorm }) => {
-    await deleteIntegration.trigger({
-      integration: livestorm,
-      deleteIntegration: true,
-    });
+    await deleteIntegration.trigger({ integration: livestorm });
   },
 });
