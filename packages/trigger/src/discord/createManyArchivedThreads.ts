@@ -46,15 +46,6 @@ export const createManyArchivedThreads = async ({
 
       const threads = responseThreads.threads as APIThreadChannel[];
 
-      const lastThread = threads.at(-1);
-
-      if (lastThread?.thread_metadata?.create_timestamp) {
-        const lastThreadDate = parseISO(
-          lastThread.thread_metadata.create_timestamp,
-        );
-        if (isBefore(lastThreadDate, oneYearAgo)) break;
-      }
-
       for (const thread of threads) {
         const { name, parent_id, owner_id, thread_metadata } = thread;
         const { create_timestamp } = thread_metadata ?? {};
@@ -148,6 +139,15 @@ export const createManyArchivedThreads = async ({
           before = messages.at(-1)?.id;
           if (messages.length < 100) break;
         }
+      }
+
+      const lastThread = threads.at(-1);
+
+      if (lastThread?.thread_metadata?.create_timestamp) {
+        const lastThreadDate = parseISO(
+          lastThread.thread_metadata.create_timestamp,
+        );
+        if (isBefore(lastThreadDate, oneYearAgo)) break;
       }
 
       before = threads.at(-1)?.thread_metadata?.create_timestamp;

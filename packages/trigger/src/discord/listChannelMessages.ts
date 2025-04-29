@@ -32,13 +32,6 @@ export const listChannelMessages = async ({ channel, workspaceId }: Props) => {
 
       logger.info("messages", { messages });
 
-      const lastMessage = messages.at(-1);
-
-      if (lastMessage?.timestamp) {
-        const lastMessageDate = parseISO(lastMessage.timestamp);
-        if (isBefore(lastMessageDate, oneYearAgo)) break;
-      }
-
       for (const message of messages) {
         const {
           id,
@@ -95,6 +88,13 @@ export const listChannelMessages = async ({ channel, workspaceId }: Props) => {
             break;
           }
         }
+      }
+
+      const lastMessage = messages.at(-1);
+
+      if (lastMessage?.timestamp) {
+        const lastMessageDate = parseISO(lastMessage.timestamp);
+        if (isBefore(lastMessageDate, oneYearAgo)) break;
       }
 
       before = messages.at(-1)?.id;
