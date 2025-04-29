@@ -138,14 +138,14 @@ export const createManyArchivedThreads = async ({
         }
       }
 
-      before = threads.at(-1)?.thread_metadata?.create_timestamp;
+      before = threads.at(-1)?.thread_metadata?.archive_timestamp;
       if (threads.length < 100) break;
 
       const lastThread = threads.at(-1);
 
-      if (lastThread?.thread_metadata?.create_timestamp) {
+      if (lastThread?.thread_metadata?.archive_timestamp) {
         const lastThreadDate = parseISO(
-          lastThread.thread_metadata.create_timestamp,
+          lastThread.thread_metadata.archive_timestamp,
         );
         if (isBefore(lastThreadDate, oneYearAgo)) break;
       }
