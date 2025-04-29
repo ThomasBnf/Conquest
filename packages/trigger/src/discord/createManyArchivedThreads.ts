@@ -1,6 +1,5 @@
 import { createActivity } from "@conquest/clickhouse/activities/createActivity";
 import { deleteChannel } from "@conquest/clickhouse/channels/deleteChannel";
-import { getChannel } from "@conquest/clickhouse/channels/getChannel";
 import { getProfile } from "@conquest/clickhouse/profiles/getProfile";
 import { discordClient } from "@conquest/db/discord";
 import type { Channel } from "@conquest/zod/schemas/channel.schema";
@@ -50,17 +49,10 @@ export const createManyArchivedThreads = async ({
       });
 
       for (const thread of threads) {
-        const { name, parent_id, owner_id, thread_metadata } = thread;
+        const { name, owner_id, thread_metadata } = thread;
         const { create_timestamp } = thread_metadata ?? {};
 
-        if (!owner_id || !parent_id) continue;
-
-        const channel = await getChannel({
-          externalId: parent_id,
-          workspaceId,
-        });
-
-        if (!channel) continue;
+        if (!owner_id) continue;
 
         let before: string | undefined = undefined;
         let firstMessage: APIMessage | undefined;

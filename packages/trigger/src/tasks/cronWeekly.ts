@@ -1,4 +1,4 @@
-import { createLog } from "@conquest/clickhouse/logs/createLog";
+import { client } from "@conquest/clickhouse/client";
 import { listAllMembers } from "@conquest/clickhouse/members/listAllMembers";
 import type { Log } from "@conquest/zod/schemas/logs.schema";
 import { schedules } from "@trigger.dev/sdk/v3";
@@ -12,18 +12,32 @@ export const cronWeekly = schedules.task({
 
     const members = await listAllMembers();
 
+    const logs: Omit<Log, "id">[] = [];
+
     for (const member of members) {
       const { levelId, pulse } = member;
 
-      const log: Omit<Log, "id"> = {
+      logs.push({
         date: startOfWeek(new Date(), { weekStartsOn: 1 }),
         pulse,
         levelId: levelId ?? null,
         memberId: member.id,
         workspaceId: member.workspaceId,
-      };
-
-      await createLog({ log });
+      });
     }
+
+    await client.insert({
+      table: "log",
+      values: logs,
+      format: "JSON",
+    });
+
+    await client.query({
+      query: `
+        ALTER TABLE log
+        DELETE WHERE date < subtractWeeks(now(), 53)
+      `,
+      format: "JSON",
+    });
   },
 });
