@@ -1,5 +1,6 @@
 import { listChannels } from "@conquest/clickhouse/channels/listChannels";
 import { updateIntegration } from "@conquest/db/integrations/updateIntegration";
+import { prisma } from "@conquest/db/prisma";
 import { DiscordIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
 import { logger, schemaTask } from "@trigger.dev/sdk/v3";
 import { z } from "zod";
@@ -62,6 +63,7 @@ export const installDiscord = schemaTask({
     });
   },
   onFailure: async ({ discord }) => {
+    await prisma.integration.delete({ where: { id: discord.id } });
     await deleteIntegration.trigger({ integration: discord });
   },
 });

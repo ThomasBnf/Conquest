@@ -13,10 +13,8 @@ export const deleteIntegration = protectedProcedure
   .mutation(async ({ input }) => {
     const { integration } = input;
 
-    await prisma.integration.delete({
-      where: { id: integration.id },
-    });
-
+    await prisma.integration.delete({ where: { id: integration.id } });
     await _deleteIntegration.trigger({ integration });
+
     return { success: true };
   });

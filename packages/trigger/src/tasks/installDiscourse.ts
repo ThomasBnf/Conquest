@@ -1,5 +1,6 @@
 import { discourseClient } from "@conquest/db/discourse";
 import { updateIntegration } from "@conquest/db/integrations/updateIntegration";
+import { prisma } from "@conquest/db/prisma";
 import { decrypt } from "@conquest/db/utils/decrypt";
 import { DiscourseIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
 import { schemaTask } from "@trigger.dev/sdk/v3";
@@ -7,9 +8,9 @@ import { z } from "zod";
 import { createManyMembers } from "../discourse/createManyMembers";
 import { createManyTags } from "../discourse/createManyTags";
 import { checkDuplicates } from "./checkDuplicates";
-import { deleteIntegration } from "./deleteIntegration";
 import { getAllMembersMetrics } from "./getAllMembersMetrics";
 import { integrationSuccessEmail } from "./integrationSuccessEmail";
+import { deleteIntegration } from "./deleteIntegration";
 
 export const installDiscourse = schemaTask({
   id: "install-discourse",
@@ -54,6 +55,7 @@ export const installDiscourse = schemaTask({
     });
   },
   onFailure: async ({ discourse }) => {
+    await prisma.integration.delete({ where: { id: discourse.id } });
     await deleteIntegration.trigger({ integration: discourse });
   },
 });

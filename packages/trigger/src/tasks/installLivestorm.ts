@@ -1,4 +1,5 @@
 import { updateIntegration } from "@conquest/db/integrations/updateIntegration";
+import { prisma } from "@conquest/db/prisma";
 import { decrypt } from "@conquest/db/utils/decrypt";
 import { LivestormIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
 import { schemaTask } from "@trigger.dev/sdk/v3";
@@ -61,6 +62,7 @@ export const installLivestorm = schemaTask({
     });
   },
   onFailure: async ({ livestorm }) => {
+    await prisma.integration.delete({ where: { id: livestorm.id } });
     await deleteIntegration.trigger({ integration: livestorm });
   },
 });

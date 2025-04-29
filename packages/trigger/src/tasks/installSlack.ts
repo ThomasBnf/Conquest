@@ -1,5 +1,6 @@
 import { listChannels } from "@conquest/clickhouse/channels/listChannels";
 import { updateIntegration } from "@conquest/db/integrations/updateIntegration";
+import { prisma } from "@conquest/db/prisma";
 import { decrypt } from "@conquest/db/utils/decrypt";
 import { SlackIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
 import { WebClient } from "@slack/web-api";
@@ -54,6 +55,7 @@ export const installSlack = schemaTask({
     });
   },
   onFailure: async ({ slack }) => {
+    await prisma.integration.delete({ where: { id: slack.id } });
     await deleteIntegration.trigger({ integration: slack });
   },
 });
