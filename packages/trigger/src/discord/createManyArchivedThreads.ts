@@ -138,8 +138,8 @@ export const createManyArchivedThreads = async ({
         }
       }
 
-      before = threads.at(-1)?.thread_metadata?.archive_timestamp;
       if (threads.length < 100) break;
+      before = threads.at(-1)?.thread_metadata?.archive_timestamp;
 
       const lastThread = threads.at(-1);
 

@@ -119,8 +119,8 @@ export const createManyThreads = async ({ discord }: Props) => {
           });
         }
 
-        before = messages.at(-1)?.id;
         if (messages.length < 100) break;
+        before = messages.at(-1)?.id;
       } catch (error) {
         logger.error("error", { thread, error });
         break;

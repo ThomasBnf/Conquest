@@ -97,8 +97,8 @@ export const listChannelMessages = async ({ channel, workspaceId }: Props) => {
         if (isBefore(lastMessageDate, oneYearAgo)) break;
       }
 
-      before = messages.at(-1)?.id;
       if (messages.length < 100) break;
+      before = messages.at(-1)?.id;
     } catch (error) {
       const { name } = error as Error;
       if (name === "DiscordAPIError[50001]") {
