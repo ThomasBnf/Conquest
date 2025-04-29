@@ -3,7 +3,9 @@ import { updateIntegration } from "@conquest/db/integrations/updateIntegration";
 import { DiscordIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
 import { logger, schemaTask } from "@trigger.dev/sdk/v3";
 import { z } from "zod";
+import { checkPermissions } from "../discord/checkPermissions";
 import { createManyArchivedThreads } from "../discord/createManyArchivedThreads";
+import { createManyMembers } from "../discord/createManyMembers";
 import { createManyTags } from "../discord/createManyTags";
 import { createManyThreads } from "../discord/createManyThreads";
 import { listChannelMessages } from "../discord/listChannelMessages";
@@ -11,7 +13,6 @@ import { checkDuplicates } from "./checkDuplicates";
 import { deleteIntegration } from "./deleteIntegration";
 import { getAllMembersMetrics } from "./getAllMembersMetrics";
 import { integrationSuccessEmail } from "./integrationSuccessEmail";
-import { createManyMembers } from "../discord/createManyMembers";
 
 export const installDiscord = schemaTask({
   id: "install-discord",
@@ -34,6 +35,8 @@ export const installDiscord = schemaTask({
 
     for (const channel of channels) {
       logger.info(`CHANNEL - ${channel.name}`);
+
+      await checkPermissions({ discord, channel });
       await createManyArchivedThreads({ discord, channel });
 
       if (!channel.externalId) continue;

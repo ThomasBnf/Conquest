@@ -14,7 +14,7 @@ export const listChannels = async ({ source, workspaceId }: Props) => {
       FROM channel
       WHERE workspaceId = '${workspaceId}'
       ${source ? `AND source = '${source}'` : ""}
-      ORDER BY createdAt DESC
+      ORDER BY name ASC
     `,
     format: "JSON",
   });

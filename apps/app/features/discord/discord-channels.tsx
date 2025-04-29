@@ -1,3 +1,4 @@
+import { IconDoc } from "@/components/custom/icon-doc";
 import { LoadingChannels } from "@/components/states/loading-channels";
 import { useIntegration } from "@/context/integrationContext";
 import { trpc } from "@/server/client";
@@ -80,30 +81,28 @@ export const DiscordChannels = () => {
     <div className="space-y-4">
       <div>
         <p className="font-medium text-base">Channels</p>
-        <p className="mb-4">
-          Please select only{" "}
-          <span className="font-semibold">public channels</span>.
-          <br />
-          Private or restricted channels cannot be properly imported. <br />
-          <span className="font-semibold">
-            They will be removed from Conquest.
-          </span>
-        </p>
-        <Button
-          variant="outline"
-          size="xs"
-          disabled={loading}
-          onClick={
-            selectedChannels.length === subChannels?.length
-              ? onUnselectAll
-              : onSelectAll
-          }
-        >
-          {selectedChannels.length === subChannels?.length
-            ? "Unselect all"
-            : "Select all"}
-        </Button>
+        <div className="flex items-center gap-2">
+          <p className="text-muted-foreground">
+            ⚠️ If missing channels, please check our documentation.
+          </p>
+          <IconDoc url="https://docs.conquest.com/discord#missing-channels" />
+        </div>
       </div>
+      <Button
+        variant="outline"
+        size="xs"
+        disabled={loading}
+        onClick={
+          selectedChannels.length === subChannels?.length
+            ? onUnselectAll
+            : onSelectAll
+        }
+      >
+        {selectedChannels.length === subChannels?.length
+          ? "Unselect all"
+          : "Select all"}
+      </Button>
+
       <div className="flex flex-col gap-4">
         {categoriesChannels?.map((category) => {
           const hasSubChannels = subChannels?.some(

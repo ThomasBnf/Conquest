@@ -4,6 +4,7 @@ import { getRefreshToken } from "@conquest/trigger/discord/getRefreshToken";
 import { DiscordIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
 import {
   type APIGuildCategoryChannel,
+  APIRole,
   ChannelType,
   Routes,
 } from "discord-api-types/v10";
@@ -13,6 +14,8 @@ const EXCLUDED_CHANNEL_TYPES = [
   ChannelType.GuildStageVoice,
   ChannelType.GuildVoice,
 ] as number[];
+
+const VIEW_CHANNEL = 1 << 10;
 
 export const listChannels = protectedProcedure.query(
   async ({ ctx: { user } }) => {
@@ -33,6 +36,13 @@ export const listChannels = protectedProcedure.query(
 
     if (!externalId) return [];
 
+    const roles = (await discordClient.get(
+      Routes.guildRoles(externalId),
+    )) as APIRole[];
+
+    const conquest = roles.find((role) => role.name === "conquest-sandbox")?.id;
+    const everyone = roles.find((role) => role.name === "@everyone")?.id;
+
     const channels = (await discordClient.get(
       Routes.guildChannels(externalId),
     )) as APIGuildCategoryChannel[];
@@ -41,7 +51,26 @@ export const listChannels = protectedProcedure.query(
       if (EXCLUDED_CHANNEL_TYPES.includes(channel.type)) return false;
       if (channel.type === ChannelType.GuildCategory) return true;
 
-      return true;
+      if (!channel.permission_overwrites) return false;
+
+      const conquestPermission = channel.permission_overwrites.find(
+        (permission) => permission.id === conquest,
+      );
+
+      const everyonePermission = channel.permission_overwrites.find(
+        (permission) => permission.id === everyone,
+      );
+
+      const canView = (
+        permission: { allow: string; deny: string } | undefined,
+      ) => {
+        if (!permission) return false;
+        const deny = BigInt(permission.deny);
+
+        return (deny & BigInt(VIEW_CHANNEL)) !== BigInt(VIEW_CHANNEL);
+      };
+
+      return canView(conquestPermission) || canView(everyonePermission);
     });
 
     return filteredChannels;
