@@ -26,7 +26,7 @@ export const createManyThreads = async ({ discord }: Props) => {
 
   const threads = responseThreads.threads as APIThreadChannel[];
 
-  logger.info("active threads", { count: threads.length, threads });
+  logger.info("Active threads", { count: threads.length, threads });
 
   for (const thread of threads) {
     const { name, parent_id, owner_id, thread_metadata } = thread;
