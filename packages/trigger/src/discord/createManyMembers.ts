@@ -68,8 +68,7 @@ export const createManyMembers = async ({ discord, tags }: Props) => {
       });
     }
 
-    after = members.at(-1)?.user.id;
-
     if (members.length < 100) break;
+    after = members.at(-1)?.user.id;
   }
 };
