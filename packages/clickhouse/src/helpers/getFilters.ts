@@ -82,8 +82,8 @@ export const getFilters = ({ groupFilters }: Props) => {
         }
 
         const parsedOperator = operatorParser(operator);
-        const hasGithub = `arrayExists(attr -> attr.source = 'Github'`;
-        const condition = `toFloat64OrNull(JSONExtractString(toJSONString(attr), '${customFieldId}')) ${parsedOperator} ${value}, p.attributes)`;
+        const hasGithub = `arrayExists(attr -> attr.source = 'Github', p.attributes)`;
+        const condition = `toFloat64OrNull(JSONExtractString(toJSONString(attr), '${customFieldId}')) ${parsedOperator} ${value}`;
 
         switch (operator) {
           case ">":
@@ -113,8 +113,8 @@ export const getFilters = ({ groupFilters }: Props) => {
           return "true";
         }
 
-        const hasGithub = `arrayExists(attr -> attr.source = 'Github'`;
-        const condition = `position(lower(toString(attr.${customFieldId})), lower('${value}')) > 0, p.attributes)`;
+        const hasGithub = `arrayExists(attr -> attr.source = 'Github', p.attributes)`;
+        const condition = `position(lower(toString(attr.${customFieldId})), lower('${value}')) > 0`;
 
         switch (operator) {
           case "contains":
@@ -122,9 +122,9 @@ export const getFilters = ({ groupFilters }: Props) => {
           case "not_contains":
             return `${hasGithub} AND NOT ${condition}`;
           case "empty":
-            return `${hasGithub} AND (attr.${customFieldId} = '' OR attr.${customFieldId} IS NULL), p.attributes)`;
+            return `${hasGithub} AND (attr.${customFieldId} = '' OR attr.${customFieldId} IS NULL)`;
           case "not_empty":
-            return `${hasGithub} AND attr.${customFieldId} != '' AND attr.${customFieldId} IS NOT NULL, p.attributes)`;
+            return `${hasGithub} AND attr.${customFieldId} != '' AND attr.${customFieldId} IS NOT NULL`;
           default:
             return "true";
         }
@@ -176,18 +176,18 @@ export const getFilters = ({ groupFilters }: Props) => {
           const formattedValues = values
             .map((value) => `'${value}'`)
             .join(", ");
-          return `hasAny(tags, [${formattedValues}])`;
+          return `hasAny(m.tags, [${formattedValues}])`;
         }
         case "not_contains": {
           const formattedValues = values
             .map((value) => `'${value}'`)
             .join(", ");
-          return `NOT hasAny(tags, [${formattedValues}])`;
+          return `NOT hasAny(m.tags, [${formattedValues}])`;
         }
         case "empty":
-          return "empty(tags)";
+          return "empty(m.tags)";
         case "not_empty":
-          return "notEmpty(tags)";
+          return "notEmpty(m.tags)";
         default:
           return "true";
       }
@@ -202,13 +202,13 @@ export const getFilters = ({ groupFilters }: Props) => {
 
       switch (operator) {
         case "contains":
-          return `arrayExists(x -> position(lower(x), lower('${value}')) > 0, phones)`;
+          return `arrayExists(x -> position(lower(x), lower('${value}')) > 0, m.phones)`;
         case "not_contains":
-          return `NOT arrayExists(x -> position(lower(x), lower('${value}')) > 0, phones)`;
+          return `NOT arrayExists(x -> position(lower(x), lower('${value}')) > 0, m.phones)`;
         case "empty":
-          return "empty(phones)";
+          return "empty(m.phones)";
         case "not_empty":
-          return "notEmpty(phones)";
+          return "notEmpty(m.phones)";
         default:
           return "true";
       }
@@ -326,7 +326,7 @@ export const getFilters = ({ groupFilters }: Props) => {
       const operatorParsed = operatorParser(operator);
 
       const dateCondition = displayDate
-        ? `AND a.createdAt >= now() - INTERVAL '${dynamicDate}'`
+        ? `AND a.createdAt >= now() - INTERVAL ${dynamicDate}`
         : "";
       const channelCondition = displayChannel
         ? `AND a.channelId IN (${channelIds})`
