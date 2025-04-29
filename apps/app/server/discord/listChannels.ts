@@ -40,7 +40,10 @@ export const listChannels = protectedProcedure.query(
       Routes.guildRoles(externalId),
     )) as APIRole[];
 
-    const conquest = roles.find((role) => role.name === "conquest-sandbox")?.id;
+    const isDev = process.env.NODE_ENV === "development";
+    const botName = isDev ? "conquest-sandbox" : "conquest";
+
+    const conquest = roles.find((role) => role.name === botName)?.id;
     const everyone = roles.find((role) => role.name === "@everyone")?.id;
 
     const channels = (await discordClient.get(
