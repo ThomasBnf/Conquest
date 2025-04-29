@@ -76,7 +76,7 @@ export const FilterLevelSchema = FilterBaseSchema.extend({
 
 export const FilterActivitySchema = FilterBaseSchema.extend({
   type: z.literal("activity"),
-  field: z.enum(["activityType"]),
+  field: z.enum(["activity-type"]),
   who: WhoOptionsSchema,
   activityTypes: z
     .object({

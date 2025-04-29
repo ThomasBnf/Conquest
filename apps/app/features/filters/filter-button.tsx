@@ -253,7 +253,7 @@ const filtersActivity: Filter[] = [
     who: "who_did",
     label: "Activity type",
     type: "activity",
-    field: "activityType",
+    field: "activity-type",
     activityTypes: [],
     operator: ">=",
     value: 1,
