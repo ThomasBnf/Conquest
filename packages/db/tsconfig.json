@@ -1,4 +1,4 @@
 {
-    "extends": "@conquest/tsconfig/base.json",
-    "include": ["src/**/*.ts"]
-  }
+  "extends": "@conquest/tsconfig/base.json",
+  "include": ["src/**/*.ts"]
+}

@@ -9,7 +9,7 @@ import {
   LivestormIntegrationSchema,
 } from "@conquest/zod/schemas/integration.schema";
 import { WebClient } from "@slack/web-api";
-import { schemaTask } from "@trigger.dev/sdk/v3";
+import { logger, schemaTask } from "@trigger.dev/sdk/v3";
 import { Octokit } from "octokit";
 import { z } from "zod";
 import { listAndDeleteWebhooks } from "../github/listAndDeleteWebhooks";
@@ -86,9 +86,13 @@ export const deleteIntegration = schemaTask({
     }
 
     if (deleteIntegration) {
-      await prisma.integration.delete({
-        where: { id: integration.id },
-      });
+      try {
+        await prisma.integration.delete({
+          where: { id: integration.id },
+        });
+      } catch (error) {
+        logger.error("deleteIntegration error", { error });
+      }
     }
 
     await prisma.tag.deleteMany({

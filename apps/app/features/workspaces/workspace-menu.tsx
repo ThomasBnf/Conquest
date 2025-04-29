@@ -30,7 +30,7 @@ type Props = {
 };
 
 export const WorkspaceMenu = ({ workspace }: Props) => {
-  const { data: session } = useSession();
+  const { data: session, update } = useSession();
   const { id, name } = workspace ?? {};
   const { state } = useSidebar();
   const router = useRouter();
@@ -50,6 +50,7 @@ export const WorkspaceMenu = ({ workspace }: Props) => {
     });
 
     utils.invalidate();
+    update();
     router.push(`/${slug}`);
   };
 
