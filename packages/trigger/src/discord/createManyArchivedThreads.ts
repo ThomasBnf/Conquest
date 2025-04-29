@@ -42,9 +42,12 @@ export const createManyArchivedThreads = async ({
         `${Routes.channelThreads(externalId, "public")}?${params.toString()}`,
       )) as APIThreadList;
 
-      logger.info("responseThreads", { responseThreads });
-
       const threads = responseThreads.threads as APIThreadChannel[];
+
+      logger.info("Archived threads", {
+        count: threads.length,
+        threads,
+      });
 
       for (const thread of threads) {
         const { name, parent_id, owner_id, thread_metadata } = thread;
