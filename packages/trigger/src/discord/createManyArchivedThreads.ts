@@ -133,8 +133,8 @@ export const createManyArchivedThreads = async ({
             });
           }
 
-          beforeMessageId = messages.at(-1)?.id;
           if (messages.length < 100) break;
+          beforeMessageId = messages.at(-1)?.id;
         }
       }
 
