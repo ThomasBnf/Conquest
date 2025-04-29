@@ -55,6 +55,13 @@ export const createManyArchivedThreads = async ({
 
         if (!owner_id || !parent_id) continue;
 
+        const channel = await getChannel({
+          externalId: parent_id,
+          workspaceId,
+        });
+
+        if (!channel) continue;
+
         let before: string | undefined = undefined;
         let firstMessage: APIMessage | undefined;
 
@@ -71,13 +78,6 @@ export const createManyArchivedThreads = async ({
           logger.info("archived thread messages", { messages });
 
           if (messages.length < 100) firstMessage = messages.at(-1);
-
-          const channel = await getChannel({
-            externalId: parent_id,
-            workspaceId,
-          });
-
-          if (!channel) continue;
 
           for (const message of messages) {
             const {

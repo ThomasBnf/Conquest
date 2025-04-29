@@ -34,15 +34,15 @@ export const createManyThreads = async ({ discord }: Props) => {
 
     if (!owner_id || !parent_id) continue;
 
-    let before: string | undefined = undefined;
-    let firstMessage: APIMessage | undefined;
-
     const channel = await getChannel({
       externalId: parent_id,
       workspaceId,
     });
 
     if (!channel) continue;
+
+    let before: string | undefined = undefined;
+    let firstMessage: APIMessage | undefined;
 
     while (true) {
       const params = new URLSearchParams({
