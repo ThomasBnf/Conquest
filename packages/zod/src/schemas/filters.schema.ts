@@ -62,7 +62,7 @@ export const FilterTextSchema = FilterBaseSchema.extend({
 
 export const FilterNumberSchema = FilterBaseSchema.extend({
   type: z.literal("number"),
-  field: z.enum(["pulse", "level", "github-followers"]),
+  field: z.enum(["pulse", "level", "githubFollowers"]),
   operator: NumberOperatorSchema,
   value: z.number().min(0).default(1),
 });
@@ -76,7 +76,7 @@ export const FilterLevelSchema = FilterBaseSchema.extend({
 
 export const FilterActivitySchema = FilterBaseSchema.extend({
   type: z.literal("activity"),
-  field: z.enum(["activity-type"]),
+  field: z.enum(["activityType"]),
   who: WhoOptionsSchema,
   activityTypes: z
     .object({

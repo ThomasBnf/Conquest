@@ -18,7 +18,7 @@ export const getFilters = ({ groupFilters }: Props) => {
     const parsedFilter = FilterSchema.parse(filter);
     const { field } = parsedFilter;
 
-    if (field.includes("discourse-")) {
+    if (field.startsWith("discourse")) {
       const customFieldId = field.split("-")[1];
 
       if (filter.type === "text") {
@@ -68,7 +68,7 @@ export const getFilters = ({ groupFilters }: Props) => {
       return "true";
     }
 
-    if (field.includes("github-")) {
+    if (field.startsWith("github")) {
       const customFieldId = field.split("-")[1];
 
       if (filter.type === "number") {
