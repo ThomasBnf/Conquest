@@ -59,11 +59,6 @@ export const createManyArchivedThreads = async ({
         const { name, parent_id, owner_id, thread_metadata } = thread;
         const { create_timestamp } = thread_metadata ?? {};
 
-        if (create_timestamp) {
-          const threadDate = parseISO(create_timestamp);
-          if (isBefore(threadDate, oneYearAgo)) break;
-        }
-
         if (!owner_id || !parent_id) continue;
 
         let before: string | undefined = undefined;
