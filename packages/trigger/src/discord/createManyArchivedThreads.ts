@@ -6,6 +6,7 @@ import { discordClient } from "@conquest/db/discord";
 import type { Channel } from "@conquest/zod/schemas/channel.schema";
 import type { DiscordIntegration } from "@conquest/zod/schemas/integration.schema";
 import { logger } from "@trigger.dev/sdk/v3";
+import { isBefore, parseISO, subYears } from "date-fns";
 import {
   type APIMessage,
   type APIThreadChannel,
@@ -24,6 +25,7 @@ export const createManyArchivedThreads = async ({
 }: Props) => {
   const { workspaceId } = discord;
   const { id, externalId } = channel;
+  const oneYearAgo = subYears(new Date(), 1);
 
   if (!externalId) return;
 
@@ -44,9 +46,23 @@ export const createManyArchivedThreads = async ({
 
       const threads = responseThreads.threads as APIThreadChannel[];
 
+      const lastThread = threads.at(-1);
+
+      if (lastThread?.thread_metadata?.create_timestamp) {
+        const lastThreadDate = parseISO(
+          lastThread.thread_metadata.create_timestamp,
+        );
+        if (isBefore(lastThreadDate, oneYearAgo)) break;
+      }
+
       for (const thread of threads) {
         const { name, parent_id, owner_id, thread_metadata } = thread;
         const { create_timestamp } = thread_metadata ?? {};
+
+        if (create_timestamp) {
+          const threadDate = parseISO(create_timestamp);
+          if (isBefore(threadDate, oneYearAgo)) break;
+        }
 
         if (!owner_id || !parent_id) continue;
 

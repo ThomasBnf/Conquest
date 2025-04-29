@@ -1,14 +1,4 @@
 {
   "extends": "@conquest/tsconfig/base.json",
-  "include": [
-    "src/**/*.ts",
-    "../trigger/src/queries/createGithubMember.ts",
-    "../trigger/src/queries/createManyComments.ts",
-    "../trigger/src/queries/createManyIssues.ts",
-    "../trigger/src/queries/createManyPullRequests.ts",
-    "../trigger/src/queries/createWebhook.ts",
-    "../trigger/src/queries/listAndDeleteWebhooks.ts",
-    "../trigger/src/queries/listStargazers.ts",
-    "../../apps/app/features/merge/helpers/getFinalMember.ts"
-  ]
+  "include": ["src/**/*.ts"]
 }

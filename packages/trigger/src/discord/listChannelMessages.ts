@@ -2,8 +2,8 @@ import { createActivity } from "@conquest/clickhouse/activities/createActivity";
 import { getProfile } from "@conquest/clickhouse/profiles/getProfile";
 import { discordClient } from "@conquest/db/discord";
 import type { Channel } from "@conquest/zod/schemas/channel.schema";
-import type { DiscordIntegration } from "@conquest/zod/schemas/integration.schema";
 import { logger } from "@trigger.dev/sdk/v3";
+import { isBefore, parseISO, subYears } from "date-fns";
 import { type APIMessage, Routes } from "discord-api-types/v10";
 
 type Props = {
@@ -13,6 +13,7 @@ type Props = {
 
 export const listChannelMessages = async ({ channel, workspaceId }: Props) => {
   const { externalId } = channel;
+  const oneYearAgo = subYears(new Date(), 1);
 
   if (!externalId) return;
 
@@ -30,6 +31,13 @@ export const listChannelMessages = async ({ channel, workspaceId }: Props) => {
       )) as APIMessage[];
 
       logger.info("messages", { messages });
+
+      const lastMessage = messages.at(-1);
+
+      if (lastMessage?.timestamp) {
+        const lastMessageDate = parseISO(lastMessage.timestamp);
+        if (isBefore(lastMessageDate, oneYearAgo)) break;
+      }
 
       for (const message of messages) {
         const {

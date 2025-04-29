@@ -23,6 +23,7 @@ export const checkDuplicates = schemaTask({
           FROM member m FINAL
           WHERE 
             m.primaryEmail != '' 
+            AND m.pulse > 0
             AND m.primaryEmail IS NOT NULL 
             AND length(trim(m.primaryEmail)) > 0 
             AND m.workspaceId = '${workspaceId}'
@@ -39,6 +40,7 @@ export const checkDuplicates = schemaTask({
           WHERE 
             m.firstName != ''
             AND m.lastName != ''
+            AND m.pulse > 0
             AND m.workspaceId = '${workspaceId}'
           GROUP BY m.firstName, m.lastName
           HAVING count(DISTINCT m.id) > 1
@@ -54,9 +56,11 @@ export const checkDuplicates = schemaTask({
                   JSONExtractString(toString(p.attributes), 'username') AS username,
                   p.memberId
               FROM profile p FINAL
+              LEFT JOIN member m FINAL ON m.id = p.memberId
               WHERE JSONExtractString(toString(p.attributes), 'source') = 'Discord' 
               AND JSONExtractString(toString(p.attributes), 'username') != ''
               AND p.workspaceId = '${workspaceId}'
+              AND m.pulse > 0
 
               UNION ALL
 
@@ -64,9 +68,11 @@ export const checkDuplicates = schemaTask({
                   JSONExtractString(toString(p.attributes), 'username') AS username,
                   p.memberId
               FROM profile p FINAL
+              LEFT JOIN member m FINAL ON m.id = p.memberId
               WHERE JSONExtractString(toString(p.attributes), 'source') = 'Discourse'
               AND JSONExtractString(toString(p.attributes), 'username') != ''
               AND p.workspaceId = '${workspaceId}'
+              AND m.pulse > 0
 
               UNION ALL
 
@@ -74,9 +80,11 @@ export const checkDuplicates = schemaTask({
                   JSONExtractString(toString(p.attributes), 'login') AS username,
                   p.memberId
               FROM profile p FINAL
+              LEFT JOIN member m FINAL ON m.id = p.memberId
               WHERE JSONExtractString(toString(p.attributes), 'source') = 'Github'
               AND JSONExtractString(toString(p.attributes), 'login') != ''
               AND p.workspaceId = '${workspaceId}'
+              AND m.pulse > 0
           )
           GROUP BY username
           HAVING count(DISTINCT memberId) > 1
