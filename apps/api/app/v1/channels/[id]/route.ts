@@ -1,6 +1,5 @@
 import { getAuthenticatedUser } from "@/utils/getAuthenticatedUser";
 import { client } from "@conquest/clickhouse/client";
-import { ChannelSchema } from "@conquest/zod/schemas/channel.schema";
 import { createZodRoute } from "next-zod-route";
 import { NextResponse } from "next/server";
 import { z } from "zod";
@@ -53,7 +52,7 @@ export const GET = createZodRoute()
     return NextResponse.json({ channel });
   });
 
-export const PUT = createZodRoute()
+export const PATCH = createZodRoute()
   .use(async ({ request, next }) => {
     const result = await getAuthenticatedUser(request);
 
@@ -71,7 +70,12 @@ export const PUT = createZodRoute()
       id: z.string(),
     }),
   )
-  .body(ChannelSchema.partial())
+  .body(
+    z.object({
+      externalId: z.string().optional(),
+      name: z.string().optional(),
+    }),
+  )
   .handler(async (_, { ctx, params, body }) => {
     const { workspaceId } = ctx;
     const { id } = params;

@@ -31,6 +31,10 @@ import ISO6391 from "iso-639-1";
 import { type NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
+const escapeSqlString = (str: string): string => {
+  return str.replace(/'/g, "''");
+};
+
 const WebhookSchema = z.object({
   token: z.string(),
   api_app_id: z.string(),
@@ -187,7 +191,7 @@ export async function POST(req: NextRequest) {
           DELETE WHERE memberId = '${profile.memberId}'
           AND channelId = '${channel.id}' 
           AND reactTo = '${ts}' 
-          AND message = '${reaction}'
+          AND message = '${escapeSqlString(reaction)}'
           AND workspaceId = '${workspaceId}'
         `,
       });
@@ -324,7 +328,7 @@ export async function POST(req: NextRequest) {
             await updateActivity({
               ...activity,
               activityTypeId: activityType.id,
-              message: text ?? "",
+              message: text ? escapeSqlString(text) : "",
               replyTo: thread_ts ?? "",
             });
 
@@ -376,7 +380,7 @@ export async function POST(req: NextRequest) {
       await createActivity({
         externalId: ts,
         activityTypeKey: thread_ts ? "slack:reply" : "slack:message",
-        message: text ?? "",
+        message: text ? escapeSqlString(text) : "",
         replyTo: thread_ts ?? "",
         memberId: profile.memberId,
         channelId: channel.id,

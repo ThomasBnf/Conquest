@@ -82,7 +82,6 @@
       "group": "Activities",
       "pages": [
         "api-reference/activities/list",
-        "api-reference/activities/list-member-activities",
         "api-reference/activities/post",
         "api-reference/activities/get",
         "api-reference/activities/patch",
@@ -115,7 +114,7 @@
         "api-reference/companies/list",
         "api-reference/companies/post",
         "api-reference/companies/get",
-        "api-reference/companies/patch",
+        "api-reference/companies/put",
         "api-reference/companies/delete"
       ]
     }

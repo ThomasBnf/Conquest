@@ -54,7 +54,7 @@ export const GET = createZodRoute()
     return NextResponse.json({ activity });
   });
 
-export const PUT = createZodRoute()
+export const PATCH = createZodRoute()
   .use(async ({ request, next }) => {
     const result = await getAuthenticatedUser(request);
 
@@ -73,9 +73,17 @@ export const PUT = createZodRoute()
     }),
   )
   .body(
-    ActivitySchema.partial().extend({
-      activityTypeKey: z.string().optional(),
-    }),
+    ActivitySchema.partial()
+      .omit({
+        id: true,
+        source: true,
+        workspaceId: true,
+        createdAt: true,
+        updatedAt: true,
+      })
+      .extend({
+        activityTypeKey: z.string().optional(),
+      }),
   )
   .handler(async (_, { ctx, params, body }) => {
     const { id } = params;
@@ -125,7 +133,19 @@ export const PUT = createZodRoute()
       `,
     });
 
-    return NextResponse.json({ success: true });
+    const result = await client.query({
+      query: `
+        SELECT * 
+        FROM activity
+        WHERE id = '${id}'
+        AND workspaceId = '${workspaceId}'
+      `,
+    });
+
+    const { data } = await result.json();
+    const activity = ActivitySchema.parse(data[0]);
+
+    return NextResponse.json({ activity });
   });
 
 export const DELETE = createZodRoute()

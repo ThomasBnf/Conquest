@@ -14,25 +14,32 @@
     "/v1/activities": {
       "get": {
         "description": "List all activities from your workspace",
+        "security": [{ "bearerAuth": [] }],
+        "x-codeSamples": [
+          {
+            "lang": "curl",
+            "source": "curl --request GET \\\n  --url 'https://api.useconquest.com/v1/activities?page=1&pageSize=10' \\\n  --header 'Authorization: Bearer <token>'"
+          }
+        ],
         "parameters": [
           {
             "name": "page",
             "in": "query",
-            "description": "The page number to return",
+            "description": "Page number",
             "schema": {
               "type": "integer",
-              "format": "int32",
               "default": 1
             }
           },
           {
-            "name": "page_size",
+            "name": "pageSize",
             "in": "query",
-            "description": "The number of results to return per page",
+            "description": "Number of activities per page",
             "schema": {
               "type": "integer",
-              "format": "int32",
-              "default": 10
+              "default": 10,
+              "minimum": 10,
+              "maximum": 100
             }
           }
         ],
@@ -41,7 +48,9 @@
             "description": "Successful response",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/Activities" }
+                "schema": {
+                  "$ref": "#/components/schemas/Activities"
+                }
               }
             }
           },
@@ -49,7 +58,9 @@
             "description": "Bad Request",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/error.BAD_REQUEST" }
+                "schema": {
+                  "$ref": "#/components/schemas/error.BAD_REQUEST"
+                }
               }
             }
           },
@@ -57,7 +68,9 @@
             "description": "Unauthorized",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/error.UNAUTHORIZED" }
+                "schema": {
+                  "$ref": "#/components/schemas/error.UNAUTHORIZED"
+                }
               }
             }
           },
@@ -65,21 +78,125 @@
             "description": "Not Found",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/error.NOT_FOUND" }
+                "schema": {
+                  "$ref": "#/components/schemas/error.NOT_FOUND"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "description": "Create an activity for a member",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["activityTypeKey", "memberId"],
+                "properties": {
+                  "activityTypeKey": {
+                    "type": "string",
+                    "description": "Key of the activity type",
+                    "example": "discord:message"
+                  },
+                  "title": {
+                    "type": "string",
+                    "description": "Title of the activity"
+                  },
+                  "message": {
+                    "type": "string",
+                    "description": "Message of the activity"
+                  },
+                  "replyTo": {
+                    "type": "string",
+                    "format": "uuid",
+                    "description": "ID of the activity to reply to"
+                  },
+                  "reactTo": {
+                    "type": "string",
+                    "format": "uuid",
+                    "description": "ID of the activity to react to"
+                  },
+                  "inviteTo": {
+                    "type": "string",
+                    "format": "uuid",
+                    "description": "ID of the activity to invite to"
+                  },
+                  "channelId": {
+                    "type": "string",
+                    "format": "uuid",
+                    "description": "ID of the channel"
+                  },
+                  "eventId": {
+                    "type": "string",
+                    "format": "uuid",
+                    "description": "ID of the event"
+                  },
+                  "memberId": {
+                    "type": "string",
+                    "format": "uuid",
+                    "description": "ID of the member"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Activity created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Activity"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error.BAD_REQUEST"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error.UNAUTHORIZED"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found - Activity type, member, channel, event or referenced activity not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error.NOT_FOUND"
+                }
               }
             }
           }
         }
       }
     },
-    "/v1/activities/{activity_id}": {
+    "/v1/activities/{activityId}": {
       "get": {
         "description": "Get an activity from your workspace",
         "security": [{ "bearerAuth": [] }],
         "parameters": [
           {
             "in": "path",
-            "name": "activity_id",
+            "name": "activityId",
             "schema": {
               "type": "string"
             },
@@ -91,7 +208,9 @@
             "description": "Successful response",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/Activity" }
+                "schema": {
+                  "$ref": "#/components/schemas/Activity"
+                }
               }
             }
           },
@@ -99,7 +218,9 @@
             "description": "Bad Request",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/error.BAD_REQUEST" }
+                "schema": {
+                  "$ref": "#/components/schemas/error.BAD_REQUEST"
+                }
               }
             }
           },
@@ -107,7 +228,9 @@
             "description": "Unauthorized",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/error.UNAUTHORIZED" }
+                "schema": {
+                  "$ref": "#/components/schemas/error.UNAUTHORIZED"
+                }
               }
             }
           },
@@ -115,31 +238,95 @@
             "description": "Not Found",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/error.NOT_FOUND" }
+                "schema": {
+                  "$ref": "#/components/schemas/error.NOT_FOUND"
+                }
               }
             }
           }
         }
       },
       "patch": {
-        "description": "Update an activity from your workspace",
+        "description": "Update an activity in your workspace",
         "security": [{ "bearerAuth": [] }],
         "parameters": [
           {
             "in": "path",
-            "name": "activity_id",
+            "name": "activityId",
             "schema": {
               "type": "string"
             },
             "required": true
           }
         ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "externalId": {
+                    "type": "string",
+                    "description": "External ID of the activity",
+                    "example": "ext_123"
+                  },
+                  "title": {
+                    "type": "string",
+                    "description": "Title of the activity"
+                  },
+                  "message": {
+                    "type": "string",
+                    "description": "Message of the activity"
+                  },
+                  "replyTo": {
+                    "type": "string",
+                    "format": "uuid",
+                    "description": "ID of the activity to reply to"
+                  },
+                  "reactTo": {
+                    "type": "string",
+                    "format": "uuid",
+                    "description": "ID of the activity to react to"
+                  },
+                  "inviteTo": {
+                    "type": "string",
+                    "format": "uuid",
+                    "description": "ID of the activity to invite to"
+                  },
+                  "activityTypeKey": {
+                    "type": "string",
+                    "format": "uuid",
+                    "description": "Key of the activity type"
+                  },
+                  "channelId": {
+                    "type": "string",
+                    "format": "uuid",
+                    "description": "ID of the channel"
+                  },
+                  "eventId": {
+                    "type": "string",
+                    "format": "uuid",
+                    "description": "ID of the event"
+                  },
+                  "memberId": {
+                    "type": "string",
+                    "format": "uuid",
+                    "description": "ID of the member"
+                  }
+                }
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
-            "description": "Successful response",
+            "description": "Successful update",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/Activity" }
+                "schema": {
+                  "$ref": "#/components/schemas/Activity"
+                }
               }
             }
           },
@@ -147,7 +334,9 @@
             "description": "Bad Request",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/error.BAD_REQUEST" }
+                "schema": {
+                  "$ref": "#/components/schemas/error.BAD_REQUEST"
+                }
               }
             }
           },
@@ -155,7 +344,9 @@
             "description": "Unauthorized",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/error.UNAUTHORIZED" }
+                "schema": {
+                  "$ref": "#/components/schemas/error.UNAUTHORIZED"
+                }
               }
             }
           },
@@ -163,7 +354,9 @@
             "description": "Not Found",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/error.NOT_FOUND" }
+                "schema": {
+                  "$ref": "#/components/schemas/error.NOT_FOUND"
+                }
               }
             }
           }
@@ -171,11 +364,15 @@
       },
       "delete": {
         "description": "Delete an activity from your workspace",
-        "security": [{ "bearerAuth": [] }],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "parameters": [
           {
             "in": "path",
-            "name": "activity_id",
+            "name": "activityId",
             "schema": {
               "type": "string"
             },
@@ -187,7 +384,15 @@
             "description": "Successful response",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/Activity" }
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    }
+                  }
+                }
               }
             }
           },
@@ -195,7 +400,9 @@
             "description": "Bad Request",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/error.BAD_REQUEST" }
+                "schema": {
+                  "$ref": "#/components/schemas/error.BAD_REQUEST"
+                }
               }
             }
           },
@@ -203,7 +410,9 @@
             "description": "Unauthorized",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/error.UNAUTHORIZED" }
+                "schema": {
+                  "$ref": "#/components/schemas/error.UNAUTHORIZED"
+                }
               }
             }
           },
@@ -211,7 +420,9 @@
             "description": "Not Found",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/error.NOT_FOUND" }
+                "schema": {
+                  "$ref": "#/components/schemas/error.NOT_FOUND"
+                }
               }
             }
           }
@@ -221,29 +432,35 @@
     "/v1/members": {
       "get": {
         "description": "List all members from your workspace",
+        "security": [{ "bearerAuth": [] }],
+        "x-codeSamples": [
+          {
+            "lang": "curl",
+            "source": "curl --request GET \\\n  --url 'https://api.useconquest.com/v1/members?page=1&pageSize=10' \\\n  --header 'Authorization: Bearer <token>'"
+          }
+        ],
         "parameters": [
           {
             "name": "page",
             "in": "query",
-            "description": "Page number for pagination",
-            "required": false,
+            "description": "Page number",
             "schema": {
               "type": "integer",
               "default": 1
             }
           },
           {
-            "name": "page_size",
+            "name": "pageSize",
             "in": "query",
-            "description": "Number of items per page",
-            "required": false,
+            "description": "Number of members per page",
             "schema": {
               "type": "integer",
-              "default": 10
+              "default": 10,
+              "minimum": 10,
+              "maximum": 100
             }
           }
         ],
-        "security": [{ "bearerAuth": [] }],
         "responses": {
           "200": {
             "description": "Successful response",
@@ -269,7 +486,9 @@
             "description": "Unauthorized",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/error.UNAUTHORIZED" }
+                "schema": {
+                  "$ref": "#/components/schemas/error.UNAUTHORIZED"
+                }
               }
             }
           },
@@ -277,7 +496,9 @@
             "description": "Not Found",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/error.NOT_FOUND" }
+                "schema": {
+                  "$ref": "#/components/schemas/error.NOT_FOUND"
+                }
               }
             }
           }
@@ -315,7 +536,9 @@
             "description": "Unauthorized",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/error.UNAUTHORIZED" }
+                "schema": {
+                  "$ref": "#/components/schemas/error.UNAUTHORIZED"
+                }
               }
             }
           },
@@ -323,71 +546,27 @@
             "description": "Not Found",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/error.NOT_FOUND" }
+                "schema": {
+                  "$ref": "#/components/schemas/error.NOT_FOUND"
+                }
               }
             }
           }
         }
       }
     },
-    "/v1/members/{member_id}": {
+    "/v1/members/{memberId}": {
       "get": {
         "description": "Get a member from your workspace",
-        "security": [{ "bearerAuth": [] }],
-        "parameters": [
+        "security": [
           {
-            "in": "path",
-            "name": "member_id",
-            "schema": {
-              "type": "string"
-            },
-            "required": true
+            "bearerAuth": []
           }
         ],
-        "responses": {
-          "200": {
-            "description": "Successful response",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/Member" }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/error.BAD_REQUEST"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/error.UNAUTHORIZED" }
-              }
-            }
-          },
-          "404": {
-            "description": "Not Found",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/error.NOT_FOUND" }
-              }
-            }
-          }
-        }
-      },
-      "patch": {
-        "description": "Update a member in your workspace",
-        "security": [{ "bearerAuth": [] }],
         "parameters": [
           {
             "in": "path",
-            "name": "member_id",
+            "name": "memberId",
             "schema": {
               "type": "string"
             },
@@ -419,7 +598,9 @@
             "description": "Unauthorized",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/error.UNAUTHORIZED" }
+                "schema": {
+                  "$ref": "#/components/schemas/error.UNAUTHORIZED"
+                }
               }
             }
           },
@@ -427,7 +608,122 @@
             "description": "Not Found",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/error.NOT_FOUND" }
+                "schema": {
+                  "$ref": "#/components/schemas/error.NOT_FOUND"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "description": "Update a member in your workspace",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "memberId",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "firstName": {
+                    "type": "string"
+                  },
+                  "lastName": {
+                    "type": "string"
+                  },
+                  "primaryEmail": {
+                    "type": "string"
+                  },
+                  "emails": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "email"
+                    }
+                  },
+                  "phones": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "example": "+33612345678"
+                    }
+                  },
+                  "jobTitle": {
+                    "type": "string"
+                  },
+                  "avatarUrl": {
+                    "type": "string"
+                  },
+                  "country": {
+                    "type": "string"
+                  },
+                  "language": {
+                    "type": "string"
+                  },
+                  "tags": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "uuid"
+                    }
+                  },
+                  "linkedinUrl": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Member"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error.BAD_REQUEST"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error.UNAUTHORIZED"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error.NOT_FOUND"
+                }
               }
             }
           }
@@ -435,11 +731,15 @@
       },
       "delete": {
         "description": "Delete a member in your workspace",
-        "security": [{ "bearerAuth": [] }],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "parameters": [
           {
             "in": "path",
-            "name": "member_id",
+            "name": "memberId",
             "schema": {
               "type": "string"
             },
@@ -454,9 +754,9 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "message": {
-                      "type": "string",
-                      "example": "Member deleted successfully"
+                    "success": {
+                      "type": "boolean",
+                      "example": true
                     }
                   }
                 }
@@ -477,7 +777,9 @@
             "description": "Unauthorized",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/error.UNAUTHORIZED" }
+                "schema": {
+                  "$ref": "#/components/schemas/error.UNAUTHORIZED"
+                }
               }
             }
           },
@@ -485,7 +787,9 @@
             "description": "Not Found",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/error.NOT_FOUND" }
+                "schema": {
+                  "$ref": "#/components/schemas/error.NOT_FOUND"
+                }
               }
             }
           }
@@ -495,29 +799,35 @@
     "/v1/companies": {
       "get": {
         "description": "List all companies from your workspace",
+        "security": [{ "bearerAuth": [] }],
+        "x-codeSamples": [
+          {
+            "lang": "curl",
+            "source": "curl --request GET \\\n  --url 'https://api.useconquest.com/v1/companies?page=1&pageSize=10' \\\n  --header 'Authorization: Bearer <token>'"
+          }
+        ],
         "parameters": [
           {
             "name": "page",
             "in": "query",
-            "description": "Page number for pagination",
-            "required": false,
+            "description": "Page number",
             "schema": {
               "type": "integer",
               "default": 1
             }
           },
           {
-            "name": "page_size",
+            "name": "pageSize",
             "in": "query",
-            "description": "Number of items per page",
-            "required": false,
+            "description": "Number of activities per page",
             "schema": {
               "type": "integer",
-              "default": 10
+              "default": 10,
+              "minimum": 10,
+              "maximum": 100
             }
           }
         ],
-        "security": [{ "bearerAuth": [] }],
         "responses": {
           "200": {
             "description": "Successful response",
@@ -543,7 +853,9 @@
             "description": "Unauthorized",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/error.UNAUTHORIZED" }
+                "schema": {
+                  "$ref": "#/components/schemas/error.UNAUTHORIZED"
+                }
               }
             }
           },
@@ -551,7 +863,9 @@
             "description": "Not Found",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/error.NOT_FOUND" }
+                "schema": {
+                  "$ref": "#/components/schemas/error.NOT_FOUND"
+                }
               }
             }
           }
@@ -589,7 +903,9 @@
             "description": "Unauthorized",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/error.UNAUTHORIZED" }
+                "schema": {
+                  "$ref": "#/components/schemas/error.UNAUTHORIZED"
+                }
               }
             }
           },
@@ -597,71 +913,27 @@
             "description": "Not Found",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/error.NOT_FOUND" }
+                "schema": {
+                  "$ref": "#/components/schemas/error.NOT_FOUND"
+                }
               }
             }
           }
         }
       }
     },
-    "/v1/companies/{company_id}": {
+    "/v1/companies/{companyId}": {
       "get": {
         "description": "Get a company from your workspace",
-        "security": [{ "bearerAuth": [] }],
-        "parameters": [
+        "security": [
           {
-            "in": "path",
-            "name": "company_id",
-            "schema": {
-              "type": "string"
-            },
-            "required": true
+            "bearerAuth": []
           }
         ],
-        "responses": {
-          "200": {
-            "description": "Successful response",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/Company" }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/error.BAD_REQUEST"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/error.UNAUTHORIZED" }
-              }
-            }
-          },
-          "404": {
-            "description": "Not Found",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/error.NOT_FOUND" }
-              }
-            }
-          }
-        }
-      },
-      "patch": {
-        "description": "Update a company in your workspace",
-        "security": [{ "bearerAuth": [] }],
         "parameters": [
           {
             "in": "path",
-            "name": "company_id",
+            "name": "companyId",
             "schema": {
               "type": "string"
             },
@@ -693,7 +965,9 @@
             "description": "Unauthorized",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/error.UNAUTHORIZED" }
+                "schema": {
+                  "$ref": "#/components/schemas/error.UNAUTHORIZED"
+                }
               }
             }
           },
@@ -701,7 +975,69 @@
             "description": "Not Found",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/error.NOT_FOUND" }
+                "schema": {
+                  "$ref": "#/components/schemas/error.NOT_FOUND"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "description": "Update a company in your workspace",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "companyId",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Company"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error.BAD_REQUEST"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error.UNAUTHORIZED"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error.NOT_FOUND"
+                }
               }
             }
           }
@@ -709,11 +1045,15 @@
       },
       "delete": {
         "description": "Delete a company in your workspace",
-        "security": [{ "bearerAuth": [] }],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "parameters": [
           {
             "in": "path",
-            "name": "company_id",
+            "name": "companyId",
             "schema": {
               "type": "string"
             },
@@ -751,7 +1091,9 @@
             "description": "Unauthorized",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/error.UNAUTHORIZED" }
+                "schema": {
+                  "$ref": "#/components/schemas/error.UNAUTHORIZED"
+                }
               }
             }
           },
@@ -759,7 +1101,9 @@
             "description": "Not Found",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/error.NOT_FOUND" }
+                "schema": {
+                  "$ref": "#/components/schemas/error.NOT_FOUND"
+                }
               }
             }
           }
@@ -769,29 +1113,35 @@
     "/v1/channels": {
       "get": {
         "description": "List all channels from your workspace",
+        "security": [{ "bearerAuth": [] }],
+        "x-codeSamples": [
+          {
+            "lang": "curl",
+            "source": "curl --request GET \\\n  --url 'https://api.useconquest.com/v1/channels?page=1&pageSize=10' \\\n  --header 'Authorization: Bearer <token>'"
+          }
+        ],
         "parameters": [
           {
             "name": "page",
             "in": "query",
-            "description": "Page number for pagination",
-            "required": false,
+            "description": "Page number",
             "schema": {
               "type": "integer",
               "default": 1
             }
           },
           {
-            "name": "page_size",
+            "name": "pageSize",
             "in": "query",
-            "description": "Number of items per page",
-            "required": false,
+            "description": "Number of channels per page",
             "schema": {
               "type": "integer",
-              "default": 10
+              "default": 10,
+              "minimum": 10,
+              "maximum": 100
             }
           }
         ],
-        "security": [{ "bearerAuth": [] }],
         "responses": {
           "200": {
             "description": "Successful response",
@@ -817,7 +1167,9 @@
             "description": "Unauthorized",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/error.UNAUTHORIZED" }
+                "schema": {
+                  "$ref": "#/components/schemas/error.UNAUTHORIZED"
+                }
               }
             }
           },
@@ -825,7 +1177,9 @@
             "description": "Not Found",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/error.NOT_FOUND" }
+                "schema": {
+                  "$ref": "#/components/schemas/error.NOT_FOUND"
+                }
               }
             }
           }
@@ -833,9 +1187,84 @@
       },
       "post": {
         "description": "Create a channel in your workspace",
-        "security": [
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["activityTypeKey", "memberId"],
+                "properties": {
+                  "externalId": {
+                    "type": "string",
+                    "description": "External ID of the channel",
+                    "example": "ext_123"
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "Name of the channel"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Channel"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error.BAD_REQUEST"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error.UNAUTHORIZED"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error.NOT_FOUND"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/channels/{channelId}": {
+      "get": {
+        "description": "Get a channel from your workspace",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
           {
-            "bearerAuth": []
+            "in": "path",
+            "name": "channelId",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
           }
         ],
         "responses": {
@@ -863,67 +1292,19 @@
             "description": "Unauthorized",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/error.UNAUTHORIZED" }
-              }
-            }
-          },
-          "404": {
-            "description": "Not Found",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/error.NOT_FOUND" }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/v1/channels/{channel_id}": {
-      "get": {
-        "description": "Get a channel from your workspace",
-        "security": [{ "bearerAuth": [] }],
-        "parameters": [
-          {
-            "in": "path",
-            "name": "channel_id",
-            "schema": {
-              "type": "string"
-            },
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful response",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/Channel" }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request",
-            "content": {
-              "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/error.BAD_REQUEST"
+                  "$ref": "#/components/schemas/error.UNAUTHORIZED"
                 }
               }
             }
           },
-          "401": {
-            "description": "Unauthorized",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/error.UNAUTHORIZED" }
-              }
-            }
-          },
           "404": {
             "description": "Not Found",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/error.NOT_FOUND" }
+                "schema": {
+                  "$ref": "#/components/schemas/error.NOT_FOUND"
+                }
               }
             }
           }
@@ -935,13 +1316,34 @@
         "parameters": [
           {
             "in": "path",
-            "name": "channel_id",
+            "name": "channelId",
             "schema": {
               "type": "string"
             },
             "required": true
           }
         ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["activityTypeKey", "memberId"],
+                "properties": {
+                  "externalId": {
+                    "type": "string",
+                    "description": "External ID of the channel",
+                    "example": "ext_123"
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "Name of the channel"
+                  }
+                }
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "Successful response",
@@ -967,7 +1369,9 @@
             "description": "Unauthorized",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/error.UNAUTHORIZED" }
+                "schema": {
+                  "$ref": "#/components/schemas/error.UNAUTHORIZED"
+                }
               }
             }
           },
@@ -975,7 +1379,9 @@
             "description": "Not Found",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/error.NOT_FOUND" }
+                "schema": {
+                  "$ref": "#/components/schemas/error.NOT_FOUND"
+                }
               }
             }
           }
@@ -983,11 +1389,15 @@
       },
       "delete": {
         "description": "Delete a channel in your workspace",
-        "security": [{ "bearerAuth": [] }],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "parameters": [
           {
             "in": "path",
-            "name": "channel_id",
+            "name": "channelId",
             "schema": {
               "type": "string"
             },
@@ -1002,9 +1412,9 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "message": {
-                      "type": "string",
-                      "example": "Channel deleted successfully"
+                    "success": {
+                      "type": "boolean",
+                      "example": true
                     }
                   }
                 }
@@ -1025,7 +1435,9 @@
             "description": "Unauthorized",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/error.UNAUTHORIZED" }
+                "schema": {
+                  "$ref": "#/components/schemas/error.UNAUTHORIZED"
+                }
               }
             }
           },
@@ -1033,7 +1445,9 @@
             "description": "Not Found",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/error.NOT_FOUND" }
+                "schema": {
+                  "$ref": "#/components/schemas/error.NOT_FOUND"
+                }
               }
             }
           }
@@ -1046,9 +1460,18 @@
       "Activities": {
         "type": "object",
         "properties": {
-          "page": { "type": "number", "example": 1 },
-          "page_size": { "type": "number", "example": 10 },
-          "total_activities": { "type": "number", "example": 1235 },
+          "page": {
+            "type": "number",
+            "example": 1
+          },
+          "pageSize": {
+            "type": "number",
+            "example": 10
+          },
+          "totalActivities": {
+            "type": "number",
+            "example": 1235
+          },
           "activities": {
             "type": "array",
             "items": {
@@ -1057,9 +1480,9 @@
                 "id": {
                   "type": "string",
                   "format": "uuid",
-                  "example": "cm5fkwwup0006dntb34yzw7dd"
+                  "example": "9e1c8bba-9121-479f-b510-1bf02d01a42b"
                 },
-                "external_id": {
+                "externalId": {
                   "type": "string",
                   "example": "ext_123"
                 },
@@ -1071,55 +1494,55 @@
                   "type": "string",
                   "example": "This is an activity message"
                 },
-                "reply_to": {
+                "replyTo": {
                   "type": "string",
-                  "example": "cm5fkwwup0006dntb34yzw7dd"
+                  "example": "535e84c4-8d72-4b76-be79-8f21537e149e"
                 },
-                "react_to": {
+                "reactTo": {
                   "type": "string",
-                  "example": "cm5fkwwup0006dntb34yzw7dd"
+                  "example": "f939094f-4e24-4c7c-aab8-65a62515bfe4"
                 },
-                "invite_to": {
+                "inviteTo": {
                   "type": "string",
-                  "example": "cm5fkwwup0006dntb34yzw7dd"
+                  "example": "950420e7-1092-4942-8edd-90c3143293d2"
                 },
                 "source": {
                   "type": "string",
                   "example": "Slack"
                 },
-                "activity_type_id": {
+                "activityTypeId": {
                   "type": "string",
                   "format": "uuid",
-                  "example": "cm5fkwwup0006dntb34yzw7dd"
+                  "example": "d5b33178-6222-4e2d-a1e9-72828cffca9a"
                 },
-                "channel_id": {
-                  "type": "string",
-                  "format": "uuid",
-                  "nullable": true,
-                  "example": "cm5fkwwup0006dntb34yzw7dd"
-                },
-                "event_id": {
+                "channelId": {
                   "type": "string",
                   "format": "uuid",
                   "nullable": true,
-                  "example": "cm5fkwwup0006dntb34yzw7dd"
+                  "example": "350a95cd-c654-4238-9692-49d520420833"
                 },
-                "member_id": {
+                "eventId": {
                   "type": "string",
                   "format": "uuid",
-                  "example": "cm5fkwwup0006dntb34yzw7dd"
+                  "nullable": true,
+                  "example": "39813609-1062-4fd7-b488-533244b99f7d"
                 },
-                "workspace_id": {
+                "memberId": {
                   "type": "string",
                   "format": "uuid",
-                  "example": "cm5fkwwup0006dntb34yzw7dd"
+                  "example": "1dc2a014-13c9-41cd-87b5-4288df35b59a"
                 },
-                "created_at": {
+                "workspaceId": {
+                  "type": "string",
+                  "format": "uuid",
+                  "example": "5901abdb-32b7-4e56-8766-d8b6ac906376"
+                },
+                "createdAt": {
                   "type": "string",
                   "format": "date-time",
                   "example": "2025-01-01T00:00:00Z"
                 },
-                "updated_at": {
+                "updatedAt": {
                   "type": "string",
                   "format": "date-time",
                   "example": "2025-01-01T00:00:00Z"
@@ -1138,9 +1561,9 @@
               "id": {
                 "type": "string",
                 "format": "uuid",
-                "example": "cm5fkwwup0006dntb34yzw7dd"
+                "example": "9e1c8bba-9121-479f-b510-1bf02d01a42b"
               },
-              "external_id": {
+              "externalId": {
                 "type": "string",
                 "example": "ext_123"
               },
@@ -1152,55 +1575,55 @@
                 "type": "string",
                 "example": "This is an activity message"
               },
-              "reply_to": {
+              "replyTo": {
                 "type": "string",
-                "example": "cm5fkwwup0006dntb34yzw7dd"
+                "example": "535e84c4-8d72-4b76-be79-8f21537e149e"
               },
-              "react_to": {
+              "reactTo": {
                 "type": "string",
-                "example": "cm5fkwwup0006dntb34yzw7dd"
+                "example": "f939094f-4e24-4c7c-aab8-65a62515bfe4"
               },
-              "invite_to": {
+              "inviteTo": {
                 "type": "string",
-                "example": "cm5fkwwup0006dntb34yzw7dd"
+                "example": "950420e7-1092-4942-8edd-90c3143293d2"
               },
               "source": {
                 "type": "string",
                 "example": "Slack"
               },
-              "activity_type_id": {
+              "activityTypeId": {
                 "type": "string",
                 "format": "uuid",
-                "example": "cm5fkwwup0006dntb34yzw7dd"
+                "example": "d5b33178-6222-4e2d-a1e9-72828cffca9a"
               },
-              "channel_id": {
-                "type": "string",
-                "format": "uuid",
-                "nullable": true,
-                "example": "cm5fkwwup0006dntb34yzw7dd"
-              },
-              "event_id": {
+              "channelId": {
                 "type": "string",
                 "format": "uuid",
                 "nullable": true,
-                "example": "cm5fkwwup0006dntb34yzw7dd"
+                "example": "350a95cd-c654-4238-9692-49d520420833"
               },
-              "member_id": {
+              "eventId": {
                 "type": "string",
                 "format": "uuid",
-                "example": "cm5fkwwup0006dntb34yzw7dd"
+                "nullable": true,
+                "example": "39813609-1062-4fd7-b488-533244b99f7d"
               },
-              "workspace_id": {
+              "memberId": {
                 "type": "string",
                 "format": "uuid",
-                "example": "cm5fkwwup0006dntb34yzw7dd"
+                "example": "1dc2a014-13c9-41cd-87b5-4288df35b59a"
               },
-              "created_at": {
+              "workspaceId": {
+                "type": "string",
+                "format": "uuid",
+                "example": "5901abdb-32b7-4e56-8766-d8b6ac906376"
+              },
+              "createdAt": {
                 "type": "string",
                 "format": "date-time",
                 "example": "2025-01-01T00:00:00Z"
               },
-              "updated_at": {
+              "updatedAt": {
                 "type": "string",
                 "format": "date-time",
                 "example": "2025-01-01T00:00:00Z"
@@ -1212,175 +1635,128 @@
       "Members": {
         "type": "object",
         "properties": {
-          "page": { "type": "number", "example": 1 },
-          "page_size": { "type": "number", "example": 10 },
-          "total_members": { "type": "number", "example": 1235 },
+          "page": {
+            "type": "number",
+            "example": 1
+          },
+          "pageSize": {
+            "type": "number",
+            "example": 10
+          },
+          "totalMembers": {
+            "type": "number",
+            "example": 1235
+          },
           "members": {
             "type": "array",
             "items": {
               "type": "object",
               "properties": {
-                "type": "object",
-                "properties": {
-                  "id": {
+                "id": {
+                  "type": "string",
+                  "format": "uuid",
+                  "example": "d5b33178-6222-4e2d-a1e9-72828cffca9a"
+                },
+                "firstName": {
+                  "type": "string",
+                  "nullable": true,
+                  "example": "Thomas"
+                },
+                "lastName": {
+                  "type": "string",
+                  "nullable": true,
+                  "example": "Bonfils"
+                },
+                "primaryEmail": {
+                  "type": "string",
+                  "nullable": true,
+                  "example": "thomas@useconquest.com"
+                },
+                "emails": {
+                  "type": "array",
+                  "items": {
                     "type": "string",
-                    "format": "uuid",
-                    "example": "cm5fkwwup0006dntb34yzw7dd"
-                  },
-                  "discord_id": {
-                    "type": "string",
-                    "nullable": true,
-                    "example": "123456789"
-                  },
-                  "discord_username": {
-                    "type": "string",
-                    "nullable": true,
-                    "example": "user#1234"
-                  },
-                  "discourse_id": {
-                    "type": "string",
-                    "nullable": true,
-                    "example": "123"
-                  },
-                  "discourse_username": {
-                    "type": "string",
-                    "nullable": true,
-                    "example": "thomas-bonfils"
-                  },
-                  "linkedin_id": {
-                    "type": "string",
-                    "nullable": true,
-                    "example": "iuHQSczlaW"
-                  },
-                  "linkedin_url": {
-                    "type": "string",
-                    "nullable": true,
-                    "example": "https://linkedin.com/in/username"
-                  },
-                  "livestorm_id": {
-                    "type": "string",
-                    "nullable": true,
-                    "example": "02a51b3b-3d6b-448c-91bb-48f0d12702c1"
-                  },
-                  "slack_id": {
-                    "type": "string",
-                    "nullable": true,
-                    "example": "U0512345678"
-                  },
-                  "first_name": {
-                    "type": "string",
-                    "nullable": true,
-                    "example": "Thomas"
-                  },
-                  "last_name": {
-                    "type": "string",
-                    "nullable": true,
-                    "example": "Bonfils"
-                  },
-                  "primary_email": {
-                    "type": "string",
-                    "nullable": true,
-                    "example": "thomas@useconquest.com"
-                  },
-                  "secondary_emails": {
-                    "type": "array",
-                    "items": {
-                      "type": "string",
-                      "example": "support@useconquest.com"
-                    }
-                  },
-                  "phones": {
-                    "type": "array",
-                    "items": {
-                      "type": "string",
-                      "example": "+33 6 12 34 56 78"
-                    }
-                  },
-                  "job_title": {
-                    "type": "string",
-                    "nullable": true,
-                    "example": "Software Engineer"
-                  },
-                  "avatar_url": {
-                    "type": "string",
-                    "nullable": true,
-                    "example": "https://example.com/avatar.jpg"
-                  },
-                  "locale": {
-                    "type": "string",
-                    "nullable": true,
-                    "example": "FR"
-                  },
-                  "tags": {
-                    "type": "array",
-                    "items": {
-                      "type": "string",
-                      "example": "cm5fkwwup0006dntb34yzw7dd"
-                    }
-                  },
-                  "level": { "type": "number", "example": 6 },
-                  "pulse": { "type": "number", "example": 203 },
-                  "presence": { "type": "number", "example": 6 },
-                  "source": { "type": "string", "example": "Slack" },
-                  "logs": {
-                    "type": "array",
-                    "items": {
-                      "type": "object",
-                      "properties": {
-                        "date": {
-                          "type": "string",
-                          "example": "2025-01-01T00:00:00Z"
-                        },
-                        "pulse": { "type": "number", "example": 203 },
-                        "presence": { "type": "number", "example": 6 },
-                        "level": { "type": "number", "example": 6 },
-                        "max_weight": { "type": "number", "example": 4 },
-                        "max_weight_activity": {
-                          "type": "string",
-                          "example": "Slack - Write a post"
-                        }
-                      }
-                    }
-                  },
-                  "custom_fields": {
-                    "type": "array",
-                    "items": {
-                      "$ref": "#/components/schemas/CustomField"
-                    }
-                  },
-                  "company_id": {
-                    "type": "string",
-                    "format": "uuid",
-                    "nullable": true,
-                    "example": "cm5fkwwup0006dntb34yzw7dd"
-                  },
-                  "workspace_id": {
-                    "type": "string",
-                    "format": "uuid",
-                    "example": "cm5fkwwup0006dntb34yzw7dd"
-                  },
-                  "first_activity": {
-                    "type": "string",
-                    "format": "date-time",
-                    "nullable": true,
-                    "example": "2025-01-01T00:00:00Z"
-                  },
-                  "last_activity": {
-                    "type": "string",
-                    "format": "date-time",
-                    "nullable": true,
-                    "example": "2025-01-01T00:00:00Z"
-                  },
-                  "created_at": {
-                    "type": "string",
-                    "format": "date-time",
-                    "example": "2025-01-01T00:00:00Z"
-                  },
-                  "updated_at": {
-                    "type": "string",
-                    "format": "date-time",
-                    "example": "2025-01-01T00:00:00Z"
+                    "example": "support@useconquest.com"
                   }
+                },
+                "phones": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "example": "+33 6 12 34 56 78"
+                  }
+                },
+                "jobTitle": {
+                  "type": "string",
+                  "nullable": true,
+                  "example": "Software Engineer"
+                },
+                "avatarUrl": {
+                  "type": "string",
+                  "nullable": true,
+                  "example": "https://example.com/avatar.jpg"
+                },
+                "language": {
+                  "type": "string",
+                  "nullable": true,
+                  "example": "French"
+                },
+                "country": {
+                  "type": "string",
+                  "nullable": true,
+                  "example": "France"
+                },
+                "tags": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "example": "e80f0f3c-f2df-4d37-a40a-fea15aa8c65c"
+                  }
+                },
+                "level": {
+                  "type": "number",
+                  "example": 6
+                },
+                "pulse": {
+                  "type": "number",
+                  "example": 203
+                },
+                "source": {
+                  "type": "string",
+                  "example": "Slack"
+                },
+                "companyId": {
+                  "type": "string",
+                  "format": "uuid",
+                  "nullable": true,
+                  "example": "031af83a-885a-4a20-91ef-9cbba8bd859d"
+                },
+                "workspaceId": {
+                  "type": "string",
+                  "format": "uuid",
+                  "example": "5901abdb-32b7-4e56-8766-d8b6ac906376"
+                },
+                "firstActivity": {
+                  "type": "string",
+                  "format": "date-time",
+                  "nullable": true,
+                  "example": "2025-01-01T00:00:00Z"
+                },
+                "lastActivity": {
+                  "type": "string",
+                  "format": "date-time",
+                  "nullable": true,
+                  "example": "2025-01-01T00:00:00Z"
+                },
+                "createdAt": {
+                  "type": "string",
+                  "format": "date-time",
+                  "example": "2025-01-01T00:00:00Z"
+                },
+                "updatedAt": {
+                  "type": "string",
+                  "format": "date-time",
+                  "example": "2025-01-01T00:00:00Z"
                 }
               }
             }
@@ -1396,64 +1772,24 @@
               "id": {
                 "type": "string",
                 "format": "uuid",
-                "example": "cm5fkwwup0006dntb34yzw7dd"
+                "example": "d5b33178-6222-4e2d-a1e9-72828cffca9a"
               },
-              "discord_id": {
-                "type": "string",
-                "nullable": true,
-                "example": "123456789"
-              },
-              "discord_username": {
-                "type": "string",
-                "nullable": true,
-                "example": "user#1234"
-              },
-              "discourse_id": {
-                "type": "string",
-                "nullable": true,
-                "example": "123"
-              },
-              "discourse_username": {
-                "type": "string",
-                "nullable": true,
-                "example": "thomas-bonfils"
-              },
-              "linkedin_id": {
-                "type": "string",
-                "nullable": true,
-                "example": "iuHQSczlaW"
-              },
-              "linkedin_url": {
-                "type": "string",
-                "nullable": true,
-                "example": "https://linkedin.com/in/username"
-              },
-              "livestorm_id": {
-                "type": "string",
-                "nullable": true,
-                "example": "02a51b3b-3d6b-448c-91bb-48f0d12702c1"
-              },
-              "slack_id": {
-                "type": "string",
-                "nullable": true,
-                "example": "U0512345678"
-              },
-              "first_name": {
+              "firstName": {
                 "type": "string",
                 "nullable": true,
                 "example": "Thomas"
               },
-              "last_name": {
+              "lastName": {
                 "type": "string",
                 "nullable": true,
                 "example": "Bonfils"
               },
-              "primary_email": {
+              "primaryEmail": {
                 "type": "string",
                 "nullable": true,
                 "example": "thomas@useconquest.com"
               },
-              "secondary_emails": {
+              "emails": {
                 "type": "array",
                 "items": {
                   "type": "string",
@@ -1467,87 +1803,74 @@
                   "example": "+33 6 12 34 56 78"
                 }
               },
-              "job_title": {
+              "jobTitle": {
                 "type": "string",
                 "nullable": true,
                 "example": "Software Engineer"
               },
-              "avatar_url": {
+              "avatarUrl": {
                 "type": "string",
                 "nullable": true,
                 "example": "https://example.com/avatar.jpg"
               },
-              "locale": {
+              "language": {
                 "type": "string",
                 "nullable": true,
-                "example": "FR"
+                "example": "French"
+              },
+              "country": {
+                "type": "string",
+                "nullable": true,
+                "example": "France"
               },
               "tags": {
                 "type": "array",
                 "items": {
                   "type": "string",
-                  "example": "cm5fkwwup0006dntb34yzw7dd"
+                  "example": "e80f0f3c-f2df-4d37-a40a-fea15aa8c65c"
                 }
               },
-              "level": { "type": "number", "example": 6 },
-              "pulse": { "type": "number", "example": 203 },
-              "presence": { "type": "number", "example": 6 },
-              "source": { "type": "string", "example": "Slack" },
-              "logs": {
-                "type": "array",
-                "items": {
-                  "type": "object",
-                  "properties": {
-                    "date": {
-                      "type": "string",
-                      "example": "2025-01-01T00:00:00Z"
-                    },
-                    "pulse": { "type": "number", "example": 203 },
-                    "presence": { "type": "number", "example": 6 },
-                    "level": { "type": "number", "example": 6 },
-                    "max_weight": { "type": "number", "example": 4 },
-                    "max_weight_activity": {
-                      "type": "string",
-                      "example": "Slack - Write a post"
-                    }
-                  }
-                }
+              "level": {
+                "type": "number",
+                "example": 6
               },
-              "custom_fields": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/components/schemas/CustomField"
-                }
+              "pulse": {
+                "type": "number",
+                "example": 203
               },
-              "company_id": {
+              "source": {
+                "type": "string",
+                "example": "Slack"
+              },
+              "companyId": {
                 "type": "string",
                 "format": "uuid",
                 "nullable": true,
-                "example": "cm5fkwwup0006dntb34yzw7dd"
+                "example": "031af83a-885a-4a20-91ef-9cbba8bd859d"
               },
-              "workspace_id": {
+              "workspaceId": {
                 "type": "string",
                 "format": "uuid",
-                "example": "cm5fkwwup0006dntb34yzw7dd"
+                "example": "5901abdb-32b7-4e56-8766-d8b6ac906376"
               },
-              "first_activity": {
+              "firstActivity": {
                 "type": "string",
                 "format": "date-time",
                 "nullable": true,
                 "example": "2025-01-01T00:00:00Z"
               },
-              "last_activity": {
+              "lastActivity": {
                 "type": "string",
                 "format": "date-time",
                 "nullable": true,
                 "example": "2025-01-01T00:00:00Z"
               },
-              "created_at": {
+              "createdAt": {
                 "type": "string",
                 "format": "date-time",
                 "example": "2025-01-01T00:00:00Z"
               },
-              "updated_at": {
+              "updatedAt": {
                 "type": "string",
                 "format": "date-time",
                 "example": "2025-01-01T00:00:00Z"
@@ -1559,9 +1882,18 @@
       "Channels": {
         "type": "object",
         "properties": {
-          "page": { "type": "number", "example": 1 },
-          "page_size": { "type": "number", "example": 10 },
-          "total_channels": { "type": "number", "example": 1235 },
+          "page": {
+            "type": "number",
+            "example": 1
+          },
+          "pageSize": {
+            "type": "number",
+            "example": 10
+          },
+          "totalChannels": {
+            "type": "number",
+            "example": 35
+          },
           "channels": {
             "type": "array",
             "items": {
@@ -1570,9 +1902,9 @@
                 "id": {
                   "type": "string",
                   "format": "uuid",
-                  "example": "cm5fkwwup0006dntb34yzw7dd"
+                  "example": "e80f0f3c-f2df-4d37-a40a-fea15aa8c65c"
                 },
-                "external_id": {
+                "externalId": {
                   "type": "string",
                   "nullable": true,
                   "example": "C07QZEDCW7P"
@@ -1581,26 +1913,21 @@
                   "type": "string",
                   "example": "General Chat"
                 },
-                "slug": {
-                  "type": "string",
-                  "nullable": true,
-                  "example": "general-chat"
-                },
                 "source": {
                   "type": "string",
-                  "example": "Slack"
+                  "example": "Api"
                 },
-                "workspace_id": {
+                "workspaceId": {
                   "type": "string",
                   "format": "uuid",
-                  "example": "cm5fkwwup0006dntb34yzw7dd"
+                  "example": "5901abdb-32b7-4e56-8766-d8b6ac906376"
                 },
-                "created_at": {
+                "createdAt": {
                   "type": "string",
                   "format": "date-time",
                   "example": "2025-01-01T00:00:00Z"
                 },
-                "updated_at": {
+                "updatedAt": {
                   "type": "string",
                   "format": "date-time",
                   "example": "2025-01-01T00:00:00Z"
@@ -1621,9 +1948,9 @@
                 "id": {
                   "type": "string",
                   "format": "uuid",
-                  "example": "cm5fkwwup0006dntb34yzw7dd"
+                  "example": "e80f0f3c-f2df-4d37-a40a-fea15aa8c65c"
                 },
-                "external_id": {
+                "externalId": {
                   "type": "string",
                   "nullable": true,
                   "example": "C07QZEDCW7P"
@@ -1632,26 +1959,21 @@
                   "type": "string",
                   "example": "General Chat"
                 },
-                "slug": {
-                  "type": "string",
-                  "nullable": true,
-                  "example": "general-chat"
-                },
                 "source": {
                   "type": "string",
-                  "example": "Slack"
+                  "example": "Api"
                 },
-                "workspace_id": {
+                "workspaceId": {
                   "type": "string",
                   "format": "uuid",
-                  "example": "cm5fkwwup0006dntb34yzw7dd"
+                  "example": "5901abdb-32b7-4e56-8766-d8b6ac906376"
                 },
-                "created_at": {
+                "createdAt": {
                   "type": "string",
                   "format": "date-time",
                   "example": "2025-01-01T00:00:00Z"
                 },
-                "updated_at": {
+                "updatedAt": {
                   "type": "string",
                   "format": "date-time",
                   "example": "2025-01-01T00:00:00Z"
@@ -1664,9 +1986,18 @@
       "Companies": {
         "type": "object",
         "properties": {
-          "page": { "type": "number", "example": 1 },
-          "page_size": { "type": "number", "example": 10 },
-          "total_companies": { "type": "number", "example": 1235 },
+          "page": {
+            "type": "number",
+            "example": 1
+          },
+          "pageSize": {
+            "type": "number",
+            "example": 10
+          },
+          "totalCompanies": {
+            "type": "number",
+            "example": 1235
+          },
           "members": {
             "type": "array",
             "items": {
@@ -1701,13 +2032,13 @@
                   "nullable": true,
                   "example": 50
                 },
-                "founded_at": {
+                "foundedAt": {
                   "type": "string",
                   "format": "date-time",
                   "nullable": true,
                   "example": "2023-01-01T00:00:00Z"
                 },
-                "logo_url": {
+                "logoUrl": {
                   "type": "string",
                   "nullable": true,
                   "example": "https://example.com/logo.png"
@@ -1723,17 +2054,17 @@
                   "type": "string",
                   "example": "MANUAL"
                 },
-                "workspace_id": {
+                "workspaceId": {
                   "type": "string",
                   "format": "uuid",
-                  "example": "cm5fkwwup0006dntb34yzw7dd"
+                  "example": "5901abdb-32b7-4e56-8766-d8b6ac906376"
                 },
-                "created_at": {
+                "createdAt": {
                   "type": "string",
                   "format": "date-time",
                   "example": "2025-01-01T00:00:00Z"
                 },
-                "updated_at": {
+                "updatedAt": {
                   "type": "string",
                   "format": "date-time",
                   "example": "2025-01-01T00:00:00Z"
@@ -1778,13 +2109,13 @@
                 "nullable": true,
                 "example": 50
               },
-              "founded_at": {
+              "foundedAt": {
                 "type": "string",
                 "format": "date-time",
                 "nullable": true,
                 "example": "2023-01-01T00:00:00Z"
               },
-              "logo_url": {
+              "logoUrl": {
                 "type": "string",
                 "nullable": true,
                 "example": "https://example.com/logo.png"
@@ -1800,17 +2131,17 @@
                 "type": "string",
                 "example": "MANUAL"
               },
-              "workspace_id": {
+              "workspaceId": {
                 "type": "string",
                 "format": "uuid",
-                "example": "cm5fkwwup0006dntb34yzw7dd"
+                "example": "5901abdb-32b7-4e56-8766-d8b6ac906376"
               },
-              "created_at": {
+              "createdAt": {
                 "type": "string",
                 "format": "date-time",
                 "example": "2025-01-01T00:00:00Z"
               },
-              "updated_at": {
+              "updatedAt": {
                 "type": "string",
                 "format": "date-time",
                 "example": "2025-01-01T00:00:00Z"
@@ -1839,6 +2170,13 @@
           "code": "NOT_FOUND",
           "error": "Resource not found"
         }
+      }
+    },
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
       }
     }
   }
