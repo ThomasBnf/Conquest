@@ -41,7 +41,7 @@ export const listChannels = protectedProcedure.query(
     )) as APIRole[];
 
     const isDev = process.env.NODE_ENV === "development";
-    const botName = isDev ? "conquest-sandbox" : "conquest";
+    const botName = isDev ? "conquest-sandbox" : "Conquest";
 
     const conquest = roles.find((role) => role.name === botName)?.id;
     const everyone = roles.find((role) => role.name === "@everyone")?.id;
