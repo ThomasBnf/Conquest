@@ -2,7 +2,7 @@ import { prisma } from "@conquest/db/prisma";
 import { decrypt } from "@conquest/db/utils/decrypt";
 import { GithubIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
 import { UserWithWorkspaceSchema } from "@conquest/zod/schemas/user.schema";
-import { schemaTask } from "@trigger.dev/sdk/v3";
+import { logger, schemaTask } from "@trigger.dev/sdk/v3";
 import { Octokit } from "octokit";
 import { z } from "zod";
 
@@ -37,7 +37,7 @@ export const seed = schemaTask({
     });
 
     const { data } = response;
-    console.dir(data, { depth: null });
+    logger.info("webhooks", { data });
 
     // const { workspaceId } = user;
 
