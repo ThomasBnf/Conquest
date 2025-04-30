@@ -82,6 +82,7 @@
       "group": "Activities",
       "pages": [
         "api-reference/activities/list",
+        "api-reference/activities/member/get",
         "api-reference/activities/post",
         "api-reference/activities/get",
         "api-reference/activities/patch",

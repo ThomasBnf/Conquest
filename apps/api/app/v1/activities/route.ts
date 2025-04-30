@@ -107,6 +107,18 @@ export const POST = createZodRoute()
       ...rest
     } = body;
 
+    const source = activityTypeKey.split(":")[0];
+
+    if (source !== "api") {
+      return NextResponse.json(
+        {
+          code: "BAD_REQUEST",
+          message: "Invalid activity type key, source must be 'api'",
+        },
+        { status: 400 },
+      );
+    }
+
     const verifications = [
       { id: replyTo, type: "replyTo" },
       { id: reactTo, type: "reactTo" },

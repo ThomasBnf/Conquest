@@ -1,5 +1,6 @@
 import { getAuthenticatedUser } from "@/utils/getAuthenticatedUser";
 import { client } from "@conquest/clickhouse/client";
+import { ChannelSchema } from "@conquest/zod/schemas/channel.schema";
 import { createZodRoute } from "next-zod-route";
 import { NextResponse } from "next/server";
 import { z } from "zod";
@@ -80,25 +81,50 @@ export const PATCH = createZodRoute()
     const { workspaceId } = ctx;
     const { id } = params;
 
-    const values = Object.entries(body)
-      .map(([key, value]) => `${key} = '${value}'`)
-      .join(", ");
+    try {
+      const values = Object.entries(body)
+        .map(([key, value]) => `${key} = '${value}'`)
+        .join(", ");
 
-    const updateQuery = [values, "updatedAt = now()"]
-      .filter(Boolean)
-      .join(", ");
+      const updateQuery = [values, "updatedAt = now()"]
+        .filter(Boolean)
+        .join(", ");
 
-    await client.query({
-      query: `
+      await client.query({
+        query: `
           ALTER TABLE channel
           UPDATE
             ${updateQuery}
           WHERE id = '${id}'
           AND workspaceId = '${workspaceId}'
+        `,
+        format: "JSON",
+      });
+    } catch (error) {
+      console.error(error);
+
+      return NextResponse.json(
+        {
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Erreur lors de la mise à jour du canal",
+        },
+        { status: 500 },
+      );
+    }
+
+    const result = await client.query({
+      query: `
+        SELECT * 
+        FROM channel
+        WHERE id = '${id}'
+        AND workspaceId = '${workspaceId}'
       `,
     });
 
-    return NextResponse.json({ success: true });
+    const { data } = await result.json();
+    const channel = ChannelSchema.parse(data[0]);
+
+    return NextResponse.json({ channel });
   });
 
 export const DELETE = createZodRoute()

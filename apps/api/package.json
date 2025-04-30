@@ -2,7 +2,7 @@
   "name": "api",
   "type": "module",
   "scripts": {
-    "dev": "dotenv -e ./.env -e ../../.env -- next dev -p 3001 --turbo",
+    "dev": "dotenv -e ./.env -e ../../.env -- next dev -p 3003 --turbo",
     "build": "dotenv -e ./.env -e ../../.env -- next build",
     "start": "dotenv -e ./.env -e ../../.env -- next start",
     "typecheck": "tsc --noEmit"

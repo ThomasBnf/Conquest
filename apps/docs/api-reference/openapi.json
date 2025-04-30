@@ -100,7 +100,11 @@
                   "activityTypeKey": {
                     "type": "string",
                     "description": "Key of the activity type",
-                    "example": "discord:message"
+                    "example": "api:message"
+                  },
+                  "externalId": {
+                    "type": "string",
+                    "description": "External ID of the activity"
                   },
                   "title": {
                     "type": "string",
@@ -392,6 +396,90 @@
                       "example": true
                     }
                   }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error.BAD_REQUEST"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error.UNAUTHORIZED"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error.NOT_FOUND"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/activities/member/{memberId}": {
+      "get": {
+        "description": "List all member activities",
+        "security": [{ "bearerAuth": [] }],
+        "x-codeSamples": [
+          {
+            "lang": "curl",
+            "source": "curl --request GET \\\n  --url 'https://api.useconquest.com/v1/activities/member/{memberId}?page=1&pageSize=10' \\\n  --header 'Authorization: Bearer <token>'"
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "memberId",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Page number",
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "description": "Number of activities per page",
+            "schema": {
+              "type": "integer",
+              "default": 10,
+              "minimum": 10,
+              "maximum": 100
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Activities"
                 }
               }
             }
@@ -1193,16 +1281,16 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": ["activityTypeKey", "memberId"],
+                "required": ["name"],
                 "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "Name of the channel"
+                  },
                   "externalId": {
                     "type": "string",
                     "description": "External ID of the channel",
                     "example": "ext_123"
-                  },
-                  "name": {
-                    "type": "string",
-                    "description": "Name of the channel"
                   }
                 }
               }
@@ -1589,7 +1677,7 @@
               },
               "source": {
                 "type": "string",
-                "example": "Slack"
+                "example": "Api"
               },
               "activityTypeId": {
                 "type": "string",

@@ -7,6 +7,16 @@ export const getAuthenticatedUser = async (request: Request) => {
   const hasBearer = authorization?.startsWith("Bearer");
   const token = authorization?.split("Bearer ")[1];
 
+  if (!authorization) {
+    return {
+      error: {
+        code: "UNAUTHORIZED",
+        message: "Missing authorization header",
+        status: 401,
+      },
+    };
+  }
+
   if (!hasBearer) {
     return {
       error: {

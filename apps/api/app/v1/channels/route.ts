@@ -81,7 +81,7 @@ export const POST = createZodRoute()
   })
   .body(
     z.object({
-      externalId: z.string(),
+      externalId: z.string().optional(),
       name: z.string(),
     }),
   )
