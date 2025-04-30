@@ -25,6 +25,8 @@ export async function POST(request: NextRequest) {
   const body = JSON.parse(bodyRaw) as WebhookEvent;
   const type = headers.get("x-github-event");
 
+  console.dir(body, { depth: null });
+
   const github = await checkSignature(request, bodyRaw);
   if (!github) return NextResponse.json({ status: 200 });
 
