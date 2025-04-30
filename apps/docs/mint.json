@@ -119,12 +119,6 @@
       ]
     }
   ],
-  "api": {
-    "baseUrl": "https://api.useconquest.com",
-    "auth": {
-      "method": "bearer"
-    }
-  },
   "footerSocials": {
     "linkedin": "https://www.linkedin.com/company/useconquest"
   }
