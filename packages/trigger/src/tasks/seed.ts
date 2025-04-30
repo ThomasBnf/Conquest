@@ -1,16 +1,10 @@
-import { client } from "@conquest/clickhouse/client";
+import { prisma } from "@conquest/db/prisma";
+import { decrypt } from "@conquest/db/utils/decrypt";
+import { GithubIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
 import { UserWithWorkspaceSchema } from "@conquest/zod/schemas/user.schema";
-import { faker } from "@faker-js/faker";
-import { logger, schemaTask } from "@trigger.dev/sdk/v3";
-import { getLocaleByAlpha2 } from "country-locale-map";
-import ISO6391 from "iso-639-1";
-import { randomUUID } from "node:crypto";
+import { schemaTask } from "@trigger.dev/sdk/v3";
+import { Octokit } from "octokit";
 import { z } from "zod";
-import { getNumActivities } from "../seed/getNumActivities";
-import { processDiscourse } from "../seed/processDiscourse";
-import { processGithub } from "../seed/processGithub";
-import { processLivestorm } from "../seed/processLivestorm";
-import { getAllMembersMetrics } from "./getAllMembersMetrics";
 
 export const seed = schemaTask({
   id: "seed",
@@ -21,312 +15,336 @@ export const seed = schemaTask({
   run: async ({ user }) => {
     if (user.role !== "STAFF") return;
 
-    const { workspaceId } = user;
-
-    const { channels, discourseActivityTypes } = await processDiscourse({
-      user,
+    const integration = await prisma.integration.findFirst({
+      where: {
+        details: {
+          path: ["source"],
+          equals: "Github",
+        },
+        workspaceId: user.workspaceId,
+      },
     });
-    const { livestormActivityTypes, events } = await processLivestorm({ user });
-    const { githubActivityTypes } = await processGithub({ user });
 
-    const TOTAL_MEMBERS = 250;
-    const inserts = [];
-    const memberIds: string[] = [];
+    const github = GithubIntegrationSchema.parse(integration);
+    const { accessToken, iv, owner, repo } = github.details;
 
-    for (let i = 0; i < TOTAL_MEMBERS; i++) {
-      const memberId = randomUUID();
-      memberIds.push(memberId);
+    const decryptedToken = await decrypt({ accessToken, iv });
+    const octokit = new Octokit({ auth: decryptedToken });
 
-      const firstName = faker.person.firstName();
-      const lastName = faker.person.lastName();
-      const primaryEmail = faker.internet.email({
-        firstName,
-        lastName,
-        provider: faker.company
-          .catchPhraseNoun()
-          .toLowerCase()
-          .replace(" ", "-")
-          .concat(".com"),
-      });
+    const response = await octokit.rest.repos.listWebhooks({
+      owner,
+      repo,
+    });
 
-      let language = "";
+    const { data } = response;
+    console.dir(data, { depth: null });
 
-      const country = faker.helpers.arrayElement([
-        "FR",
-        "US",
-        "GB",
-        "DE",
-        "CA",
-      ]);
+    // const { workspaceId } = user;
 
-      const locale = getLocaleByAlpha2(country.toUpperCase());
-      const languageCode = locale?.split("_")[0] ?? "";
-      language = languageCode ? ISO6391.getName(languageCode) : "";
+    // const { channels, discourseActivityTypes } = await processDiscourse({
+    //   user,
+    // });
+    // const { livestormActivityTypes, events } = await processLivestorm({ user });
+    // const { githubActivityTypes } = await processGithub({ user });
 
-      const createdAt = faker.date
-        .recent({ days: 180 })
-        .toISOString()
-        .replace("T", " ")
-        .substring(0, 19);
+    // const TOTAL_MEMBERS = 250;
+    // const inserts = [];
+    // const memberIds: string[] = [];
 
-      inserts.push(
-        client.insert({
-          table: "member",
-          values: [
-            {
-              id: memberId,
-              firstName,
-              lastName,
-              primaryEmail: primaryEmail.toLowerCase(),
-              emails: [primaryEmail.toLowerCase()],
-              phones: [faker.phone.number({ style: "international" })],
-              jobTitle: faker.person.jobTitle(),
-              avatarUrl: faker.image.avatar(),
-              country,
-              language,
-              source: "Discourse",
-              createdAt,
-              workspaceId,
-            },
-          ],
-          format: "JSON",
-        }),
-      );
+    // for (let i = 0; i < TOTAL_MEMBERS; i++) {
+    //   const memberId = randomUUID();
+    //   memberIds.push(memberId);
 
-      inserts.push(
-        client.insert({
-          table: "profile",
-          values: [
-            {
-              externalId: randomUUID(),
-              attributes: {
-                source: "Discourse",
-                username: faker.internet.username(),
-                customFields: [
-                  {
-                    id: "1",
-                    value: faker.internet.url(),
-                  },
-                  {
-                    id: "2",
-                    value: faker.datatype.boolean().toString(),
-                  },
-                  {
-                    id: "3",
-                    value: faker.datatype.boolean().toString(),
-                  },
-                ],
-              },
-              memberId: memberId,
-              workspaceId,
-            },
-          ],
-          format: "JSON",
-        }),
-      );
-    }
+    //   const firstName = faker.person.firstName();
+    //   const lastName = faker.person.lastName();
+    //   const primaryEmail = faker.internet.email({
+    //     firstName,
+    //     lastName,
+    //     provider: faker.company
+    //       .catchPhraseNoun()
+    //       .toLowerCase()
+    //       .replace(" ", "-")
+    //       .concat(".com"),
+    //   });
 
-    await Promise.all(inserts);
+    //   let language = "";
 
-    logger.info("Finished inserting members");
+    //   const country = faker.helpers.arrayElement([
+    //     "FR",
+    //     "US",
+    //     "GB",
+    //     "DE",
+    //     "CA",
+    //   ]);
 
-    const activityInserts = [];
-    const hasLivestormProfile = new Set<string>();
+    //   const locale = getLocaleByAlpha2(country.toUpperCase());
+    //   const languageCode = locale?.split("_")[0] ?? "";
+    //   language = languageCode ? ISO6391.getName(languageCode) : "";
 
-    for (const event of events) {
-      const participatingMembers = faker.helpers.arrayElements(memberIds, {
-        min: Math.floor(TOTAL_MEMBERS * 0.1),
-        max: Math.floor(TOTAL_MEMBERS * 0.3),
-      });
+    //   const createdAt = faker.date
+    //     .recent({ days: 180 })
+    //     .toISOString()
+    //     .replace("T", " ")
+    //     .substring(0, 19);
 
-      for (const memberId of participatingMembers) {
-        const roll = Math.random();
+    //   inserts.push(
+    //     client.insert({
+    //       table: "member",
+    //       values: [
+    //         {
+    //           id: memberId,
+    //           firstName,
+    //           lastName,
+    //           primaryEmail: primaryEmail.toLowerCase(),
+    //           emails: [primaryEmail.toLowerCase()],
+    //           phones: [faker.phone.number({ style: "international" })],
+    //           jobTitle: faker.person.jobTitle(),
+    //           avatarUrl: faker.image.avatar(),
+    //           country,
+    //           language,
+    //           source: "Discourse",
+    //           createdAt,
+    //           workspaceId,
+    //         },
+    //       ],
+    //       format: "JSON",
+    //     }),
+    //   );
 
-        let type:
-          | "livestorm:register"
-          | "livestorm:attend"
-          | "livestorm:co-host";
+    //   inserts.push(
+    //     client.insert({
+    //       table: "profile",
+    //       values: [
+    //         {
+    //           externalId: randomUUID(),
+    //           attributes: {
+    //             source: "Discourse",
+    //             username: faker.internet.username(),
+    //             customFields: [
+    //               {
+    //                 id: "1",
+    //                 value: faker.internet.url(),
+    //               },
+    //               {
+    //                 id: "2",
+    //                 value: faker.datatype.boolean().toString(),
+    //               },
+    //               {
+    //                 id: "3",
+    //                 value: faker.datatype.boolean().toString(),
+    //               },
+    //             ],
+    //           },
+    //           memberId: memberId,
+    //           workspaceId,
+    //         },
+    //       ],
+    //       format: "JSON",
+    //     }),
+    //   );
+    // }
 
-        if (roll < 0.02) {
-          type = "livestorm:co-host";
-        } else if (roll < 0.5) {
-          type = "livestorm:attend";
-        } else {
-          type = "livestorm:register";
-        }
+    // await Promise.all(inserts);
 
-        const activityType = livestormActivityTypes.find((a) => a.key === type);
-        if (!activityType) continue;
+    // logger.info("Finished inserting members");
 
-        const createdAt = faker.date
-          .between({
-            from: event.startedAt,
-            to: event.endedAt ?? new Date(),
-          })
-          .toISOString()
-          .replace("T", " ")
-          .substring(0, 19);
+    // const activityInserts = [];
+    // const hasLivestormProfile = new Set<string>();
 
-        activityInserts.push(
-          client.insert({
-            table: "activity",
-            values: [
-              {
-                id: randomUUID(),
-                activityTypeId: activityType.id,
-                memberId,
-                eventId: event.id,
-                workspaceId,
-                source: "Livestorm",
-                createdAt,
-              },
-            ],
-            format: "JSON",
-          }),
-        );
+    // for (const event of events) {
+    //   const participatingMembers = faker.helpers.arrayElements(memberIds, {
+    //     min: Math.floor(TOTAL_MEMBERS * 0.1),
+    //     max: Math.floor(TOTAL_MEMBERS * 0.3),
+    //   });
 
-        hasLivestormProfile.add(memberId);
-      }
-    }
+    //   for (const memberId of participatingMembers) {
+    //     const roll = Math.random();
 
-    await Promise.all(activityInserts);
+    //     let type:
+    //       | "livestorm:register"
+    //       | "livestorm:attend"
+    //       | "livestorm:co-host";
 
-    logger.info("Finished inserting livestorm activities");
+    //     if (roll < 0.02) {
+    //       type = "livestorm:co-host";
+    //     } else if (roll < 0.5) {
+    //       type = "livestorm:attend";
+    //     } else {
+    //       type = "livestorm:register";
+    //     }
 
-    const livestormProfileInserts = [];
+    //     const activityType = livestormActivityTypes.find((a) => a.key === type);
+    //     if (!activityType) continue;
 
-    for (const memberId of hasLivestormProfile) {
-      livestormProfileInserts.push(
-        client.insert({
-          table: "profile",
-          values: [
-            {
-              externalId: randomUUID(),
-              attributes: {
-                source: "Livestorm",
-              },
-              memberId,
-              workspaceId,
-            },
-          ],
-          format: "JSON",
-        }),
-      );
-    }
+    //     const createdAt = faker.date
+    //       .between({
+    //         from: event.startedAt,
+    //         to: event.endedAt ?? new Date(),
+    //       })
+    //       .toISOString()
+    //       .replace("T", " ")
+    //       .substring(0, 19);
 
-    await Promise.all(livestormProfileInserts);
+    //     activityInserts.push(
+    //       client.insert({
+    //         table: "activity",
+    //         values: [
+    //           {
+    //             id: randomUUID(),
+    //             activityTypeId: activityType.id,
+    //             memberId,
+    //             eventId: event.id,
+    //             workspaceId,
+    //             source: "Livestorm",
+    //             createdAt,
+    //           },
+    //         ],
+    //         format: "JSON",
+    //       }),
+    //     );
 
-    logger.info("Finished inserting livestorm profiles");
+    //     hasLivestormProfile.add(memberId);
+    //   }
+    // }
 
-    const discourseActivityInserts = [];
+    // await Promise.all(activityInserts);
 
-    for (const memberId of memberIds) {
-      const NUM_ACTIVITIES = getNumActivities();
+    // logger.info("Finished inserting livestorm activities");
 
-      for (let i = 0; i < NUM_ACTIVITIES; i++) {
-        const type = faker.helpers.arrayElement(discourseActivityTypes);
+    // const livestormProfileInserts = [];
 
-        const createdAt = faker.date
-          .recent({ days: 365 })
-          .toISOString()
-          .replace("T", " ")
-          .substring(0, 19);
+    // for (const memberId of hasLivestormProfile) {
+    //   livestormProfileInserts.push(
+    //     client.insert({
+    //       table: "profile",
+    //       values: [
+    //         {
+    //           externalId: randomUUID(),
+    //           attributes: {
+    //             source: "Livestorm",
+    //           },
+    //           memberId,
+    //           workspaceId,
+    //         },
+    //       ],
+    //       format: "JSON",
+    //     }),
+    //   );
+    // }
 
-        discourseActivityInserts.push(
-          client.insert({
-            table: "activity",
-            values: [
-              {
-                id: randomUUID(),
-                activityTypeId: type.id,
-                memberId,
-                workspaceId,
-                source: "Discourse",
-                createdAt,
-              },
-            ],
-            format: "JSON",
-          }),
-        );
-      }
-    }
+    // await Promise.all(livestormProfileInserts);
 
-    await Promise.all(discourseActivityInserts);
+    // logger.info("Finished inserting livestorm profiles");
 
-    logger.info("Finished inserting discourse activities");
+    // const discourseActivityInserts = [];
 
-    const githubActivityInserts = [];
-    const hasGithubProfile = new Set<string>();
+    // for (const memberId of memberIds) {
+    //   const NUM_ACTIVITIES = getNumActivities();
 
-    for (const memberId of memberIds) {
-      const NUM_ACTIVITIES = getNumActivities();
+    //   for (let i = 0; i < NUM_ACTIVITIES; i++) {
+    //     const type = faker.helpers.arrayElement(discourseActivityTypes);
 
-      for (let i = 0; i < NUM_ACTIVITIES; i++) {
-        const type = faker.helpers.arrayElement(githubActivityTypes);
-        const channel = faker.helpers.arrayElement(channels);
+    //     const createdAt = faker.date
+    //       .recent({ days: 365 })
+    //       .toISOString()
+    //       .replace("T", " ")
+    //       .substring(0, 19);
 
-        const createdAt = faker.date
-          .recent({ days: 365 })
-          .toISOString()
-          .replace("T", " ")
-          .substring(0, 19);
+    //     discourseActivityInserts.push(
+    //       client.insert({
+    //         table: "activity",
+    //         values: [
+    //           {
+    //             id: randomUUID(),
+    //             activityTypeId: type.id,
+    //             memberId,
+    //             workspaceId,
+    //             source: "Discourse",
+    //             createdAt,
+    //           },
+    //         ],
+    //         format: "JSON",
+    //       }),
+    //     );
+    //   }
+    // }
 
-        githubActivityInserts.push(
-          client.insert({
-            table: "activity",
-            values: [
-              {
-                id: randomUUID(),
-                activityTypeId: type.id,
-                memberId,
-                channelId: channel.id,
-                workspaceId,
-                source: "Github",
-                createdAt,
-              },
-            ],
-            format: "JSON",
-          }),
-        );
+    // await Promise.all(discourseActivityInserts);
 
-        hasGithubProfile.add(memberId);
-      }
-    }
+    // logger.info("Finished inserting discourse activities");
 
-    await Promise.all(githubActivityInserts);
+    // const githubActivityInserts = [];
+    // const hasGithubProfile = new Set<string>();
 
-    logger.info("Finished inserting github activities");
+    // for (const memberId of memberIds) {
+    //   const NUM_ACTIVITIES = getNumActivities();
 
-    const githubProfileInserts = [];
+    //   for (let i = 0; i < NUM_ACTIVITIES; i++) {
+    //     const type = faker.helpers.arrayElement(githubActivityTypes);
+    //     const channel = faker.helpers.arrayElement(channels);
 
-    for (const memberId of hasGithubProfile) {
-      githubProfileInserts.push(
-        client.insert({
-          table: "profile",
-          values: [
-            {
-              externalId: randomUUID(),
-              attributes: {
-                source: "Github",
-                login: faker.internet.username(),
-                bio: faker.lorem.paragraph(),
-                blog: faker.internet.url(),
-                location: faker.location.city(),
-                followers: faker.number.int({ min: 0, max: 1000 }),
-              },
-              memberId,
-              workspaceId,
-            },
-          ],
-          format: "JSON",
-        }),
-      );
-    }
+    //     const createdAt = faker.date
+    //       .recent({ days: 365 })
+    //       .toISOString()
+    //       .replace("T", " ")
+    //       .substring(0, 19);
 
-    await Promise.all(githubProfileInserts);
+    //     githubActivityInserts.push(
+    //       client.insert({
+    //         table: "activity",
+    //         values: [
+    //           {
+    //             id: randomUUID(),
+    //             activityTypeId: type.id,
+    //             memberId,
+    //             channelId: channel.id,
+    //             workspaceId,
+    //             source: "Github",
+    //             createdAt,
+    //           },
+    //         ],
+    //         format: "JSON",
+    //       }),
+    //     );
 
-    logger.info("Finished inserting github profiles");
+    //     hasGithubProfile.add(memberId);
+    //   }
+    // }
 
-    await getAllMembersMetrics.trigger({ workspaceId });
+    // await Promise.all(githubActivityInserts);
+
+    // logger.info("Finished inserting github activities");
+
+    // const githubProfileInserts = [];
+
+    // for (const memberId of hasGithubProfile) {
+    //   githubProfileInserts.push(
+    //     client.insert({
+    //       table: "profile",
+    //       values: [
+    //         {
+    //           externalId: randomUUID(),
+    //           attributes: {
+    //             source: "Github",
+    //             login: faker.internet.username(),
+    //             bio: faker.lorem.paragraph(),
+    //             blog: faker.internet.url(),
+    //             location: faker.location.city(),
+    //             followers: faker.number.int({ min: 0, max: 1000 }),
+    //           },
+    //           memberId,
+    //           workspaceId,
+    //         },
+    //       ],
+    //       format: "JSON",
+    //     }),
+    //   );
+    // }
+
+    // await Promise.all(githubProfileInserts);
+
+    // logger.info("Finished inserting github profiles");
+
+    // await getAllMembersMetrics.trigger({ workspaceId });
   },
 });
