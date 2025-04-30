@@ -80,8 +80,6 @@ export const EditableCompany = ({ member, onUpdate }: Props) => {
   const companies = data?.pages.flat();
   const hasNextPage = data?.pages.at(-1)?.length === 25;
 
-  console.log("companies", companies);
-
   useEffect(() => {
     if (inView && hasNextPage) fetchNextPage();
   }, [inView]);

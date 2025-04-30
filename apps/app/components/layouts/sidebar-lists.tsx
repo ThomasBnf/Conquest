@@ -20,9 +20,7 @@ export const SidebarLists = () => {
   const { setOpen } = useOpenList();
   const pathname = usePathname();
 
-  const { data: lists, isLoading, failureReason } = trpc.lists.list.useQuery();
-
-  console.log(failureReason);
+  const { data: lists, isLoading } = trpc.lists.list.useQuery();
 
   return (
     <SidebarGroup>
