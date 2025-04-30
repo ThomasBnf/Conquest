@@ -1,5 +1,4 @@
 import { createActivity } from "@conquest/clickhouse/activities/createActivity";
-import { deleteChannel } from "@conquest/clickhouse/channels/deleteChannel";
 import { getProfile } from "@conquest/clickhouse/profiles/getProfile";
 import { discordClient } from "@conquest/db/discord";
 import type { Channel } from "@conquest/zod/schemas/channel.schema";
@@ -44,11 +43,6 @@ export const createManyArchivedThreads = async ({
 
       const threads = responseThreads.threads as APIThreadChannel[];
 
-      logger.info("Archived threads", {
-        count: threads.length,
-        threads,
-      });
-
       if (threads.length === 0) break;
 
       allThreads.push(...threads);
@@ -67,12 +61,10 @@ export const createManyArchivedThreads = async ({
     } catch (error) {
       const { name } = error as Error;
       if (name === "DiscordAPIError[50001]") {
-        await deleteChannel({ id });
-
         logger.error("createManyArchivedThreads - Missing access", { channel });
-
         break;
       }
+      logger.error("createManyArchivedThreads - Error", { error });
     }
   }
 
@@ -82,8 +74,7 @@ export const createManyArchivedThreads = async ({
   });
 
   for (const thread of allThreads) {
-    const { name, owner_id, thread_metadata } = thread;
-    const { create_timestamp } = thread_metadata ?? {};
+    const { name, owner_id } = thread;
 
     if (!owner_id) continue;
 
@@ -135,8 +126,8 @@ export const createManyArchivedThreads = async ({
             message: type === 21 ? (message_content ?? "") : content,
             memberId: profile.memberId,
             channelId: channel.id,
-            createdAt: new Date(create_timestamp ?? ""),
-            updatedAt: new Date(create_timestamp ?? ""),
+            createdAt: new Date(firstMessage.timestamp),
+            updatedAt: new Date(firstMessage.timestamp),
             source: "Discord",
             workspaceId,
           });

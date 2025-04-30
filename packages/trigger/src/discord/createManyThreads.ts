@@ -122,7 +122,7 @@ export const createManyThreads = async ({ discord }: Props) => {
         if (messages.length < 100) break;
         before = messages.at(-1)?.id;
       } catch (error) {
-        logger.error("error", { thread, error });
+        logger.error("Active thread error", { thread, error });
         break;
       }
     }

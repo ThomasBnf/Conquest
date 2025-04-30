@@ -105,6 +105,7 @@ export const listChannelMessages = async ({ channel, workspaceId }: Props) => {
         logger.error("listChannelMessages - Missing access", { channel });
         break;
       }
+      logger.error("listChannelMessages - Error", { error });
     }
   }
 };
