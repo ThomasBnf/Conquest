@@ -30,11 +30,17 @@ export async function POST(request: NextRequest) {
   const github = await checkSignature(request, bodyRaw);
   if (!github) return NextResponse.json({ status: 200 });
 
+  console.log(github);
+
   const { details, workspaceId } = github;
   const { accessToken, iv, repo } = details;
 
   const decryptedToken = await decrypt({ accessToken, iv });
+
+  console.log(decryptedToken);
+
   const octokit = new Octokit({ auth: decryptedToken });
+  console.log(octokit);
 
   try {
     switch (type) {
