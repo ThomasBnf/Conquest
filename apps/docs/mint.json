@@ -115,7 +115,7 @@
         "api-reference/companies/list",
         "api-reference/companies/post",
         "api-reference/companies/get",
-        "api-reference/companies/put",
+        "api-reference/companies/patch",
         "api-reference/companies/delete"
       ]
     }

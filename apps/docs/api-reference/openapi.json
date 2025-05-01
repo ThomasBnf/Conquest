@@ -15,12 +15,6 @@
       "get": {
         "description": "List all activities from your workspace",
         "security": [{ "bearerAuth": [] }],
-        "x-codeSamples": [
-          {
-            "lang": "curl",
-            "source": "curl --request GET \\\n  --url 'https://api.useconquest.com/v1/activities?page=1&pageSize=10' \\\n  --header 'Authorization: Bearer <token>'"
-          }
-        ],
         "parameters": [
           {
             "name": "page",
@@ -368,11 +362,7 @@
       },
       "delete": {
         "description": "Delete an activity from your workspace",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
+        "security": [{ "bearerAuth": [] }],
         "parameters": [
           {
             "in": "path",
@@ -437,12 +427,6 @@
       "get": {
         "description": "List all member activities",
         "security": [{ "bearerAuth": [] }],
-        "x-codeSamples": [
-          {
-            "lang": "curl",
-            "source": "curl --request GET \\\n  --url 'https://api.useconquest.com/v1/activities/member/{memberId}?page=1&pageSize=10' \\\n  --header 'Authorization: Bearer <token>'"
-          }
-        ],
         "parameters": [
           {
             "in": "path",
@@ -521,12 +505,6 @@
       "get": {
         "description": "List all members from your workspace",
         "security": [{ "bearerAuth": [] }],
-        "x-codeSamples": [
-          {
-            "lang": "curl",
-            "source": "curl --request GET \\\n  --url 'https://api.useconquest.com/v1/members?page=1&pageSize=10' \\\n  --header 'Authorization: Bearer <token>'"
-          }
-        ],
         "parameters": [
           {
             "name": "page",
@@ -594,11 +572,64 @@
       },
       "post": {
         "description": "Create a member in your workspace",
-        "security": [
-          {
-            "bearerAuth": []
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "firstName": {
+                    "type": "string"
+                  },
+                  "lastName": {
+                    "type": "string"
+                  },
+                  "primaryEmail": {
+                    "type": "string"
+                  },
+                  "emails": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "email"
+                    }
+                  },
+                  "phones": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "example": "+33612345678"
+                    }
+                  },
+                  "jobTitle": {
+                    "type": "string"
+                  },
+                  "avatarUrl": {
+                    "type": "string"
+                  },
+                  "country": {
+                    "type": "string"
+                  },
+                  "language": {
+                    "type": "string"
+                  },
+                  "tags": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "uuid"
+                    }
+                  },
+                  "linkedinUrl": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
           }
-        ],
+        },
         "responses": {
           "200": {
             "description": "Successful response",
@@ -646,11 +677,7 @@
     "/v1/members/{memberId}": {
       "get": {
         "description": "Get a member from your workspace",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
+        "security": [{ "bearerAuth": [] }],
         "parameters": [
           {
             "in": "path",
@@ -819,11 +846,7 @@
       },
       "delete": {
         "description": "Delete a member in your workspace",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
+        "security": [{ "bearerAuth": [] }],
         "parameters": [
           {
             "in": "path",
@@ -888,12 +911,6 @@
       "get": {
         "description": "List all companies from your workspace",
         "security": [{ "bearerAuth": [] }],
-        "x-codeSamples": [
-          {
-            "lang": "curl",
-            "source": "curl --request GET \\\n  --url 'https://api.useconquest.com/v1/companies?page=1&pageSize=10' \\\n  --header 'Authorization: Bearer <token>'"
-          }
-        ],
         "parameters": [
           {
             "name": "page",
@@ -961,11 +978,57 @@
       },
       "post": {
         "description": "Create a company in your workspace",
-        "security": [
-          {
-            "bearerAuth": []
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["activityTypeKey", "memberId"],
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "Name of the company"
+                  },
+                  "industry": {
+                    "type": "string",
+                    "description": "Industry of the company"
+                  },
+                  "address": {
+                    "type": "string",
+                    "description": "Address of the company"
+                  },
+                  "domain": {
+                    "type": "string",
+                    "description": "Domain of the company"
+                  },
+                  "employees": {
+                    "type": "number",
+                    "description": "Number of employees of the company"
+                  },
+                  "foundedAt": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "Founded at of the company"
+                  },
+                  "logoUrl": {
+                    "type": "string",
+                    "description": "Logo URL of the company"
+                  },
+                  "tags": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "description": "Tags of the company"
+                  }
+                }
+              }
+            }
           }
-        ],
+        },
         "responses": {
           "200": {
             "description": "Successful response",
@@ -1013,11 +1076,7 @@
     "/v1/companies/{companyId}": {
       "get": {
         "description": "Get a company from your workspace",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
+        "security": [{ "bearerAuth": [] }],
         "parameters": [
           {
             "in": "path",
@@ -1071,13 +1130,9 @@
           }
         }
       },
-      "put": {
+      "patch": {
         "description": "Update a company in your workspace",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
+        "security": [{ "bearerAuth": [] }],
         "parameters": [
           {
             "in": "path",
@@ -1088,6 +1143,56 @@
             "required": true
           }
         ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["activityTypeKey", "memberId"],
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "Name of the company"
+                  },
+                  "industry": {
+                    "type": "string",
+                    "description": "Industry of the company"
+                  },
+                  "address": {
+                    "type": "string",
+                    "description": "Address of the company"
+                  },
+                  "domain": {
+                    "type": "string",
+                    "description": "Domain of the company"
+                  },
+                  "employees": {
+                    "type": "number",
+                    "description": "Number of employees of the company"
+                  },
+                  "foundedAt": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "Founded at of the company"
+                  },
+                  "logoUrl": {
+                    "type": "string",
+                    "description": "Logo URL of the company"
+                  },
+                  "tags": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "description": "Tags of the company"
+                  }
+                }
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "Successful response",
@@ -1133,11 +1238,7 @@
       },
       "delete": {
         "description": "Delete a company in your workspace",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
+        "security": [{ "bearerAuth": [] }],
         "parameters": [
           {
             "in": "path",
@@ -1202,12 +1303,6 @@
       "get": {
         "description": "List all channels from your workspace",
         "security": [{ "bearerAuth": [] }],
-        "x-codeSamples": [
-          {
-            "lang": "curl",
-            "source": "curl --request GET \\\n  --url 'https://api.useconquest.com/v1/channels?page=1&pageSize=10' \\\n  --header 'Authorization: Bearer <token>'"
-          }
-        ],
         "parameters": [
           {
             "name": "page",
@@ -1418,14 +1513,14 @@
                 "type": "object",
                 "required": ["activityTypeKey", "memberId"],
                 "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "Name of the channel"
+                  },
                   "externalId": {
                     "type": "string",
                     "description": "External ID of the channel",
                     "example": "ext_123"
-                  },
-                  "name": {
-                    "type": "string",
-                    "description": "Name of the channel"
                   }
                 }
               }
@@ -1477,11 +1572,7 @@
       },
       "delete": {
         "description": "Delete a channel in your workspace",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
+        "security": [{ "bearerAuth": [] }],
         "parameters": [
           {
             "in": "path",
@@ -1567,73 +1658,59 @@
               "properties": {
                 "id": {
                   "type": "string",
-                  "format": "uuid",
-                  "example": "9e1c8bba-9121-479f-b510-1bf02d01a42b"
+                  "format": "uuid"
                 },
                 "externalId": {
-                  "type": "string",
-                  "example": "ext_123"
+                  "type": "string"
                 },
                 "title": {
-                  "type": "string",
-                  "example": "Activity Title"
+                  "type": "string"
                 },
                 "message": {
-                  "type": "string",
-                  "example": "This is an activity message"
+                  "type": "string"
                 },
                 "replyTo": {
-                  "type": "string",
-                  "example": "535e84c4-8d72-4b76-be79-8f21537e149e"
+                  "type": "string"
                 },
                 "reactTo": {
-                  "type": "string",
-                  "example": "f939094f-4e24-4c7c-aab8-65a62515bfe4"
+                  "type": "string"
                 },
                 "inviteTo": {
-                  "type": "string",
-                  "example": "950420e7-1092-4942-8edd-90c3143293d2"
+                  "type": "string"
                 },
                 "source": {
                   "type": "string",
-                  "example": "Slack"
+                  "example": "Api"
                 },
                 "activityTypeId": {
                   "type": "string",
-                  "format": "uuid",
-                  "example": "d5b33178-6222-4e2d-a1e9-72828cffca9a"
+                  "format": "uuid"
                 },
                 "channelId": {
                   "type": "string",
                   "format": "uuid",
-                  "nullable": true,
-                  "example": "350a95cd-c654-4238-9692-49d520420833"
+                  "nullable": true
                 },
                 "eventId": {
                   "type": "string",
                   "format": "uuid",
-                  "nullable": true,
-                  "example": "39813609-1062-4fd7-b488-533244b99f7d"
+                  "nullable": true
                 },
                 "memberId": {
                   "type": "string",
-                  "format": "uuid",
-                  "example": "1dc2a014-13c9-41cd-87b5-4288df35b59a"
+                  "format": "uuid"
                 },
                 "workspaceId": {
                   "type": "string",
-                  "format": "uuid",
-                  "example": "5901abdb-32b7-4e56-8766-d8b6ac906376"
+                  "format": "uuid"
                 },
                 "createdAt": {
                   "type": "string",
-                  "format": "date-time",
-                  "example": "2025-01-01T00:00:00Z"
+                  "format": "date-time"
                 },
                 "updatedAt": {
                   "type": "string",
-                  "format": "date-time",
-                  "example": "2025-01-01T00:00:00Z"
+                  "format": "date-time"
                 }
               }
             }
@@ -1648,32 +1725,25 @@
             "properties": {
               "id": {
                 "type": "string",
-                "format": "uuid",
-                "example": "9e1c8bba-9121-479f-b510-1bf02d01a42b"
+                "format": "uuid"
               },
               "externalId": {
-                "type": "string",
-                "example": "ext_123"
+                "type": "string"
               },
               "title": {
-                "type": "string",
-                "example": "Activity Title"
+                "type": "string"
               },
               "message": {
-                "type": "string",
-                "example": "This is an activity message"
+                "type": "string"
               },
               "replyTo": {
-                "type": "string",
-                "example": "535e84c4-8d72-4b76-be79-8f21537e149e"
+                "type": "string"
               },
               "reactTo": {
-                "type": "string",
-                "example": "f939094f-4e24-4c7c-aab8-65a62515bfe4"
+                "type": "string"
               },
               "inviteTo": {
-                "type": "string",
-                "example": "950420e7-1092-4942-8edd-90c3143293d2"
+                "type": "string"
               },
               "source": {
                 "type": "string",
@@ -1681,40 +1751,33 @@
               },
               "activityTypeId": {
                 "type": "string",
-                "format": "uuid",
-                "example": "d5b33178-6222-4e2d-a1e9-72828cffca9a"
+                "format": "uuid"
               },
               "channelId": {
                 "type": "string",
                 "format": "uuid",
-                "nullable": true,
-                "example": "350a95cd-c654-4238-9692-49d520420833"
+                "nullable": true
               },
               "eventId": {
                 "type": "string",
                 "format": "uuid",
-                "nullable": true,
-                "example": "39813609-1062-4fd7-b488-533244b99f7d"
+                "nullable": true
               },
               "memberId": {
                 "type": "string",
-                "format": "uuid",
-                "example": "1dc2a014-13c9-41cd-87b5-4288df35b59a"
+                "format": "uuid"
               },
               "workspaceId": {
                 "type": "string",
-                "format": "uuid",
-                "example": "5901abdb-32b7-4e56-8766-d8b6ac906376"
+                "format": "uuid"
               },
               "createdAt": {
                 "type": "string",
-                "format": "date-time",
-                "example": "2025-01-01T00:00:00Z"
+                "format": "date-time"
               },
               "updatedAt": {
                 "type": "string",
-                "format": "date-time",
-                "example": "2025-01-01T00:00:00Z"
+                "format": "date-time"
               }
             }
           }
@@ -1742,109 +1805,88 @@
               "properties": {
                 "id": {
                   "type": "string",
-                  "format": "uuid",
-                  "example": "d5b33178-6222-4e2d-a1e9-72828cffca9a"
+                  "format": "uuid"
                 },
                 "firstName": {
                   "type": "string",
-                  "nullable": true,
-                  "example": "Thomas"
+                  "nullable": true
                 },
                 "lastName": {
                   "type": "string",
-                  "nullable": true,
-                  "example": "Bonfils"
+                  "nullable": true
                 },
                 "primaryEmail": {
                   "type": "string",
-                  "nullable": true,
-                  "example": "thomas@useconquest.com"
+                  "nullable": true
                 },
                 "emails": {
                   "type": "array",
                   "items": {
-                    "type": "string",
-                    "example": "support@useconquest.com"
+                    "type": "string"
                   }
                 },
                 "phones": {
                   "type": "array",
                   "items": {
-                    "type": "string",
-                    "example": "+33 6 12 34 56 78"
+                    "type": "string"
                   }
                 },
                 "jobTitle": {
                   "type": "string",
-                  "nullable": true,
-                  "example": "Software Engineer"
+                  "nullable": true
                 },
                 "avatarUrl": {
                   "type": "string",
-                  "nullable": true,
-                  "example": "https://example.com/avatar.jpg"
+                  "nullable": true
                 },
                 "language": {
                   "type": "string",
-                  "nullable": true,
-                  "example": "French"
+                  "nullable": true
                 },
                 "country": {
                   "type": "string",
-                  "nullable": true,
-                  "example": "France"
+                  "nullable": true
                 },
                 "tags": {
                   "type": "array",
                   "items": {
-                    "type": "string",
-                    "example": "e80f0f3c-f2df-4d37-a40a-fea15aa8c65c"
+                    "type": "string"
                   }
                 },
                 "level": {
-                  "type": "number",
-                  "example": 6
+                  "type": "number"
                 },
                 "pulse": {
-                  "type": "number",
-                  "example": 203
+                  "type": "number"
                 },
                 "source": {
-                  "type": "string",
-                  "example": "Slack"
+                  "type": "string"
                 },
                 "companyId": {
                   "type": "string",
-                  "format": "uuid",
-                  "nullable": true,
-                  "example": "031af83a-885a-4a20-91ef-9cbba8bd859d"
+                  "format": "uuid"
                 },
                 "workspaceId": {
                   "type": "string",
-                  "format": "uuid",
-                  "example": "5901abdb-32b7-4e56-8766-d8b6ac906376"
+                  "format": "uuid"
                 },
                 "firstActivity": {
                   "type": "string",
                   "format": "date-time",
-                  "nullable": true,
-                  "example": "2025-01-01T00:00:00Z"
+                  "nullable": true
                 },
                 "lastActivity": {
                   "type": "string",
                   "format": "date-time",
-                  "nullable": true,
-                  "example": "2025-01-01T00:00:00Z"
+                  "nullable": true
                 },
                 "createdAt": {
                   "type": "string",
-                  "format": "date-time",
-                  "example": "2025-01-01T00:00:00Z"
+                  "format": "date-time"
                 },
                 "updatedAt": {
                   "type": "string",
-                  "format": "date-time",
-                  "example": "2025-01-01T00:00:00Z"
+                  "format": "date-time"
                 }
               }
             }
@@ -1859,109 +1901,88 @@
             "properties": {
               "id": {
                 "type": "string",
-                "format": "uuid",
-                "example": "d5b33178-6222-4e2d-a1e9-72828cffca9a"
+                "format": "uuid"
               },
               "firstName": {
                 "type": "string",
-                "nullable": true,
-                "example": "Thomas"
+                "nullable": true
               },
               "lastName": {
                 "type": "string",
-                "nullable": true,
-                "example": "Bonfils"
+                "nullable": true
               },
               "primaryEmail": {
                 "type": "string",
-                "nullable": true,
-                "example": "thomas@useconquest.com"
+                "nullable": true
               },
               "emails": {
                 "type": "array",
                 "items": {
-                  "type": "string",
-                  "example": "support@useconquest.com"
+                  "type": "string"
                 }
               },
               "phones": {
                 "type": "array",
                 "items": {
-                  "type": "string",
-                  "example": "+33 6 12 34 56 78"
+                  "type": "string"
                 }
               },
               "jobTitle": {
                 "type": "string",
-                "nullable": true,
-                "example": "Software Engineer"
+                "nullable": true
               },
               "avatarUrl": {
                 "type": "string",
-                "nullable": true,
-                "example": "https://example.com/avatar.jpg"
+                "nullable": true
               },
               "language": {
                 "type": "string",
-                "nullable": true,
-                "example": "French"
+                "nullable": true
               },
               "country": {
                 "type": "string",
-                "nullable": true,
-                "example": "France"
+                "nullable": true
               },
               "tags": {
                 "type": "array",
                 "items": {
-                  "type": "string",
-                  "example": "e80f0f3c-f2df-4d37-a40a-fea15aa8c65c"
+                  "type": "string"
                 }
               },
               "level": {
-                "type": "number",
-                "example": 6
+                "type": "number"
               },
               "pulse": {
-                "type": "number",
-                "example": 203
+                "type": "number"
               },
               "source": {
-                "type": "string",
-                "example": "Slack"
+                "type": "string"
               },
               "companyId": {
                 "type": "string",
-                "format": "uuid",
-                "nullable": true,
-                "example": "031af83a-885a-4a20-91ef-9cbba8bd859d"
+                "format": "uuid"
               },
               "workspaceId": {
                 "type": "string",
-                "format": "uuid",
-                "example": "5901abdb-32b7-4e56-8766-d8b6ac906376"
+                "format": "uuid"
               },
               "firstActivity": {
                 "type": "string",
                 "format": "date-time",
-                "nullable": true,
-                "example": "2025-01-01T00:00:00Z"
+                "nullable": true
               },
               "lastActivity": {
                 "type": "string",
                 "format": "date-time",
-                "nullable": true,
-                "example": "2025-01-01T00:00:00Z"
+                "nullable": true
               },
               "createdAt": {
                 "type": "string",
-                "format": "date-time",
-                "example": "2025-01-01T00:00:00Z"
+                "format": "date-time"
               },
               "updatedAt": {
                 "type": "string",
-                "format": "date-time",
-                "example": "2025-01-01T00:00:00Z"
+                "format": "date-time"
               }
             }
           }
@@ -1989,36 +2010,29 @@
               "properties": {
                 "id": {
                   "type": "string",
-                  "format": "uuid",
-                  "example": "e80f0f3c-f2df-4d37-a40a-fea15aa8c65c"
+                  "format": "uuid"
                 },
                 "externalId": {
                   "type": "string",
-                  "nullable": true,
-                  "example": "C07QZEDCW7P"
+                  "nullable": true
                 },
                 "name": {
-                  "type": "string",
-                  "example": "General Chat"
+                  "type": "string"
                 },
                 "source": {
-                  "type": "string",
-                  "example": "Api"
+                  "type": "string"
                 },
                 "workspaceId": {
                   "type": "string",
-                  "format": "uuid",
-                  "example": "5901abdb-32b7-4e56-8766-d8b6ac906376"
+                  "format": "uuid"
                 },
                 "createdAt": {
                   "type": "string",
-                  "format": "date-time",
-                  "example": "2025-01-01T00:00:00Z"
+                  "format": "date-time"
                 },
                 "updatedAt": {
                   "type": "string",
-                  "format": "date-time",
-                  "example": "2025-01-01T00:00:00Z"
+                  "format": "date-time"
                 }
               }
             }
@@ -2035,36 +2049,29 @@
               "properties": {
                 "id": {
                   "type": "string",
-                  "format": "uuid",
-                  "example": "e80f0f3c-f2df-4d37-a40a-fea15aa8c65c"
+                  "format": "uuid"
                 },
                 "externalId": {
                   "type": "string",
-                  "nullable": true,
-                  "example": "C07QZEDCW7P"
+                  "nullable": true
                 },
                 "name": {
-                  "type": "string",
-                  "example": "General Chat"
+                  "type": "string"
                 },
                 "source": {
-                  "type": "string",
-                  "example": "Api"
+                  "type": "string"
                 },
                 "workspaceId": {
                   "type": "string",
-                  "format": "uuid",
-                  "example": "5901abdb-32b7-4e56-8766-d8b6ac906376"
+                  "format": "uuid"
                 },
                 "createdAt": {
                   "type": "string",
-                  "format": "date-time",
-                  "example": "2025-01-01T00:00:00Z"
+                  "format": "date-time"
                 },
                 "updatedAt": {
                   "type": "string",
-                  "format": "date-time",
-                  "example": "2025-01-01T00:00:00Z"
+                  "format": "date-time"
                 }
               }
             }
@@ -2075,87 +2082,65 @@
         "type": "object",
         "properties": {
           "page": {
-            "type": "number",
-            "example": 1
+            "type": "number"
           },
           "pageSize": {
-            "type": "number",
-            "example": 10
+            "type": "number"
           },
           "totalCompanies": {
-            "type": "number",
-            "example": 1235
+            "type": "number"
           },
-          "members": {
+          "companies": {
             "type": "array",
             "items": {
               "type": "object",
               "properties": {
                 "id": {
                   "type": "string",
-                  "format": "uuid",
-                  "example": "cm5fkwwup0006dntb34yzw7dd"
+                  "format": "uuid"
                 },
                 "name": {
-                  "type": "string",
-                  "example": "Conquest"
+                  "type": "string"
                 },
                 "industry": {
-                  "type": "string",
-                  "nullable": true,
-                  "example": "Software"
+                  "type": "string"
                 },
                 "address": {
-                  "type": "string",
-                  "nullable": true,
-                  "example": "123 Tech Street"
+                  "type": "string"
                 },
                 "domain": {
-                  "type": "string",
-                  "nullable": true,
-                  "example": "useconquest.com"
+                  "type": "string"
                 },
                 "employees": {
-                  "type": "number",
-                  "nullable": true,
-                  "example": 50
+                  "type": "number"
                 },
                 "foundedAt": {
                   "type": "string",
-                  "format": "date-time",
-                  "nullable": true,
-                  "example": "2023-01-01T00:00:00Z"
+                  "format": "date-time"
                 },
                 "logoUrl": {
-                  "type": "string",
-                  "nullable": true,
-                  "example": "https://example.com/logo.png"
+                  "type": "string"
                 },
                 "tags": {
                   "type": "array",
                   "items": {
-                    "type": "string",
-                    "example": "cm5fkwwup0006dntb34yzw7dd"
+                    "type": "string"
                   }
                 },
                 "source": {
-                  "type": "string",
-                  "example": "MANUAL"
+                  "type": "string"
                 },
                 "workspaceId": {
                   "type": "string",
-                  "format": "uuid",
-                  "example": "5901abdb-32b7-4e56-8766-d8b6ac906376"
+                  "format": "uuid"
                 },
                 "createdAt": {
                   "type": "string",
-                  "format": "date-time",
-                  "example": "2025-01-01T00:00:00Z"
+                  "format": "date-time"
                 },
                 "updatedAt": {
                   "type": "string",
-                  "format": "date-time",
-                  "example": "2025-01-01T00:00:00Z"
+                  "format": "date-time"
                 }
               }
             }
@@ -2170,69 +2155,50 @@
             "properties": {
               "id": {
                 "type": "string",
-                "format": "uuid",
-                "example": "cm5fkwwup0006dntb34yzw7dd"
+                "format": "uuid"
               },
               "name": {
-                "type": "string",
-                "example": "Conquest"
+                "type": "string"
               },
               "industry": {
-                "type": "string",
-                "nullable": true,
-                "example": "Software"
+                "type": "string"
               },
               "address": {
-                "type": "string",
-                "nullable": true,
-                "example": "123 Tech Street"
+                "type": "string"
               },
               "domain": {
-                "type": "string",
-                "nullable": true,
-                "example": "useconquest.com"
+                "type": "string"
               },
               "employees": {
-                "type": "number",
-                "nullable": true,
-                "example": 50
+                "type": "number"
               },
               "foundedAt": {
                 "type": "string",
-                "format": "date-time",
-                "nullable": true,
-                "example": "2023-01-01T00:00:00Z"
+                "format": "date-time"
               },
               "logoUrl": {
-                "type": "string",
-                "nullable": true,
-                "example": "https://example.com/logo.png"
+                "type": "string"
               },
               "tags": {
                 "type": "array",
                 "items": {
-                  "type": "string",
-                  "example": "cm5fkwwup0006dntb34yzw7dd"
+                  "type": "string"
                 }
               },
               "source": {
-                "type": "string",
-                "example": "MANUAL"
+                "type": "string"
               },
               "workspaceId": {
                 "type": "string",
-                "format": "uuid",
-                "example": "5901abdb-32b7-4e56-8766-d8b6ac906376"
+                "format": "uuid"
               },
               "createdAt": {
                 "type": "string",
-                "format": "date-time",
-                "example": "2025-01-01T00:00:00Z"
+                "format": "date-time"
               },
               "updatedAt": {
                 "type": "string",
-                "format": "date-time",
-                "example": "2025-01-01T00:00:00Z"
+                "format": "date-time"
               }
             }
           }
