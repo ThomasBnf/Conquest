@@ -1,8 +1,8 @@
 import { getAuthenticatedUser } from "@/utils/getAuthenticatedUser";
 import { sleep } from "@/utils/sleep";
 import { client } from "@conquest/clickhouse/client";
-import { getCompany } from "@conquest/clickhouse/companies/getCompany";
-import { CompanySchema } from "@conquest/zod/schemas/company.schema";
+import { getMember } from "@conquest/clickhouse/members/getMember";
+import { MemberSchema } from "@conquest/zod/schemas/member.schema";
 import { createZodRoute } from "next-zod-route";
 import { NextResponse } from "next/server";
 import { randomUUID } from "node:crypto";
@@ -34,7 +34,7 @@ export const GET = createZodRoute()
     const resultCount = await client.query({
       query: `
         SELECT COUNT(*) as total
-        FROM company
+        FROM member FINAL
         WHERE workspaceId = '${workspaceId}'
       `,
       format: "JSON",
@@ -42,12 +42,12 @@ export const GET = createZodRoute()
 
     const json = await resultCount.json();
     const { data: count } = json as { data: Array<{ total: number }> };
-    const totalCompanies = Number(count[0]?.total || 0);
+    const totalMembers = Number(count[0]?.total || 0);
 
     const result = await client.query({
       query: `
         SELECT * 
-        FROM company
+        FROM member FINAL
         WHERE workspaceId = '${workspaceId}'  
         ORDER BY createdAt DESC
         LIMIT ${pageSize}
@@ -57,13 +57,13 @@ export const GET = createZodRoute()
     });
 
     const { data } = await result.json();
-    const companies = CompanySchema.array().parse(data);
+    const members = MemberSchema.array().parse(data);
 
     return NextResponse.json({
       page,
       pageSize,
-      totalCompanies,
-      companies,
+      totalMembers,
+      members,
     });
   });
 
@@ -81,8 +81,13 @@ export const POST = createZodRoute()
     return next({ ctx: { workspaceId: result.workspaceId } });
   })
   .body(
-    CompanySchema.partial().omit({
+    MemberSchema.partial().omit({
       id: true,
+      pulse: true,
+      levelId: true,
+      firstActivity: true,
+      lastActivity: true,
+      source: true,
       createdAt: true,
       updatedAt: true,
       workspaceId: true,
@@ -90,32 +95,39 @@ export const POST = createZodRoute()
   )
   .handler(async (_, { ctx, body }) => {
     const { workspaceId } = ctx;
+    const { primaryEmail, emails = [], ...rest } = body;
+
+    const emailsArray = Array.from(
+      new Set([primaryEmail, ...(emails || [])]),
+    ).filter(Boolean);
 
     const id = randomUUID();
 
     const values = {
       id,
-      ...body,
+      ...rest,
+      primaryEmail,
+      emails: emailsArray,
       source: "Api",
       workspaceId,
     };
 
     await client.insert({
-      table: "company",
+      table: "member",
       values: [values],
       format: "JSON",
     });
 
     await sleep(50);
 
-    const company = await getCompany({ id });
+    const member = await getMember({ id });
 
-    if (!company) {
+    if (!member) {
       return NextResponse.json(
-        { code: "NOT_FOUND", message: "Failed to create company" },
+        { code: "NOT_FOUND", message: "Failed to create member" },
         { status: 404 },
       );
     }
 
-    return NextResponse.json({ company });
+    return NextResponse.json({ member });
   });

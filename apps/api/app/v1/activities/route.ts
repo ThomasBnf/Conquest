@@ -1,4 +1,5 @@
 import { getAuthenticatedUser } from "@/utils/getAuthenticatedUser";
+import { sleep } from "@/utils/sleep";
 import { getActivity } from "@conquest/clickhouse/activities/getActivity";
 import { getActivityTypeByKey } from "@conquest/clickhouse/activity-types/getActivityTypeByKey";
 import { getChannel } from "@conquest/clickhouse/channels/getChannel";
@@ -113,7 +114,8 @@ export const POST = createZodRoute()
       return NextResponse.json(
         {
           code: "BAD_REQUEST",
-          message: "Invalid activity type key, source must be 'api'",
+          message:
+            "Invalid activity type key, Activity type key must start with 'api:'",
         },
         { status: 400 },
       );
@@ -214,24 +216,16 @@ export const POST = createZodRoute()
       format: "JSON",
     });
 
-    const result = await client.query({
-      query: `
-        SELECT *
-        FROM activity
-        WHERE id = '${id}'
-      `,
-      format: "JSON",
-    });
+    await sleep(50);
 
-    const { data } = await result.json();
+    const activity = await getActivity({ id });
 
-    if (!data?.length) {
+    if (!activity) {
       return NextResponse.json(
         { code: "NOT_FOUND", message: "Failed to create activity" },
         { status: 404 },
       );
     }
 
-    const activity = ActivitySchema.parse(data[0]);
     return NextResponse.json({ activity });
   });

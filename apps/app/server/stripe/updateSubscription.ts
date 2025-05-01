@@ -52,6 +52,9 @@ export const updateSubscription = protectedProcedure
           quantity: 1,
         },
       ],
+      automatic_tax: {
+        enabled: true,
+      },
       trial_end: trial_end ?? undefined,
       metadata: {
         plan,

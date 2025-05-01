@@ -1,9 +1,9 @@
 import { getAuthenticatedUser } from "@/utils/getAuthenticatedUser";
 import { sleep } from "@/utils/sleep";
 import { client } from "@conquest/clickhouse/client";
-import { deleteCompany } from "@conquest/clickhouse/companies/deleteCompany";
-import { getCompany } from "@conquest/clickhouse/companies/getCompany";
-import { CompanySchema } from "@conquest/zod/schemas/company.schema";
+import { deleteMember } from "@conquest/clickhouse/members/deleteMember";
+import { getMember } from "@conquest/clickhouse/members/getMember";
+import { MemberSchema } from "@conquest/zod/schemas/member.schema";
 import { createZodRoute } from "next-zod-route";
 import { NextResponse } from "next/server";
 import { z } from "zod";
@@ -29,19 +29,19 @@ export const GET = createZodRoute()
   .handler(async (_, { params }) => {
     const { id } = params;
 
-    const company = await getCompany({ id });
+    const member = await getMember({ id });
 
-    if (!company) {
+    if (!member) {
       return NextResponse.json(
         {
           code: "NOT_FOUND",
-          message: "Company not found",
+          message: "Member not found",
         },
         { status: 404 },
       );
     }
 
-    return NextResponse.json({ company });
+    return NextResponse.json({ member });
   });
 
 export const PATCH = createZodRoute()
@@ -59,7 +59,7 @@ export const PATCH = createZodRoute()
   })
   .params(paramsSchema)
   .body(
-    CompanySchema.partial().omit({
+    MemberSchema.partial().omit({
       id: true,
       createdAt: true,
       updatedAt: true,
@@ -67,36 +67,43 @@ export const PATCH = createZodRoute()
     }),
   )
   .handler(async (_, { params, body }) => {
+    const { primaryEmail, emails, ...rest } = body;
+
+    const emailsArray = Array.from(
+      new Set([primaryEmail, ...(emails || [])]),
+    ).filter(Boolean);
+
     const { id } = params;
 
-    const company = await getCompany({ id });
+    const member = await getMember({ id });
 
-    if (!company) {
+    if (!member) {
       return NextResponse.json(
-        { code: "NOT_FOUND", message: "Company not found" },
+        { code: "NOT_FOUND", message: "Member not found" },
         { status: 404 },
       );
     }
 
-    const values = Object.entries(body)
-      .map(([key, value]) => `${key} = '${value}'`)
-      .join(", ");
+    const values = {
+      ...rest,
+      primaryEmail,
+      emails: emailsArray,
+      updatedAt: new Date(),
+    };
 
-    await client.query({
-      query: `
-          ALTER TABLE company
-          UPDATE
-            ${values},
-            updatedAt = now()
-          WHERE id = '${id}'
-      `,
+    console.log(values);
+
+    await client.insert({
+      table: "member",
+      values: [values],
+      format: "JSON",
     });
 
     await sleep(50);
 
-    const updatedCompany = await getCompany({ id });
+    const updatedMember = await getMember({ id });
 
-    return NextResponse.json({ company: updatedCompany });
+    return NextResponse.json({ member: updatedMember });
   });
 
 export const DELETE = createZodRoute()
@@ -116,16 +123,16 @@ export const DELETE = createZodRoute()
   .handler(async (_, { params }) => {
     const { id } = params;
 
-    const company = await getCompany({ id });
+    const member = await getMember({ id });
 
-    if (!company) {
+    if (!member) {
       return NextResponse.json(
-        { code: "NOT_FOUND", message: "Company not found" },
+        { code: "NOT_FOUND", message: "Member not found" },
         { status: 404 },
       );
     }
 
-    await deleteCompany({ id });
+    await deleteMember({ id });
 
     return NextResponse.json({ success: true });
   });

@@ -1,6 +1,8 @@
 import { getAuthenticatedUser } from "@/utils/getAuthenticatedUser";
-import { client } from "@conquest/clickhouse/client";
-import { ChannelSchema } from "@conquest/zod/schemas/channel.schema";
+import { sleep } from "@/utils/sleep";
+import { deleteChannel } from "@conquest/clickhouse/channels/deleteChannel";
+import { getChannel } from "@conquest/clickhouse/channels/getChannel";
+import { updateChannel } from "@conquest/clickhouse/channels/updateChannel";
 import { createZodRoute } from "next-zod-route";
 import { NextResponse } from "next/server";
 import { z } from "zod";
@@ -23,22 +25,10 @@ export const GET = createZodRoute()
     return next({ ctx: { workspaceId: result.workspaceId } });
   })
   .params(paramsSchema)
-  .handler(async (_, { ctx, params }) => {
-    const { workspaceId } = ctx;
+  .handler(async (_, { params }) => {
     const { id } = params;
 
-    const result = await client.query({
-      query: `
-        SELECT * 
-        FROM channel
-        WHERE id = '${id}'
-        AND workspaceId = '${workspaceId}'
-      `,
-      format: "JSON",
-    });
-
-    const { data } = await result.json();
-    const channel = data[0];
+    const channel = await getChannel({ id });
 
     if (!channel) {
       return NextResponse.json(
@@ -66,65 +56,33 @@ export const PATCH = createZodRoute()
 
     return next({ ctx: { workspaceId: result.workspaceId } });
   })
-  .params(
-    z.object({
-      id: z.string(),
-    }),
-  )
+  .params(paramsSchema)
   .body(
     z.object({
-      externalId: z.string().optional(),
-      name: z.string().optional(),
+      externalId: z.string().min(1).optional(),
+      name: z.string().min(1).optional(),
     }),
   )
-  .handler(async (_, { ctx, params, body }) => {
-    const { workspaceId } = ctx;
+  .handler(async (_, { params, body }) => {
     const { id } = params;
+    const { externalId, name } = body;
 
-    try {
-      const values = Object.entries(body)
-        .map(([key, value]) => `${key} = '${value}'`)
-        .join(", ");
+    const channel = await getChannel({ id });
 
-      const updateQuery = [values, "updatedAt = now()"]
-        .filter(Boolean)
-        .join(", ");
-
-      await client.query({
-        query: `
-          ALTER TABLE channel
-          UPDATE
-            ${updateQuery}
-          WHERE id = '${id}'
-          AND workspaceId = '${workspaceId}'
-        `,
-        format: "JSON",
-      });
-    } catch (error) {
-      console.error(error);
-
+    if (!channel) {
       return NextResponse.json(
-        {
-          code: "INTERNAL_SERVER_ERROR",
-          message: "Erreur lors de la mise à jour du canal",
-        },
-        { status: 500 },
+        { code: "NOT_FOUND", message: "Channel not found" },
+        { status: 404 },
       );
     }
 
-    const result = await client.query({
-      query: `
-        SELECT * 
-        FROM channel
-        WHERE id = '${id}'
-        AND workspaceId = '${workspaceId}'
-      `,
-    });
+    await updateChannel({ id, externalId, name });
 
-    const { data } = await result.json();
-    const channel = ChannelSchema.parse(data[0]);
+    await sleep(50);
 
-    return NextResponse.json({ channel });
+    const updatedChannel = await getChannel({ id });
+
+    return NextResponse.json({ channel: updatedChannel });
   });
 
 export const DELETE = createZodRoute()
@@ -141,19 +99,19 @@ export const DELETE = createZodRoute()
     return next({ ctx: { workspaceId: result.workspaceId } });
   })
   .params(paramsSchema)
-  .handler(async (_, { ctx, params }) => {
-    const { workspaceId } = ctx;
+  .handler(async (_, { params }) => {
     const { id } = params;
 
-    await client.query({
-      query: `
-        ALTER TABLE channel
-        DELETE
-        WHERE id = '${id}'
-        AND workspaceId = '${workspaceId}'
-      `,
-      format: "JSON",
-    });
+    const channel = await getChannel({ id });
+
+    if (!channel) {
+      return NextResponse.json(
+        { code: "NOT_FOUND", message: "Channel not found" },
+        { status: 404 },
+      );
+    }
+
+    await deleteChannel({ id });
 
     return NextResponse.json({ success: true });
   });

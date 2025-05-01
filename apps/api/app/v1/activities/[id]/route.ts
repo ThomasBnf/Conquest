@@ -1,4 +1,7 @@
 import { getAuthenticatedUser } from "@/utils/getAuthenticatedUser";
+import { sleep } from "@/utils/sleep";
+import { deleteActivity } from "@conquest/clickhouse/activities/deleteActivity";
+import { getActivity } from "@conquest/clickhouse/activities/getActivity";
 import { getActivityTypeByKey } from "@conquest/clickhouse/activity-types/getActivityTypeByKey";
 import { client } from "@conquest/clickhouse/client";
 import { ActivitySchema } from "@conquest/zod/schemas/activity.schema";
@@ -24,22 +27,10 @@ export const GET = createZodRoute()
     return next({ ctx: { workspaceId: result.workspaceId } });
   })
   .params(paramsSchema)
-  .handler(async (_, { ctx, params }) => {
-    const { workspaceId } = ctx;
+  .handler(async (_, { params }) => {
     const { id } = params;
 
-    const result = await client.query({
-      query: `
-        SELECT * 
-        FROM activity
-        WHERE id = '${id}'
-        AND workspaceId = '${workspaceId}'
-      `,
-      format: "JSON",
-    });
-
-    const { data } = await result.json();
-    const activity = ActivitySchema.parse(data[0]);
+    const activity = await getActivity({ id });
 
     if (!activity) {
       return NextResponse.json(
@@ -67,11 +58,7 @@ export const PATCH = createZodRoute()
 
     return next({ ctx: { workspaceId: result.workspaceId } });
   })
-  .params(
-    z.object({
-      id: z.string(),
-    }),
-  )
+  .params(paramsSchema)
   .body(
     ActivitySchema.partial()
       .omit({
@@ -89,6 +76,15 @@ export const PATCH = createZodRoute()
     const { id } = params;
     const { workspaceId } = ctx;
     const { activityTypeKey, ...rest } = body;
+
+    const activity = await getActivity({ id, workspaceId });
+
+    if (!activity) {
+      return NextResponse.json(
+        { code: "NOT_FOUND", message: "Activity not found" },
+        { status: 404 },
+      );
+    }
 
     let activityTypeId = null;
 
@@ -133,19 +129,11 @@ export const PATCH = createZodRoute()
       `,
     });
 
-    const result = await client.query({
-      query: `
-        SELECT * 
-        FROM activity
-        WHERE id = '${id}'
-        AND workspaceId = '${workspaceId}'
-      `,
-    });
+    await sleep(50);
 
-    const { data } = await result.json();
-    const activity = ActivitySchema.parse(data[0]);
+    const updatedActivity = await getActivity({ id, workspaceId });
 
-    return NextResponse.json({ activity });
+    return NextResponse.json({ activity: updatedActivity });
   });
 
 export const DELETE = createZodRoute()
@@ -162,19 +150,19 @@ export const DELETE = createZodRoute()
     return next({ ctx: { workspaceId: result.workspaceId } });
   })
   .params(paramsSchema)
-  .handler(async (_, { ctx, params }) => {
-    const { workspaceId } = ctx;
+  .handler(async (_, { params }) => {
     const { id } = params;
 
-    await client.query({
-      query: `
-        ALTER TABLE activity
-        DELETE
-        WHERE id = '${id}'
-        AND workspaceId = '${workspaceId}'
-      `,
-      format: "JSON",
-    });
+    const activity = await getActivity({ id });
+
+    if (!activity) {
+      return NextResponse.json(
+        { code: "NOT_FOUND", message: "Activity not found" },
+        { status: 404 },
+      );
+    }
+
+    await deleteActivity({ id });
 
     return NextResponse.json({ success: true });
   });

@@ -1,33 +1,36 @@
 import { client } from "../client";
 
 type Props =
-  | { id: string; name: string }
+  | { id: string; externalId?: string; name?: string }
   | { externalId: string; name: string; workspaceId: string };
 
 export const updateChannel = async (props: Props) => {
   if ("id" in props) {
-    const { id, name } = props;
-    await client.query({
+    const { id, externalId, name } = props;
+
+    return await client.query({
       query: `
         ALTER TABLE channel
         UPDATE 
-          name = '${name}'
+          ${externalId ? `externalId = '${externalId}',` : ""}
+          ${name ? `name = '${name}',` : ""}
+          updatedAt = now()
         WHERE id = '${id}'
       `,
     });
   }
 
-  if ("externalId" in props) {
-    const { externalId, name, workspaceId } = props;
+  const { externalId, name, workspaceId } = props;
 
-    await client.query({
-      query: `
+  await client.query({
+    query: `
         ALTER TABLE channel
         UPDATE 
-          name = '${name}'
+          ${externalId ? `externalId = '${externalId}',` : ""}
+          ${name ? `name = '${name}',` : ""}
+          updatedAt = now()
         WHERE externalId = '${externalId}'
         AND workspaceId = '${workspaceId}'
       `,
-    });
-  }
+  });
 };
