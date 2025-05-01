@@ -33,16 +33,27 @@ export default async function Page({ searchParams }: Props) {
   }
 
   const data = await response.json();
-  const { access_token, scope } = data;
+  const {
+    access_token,
+    expires_in,
+    refresh_token,
+    refresh_token_expires_in,
+    scope,
+  } = data;
 
   const encryptedAccessToken = await encrypt(access_token);
+  const encryptedRefreshToken = await encrypt(refresh_token);
 
   await createIntegration({
     externalId: null,
     details: {
       source: "Github",
       accessToken: encryptedAccessToken.token,
-      iv: encryptedAccessToken.iv,
+      accessTokenIv: encryptedAccessToken.iv,
+      refreshToken: encryptedRefreshToken.token,
+      refreshTokenIv: encryptedRefreshToken.iv,
+      refreshTokenExpires: refresh_token_expires_in,
+      expiresIn: expires_in,
       installationId: installation_id,
       scope,
       repo: "",

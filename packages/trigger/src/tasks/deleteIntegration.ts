@@ -35,9 +35,12 @@ export const deleteIntegration = schemaTask({
 
     if (source === "Github") {
       const github = GithubIntegrationSchema.parse(integration);
-      const { accessToken, iv } = github.details;
+      const { accessToken, accessTokenIv } = github.details;
 
-      const decryptedToken = await decrypt({ accessToken, iv });
+      const decryptedToken = await decrypt({
+        accessToken,
+        iv: accessTokenIv,
+      });
       const octokit = new Octokit({ auth: decryptedToken });
 
       await listAndDeleteWebhooks({ octokit, github });
@@ -103,12 +106,16 @@ export const deleteIntegration = schemaTask({
           AND workspaceId = '${workspaceId}'
         );`,
     });
-    client.query({
-      query: `
+    try {
+      client.query({
+        query: `
         ALTER TABLE activityType DELETE 
         WHERE source = '${source}'
         AND workspaceId = '${workspaceId}'`,
-    });
+      });
+    } catch (error) {
+      console.error(error);
+    }
     client.query({
       query: `
         ALTER TABLE channel DELETE

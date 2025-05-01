@@ -45,8 +45,6 @@ const WebhookSchema = z.object({
 export async function POST(req: NextRequest) {
   const body = await req.json();
 
-  console.log(body);
-
   if (body.challenge) {
     return NextResponse.json({ challenge: body.challenge });
   }
@@ -89,8 +87,6 @@ export async function POST(req: NextRequest) {
 
   switch (type) {
     case "app_uninstalled": {
-      console.log("app_uninstalled", event);
-
       await updateIntegration({
         id: integration.id,
         status: "DISCONNECTED",

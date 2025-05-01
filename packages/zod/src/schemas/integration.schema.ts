@@ -49,15 +49,6 @@ export const DiscordDetailsSchema = z.object({
   permissions: z.string(),
 });
 
-export const LinkedInDetailsSchema = z.object({
-  source: z.literal("Linkedin"),
-  name: z.string(),
-  accessToken: z.string(),
-  iv: z.string(),
-  scopes: z.string(),
-  userId: z.string(),
-});
-
 export const LivestormDetailsSchema = z.object({
   source: z.literal("Livestorm"),
   name: z.string(),
@@ -74,7 +65,11 @@ export const GithubDetailsSchema = z.object({
   source: z.literal("Github"),
   repo: z.string(),
   accessToken: z.string(),
-  iv: z.string(),
+  accessTokenIv: z.string(),
+  refreshToken: z.string(),
+  refreshTokenIv: z.string(),
+  refreshTokenExpires: z.number(),
+  expiresIn: z.number(),
   installationId: z.coerce.number(),
   scope: z.string(),
   owner: z.string(),
@@ -83,7 +78,6 @@ export const GithubDetailsSchema = z.object({
 export const IntegrationDetailsSchema = z.discriminatedUnion("source", [
   DiscordDetailsSchema,
   DiscourseDetailsSchema,
-  LinkedInDetailsSchema,
   LivestormDetailsSchema,
   SlackDetailsSchema,
   GithubDetailsSchema,
@@ -101,10 +95,6 @@ export const DiscordIntegrationSchema = BaseSchema.extend({
   details: DiscordDetailsSchema,
 });
 
-export const LinkedInIntegrationSchema = BaseSchema.extend({
-  details: LinkedInDetailsSchema,
-});
-
 export const LivestormIntegrationSchema = BaseSchema.extend({
   details: LivestormDetailsSchema,
 });
@@ -117,7 +107,6 @@ export const IntegrationSchema = z.union([
   SlackIntegrationSchema,
   DiscourseIntegrationSchema,
   DiscordIntegrationSchema,
-  LinkedInIntegrationSchema,
   LivestormIntegrationSchema,
   GithubIntegrationSchema,
 ]);
@@ -127,6 +116,5 @@ export type IntegrationDetails = z.infer<typeof IntegrationDetailsSchema>;
 export type SlackIntegration = z.infer<typeof SlackIntegrationSchema>;
 export type DiscourseIntegration = z.infer<typeof DiscourseIntegrationSchema>;
 export type DiscordIntegration = z.infer<typeof DiscordIntegrationSchema>;
-export type LinkedInIntegration = z.infer<typeof LinkedInIntegrationSchema>;
 export type LivestormIntegration = z.infer<typeof LivestormIntegrationSchema>;
 export type GithubIntegration = z.infer<typeof GithubIntegrationSchema>;

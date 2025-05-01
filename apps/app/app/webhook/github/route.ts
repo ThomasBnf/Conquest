@@ -1,23 +1,10 @@
-import { createActivity } from "@conquest/clickhouse/activities/createActivity";
-import { deleteActivity } from "@conquest/clickhouse/activities/deleteActivity";
-import { getActivity } from "@conquest/clickhouse/activities/getActivity";
-import { updateActivity } from "@conquest/clickhouse/activities/updateActivity";
 import { prisma } from "@conquest/db/prisma";
-import { decrypt } from "@conquest/db/utils/decrypt";
 import { env } from "@conquest/env";
-import { createGithubMember } from "@conquest/trigger/github/createGithubMember";
+import { getRefreshToken } from "@conquest/trigger/github/getRefreshToken";
 import { GithubIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
-import {
-  IssueCommentEvent,
-  IssuesEvent,
-  PullRequestEvent,
-  Repository,
-  StarEvent,
-  WebhookEvent,
-} from "@octokit/webhooks-types";
+import { Repository, WebhookEvent } from "@octokit/webhooks-types";
 import { NextRequest, NextResponse } from "next/server";
 import { createHmac } from "node:crypto";
-import { Octokit } from "octokit";
 
 export async function POST(request: NextRequest) {
   const bodyRaw = await request.text();
@@ -25,235 +12,224 @@ export async function POST(request: NextRequest) {
   const body = JSON.parse(bodyRaw) as WebhookEvent;
   const type = headers.get("x-github-event");
 
-  console.dir(body, { depth: null });
-
   const github = await checkSignature(request, bodyRaw);
   if (!github) return NextResponse.json({ status: 200 });
 
-  console.log(github);
+  // const { details, workspaceId } = github;
+  // const { expiresIn, accessToken, accessTokenIv, repo } = details;
 
-  const { details, workspaceId } = github;
-  const { accessToken, iv, repo } = details;
+  // let token = accessToken;
 
-  const decryptedToken = await decrypt({ accessToken, iv });
+  // const expiresAt = new Date(expiresIn * 1000);
 
-  console.log(decryptedToken);
+  // if (expiresAt < new Date()) {
+  const newToken = await getRefreshToken({ github });
+  console.log("newToken", newToken);
+  // token = newToken;
+  // }
 
-  try {
-    const octokit = new Octokit({ auth: decryptedToken });
-    await octokit.rest.users.getAuthenticated(); // simple test
+  // const decryptedToken = await decrypt({ accessToken, iv: accessTokenIv });
+  // const octokit = new Octokit({ auth: decryptedToken });
 
-    console.log(octokit);
+  // try {
+  //   switch (type) {
+  //     case "star": {
+  //       const event = body as StarEvent;
+  //       const { sender, starred_at } = event;
+  //       const { id } = sender;
 
-    try {
-      switch (type) {
-        case "star": {
-          const event = body as StarEvent;
-          const { sender, starred_at } = event;
-          const { id } = sender;
+  //       if (!starred_at) return NextResponse.json({ status: 200 });
 
-          if (!starred_at) return NextResponse.json({ status: 200 });
+  //       const { member } = await createGithubMember({
+  //         octokit,
+  //         id,
+  //         createdAt: new Date(starred_at),
+  //         workspaceId,
+  //       });
 
-          const { member } = await createGithubMember({
-            octokit,
-            id,
-            createdAt: new Date(starred_at),
-            workspaceId,
-          });
+  //       if (!member) return NextResponse.json({ status: 200 });
 
-          if (!member) return NextResponse.json({ status: 200 });
+  //       await createActivity({
+  //         activityTypeKey: "github:star",
+  //         message: `Starred the repository ${repo}`,
+  //         memberId: member.id,
+  //         createdAt: new Date(starred_at),
+  //         updatedAt: new Date(starred_at),
+  //         source: "Github",
+  //         workspaceId,
+  //       });
 
-          await createActivity({
-            activityTypeKey: "github:star",
-            message: `Starred the repository ${repo}`,
-            memberId: member.id,
-            createdAt: new Date(starred_at),
-            updatedAt: new Date(starred_at),
-            source: "Github",
-            workspaceId,
-          });
+  //       break;
+  //     }
+  //     case "issues": {
+  //       const event = body as IssuesEvent;
+  //       const { action, sender, issue } = event;
+  //       const { number, title, body: message, created_at, updated_at } = issue;
+  //       const { id } = sender;
 
-          break;
-        }
-        case "issues": {
-          const event = body as IssuesEvent;
-          const { action, sender, issue } = event;
-          const {
-            number,
-            title,
-            body: message,
-            created_at,
-            updated_at,
-          } = issue;
-          const { id } = sender;
+  //       const { member } = await createGithubMember({
+  //         octokit,
+  //         id,
+  //         workspaceId,
+  //       });
 
-          const { member } = await createGithubMember({
-            octokit,
-            id,
-            workspaceId,
-          });
+  //       if (!member) return NextResponse.json({ status: 200 });
 
-          if (!member) return NextResponse.json({ status: 200 });
+  //       switch (action) {
+  //         case "opened": {
+  //           await createActivity({
+  //             externalId: String(number),
+  //             activityTypeKey: "github:issue",
+  //             title: `#${number} - ${title}`,
+  //             message: message ?? "",
+  //             memberId: member.id,
+  //             createdAt: new Date(created_at),
+  //             updatedAt: new Date(updated_at),
+  //             source: "Github",
+  //             workspaceId,
+  //           });
 
-          switch (action) {
-            case "opened": {
-              await createActivity({
-                externalId: String(number),
-                activityTypeKey: "github:issue",
-                title: `#${number} - ${title}`,
-                message: message ?? "",
-                memberId: member.id,
-                createdAt: new Date(created_at),
-                updatedAt: new Date(updated_at),
-                source: "Github",
-                workspaceId,
-              });
+  //           break;
+  //         }
+  //         case "edited": {
+  //           const activity = await getActivity({
+  //             externalId: String(number),
+  //             workspaceId,
+  //           });
 
-              break;
-            }
-            case "edited": {
-              const activity = await getActivity({
-                externalId: String(number),
-                workspaceId,
-              });
+  //           if (!activity) return NextResponse.json({ status: 200 });
 
-              if (!activity) return NextResponse.json({ status: 200 });
+  //           const { activityType, ...data } = activity;
 
-              const { activityType, ...data } = activity;
+  //           await updateActivity({
+  //             ...data,
+  //             title: `#${number} - ${title}`,
+  //             message: message ?? "",
+  //           });
 
-              await updateActivity({
-                ...data,
-                title: `#${number} - ${title}`,
-                message: message ?? "",
-              });
+  //           break;
+  //         }
+  //         case "deleted": {
+  //           await deleteActivity({
+  //             externalId: String(number),
+  //             workspaceId,
+  //           });
+  //         }
+  //       }
 
-              break;
-            }
-            case "deleted": {
-              await deleteActivity({
-                externalId: String(number),
-                workspaceId,
-              });
-            }
-          }
+  //       break;
+  //     }
+  //     case "pull_request": {
+  //       const event = body as PullRequestEvent;
+  //       const { action, sender, pull_request } = event;
+  //       const { number, title, body: message } = pull_request;
+  //       const { id } = sender;
 
-          break;
-        }
-        case "pull_request": {
-          const event = body as PullRequestEvent;
-          const { action, sender, pull_request } = event;
-          const { number, title, body: message } = pull_request;
-          const { id } = sender;
+  //       const { member } = await createGithubMember({
+  //         octokit,
+  //         id,
+  //         workspaceId,
+  //       });
 
-          const { member } = await createGithubMember({
-            octokit,
-            id,
-            workspaceId,
-          });
+  //       if (!member) return NextResponse.json({ status: 200 });
 
-          if (!member) return NextResponse.json({ status: 200 });
+  //       switch (action) {
+  //         case "opened": {
+  //           await createActivity({
+  //             activityTypeKey: "github:pr",
+  //             title: `#${number} - ${title}`,
+  //             message: message ?? "",
+  //             memberId: member.id,
+  //             source: "Github",
+  //             workspaceId,
+  //           });
 
-          switch (action) {
-            case "opened": {
-              await createActivity({
-                activityTypeKey: "github:pr",
-                title: `#${number} - ${title}`,
-                message: message ?? "",
-                memberId: member.id,
-                source: "Github",
-                workspaceId,
-              });
+  //           break;
+  //         }
+  //         case "edited": {
+  //           const activity = await getActivity({
+  //             externalId: String(number),
+  //             workspaceId,
+  //           });
 
-              break;
-            }
-            case "edited": {
-              const activity = await getActivity({
-                externalId: String(number),
-                workspaceId,
-              });
+  //           if (!activity) return NextResponse.json({ status: 200 });
 
-              if (!activity) return NextResponse.json({ status: 200 });
+  //           const { activityType, ...data } = activity;
 
-              const { activityType, ...data } = activity;
+  //           await updateActivity({
+  //             ...data,
+  //             title: `#${number} - ${title}`,
+  //             message: message ?? "",
+  //           });
 
-              await updateActivity({
-                ...data,
-                title: `#${number} - ${title}`,
-                message: message ?? "",
-              });
+  //           break;
+  //         }
+  //       }
 
-              break;
-            }
-          }
+  //       break;
+  //     }
+  //     case "issue_comment": {
+  //       const event = body as IssueCommentEvent;
+  //       const { action, sender, issue, comment } = event;
+  //       const { id: commentId, body: message } = comment;
+  //       const { number } = issue;
+  //       const { id } = sender;
 
-          break;
-        }
-        case "issue_comment": {
-          const event = body as IssueCommentEvent;
-          const { action, sender, issue, comment } = event;
-          const { id: commentId, body: message } = comment;
-          const { number } = issue;
-          const { id } = sender;
+  //       const { member } = await createGithubMember({
+  //         octokit,
+  //         id,
+  //         workspaceId,
+  //       });
 
-          const { member } = await createGithubMember({
-            octokit,
-            id,
-            workspaceId,
-          });
+  //       if (!member) return NextResponse.json({ status: 200 });
 
-          if (!member) return NextResponse.json({ status: 200 });
+  //       switch (action) {
+  //         case "created": {
+  //           await createActivity({
+  //             externalId: String(commentId),
+  //             activityTypeKey: "github:comment",
+  //             message,
+  //             memberId: member.id,
+  //             replyTo: String(number),
+  //             source: "Github",
+  //             workspaceId,
+  //           });
 
-          switch (action) {
-            case "created": {
-              await createActivity({
-                externalId: String(commentId),
-                activityTypeKey: "github:comment",
-                message,
-                memberId: member.id,
-                replyTo: String(number),
-                source: "Github",
-                workspaceId,
-              });
+  //           break;
+  //         }
+  //         case "edited": {
+  //           const activity = await getActivity({
+  //             externalId: String(commentId),
+  //             workspaceId,
+  //           });
 
-              break;
-            }
-            case "edited": {
-              const activity = await getActivity({
-                externalId: String(commentId),
-                workspaceId,
-              });
+  //           if (!activity) return NextResponse.json({ status: 200 });
 
-              if (!activity) return NextResponse.json({ status: 200 });
+  //           const { activityType, ...data } = activity;
 
-              const { activityType, ...data } = activity;
+  //           await updateActivity({
+  //             ...data,
+  //             message: message ?? "",
+  //           });
 
-              await updateActivity({
-                ...data,
-                message: message ?? "",
-              });
+  //           break;
+  //         }
+  //         case "deleted": {
+  //           console.log("deleted", event);
+  //           await deleteActivity({
+  //             externalId: String(commentId),
+  //             workspaceId,
+  //           });
+  //         }
+  //       }
 
-              break;
-            }
-            case "deleted": {
-              console.log("deleted", event);
-              await deleteActivity({
-                externalId: String(commentId),
-                workspaceId,
-              });
-            }
-          }
-
-          break;
-        }
-      }
-    } catch (error) {
-      console.error("error", error);
-      return NextResponse.json({ status: 200 });
-    }
-  } catch (err) {
-    console.error("Octokit authentication failed:", err);
-    return NextResponse.json({ status: 200 });
-  }
+  //       break;
+  //     }
+  //   }
+  // } catch (error) {
+  //   console.error("error", error);
+  //   return NextResponse.json({ status: 200 });
+  // }
 
   return NextResponse.json({ message: "Webhook received" });
 }

@@ -19,9 +19,9 @@ export const listRepositories = protectedProcedure.query(
     );
 
     const { details } = github;
-    const { accessToken, iv, installationId } = details;
+    const { accessToken, accessTokenIv, installationId } = details;
 
-    const token = await decrypt({ accessToken, iv });
+    const token = await decrypt({ accessToken, iv: accessTokenIv });
 
     const octokit = new Octokit({ auth: token });
 

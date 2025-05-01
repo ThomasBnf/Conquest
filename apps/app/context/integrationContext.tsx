@@ -12,8 +12,6 @@ import {
   type GithubIntegration,
   GithubIntegrationSchema,
   type Integration,
-  type LinkedInIntegration,
-  LinkedInIntegrationSchema,
   type LivestormIntegration,
   LivestormIntegrationSchema,
   type SlackIntegration,
@@ -26,7 +24,6 @@ type integrationContext = {
   discord: DiscordIntegration | null;
   discourse: DiscourseIntegration | null;
   github: GithubIntegration | null;
-  linkedin: LinkedInIntegration | null;
   livestorm: LivestormIntegration | null;
   slack: SlackIntegration | null;
   channels: Channel[] | undefined;
@@ -62,7 +59,6 @@ export const IntegrationProvider = ({
   let discord: DiscordIntegration | null = null;
   let discourse: DiscourseIntegration | null = null;
   let github: GithubIntegration | null = null;
-  let linkedin: LinkedInIntegration | null = null;
   let livestorm: LivestormIntegration | null = null;
   let slack: SlackIntegration | null = null;
 
@@ -80,9 +76,6 @@ export const IntegrationProvider = ({
         break;
       case "Github":
         github = GithubIntegrationSchema.parse(data);
-        break;
-      case "Linkedin":
-        linkedin = LinkedInIntegrationSchema.parse(data);
         break;
       case "Livestorm":
         livestorm = LivestormIntegrationSchema.parse(data);
@@ -117,7 +110,6 @@ export const IntegrationProvider = ({
         discord,
         discourse,
         github,
-        linkedin,
         livestorm,
         slack,
         channels,

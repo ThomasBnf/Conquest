@@ -91,8 +91,6 @@ export const PATCH = createZodRoute()
       updatedAt: new Date(),
     };
 
-    console.log(values);
-
     await client.insert({
       table: "member",
       values: [values],

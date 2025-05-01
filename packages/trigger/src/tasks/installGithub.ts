@@ -22,9 +22,9 @@ export const installGithub = schemaTask({
   }),
   run: async ({ github }) => {
     const { details, workspaceId } = github;
-    const { accessToken, iv } = details;
+    const { accessToken, accessTokenIv } = details;
 
-    const decryptedToken = await decrypt({ accessToken, iv });
+    const decryptedToken = await decrypt({ accessToken, iv: accessTokenIv });
     const octokit = new Octokit({ auth: decryptedToken });
 
     await createWebhook({ github, octokit });
