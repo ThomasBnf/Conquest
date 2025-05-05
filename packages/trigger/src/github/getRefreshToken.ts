@@ -32,6 +32,7 @@ export const getRefreshToken = async ({ github }: Props) => {
   });
 
   const data = await response.json();
+  console.log("data", data);
 
   const {
     access_token,
