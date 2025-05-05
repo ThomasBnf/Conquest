@@ -41,6 +41,8 @@ export default async function Page({ searchParams }: Props) {
     scope,
   } = data;
 
+  console.log("page connect", data);
+
   const encryptedAccessToken = await encrypt(access_token);
   const encryptedRefreshToken = await encrypt(refresh_token);
 
