@@ -23,7 +23,6 @@ export const checkDuplicates = schemaTask({
           FROM member m FINAL
           WHERE 
             m.primaryEmail != '' 
-            AND m.pulse > 0
             AND m.primaryEmail IS NOT NULL 
             AND length(trim(m.primaryEmail)) > 0 
             AND m.workspaceId = '${workspaceId}'
@@ -41,7 +40,6 @@ export const checkDuplicates = schemaTask({
           WHERE 
             m.firstName != ''
             AND m.lastName != ''
-            AND m.pulse > 0
             AND m.workspaceId = '${workspaceId}'
           GROUP BY m.firstName, m.lastName
           HAVING count(DISTINCT m.id) > 1
