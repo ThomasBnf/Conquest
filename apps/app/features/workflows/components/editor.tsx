@@ -1,6 +1,8 @@
 "use client";
 
+import { trpc } from "@/server/client";
 import { Button } from "@conquest/ui/button";
+import { NodeDataSchema } from "@conquest/zod/schemas/node.schema";
 import type { Workflow } from "@conquest/zod/schemas/workflow.schema";
 import {
   Background,
@@ -21,6 +23,7 @@ import {
 import "@xyflow/react/dist/style.css";
 import { Loader2, MousePointerClick } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { toast } from "sonner";
 import { usePanel } from "../hooks/usePanel";
 import { useSelected } from "../hooks/useSelected";
 import { CustomEdge } from "../nodes/custom-edge";
@@ -47,6 +50,15 @@ export const Editor = ({ workflow }: Props) => {
   const [running, setRunning] = useState(false);
   const [nodes, setNodes] = useNodesState<WorkflowNode>(workflow.nodes);
   const [edges, setEdges] = useEdgesState<Edge>(workflow.edges);
+
+  const { mutateAsync: updateWorkflow } = trpc.workflows.update.useMutation({
+    onSuccess: () => {
+      toast.success("Workflow updated");
+    },
+    onError: (error) => {
+      toast.error(error.message);
+    },
+  });
 
   const nodeTypes = useMemo(() => {
     return {
@@ -99,9 +111,8 @@ export const Editor = ({ workflow }: Props) => {
             case "replace": {
               const { item } = change;
 
-              updateNodeData(item.id, item.data);
-
               setTimeout(() => {
+                updateNodeData(item.id, item.data);
                 setPanel("node");
                 setSelected(item);
                 onSave();
@@ -175,19 +186,21 @@ export const Editor = ({ workflow }: Props) => {
   );
 
   const onSave = async () => {
-    // updateWorkflow({
-    //   id: workflow.id,
-    //   nodes: toObject().nodes.map((node) => {
-    //     const nodeData = NodeDataSchema.or(NodeDataLoopSchema).parse(node.data);
-    //     return {
-    //       id: node.id,
-    //       type: "custom",
-    //       position: node.position,
-    //       data: nodeData,
-    //     };
-    //   }) as Node[],
-    //   edges: toObject().edges,
-    // });
+    const nodes = toObject().nodes.map((node) => {
+      const nodeData = NodeDataSchema.parse(node.data);
+      return {
+        id: node.id,
+        type: "custom" as const,
+        position: node.position,
+        data: nodeData,
+      };
+    });
+
+    updateWorkflow({
+      id: workflow.id,
+      nodes,
+      edges: toObject().edges,
+    });
   };
 
   const hasEdges = useMemo(() => {

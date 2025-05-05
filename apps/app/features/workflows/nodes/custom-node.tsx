@@ -1,5 +1,4 @@
 import { Icon } from "@/components/custom/Icon";
-import { Badge } from "@conquest/ui/badge";
 import { Button } from "@conquest/ui/button";
 import { cn } from "@conquest/ui/cn";
 import { Slack } from "@conquest/ui/icons/Slack";
@@ -25,7 +24,7 @@ export const CustomNode = ({ hasEdges, ...props }: Props) => {
 
   if (!node) return;
 
-  const { category, icon, label, description } = node.data;
+  const { icon, label, description } = node.data;
   const isTrigger = useMemo(() => "isTrigger" in node.data, [node]);
   const isLoop = useMemo(() => node.data.type === "loop", [node]);
 
@@ -67,9 +66,6 @@ export const CustomNode = ({ hasEdges, ...props }: Props) => {
             )}
           </div>
           <p className="font-medium">{label}</p>
-          <Badge variant="secondary" className="ml-auto">
-            {category}
-          </Badge>
         </div>
         <Separator className="my-3" />
         <p className="line-clamp-1 text-muted-foreground">

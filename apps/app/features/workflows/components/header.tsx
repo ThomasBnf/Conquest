@@ -1,5 +1,6 @@
 "use client";
 
+import { trpc } from "@/server/client";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -11,9 +12,8 @@ import {
 import { Form, FormControl, FormField, FormItem } from "@conquest/ui/form";
 import { Input } from "@conquest/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useQueryClient } from "@tanstack/react-query";
-import { useSession } from "next-auth/react";
 import Link from "next/link";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import {
   type FormName,
@@ -21,37 +21,25 @@ import {
 } from "../panels/schemas/form-name.schema";
 
 type Props = {
-  workflow_id: string;
+  slug: string;
+  workflowId: string;
 };
 
-export const Header = ({ workflow_id }: Props) => {
-  const { data: session } = useSession();
-  const { slug } = session?.user.workspace ?? {};
-  const queryClient = useQueryClient();
-
-  // const { data: workflow } = getWorkflow({ workflow_id });
-
-  // const { mutate } = useMutation({
-  //   mutationFn: updateWorkflow,
-  //   onSuccess: () => {
-  //     queryClient.refetchQueries({ queryKey: ["workflow", workflow_id] });
-  //   },
-  // });
+export const Header = ({ slug, workflowId }: Props) => {
+  const { data: workflow } = trpc.workflows.get.useQuery({ id: workflowId });
 
   const form = useForm<FormName>({
     resolver: zodResolver(FormNameSchema),
-    // defaultValues: {
-    //   name: workflow?.name,
-    // },
+    defaultValues: {
+      name: workflow?.name,
+    },
   });
 
-  const onSubmit = async ({ name }: FormName) => {
-    // mutate({ id: workflow_id, name });
-  };
+  const onSubmit = async ({ name }: FormName) => {};
 
-  // useEffect(() => {
-  //   form.setValue("name", workflow?.name ?? "");
-  // }, [workflow]);
+  useEffect(() => {
+    form.setValue("name", workflow?.name ?? "");
+  }, [workflow]);
 
   return (
     <div className="flex h-12 shrink-0 items-center justify-between gap-2 px-4">

@@ -33,13 +33,11 @@ export const NodeBaseDataSchema = z.object({
 
 export const NodeMemberCreatedSchema = NodeBaseDataSchema.extend({
   type: z.literal("member-created"),
-  category: z.literal("members"),
   isTrigger: z.boolean().default(true),
 });
 
 export const NodeRecurringSchema = NodeBaseDataSchema.extend({
   type: z.literal("recurring-workflow"),
-  category: z.literal("utilities"),
   frequency: FrequencySchema,
   repeat_on: z.array(RepeatOnSchema),
   time: z.string().regex(/^([01]?[0-9]|2[0-3]):[0-5][0-9]$/, {
@@ -50,7 +48,6 @@ export const NodeRecurringSchema = NodeBaseDataSchema.extend({
 
 export const NodeManualRunSchema = NodeBaseDataSchema.extend({
   type: z.literal("manual-run"),
-  category: z.literal("utilities"),
   isTrigger: z.boolean().default(true),
 });
 

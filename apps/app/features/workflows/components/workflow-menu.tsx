@@ -1,6 +1,7 @@
 "use client";
 
 import { AlertDialog } from "@/components/custom/alert-dialog";
+import { trpc } from "@/server/client";
 import { Button } from "@conquest/ui/button";
 import {
   DropdownMenu,
@@ -19,25 +20,32 @@ type Props = {
 
 export const WorkflowMenu = ({ workflow }: Props) => {
   const [open, setOpen] = useState(false);
+  const utils = trpc.useUtils();
+
+  const { mutateAsync } = trpc.workflows.delete.useMutation({
+    onSuccess: () => {
+      toast.success("Workflow deleted");
+      utils.workflows.list.invalidate();
+    },
+    onError: (error) => {
+      toast.error(error.message);
+    },
+  });
 
   const handleDelete = async () => {
     if (!workflow) return;
-
-    // const rWorkflow = await deleteWorkflow({ id: workflow.id });
-    // const error = rWorkflow?.serverError;
-
-    // if (error) return toast.error(error);
+    await mutateAsync({ id: workflow.id });
   };
 
   return (
     <>
-      {/* <AlertDialog
+      <AlertDialog
         title="Delete workflow"
         description="Are you sure you want to delete this workflow?"
         onConfirm={handleDelete}
         open={open}
         setOpen={setOpen}
-      /> */}
+      />
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="outline" size="icon">

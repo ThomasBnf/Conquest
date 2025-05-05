@@ -58,6 +58,13 @@ export const AppSidebar = ({ workspace }: Props) => {
       href: `/${slug}/companies`,
       isActive: pathname.startsWith(`/${slug}/companies`),
     },
+    // {
+    //   label: "Workflows",
+    //   icon: <Workflows size={18} />,
+    //   href: `/${slug}/workflows`,
+    //   isActive: pathname.startsWith(`/${slug}/workflows`),
+    //   isBeta: true,
+    // },
   ];
 
   const footer = [
@@ -99,6 +106,7 @@ export const AppSidebar = ({ workspace }: Props) => {
                   <Link href={route.href} prefetch>
                     {route.icon}
                     <span>{route.label}</span>
+                    {/* {route.isBeta && <Badge variant="secondary">Beta</Badge>} */}
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>

@@ -30,7 +30,7 @@ export const TriggerPanel = () => {
   };
 
   return (
-    <ScrollArea className="flex-1 p-6">
+    <ScrollArea className="flex-1 p-4">
       <div>
         <Label>Triggers</Label>
         <p className="text-muted-foreground">
@@ -38,34 +38,22 @@ export const TriggerPanel = () => {
         </p>
       </div>
       <div className="mt-2 flex flex-col gap-1">
-        {nodes.categories.map((category) => {
-          return (
-            <div key={category.label} className="mt-2">
-              <Label>{category.label}</Label>
-              <div className="mt-1 flex flex-col gap-1">
-                {category.nodes.map((node) => {
-                  const { data } = node;
+        {nodes.map((node) => {
+          const { data } = node;
 
-                  return (
-                    <Button
-                      key={node.id}
-                      variant="outline"
-                      size="default"
-                      className="px-2"
-                      onClick={() => onClick(node)}
-                    >
-                      <div className="rounded-md border p-1">
-                        <Icon
-                          name={data.icon as keyof typeof icons}
-                          size={16}
-                        />
-                      </div>
-                      <p className="font-medium">{data.label}</p>
-                    </Button>
-                  );
-                })}
+          return (
+            <Button
+              key={node.id}
+              variant="outline"
+              size="default"
+              className="justify-start px-1.5"
+              onClick={() => onClick(node)}
+            >
+              <div className="rounded-md border bg-background p-1">
+                <Icon name={data.icon as keyof typeof icons} size={16} />
               </div>
-            </div>
+              <p>{data.label}</p>
+            </Button>
           );
         })}
       </div>
@@ -73,64 +61,18 @@ export const TriggerPanel = () => {
   );
 };
 
-export const nodes: {
-  categories: {
-    label: string;
-    nodes: WorkflowNode[];
-  }[];
-} = {
-  categories: [
-    {
-      label: "Members",
-      nodes: [
-        {
-          id: uuid(),
-          type: "custom",
-          position: { x: 0, y: 0 },
-          data: {
-            icon: "User",
-            label: "Member created",
-            description: "Trigger a workflow when a member is created",
-            type: "member-created",
-            category: "members",
-            isTrigger: true,
-          },
-        },
-      ],
+export const nodes = [
+  {
+    id: uuid(),
+    type: "custom",
+    position: { x: 0, y: 0 },
+    data: {
+      icon: "User",
+      label: "Member created",
+      description: "Trigger a workflow when a member is created",
+      type: "member-created" as const,
+      category: "members" as const,
+      isTrigger: true,
     },
-    {
-      label: "Utilities",
-      nodes: [
-        {
-          id: uuid(),
-          type: "custom",
-          position: { x: 0, y: 0 },
-          data: {
-            icon: "Calendar",
-            label: "Recurring Workflow",
-            description: "Trigger a recurring workflow",
-            type: "recurring-workflow",
-            category: "utilities",
-            frequency: "daily",
-            repeat_on: ["monday"],
-            time: "06:00",
-            isTrigger: true,
-          },
-        },
-        {
-          id: uuid(),
-          type: "custom",
-          position: { x: 0, y: 0 },
-          data: {
-            icon: "MousePointerClick",
-            label: "Manual run",
-            description: "Trigger a workflow manually",
-            type: "manual-run",
-            category: "utilities",
-            isTrigger: true,
-          },
-        },
-      ],
-    },
-  ],
-};
+  },
+];

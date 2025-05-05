@@ -1,5 +1,5 @@
 import { Icon } from "@/components/custom/Icon";
-import { Badge } from "@conquest/ui/badge";
+import { DeleteDialog } from "@/components/custom/delete-dialog";
 import { Button } from "@conquest/ui/button";
 import { Slack } from "@conquest/ui/icons/Slack";
 import { ScrollArea } from "@conquest/ui/scroll-area";
@@ -27,7 +27,7 @@ export const OptionsPanel = () => {
 
   if (!selected) return;
 
-  const { type, icon, category, label } = selected.data;
+  const { type, icon, label } = selected.data;
   const isTrigger = "isTrigger" in selected.data;
 
   const onDelete = async () => {
@@ -40,7 +40,8 @@ export const OptionsPanel = () => {
 
     setSelected(undefined);
     setPanel("workflow");
-    return toast.success("Node deleted");
+    toast.success("Node deleted");
+    return;
   };
 
   return (
@@ -49,7 +50,7 @@ export const OptionsPanel = () => {
       {panel === "triggers" && <TriggerPanel />}
       {panel === "node" && (
         <ScrollArea className="flex-1">
-          <div className="flex flex-col gap-4 p-6">
+          <div className="flex flex-col gap-4 p-4">
             <div className="flex justify-between gap-2">
               <div className="flex items-center gap-2">
                 {icon === "Slack" ? (
@@ -61,10 +62,7 @@ export const OptionsPanel = () => {
                     className="rounded-md border p-2.5"
                   />
                 )}
-                <div className="space-y-1">
-                  <Badge variant="secondary">{category}</Badge>
-                  <p className="font-medium">{label}</p>
-                </div>
+                <p className="font-medium text-sm">{label}</p>
               </div>
               <Button
                 variant="outline"
@@ -88,7 +86,7 @@ export const OptionsPanel = () => {
           </div>
         </ScrollArea>
       )}
-      {/* {panel === "node" && !isTrigger && (
+      {panel === "node" && !isTrigger && (
         <div className="flex shrink-0 justify-end p-4">
           <DeleteDialog
             title="Delete Workflow"
@@ -96,7 +94,7 @@ export const OptionsPanel = () => {
             onConfirm={onDelete}
           />
         </div>
-      )} */}
+      )}
     </div>
   );
 };

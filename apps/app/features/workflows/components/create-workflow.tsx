@@ -1,31 +1,39 @@
 "use client";
 
+import { trpc } from "@/server/client";
 import { Button } from "@conquest/ui/button";
 import { Loader2, Plus } from "lucide-react";
-import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { toast } from "sonner";
 
-export const CreateWorkflow = () => {
-  const { data: session } = useSession();
-  const { slug } = session?.user.workspace ?? {};
+type Props = {
+  slug: string;
+};
+
+export const CreateWorkflow = ({ slug }: Props) => {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const utils = trpc.useUtils();
+
+  const { mutateAsync } = trpc.workflows.post.useMutation({
+    onSuccess: ({ id }) => {
+      utils.workflows.list.invalidate();
+      router.push(`/${slug}/workflows/${id}`);
+    },
+    onError: (error) => {
+      toast.error(error.message);
+      setLoading(false);
+    },
+  });
 
   const handleCreateWorkflow = async () => {
-    // setLoading(true);
-    // const rWorkflow = await createWorkflow();
-    // const error = rWorkflow?.serverError;
-    // const workflow = rWorkflow?.data;
-    // if (error) {
-    //   setLoading(false);
-    //   return toast.error(error);
-    // }
-    // router.push(`/${slug}/workflows/${workflow?.id}`);
+    setLoading(true);
+    await mutateAsync();
   };
 
   return (
-    <Button onClick={handleCreateWorkflow}>
+    <Button onClick={handleCreateWorkflow} disabled={loading}>
       {loading ? (
         <Loader2 className="size-4 animate-spin" />
       ) : (

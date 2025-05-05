@@ -14,7 +14,6 @@ import { integrationsRouter } from "./integrations/router";
 import { levelsRouter } from "./levels/router";
 import { listsRouter } from "./lists/router";
 import { logsRouter } from "./logs/router";
-import { userInWorkspaceRouter } from "./userInWorkspace/router";
 import { membersRouter } from "./members/router";
 import { profilesRouter } from "./profiles/router";
 import { slackRouter } from "./slack/router";
@@ -22,7 +21,9 @@ import { stripeRouter } from "./stripe/router";
 import { tagsRouter } from "./tags/router";
 import { teamRouter } from "./team/router";
 import { router } from "./trpc";
+import { userInWorkspaceRouter } from "./userInWorkspace/router";
 import { usersRouter } from "./users/router";
+import { workflowsRouter } from "./workflows/route";
 import { workspacesRouter } from "./workspaces/router";
 
 export const appRouter = router({
@@ -50,6 +51,7 @@ export const appRouter = router({
   tags: tagsRouter,
   team: teamRouter,
   users: usersRouter,
+  workflows: workflowsRouter,
   workspaces: workspacesRouter,
 });
 
