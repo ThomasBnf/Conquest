@@ -8,6 +8,7 @@ import { ActivityMenu } from "./activity-menu";
 import { DiscordMessage } from "./discord/discord-message";
 import { DiscordReaction } from "./discord/discord-reaction";
 import { DiscordReply } from "./discord/discord-reply";
+import { DiscordReplyThread } from "./discord/discord-reply-thread";
 import { DiscordThread } from "./discord/discord-thread";
 import { DiscourseInvite } from "./discourse/discourse-invite";
 import { DiscourseLogin } from "./discourse/discourse-login";
@@ -48,7 +49,7 @@ export const ActivityParser = ({ activity }: Props) => {
       return <DiscordThread activity={activity} member={member} />;
     }
     case "discord:reply_thread": {
-      return <DiscordReply activity={activity} member={member} isThread />;
+      return <DiscordReplyThread activity={activity} member={member} />;
     }
     case "discord:message": {
       return <DiscordMessage activity={activity} member={member} />;

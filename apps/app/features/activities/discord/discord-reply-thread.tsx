@@ -14,19 +14,19 @@ type Props = {
   member: Member | null | undefined;
 };
 
-export const DiscordThread = ({ activity, member }: Props) => {
+export const DiscordReplyThread = ({ activity, member }: Props) => {
   const { discord } = useIntegration();
   const { externalId: guildId } = discord ?? {};
-  const { title, message, channelId, createdAt } = activity;
+  const { externalId, message, replyTo, createdAt } = activity;
   const { source } = activity.activityType;
 
   const { avatarUrl, firstName, lastName } = member ?? {};
 
-  const { data: channel } = trpc.channels.get.useQuery(
-    channelId ? { id: channelId } : skipToken,
+  const { data: thread } = trpc.activities.get.useQuery(
+    replyTo ? { externalId: replyTo } : skipToken,
   );
 
-  const href = `https://discord.com/channels/${guildId}/${activity.externalId}`;
+  const href = `https://discord.com/channels/${guildId}/${replyTo}/${externalId}`;
 
   return (
     <div>
@@ -43,10 +43,10 @@ export const DiscordThread = ({ activity, member }: Props) => {
             <span className="font-medium text-foreground">
               {firstName} {lastName}
             </span>{" "}
-            created a thread
+            replied in thread
             <span className="font-medium text-foreground">
               {" "}
-              in #{channel?.name}
+              in #{thread?.title}
             </span>
           </p>
           <SourceBadge source={source} transparent onlyIcon />
@@ -55,7 +55,6 @@ export const DiscordThread = ({ activity, member }: Props) => {
         <ActivityMenu activity={activity} href={href} />
       </div>
       <div className="mt-2 ml-7 rounded-md border p-3">
-        <p className="font-semibold">{title}</p>
         <ReactMarkdown className="whitespace-pre-wrap break-words">
           {message}
         </ReactMarkdown>

@@ -3,6 +3,14 @@ import { client } from "../client";
 
 type Props = Activity;
 
+const escapeValue = (value: unknown): string => {
+  if (value === null || value === undefined) return "NULL";
+  if (typeof value === "number" || typeof value === "boolean")
+    return String(value);
+  if (value instanceof Date) return `'${value.toISOString()}'`;
+  return `'${String(value).replace(/'/g, "''")}'`;
+};
+
 export const updateActivity = async ({
   id,
   externalId,
@@ -12,7 +20,7 @@ export const updateActivity = async ({
   ...data
 }: Props) => {
   const values = Object.entries(data)
-    .map(([key, value]) => `${key} = '${value}'`)
+    .map(([key, value]) => `${key} = ${escapeValue(value)}`)
     .join(", ");
 
   await client.query({
@@ -21,5 +29,6 @@ export const updateActivity = async ({
       UPDATE ${values}, updatedAt = now()
       WHERE id = '${id}' 
     `,
+    format: "JSON",
   });
 };

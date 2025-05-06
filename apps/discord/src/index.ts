@@ -273,6 +273,7 @@ client.on(Events.ChannelDelete, async (channel) => {
 });
 
 client.on(Events.MessageCreate, async (message) => {
+  console.log("MessageCreate", message);
   const { id, channelId, guildId, type, content, author, reference } = message;
   const { id: externalId } = author;
 
@@ -294,86 +295,118 @@ client.on(Events.MessageCreate, async (message) => {
 
   const channel = await getChannel({ externalId: channelId, workspaceId });
 
-  if (!channel) {
-    await sleep(2000);
-
-    const activity = await getActivity({
+  if (type === 4) {
+    //CHANNEL NAME CHANGED
+    const activityWithType = await getActivity({
       externalId: channelId,
       workspaceId,
     });
 
-    if (activity && activity.message === "") {
-      const result = await getActivityTypeByKey({
-        key: "discord:thread",
+    if (!activityWithType) return;
+
+    const { activityType, ...activity } = activityWithType;
+
+    return await updateActivity({
+      ...activity,
+      title: content,
+    });
+  }
+
+  if (type === 19 && reference) {
+    //REPLY
+    const channel = await getChannel({ externalId: channelId, workspaceId });
+
+    if (!channel) {
+      const thread = client.channels.cache.get(channelId);
+      const isThread = thread?.isThread();
+
+      if (!isThread) return;
+
+      const { parentId } = thread;
+
+      if (!parentId) return;
+
+      const channel = await getChannel({ externalId: parentId, workspaceId });
+
+      return await createActivity({
+        externalId: id,
+        activityTypeKey: "discord:reply_thread",
+        message: content,
+        replyTo: thread.id,
+        memberId: profile.memberId,
+        channelId: channel?.id,
+        source: "Discord",
         workspaceId,
       });
-
-      if (!result) return;
-
-      const { activityType, ...data } = activity;
-
-      try {
-        return await updateActivity({
-          ...data,
-          activityTypeId: activityType.id,
-          message: content,
-        });
-      } catch (error) {
-        console.error("ThreadFirstMessage", error);
-      }
     }
 
-    try {
-      await createActivity({
+    return await createActivity({
+      externalId: id,
+      activityTypeKey: "discord:reply",
+      message: content,
+      replyTo: reference.messageId,
+      memberId: profile.memberId,
+      channelId: channel?.id,
+      source: "Discord",
+      workspaceId,
+    });
+  }
+
+  if (!channel) {
+    //REPLY IN THREAD
+
+    await sleep(2000);
+
+    const activityWithType = await getActivity({
+      externalId: id,
+      workspaceId,
+    });
+
+    if (!activityWithType) {
+      const thread = client.channels.cache.get(channelId);
+      const isThread = thread?.isThread();
+
+      if (!isThread) return;
+
+      const { parentId } = thread;
+
+      if (!parentId) return;
+
+      const channel = await getChannel({ externalId: parentId, workspaceId });
+
+      return await createActivity({
         externalId: id,
         activityTypeKey: "discord:reply_thread",
         message: content,
         replyTo: channelId,
         memberId: profile.memberId,
-        channelId: activity?.channelId,
+        channelId: channel?.id,
         source: "Discord",
         workspaceId,
       });
-    } catch (error) {
-      console.error("ThreadReply", error);
     }
+
+    const { activityType, ...activity } = activityWithType;
+
+    return await updateActivity({
+      ...activity,
+      message: content,
+    });
   }
 
-  if (type === 0 && channel) {
-    try {
-      await createActivity({
-        externalId: id,
-        activityTypeKey: "discord:message",
-        message: content,
-        memberId: profile.memberId,
-        channelId: channel.id,
-        source: "Discord",
-        workspaceId,
-      });
-    } catch (error) {
-      console.error("MessageCreate", type, error);
-    }
-  }
-
-  if (type === 19 && channel) {
-    try {
-      await createActivity({
-        externalId: id,
-        activityTypeKey: "discord:reply",
-        message: content,
-        replyTo: reference?.messageId,
-        memberId: profile.memberId,
-        channelId: channel.id,
-        source: "Discord",
-        workspaceId,
-      });
-    } catch (error) {
-      console.error("MessageCreate", type, error);
-    }
-  }
+  await createActivity({
+    externalId: id,
+    activityTypeKey: "discord:message",
+    message: content,
+    memberId: profile.memberId,
+    channelId: channel?.id,
+    source: "Discord",
+    workspaceId,
+  });
 });
 
 client.on(Events.MessageUpdate, async (message) => {
+  console.log("MessageUpdate", message);
   const { id, guildId, reactions } = message;
   const { message: updatedMessage } = reactions;
   const { content } = updatedMessage;
@@ -407,8 +440,7 @@ client.on(Events.MessageUpdate, async (message) => {
 });
 
 client.on(Events.MessageDelete, async (message) => {
-  const { id, guildId, author } = message;
-  const { id: externalId } = author ?? {};
+  const { id, guildId } = message;
 
   if (!guildId) return;
 
@@ -419,28 +451,10 @@ client.on(Events.MessageDelete, async (message) => {
   if (!integration) return;
   const { workspaceId } = integration;
 
-  if (!externalId) return;
-
-  const profile = await getProfile({
-    externalId,
-    workspaceId,
-  });
-
-  if (!profile) return;
-
   try {
     await deleteActivity({
       externalId: id,
       workspaceId,
-    });
-
-    await clickhouseClient.query({
-      query: `
-        ALTER TABLE activity
-        DELETE WHERE reactTo = '${id}'
-        OR replyTo = '${id}'
-        AND workspaceId = '${workspaceId}'
-      `,
     });
   } catch (error) {
     console.error("MessageDelete", error);
@@ -448,44 +462,60 @@ client.on(Events.MessageDelete, async (message) => {
 });
 
 client.on(Events.ThreadCreate, async (thread) => {
-  const { id, parentId, guildId, name, ownerId } = thread;
-
-  if (!guildId || !parentId) return;
+  const { id, name, guildId, ownerId, parentId } = thread;
 
   const integration = await getIntegration({
     externalId: guildId,
   });
 
   if (!integration) return;
+
   const { workspaceId } = integration;
+
+  const activityWithType = await getActivity({
+    externalId: id,
+    workspaceId,
+  });
+
+  if (activityWithType) {
+    const { activityType, ...activity } = activityWithType;
+
+    const newActivityType = await getActivityTypeByKey({
+      key: "discord:thread",
+      workspaceId,
+    });
+
+    if (!newActivityType) return;
+
+    return await updateActivity({
+      ...activity,
+      title: name,
+      activityTypeId: newActivityType?.id,
+    });
+  }
 
   const profile = await getProfile({
     externalId: ownerId,
     workspaceId,
   });
-  if (!profile) return;
+
+  if (!profile || !parentId) return;
 
   const channel = await getChannel({ externalId: parentId, workspaceId });
-  if (!channel) return;
 
-  try {
-    await createActivity({
-      externalId: id,
-      activityTypeKey: "discord:thread",
-      title: name,
-      message: "",
-      memberId: profile.memberId,
-      channelId: channel.id,
-      source: "Discord",
-      workspaceId,
-    });
-  } catch (error) {
-    console.error("ThreadCreate", error);
-  }
+  await createActivity({
+    externalId: id,
+    activityTypeKey: "discord:thread",
+    title: name,
+    memberId: profile.memberId,
+    channelId: channel?.id,
+    source: "Discord",
+    workspaceId,
+  });
 });
 
 client.on(Events.ThreadDelete, async (thread) => {
-  const { id, guildId, ownerId } = thread;
+  const { id, guildId } = thread;
 
   const integration = await getIntegration({
     externalId: guildId,
@@ -493,12 +523,6 @@ client.on(Events.ThreadDelete, async (thread) => {
 
   if (!integration) return;
   const { workspaceId } = integration;
-
-  const profile = await getProfile({
-    externalId: ownerId,
-    workspaceId,
-  });
-  if (!profile) return;
 
   try {
     const result = await clickhouseClient.query({

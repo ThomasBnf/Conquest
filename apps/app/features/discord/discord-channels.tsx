@@ -85,7 +85,7 @@ export const DiscordChannels = () => {
           <p className="text-muted-foreground">
             ⚠️ If missing channels, please check our documentation.
           </p>
-          <IconDoc url="https://docs.conquest.com/discord#missing-channels" />
+          <IconDoc url="https://docs.useconquest.com/integrations/discord#missing-channels" />
         </div>
       </div>
       <Button

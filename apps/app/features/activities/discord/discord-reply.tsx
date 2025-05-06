@@ -12,13 +12,12 @@ import { ActivityMenu } from "../activity-menu";
 type Props = {
   activity: ActivityWithType;
   member: Member | null | undefined;
-  isThread?: boolean;
 };
 
-export const DiscordReply = ({ activity, member, isThread }: Props) => {
+export const DiscordReply = ({ activity, member }: Props) => {
   const { discord } = useIntegration();
   const { externalId: guildId } = discord ?? {};
-  const { externalId, message, replyTo, channelId, createdAt } = activity;
+  const { externalId, message, channelId, createdAt } = activity;
   const { source } = activity.activityType;
 
   const { avatarUrl, firstName, lastName } = member ?? {};
@@ -27,9 +26,7 @@ export const DiscordReply = ({ activity, member, isThread }: Props) => {
     channelId ? { id: channelId } : skipToken,
   );
 
-  const href = isThread
-    ? `https://discord.com/channels/${guildId}/${replyTo}/${externalId}`
-    : `https://discord.com/channels/${guildId}/${channel?.externalId}/${externalId}`;
+  const href = `https://discord.com/channels/${guildId}/${channel?.externalId}/${externalId}`;
 
   return (
     <div>
@@ -46,7 +43,7 @@ export const DiscordReply = ({ activity, member, isThread }: Props) => {
             <span className="font-medium text-foreground">
               {firstName} {lastName}
             </span>{" "}
-            {isThread ? "replied in thread" : "replied"}
+            replied
             <span className="font-medium text-foreground">
               {" "}
               in #{channel?.name}
