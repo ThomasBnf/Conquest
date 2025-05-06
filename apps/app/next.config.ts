@@ -4,6 +4,7 @@ import { env } from "node:process";
 
 const nextConfig: NextConfig = {
   reactStrictMode: false,
+  allowedDevOrigins: ["conquest.ngrok.app", "app.useconquest.com"],
 };
 
 export default withSentryConfig(nextConfig, {

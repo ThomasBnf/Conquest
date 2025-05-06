@@ -8,7 +8,7 @@ import { updateList } from "./updateList";
 export const listsRouter = router({
   list: listLists,
   post: createList,
-  put: updateList,
+  update: updateList,
   get: getList,
   delete: deleteList,
 });

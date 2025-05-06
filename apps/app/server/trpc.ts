@@ -28,9 +28,11 @@ export const publicProcedure = t.procedure;
 const middleware = t.middleware(async ({ ctx, next }) => {
   if (!ctx.session?.user?.id) throw new TRPCError({ code: "UNAUTHORIZED" });
 
-  const user = UserWithWorkspaceSchema.parse(ctx.session?.user);
-
-  return next({ ctx: { user } });
+  return next({
+    ctx: {
+      user: UserWithWorkspaceSchema.parse(ctx.session?.user),
+    },
+  });
 });
 
 const sentryMiddleware = t.middleware(

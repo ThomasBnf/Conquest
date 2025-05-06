@@ -25,7 +25,7 @@ export const SidebarLists = () => {
   return (
     <SidebarGroup>
       <SidebarMenu>
-        <SidebarMenuItem className="flex h-6 items-center justify-between pl-0.5">
+        <SidebarMenuItem className="flex h-6 items-center justify-between pr-[5px] pl-0.5">
           <p className="text-muted-foreground text-xs">Lists</p>
           {lists && lists?.length > 0 && (
             <Button

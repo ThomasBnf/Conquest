@@ -34,7 +34,7 @@ type Props = {
 export const EditListDialog = ({ list, open, setOpen }: Props) => {
   const utils = trpc.useUtils();
 
-  const { mutateAsync, isPending } = trpc.lists.put.useMutation({
+  const { mutateAsync, isPending } = trpc.lists.update.useMutation({
     onSuccess: () => {
       utils.lists.get.invalidate({ id: list.id });
       utils.lists.list.invalidate();

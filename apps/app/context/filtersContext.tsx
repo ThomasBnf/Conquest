@@ -7,6 +7,7 @@ import {
   GroupFiltersSchema,
 } from "@conquest/zod/schemas/filters.schema";
 import { useSession } from "next-auth/react";
+import { usePathname } from "next/navigation";
 import { createContext, useContext, useState } from "react";
 
 type filtersContext = {
@@ -30,6 +31,11 @@ export const FiltersProvider = ({ initialGroupFilters, children }: Props) => {
   const { user } = session ?? {};
   const { membersPreferences } = user ?? {};
 
+  const utils = trpc.useUtils();
+  const pathname = usePathname();
+  const isListPage = pathname.includes("lists");
+  const listId = pathname.split("/").pop();
+
   const [groupFilters, setGroupFilters] = useState<GroupFilters>(
     initialGroupFilters ??
       membersPreferences?.groupFilters ?? {
@@ -42,6 +48,13 @@ export const FiltersProvider = ({ initialGroupFilters, children }: Props) => {
     onSuccess: () => update(),
   });
 
+  const { mutateAsync: updateList } = trpc.lists.update.useMutation({
+    onSuccess: () => {
+      update();
+      utils.lists.get.invalidate({ id: listId });
+    },
+  });
+
   const onAddFilter = async (filter: Filter) => {
     if (!user?.id) return;
 
@@ -50,15 +63,7 @@ export const FiltersProvider = ({ initialGroupFilters, children }: Props) => {
         ...prev,
         filters: [...prev.filters, filter],
       });
-
-      mutateAsync({
-        id: user.id,
-        membersPreferences: {
-          ...user.membersPreferences,
-          groupFilters: newGroupFilters,
-        },
-      });
-
+      saveFilters(newGroupFilters);
       return newGroupFilters;
     });
   };
@@ -73,15 +78,7 @@ export const FiltersProvider = ({ initialGroupFilters, children }: Props) => {
           _filter.id === filter.id ? filter : _filter,
         ),
       });
-
-      mutateAsync({
-        id: user.id,
-        membersPreferences: {
-          ...user.membersPreferences,
-          groupFilters: newGroupFilters,
-        },
-      });
-
+      saveFilters(newGroupFilters);
       return newGroupFilters;
     });
   };
@@ -94,15 +91,7 @@ export const FiltersProvider = ({ initialGroupFilters, children }: Props) => {
         ...prev,
         filters: prev.filters.filter((_filter) => _filter.id !== filter.id),
       });
-
-      mutateAsync({
-        id: user.id,
-        membersPreferences: {
-          ...user.membersPreferences,
-          groupFilters: newGroupFilters,
-        },
-      });
-
+      saveFilters(newGroupFilters);
       return newGroupFilters;
     });
   };
@@ -110,18 +99,13 @@ export const FiltersProvider = ({ initialGroupFilters, children }: Props) => {
   const resetFilters = async () => {
     if (!user?.id) return;
 
-    setGroupFilters({
+    const newGroupFilters: GroupFilters = {
       filters: [],
       operator: "AND",
-    });
+    };
 
-    mutateAsync({
-      id: user.id,
-      membersPreferences: {
-        ...user.membersPreferences,
-        groupFilters: { filters: [], operator: "AND" },
-      },
-    });
+    setGroupFilters(newGroupFilters);
+    saveFilters(newGroupFilters);
   };
 
   const onUpdateGroupOperator = async (operator: "AND" | "OR") => {
@@ -132,7 +116,20 @@ export const FiltersProvider = ({ initialGroupFilters, children }: Props) => {
         ...prev,
         operator,
       });
+      saveFilters(newGroupFilters);
+      return newGroupFilters;
+    });
+  };
 
+  const saveFilters = async (newGroupFilters: GroupFilters) => {
+    if (!user?.id) return;
+
+    if (isListPage && listId) {
+      updateList({
+        id: listId,
+        groupFilters: newGroupFilters,
+      });
+    } else {
       mutateAsync({
         id: user.id,
         membersPreferences: {
@@ -140,9 +137,7 @@ export const FiltersProvider = ({ initialGroupFilters, children }: Props) => {
           groupFilters: newGroupFilters,
         },
       });
-
-      return newGroupFilters;
-    });
+    }
   };
 
   return (

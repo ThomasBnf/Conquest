@@ -26,7 +26,7 @@ export async function POST(request: NextRequest) {
   const body = JSON.parse(bodyRaw) as WebhookEvent;
   const type = headers.get("x-github-event");
 
-  console.log("body", body);
+  // console.log("body", body);
 
   const github = await checkSignature(request, bodyRaw);
   if (!github) return NextResponse.json({ status: 200 });
@@ -39,6 +39,7 @@ export async function POST(request: NextRequest) {
   let token = decryptedToken;
 
   const expiresAt = new Date(Date.now() + expiresIn * 1000);
+  console.log("expiresAt", expiresAt);
 
   if (expiresAt < new Date()) {
     token = await getRefreshToken({ github });

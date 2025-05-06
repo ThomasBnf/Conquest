@@ -36,10 +36,10 @@ export const getRefreshToken = async ({ github }: Props) => {
 
   const {
     access_token,
-    scope,
     expires_in,
     refresh_token,
     refresh_token_expires_in,
+    scope,
   } = data;
 
   const encryptedAccessToken = await encrypt(access_token);

@@ -67,8 +67,6 @@ export const CreateListDialog = () => {
     await mutateAsync({ emoji, name, groupFilters });
   };
 
-  if (isListPage) return;
-
   if (open) {
     return (
       <Dialog open={open} onOpenChange={setOpen} modal>
