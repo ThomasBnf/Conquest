@@ -40,6 +40,8 @@ export const listDayActivities = protectedProcedure
 
     const { data } = await result.json();
 
+    console.log("data", data);
+
     if (!data?.length) return [];
 
     const transformFlatActivity = (row: Record<string, unknown>) => {
@@ -67,6 +69,8 @@ export const listDayActivities = protectedProcedure
     const activities = data.map((row: unknown) =>
       transformFlatActivity(row as Record<string, unknown>),
     );
+
+    console.log("activities", activities);
 
     if (!activities?.length) return [];
     return ActivityWithTypeSchema.array().parse(activities);
