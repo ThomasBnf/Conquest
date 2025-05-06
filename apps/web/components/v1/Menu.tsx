@@ -44,7 +44,7 @@ export const Menu = () => {
       label: "Community",
     },
     {
-      href: "/documentation",
+      href: "https://docs.useconquest.com",
       label: "Documentation",
     },
   ];
