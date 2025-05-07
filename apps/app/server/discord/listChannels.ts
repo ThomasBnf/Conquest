@@ -54,8 +54,6 @@ export const listChannels = protectedProcedure.query(
       if (EXCLUDED_CHANNEL_TYPES.includes(channel.type)) return false;
       if (channel.type === ChannelType.GuildCategory) return true;
 
-      console.log(channel);
-
       if (!channel.permission_overwrites?.length) return true;
 
       const conquestPermission = channel.permission_overwrites.find(
