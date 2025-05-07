@@ -1,6 +1,5 @@
 "use client";
 
-import { QueryInput } from "@/components/custom/query-input";
 import { useFilters } from "@/context/filtersContext";
 import { useTable } from "@/hooks/useTable";
 import { trpc } from "@/server/client";
@@ -53,11 +52,11 @@ export const MembersPage = () => {
     <div className="relative flex h-full flex-col overflow-hidden">
       <div className="flex h-full flex-col">
         <div className="flex h-12 shrink-0 items-center gap-2 px-3">
-          <QueryInput
+          {/* <QueryInput
             placeholder="Search..."
             query={search}
             setQuery={(value) => setParams({ search: value })}
-          />
+          /> */}
           <FiltersList />
           <div className="ml-auto flex items-center gap-2">
             <SaveList />

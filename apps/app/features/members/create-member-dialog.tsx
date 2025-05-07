@@ -47,7 +47,7 @@ export const CreateMemberDialog = () => {
         duration: 5000,
       });
     },
-    onError: () => {
+    onError: (error) => {
       toast.error("Failed to create member");
     },
     onSettled: () => {

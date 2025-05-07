@@ -89,14 +89,14 @@ export const TagForm = ({ tag, setIsVisible, setIsEditing }: Props) => {
                     {COLORS.map((color) => (
                       <button
                         type="button"
-                        key={color}
-                        onClick={() => field.onChange(color)}
+                        key={color.hex}
+                        onClick={() => field.onChange(color.hex)}
                         className="flex size-4 cursor-pointer items-center justify-center rounded-full text-white transition-transform hover:scale-110"
                         style={{
-                          backgroundColor: color,
+                          backgroundColor: color.hex,
                         }}
                       >
-                        {field.value === color && <Check size={13} />}
+                        {field.value === color.hex && <Check size={13} />}
                       </button>
                     ))}
                     <ColorPicker

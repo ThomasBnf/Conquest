@@ -59,7 +59,6 @@ export const MemberSidebar = ({ member, profiles }: Props) => {
       utils.members.get.setData({ id }, context?.previousMember);
     },
     onSettled: () => {
-      utils.members.get.invalidate({ id });
       utils.members.invalidate();
     },
   });
