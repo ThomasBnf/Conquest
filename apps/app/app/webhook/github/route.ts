@@ -16,7 +16,7 @@ import {
   StarEvent,
   WebhookEvent,
 } from "@octokit/webhooks-types";
-import { subMinutes } from "date-fns";
+import { addMinutes, subMinutes } from "date-fns";
 import { NextRequest, NextResponse } from "next/server";
 import { createHmac } from "node:crypto";
 import { Octokit } from "octokit";
@@ -37,8 +37,8 @@ export async function POST(request: NextRequest) {
 
   let token = decryptedToken;
 
-  const expiresAt = new Date(updatedAt).getTime() + expiresIn * 1000;
-  const shouldRefresh = expiresAt < subMinutes(new Date(), 5).getTime();
+  const expiresAt = addMinutes(new Date(updatedAt), expiresIn * 1000);
+  const shouldRefresh = subMinutes(expiresAt, 5) < new Date();
 
   console.log("expiresAt", expiresAt);
   console.log("shouldRefresh", shouldRefresh);
