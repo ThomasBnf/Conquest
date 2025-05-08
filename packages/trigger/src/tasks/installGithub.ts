@@ -1,4 +1,5 @@
 import { updateIntegration } from "@conquest/db/integrations/updateIntegration";
+import { prisma } from "@conquest/db/prisma";
 import { decrypt } from "@conquest/db/utils/decrypt";
 import { GithubIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
 import { schemaTask } from "@trigger.dev/sdk/v3";
@@ -42,6 +43,12 @@ export const installGithub = schemaTask({
       connectedAt: new Date(),
       status: "CONNECTED",
       workspaceId,
+    });
+  },
+  onFailure: async ({ github }) => {
+    await prisma.integration.update({
+      where: { id: github.id },
+      data: { status: "DISCONNECTED" },
     });
   },
 });

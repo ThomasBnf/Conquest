@@ -11,7 +11,6 @@ import { createManyTags } from "../discord/createManyTags";
 import { createManyThreads } from "../discord/createManyThreads";
 import { listChannelMessages } from "../discord/listChannelMessages";
 import { checkDuplicates } from "./checkDuplicates";
-import { deleteIntegration } from "./deleteIntegration";
 import { getAllMembersMetrics } from "./getAllMembersMetrics";
 import { integrationSuccessEmail } from "./integrationSuccessEmail";
 
@@ -63,7 +62,9 @@ export const installDiscord = schemaTask({
     });
   },
   onFailure: async ({ discord }) => {
-    await prisma.integration.delete({ where: { id: discord.id } });
-    await deleteIntegration.trigger({ integration: discord });
+    await prisma.integration.update({
+      where: { id: discord.id },
+      data: { status: "DISCONNECTED" },
+    });
   },
 });

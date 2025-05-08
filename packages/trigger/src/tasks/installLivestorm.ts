@@ -8,7 +8,6 @@ import { createManyEvents } from "../livestorm/createManyEvents";
 import { createWebhook } from "../livestorm/createWebhook";
 import { getRefreshToken } from "../livestorm/getRefreshToken";
 import { checkDuplicates } from "./checkDuplicates";
-import { deleteIntegration } from "./deleteIntegration";
 import { getAllMembersMetrics } from "./getAllMembersMetrics";
 import { integrationSuccessEmail } from "./integrationSuccessEmail";
 
@@ -62,7 +61,9 @@ export const installLivestorm = schemaTask({
     });
   },
   onFailure: async ({ livestorm }) => {
-    await prisma.integration.delete({ where: { id: livestorm.id } });
-    await deleteIntegration.trigger({ integration: livestorm });
+    await prisma.integration.update({
+      where: { id: livestorm.id },
+      data: { status: "DISCONNECTED" },
+    });
   },
 });

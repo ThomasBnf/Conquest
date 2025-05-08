@@ -9,7 +9,6 @@ import { z } from "zod";
 import { createListMembers } from "../slack/createListMembers";
 import { listMessages } from "../slack/listMessages";
 import { checkDuplicates } from "./checkDuplicates";
-import { deleteIntegration } from "./deleteIntegration";
 import { getAllMembersMetrics } from "./getAllMembersMetrics";
 import { integrationSuccessEmail } from "./integrationSuccessEmail";
 
@@ -55,7 +54,9 @@ export const installSlack = schemaTask({
     });
   },
   onFailure: async ({ slack }) => {
-    await prisma.integration.delete({ where: { id: slack.id } });
-    await deleteIntegration.trigger({ integration: slack });
+    await prisma.integration.update({
+      where: { id: slack.id },
+      data: { status: "DISCONNECTED" },
+    });
   },
 });
