@@ -9,7 +9,7 @@ export type TokenManager = {
 };
 
 export const createTokenManager = async (initialGithub: GithubIntegration) => {
-  const { details } = initialGithub;
+  const { details, updatedAt } = initialGithub;
   const { accessToken, accessTokenIv, expiresIn } = details;
 
   const decrypted = await decrypt({
@@ -19,10 +19,11 @@ export const createTokenManager = async (initialGithub: GithubIntegration) => {
 
   let github = initialGithub;
   let token = decrypted;
-  let expiresAt = addSeconds(new Date(initialGithub.createdAt), expiresIn);
+
+  let expiresAt = addSeconds(new Date(updatedAt), expiresIn);
 
   const getToken = async (): Promise<string> => {
-    const shouldRefresh = subMinutes(expiresAt, 10) < new Date();
+    const shouldRefresh = subMinutes(expiresAt, 5) < new Date();
 
     if (shouldRefresh) {
       const { accessToken: newToken, refreshGithub } = await getRefreshToken({

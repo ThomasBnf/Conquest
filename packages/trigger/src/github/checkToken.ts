@@ -5,7 +5,7 @@ import {
   GithubIntegrationSchema,
 } from "@conquest/zod/schemas/integration.schema";
 import { logger } from "@trigger.dev/sdk/v3";
-import { addMinutes, subMinutes } from "date-fns";
+import { addSeconds, subMinutes } from "date-fns";
 import { getRefreshToken } from "./getRefreshToken";
 
 type Props = {
@@ -22,12 +22,12 @@ export const checkToken = async ({ github }: Props) => {
     }),
   );
 
-  const { details, createdAt } = githubIntegration;
+  const { details, updatedAt } = githubIntegration;
   const { accessToken, accessTokenIv, expiresIn } = details;
 
   const decryptedToken = await decrypt({ accessToken, iv: accessTokenIv });
 
-  const expiresAt = addMinutes(new Date(createdAt), expiresIn * 1000);
+  const expiresAt = addSeconds(new Date(updatedAt), expiresIn);
   const shouldRefresh = subMinutes(expiresAt, 5) < new Date();
 
   let token = decryptedToken;
