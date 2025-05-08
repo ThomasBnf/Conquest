@@ -9,6 +9,7 @@ export const updateWorkflow = protectedProcedure
       name: true,
       description: true,
       published: true,
+      trigger: true,
       nodes: true,
       edges: true,
     }).partial(),

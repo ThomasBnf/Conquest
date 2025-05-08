@@ -10,36 +10,29 @@ import { toast } from "sonner";
 import { Description } from "../components/description";
 import { NextStep } from "../components/next-step";
 import { usePanel } from "../hooks/usePanel";
-import { useSelected } from "../hooks/useSelected";
-import { ListMembers } from "../nodes/list-members";
-import { RecurringWorkflow } from "../nodes/recurring-workflow";
 import { SlackMessage } from "../nodes/slack-message";
-import { TagMember } from "../nodes/tag-member";
 import { Wait } from "../nodes/wait";
-import { Webhook } from "../nodes/webhook";
 import { ActionPanel } from "./action-panel";
 import { TriggerPanel } from "./trigger-panel";
 
 export const OptionsPanel = () => {
-  const { panel, setPanel } = usePanel();
-  const { selected, setSelected } = useSelected();
+  const { panel, node, setPanel } = usePanel();
   const { getEdges, deleteElements } = useReactFlow();
 
-  if (!selected) return;
+  if (!node) return;
 
-  const { type, icon, label } = selected.data;
-  const isTrigger = "isTrigger" in selected.data;
+  const { type, icon, label } = node.data;
+  const isTrigger = "isTrigger" in node.data;
 
   const onDelete = async () => {
     deleteElements({
-      nodes: [{ id: selected.id }],
+      nodes: [{ id: node.id }],
       edges: getEdges().filter(
-        (edge) => edge.source === selected.id || edge.target === selected.id,
+        (edge) => edge.source === node.id || edge.target === node.id,
       ),
     });
 
-    setSelected(undefined);
-    setPanel("workflow");
+    setPanel({ panel: "workflow", node: undefined });
     toast.success("Node deleted");
     return;
   };
@@ -67,18 +60,15 @@ export const OptionsPanel = () => {
               <Button
                 variant="outline"
                 onClick={() => {
-                  setPanel(isTrigger ? "triggers" : "actions-change");
+                  setPanel({
+                    panel: isTrigger ? "triggers" : "actions-change",
+                  });
                 }}
               >
                 Change
               </Button>
             </div>
-            <Description id={selected.id} />
-            {type === "recurring-workflow" && <RecurringWorkflow />}
-            {type === "list-members" && <ListMembers />}
-            {type === "webhook" && <Webhook />}
-            {type === "add-tag" && <TagMember />}
-            {type === "remove-tag" && <TagMember />}
+            <Description id={node.id} />
             {type === "slack-message" && <SlackMessage />}
             {type === "wait" && <Wait />}
             <Separator />

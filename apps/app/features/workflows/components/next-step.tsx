@@ -6,29 +6,26 @@ import { Label } from "@conquest/ui/label";
 import { useReactFlow } from "@xyflow/react";
 import { X, type icons } from "lucide-react";
 import { usePanel } from "../hooks/usePanel";
-import { useSelected } from "../hooks/useSelected";
 import type { WorkflowNode } from "../panels/schemas/workflow-node.type";
 
 export const NextStep = () => {
-  const { setPanel } = usePanel();
-  const { selected } = useSelected();
+  const { setPanel, node } = usePanel();
 
   const { getNodes, getEdges, deleteElements } = useReactFlow();
-  const { icon, label } = selected?.data ?? {};
+  const { icon, label } = node?.data ?? {};
 
   const nodes = getNodes();
   const edges = getEdges();
+
   const nextNode = nodes.find((node) =>
-    edges.find(
-      (edge) => edge.source === selected?.id && edge.target === node.id,
-    ),
+    edges.find((edge) => edge.source === node.id && edge.target === node.id),
   ) as WorkflowNode | undefined;
 
   const { label: nextNodeLabel } = nextNode?.data ?? {};
 
   const onDeleteNode = () => {
     deleteElements({
-      edges: edges.filter((edge) => edge.source === selected?.id),
+      edges: edges.filter((edge) => edge.source === node?.id),
     });
   };
 
@@ -37,14 +34,14 @@ export const NextStep = () => {
       <Label>Next node</Label>
       <p className="text-muted-foreground">Add the next node in the workflow</p>
       <div className="relative mt-2">
-        <div className="relative z-10 flex h-10 items-center gap-2 rounded-md border bg-muted-hover px-2">
+        <div className="relative z-10 flex h-10 items-center gap-2 rounded-md border bg-muted px-2">
           {icon === "Slack" ? (
             <Slack size={24} className="rounded-md border p-1" />
           ) : (
             <Icon
               name={icon as keyof typeof icons}
               size={24}
-              className="rounded-md border p-1"
+              className="rounded-md border bg-background p-1"
             />
           )}
           <p>{label}</p>
@@ -56,7 +53,7 @@ export const NextStep = () => {
             <div
               className="relative z-10 flex h-10 cursor-pointer items-center gap-2 rounded-md border px-2 transition-colors-hover hover:bg-muted-hover"
               onClick={() => {
-                setPanel("actions");
+                setPanel({ panel: "actions", node });
               }}
             >
               {nextNode ? (
@@ -80,7 +77,7 @@ export const NextStep = () => {
               {nextNode && (
                 <Button
                   variant="outline"
-                  size="icon"
+                  size="icon_sm"
                   className="ml-auto"
                   onClick={onDeleteNode}
                 >

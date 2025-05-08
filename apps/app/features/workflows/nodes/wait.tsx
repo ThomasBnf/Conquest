@@ -1,4 +1,3 @@
-import { useSelected } from "@/features/workflows/hooks/useSelected";
 import { Form, FormControl, FormField, FormItem } from "@conquest/ui/form";
 import { Input } from "@conquest/ui/input";
 import { Label } from "@conquest/ui/label";
@@ -14,13 +13,14 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useReactFlow } from "@xyflow/react";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
+import { usePanel } from "../hooks/usePanel";
 import { type FormWait, FormWaitSchema } from "./schemas/form-wait.schema";
 
 export const Wait = () => {
-  const { selected } = useSelected();
+  const { node } = usePanel();
   const { updateNodeData } = useReactFlow();
 
-  const parsedData = NodeWaitSchema.parse(selected?.data);
+  const parsedData = NodeWaitSchema.parse(node?.data);
   const { duration, unit } = parsedData;
 
   const form = useForm<FormWait>({
@@ -36,12 +36,12 @@ export const Wait = () => {
       duration,
       unit,
     });
-  }, [selected]);
+  }, [node]);
 
   const onSubmit = ({ duration, unit }: FormWait) => {
-    if (!selected) return;
+    if (!node) return;
 
-    updateNodeData(selected.id, {
+    updateNodeData(node.id, {
       ...parsedData,
       duration,
       unit,

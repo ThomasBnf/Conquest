@@ -1,37 +1,24 @@
 import { Icon } from "@/components/custom/Icon";
-import { Button } from "@conquest/ui/button";
 import { cn } from "@conquest/ui/cn";
 import { Slack } from "@conquest/ui/icons/Slack";
 import { Separator } from "@conquest/ui/separator";
 import { type NodeProps, Position, useReactFlow } from "@xyflow/react";
-import { Plus, Target, type icons } from "lucide-react";
+import { Target, type icons } from "lucide-react";
 import { useMemo } from "react";
 import { usePanel } from "../hooks/usePanel";
-import { useSelected } from "../hooks/useSelected";
 import type { WorkflowNode } from "../panels/schemas/workflow-node.type";
 import { CustomHandle } from "./custom-handle";
 
-type Props = NodeProps<WorkflowNode> & {
-  hasEdges: WorkflowNode[];
-};
+type Props = NodeProps<WorkflowNode>;
 
-export const CustomNode = ({ hasEdges, ...props }: Props) => {
+export const CustomNode = ({ ...props }: Props) => {
   const { setPanel } = usePanel();
-  const { selected, setSelected } = useSelected();
   const { getNode } = useReactFlow();
 
-  const node = getNode(props.id) as WorkflowNode | undefined;
-
-  if (!node) return;
+  const node = getNode(props.id) as WorkflowNode;
 
   const { icon, label, description } = node.data;
   const isTrigger = useMemo(() => "isTrigger" in node.data, [node]);
-  const isLoop = useMemo(() => node.data.type === "loop", [node]);
-
-  const hasEdge = useMemo(
-    () => hasEdges.find((edge) => edge.id === node.id),
-    [hasEdges, props],
-  );
 
   return (
     <div className="relative">
@@ -48,13 +35,12 @@ export const CustomNode = ({ hasEdges, ...props }: Props) => {
       )}
       <div
         onClick={() => {
-          setPanel("node");
-          setSelected(node);
+          setPanel({ panel: "node", node });
         }}
         className={cn(
           "relative flex w-80 flex-1 flex-col border bg-background p-3",
           isTrigger ? "rounded-b-lg rounded-tr-lg" : "rounded-md",
-          selected?.id === node.id && "border-main-400 ring-2 ring-ring",
+          props.selected && "border-main-400 ring-2 ring-ring",
         )}
       >
         <div className="flex items-center gap-2">
@@ -74,50 +60,6 @@ export const CustomNode = ({ hasEdges, ...props }: Props) => {
         {!isTrigger && <CustomHandle position={Position.Top} type="target" />}
         <CustomHandle position={Position.Bottom} type="source" />
       </div>
-      {!hasEdge && (
-        <>
-          <div className="-bottom-9 -translate-x-1/2 absolute left-1/2 h-7 w-px bg-border" />
-          <Button
-            size="icon"
-            className="-bottom-16 -translate-x-1/2 absolute left-1/2"
-            onClick={() => {
-              setPanel("actions");
-              setSelected(node);
-            }}
-          >
-            <Plus size={16} />
-          </Button>
-        </>
-      )}
-      {isLoop && (
-        <div className="-z-10 -translate-x-1/2 absolute top-8 left-1/2 h-48 w-full">
-          <div className="-translate-x-1/2 absolute left-1/2 flex h-48 w-[calc(100%+40px)] items-center justify-center rounded-lg border border-dashed">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => {
-                setPanel("actions");
-                setSelected(node);
-              }}
-            >
-              <Plus size={20} className="rounded border p-0.5" />
-              Select first step
-            </Button>
-          </div>
-          <div className="-bottom-9 -translate-x-1/2 absolute left-1/2 h-7 w-px bg-border" />
-          <CustomHandle position={Position.Bottom} type="source" />
-          <Button
-            size="icon"
-            className="-bottom-16 -translate-x-1/2 absolute left-1/2"
-            onClick={() => {
-              setPanel("actions");
-              setSelected(node);
-            }}
-          >
-            <Plus size={16} />
-          </Button>
-        </div>
-      )}
     </div>
   );
 };

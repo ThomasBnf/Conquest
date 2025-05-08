@@ -1,4 +1,3 @@
-import { useSelected } from "@/features/workflows/hooks/useSelected";
 import {
   Form,
   FormControl,
@@ -8,20 +7,21 @@ import {
   FormMessage,
 } from "@conquest/ui/form";
 import { TextField } from "@conquest/ui/text-field";
-import { NodeSlackMessage } from "@conquest/zod/schemas/node.schema";
+import { NodeSlackMessageSchema } from "@conquest/zod/schemas/node.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useReactFlow } from "@xyflow/react";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useDebouncedCallback } from "use-debounce";
+import { usePanel } from "../hooks/usePanel";
 import { VariablePicker } from "../components/variable-picker";
 import { type FormSlack, FormSlackSchema } from "./schemas/form-slack.schema";
 
 export const SlackMessage = () => {
-  const { selected } = useSelected();
+  const { node } = usePanel();
   const { updateNodeData } = useReactFlow();
 
-  const parsedData = NodeSlackMessage.parse(selected?.data);
+  const parsedData = NodeSlackMessageSchema.parse(node?.data);
   const { message } = parsedData;
 
   const form = useForm<FormSlack>({
@@ -35,12 +35,12 @@ export const SlackMessage = () => {
     form.reset({
       message: message ?? "",
     });
-  }, [selected]);
+  }, [node]);
 
   const onSubmit = ({ message }: FormSlack) => {
-    if (!selected) return;
+    if (!node) return;
 
-    updateNodeData(selected.id, {
+    updateNodeData(node.id, {
       ...parsedData,
       message,
     });

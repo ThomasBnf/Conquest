@@ -19,6 +19,7 @@ import { getIntegration } from "@conquest/db/integrations/getIntegration";
 import { updateIntegration } from "@conquest/db/integrations/updateIntegration";
 import { decrypt } from "@conquest/db/utils/decrypt";
 import { env } from "@conquest/env";
+import { triggerWorkflows } from "@conquest/trigger/tasks/triggerWorkflows";
 import { SlackIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
 import {
   type GenericMessageEvent,
@@ -283,6 +284,12 @@ export async function POST(req: NextRequest) {
           },
           memberId: createdMember.id,
           workspaceId,
+        });
+
+        await triggerWorkflows.trigger({
+          trigger: "member-created",
+          workspaceId,
+          member: createdMember,
         });
       }
 

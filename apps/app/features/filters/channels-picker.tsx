@@ -32,17 +32,16 @@ export const ChannelsPicker = ({ filter }: Props) => {
         ? filter.channels.filter((c) => c.id !== channel.id)
         : [...filter.channels, { id: channel.id, label: channel.name }],
     });
-    setOpen(false);
   };
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button variant="outline">
-          {filter.channels.length === 2 ? (
-            "2 channels"
-          ) : filter.channels.length ? (
-            `${filter.channels.map((channel) => `#${channel.label}`).join(", ")}`
+        <Button variant="outline" className="flex items-center gap-1">
+          {filter.channels.length > 2 ? (
+            `${filter.channels.length} channels`
+          ) : filter.channels.length > 0 ? (
+            filter.channels.map((channel) => `#${channel.label}`).join(", ")
           ) : (
             <span className="text-muted-foreground">Select channel</span>
           )}

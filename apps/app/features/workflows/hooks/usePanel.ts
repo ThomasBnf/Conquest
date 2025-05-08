@@ -1,25 +1,21 @@
 import { create } from "zustand";
+import type { WorkflowNode } from "../panels/schemas/workflow-node.type";
+type PANEL =
+  | "workflow"
+  | "triggers"
+  | "actions"
+  | "actions-change"
+  | "node"
+  | undefined;
 
 type PanelState = {
-  panel:
-    | "workflow"
-    | "triggers"
-    | "actions"
-    | "actions-change"
-    | "node"
-    | undefined;
-  setPanel: (
-    panel:
-      | "workflow"
-      | "triggers"
-      | "actions"
-      | "actions-change"
-      | "node"
-      | undefined,
-  ) => void;
+  panel: PANEL;
+  node: WorkflowNode | undefined;
+  setPanel: ({ panel, node }: { panel: PANEL; node?: WorkflowNode }) => void;
 };
 
 export const usePanel = create<PanelState>((set) => ({
   panel: "workflow",
-  setPanel: (panel) => set({ panel }),
+  node: undefined,
+  setPanel: ({ panel, node }) => set({ panel, node }),
 }));
