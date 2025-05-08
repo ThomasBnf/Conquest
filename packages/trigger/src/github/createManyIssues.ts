@@ -1,22 +1,18 @@
 import { createActivity } from "@conquest/clickhouse/activities/createActivity";
-import type { GithubIntegration } from "@conquest/zod/schemas/integration.schema";
-import type { Endpoints } from "@octokit/types";
 import { logger } from "@trigger.dev/sdk/v3";
 import { subDays } from "date-fns";
-import type { Octokit } from "octokit";
+import { Octokit } from "octokit";
 import { checkRateLimit } from "./checkRateLimit";
 import { createGithubMember } from "./createGithubMember";
 import { createManyComments } from "./createManyComments";
+import { TokenManager } from "./createTokenManager";
 
-type Issue =
-  Endpoints["GET /repos/{owner}/{repo}/issues"]["response"]["data"][number];
+export const createManyIssues = async (tokenManager: TokenManager) => {
+  const { getToken, getGithub } = tokenManager;
 
-type Props = {
-  octokit: Octokit;
-  github: GithubIntegration;
-};
+  const token = await getToken();
+  const github = getGithub();
 
-export const createManyIssues = async ({ octokit, github }: Props) => {
   const { details, workspaceId } = github;
   const { owner, repo } = details;
 
@@ -24,6 +20,8 @@ export const createManyIssues = async ({ octokit, github }: Props) => {
   const since = subDays(new Date(), 365).toString();
 
   while (true) {
+    const octokit = new Octokit({ auth: token });
+
     const response = await octokit.rest.issues.listForRepo({
       owner,
       repo,
@@ -40,6 +38,9 @@ export const createManyIssues = async ({ octokit, github }: Props) => {
     logger.info("Issues", { count: data.length, data });
 
     for (const issue of data) {
+      const issueToken = await getToken();
+      const issueOctokit = new Octokit({ auth: issueToken });
+
       const { number, user, title, body, comments, created_at, updated_at } =
         issue;
       const { id: userId, login } = user ?? {};
@@ -47,7 +48,7 @@ export const createManyIssues = async ({ octokit, github }: Props) => {
       if (!userId || login?.includes("[bot]")) continue;
 
       const { headers, member } = await createGithubMember({
-        octokit,
+        octokit: issueOctokit,
         id: userId,
         workspaceId,
       });
@@ -69,8 +70,11 @@ export const createManyIssues = async ({ octokit, github }: Props) => {
       });
 
       if (comments > 0) {
+        const commentToken = await getToken();
+        const commentOctokit = new Octokit({ auth: commentToken });
+
         await createManyComments({
-          octokit,
+          octokit: commentOctokit,
           github,
           issueNumber: number,
         });
@@ -78,9 +82,7 @@ export const createManyIssues = async ({ octokit, github }: Props) => {
     }
 
     if (data.length < 100) break;
-
     await checkRateLimit(headers);
-
     page++;
   }
 };

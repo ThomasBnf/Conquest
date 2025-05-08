@@ -1,0 +1,50 @@
+import { getIntegrationBySource } from "@conquest/db/integrations/getIntegrationBySource";
+import { decrypt } from "@conquest/db/utils/decrypt";
+import {
+  GithubIntegration,
+  GithubIntegrationSchema,
+} from "@conquest/zod/schemas/integration.schema";
+import { logger } from "@trigger.dev/sdk/v3";
+import { addMinutes, subMinutes } from "date-fns";
+import { getRefreshToken } from "./getRefreshToken";
+
+type Props = {
+  github: GithubIntegration;
+};
+
+export const checkToken = async ({ github }: Props) => {
+  const { workspaceId } = github;
+
+  const githubIntegration = GithubIntegrationSchema.parse(
+    await getIntegrationBySource({
+      source: "Github",
+      workspaceId,
+    }),
+  );
+
+  const { details, createdAt } = githubIntegration;
+  const { accessToken, accessTokenIv, expiresIn } = details;
+
+  const decryptedToken = await decrypt({ accessToken, iv: accessTokenIv });
+
+  const expiresAt = addMinutes(new Date(createdAt), expiresIn * 1000);
+  const shouldRefresh = subMinutes(expiresAt, 5) < new Date();
+
+  let token = decryptedToken;
+  let updatedGithub = github;
+
+  if (shouldRefresh) {
+    try {
+      const { accessToken, refreshGithub } = await getRefreshToken({
+        github,
+      });
+
+      token = accessToken;
+      updatedGithub = refreshGithub;
+    } catch (error) {
+      logger.error("checkToken", { error });
+    }
+  }
+
+  return token;
+};

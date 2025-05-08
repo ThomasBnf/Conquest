@@ -2,6 +2,7 @@ import { client } from "@conquest/clickhouse/client";
 import { listAllDuplicates } from "@conquest/db/duplicates/listAllDuplicates";
 import { REASON, prisma } from "@conquest/db/prisma";
 import { listWorkspaces } from "@conquest/db/workspaces/listWorkspaces";
+import { Reason } from "@conquest/zod/enum/reason.enum";
 import { logger, schemaTask } from "@trigger.dev/sdk/v3";
 
 export const checkDuplicates = schemaTask({
@@ -95,7 +96,7 @@ export const checkDuplicates = schemaTask({
 
       const { data } = (await result.json()) as {
         data: {
-          reason: REASON;
+          reason: Reason;
           value: string;
           memberIds: string[];
         }[];
@@ -146,7 +147,7 @@ export const checkDuplicates = schemaTask({
             data: {
               totalPulse,
               memberIds,
-              reason,
+              reason: reason as REASON,
               state: "PENDING",
               workspaceId,
             },

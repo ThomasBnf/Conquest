@@ -42,7 +42,8 @@ export async function POST(request: NextRequest) {
   console.log("expiresAt", expiresAt);
 
   if (expiresAt < new Date()) {
-    token = await getRefreshToken({ github });
+    const { accessToken } = await getRefreshToken({ github });
+    token = accessToken;
   }
 
   const octokit = new Octokit({ auth: token });

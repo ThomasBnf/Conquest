@@ -5,11 +5,11 @@ export const checkRateLimit = async (headers: ResponseHeaders) => {
   const rateLimit = Number(headers["x-ratelimit-remaining"]);
   const rateLimitReset = headers["x-ratelimit-reset"];
 
-  if (rateLimit === 0) {
-    logger.info("Rate limit atteint, attente jusqu'au reset", {
-      resetTime: new Date(Number(rateLimitReset) * 1000),
-    });
+  if (rateLimit !== 0) return;
 
-    await wait.until({ date: new Date(Number(rateLimitReset) * 1000) });
-  }
+  logger.info("Rate limit atteint, attente jusqu'au reset", {
+    resetTime: new Date(Number(rateLimitReset) * 1000),
+  });
+
+  await wait.until({ date: new Date(Number(rateLimitReset) * 1000) });
 };

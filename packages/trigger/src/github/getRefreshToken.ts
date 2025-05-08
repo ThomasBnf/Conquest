@@ -2,7 +2,11 @@ import { updateIntegration } from "@conquest/db/integrations/updateIntegration";
 import { decrypt } from "@conquest/db/utils/decrypt";
 import { encrypt } from "@conquest/db/utils/encrypt";
 import { env } from "@conquest/env";
-import type { GithubIntegration } from "@conquest/zod/schemas/integration.schema";
+import {
+  type GithubIntegration,
+  GithubIntegrationSchema,
+} from "@conquest/zod/schemas/integration.schema";
+import { logger } from "@trigger.dev/sdk/v3";
 
 type Props = {
   github: GithubIntegration;
@@ -31,6 +35,10 @@ export const getRefreshToken = async ({ github }: Props) => {
     }),
   });
 
+  if (!response.ok) {
+    logger.error("getRefreshToken", { response: response.statusText });
+  }
+
   const data = await response.json();
   console.log("data", data);
 
@@ -45,20 +53,22 @@ export const getRefreshToken = async ({ github }: Props) => {
   const encryptedAccessToken = await encrypt(access_token);
   const encryptedRefreshToken = await encrypt(refresh_token);
 
-  await updateIntegration({
-    id,
-    details: {
-      ...details,
-      accessToken: encryptedAccessToken.token,
-      accessTokenIv: encryptedAccessToken.iv,
-      refreshToken: encryptedRefreshToken.token,
-      refreshTokenIv: encryptedRefreshToken.iv,
-      refreshTokenExpires: refresh_token_expires_in,
-      expiresIn: expires_in,
-      scope,
-    },
-    workspaceId,
-  });
+  const refreshGithub = GithubIntegrationSchema.parse(
+    await updateIntegration({
+      id,
+      details: {
+        ...details,
+        accessToken: encryptedAccessToken.token,
+        accessTokenIv: encryptedAccessToken.iv,
+        refreshToken: encryptedRefreshToken.token,
+        refreshTokenIv: encryptedRefreshToken.iv,
+        refreshTokenExpires: refresh_token_expires_in,
+        expiresIn: expires_in,
+        scope,
+      },
+      workspaceId,
+    }),
+  );
 
-  return access_token;
+  return { refreshGithub, accessToken: access_token };
 };

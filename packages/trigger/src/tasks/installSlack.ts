@@ -56,7 +56,7 @@ export const installSlack = schemaTask({
   onFailure: async ({ slack }) => {
     await prisma.integration.update({
       where: { id: slack.id },
-      data: { status: "DISCONNECTED" },
+      data: { status: "FAILED" },
     });
   },
 });

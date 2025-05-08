@@ -1,5 +1,8 @@
 import type { Status } from "@conquest/zod/enum/status.enum";
-import type { IntegrationDetails } from "@conquest/zod/schemas/integration.schema";
+import {
+  type IntegrationDetails,
+  IntegrationSchema,
+} from "@conquest/zod/schemas/integration.schema";
 import { prisma } from "../prisma";
 
 type Props = {
@@ -23,7 +26,7 @@ export const updateIntegration = async ({
   createdBy,
   workspaceId,
 }: Props) => {
-  return await prisma.integration.update({
+  const integration = await prisma.integration.update({
     where: {
       id,
       workspaceId,
@@ -36,4 +39,6 @@ export const updateIntegration = async ({
       createdBy,
     },
   });
+
+  return IntegrationSchema.parse(integration);
 };

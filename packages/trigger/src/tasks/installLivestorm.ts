@@ -63,7 +63,7 @@ export const installLivestorm = schemaTask({
   onFailure: async ({ livestorm }) => {
     await prisma.integration.update({
       where: { id: livestorm.id },
-      data: { status: "DISCONNECTED" },
+      data: { status: "FAILED" },
     });
   },
 });

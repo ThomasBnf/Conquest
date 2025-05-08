@@ -64,7 +64,7 @@ export const installDiscord = schemaTask({
   onFailure: async ({ discord }) => {
     await prisma.integration.update({
       where: { id: discord.id },
-      data: { status: "DISCONNECTED" },
+      data: { status: "FAILED" },
     });
   },
 });

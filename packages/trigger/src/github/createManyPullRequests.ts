@@ -1,21 +1,17 @@
 import { createActivity } from "@conquest/clickhouse/activities/createActivity";
-import type { GithubIntegration } from "@conquest/zod/schemas/integration.schema";
-import type { Endpoints } from "@octokit/types";
 import { logger } from "@trigger.dev/sdk/v3";
 import { subDays } from "date-fns";
-import type { Octokit } from "octokit";
+import { Octokit } from "octokit";
 import { checkRateLimit } from "./checkRateLimit";
 import { createGithubMember } from "./createGithubMember";
+import { TokenManager } from "./createTokenManager";
 
-type PullRequest =
-  Endpoints["GET /repos/{owner}/{repo}/pulls"]["response"]["data"][number];
+export const createManyPullRequests = async (tokenManager: TokenManager) => {
+  const { getToken, getGithub } = tokenManager;
 
-type Props = {
-  octokit: Octokit;
-  github: GithubIntegration;
-};
+  const token = await getToken();
+  const github = getGithub();
 
-export const createManyPullRequests = async ({ octokit, github }: Props) => {
   const { details, workspaceId } = github;
   const { owner, repo } = details;
 
@@ -23,6 +19,8 @@ export const createManyPullRequests = async ({ octokit, github }: Props) => {
   const since = subDays(new Date(), 365).toString();
 
   while (true) {
+    const octokit = new Octokit({ auth: token });
+
     const { headers, data } = await octokit.rest.pulls.list({
       owner,
       repo,
@@ -37,13 +35,16 @@ export const createManyPullRequests = async ({ octokit, github }: Props) => {
     logger.info("Pull Requests", { count: data.length, data });
 
     for (const pullRequest of data) {
+      const pullRequestToken = await getToken();
+      const pullRequestOctokit = new Octokit({ auth: pullRequestToken });
+
       const { number, user, title, body, created_at, updated_at } = pullRequest;
       const { id: userId, login } = user ?? {};
 
       if (!userId || login?.includes("[bot]")) continue;
 
       const { headers, member } = await createGithubMember({
-        octokit,
+        octokit: pullRequestOctokit,
         id: userId,
         workspaceId,
       });
