@@ -8,24 +8,26 @@ import { X, type icons } from "lucide-react";
 import { usePanel } from "../hooks/usePanel";
 import type { WorkflowNode } from "../panels/schemas/workflow-node.type";
 
-export const NextStep = () => {
-  const { setPanel, node } = usePanel();
+export const NextNode = () => {
+  const { node: selectedNode, setPanel } = usePanel();
 
   const { getNodes, getEdges, deleteElements } = useReactFlow();
-  const { icon, label } = node?.data ?? {};
+  const { icon, label } = selectedNode?.data ?? {};
 
   const nodes = getNodes();
   const edges = getEdges();
 
   const nextNode = nodes.find((node) =>
-    edges.find((edge) => edge.source === node.id && edge.target === node.id),
+    edges.find(
+      (edge) => edge.source === selectedNode?.id && edge.target === node.id,
+    ),
   ) as WorkflowNode | undefined;
 
   const { label: nextNodeLabel } = nextNode?.data ?? {};
 
   const onDeleteNode = () => {
     deleteElements({
-      edges: edges.filter((edge) => edge.source === node?.id),
+      edges: edges.filter((edge) => edge.source === selectedNode?.id),
     });
   };
 
@@ -52,9 +54,7 @@ export const NextStep = () => {
             <Badge variant="secondary">Next node</Badge>
             <div
               className="relative z-10 flex h-10 cursor-pointer items-center gap-2 rounded-md border px-2 transition-colors-hover hover:bg-muted-hover"
-              onClick={() => {
-                setPanel({ panel: "actions", node });
-              }}
+              onClick={() => setPanel({ panel: "actions", node: selectedNode })}
             >
               {nextNode ? (
                 nextNode.data.icon === "Slack" ? (

@@ -12,7 +12,7 @@ import { CustomHandle } from "./custom-handle";
 type Props = NodeProps<WorkflowNode>;
 
 export const CustomNode = ({ ...props }: Props) => {
-  const { setPanel } = usePanel();
+  const { node: selectedNode, setPanel } = usePanel();
   const { getNode } = useReactFlow();
 
   const node = getNode(props.id) as WorkflowNode;
@@ -21,7 +21,7 @@ export const CustomNode = ({ ...props }: Props) => {
   const isTrigger = useMemo(() => "isTrigger" in node.data, [node]);
 
   return (
-    <div className="relative">
+    <div className="relative" onClick={() => setPanel({ panel: "node", node })}>
       {isTrigger && (
         <div
           className={cn(
@@ -34,13 +34,10 @@ export const CustomNode = ({ ...props }: Props) => {
         </div>
       )}
       <div
-        onClick={() => {
-          setPanel({ panel: "node", node });
-        }}
         className={cn(
           "relative flex w-80 flex-1 flex-col border bg-background p-3",
           isTrigger ? "rounded-b-lg rounded-tr-lg" : "rounded-md",
-          props.selected && "border-main-400 ring-2 ring-ring",
+          selectedNode?.id === props.id && "border-main-400 ring-2 ring-ring",
         )}
       >
         <div className="flex items-center gap-2">

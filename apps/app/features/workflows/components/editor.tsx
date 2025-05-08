@@ -1,6 +1,8 @@
 "use client";
 
 import { trpc } from "@/server/client";
+import { Button } from "@conquest/ui/button";
+import { NodeDataSchema } from "@conquest/zod/schemas/node.schema";
 import { Workflow } from "@conquest/zod/schemas/workflow.schema";
 import {
   Background,
@@ -20,6 +22,7 @@ import {
   useReactFlow,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
+import { Info } from "lucide-react";
 import { useCallback, useEffect } from "react";
 import { toast } from "sonner";
 import { usePanel } from "../hooks/usePanel";
@@ -42,23 +45,14 @@ const edgeTypes = {
 
 export const Editor = ({ workflow }: Props) => {
   const { panel, setPanel } = usePanel();
-
-  const {
-    toObject,
-    deleteElements,
-    addEdges,
-    updateNodeData,
-    updateNode,
-    fitView,
-    getNode,
-  } = useReactFlow();
-
+  const { toObject, getNode } = useReactFlow();
   const [nodes, setNodes] = useNodesState<WorkflowNode>(workflow.nodes);
   const [edges, setEdges] = useEdgesState<Edge>(workflow.edges);
+  const utils = trpc.useUtils();
 
   const { mutateAsync: updateWorkflow } = trpc.workflows.update.useMutation({
     onSuccess: () => {
-      toast.success("Workflow updated");
+      utils.workflows.get.invalidate({ id: workflow.id });
     },
     onError: (error) => {
       toast.error(error.message);
@@ -74,8 +68,13 @@ export const Editor = ({ workflow }: Props) => {
 
           if (node && "isTrigger" in node.data) return prev;
         }
+
         return applyNodeChanges(changes, prev) as WorkflowNode[];
       });
+
+      setTimeout(() => {
+        onSave();
+      }, 100);
     },
     [getNode, setNodes],
   );
@@ -92,6 +91,31 @@ export const Editor = ({ workflow }: Props) => {
     [setEdges],
   );
 
+  const onSave = async () => {
+    const nodes = toObject().nodes.map((node) => {
+      const nodeData = NodeDataSchema.parse(node.data);
+      return {
+        id: node.id,
+        data: nodeData,
+        position: node.position,
+        type: "custom" as const,
+      };
+    });
+
+    updateWorkflow({
+      id: workflow.id,
+      nodes,
+      edges: toObject().edges,
+    });
+  };
+
+  const onPublish = async () => {
+    await updateWorkflow({
+      id: workflow.id,
+      published: true,
+    });
+  };
+
   useEffect(() => {
     const hasTrigger = nodes.find((node) => "isTrigger" in node.data);
 
@@ -102,10 +126,8 @@ export const Editor = ({ workflow }: Props) => {
     }
   }, [nodes]);
 
-  console.log(nodes);
-
   return (
-    <div className="flex h-full">
+    <div className="relative flex h-full ">
       <ReactFlow
         nodes={nodes}
         edges={edges}
@@ -114,9 +136,6 @@ export const Editor = ({ workflow }: Props) => {
         onConnect={onConnect}
         nodeTypes={nodeTypes}
         edgeTypes={edgeTypes}
-        defaultEdgeOptions={{
-          type: "custom",
-        }}
         fitViewOptions={{
           maxZoom: 1,
         }}
@@ -124,11 +143,21 @@ export const Editor = ({ workflow }: Props) => {
         fitView
         snapToGrid
         zoomOnDoubleClick
+        className="relative"
       >
+        {!workflow.published && (
+          <div className="absolute top-2 left-2 z-10 flex w-[calc(100%-1rem)] items-center justify-between rounded-md border border-main-100 bg-main-100/50 p-2">
+            <div className="flex items-center gap-2 text-main-500">
+              <Info size={16} />
+              <p>This workflow has not yet been published</p>
+            </div>
+            <Button onClick={onPublish}>Publish workflow</Button>
+          </div>
+        )}
         <Controls showInteractive={false} />
         <Background />
       </ReactFlow>
-      <Sidebar />
+      <Sidebar workflow={workflow} />
     </div>
   );
 };

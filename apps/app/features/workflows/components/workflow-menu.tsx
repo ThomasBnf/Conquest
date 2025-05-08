@@ -26,6 +26,7 @@ export const WorkflowMenu = ({ workflow }: Props) => {
     onSuccess: () => {
       toast.success("Workflow deleted");
       utils.workflows.list.invalidate();
+      utils.workflows.get.invalidate({ id: workflow.id });
     },
     onError: (error) => {
       toast.error(error.message);

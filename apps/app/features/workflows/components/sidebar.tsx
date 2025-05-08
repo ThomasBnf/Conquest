@@ -1,4 +1,5 @@
 import { Button } from "@conquest/ui/button";
+import { Workflow } from "@conquest/zod/schemas/workflow.schema";
 import { ArrowLeft } from "lucide-react";
 import { usePanel } from "../hooks/usePanel";
 import { ActionPanel } from "../panels/action-panel";
@@ -6,7 +7,11 @@ import { OptionsPanel } from "../panels/options-panel";
 import { TriggerPanel } from "../panels/trigger-panel";
 import { WorkflowPanel } from "../panels/workflow-panel";
 
-export const Sidebar = () => {
+type Props = {
+  workflow: Workflow;
+};
+
+export const Sidebar = ({ workflow }: Props) => {
   const { panel, node, setPanel } = usePanel();
 
   const hasPanel = panel !== undefined;
@@ -30,9 +35,9 @@ export const Sidebar = () => {
           </Button>
         </div>
       )}
-      {panel === "node" && node?.id && <OptionsPanel />}
-      {panel === "workflow" && <WorkflowPanel />}
-      {panel === "triggers" && <TriggerPanel />}
+      {panel === "workflow" && <WorkflowPanel workflow={workflow} />}
+      {panel === "triggers" && <TriggerPanel workflow={workflow} />}
+      {panel === "node" && node?.id && <OptionsPanel workflow={workflow} />}
       {panel?.startsWith("actions") && <ActionPanel />}
     </div>
   );

@@ -102,9 +102,30 @@ export const slackMessage = async ({
 
   if (!channel?.id) return logger.error("No channel ID found");
 
+  const parsedMessage = replaceMemberVariables(message);
+
   await web.chat.postMessage({
     channel: channel?.id,
-    text: message,
+    text: parsedMessage,
     as_user: true,
   });
+};
+
+const replaceMemberVariables = (message: string) => {
+  const variables = {
+    "{{firstName}}": currentMember.firstName,
+    "{{lastName}}": currentMember.lastName,
+    "{{primaryEmail}}": currentMember.primaryEmail,
+    "{{country}}": currentMember.country,
+    "{{language}}": currentMember.language,
+    "{{jobTitle}}": currentMember.jobTitle,
+    "{{linkedinUrl}}": currentMember.linkedinUrl,
+    "{{emails}}": currentMember.emails.join(", "),
+    "{{phones}}": currentMember.phones.join(", "),
+  };
+
+  return Object.entries(variables).reduce(
+    (acc, [key, value]) => acc.replace(key, value),
+    message,
+  );
 };

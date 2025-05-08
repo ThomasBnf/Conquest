@@ -17,11 +17,11 @@ export const WorkflowPage = ({ slug, workflowId }: Props) => {
   const { data, isLoading } = trpc.workflows.get.useQuery({ id: workflowId });
 
   if (isLoading) return <IsLoading />;
-  if (!data) return redirect(`/${slug}/workflows`);
+  if (!data) redirect(`/${slug}/workflows`);
 
   return (
     <PageLayout>
-      <Header slug={slug} workflowId={workflowId} />
+      <Header slug={slug} workflow={data} />
       <ReactFlowProvider>
         <Editor workflow={data} />
       </ReactFlowProvider>

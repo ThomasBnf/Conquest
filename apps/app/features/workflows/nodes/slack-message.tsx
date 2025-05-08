@@ -12,9 +12,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useReactFlow } from "@xyflow/react";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { useDebouncedCallback } from "use-debounce";
-import { usePanel } from "../hooks/usePanel";
 import { VariablePicker } from "../components/variable-picker";
+import { usePanel } from "../hooks/usePanel";
 import { type FormSlack, FormSlackSchema } from "./schemas/form-slack.schema";
 
 export const SlackMessage = () => {
@@ -31,36 +30,37 @@ export const SlackMessage = () => {
     },
   });
 
-  useEffect(() => {
-    form.reset({
-      message: message ?? "",
-    });
-  }, [node]);
-
-  const onSubmit = ({ message }: FormSlack) => {
+  const onChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     if (!node) return;
 
-    updateNodeData(node.id, {
+    form.setValue("message", e.target.value);
+    updateNodeData(node?.id, {
       ...parsedData,
-      message,
+      message: e.target.value,
     });
   };
 
-  const debouncedSubmit = useDebouncedCallback(
-    (newMessage: string) => onSubmit({ message: newMessage }),
-    500,
-  );
-
   const onSetVariable = (variable: string) => {
-    const newMessage = message + variable;
+    if (!node) return;
+
+    const currentMessage = form.getValues("message");
+    const newMessage = currentMessage + variable;
 
     form.setValue("message", newMessage);
-    onSubmit({ message: newMessage });
+
+    updateNodeData(node?.id, {
+      ...parsedData,
+      message: newMessage,
+    });
   };
+
+  useEffect(() => {
+    form.setValue("message", message ?? "");
+  }, [message]);
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+      <form className="space-y-2">
         <FormField
           control={form.control}
           name="message"
@@ -71,10 +71,7 @@ export const SlackMessage = () => {
                 <TextField
                   {...field}
                   placeholder="Add a message"
-                  onChange={(e) => {
-                    form.setValue("message", e.target.value);
-                    debouncedSubmit(e.target.value);
-                  }}
+                  onChange={onChange}
                 />
               </FormControl>
               <FormMessage />

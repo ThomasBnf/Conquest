@@ -16,23 +16,34 @@ export const IsPublished = ({ workflow }: Props) => {
   const { mutateAsync } = trpc.workflows.update.useMutation({
     onMutate: async () => {
       await utils.workflows.list.cancel();
+      await utils.workflows.get.cancel();
 
       const previousWorkflows = utils.workflows.list.getData();
+      const previousWorkflow = utils.workflows.get.getData({ id: workflow.id });
 
       utils.workflows.list.setData(undefined, (old) => {
         return old?.map((w) =>
           w.id === workflow.id ? { ...w, published: !published } : w,
         );
       });
+      utils.workflows.get.setData({ id: workflow.id }, (old) => {
+        if (!old) return undefined;
+        return { ...old, published: !published };
+      });
 
-      return { previousWorkflows };
-    },
-    onSuccess: () => {
-      utils.workflows.list.invalidate();
+      return { previousWorkflows, previousWorkflow };
     },
     onError: (error, __, context) => {
       utils.workflows.list.setData(undefined, context?.previousWorkflows);
+      utils.workflows.get.setData(
+        { id: workflow.id },
+        context?.previousWorkflow,
+      );
       toast.error(error.message);
+    },
+    onSettled: () => {
+      utils.workflows.list.invalidate();
+      utils.workflows.get.invalidate({ id: workflow.id });
     },
   });
 

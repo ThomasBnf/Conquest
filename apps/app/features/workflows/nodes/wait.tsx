@@ -31,13 +31,6 @@ export const Wait = () => {
     },
   });
 
-  useEffect(() => {
-    form.reset({
-      duration,
-      unit,
-    });
-  }, [node]);
-
   const onSubmit = ({ duration, unit }: FormWait) => {
     if (!node) return;
 
@@ -52,6 +45,12 @@ export const Wait = () => {
     form.setValue("unit", value);
     onSubmit({ duration, unit: value });
   };
+
+  useEffect(() => {
+    if (!node) return;
+    form.setValue("duration", duration);
+    form.setValue("unit", unit);
+  }, [node, duration, unit]);
 
   return (
     <div>
@@ -90,7 +89,7 @@ export const Wait = () => {
                         unit as "seconds" | "minutes" | "hours" | "days",
                       )
                     }
-                    defaultValue={field.value}
+                    value={field.value}
                   >
                     <SelectTrigger className="m-0 h-10 w-28 rounded-none border-none bg-muted-hover px-2 shadow-none">
                       <SelectValue />

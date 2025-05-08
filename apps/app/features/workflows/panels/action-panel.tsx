@@ -32,9 +32,10 @@ export const ActionPanel = () => {
 
     const newNode = {
       ...node,
+      id: uuid(),
       position: {
         x: selectedNode.position.x,
-        y: selectedNode.position.y + 200,
+        y: selectedNode.position.y + 150,
       },
     };
 

@@ -4,18 +4,23 @@ import { Button } from "@conquest/ui/button";
 import { Slack } from "@conquest/ui/icons/Slack";
 import { ScrollArea } from "@conquest/ui/scroll-area";
 import { Separator } from "@conquest/ui/separator";
+import type { Workflow } from "@conquest/zod/schemas/workflow.schema";
 import { useReactFlow } from "@xyflow/react";
 import type { icons } from "lucide-react";
 import { toast } from "sonner";
+import { NextNode } from "../components/NextNode";
 import { Description } from "../components/description";
-import { NextStep } from "../components/next-step";
 import { usePanel } from "../hooks/usePanel";
 import { SlackMessage } from "../nodes/slack-message";
 import { Wait } from "../nodes/wait";
 import { ActionPanel } from "./action-panel";
 import { TriggerPanel } from "./trigger-panel";
 
-export const OptionsPanel = () => {
+type Props = {
+  workflow: Workflow;
+};
+
+export const OptionsPanel = ({ workflow }: Props) => {
   const { panel, node, setPanel } = usePanel();
   const { getEdges, deleteElements } = useReactFlow();
 
@@ -40,7 +45,7 @@ export const OptionsPanel = () => {
   return (
     <div className="flex h-full flex-col">
       {panel === "actions" && <ActionPanel />}
-      {panel === "triggers" && <TriggerPanel />}
+      {panel === "triggers" && <TriggerPanel workflow={workflow} />}
       {panel === "node" && (
         <ScrollArea className="flex-1">
           <div className="flex flex-col gap-4 p-4">
@@ -62,6 +67,7 @@ export const OptionsPanel = () => {
                 onClick={() => {
                   setPanel({
                     panel: isTrigger ? "triggers" : "actions-change",
+                    node: node,
                   });
                 }}
               >
@@ -72,7 +78,7 @@ export const OptionsPanel = () => {
             {type === "slack-message" && <SlackMessage />}
             {type === "wait" && <Wait />}
             <Separator />
-            <NextStep />
+            <NextNode />
           </div>
         </ScrollArea>
       )}
