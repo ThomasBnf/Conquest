@@ -1,4 +1,5 @@
 import { Button } from "@conquest/ui/button";
+import { ScrollArea } from "@conquest/ui/scroll-area";
 import { Workflow } from "@conquest/zod/schemas/workflow.schema";
 import { ArrowLeft } from "lucide-react";
 import { usePanel } from "../hooks/usePanel";
@@ -26,7 +27,7 @@ export const Sidebar = ({ workflow }: Props) => {
   };
 
   return (
-    <div className="h-full w-full max-w-sm divide-y border-l bg-background">
+    <div className="flex h-full w-full max-w-sm flex-col divide-y border-l bg-background">
       {hasPanel && panel !== "workflow" && (
         <div className="flex h-12 shrink-0 items-center px-2">
           <Button variant="ghost" onClick={onBack}>
@@ -35,10 +36,12 @@ export const Sidebar = ({ workflow }: Props) => {
           </Button>
         </div>
       )}
-      {panel === "workflow" && <WorkflowPanel workflow={workflow} />}
-      {panel === "triggers" && <TriggerPanel workflow={workflow} />}
-      {panel === "node" && node?.id && <OptionsPanel workflow={workflow} />}
-      {panel?.startsWith("actions") && <ActionPanel />}
+      <ScrollArea className="h-[calc(100vh-98px)]">
+        {panel === "workflow" && <WorkflowPanel workflow={workflow} />}
+        {panel === "triggers" && <TriggerPanel workflow={workflow} />}
+        {panel === "node" && node?.id && <OptionsPanel workflow={workflow} />}
+        {panel?.startsWith("actions") && <ActionPanel />}
+      </ScrollArea>
     </div>
   );
 };

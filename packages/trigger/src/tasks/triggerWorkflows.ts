@@ -10,10 +10,11 @@ export const triggerWorkflows = schemaTask({
   machine: "small-2x",
   schema: z.object({
     trigger: z.enum(["member-created"]),
-    workspaceId: z.string(),
     member: MemberSchema,
   }),
-  run: async ({ trigger, member, workspaceId }) => {
+  run: async ({ trigger, member }) => {
+    const { workspaceId } = member;
+
     const workflows = WorkflowSchema.array().parse(
       await prisma.workflow.findMany({
         where: {

@@ -6,6 +6,7 @@ import { Member, MemberSchema } from "@conquest/zod/schemas/member.schema";
 import {
   NodeSchema,
   NodeSlackMessage,
+  NodeWebhook,
 } from "@conquest/zod/schemas/node.schema";
 import { WorkflowSchema } from "@conquest/zod/schemas/workflow.schema";
 import { WebClient } from "@slack/web-api";
@@ -50,6 +51,10 @@ export const runWorkflow = schemaTask({
 
           const milliseconds = duration * timeMap[unit];
           await wait.for({ seconds: milliseconds });
+          break;
+        }
+        case "webhook": {
+          await webhook({ node: parsedNode.data });
           break;
         }
       }
@@ -111,7 +116,30 @@ export const slackMessage = async ({
   });
 };
 
-const replaceMemberVariables = (message: string) => {
+export const webhook = async ({ node }: { node: NodeWebhook }) => {
+  const { url, body } = node;
+
+  if (!url) throw new Error("No URL provided");
+
+  const parsedBody = replaceMemberVariables(body);
+
+  await fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: parsedBody,
+  });
+};
+
+const replaceMemberVariables = (message: string | undefined) => {
+  if (!message) return "";
+
+  if (message.includes("{{createdMember}}")) {
+    return message.replaceAll(
+      "{{createdMember}}",
+      JSON.stringify(currentMember, null, 2),
+    );
+  }
+
   const variables = {
     "{{firstName}}": currentMember.firstName,
     "{{lastName}}": currentMember.lastName,
@@ -125,7 +153,7 @@ const replaceMemberVariables = (message: string) => {
   };
 
   return Object.entries(variables).reduce(
-    (acc, [key, value]) => acc.replace(key, value),
+    (acc, [key, value]) => acc.replaceAll(key, value),
     message,
   );
 };

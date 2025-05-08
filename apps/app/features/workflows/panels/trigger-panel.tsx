@@ -17,6 +17,7 @@ import { type icons } from "lucide-react";
 import { v4 as uuid } from "uuid";
 import { usePanel } from "../hooks/usePanel";
 import type { WorkflowNode } from "./schemas/workflow-node.type";
+import { Node } from "@conquest/zod/schemas/node.schema";
 
 type Props = {
   workflow: Workflow;
@@ -79,7 +80,7 @@ export const TriggerPanel = ({ workflow }: Props) => {
   );
 };
 
-export const nodes = [
+export const nodes: Node[] = [
   {
     id: uuid(),
     type: "custom",
@@ -87,9 +88,8 @@ export const nodes = [
     data: {
       icon: "User",
       label: "Member created",
-      description: "Trigger a workflow when a member is created",
+      description: "Trigger this workflow when a member is created",
       type: "member-created" as const,
-      category: "members" as const,
       isTrigger: true,
     },
   },

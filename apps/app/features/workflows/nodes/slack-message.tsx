@@ -20,13 +20,12 @@ export const SlackMessage = () => {
   const { node } = usePanel();
   const { updateNodeData } = useReactFlow();
 
-  const parsedData = NodeSlackMessageSchema.parse(node?.data);
-  const { message } = parsedData;
+  const { message } = NodeSlackMessageSchema.parse(node?.data);
 
   const form = useForm<FormSlack>({
     resolver: zodResolver(FormSlackSchema),
     defaultValues: {
-      message: message ?? "",
+      message,
     },
   });
 
@@ -34,8 +33,9 @@ export const SlackMessage = () => {
     if (!node) return;
 
     form.setValue("message", e.target.value);
+
     updateNodeData(node?.id, {
-      ...parsedData,
+      ...node.data,
       message: e.target.value,
     });
   };
@@ -49,7 +49,7 @@ export const SlackMessage = () => {
     form.setValue("message", newMessage);
 
     updateNodeData(node?.id, {
-      ...parsedData,
+      ...node.data,
       message: newMessage,
     });
   };

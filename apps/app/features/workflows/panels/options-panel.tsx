@@ -1,18 +1,18 @@
 import { Icon } from "@/components/custom/Icon";
-import { DeleteDialog } from "@/components/custom/delete-dialog";
 import { Button } from "@conquest/ui/button";
 import { Slack } from "@conquest/ui/icons/Slack";
 import { ScrollArea } from "@conquest/ui/scroll-area";
 import { Separator } from "@conquest/ui/separator";
 import type { Workflow } from "@conquest/zod/schemas/workflow.schema";
 import { useReactFlow } from "@xyflow/react";
-import type { icons } from "lucide-react";
+import { type icons } from "lucide-react";
 import { toast } from "sonner";
 import { NextNode } from "../components/NextNode";
 import { Description } from "../components/description";
 import { usePanel } from "../hooks/usePanel";
 import { SlackMessage } from "../nodes/slack-message";
 import { Wait } from "../nodes/wait";
+import { Webhook } from "../nodes/webhook";
 import { ActionPanel } from "./action-panel";
 import { TriggerPanel } from "./trigger-panel";
 
@@ -43,7 +43,7 @@ export const OptionsPanel = ({ workflow }: Props) => {
   };
 
   return (
-    <div className="flex h-full flex-col">
+    <>
       {panel === "actions" && <ActionPanel />}
       {panel === "triggers" && <TriggerPanel workflow={workflow} />}
       {panel === "node" && (
@@ -77,20 +77,12 @@ export const OptionsPanel = ({ workflow }: Props) => {
             <Description id={node.id} />
             {type === "slack-message" && <SlackMessage />}
             {type === "wait" && <Wait />}
+            {type === "webhook" && <Webhook />}
             <Separator />
             <NextNode />
           </div>
         </ScrollArea>
       )}
-      {panel === "node" && !isTrigger && (
-        <div className="flex shrink-0 justify-end p-4">
-          <DeleteDialog
-            title="Delete Workflow"
-            description="Are you sure you want to delete this workflow?"
-            onConfirm={onDelete}
-          />
-        </div>
-      )}
-    </div>
+    </>
   );
 };

@@ -288,7 +288,6 @@ export async function POST(req: NextRequest) {
 
         await triggerWorkflows.trigger({
           trigger: "member-created",
-          workspaceId,
           member: createdMember,
         });
       }

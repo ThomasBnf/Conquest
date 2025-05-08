@@ -16,7 +16,7 @@ import { integrationSuccessEmail } from "./integrationSuccessEmail";
 
 export const installGithub = schemaTask({
   id: "install-github",
-  machine: "medium-1x",
+  machine: "small-2x",
   schema: z.object({
     github: GithubIntegrationSchema,
   }),

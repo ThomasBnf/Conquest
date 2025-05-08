@@ -61,14 +61,18 @@ export const Editor = ({ workflow }: Props) => {
 
   const onNodesChange = useCallback(
     (changes: NodeChange[]) => {
+      console.log(changes);
       setNodes((prev) => {
         if (changes[0]?.type === "remove") {
           const { id } = changes[0];
           const node = getNode(id);
 
+          setTimeout(() => {
+            setPanel({ panel: "workflow", node: undefined });
+          }, 0);
+
           if (node && "isTrigger" in node.data) return prev;
         }
-
         return applyNodeChanges(changes, prev) as WorkflowNode[];
       });
 
@@ -154,7 +158,13 @@ export const Editor = ({ workflow }: Props) => {
             <Button onClick={onPublish}>Publish workflow</Button>
           </div>
         )}
-        <Controls showInteractive={false} />
+        <Controls
+          showInteractive={false}
+          className="overflow-hidden rounded border"
+          style={{
+            boxShadow: "0 1px 2px 0 rgb(0 0 0 / 0.05)",
+          }}
+        />
         <Background />
       </ReactFlow>
       <Sidebar workflow={workflow} />

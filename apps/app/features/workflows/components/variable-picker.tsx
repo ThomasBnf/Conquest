@@ -3,9 +3,9 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@conquest/ui/dropdown-menu";
-import { ScrollArea } from "@conquest/ui/scroll-area";
 import { MemberSchema } from "@conquest/zod/schemas/member.schema";
 import { Braces } from "lucide-react";
 
@@ -22,30 +22,35 @@ export const VariablePicker = ({ onClick }: Props) => {
           Variables
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="start" className="h-56 w-48">
-        <ScrollArea className="h-full">
-          {Object.entries(
-            MemberSchema.pick({
-              firstName: true,
-              lastName: true,
-              primaryEmail: true,
-              country: true,
-              language: true,
-              jobTitle: true,
-              linkedinUrl: true,
-              emails: true,
-              phones: true,
-            }).shape,
-          ).map(([key]) => (
-            <DropdownMenuItem
-              key={key}
-              onClick={() => onClick(`{{${key}}}`)}
-              className="gap-2 capitalize"
-            >
-              {key.replace(/_/g, " ")}
-            </DropdownMenuItem>
-          ))}
-        </ScrollArea>
+      <DropdownMenuContent align="start" className="w-48">
+        <DropdownMenuItem
+          onClick={() => onClick("{{createdMember}}")}
+          className="capitalize"
+        >
+          Created member data
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        {Object.entries(
+          MemberSchema.pick({
+            firstName: true,
+            lastName: true,
+            primaryEmail: true,
+            country: true,
+            language: true,
+            jobTitle: true,
+            linkedinUrl: true,
+            emails: true,
+            phones: true,
+          }).shape,
+        ).map(([key]) => (
+          <DropdownMenuItem
+            key={key}
+            onClick={() => onClick(`{{${key}}}`)}
+            className="capitalize"
+          >
+            {key.replace(/_/g, " ")}
+          </DropdownMenuItem>
+        ))}
       </DropdownMenuContent>
     </DropdownMenu>
   );

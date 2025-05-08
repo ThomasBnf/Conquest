@@ -20,14 +20,33 @@ export const ActionPanel = () => {
   const { panel, node: selectedNode, setPanel } = usePanel();
   const { addNodes, addEdges, updateNodeData } = useReactFlow();
 
+  // const onSelect = async (node: WorkflowNode) => {
+  //   if (selectedNode) {
+  //     updateNode(selectedNode.id, node);
+  //   } else {
+  //     addNodes(node);
+  //   }
+
+  //   await mutateAsync({ id, trigger: node.data.type as Trigger });
+
+  //   setPanel({ panel: "node", node });
+  // };
+
   const onSelect = (node: WorkflowNode) => {
     if (!selectedNode) return;
-
     if (panel === "actions-change") {
-      return updateNodeData(node.id, {
-        id: node.id,
-        ...node.data,
-      });
+      const updatedNode = {
+        ...selectedNode,
+        data: {
+          ...selectedNode.data,
+          ...node.data,
+        },
+      };
+
+      updateNodeData(selectedNode.id, updatedNode.data);
+      setPanel({ panel: "node", node: updatedNode });
+
+      return;
     }
 
     const newNode = {
@@ -53,7 +72,7 @@ export const ActionPanel = () => {
   };
 
   return (
-    <div>
+    <>
       <div className="p-4">
         <Label>Next step</Label>
         <p className="text-muted-foreground">
@@ -90,7 +109,7 @@ export const ActionPanel = () => {
           </CommandGroup>
         </CommandList>
       </Command>
-    </div>
+    </>
   );
 };
 
@@ -104,7 +123,6 @@ export const nodes: WorkflowNode[] = [
       label: "Send Slack message",
       description: "",
       type: "slack-message",
-      category: "communications",
       message: "",
     },
   },
@@ -117,7 +135,6 @@ export const nodes: WorkflowNode[] = [
       label: "Wait",
       description: "",
       type: "wait",
-      category: "utilities",
       duration: 0,
       unit: "seconds",
     },
@@ -131,7 +148,6 @@ export const nodes: WorkflowNode[] = [
       label: "Webhook",
       description: "",
       type: "webhook",
-      category: "utilities",
       url: undefined,
     },
   },
