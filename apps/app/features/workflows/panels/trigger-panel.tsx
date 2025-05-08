@@ -11,13 +11,13 @@ import {
 import { Label } from "@conquest/ui/label";
 import { ScrollArea } from "@conquest/ui/scroll-area";
 import { Separator } from "@conquest/ui/separator";
+import { Node } from "@conquest/zod/schemas/node.schema";
 import type { Trigger, Workflow } from "@conquest/zod/schemas/workflow.schema";
 import { useReactFlow } from "@xyflow/react";
 import { type icons } from "lucide-react";
 import { v4 as uuid } from "uuid";
 import { usePanel } from "../hooks/usePanel";
 import type { WorkflowNode } from "./schemas/workflow-node.type";
-import { Node } from "@conquest/zod/schemas/node.schema";
 
 type Props = {
   workflow: Workflow;
@@ -52,7 +52,7 @@ export const TriggerPanel = ({ workflow }: Props) => {
       </div>
       <Separator />
       <Command>
-        <CommandInput placeholder="Search for an trigger..." />
+        <CommandInput placeholder="Search for a trigger..." />
         <CommandList>
           <CommandEmpty>No trigger found.</CommandEmpty>
           <CommandGroup>
@@ -69,7 +69,10 @@ export const TriggerPanel = ({ workflow }: Props) => {
                   <div className="rounded-md border bg-background p-1">
                     <Icon name={data.icon as keyof typeof icons} size={16} />
                   </div>
-                  <p className="font-medium">{data.label}</p>
+                  <div>
+                    <p className="font-medium">{data.label}</p>
+                    <p className="text-muted-foreground">{data.description}</p>
+                  </div>
                 </CommandItem>
               );
             })}
@@ -88,8 +91,32 @@ export const nodes: Node[] = [
     data: {
       icon: "User",
       label: "Member created",
-      description: "Trigger this workflow when a member is created",
+      description: "When a member is created",
       type: "member-created" as const,
+      isTrigger: true,
+    },
+  },
+  {
+    id: uuid(),
+    type: "custom",
+    position: { x: 0, y: 0 },
+    data: {
+      icon: "UserPlus",
+      label: "Level reached",
+      description: "When a member has reached a new level",
+      type: "level-reached" as const,
+      isTrigger: true,
+    },
+  },
+  {
+    id: uuid(),
+    type: "custom",
+    position: { x: 0, y: 0 },
+    data: {
+      icon: "UserMinus",
+      label: "Level Decreased",
+      description: "When a member has decreased a level",
+      type: "level-decreased" as const,
       isTrigger: true,
     },
   },

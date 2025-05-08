@@ -35,6 +35,16 @@ export const NodeMemberCreatedSchema = NodeBaseDataSchema.extend({
   isTrigger: z.boolean().default(true),
 });
 
+export const NodeLevelReachedSchema = NodeBaseDataSchema.extend({
+  type: z.literal("level-reached"),
+  isTrigger: z.boolean().default(true),
+});
+
+export const NodeLevelDecreasedSchema = NodeBaseDataSchema.extend({
+  type: z.literal("level-decreased"),
+  isTrigger: z.boolean().default(true),
+});
+
 // ACTIONS
 
 export const NodeTagMemberSchema = NodeBaseDataSchema.extend({
@@ -61,6 +71,8 @@ export const NodeWebhookSchema = NodeBaseDataSchema.extend({
 
 export const NodeDataSchema = z.discriminatedUnion("type", [
   NodeMemberCreatedSchema,
+  NodeLevelReachedSchema,
+  NodeLevelDecreasedSchema,
   NodeTagMemberSchema,
   NodeSlackMessageSchema,
   NodeWaitSchema,
@@ -77,6 +89,8 @@ export type Frequency = z.infer<typeof FrequencySchema>;
 export type RepeatOn = z.infer<typeof RepeatOnSchema>;
 
 export type NodeMemberCreated = z.infer<typeof NodeMemberCreatedSchema>;
+export type NodeLevelReached = z.infer<typeof NodeLevelReachedSchema>;
+export type NodeLevelDecreased = z.infer<typeof NodeLevelDecreasedSchema>;
 export type NodeTagMember = z.infer<typeof NodeTagMemberSchema>;
 export type NodeSlackMessage = z.infer<typeof NodeSlackMessageSchema>;
 export type NodeWait = z.infer<typeof NodeWaitSchema>;

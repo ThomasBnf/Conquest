@@ -1,6 +1,7 @@
 import { Button } from "@conquest/ui/button";
 import { ScrollArea } from "@conquest/ui/scroll-area";
 import { Workflow } from "@conquest/zod/schemas/workflow.schema";
+import { useReactFlow } from "@xyflow/react";
 import { ArrowLeft } from "lucide-react";
 import { usePanel } from "../hooks/usePanel";
 import { ActionPanel } from "../panels/action-panel";
@@ -14,13 +15,20 @@ type Props = {
 
 export const Sidebar = ({ workflow }: Props) => {
   const { panel, node, setPanel } = usePanel();
+  const { getNodes } = useReactFlow();
 
-  const hasPanel = panel !== undefined;
+  const hasTrigger = getNodes().some((node) => "isTrigger" in node.data);
+  const isWorkflowPanel = panel === "workflow";
+
+  const showBackButton = hasTrigger && !isWorkflowPanel;
 
   const onBack = () => {
     if (panel === "node") {
-      setPanel({ panel: "workflow" });
-      return;
+      return setPanel({ panel: "workflow" });
+    }
+
+    if (node) {
+      return setPanel({ panel: "node", node });
     }
 
     setPanel({ panel: "node" });
@@ -28,7 +36,7 @@ export const Sidebar = ({ workflow }: Props) => {
 
   return (
     <div className="flex h-full w-full max-w-sm flex-col divide-y border-l bg-background">
-      {hasPanel && panel !== "workflow" && (
+      {showBackButton && (
         <div className="flex h-12 shrink-0 items-center px-2">
           <Button variant="ghost" onClick={onBack}>
             <ArrowLeft size={16} />
