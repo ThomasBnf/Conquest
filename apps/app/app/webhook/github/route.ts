@@ -16,6 +16,7 @@ import {
   StarEvent,
   WebhookEvent,
 } from "@octokit/webhooks-types";
+import { subMinutes } from "date-fns";
 import { NextRequest, NextResponse } from "next/server";
 import { createHmac } from "node:crypto";
 import { Octokit } from "octokit";
@@ -26,22 +27,23 @@ export async function POST(request: NextRequest) {
   const body = JSON.parse(bodyRaw) as WebhookEvent;
   const type = headers.get("x-github-event");
 
-  // console.log("body", body);
-
   const github = await checkSignature(request, bodyRaw);
   if (!github) return NextResponse.json({ status: 200 });
 
-  const { details, workspaceId } = github;
+  const { details, workspaceId, updatedAt } = github;
   const { expiresIn, accessToken, accessTokenIv, repo } = details;
 
   const decryptedToken = await decrypt({ accessToken, iv: accessTokenIv });
 
   let token = decryptedToken;
 
-  const expiresAt = new Date(Date.now() + expiresIn * 1000);
-  console.log("expiresAt", expiresAt);
+  const expiresAt = new Date(updatedAt).getTime() + expiresIn * 1000;
+  const shouldRefresh = expiresAt < subMinutes(new Date(), 5).getTime();
 
-  if (expiresAt < new Date()) {
+  console.log("expiresAt", expiresAt);
+  console.log("shouldRefresh", shouldRefresh);
+
+  if (shouldRefresh) {
     const { accessToken } = await getRefreshToken({ github });
     token = accessToken;
   }

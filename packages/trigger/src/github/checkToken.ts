@@ -31,7 +31,6 @@ export const checkToken = async ({ github }: Props) => {
   const shouldRefresh = subMinutes(expiresAt, 5) < new Date();
 
   let token = decryptedToken;
-  let updatedGithub = github;
 
   if (shouldRefresh) {
     try {
@@ -40,7 +39,6 @@ export const checkToken = async ({ github }: Props) => {
       });
 
       token = accessToken;
-      updatedGithub = refreshGithub;
     } catch (error) {
       logger.error("checkToken", { error });
     }
