@@ -19,7 +19,6 @@ export const listStargazers = async ({ octokit, github }: Props) => {
   const { owner, repo } = details;
 
   let page = 1;
-  const stargazers: Stargazer[] = [];
   const since = subDays(new Date(), 365).toString();
 
   while (true) {
@@ -39,52 +38,45 @@ export const listStargazers = async ({ octokit, github }: Props) => {
       },
     );
 
-    logger.info("listStargazers", { data });
+    logger.info("Stargazers", { count: data.length, data });
 
-    stargazers.push(...data);
+    for (const stargazer of data) {
+      const { starred_at, user } = stargazer as {
+        starred_at: string;
+        user: {
+          id: number;
+        };
+      };
+      const { id } = user;
+
+      const { headers, member } = await createGithubMember({
+        octokit,
+        id,
+        createdAt: new Date(starred_at),
+        workspaceId,
+      });
+
+      await checkRateLimit(headers);
+
+      if (!member) continue;
+
+      await createActivity({
+        activityTypeKey: "github:star",
+        message: `Starred the repository ${repo}`,
+        memberId: member.id,
+        createdAt: new Date(starred_at),
+        updatedAt: new Date(starred_at),
+        source: "Github",
+        workspaceId,
+      });
+
+      await checkRateLimit(headers);
+    }
 
     if (data.length < 100) break;
 
     await checkRateLimit(headers);
 
     page++;
-  }
-
-  logger.info("stargazers", {
-    count: stargazers.length,
-    stargazers,
-  });
-
-  for (const stargazer of stargazers) {
-    const { starred_at, user } = stargazer as {
-      starred_at: string;
-      user: {
-        id: number;
-      };
-    };
-    const { id } = user;
-
-    const { headers, member } = await createGithubMember({
-      octokit,
-      id,
-      createdAt: new Date(starred_at),
-      workspaceId,
-    });
-
-    await checkRateLimit(headers);
-
-    if (!member) continue;
-
-    await createActivity({
-      activityTypeKey: "github:star",
-      message: `Starred the repository ${repo}`,
-      memberId: member.id,
-      createdAt: new Date(starred_at),
-      updatedAt: new Date(starred_at),
-      source: "Github",
-      workspaceId,
-    });
-
-    await checkRateLimit(headers);
   }
 };

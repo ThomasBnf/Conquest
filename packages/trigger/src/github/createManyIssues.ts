@@ -21,7 +21,6 @@ export const createManyIssues = async ({ octokit, github }: Props) => {
   const { owner, repo } = details;
 
   let page = 1;
-  const issues: Issue[] = [];
   const since = subDays(new Date(), 365).toString();
 
   while (true) {
@@ -38,57 +37,50 @@ export const createManyIssues = async ({ octokit, github }: Props) => {
 
     const { headers, data } = response;
 
-    logger.info("issues", { response });
+    logger.info("Issues", { count: data.length, data });
 
-    issues.push(...data.filter((issue) => !issue.pull_request));
+    for (const issue of data) {
+      const { number, user, title, body, comments, created_at, updated_at } =
+        issue;
+      const { id: userId, login } = user ?? {};
+
+      if (!userId || login?.includes("[bot]")) continue;
+
+      const { headers, member } = await createGithubMember({
+        octokit,
+        id: userId,
+        workspaceId,
+      });
+
+      await checkRateLimit(headers);
+
+      if (!member) continue;
+
+      await createActivity({
+        externalId: String(number),
+        activityTypeKey: "github:issue",
+        title: `#${number} - ${title}`,
+        message: body ?? "",
+        memberId: member?.id,
+        createdAt: new Date(created_at),
+        updatedAt: new Date(updated_at),
+        source: "Github",
+        workspaceId,
+      });
+
+      if (comments > 0) {
+        await createManyComments({
+          octokit,
+          github,
+          issueNumber: number,
+        });
+      }
+    }
 
     if (data.length < 100) break;
 
     await checkRateLimit(headers);
 
     page++;
-  }
-
-  logger.info("issues", {
-    count: issues.length,
-    issues,
-  });
-
-  for (const issue of issues) {
-    const { number, user, title, body, comments, created_at, updated_at } =
-      issue;
-    const { id: userId, login } = user ?? {};
-
-    if (!userId || login?.includes("[bot]")) continue;
-
-    const { headers, member } = await createGithubMember({
-      octokit,
-      id: userId,
-      workspaceId,
-    });
-
-    await checkRateLimit(headers);
-
-    if (!member) continue;
-
-    await createActivity({
-      externalId: String(number),
-      activityTypeKey: "github:issue",
-      title: `#${number} - ${title}`,
-      message: body ?? "",
-      memberId: member?.id,
-      createdAt: new Date(created_at),
-      updatedAt: new Date(updated_at),
-      source: "Github",
-      workspaceId,
-    });
-
-    if (comments > 0) {
-      await createManyComments({
-        octokit,
-        github,
-        issueNumber: number,
-      });
-    }
   }
 };

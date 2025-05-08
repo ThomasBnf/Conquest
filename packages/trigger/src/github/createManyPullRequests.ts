@@ -20,7 +20,6 @@ export const createManyPullRequests = async ({ octokit, github }: Props) => {
   const { owner, repo } = details;
 
   let page = 1;
-  const pullRequests: PullRequest[] = [];
   const since = subDays(new Date(), 365).toString();
 
   while (true) {
@@ -35,48 +34,40 @@ export const createManyPullRequests = async ({ octokit, github }: Props) => {
       direction: "desc",
     });
 
-    logger.info("pullRequests", { data });
+    logger.info("Pull Requests", { count: data.length, data });
 
-    pullRequests.push(...data);
+    for (const pullRequest of data) {
+      const { number, user, title, body, created_at, updated_at } = pullRequest;
+      const { id: userId, login } = user ?? {};
+
+      if (!userId || login?.includes("[bot]")) continue;
+
+      const { headers, member } = await createGithubMember({
+        octokit,
+        id: userId,
+        workspaceId,
+      });
+
+      await checkRateLimit(headers);
+
+      if (!member) continue;
+
+      await createActivity({
+        externalId: String(number),
+        activityTypeKey: "github:pr",
+        title: `#${number} - ${title}`,
+        message: body ?? "",
+        memberId: member.id,
+        createdAt: new Date(created_at),
+        updatedAt: new Date(updated_at),
+        source: "Github",
+        workspaceId,
+      });
+    }
 
     if (data.length < 100) break;
 
     await checkRateLimit(headers);
-
     page++;
-  }
-
-  logger.info("pullRequests", {
-    count: pullRequests.length,
-    pullRequests,
-  });
-
-  for (const pullRequest of pullRequests) {
-    const { number, user, title, body, created_at, updated_at } = pullRequest;
-    const { id: userId, login } = user ?? {};
-
-    if (!userId || login?.includes("[bot]")) continue;
-
-    const { headers, member } = await createGithubMember({
-      octokit,
-      id: userId,
-      workspaceId,
-    });
-
-    await checkRateLimit(headers);
-
-    if (!member) continue;
-
-    await createActivity({
-      externalId: String(number),
-      activityTypeKey: "github:pr",
-      title: `#${number} - ${title}`,
-      message: body ?? "",
-      memberId: member.id,
-      createdAt: new Date(created_at),
-      updatedAt: new Date(updated_at),
-      source: "Github",
-      workspaceId,
-    });
   }
 };
