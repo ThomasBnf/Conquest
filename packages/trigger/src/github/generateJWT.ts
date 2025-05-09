@@ -1,18 +1,6 @@
 import { env } from "@conquest/env";
 import jwt from "jsonwebtoken";
 
-const formatPrivateKey = (key: string): string => {
-  const formattedKey = key
-    .replace(
-      /-----BEGIN RSA PRIVATE KEY-----/,
-      "-----BEGIN RSA PRIVATE KEY-----\n",
-    )
-    .replace(/-----END RSA PRIVATE KEY-----/, "\n-----END RSA PRIVATE KEY-----")
-    .replace(/\s+/g, "\n");
-
-  return formattedKey;
-};
-
 export function generateJWT(): string {
   const now = Math.floor(Date.now() / 1000);
   const payload = {
@@ -21,9 +9,9 @@ export function generateJWT(): string {
     iss: env.GITHUB_APP_ID,
   };
 
-  const privateKey = formatPrivateKey(env.GITHUB_PRIVATE_KEY);
+  console.log(env.GITHUB_PRIVATE_KEY);
 
-  const token = jwt.sign(payload, privateKey, {
+  const token = jwt.sign(payload, env.GITHUB_PRIVATE_KEY, {
     algorithm: "RS256",
   });
   return token;
