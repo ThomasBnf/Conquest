@@ -64,7 +64,6 @@ export const getRefreshToken = async ({ github }: Props) => {
         refreshTokenIv: encryptedRefreshToken.iv,
         refreshTokenExpires: refresh_token_expires_in,
         expiresIn: expires_in,
-        scope,
       },
       workspaceId,
     }),
