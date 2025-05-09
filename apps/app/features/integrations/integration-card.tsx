@@ -26,6 +26,7 @@ export const IntegrationCard = ({ integration }: Props) => {
   const isConnected = data?.status === "CONNECTED";
   const isSyncing = data?.status === "SYNCING";
   const isDisconnected = data?.status === "DISCONNECTED";
+  const isFailed = data?.status === "FAILED";
 
   return (
     <Link
@@ -61,6 +62,11 @@ export const IntegrationCard = ({ integration }: Props) => {
       {isDisconnected && (
         <Badge variant="destructive" className="absolute top-2 right-2">
           Disconnected
+        </Badge>
+      )}
+      {isFailed && (
+        <Badge variant="destructive" className="absolute top-2 right-2">
+          Failed
         </Badge>
       )}
       {soon && (

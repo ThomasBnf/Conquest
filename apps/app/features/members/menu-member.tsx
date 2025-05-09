@@ -1,7 +1,6 @@
 "use client";
 
 import { AlertDialog } from "@/components/custom/alert-dialog";
-import { trpc } from "@/server/client";
 import { Button } from "@conquest/ui/button";
 import {
   DropdownMenu,
@@ -20,60 +19,33 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+import { useDeleteMember } from "./mutations/useDeleteMember";
+import { useUpdateMember } from "./mutations/useUpdateMember";
 
 type Props = {
   member: Member;
 };
 
 export const MenuMember = ({ member }: Props) => {
-  const { id, firstName, isStaff } = member;
+  const { isStaff } = member;
   const [open, setOpen] = useState(false);
-  const utils = trpc.useUtils();
+
+  const updateMember = useUpdateMember();
+  const deleteMember = useDeleteMember();
 
   const onCopy = () => {
     navigator.clipboard.writeText(member.id);
     toast.success("Member ID copied to clipboard");
   };
 
-  const { mutateAsync: updateMember } = trpc.members.update.useMutation({
-    onMutate: (updatedMember) => {
-      const { id } = updatedMember;
-
-      utils.members.get.cancel({ id });
-      const previousMember = utils.members.get.getData({ id });
-
-      utils.members.get.setData({ id }, updatedMember);
-
-      return { previousMember };
-    },
-    onError: (_, __, context) => {
-      utils.members.get.setData({ id }, context?.previousMember);
-    },
-    onSettled: () => {
-      utils.members.get.invalidate({ id });
-      utils.members.invalidate();
-    },
-    onSuccess: () => {
-      toast.success(
-        `${firstName} ${isStaff ? "marked as staff" : "removed from staff"}`,
-      );
-    },
-  });
-
-  const { mutateAsync: deleteMember } = trpc.members.delete.useMutation({
-    onSuccess: () => {
-      utils.members.get.invalidate();
-      utils.members.list.invalidate();
-      toast.success("Member deleted");
-    },
-  });
-
   const onDelete = async () => {
     await deleteMember({ id: member.id });
+    toast.success("Member deleted");
   };
 
   const onMarkAsStaff = async () => {
     await updateMember({ ...member, isStaff: !isStaff });
+    toast.success(`${isStaff ? "Removed from staff" : "Marked as staff"}`);
   };
 
   return (

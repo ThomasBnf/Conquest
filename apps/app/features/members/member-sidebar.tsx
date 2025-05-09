@@ -10,16 +10,19 @@ import { EditableLink } from "@/components/editable/editable-link";
 import { EditablePhones } from "@/components/editable/editable-phones";
 import { FieldCard } from "@/components/editable/field-card";
 import { TagPicker } from "@/features/tags/tag-picker";
-import { trpc } from "@/server/client";
 import { Avatar, AvatarFallback, AvatarImage } from "@conquest/ui/avatar";
+import { Label } from "@conquest/ui/label";
 import { ScrollArea } from "@conquest/ui/scroll-area";
 import { Separator } from "@conquest/ui/separator";
 import type { Member } from "@conquest/zod/schemas/member.schema";
 import type { Profile } from "@conquest/zod/schemas/profile.schema";
 import { format } from "date-fns";
 import { TagIcon } from "lucide-react";
+import { DiscourseFields } from "./DiscourseFields";
+import { GithubFields } from "./GithubFields.tsx";
+import { ProfilesParser } from "./ProfilesParser";
 import { LevelBadge } from "./level-badge";
-import { ProfilesParser } from "./profiles-parser";
+import { useUpdateMember } from "./mutations/useUpdateMember";
 import { PulseBadge } from "./pulse-badge";
 
 type Props = {
@@ -42,27 +45,8 @@ export const MemberSidebar = ({ member, profiles }: Props) => {
     lastActivity,
     createdAt,
   } = member ?? {};
-  const utils = trpc.useUtils();
 
-  const { mutateAsync: updateMember } = trpc.members.update.useMutation({
-    onMutate: (updatedMember) => {
-      const { id } = updatedMember;
-
-      utils.members.get.cancel({ id });
-      const previousMember = utils.members.get.getData({ id });
-
-      utils.members.get.setData({ id }, updatedMember);
-
-      return { previousMember };
-    },
-    onError: (_, __, context) => {
-      utils.members.get.setData({ id }, context?.previousMember);
-    },
-    onSettled: () => {
-      utils.members.get.invalidate({ id });
-      utils.members.invalidate();
-    },
-  });
+  const updateMember = useUpdateMember();
 
   const onUpdateMember = async (
     field: keyof Member,
@@ -109,7 +93,9 @@ export const MemberSidebar = ({ member, profiles }: Props) => {
         </div>
         <Separator />
         <ProfilesParser profiles={profiles} />
+        <Separator />
         <div className="space-y-4 p-4">
+          <Label className="text-base">Attributes</Label>
           <FieldCard label="First name">
             <EditableInput
               defaultValue={firstName}
@@ -157,9 +143,6 @@ export const MemberSidebar = ({ member, profiles }: Props) => {
               href={linkedinUrl}
             />
           </FieldCard>
-        </div>
-        <Separator />
-        <div className="space-y-4 p-4">
           <FieldCard label="Language">
             <EditableLanguage
               language={language}
@@ -177,6 +160,8 @@ export const MemberSidebar = ({ member, profiles }: Props) => {
           </FieldCard>
         </div>
         <Separator />
+        <DiscourseFields profiles={profiles} />
+        <GithubFields profiles={profiles} />
         <div className="space-y-4 p-4">
           {firstActivity && (
             <FieldCard label="First activity">
