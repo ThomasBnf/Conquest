@@ -64,15 +64,12 @@ export const LivestormDetailsSchema = z.object({
 export const GithubDetailsSchema = z.object({
   source: z.literal("Github"),
   repo: z.string(),
-  accessToken: z.string(),
-  accessTokenIv: z.string(),
-  refreshToken: z.string(),
-  refreshTokenIv: z.string(),
-  refreshTokenExpires: z.number(),
-  expiresIn: z.number(),
-  installationId: z.coerce.number(),
-  scope: z.string(),
   owner: z.string(),
+  installationId: z.coerce.number(),
+  token: z.string(),
+  tokenIv: z.string(),
+  expiresAt: z.coerce.date(),
+  permissions: z.record(z.enum(["read", "write"])),
 });
 
 export const IntegrationDetailsSchema = z.discriminatedUnion("source", [

@@ -12,6 +12,8 @@ import { WebClient } from "@slack/web-api";
 import { schemaTask } from "@trigger.dev/sdk/v3";
 import { Octokit } from "octokit";
 import { z } from "zod";
+import { createTokenManager } from "../github/createTokenManager";
+import { generateJWT } from "../github/generateJWT";
 import { listAndDeleteWebhooks } from "../github/listAndDeleteWebhooks";
 import { deleteWebhook } from "../livestorm/deleteWebhook";
 import { getRefreshToken } from "../livestorm/getRefreshToken";
@@ -35,15 +37,30 @@ export const deleteIntegration = schemaTask({
 
     if (source === "Github") {
       const github = GithubIntegrationSchema.parse(integration);
-      const { accessToken, accessTokenIv } = github.details;
+      const { repo, installationId, owner } = github.details;
 
-      const decryptedToken = await decrypt({
-        accessToken,
-        iv: accessTokenIv,
-      });
-      const octokit = new Octokit({ auth: decryptedToken });
+      const tokenManager = await createTokenManager(github);
+      const token = await tokenManager.getToken();
+      const octokit = new Octokit({ auth: token });
 
       await listAndDeleteWebhooks({ octokit, github });
+
+      const jwt = generateJWT();
+      const appOctokit = new Octokit({ auth: jwt });
+
+      try {
+        await appOctokit.request(
+          "DELETE /app/installations/{installation_id}",
+          {
+            installation_id: installationId,
+            headers: {
+              "X-GitHub-Api-Version": "2022-11-28",
+            },
+          },
+        );
+      } catch (error) {
+        console.error("Erreur lors de la suppression du repository:", error);
+      }
 
       client.query({
         query: `

@@ -3,10 +3,9 @@ import { deleteActivity } from "@conquest/clickhouse/activities/deleteActivity";
 import { getActivity } from "@conquest/clickhouse/activities/getActivity";
 import { updateActivity } from "@conquest/clickhouse/activities/updateActivity";
 import { prisma } from "@conquest/db/prisma";
-import { decrypt } from "@conquest/db/utils/decrypt";
 import { env } from "@conquest/env";
 import { createGithubMember } from "@conquest/trigger/github/createGithubMember";
-import { getRefreshToken } from "@conquest/trigger/github/getRefreshToken";
+import { createTokenManager } from "@conquest/trigger/github/createTokenManager";
 import { GithubIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
 import {
   IssueCommentEvent,
@@ -16,43 +15,25 @@ import {
   StarEvent,
   WebhookEvent,
 } from "@octokit/webhooks-types";
-import { addSeconds, subMinutes } from "date-fns";
 import { NextRequest, NextResponse } from "next/server";
 import { createHmac } from "node:crypto";
 import { Octokit } from "octokit";
 
 export async function POST(request: NextRequest) {
   const bodyRaw = await request.text();
-  console.log("bodyRaw", bodyRaw);
   const headers = request.headers;
-  console.log("headers", headers);
   const body = JSON.parse(bodyRaw) as WebhookEvent;
-  console.log("body", body);
   const type = headers.get("x-github-event");
-  console.log("type", type);
 
   const github = await checkSignature(request, bodyRaw);
   if (!github) return NextResponse.json({ status: 200 });
 
-  const { details, workspaceId, updatedAt } = github;
-  const { expiresIn, accessToken, accessTokenIv, repo } = details;
+  const { details, workspaceId } = github;
+  const { repo } = details;
 
-  const decryptedToken = await decrypt({ accessToken, iv: accessTokenIv });
+  const tokenManager = await createTokenManager(github);
 
-  console.log("decryptedToken", decryptedToken);
-
-  let token = decryptedToken;
-
-  const expiresAt = addSeconds(new Date(updatedAt), expiresIn);
-  const shouldRefresh = subMinutes(expiresAt, 5) < new Date();
-
-  console.log("expiresAt", expiresAt);
-  console.log("shouldRefresh", shouldRefresh);
-
-  if (shouldRefresh) {
-    const { accessToken } = await getRefreshToken({ github });
-    token = accessToken;
-  }
+  const token = await tokenManager.getToken();
 
   const octokit = new Octokit({ auth: token });
 
