@@ -1,14 +1,12 @@
 import { env } from "@conquest/env";
 import jwt from "jsonwebtoken";
 
-const GITHUB_APP_ID = env.GITHUB_APP_ID;
-
 export function generateJWT(): string {
   const now = Math.floor(Date.now() / 1000);
   const payload = {
     iat: now,
     exp: now + 600, // valid for 10 minutes
-    iss: GITHUB_APP_ID,
+    iss: env.GITHUB_APP_ID,
   };
 
   console.log(env.GITHUB_PRIVATE_KEY);
