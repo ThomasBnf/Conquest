@@ -11,6 +11,8 @@ export function generateJWT(): string {
     iss: GITHUB_APP_ID,
   };
 
+  console.log(env.GITHUB_PRIVATE_KEY);
+
   const token = jwt.sign(payload, env.GITHUB_PRIVATE_KEY, {
     algorithm: "RS256",
   });

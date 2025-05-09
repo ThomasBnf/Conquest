@@ -37,7 +37,7 @@ export const deleteIntegration = schemaTask({
 
     if (source === "Github") {
       const github = GithubIntegrationSchema.parse(integration);
-      const { repo, installationId, owner } = github.details;
+      const { installationId } = github.details;
 
       const tokenManager = await createTokenManager(github);
       const token = await tokenManager.getToken();
