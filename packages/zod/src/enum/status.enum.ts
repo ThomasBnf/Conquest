@@ -5,6 +5,7 @@ export const STATUS = z.enum([
   "CONNECTED",
   "SYNCING",
   "DISCONNECTED",
+  "FAILED",
 ]);
 
 export type Status = z.infer<typeof STATUS>;
