@@ -61,7 +61,7 @@ export const deleteIntegration = schemaTask({
         console.error("Erreur lors de la suppression du repository:", error);
       }
 
-      client.query({
+      await client.query({
         query: `
           ALTER TABLE profile DELETE
           WHERE memberId IN (
@@ -107,7 +107,9 @@ export const deleteIntegration = schemaTask({
       where: { source, workspaceId },
     });
 
-    client.query({
+    logger.info("ALTER TABLE activity DELETE");
+
+    await client.query({
       query: `
         ALTER TABLE activity DELETE 
         WHERE source = '${source}'
@@ -116,7 +118,7 @@ export const deleteIntegration = schemaTask({
 
     logger.info("ALTER TABLE log DELETE");
 
-    client.query({
+    await client.query({
       query: `
         ALTER TABLE log DELETE 
         WHERE memberId IN (
@@ -128,7 +130,7 @@ export const deleteIntegration = schemaTask({
 
     logger.info("ALTER TABLE activityType DELETE");
 
-    client.query({
+    await client.query({
       query: `
       ALTER TABLE activityType DELETE 
       WHERE source = '${source}'
@@ -137,7 +139,7 @@ export const deleteIntegration = schemaTask({
 
     logger.info("ALTER TABLE channel DELETE");
 
-    client.query({
+    await client.query({
       query: `
         ALTER TABLE channel DELETE
         WHERE source = '${source}'
@@ -146,7 +148,7 @@ export const deleteIntegration = schemaTask({
 
     logger.info("ALTER TABLE company DELETE");
 
-    client.query({
+    await client.query({
       query: `
         ALTER TABLE company DELETE
         WHERE source = '${source}'
@@ -155,7 +157,7 @@ export const deleteIntegration = schemaTask({
 
     logger.info("ALTER TABLE member DELETE");
 
-    client.query({
+    await client.query({
       query: `
         ALTER TABLE member DELETE
         WHERE source = '${source}'
@@ -164,7 +166,7 @@ export const deleteIntegration = schemaTask({
 
     logger.info("ALTER TABLE profile DELETE");
 
-    client.query({
+    await client.query({
       query: `
         ALTER TABLE profile DELETE
         WHERE JSONExtractString(CAST(attributes AS String), 'source') = '${source}'
