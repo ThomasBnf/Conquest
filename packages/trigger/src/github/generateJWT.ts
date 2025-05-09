@@ -1,7 +1,7 @@
 import { env } from "@conquest/env";
 import jwt from "jsonwebtoken";
 
-const GITHUB_APP_ID = "1186268";
+const GITHUB_APP_ID = env.GITHUB_APP_ID;
 
 export function generateJWT(): string {
   const now = Math.floor(Date.now() / 1000);

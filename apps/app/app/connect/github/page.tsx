@@ -18,6 +18,7 @@ export default async function Page({ searchParams }: Props) {
   const response = await generateToken(installation_id);
 
   if (!response.ok) {
+    console.error(await response.json());
     return redirect("/settings/integrations/github?error=invalid_code");
   }
 
@@ -27,6 +28,8 @@ export default async function Page({ searchParams }: Props) {
   console.log("page github", data);
 
   const encryptedAccessToken = await encrypt(token);
+
+  console.log("encryptedAccessToken", encryptedAccessToken);
 
   await createIntegration({
     externalId: null,
