@@ -11,7 +11,7 @@ export const getProfileBySource = async ({ memberId, source }: Props) => {
   const result = await client.query({
     query: `
       SELECT *
-      FROM profile
+      FROM profile FINAL
       WHERE memberId = '${memberId}'
       AND attributes.source = '${source}'
     `,

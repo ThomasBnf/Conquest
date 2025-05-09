@@ -41,7 +41,7 @@ export const createProfile = async ({
   const result = await client.query({
     query: `
       SELECT *
-      FROM profile
+      FROM profile FINAL
       WHERE id = '${id}'
     `,
     format: "JSON",
