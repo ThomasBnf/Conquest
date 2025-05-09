@@ -26,7 +26,7 @@ export const MenuProfile = ({ href, profile }: Props) => {
 
   const { mutateAsync: deleteProfile } = trpc.profiles.delete.useMutation({
     onSuccess: () => {
-      utils.profiles.list.invalidate();
+      utils.profiles.list.invalidate({ memberId: profile.memberId });
       toast.success("Profile deleted");
     },
   });
@@ -38,8 +38,8 @@ export const MenuProfile = ({ href, profile }: Props) => {
   return (
     <>
       <AlertDialog
-        title="Delete member"
-        description="Are you sure you want to delete this member?"
+        title="Delete profile"
+        description="Are you sure you want to delete this profile?"
         onConfirm={onDelete}
         open={open}
         setOpen={setOpen}
