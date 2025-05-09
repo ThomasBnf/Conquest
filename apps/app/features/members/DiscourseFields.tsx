@@ -32,7 +32,7 @@ export const DiscourseFields = ({ profiles }: Props) => {
   return (
     <>
       <div className="space-y-4 p-4">
-        <Label className="text-base">Discourse custom fields</Label>
+        <Label>Discourse custom fields</Label>
         <div className="space-y-4">
           {customFields?.map((userField) => {
             const { id, value } = userField;

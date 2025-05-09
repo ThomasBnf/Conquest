@@ -95,7 +95,7 @@ export const MemberSidebar = ({ member, profiles }: Props) => {
         <ProfilesParser profiles={profiles} />
         <Separator />
         <div className="space-y-4 p-4">
-          <Label className="text-base">Attributes</Label>
+          <Label>Attributes</Label>
           <FieldCard label="First name">
             <EditableInput
               defaultValue={firstName}

@@ -19,7 +19,7 @@ export const GithubFields = ({ profiles }: Props) => {
   return (
     <>
       <div className="space-y-4 p-4">
-        <Label className="text-base">Github attributes</Label>
+        <Label>Github attributes</Label>
         <div className="space-y-4">
           {Object.entries(rest).map(([key, value]) => {
             const formattedKey = key.slice(0, 1).toUpperCase() + key.slice(1);
