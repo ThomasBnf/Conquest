@@ -22,22 +22,14 @@ import { createHmac } from "node:crypto";
 import { Octokit } from "octokit";
 
 export async function POST(request: NextRequest) {
-  let bodyRaw: string;
-  let body: WebhookEvent;
-
-  try {
-    bodyRaw = await request.text();
-    body = JSON.parse(bodyRaw) as WebhookEvent;
-  } catch (error) {
-    console.error("Erreur de parsing JSON:", error);
-    return NextResponse.json(
-      { error: "Invalid JSON payload" },
-      { status: 400 },
-    );
-  }
-
+  const bodyRaw = await request.text();
+  console.log("bodyRaw", bodyRaw);
   const headers = request.headers;
+  console.log("headers", headers);
+  const body = JSON.parse(bodyRaw) as WebhookEvent;
+  console.log("body", body);
   const type = headers.get("x-github-event");
+  console.log("type", type);
 
   const github = await checkSignature(request, bodyRaw);
   if (!github) return NextResponse.json({ status: 200 });
