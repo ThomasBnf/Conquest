@@ -40,6 +40,7 @@ export const activeMembers = protectedProcedure
               a.createdAt >= '${_from}' 
               AND a.createdAt <= '${_to}'
               AND m.workspaceId = '${workspaceId}'
+              AND m.isStaff = 0
           ) as currentCount,
           (
             SELECT count(DISTINCT a.memberId)
@@ -49,6 +50,7 @@ export const activeMembers = protectedProcedure
               a.createdAt >= '${_previousFrom}' 
               AND a.createdAt <= '${_previousTo}'
               AND m.workspaceId = '${workspaceId}'
+              AND m.isStaff = 0
           ) as previousCount
         SELECT 
           currentCount as current,

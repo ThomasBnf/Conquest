@@ -51,6 +51,7 @@ export const atRiskMembersTable = protectedProcedure
         ) p ON m.id = p.memberId
         WHERE 
           m.workspaceId = '${workspaceId}'
+          AND m.isStaff = 0
           AND l.number >= 4
           AND m.id NOT IN (
             SELECT memberId 

@@ -39,6 +39,7 @@ export const newMembers = protectedProcedure
               createdAt >= '${_from}' 
               AND createdAt <= '${_to}'
               AND workspaceId = '${workspaceId}'
+              AND isStaff = 0
           ) as currentCount,
           (
             SELECT count()
@@ -47,6 +48,7 @@ export const newMembers = protectedProcedure
               createdAt >= '${_previousFrom}' 
               AND createdAt <= '${_previousTo}'
               AND workspaceId = '${workspaceId}'
+              AND isStaff = 0
           ) as previousCount
         SELECT 
           currentCount as current,

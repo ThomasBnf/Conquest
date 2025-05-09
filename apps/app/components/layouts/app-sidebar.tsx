@@ -1,12 +1,15 @@
 "use client";
 
 import { WorkspaceMenu } from "@/features/workspaces/workspace-menu";
+import { Badge } from "@conquest/ui/badge";
+import { cn } from "@conquest/ui/cn";
 import { Companies } from "@conquest/ui/icons/Companies";
 import { Dashboard } from "@conquest/ui/icons/Dashboard";
 import { Documentation } from "@conquest/ui/icons/Documentation";
 import { Members } from "@conquest/ui/icons/Members";
 import { Settings } from "@conquest/ui/icons/Settings";
 import { SlackCommunity } from "@conquest/ui/icons/Slack-Community";
+import { Workflows } from "@conquest/ui/icons/Workflows";
 import { Separator } from "@conquest/ui/separator";
 import {
   Sidebar,
@@ -58,13 +61,13 @@ export const AppSidebar = ({ workspace }: Props) => {
       href: `/${slug}/companies`,
       isActive: pathname.startsWith(`/${slug}/companies`),
     },
-    // {
-    //   label: "Workflows",
-    //   icon: <Workflows size={18} />,
-    //   href: `/${slug}/workflows`,
-    //   isActive: pathname.startsWith(`/${slug}/workflows`),
-    //   isBeta: true,
-    // },
+    {
+      label: "Workflows",
+      icon: <Workflows size={18} />,
+      href: `/${slug}/workflows`,
+      isActive: pathname.startsWith(`/${slug}/workflows`),
+      soon: true,
+    },
   ];
 
   const footer = [
@@ -102,11 +105,12 @@ export const AppSidebar = ({ workspace }: Props) => {
                   asChild
                   tooltip={route.label}
                   isActive={route.isActive}
+                  className={cn(route.soon && "cursor-default opacity-50")}
                 >
-                  <Link href={route.href} prefetch>
+                  <Link href={route.soon ? "" : route.href} prefetch>
                     {route.icon}
                     <span>{route.label}</span>
-                    {/* {route.isBeta && <Badge variant="secondary">Beta</Badge>} */}
+                    {route.soon && <Badge variant="secondary">Soon</Badge>}
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>

@@ -47,6 +47,7 @@ export const listFilteredMembers = async ({
           GROUP BY memberId
         ) p ON m.id = p.memberId
         WHERE m.workspaceId = '${workspaceId}'
+        AND m.isStaff = 0
         ${
           search
             ? `AND (

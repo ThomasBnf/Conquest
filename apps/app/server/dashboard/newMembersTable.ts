@@ -52,6 +52,7 @@ export const newMembersTable = protectedProcedure
         WHERE 
           m.workspaceId = '${workspaceId}'
           AND m.createdAt BETWEEN '${_from}' AND '${_to}'
+          AND m.isStaff = 0
         ${
           search
             ? `AND (

@@ -26,6 +26,7 @@ export const heatmap = protectedProcedure
         JOIN member m FINAL ON a.memberId = m.id
         WHERE 
           m.workspaceId = '${workspaceId}'
+          AND m.isStaff = 0
           AND a.createdAt >= '${last365days}'
           ${memberId ? `AND a.memberId = '${memberId}'` : ""}
         GROUP BY date

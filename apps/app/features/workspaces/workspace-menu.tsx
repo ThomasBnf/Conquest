@@ -73,7 +73,7 @@ export const WorkspaceMenu = ({ workspace }: Props) => {
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <SidebarMenuButton className="w-fit font-medium data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground">
-              {name}
+              <p className="truncate">{name}</p>
               <ChevronsUpDown className="!size-3.5" />
             </SidebarMenuButton>
           </DropdownMenuTrigger>

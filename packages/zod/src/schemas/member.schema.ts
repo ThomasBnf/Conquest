@@ -19,6 +19,7 @@ export const MemberSchema = z.object({
   pulse: z.number(),
   source: SOURCE,
   companyId: z.string().nullable(),
+  isStaff: z.boolean(),
   workspaceId: z.string(),
   firstActivity: z.coerce.date().nullable(),
   lastActivity: z.coerce.date().nullable(),

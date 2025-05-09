@@ -41,6 +41,7 @@ export const totalMembers = protectedProcedure
             FROM member FINAL
             WHERE 
               workspaceId = '${workspaceId}'
+              AND isStaff = 0
           ) as count 
         SELECT 
           count.currentPeriodEnd as current,

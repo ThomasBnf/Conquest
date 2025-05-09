@@ -11,7 +11,13 @@ import {
   DropdownMenuTrigger,
 } from "@conquest/ui/dropdown-menu";
 import type { Member } from "@conquest/zod/schemas/member.schema";
-import { Copy, MoreHorizontal, Trash2 } from "lucide-react";
+import {
+  Copy,
+  MoreHorizontal,
+  Trash2,
+  UserMinus,
+  UserPlus,
+} from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -20,6 +26,7 @@ type Props = {
 };
 
 export const MenuMember = ({ member }: Props) => {
+  const { id, firstName, isStaff } = member;
   const [open, setOpen] = useState(false);
   const utils = trpc.useUtils();
 
@@ -27,6 +34,31 @@ export const MenuMember = ({ member }: Props) => {
     navigator.clipboard.writeText(member.id);
     toast.success("Member ID copied to clipboard");
   };
+
+  const { mutateAsync: updateMember } = trpc.members.update.useMutation({
+    onMutate: (updatedMember) => {
+      const { id } = updatedMember;
+
+      utils.members.get.cancel({ id });
+      const previousMember = utils.members.get.getData({ id });
+
+      utils.members.get.setData({ id }, updatedMember);
+
+      return { previousMember };
+    },
+    onError: (_, __, context) => {
+      utils.members.get.setData({ id }, context?.previousMember);
+    },
+    onSettled: () => {
+      utils.members.get.invalidate({ id });
+      utils.members.invalidate();
+    },
+    onSuccess: () => {
+      toast.success(
+        `${firstName} ${isStaff ? "marked as staff" : "removed from staff"}`,
+      );
+    },
+  });
 
   const { mutateAsync: deleteMember } = trpc.members.delete.useMutation({
     onSuccess: () => {
@@ -38,6 +70,10 @@ export const MenuMember = ({ member }: Props) => {
 
   const onDelete = async () => {
     await deleteMember({ id: member.id });
+  };
+
+  const onMarkAsStaff = async () => {
+    await updateMember({ ...member, isStaff: !isStaff });
   };
 
   return (
@@ -56,6 +92,12 @@ export const MenuMember = ({ member }: Props) => {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
+          <DropdownMenuItem onClick={onMarkAsStaff}>
+            {member.isStaff ? <UserMinus size={16} /> : <UserPlus size={16} />}
+            <span>
+              {member.isStaff ? "Remove from staff" : "Mark as staff"}
+            </span>
+          </DropdownMenuItem>
           <DropdownMenuItem onClick={onCopy}>
             <Copy size={16} />
             Copy ID

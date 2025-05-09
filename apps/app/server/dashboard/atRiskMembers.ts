@@ -42,6 +42,7 @@ export const atRiskMembers = protectedProcedure
           LEFT JOIN level l ON m.levelId = l.id
           WHERE 
             m.workspaceId = '${workspaceId}'
+            AND m.isStaff = 0
             AND l.number >= 4
             AND m.id NOT IN (
               SELECT memberId 
@@ -57,6 +58,7 @@ export const atRiskMembers = protectedProcedure
           LEFT JOIN level l ON m.levelId = l.id
           WHERE 
             m.workspaceId = '${workspaceId}'
+            AND m.isStaff = 0
             AND l.number >= 4
             AND m.id NOT IN (
               SELECT memberId 
