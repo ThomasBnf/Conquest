@@ -42,13 +42,8 @@ export const getRefreshToken = async ({ github }: Props) => {
   const data = await response.json();
   console.log("data", data);
 
-  const {
-    access_token,
-    expires_in,
-    refresh_token,
-    refresh_token_expires_in,
-    scope,
-  } = data;
+  const { access_token, expires_in, refresh_token, refresh_token_expires_in } =
+    data;
 
   const encryptedAccessToken = await encrypt(access_token);
   const encryptedRefreshToken = await encrypt(refresh_token);
