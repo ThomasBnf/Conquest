@@ -73,15 +73,22 @@ export const createGithubMember = async ({
   });
 
   if (twitter_username) {
-    await createProfile({
-      memberId: member.id,
-      attributes: {
-        source: "Twitter",
-        username: twitter_username,
-      },
-      createdAt,
+    const twitterProfile = await getProfile({
+      externalId: twitter_username,
       workspaceId,
     });
+
+    if (!twitterProfile) {
+      await createProfile({
+        memberId: member.id,
+        attributes: {
+          source: "Twitter",
+          username: twitter_username,
+        },
+        createdAt,
+        workspaceId,
+      });
+    }
   }
 
   return {
