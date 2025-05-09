@@ -39,6 +39,8 @@ export async function POST(request: NextRequest) {
 
   const decryptedToken = await decrypt({ accessToken, iv: accessTokenIv });
 
+  console.log("decryptedToken", decryptedToken);
+
   let token = decryptedToken;
 
   const expiresAt = addSeconds(new Date(updatedAt), expiresIn);
@@ -260,6 +262,8 @@ export async function POST(request: NextRequest) {
 const checkSignature = async (request: NextRequest, bodyRaw: string) => {
   const event = JSON.parse(bodyRaw) as WebhookEvent;
 
+  console.log("event", event);
+
   if ("repository" in event) {
     const repository = event.repository as Repository;
     const { name } = repository;
@@ -272,6 +276,8 @@ const checkSignature = async (request: NextRequest, bodyRaw: string) => {
     const expectedSignature = createHmac("sha256", secret)
       .update(Buffer.from(bodyRaw, "utf8"))
       .digest("hex");
+
+    console.log("signature", signature);
 
     if (signature !== `sha256=${expectedSignature}`) {
       return false;
@@ -287,6 +293,8 @@ const checkSignature = async (request: NextRequest, bodyRaw: string) => {
         },
       },
     });
+
+    console.log("integration", integration);
 
     if (!integration) return false;
     return GithubIntegrationSchema.parse(integration);
