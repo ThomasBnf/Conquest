@@ -9,11 +9,10 @@ import {
   LivestormIntegrationSchema,
 } from "@conquest/zod/schemas/integration.schema";
 import { WebClient } from "@slack/web-api";
-import { schemaTask } from "@trigger.dev/sdk/v3";
+import { logger, schemaTask } from "@trigger.dev/sdk/v3";
 import { Octokit } from "octokit";
 import { z } from "zod";
 import { createTokenManager } from "../github/createTokenManager";
-import { generateJWT } from "../github/generateJWT";
 import { listAndDeleteWebhooks } from "../github/listAndDeleteWebhooks";
 import { deleteWebhook } from "../livestorm/deleteWebhook";
 import { getRefreshToken } from "../livestorm/getRefreshToken";
@@ -24,8 +23,9 @@ export const deleteIntegration = schemaTask({
   machine: "small-2x",
   schema: z.object({
     integration: IntegrationSchema,
+    jwt: z.string().nullable(),
   }),
-  run: async ({ integration }) => {
+  run: async ({ integration, jwt }) => {
     const { workspaceId, details } = integration;
     const { source } = details;
 
@@ -45,7 +45,6 @@ export const deleteIntegration = schemaTask({
 
       await listAndDeleteWebhooks({ octokit, github });
 
-      const jwt = generateJWT();
       const appOctokit = new Octokit({ auth: jwt });
 
       try {
@@ -114,6 +113,9 @@ export const deleteIntegration = schemaTask({
         WHERE source = '${source}'
         AND workspaceId = '${workspaceId}'`,
     });
+
+    logger.info("ALTER TABLE log DELETE");
+
     client.query({
       query: `
         ALTER TABLE log DELETE 
@@ -123,39 +125,52 @@ export const deleteIntegration = schemaTask({
           AND workspaceId = '${workspaceId}'
         );`,
     });
-    try {
-      client.query({
-        query: `
-        ALTER TABLE activityType DELETE 
-        WHERE source = '${source}'
-        AND workspaceId = '${workspaceId}'`,
-      });
-    } catch (error) {
-      console.error(error);
-    }
+
+    logger.info("ALTER TABLE activityType DELETE");
+
+    client.query({
+      query: `
+      ALTER TABLE activityType DELETE 
+      WHERE source = '${source}'
+      AND workspaceId = '${workspaceId}'`,
+    });
+
+    logger.info("ALTER TABLE channel DELETE");
+
     client.query({
       query: `
         ALTER TABLE channel DELETE
         WHERE source = '${source}'
         AND workspaceId = '${workspaceId}'`,
     });
+
+    logger.info("ALTER TABLE company DELETE");
+
     client.query({
       query: `
         ALTER TABLE company DELETE
         WHERE source = '${source}'
         AND workspaceId = '${workspaceId}'`,
     });
+
+    logger.info("ALTER TABLE member DELETE");
+
     client.query({
       query: `
         ALTER TABLE member DELETE
         WHERE source = '${source}'
         AND workspaceId = '${workspaceId}'`,
     });
+
+    logger.info("ALTER TABLE profile DELETE");
+
     client.query({
       query: `
         ALTER TABLE profile DELETE
         WHERE JSONExtractString(CAST(attributes AS String), 'source') = '${source}'
         AND workspaceId = '${workspaceId}'`,
     });
+
+    logger.info("ALTER TABLE tag DELETE");
   },
 });
