@@ -7,7 +7,7 @@ export function generateJWT(): string {
   const now = Math.floor(Date.now() / 1000);
   const payload = {
     iat: now,
-    exp: now + 600, // valide 10 minutes
+    exp: now + 600, // valid for 10 minutes
     iss: GITHUB_APP_ID,
   };
 
