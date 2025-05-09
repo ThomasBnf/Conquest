@@ -33,7 +33,7 @@ export const DiscourseFields = ({ profiles }: Props) => {
     <>
       <div className="space-y-4 p-4">
         <Label className="text-base">Discourse custom fields</Label>
-        <div className="space-y-2">
+        <div className="space-y-4">
           {customFields?.map((userField) => {
             const { id, value } = userField;
             const key = userFields?.find((field) => field.id === id)?.name;

@@ -18,7 +18,7 @@ export const GithubFields = ({ profiles }: Props) => {
     <>
       <div className="space-y-4 p-4">
         <Label className="text-base">Github attributes</Label>
-        <div className="space-y-2">
+        <div className="space-y-4">
           {Object.entries(githubProfile.attributes).map(([key, value]) => {
             const formattedKey = key.slice(0, 1).toUpperCase() + key.slice(1);
             if (!value) return null;
