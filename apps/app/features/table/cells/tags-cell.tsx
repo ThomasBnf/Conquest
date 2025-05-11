@@ -1,4 +1,5 @@
 import { useFilters } from "@/context/filtersContext";
+import { useCreateTag } from "@/features/tags/mutations/useCreateTag";
 import { TagBadge } from "@/features/tags/tag-badge";
 import { TagMenuDialog } from "@/features/tags/tag-menu-dialog";
 import { trpc } from "@/server/client";
@@ -33,15 +34,24 @@ export const TagsCell = <TData extends Member | Company>({
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState("");
 
+  const utils = trpc.useUtils();
+  const ref = useRef<HTMLDivElement>(null);
+
+  const onUpdate = async (tags: string[]) => {
+    if ("firstName" in data) {
+      await updateMember({ ...data, tags });
+    } else {
+      await updateCompany({ ...data, tags });
+    }
+  };
+
+  const createTag = useCreateTag({ tags: data.tags, onUpdate });
   const existingTag = tags?.find((tag) => tag.name === value);
 
   const isMember = "firstName" in data;
   const [{ search, id, desc }] = useQueryStates(
     isMember ? tableMembersParams : tableCompaniesParams,
   );
-
-  const utils = trpc.useUtils();
-  const ref = useRef<HTMLDivElement>(null);
 
   const { mutateAsync: updateMember } = trpc.members.update.useMutation({
     onMutate: async (newData) => {
@@ -98,7 +108,13 @@ export const TagsCell = <TData extends Member | Company>({
     },
   });
 
-  const onSelect = async (tagId: string) => {
+  const onClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setOpen(true);
+    requestAnimationFrame(() => setHeight(ref.current?.offsetHeight ?? 0));
+  };
+
+  const onSelectTag = async (tagId: string) => {
     const hasTag = data.tags.includes(tagId);
     const newTags = hasTag
       ? data.tags.filter((id) => id !== tagId)
@@ -111,59 +127,19 @@ export const TagsCell = <TData extends Member | Company>({
     }
   };
 
-  const onClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    setOpen(true);
-    requestAnimationFrame(() => setHeight(ref.current?.offsetHeight ?? 0));
-  };
-
-  const { mutateAsync: createTag } = trpc.tags.postOptimistic.useMutation({
-    onMutate: async (newTag) => {
-      setValue("");
-
-      await utils.tags.list.cancel();
-
-      const previousTags = utils.tags.list.getData();
-
-      utils.tags.list.setData(undefined, (prevTags) => {
-        return [...(prevTags ?? []), newTag];
-      });
-
-      const newTags = [...data.tags, newTag.id];
-
-      if ("firstName" in data) {
-        updateMember({ ...data, tags: newTags });
-      } else {
-        updateCompany({ ...data, tags: newTags });
-      }
-
-      return { previousTags, newTag };
-    },
-    onError: (err, newTag, context) => {
-      if (context?.previousTags) {
-        utils.tags.list.setData(undefined, context.previousTags);
-      }
-    },
-    onSettled: () => {
-      utils.tags.list.invalidate();
-    },
-  });
-
   const onAddTag = () => {
     createTag({
       id: uuid(),
       externalId: null,
       name: value,
       color: "#0070f3",
-      source: "Manual",
+      source: "Manual" as const,
       workspaceId: data.workspaceId,
       createdAt: new Date(),
       updatedAt: new Date(),
     });
-  };
 
-  const onUpdate = () => {
-    utils.tags.list.invalidate();
+    setValue("");
   };
 
   useEffect(() => {
@@ -193,7 +169,7 @@ export const TagsCell = <TData extends Member | Company>({
             <TagBadge
               key={tag}
               tag={tags?.find((t) => t.id === tag)}
-              onDelete={() => onSelect(tag)}
+              onDelete={() => onSelectTag(tag)}
               deletable={open}
             />
           ))}
@@ -214,10 +190,10 @@ export const TagsCell = <TData extends Member | Company>({
           <CommandList>
             <CommandGroup heading="Select or create tag">
               {tags?.map((tag) => (
-                <CommandItem key={tag.id} className="p-0 pr-1">
+                <CommandItem key={tag.id} className="group">
                   <div
-                    className="flex h-full w-full items-center p-1"
-                    onClick={() => onSelect(tag.id)}
+                    className="flex h-full w-full items-center"
+                    onClick={() => onSelectTag(tag.id)}
                   >
                     <Checkbox
                       checked={data.tags.includes(tag.id)}
@@ -225,7 +201,7 @@ export const TagsCell = <TData extends Member | Company>({
                     />
                     <TagBadge tag={tag} />
                   </div>
-                  <TagMenuDialog tag={tag} onUpdate={onUpdate} />
+                  <TagMenuDialog tag={tag} />
                 </CommandItem>
               ))}
             </CommandGroup>

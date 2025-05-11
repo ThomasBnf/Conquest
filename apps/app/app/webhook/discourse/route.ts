@@ -28,6 +28,7 @@ import { DiscourseIntegrationSchema } from "@conquest/zod/schemas/integration.sc
 import type { DiscourseWebhook } from "@conquest/zod/types/discourse";
 import { type NextRequest, NextResponse } from "next/server";
 import { createHmac } from "node:crypto";
+import { v4 as uuid } from "uuid";
 
 export async function POST(request: NextRequest) {
   const rawBody = await request.text();
@@ -536,13 +537,18 @@ export async function POST(request: NextRequest) {
 
     const color = colorMap[String(badge_type_id) as keyof typeof colorMap];
 
-    const newTag = await createTag({
-      externalId: String(badgeId),
+    const newTag = {
+      id: uuid(),
+      externalId: null,
       name,
       color,
-      source: "Discourse",
+      source: "Discourse" as const,
       workspaceId,
-    });
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+
+    await createTag(newTag);
 
     await updateMember({
       ...member,

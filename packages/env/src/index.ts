@@ -27,6 +27,7 @@ const clickhouseEnv = {
     CLICKHOUSE_URL: z.string(),
     CLICKHOUSE_USER: z.string(),
     CLICKHOUSE_PASSWORD: z.string(),
+    CLICKHOUSE_DB: z.string(),
   },
 };
 

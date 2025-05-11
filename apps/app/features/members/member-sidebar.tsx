@@ -17,7 +17,7 @@ import { Separator } from "@conquest/ui/separator";
 import type { Member } from "@conquest/zod/schemas/member.schema";
 import type { Profile } from "@conquest/zod/schemas/profile.schema";
 import { format } from "date-fns";
-import { TagIcon } from "lucide-react";
+import { toast } from "sonner";
 import { LevelBadge } from "./level-badge";
 import { ProfilesParser } from "./profiles-parser";
 import { PulseBadge } from "./pulse-badge";
@@ -56,6 +56,7 @@ export const MemberSidebar = ({ member, profiles }: Props) => {
       return { previousMember };
     },
     onError: (_, __, context) => {
+      toast.error("Failed to update member");
       utils.members.get.setData({ id }, context?.previousMember);
     },
     onSettled: () => {
@@ -68,7 +69,7 @@ export const MemberSidebar = ({ member, profiles }: Props) => {
     value: string | null | string[],
   ) => {
     if (member[field] === value) return;
-    await updateMember({ ...member, [field]: value });
+    updateMember({ ...member, [field]: value });
   };
 
   return (
@@ -96,19 +97,17 @@ export const MemberSidebar = ({ member, profiles }: Props) => {
           </div>
         </div>
         <Separator />
-        <div className="flex flex-col gap-2 p-4">
-          <div className="flex items-center gap-2 text-muted-foreground">
-            <TagIcon size={16} className="shrink-0" />
-            <p>Tags</p>
-          </div>
-          <TagPicker
-            record={member}
-            onUpdate={(value) => onUpdateMember("tags", value)}
-          />
+        <div className="space-y-4 p-2.5 py-4">
+          <FieldCard label="Tags">
+            <TagPicker
+              record={member}
+              onUpdate={(value) => onUpdateMember("tags", value)}
+            />
+          </FieldCard>
         </div>
         <Separator />
         <ProfilesParser profiles={profiles} />
-        <div className="space-y-4 p-4">
+        <div className="space-y-4 p-2.5 py-4">
           <FieldCard label="First name">
             <EditableInput
               defaultValue={firstName}
@@ -158,7 +157,7 @@ export const MemberSidebar = ({ member, profiles }: Props) => {
           </FieldCard>
         </div>
         <Separator />
-        <div className="space-y-4 p-4">
+        <div className="space-y-4 p-2.5 py-4">
           <FieldCard label="Language">
             <EditableLanguage
               language={language}
@@ -176,7 +175,7 @@ export const MemberSidebar = ({ member, profiles }: Props) => {
           </FieldCard>
         </div>
         <Separator />
-        <div className="space-y-4 p-4">
+        <div className="space-y-4 p-2.5 py-4">
           {firstActivity && (
             <FieldCard label="First activity">
               <p className="h-8 place-content-center pl-2">

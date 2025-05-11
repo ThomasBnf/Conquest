@@ -13,10 +13,10 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from "@conquest/ui/popover";
 import type { Company } from "@conquest/zod/schemas/company.schema";
 import type { Member } from "@conquest/zod/schemas/member.schema";
-import type { Tag } from "@conquest/zod/schemas/tag.schema";
-import { Plus } from "lucide-react";
+import { Plus, TagIcon } from "lucide-react";
 import { useState } from "react";
 import { v4 as uuid } from "uuid";
+import { useCreateTag } from "./mutations/useCreateTag";
 import { TagBadge } from "./tag-badge";
 import { TagMenuDialog } from "./tag-menu-dialog";
 
@@ -28,50 +28,24 @@ type Props = {
 
 export const TagPicker = ({ record, onUpdate, className }: Props) => {
   const { data: tags } = trpc.tags.list.useQuery();
-
   const [value, setValue] = useState("");
-  const [recordTags, setRecordTags] = useState(record?.tags ?? []);
+  const [open, setOpen] = useState(false);
 
-  const utils = trpc.useUtils();
+  const createTag = useCreateTag({ tags: record.tags, onUpdate });
   const existingTag = tags?.find((tag) => tag.name === value);
 
-  const { mutateAsync: createTag } = trpc.tags.postOptimistic.useMutation({
-    onMutate: async (newTag) => {
-      await utils.tags.list.cancel();
+  const onClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setOpen(true);
+  };
 
-      const previousTags = utils.tags.list.getData();
+  const onSelectTag = (tagId: string) => {
+    const hasTag = record.tags?.includes(tagId);
+    const newTags = hasTag
+      ? record.tags?.filter((id) => id !== tagId)
+      : [...(record.tags ?? []), tagId];
 
-      utils.tags.list.setData(undefined, (prevTags) => {
-        return [...(prevTags ?? []), newTag];
-      });
-
-      setRecordTags((prevTags) => [...prevTags, newTag.id]);
-      onUpdate([...recordTags, newTag.id]);
-      setValue("");
-
-      return { previousTags, newTag };
-    },
-    onError: (err, newTag, context) => {
-      if (context?.previousTags) {
-        utils.tags.list.setData(undefined, context.previousTags);
-      }
-      setRecordTags(record?.tags ?? []);
-      onUpdate(record?.tags ?? []);
-    },
-    onSettled: () => {
-      utils.tags.list.invalidate();
-    },
-  });
-
-  const onSelectTag = (tag: Tag) => {
-    setRecordTags((prevTags) => {
-      const updatedTags = prevTags.includes(tag.id)
-        ? prevTags.filter((id) => id !== tag.id)
-        : [...prevTags, tag.id];
-
-      onUpdate(updatedTags);
-      return updatedTags;
-    });
+    onUpdate(newTags);
   };
 
   const onAddTag = () => {
@@ -80,40 +54,47 @@ export const TagPicker = ({ record, onUpdate, className }: Props) => {
       externalId: null,
       name: value,
       color: "#0070f3",
-      source: "Manual",
+      source: "Manual" as const,
       workspaceId: record.workspaceId,
       createdAt: new Date(),
       updatedAt: new Date(),
     });
+
+    setValue("");
   };
 
   return (
-    <Popover>
-      <PopoverTrigger asChild>
-        <div className="flex w-full cursor-pointer flex-wrap items-center gap-1.5">
-          {recordTags?.map((tagId) => (
-            <TagBadge key={tagId} tag={tags?.find((t) => t.id === tagId)} />
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild onClick={onClick}>
+        <div
+          className={cn(
+            "flex w-full cursor-pointer flex-wrap items-center gap-1 ",
+            record.tags?.length > 0 && "pl-[9px]",
+          )}
+        >
+          {record.tags?.map((tagId) => (
+            <TagBadge
+              key={tagId}
+              tag={tags?.find((t) => t.id === tagId)}
+              onDelete={() => onSelectTag(tagId)}
+              deletable={open}
+            />
           ))}
           <Button
             variant="ghost"
-            size="xs"
-            className={cn(
-              "text-muted-foreground",
-              recordTags.length > 0 ? "" : "-ml-1.5",
-              className,
-            )}
+            size={record.tags?.length > 0 ? "icon_sm" : "sm"}
+            className={cn("text-muted-foreground", className)}
           >
-            <Plus size={16} />
-            Add tags
+            {record.tags?.length > 0 ? (
+              <Plus size={16} />
+            ) : (
+              <TagIcon size={16} />
+            )}
+            {record.tags?.length === 0 && "Add tags"}
           </Button>
         </div>
       </PopoverTrigger>
-      <PopoverContent
-        className="p-0"
-        side="bottom"
-        align="start"
-        alignOffset={-5}
-      >
+      <PopoverContent className="p-0" side="left" align="start" sideOffset={5}>
         <Command>
           <CommandInput
             placeholder="Search..."
@@ -123,18 +104,18 @@ export const TagPicker = ({ record, onUpdate, className }: Props) => {
           <CommandList>
             <CommandGroup heading="Select or create tag">
               {tags?.map((tag) => (
-                <CommandItem key={tag.id} className="p-0 pr-1">
+                <CommandItem key={tag.id} className="group">
                   <div
-                    className="flex h-full w-full items-center p-1"
-                    onClick={() => onSelectTag(tag)}
+                    className="flex h-full w-full items-center"
+                    onClick={() => onSelectTag(tag.id)}
                   >
                     <Checkbox
-                      checked={recordTags.includes(tag.id)}
+                      checked={record.tags?.includes(tag.id)}
                       className="mr-2"
                     />
                     <TagBadge tag={tag} />
                   </div>
-                  <TagMenuDialog tag={tag} onUpdate={onUpdate} />
+                  <TagMenuDialog tag={tag} />
                 </CommandItem>
               ))}
             </CommandGroup>
