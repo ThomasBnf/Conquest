@@ -31,6 +31,9 @@ export const TagForm = ({ tag, setIsVisible, setIsEditing }: Props) => {
       setIsEditing?.(false);
       form.reset();
     },
+    onError: (error) => {
+      console.error(error);
+    },
   });
 
   const { mutateAsync: updateTag } = trpc.tags.update.useMutation({
@@ -49,6 +52,8 @@ export const TagForm = ({ tag, setIsVisible, setIsEditing }: Props) => {
       color: tag?.color || "#0070f3",
     },
   });
+
+  console.log(form.formState.errors);
 
   const onSubmit = async ({ name, color }: FormTag) => {
     if (tag) {
