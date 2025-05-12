@@ -18,6 +18,8 @@ export const MemberSchema = z.object({
   levelId: z.string().nullable(),
   pulse: z.number(),
   source: SOURCE,
+  atRiskMember: z.boolean(),
+  potentialAmbassador: z.boolean(),
   companyId: z.string().nullable(),
   workspaceId: z.string(),
   firstActivity: z.coerce.date().nullable(),
@@ -37,6 +39,12 @@ export const FullMemberSchema = MemberSchema.extend({
   attributes: z.array(ProfileAttributesSchema),
 });
 
+export const MemberWithLevelSchema = MemberSchema.extend({
+  level: z.number(),
+  levelName: z.string().optional(),
+});
+
 export type Member = z.infer<typeof MemberSchema>;
 export type MemberWithProfiles = z.infer<typeof MemberWithProfilesSchema>;
 export type FullMember = z.infer<typeof FullMemberSchema>;
+export type MemberWithLevel = z.infer<typeof MemberWithLevelSchema>;

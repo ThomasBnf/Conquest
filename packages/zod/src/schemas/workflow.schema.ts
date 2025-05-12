@@ -1,8 +1,6 @@
 import { z } from "zod";
 import { EdgeSchema } from "./edge.schema";
-import { NodeSchema } from "./node.schema";
-
-export const TriggerSchema = z.enum(["member-created"]);
+import { NodeSchema, TriggerSchema } from "./node.schema";
 
 export const WorkflowSchema = z.object({
   id: z.string().uuid(),
@@ -19,4 +17,3 @@ export const WorkflowSchema = z.object({
 });
 
 export type Workflow = z.infer<typeof WorkflowSchema>;
-export type Trigger = z.infer<typeof TriggerSchema>;

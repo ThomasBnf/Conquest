@@ -2,7 +2,10 @@ import { getProfileBySource } from "@conquest/clickhouse/profiles/getProfileBySo
 import { getIntegrationBySource } from "@conquest/db/integrations/getIntegrationBySource";
 import { decrypt } from "@conquest/db/utils/decrypt";
 import { SlackIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
-import { Member, MemberSchema } from "@conquest/zod/schemas/member.schema";
+import {
+  MemberWithLevel,
+  MemberWithLevelSchema,
+} from "@conquest/zod/schemas/member.schema";
 import {
   NodeSchema,
   NodeSlackMessage,
@@ -13,14 +16,14 @@ import { WebClient } from "@slack/web-api";
 import { logger, schemaTask, wait } from "@trigger.dev/sdk/v3";
 import { z } from "zod";
 
-let currentMember: Member;
+let currentMember: MemberWithLevel;
 
 export const runWorkflow = schemaTask({
   id: "run-workflow",
   machine: "small-2x",
   schema: z.object({
     workflow: WorkflowSchema,
-    member: MemberSchema,
+    member: MemberWithLevelSchema,
   }),
   run: async ({ workflow, member }) => {
     currentMember = member;

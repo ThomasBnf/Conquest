@@ -11,8 +11,8 @@ import {
 import { Label } from "@conquest/ui/label";
 import { ScrollArea } from "@conquest/ui/scroll-area";
 import { Separator } from "@conquest/ui/separator";
-import { Node } from "@conquest/zod/schemas/node.schema";
-import type { Trigger, Workflow } from "@conquest/zod/schemas/workflow.schema";
+import { Node, Trigger } from "@conquest/zod/schemas/node.schema";
+import type { Workflow } from "@conquest/zod/schemas/workflow.schema";
 import { useReactFlow } from "@xyflow/react";
 import { type icons } from "lucide-react";
 import { v4 as uuid } from "uuid";
@@ -89,7 +89,7 @@ export const nodes: Node[] = [
     type: "custom",
     position: { x: 0, y: 0 },
     data: {
-      icon: "User",
+      icon: "UserPlus",
       label: "Member created",
       description: "When a member is created",
       type: "member-created" as const,
@@ -101,10 +101,10 @@ export const nodes: Node[] = [
     type: "custom",
     position: { x: 0, y: 0 },
     data: {
-      icon: "UserPlus",
-      label: "Level reached",
+      icon: "TrendingUp",
+      label: "Level up",
       description: "When a member has reached a new level",
-      type: "level-reached" as const,
+      type: "level-up" as const,
       isTrigger: true,
     },
   },
@@ -113,7 +113,7 @@ export const nodes: Node[] = [
     type: "custom",
     position: { x: 0, y: 0 },
     data: {
-      icon: "UserMinus",
+      icon: "TriangleAlert",
       label: "At-risk member",
       description: "When a member becomes at-risk",
       type: "at-risk-member" as const,
@@ -125,7 +125,7 @@ export const nodes: Node[] = [
     type: "custom",
     position: { x: 0, y: 0 },
     data: {
-      icon: "UserPlus",
+      icon: "Megaphone",
       label: "Potential ambassador",
       description: "When a member becomes a potential mbassador",
       type: "potential-ambassador" as const,

@@ -1,5 +1,12 @@
 import { z } from "zod";
 
+export const TriggerSchema = z.enum([
+  "member-created",
+  "level-up",
+  "at-risk-member",
+  "potential-ambassador",
+]);
+
 // NODES
 
 export const NodeBaseSchema = z.object({
@@ -24,8 +31,8 @@ export const NodeMemberCreatedSchema = NodeBaseDataSchema.extend({
   isTrigger: z.boolean().default(true),
 });
 
-export const NodeLevelReachedSchema = NodeBaseDataSchema.extend({
-  type: z.literal("level-reached"),
+export const NodeLevelUpSchema = NodeBaseDataSchema.extend({
+  type: z.literal("level-up"),
   isTrigger: z.boolean().default(true),
 });
 
@@ -65,7 +72,7 @@ export const NodeWebhookSchema = NodeBaseDataSchema.extend({
 
 export const NodeDataSchema = z.discriminatedUnion("type", [
   NodeMemberCreatedSchema,
-  NodeLevelReachedSchema,
+  NodeLevelUpSchema,
   NodeAtRiskSchema,
   NodeAmbassadorSchema,
   NodeTagMemberSchema,
@@ -82,9 +89,10 @@ export type Node = z.infer<typeof NodeSchema>;
 export type NodeData = z.infer<typeof NodeDataSchema>;
 
 export type NodeMemberCreated = z.infer<typeof NodeMemberCreatedSchema>;
-export type NodeLevelReached = z.infer<typeof NodeLevelReachedSchema>;
+export type NodeLevelUp = z.infer<typeof NodeLevelUpSchema>;
 export type NodeAtRisk = z.infer<typeof NodeAtRiskSchema>;
 export type NodeAmbassador = z.infer<typeof NodeAmbassadorSchema>;
+export type Trigger = z.infer<typeof TriggerSchema>;
 
 export type NodeTagMember = z.infer<typeof NodeTagMemberSchema>;
 export type NodeSlackMessage = z.infer<typeof NodeSlackMessageSchema>;

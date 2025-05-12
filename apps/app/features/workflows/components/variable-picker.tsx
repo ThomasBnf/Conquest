@@ -6,7 +6,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@conquest/ui/dropdown-menu";
-import { MemberSchema } from "@conquest/zod/schemas/member.schema";
 import { Braces } from "lucide-react";
 
 type Props = {
@@ -30,22 +29,22 @@ export const VariablePicker = ({ onClick }: Props) => {
           Created member data
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        {Object.entries(
-          MemberSchema.pick({
-            firstName: true,
-            lastName: true,
-            primaryEmail: true,
-            country: true,
-            language: true,
-            jobTitle: true,
-            linkedinUrl: true,
-            emails: true,
-            phones: true,
-          }).shape,
-        ).map(([key]) => (
+        {[
+          "First Name",
+          "Last Name",
+          "Primary Email",
+          "Country",
+          "Language",
+          "Job Title",
+          "LinkedIn URL",
+          "Emails",
+          "Phones",
+          "Level",
+          "Level Name",
+        ].map((key) => (
           <DropdownMenuItem
             key={key}
-            onClick={() => onClick(`{{${key}}}`)}
+            onClick={() => onClick(`{{${key.replaceAll(" ", "")}}}`)}
             className="capitalize"
           >
             {key.replace(/_/g, " ")}

@@ -1,3 +1,4 @@
+import { triggerWorkflows } from "@conquest/trigger/tasks/triggerWorkflows";
 import { listActivities } from "../activities/listActivities";
 import { getLevel } from "../helpers/getLevel";
 import { getPulseScore } from "../helpers/getPulseScore";
@@ -32,4 +33,16 @@ export const getPulseAndLevel = async ({ memberId }: Props) => {
     levelId: level?.id ?? null,
     lastActivity: activities?.at(-1)?.createdAt ?? null,
   });
+
+  const previousLevel = levels.find((l) => l.id === member.levelId);
+  const newLevel = levels.find((l) => l.id === level?.id);
+
+  if (!previousLevel || !newLevel) return;
+
+  if (previousLevel?.number < newLevel?.number) {
+    await triggerWorkflows.trigger({
+      trigger: "level-up",
+      member,
+    });
+  }
 };
