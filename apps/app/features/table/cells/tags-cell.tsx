@@ -19,8 +19,8 @@ import { Company } from "@conquest/zod/schemas/company.schema";
 import { Member } from "@conquest/zod/schemas/member.schema";
 import { useQueryStates } from "nuqs";
 import { useEffect, useRef, useState } from "react";
+import { toast } from "sonner";
 import { v4 as uuid } from "uuid";
-
 type Props<TData extends Member | Company> = {
   data: TData;
 };
@@ -80,6 +80,13 @@ export const TagsCell = <TData extends Member | Company>({
 
       return { prevData };
     },
+    onError: () => {
+      toast.error("Failed to update member");
+      utils.members.get.invalidate({ id: data.id });
+    },
+    onSettled: () => {
+      utils.members.get.invalidate({ id: data.id });
+    },
   });
 
   const { mutateAsync: updateCompany } = trpc.companies.update.useMutation({
@@ -105,6 +112,13 @@ export const TagsCell = <TData extends Member | Company>({
       });
 
       return { prevData };
+    },
+    onError: () => {
+      toast.error("Failed to update company");
+      utils.companies.get.invalidate({ id: data.id });
+    },
+    onSettled: () => {
+      utils.companies.get.invalidate({ id: data.id });
     },
   });
 
