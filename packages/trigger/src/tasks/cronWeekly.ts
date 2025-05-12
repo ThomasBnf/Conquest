@@ -36,7 +36,7 @@ export const cronWeekly = schedules.task({
       query: `
         ALTER TABLE log
         DELETE WHERE date < subtractWeeks(now(), 53)
-      `,
+        `,
       format: "JSON",
     });
   },
