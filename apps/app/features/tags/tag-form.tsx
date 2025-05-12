@@ -70,7 +70,7 @@ export const TagForm = ({ tag, setIsVisible, setIsEditing }: Props) => {
       id: uuid(),
       externalId: null,
       name,
-      color: "#0070f3",
+      color,
       source: "Manual" as const,
       workspaceId,
       createdAt: new Date(),

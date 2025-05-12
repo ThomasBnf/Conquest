@@ -38,7 +38,6 @@ export const TagsList = () => {
         </div>
       )}
       {isVisible && <TagForm setIsVisible={setIsVisible} />}
-
       <div className="relative">
         {filteredTags.length === 0 ? (
           <div className="flex flex-col items-center justify-center gap-4 rounded-md border bg-muted px-6 py-12">
