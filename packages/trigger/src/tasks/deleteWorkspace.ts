@@ -1,10 +1,10 @@
 import { client } from "@conquest/clickhouse/client";
-import { discordClient } from "@conquest/db/discord";
 import { prisma } from "@conquest/db/prisma";
 import { IntegrationSchema } from "@conquest/zod/schemas/integration.schema";
 import { schemaTask } from "@trigger.dev/sdk/v3";
-import { Routes } from "discord-api-types/v10";
 import { z } from "zod";
+import { generateJWT } from "../github/generateJWT";
+import { deleteIntegration } from "./deleteIntegration";
 
 export const deleteWorkspace = schemaTask({
   id: "delete-workspace",
@@ -22,17 +22,13 @@ export const deleteWorkspace = schemaTask({
     );
 
     for (const integration of integrations) {
-      const { source } = integration.details;
+      let jwt = null;
 
-      switch (source) {
-        case "Discord": {
-          const { externalId } = integration;
-
-          if (!externalId) continue;
-
-          await discordClient.delete(`${Routes.guild(externalId)}`);
-        }
+      if (integration.details.source === "Github") {
+        jwt = generateJWT();
       }
+
+      await deleteIntegration.trigger({ integration, jwt });
     }
 
     await client.query({

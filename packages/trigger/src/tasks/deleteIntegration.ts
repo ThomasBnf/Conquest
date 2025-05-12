@@ -30,6 +30,13 @@ export const deleteIntegration = schemaTask({
     const { source } = details;
 
     if (source === "Discord") {
+      const { externalId } = integration;
+
+      if (!externalId) {
+        logger.error("No externalId found for Discord integration");
+        return;
+      }
+
       await prisma.tag.deleteMany({
         where: { source, workspaceId },
       });
