@@ -64,7 +64,7 @@ export const TriggerPanel = ({ workflow }: Props) => {
                   key={node.id}
                   value={node.data.label}
                   onSelect={() => onSelect(node)}
-                  className="space-x-2"
+                  className="items-start space-x-2"
                 >
                   <div className="rounded-md border bg-background p-1">
                     <Icon name={data.icon as keyof typeof icons} size={16} />
@@ -114,9 +114,21 @@ export const nodes: Node[] = [
     position: { x: 0, y: 0 },
     data: {
       icon: "UserMinus",
-      label: "Level Decreased",
-      description: "When a member has decreased a level",
-      type: "level-decreased" as const,
+      label: "At-risk member",
+      description: "When a member becomes at-risk",
+      type: "at-risk-member" as const,
+      isTrigger: true,
+    },
+  },
+  {
+    id: uuid(),
+    type: "custom",
+    position: { x: 0, y: 0 },
+    data: {
+      icon: "UserPlus",
+      label: "Potential ambassador",
+      description: "When a member becomes a potential mbassador",
+      type: "potential-ambassador" as const,
       isTrigger: true,
     },
   },

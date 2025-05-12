@@ -1,16 +1,5 @@
 import { z } from "zod";
 
-export const FrequencySchema = z.enum(["daily", "weekly"]);
-export const RepeatOnSchema = z.enum([
-  "monday",
-  "tuesday",
-  "wednesday",
-  "thursday",
-  "friday",
-  "saturday",
-  "sunday",
-]);
-
 // NODES
 
 export const NodeBaseSchema = z.object({
@@ -40,8 +29,13 @@ export const NodeLevelReachedSchema = NodeBaseDataSchema.extend({
   isTrigger: z.boolean().default(true),
 });
 
-export const NodeLevelDecreasedSchema = NodeBaseDataSchema.extend({
-  type: z.literal("level-decreased"),
+export const NodeAtRiskSchema = NodeBaseDataSchema.extend({
+  type: z.literal("at-risk-member"),
+  isTrigger: z.boolean().default(true),
+});
+
+export const NodeAmbassadorSchema = NodeBaseDataSchema.extend({
+  type: z.literal("potential-ambassador"),
   isTrigger: z.boolean().default(true),
 });
 
@@ -72,7 +66,8 @@ export const NodeWebhookSchema = NodeBaseDataSchema.extend({
 export const NodeDataSchema = z.discriminatedUnion("type", [
   NodeMemberCreatedSchema,
   NodeLevelReachedSchema,
-  NodeLevelDecreasedSchema,
+  NodeAtRiskSchema,
+  NodeAmbassadorSchema,
   NodeTagMemberSchema,
   NodeSlackMessageSchema,
   NodeWaitSchema,
@@ -85,12 +80,12 @@ export const NodeSchema = NodeBaseSchema.extend({
 
 export type Node = z.infer<typeof NodeSchema>;
 export type NodeData = z.infer<typeof NodeDataSchema>;
-export type Frequency = z.infer<typeof FrequencySchema>;
-export type RepeatOn = z.infer<typeof RepeatOnSchema>;
 
 export type NodeMemberCreated = z.infer<typeof NodeMemberCreatedSchema>;
 export type NodeLevelReached = z.infer<typeof NodeLevelReachedSchema>;
-export type NodeLevelDecreased = z.infer<typeof NodeLevelDecreasedSchema>;
+export type NodeAtRisk = z.infer<typeof NodeAtRiskSchema>;
+export type NodeAmbassador = z.infer<typeof NodeAmbassadorSchema>;
+
 export type NodeTagMember = z.infer<typeof NodeTagMemberSchema>;
 export type NodeSlackMessage = z.infer<typeof NodeSlackMessageSchema>;
 export type NodeWait = z.infer<typeof NodeWaitSchema>;

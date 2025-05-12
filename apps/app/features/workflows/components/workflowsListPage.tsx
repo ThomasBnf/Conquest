@@ -4,9 +4,9 @@ import { IsLoading } from "@/components/states/is-loading";
 import { trpc } from "@/server/client";
 import { ScrollArea } from "@conquest/ui/scroll-area";
 import Link from "next/link";
+import { EmptyWorkflows } from "./empty-workflows";
 import { IsPublished } from "./isPublished";
 import { WorkflowMenu } from "./workflow-menu";
-
 type Props = {
   slug: string;
 };
@@ -15,6 +15,7 @@ export const WorkflowsListPage = ({ slug }: Props) => {
   const { data: workflows, isLoading } = trpc.workflows.list.useQuery();
 
   if (isLoading) return <IsLoading />;
+  if (workflows?.length === 0) return <EmptyWorkflows slug={slug} />;
 
   return (
     <ScrollArea>
