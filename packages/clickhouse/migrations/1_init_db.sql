@@ -26,9 +26,9 @@ CREATE TABLE IF NOT EXISTS activityType
 (
     id UUID DEFAULT generateUUIDv4(),
     name String,
+    source String,
     key String,
     points UInt16,
-    source String,
     conditions JSON,
     deletable Boolean DEFAULT false,
     workspaceId UUID,
@@ -116,7 +116,6 @@ CREATE TABLE IF NOT EXISTS member
     tags Array(String),
     pulse Int32 DEFAULT 0,
     linkedinUrl String,
-    isStaff Boolean DEFAULT false,
     source String,
     levelId Nullable(UUID),
     companyId Nullable(UUID),
@@ -124,7 +123,8 @@ CREATE TABLE IF NOT EXISTS member
     firstActivity Nullable(DateTime),
     lastActivity Nullable(DateTime),
     createdAt DateTime DEFAULT now(),
-    updatedAt DateTime DEFAULT now()
+    updatedAt DateTime DEFAULT now(),
+    isStaff Bool DEFAULT false
 )
 ENGINE = ReplacingMergeTree(updatedAt)
 PARTITION BY workspaceId
