@@ -33,6 +33,7 @@ export const cronHourly = schedules.task({
 
     for (const member of members) {
       logger.info("member", { member });
+
       await getPulseAndLevel({ memberId: member.memberId });
     }
 
