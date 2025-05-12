@@ -79,7 +79,7 @@ export const MemberSidebar = ({ member, profiles }: Props) => {
           </div>
         </div>
         <Separator />
-        <div className="space-y-4 p-4">
+        <div className="p-4">
           <FieldCard label="Tags">
             <TagPicker
               record={member}
