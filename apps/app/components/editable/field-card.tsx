@@ -14,7 +14,7 @@ export const FieldCard = ({
   return (
     <div className={cn("flex flex-col gap-1", className)}>
       <p className="text-muted-foreground text-xs">{label}</p>
-      <div className="-ml-[9px] w-[calc(100%+9px)]">{children}</div>
+      <div className="-translate-x-2">{children}</div>
     </div>
   );
 };

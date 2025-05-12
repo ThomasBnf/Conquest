@@ -2,7 +2,6 @@ import {
   type ProfileAttributes,
   ProfileSchema,
 } from "@conquest/zod/schemas/profile.schema";
-import { format } from "date-fns";
 import { v4 as uuid } from "uuid";
 import { client } from "../client";
 
@@ -31,7 +30,7 @@ export const createProfile = async ({
         externalId,
         attributes,
         memberId,
-        createdAt: format(createdAt ?? new Date(), "yyyy-MM-dd HH:mm:ss"),
+        createdAt,
         workspaceId,
       },
     ],

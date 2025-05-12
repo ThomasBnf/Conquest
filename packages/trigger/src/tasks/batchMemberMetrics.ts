@@ -9,7 +9,6 @@ import { logger, schemaTask } from "@trigger.dev/sdk/v3";
 import {
   eachWeekOfInterval,
   endOfDay,
-  format,
   startOfDay,
   subDays,
   subWeeks,
@@ -83,26 +82,15 @@ export const batchMemberMetrics = schemaTask({
 
     await client.insert({
       table: "log",
-      values: logs.map((log) => ({
-        ...log,
-        date: format(log.date, "yyyy-MM-dd HH:mm:ss"),
-      })),
+      values: logs,
       format: "JSON",
     });
 
+    logger.info("updatedMembers", { updatedMembers });
+
     await client.insert({
       table: "member",
-      values: updatedMembers.map((member) => ({
-        ...member,
-        firstActivity: member.firstActivity
-          ? format(new Date(member.firstActivity), "yyyy-MM-dd HH:mm:ss")
-          : null,
-        lastActivity: member.lastActivity
-          ? format(new Date(member.lastActivity), "yyyy-MM-dd HH:mm:ss")
-          : null,
-        createdAt: format(new Date(member.createdAt), "yyyy-MM-dd HH:mm:ss"),
-        updatedAt: format(new Date(member.updatedAt), "yyyy-MM-dd HH:mm:ss"),
-      })),
+      values: updatedMembers,
       format: "JSON",
     });
   },

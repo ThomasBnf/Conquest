@@ -1,5 +1,4 @@
 import { type Member, MemberSchema } from "@conquest/zod/schemas/member.schema";
-import { format } from "date-fns";
 import { v4 as uuid } from "uuid";
 import { client } from "../client";
 import { createCompany } from "../companies/createCompany";
@@ -50,8 +49,8 @@ export const createMember = async (props: Props) => {
         firstActivity: null,
         lastActivity: null,
         companyId: company?.id,
-        updatedAt: format(updatedAt ?? new Date(), "yyyy-MM-dd HH:mm:ss"),
-        createdAt: format(createdAt ?? new Date(), "yyyy-MM-dd HH:mm:ss"),
+        updatedAt: updatedAt ?? new Date(),
+        createdAt: createdAt ?? new Date(),
       },
     ],
     format: "JSON",

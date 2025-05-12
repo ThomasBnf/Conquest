@@ -1,6 +1,5 @@
 import { FieldCard } from "@/components/editable/field-card";
 import { trpc } from "@/server/client";
-import { Label } from "@conquest/ui/label";
 import { Separator } from "@conquest/ui/separator";
 import { DiscourseDetailsSchema } from "@conquest/zod/schemas/integration.schema";
 import {
@@ -32,23 +31,20 @@ export const DiscourseFields = ({ profiles }: Props) => {
   return (
     <>
       <div className="space-y-4 p-4">
-        <Label>Discourse custom fields</Label>
-        <div className="space-y-4">
-          {customFields?.map((userField) => {
-            const { id, value } = userField;
-            const key = userFields?.find((field) => field.id === id)?.name;
+        {customFields?.map((userField) => {
+          const { id, value } = userField;
+          const key = userFields?.find((field) => field.id === id)?.name;
 
-            if (!key) return null;
+          if (!key) return null;
 
-            return (
-              <FieldCard key={id} label={key}>
-                <p className="h-full place-content-center truncate px-2">
-                  {value}
-                </p>
-              </FieldCard>
-            );
-          })}
-        </div>
+          return (
+            <FieldCard key={id} label={key}>
+              <p className="h-full place-content-center truncate px-2">
+                {value}
+              </p>
+            </FieldCard>
+          );
+        })}
       </div>
       <Separator />
     </>

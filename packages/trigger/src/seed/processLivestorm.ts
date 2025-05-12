@@ -26,6 +26,7 @@ export const processLivestorm = async ({
         refreshTokenIv: faker.string.uuid(),
         expiresIn: faker.number.int({ min: 3600, max: 86400 }),
         scope: "read:user",
+        filter: "",
       },
       createdBy: user.id,
       workspaceId,

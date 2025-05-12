@@ -1,17 +1,14 @@
-import { FormTagSchema } from "@/features/tags/schema/form.schema";
 import { createTag as _createTag } from "@conquest/db/tags/createTag";
+import { TagSchema } from "@conquest/zod/schemas/tag.schema";
 import { protectedProcedure } from "../trpc";
 
 export const createTag = protectedProcedure
-  .input(FormTagSchema)
+  .input(TagSchema)
   .mutation(async ({ ctx: { user }, input }) => {
     const { workspaceId } = user;
-    const { name, color } = input;
 
     return await _createTag({
-      name,
-      color,
-      source: "Manual",
+      ...input,
       workspaceId,
     });
   });
