@@ -6,7 +6,6 @@ export const useDeleteTag = () => {
   const { mutateAsync } = trpc.tags.delete.useMutation({
     async onMutate(newTag) {
       await utils.tags.list.cancel();
-      await utils.tags.list.cancel();
 
       const prevData = utils.tags.list.getData();
 

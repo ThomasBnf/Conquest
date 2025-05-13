@@ -2,7 +2,7 @@ import { trpc } from "@/server/client";
 import { Tag } from "@conquest/zod/schemas/tag.schema";
 
 type Props = {
-  tag: Tag;
+  tag?: Tag;
 };
 
 export const useUpdateTag = ({ tag }: Props) => {
@@ -16,7 +16,7 @@ export const useUpdateTag = ({ tag }: Props) => {
 
       utils.tags.list.setData(undefined, (old) => {
         return old?.map((t) =>
-          t.id === tag.id
+          t.id === tag?.id
             ? { ...t, name: name ?? t.name, color: color ?? t.color }
             : t,
         );

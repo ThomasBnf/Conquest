@@ -1,5 +1,4 @@
 import { COLORS } from "@/constant";
-import { trpc } from "@/server/client";
 import { Button } from "@conquest/ui/button";
 import { ColorPicker } from "@conquest/ui/color-picker";
 import { Form, FormControl, FormField, FormItem } from "@conquest/ui/form";
@@ -11,6 +10,8 @@ import { Check } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { useForm } from "react-hook-form";
 import { v4 as uuid } from "uuid";
+import { useCreateTag } from "./mutations/useCreateTag";
+import { useUpdateTag } from "./mutations/useUpdateTag";
 import { type FormTag, FormTagSchema } from "./schema/form.schema";
 
 type Props = {
@@ -22,28 +23,9 @@ type Props = {
 export const TagForm = ({ tag, setIsVisible, setIsEditing }: Props) => {
   const { data: session } = useSession();
   const { workspaceId } = session?.user ?? {};
-  const utils = trpc.useUtils();
 
-  const { mutateAsync: createTag } = trpc.tags.post.useMutation({
-    onSuccess: () => {
-      utils.tags.list.invalidate();
-      setIsVisible?.(false);
-      setIsEditing?.(false);
-      form.reset();
-    },
-    onError: (error) => {
-      console.error(error);
-    },
-  });
-
-  const { mutateAsync: updateTag } = trpc.tags.update.useMutation({
-    onSuccess: () => {
-      utils.tags.list.invalidate();
-      setIsVisible?.(false);
-      setIsEditing?.(false);
-      form.reset();
-    },
-  });
+  const createTag = useCreateTag({});
+  const updateTag = useUpdateTag({ tag });
 
   const form = useForm<FormTag>({
     resolver: zodResolver(FormTagSchema),
@@ -53,9 +35,11 @@ export const TagForm = ({ tag, setIsVisible, setIsEditing }: Props) => {
     },
   });
 
-  console.log(form.formState.errors);
-
   const onSubmit = async ({ name, color }: FormTag) => {
+    setIsVisible?.(false);
+    setIsEditing?.(false);
+    form.reset();
+
     if (tag) {
       return await updateTag({
         id: tag.id,
