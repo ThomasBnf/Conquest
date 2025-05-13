@@ -1,3 +1,4 @@
+import { getMemberWithLevel } from "@conquest/clickhouse/members/getMemberWithLevel";
 import { prisma } from "@conquest/db/prisma";
 import { MemberSchema } from "@conquest/zod/schemas/member.schema";
 import { TriggerSchema } from "@conquest/zod/schemas/node.schema";
@@ -5,7 +6,6 @@ import { WorkflowSchema } from "@conquest/zod/schemas/workflow.schema";
 import { logger, schemaTask } from "@trigger.dev/sdk/v3";
 import { z } from "zod";
 import { runWorkflow } from "./runWorkflow";
-import { getMemberWithLevel } from "@conquest/clickhouse/members/getFullMember";
 
 export const triggerWorkflows = schemaTask({
   id: "trigger-workflows",

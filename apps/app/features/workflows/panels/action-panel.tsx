@@ -20,20 +20,9 @@ export const ActionPanel = () => {
   const { panel, node: selectedNode, setPanel } = usePanel();
   const { addNodes, addEdges, updateNodeData } = useReactFlow();
 
-  // const onSelect = async (node: WorkflowNode) => {
-  //   if (selectedNode) {
-  //     updateNode(selectedNode.id, node);
-  //   } else {
-  //     addNodes(node);
-  //   }
-
-  //   await mutateAsync({ id, trigger: node.data.type as Trigger });
-
-  //   setPanel({ panel: "node", node });
-  // };
-
   const onSelect = (node: WorkflowNode) => {
     if (!selectedNode) return;
+
     if (panel === "actions-change") {
       const updatedNode = {
         ...selectedNode,
@@ -124,6 +113,34 @@ export const nodes: WorkflowNode[] = [
       description: "",
       type: "slack-message",
       message: "",
+    },
+  },
+  {
+    id: uuid(),
+    type: "custom",
+    position: { x: 0, y: 0 },
+    data: {
+      icon: "Filter",
+      label: "Filter",
+      description: "",
+      type: "filter",
+      groupFilter: {
+        filters: [],
+        operator: "AND",
+      },
+    },
+  },
+  {
+    id: uuid(),
+    type: "custom",
+    position: { x: 0, y: 0 },
+    data: {
+      icon: "SquareCheckBig",
+      label: "Task",
+      description: "",
+      type: "task",
+      task: "",
+      assignee: "",
     },
   },
   {

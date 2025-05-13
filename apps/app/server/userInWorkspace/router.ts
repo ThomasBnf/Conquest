@@ -1,6 +1,8 @@
 import { router } from "../trpc";
-import { listUsersInWorkspace } from "./listUsersInWorkspace";
+import { listUserWorkspaces } from "./listUserWorkspaces";
+import { listWorkspaceUsers } from "./listWorkspaceUsers";
 
 export const userInWorkspaceRouter = router({
-  list: listUsersInWorkspace,
+  list: listUserWorkspaces,
+  listUsers: listWorkspaceUsers,
 });

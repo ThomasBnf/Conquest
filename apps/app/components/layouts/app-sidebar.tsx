@@ -8,6 +8,7 @@ import { Documentation } from "@conquest/ui/icons/Documentation";
 import { Members } from "@conquest/ui/icons/Members";
 import { Settings } from "@conquest/ui/icons/Settings";
 import { SlackCommunity } from "@conquest/ui/icons/Slack-Community";
+import { Tasks } from "@conquest/ui/icons/Tasks";
 import { Workflows } from "@conquest/ui/icons/Workflows";
 import { Separator } from "@conquest/ui/separator";
 import {
@@ -47,6 +48,12 @@ export const AppSidebar = ({ workspace }: Props) => {
       icon: <Dashboard size={18} />,
       href: `/${slug}`,
       isActive: pathname === `/${slug}`,
+    },
+    {
+      label: "Tasks",
+      icon: <Tasks size={18} />,
+      href: `/${slug}`,
+      isActive: pathname.startsWith(`/${slug}/taks`),
     },
     {
       label: "Members",

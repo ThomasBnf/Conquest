@@ -5,7 +5,7 @@ import { trpc } from "@/server/client";
 import { ScrollArea } from "@conquest/ui/scroll-area";
 import Link from "next/link";
 import { EmptyWorkflows } from "./empty-workflows";
-import { IsPublished } from "./isPublished";
+import { IsPublished } from "./is-published";
 import { WorkflowMenu } from "./workflow-menu";
 type Props = {
   slug: string;

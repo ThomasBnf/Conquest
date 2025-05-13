@@ -52,7 +52,7 @@ export const Wait = () => {
   }, [node]);
 
   return (
-    <div>
+    <div className="space-y-2">
       <Label>Wait</Label>
       <Form {...form}>
         <form className="flex h-10 flex-1 items-center justify-between divide-x overflow-hidden rounded-md border border-input shadow-sm">

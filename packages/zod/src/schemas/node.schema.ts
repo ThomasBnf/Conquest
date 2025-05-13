@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { GroupFiltersSchema } from "./filters.schema";
 
 export const TriggerSchema = z.enum([
   "member-created",
@@ -48,14 +49,25 @@ export const NodeAmbassadorSchema = NodeBaseDataSchema.extend({
 
 // ACTIONS
 
-export const NodeTagMemberSchema = NodeBaseDataSchema.extend({
-  type: z.enum(["add-tag", "remove-tag"]),
-  tags: z.array(z.string()),
+export const NodeFilterSchema = NodeBaseDataSchema.extend({
+  type: z.literal("filter"),
+  groupFilter: GroupFiltersSchema,
 });
 
 export const NodeSlackMessageSchema = NodeBaseDataSchema.extend({
   type: z.literal("slack-message"),
   message: z.string(),
+});
+
+export const NodeTaskSchema = NodeBaseDataSchema.extend({
+  type: z.literal("task"),
+  task: z.string(),
+  assignee: z.string().optional(),
+});
+
+export const NodeTagMemberSchema = NodeBaseDataSchema.extend({
+  type: z.enum(["add-tag", "remove-tag"]),
+  tags: z.array(z.string()),
 });
 
 export const NodeWaitSchema = NodeBaseDataSchema.extend({
@@ -75,8 +87,10 @@ export const NodeDataSchema = z.discriminatedUnion("type", [
   NodeLevelUpSchema,
   NodeAtRiskSchema,
   NodeAmbassadorSchema,
-  NodeTagMemberSchema,
+  NodeFilterSchema,
   NodeSlackMessageSchema,
+  NodeTagMemberSchema,
+  NodeTaskSchema,
   NodeWaitSchema,
   NodeWebhookSchema,
 ]);
@@ -94,7 +108,9 @@ export type NodeAtRisk = z.infer<typeof NodeAtRiskSchema>;
 export type NodeAmbassador = z.infer<typeof NodeAmbassadorSchema>;
 export type Trigger = z.infer<typeof TriggerSchema>;
 
-export type NodeTagMember = z.infer<typeof NodeTagMemberSchema>;
+export type NodeFilter = z.infer<typeof NodeFilterSchema>;
 export type NodeSlackMessage = z.infer<typeof NodeSlackMessageSchema>;
+export type NodeTagMember = z.infer<typeof NodeTagMemberSchema>;
+export type NodeTask = z.infer<typeof NodeTaskSchema>;
 export type NodeWait = z.infer<typeof NodeWaitSchema>;
 export type NodeWebhook = z.infer<typeof NodeWebhookSchema>;

@@ -20,7 +20,7 @@ import {
   type FormName,
   FormNameSchema,
 } from "../panels/schemas/form-name.schema";
-import { IsPublished } from "./isPublished";
+import { IsPublished } from "./is-published";
 import { WorkflowMenu } from "./workflow-menu";
 
 type Props = {

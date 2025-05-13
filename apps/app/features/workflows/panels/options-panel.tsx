@@ -6,11 +6,12 @@ import { Separator } from "@conquest/ui/separator";
 import type { Workflow } from "@conquest/zod/schemas/workflow.schema";
 import { useReactFlow } from "@xyflow/react";
 import { type icons } from "lucide-react";
-import { toast } from "sonner";
-import { NextNode } from "../components/NextNode";
 import { Description } from "../components/description";
+import { NextNode } from "../components/next-node";
 import { usePanel } from "../hooks/usePanel";
+import { Filter } from "../nodes/filter";
 import { SlackMessage } from "../nodes/slack-message";
+import { Task } from "../nodes/task";
 import { Wait } from "../nodes/wait";
 import { Webhook } from "../nodes/webhook";
 import { ActionPanel } from "./action-panel";
@@ -28,19 +29,6 @@ export const OptionsPanel = ({ workflow }: Props) => {
 
   const { type, icon, label } = node.data;
   const isTrigger = "isTrigger" in node.data;
-
-  const onDelete = async () => {
-    deleteElements({
-      nodes: [{ id: node.id }],
-      edges: getEdges().filter(
-        (edge) => edge.source === node.id || edge.target === node.id,
-      ),
-    });
-
-    setPanel({ panel: "workflow", node: undefined });
-    toast.success("Node deleted");
-    return;
-  };
 
   return (
     <>
@@ -75,7 +63,9 @@ export const OptionsPanel = ({ workflow }: Props) => {
               </Button>
             </div>
             <Description id={node.id} />
+            {type === "filter" && <Filter />}
             {type === "slack-message" && <SlackMessage />}
+            {type === "task" && <Task />}
             {type === "wait" && <Wait />}
             {type === "webhook" && <Webhook />}
             <Separator />

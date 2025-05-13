@@ -55,7 +55,7 @@ export const LevelPicker = ({ filter }: Props) => {
         <Command>
           <CommandInput placeholder="Search..." />
           <CommandList className="max-h-[450px]">
-            {!isLoading && <CommandEmpty>No sources found.</CommandEmpty>}
+            {!isLoading && <CommandEmpty>No levels found.</CommandEmpty>}
             <CommandGroup>
               {isLoading && <Skeleton className="h-8 w-full" />}
               {levels?.map((level) => (
