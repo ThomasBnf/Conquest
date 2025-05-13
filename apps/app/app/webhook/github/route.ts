@@ -25,8 +25,6 @@ export async function POST(request: NextRequest) {
   const body = JSON.parse(bodyRaw) as WebhookEvent;
   const type = headers.get("x-github-event");
 
-  console.log("type", type);
-
   const github = await checkSignature(request, bodyRaw);
   if (!github) return NextResponse.json({ status: 200 });
 
@@ -223,7 +221,6 @@ export async function POST(request: NextRequest) {
             break;
           }
           case "deleted": {
-            console.log("deleted", event);
             await deleteActivity({
               externalId: String(commentId),
               workspaceId,
@@ -245,8 +242,6 @@ export async function POST(request: NextRequest) {
 const checkSignature = async (request: NextRequest, bodyRaw: string) => {
   const event = JSON.parse(bodyRaw) as WebhookEvent;
 
-  console.log("event", event);
-
   if ("repository" in event) {
     const repository = event.repository as Repository;
     const { name } = repository;
@@ -259,8 +254,6 @@ const checkSignature = async (request: NextRequest, bodyRaw: string) => {
     const expectedSignature = createHmac("sha256", secret)
       .update(Buffer.from(bodyRaw, "utf8"))
       .digest("hex");
-
-    console.log("signature", signature);
 
     if (signature !== `sha256=${expectedSignature}`) {
       return false;
@@ -276,8 +269,6 @@ const checkSignature = async (request: NextRequest, bodyRaw: string) => {
         },
       },
     });
-
-    console.log("integration", integration);
 
     if (!integration) return false;
     return GithubIntegrationSchema.parse(integration);

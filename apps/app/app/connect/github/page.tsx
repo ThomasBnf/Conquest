@@ -25,11 +25,7 @@ export default async function Page({ searchParams }: Props) {
   const data = await response.json();
   const { token, expires_at, permissions } = data;
 
-  console.log("page github", data);
-
   const encryptedAccessToken = await encrypt(token);
-
-  console.log("encryptedAccessToken", encryptedAccessToken);
 
   await createIntegration({
     externalId: null,

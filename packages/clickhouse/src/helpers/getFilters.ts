@@ -165,7 +165,6 @@ export const getFilters = ({ groupFilters }: Props) => {
     }
 
     if (field === "tags") {
-      console.log("tags");
       const { values, operator } = FilterSelectSchema.parse(filter);
 
       if (values.length === 0 && !["empty", "not_empty"].includes(operator)) {
@@ -218,7 +217,7 @@ export const getFilters = ({ groupFilters }: Props) => {
     if (filter.type === "text") {
       const { value, operator, field } = FilterTextSchema.parse(filter);
 
-      if (!value && !["empty", "notEmpty"].includes(operator)) {
+      if (!value && !["empty", "not_empty"].includes(operator)) {
         return "true";
       }
 
@@ -239,7 +238,7 @@ export const getFilters = ({ groupFilters }: Props) => {
     if (filter.type === "select") {
       const { values, operator, field } = FilterSelectSchema.parse(filter);
 
-      if (values.length === 0 && !["empty", "notEmpty"].includes(operator)) {
+      if (values.length === 0 && !["empty", "not_empty"].includes(operator)) {
         return "true";
       }
 
