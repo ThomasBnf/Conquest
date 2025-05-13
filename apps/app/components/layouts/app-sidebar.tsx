@@ -52,8 +52,8 @@ export const AppSidebar = ({ workspace }: Props) => {
     {
       label: "Tasks",
       icon: <Tasks size={18} />,
-      href: `/${slug}`,
-      isActive: pathname.startsWith(`/${slug}/taks`),
+      href: `/${slug}/tasks`,
+      isActive: pathname.startsWith(`/${slug}/tasks`),
     },
     {
       label: "Members",
