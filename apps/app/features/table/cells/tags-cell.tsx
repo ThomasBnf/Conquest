@@ -114,7 +114,6 @@ export const TagsCell = <TData extends Member | Company>({
       return { prevData };
     },
     onError: (error) => {
-      console.log(error);
       toast.error("Failed to update company");
       utils.companies.get.invalidate({ id: data.id });
     },

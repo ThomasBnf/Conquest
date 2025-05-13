@@ -21,6 +21,7 @@ export const useDeleteTag = () => {
     onSettled: () => {
       utils.tags.list.invalidate();
       utils.members.invalidate();
+      utils.companies.invalidate();
     },
   });
 
