@@ -25,10 +25,10 @@ export const heatmap = protectedProcedure
         FROM activity a
         JOIN member m FINAL ON a.memberId = m.id
         WHERE 
-          m.workspaceId = '${workspaceId}'
-          AND m.isStaff = 0
-          AND a.createdAt >= '${last365days}'
-          ${memberId ? `AND a.memberId = '${memberId}'` : ""}
+        m.workspaceId = '${workspaceId}'
+        AND a.createdAt >= '${last365days}'
+        ${memberId ? `AND a.memberId = '${memberId}'` : ""}
+        ${memberId ? "" : "AND m.isStaff = false"}
         GROUP BY date
       `,
     });
