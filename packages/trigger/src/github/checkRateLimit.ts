@@ -5,9 +5,11 @@ export const checkRateLimit = async (headers: ResponseHeaders) => {
   const rateLimit = Number(headers["x-ratelimit-remaining"]);
   const rateLimitReset = headers["x-ratelimit-reset"];
 
+  logger.info("rate limit", { rateLimit, rateLimitReset });
+
   if (rateLimit !== 0) return;
 
-  logger.info("Rate limit atteint, attente jusqu'au reset", {
+  logger.info("hit rate limit", {
     resetTime: new Date(Number(rateLimitReset) * 1000),
   });
 
