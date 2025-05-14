@@ -8,7 +8,7 @@ import { type icons } from "lucide-react";
 import { Description } from "../components/description";
 import { NextNode } from "../components/next-node";
 import { usePanel } from "../hooks/usePanel";
-import { Filter } from "../nodes/filter";
+import { IfElse } from "../nodes/if-else";
 import { SlackMessage } from "../nodes/slack-message";
 import { Task } from "../nodes/task";
 import { Wait } from "../nodes/wait";
@@ -62,7 +62,7 @@ export const OptionsPanel = ({ workflow }: Props) => {
             </div>
             <Description id={node.id} />
             {!isTrigger && <Separator />}
-            {type === "filter" && <Filter />}
+            {type === "if-else" && <IfElse />}
             {type === "slack-message" && <SlackMessage />}
             {type === "task" && <Task />}
             {type === "wait" && <Wait />}

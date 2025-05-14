@@ -1,5 +1,4 @@
 import { DatePicker } from "@/components/custom/date-picker";
-import { MemberPicker } from "@/components/custom/member-picker";
 import {
   FormCreateTask,
   FormCreateTaskSchema,
@@ -134,18 +133,6 @@ export const Task = () => {
                     ))}
                   </SelectContent>
                 </Select>
-              </FormControl>
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="member"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Member</FormLabel>
-              <FormControl>
-                <MemberPicker value={field.value} onChange={field.onChange} />
               </FormControl>
             </FormItem>
           )}

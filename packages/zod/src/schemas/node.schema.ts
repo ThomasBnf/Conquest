@@ -49,8 +49,8 @@ export const NodeAmbassadorSchema = NodeBaseDataSchema.extend({
 
 // ACTIONS
 
-export const NodeFilterSchema = NodeBaseDataSchema.extend({
-  type: z.literal("filter"),
+export const NodeIfElseSchema = NodeBaseDataSchema.extend({
+  type: z.literal("if-else"),
   groupFilter: GroupFiltersSchema,
 });
 
@@ -87,7 +87,7 @@ export const NodeDataSchema = z.discriminatedUnion("type", [
   NodeLevelUpSchema,
   NodeAtRiskSchema,
   NodeAmbassadorSchema,
-  NodeFilterSchema,
+  NodeIfElseSchema,
   NodeSlackMessageSchema,
   NodeTagMemberSchema,
   NodeTaskSchema,
@@ -108,7 +108,7 @@ export type NodeAtRisk = z.infer<typeof NodeAtRiskSchema>;
 export type NodeAmbassador = z.infer<typeof NodeAmbassadorSchema>;
 export type Trigger = z.infer<typeof TriggerSchema>;
 
-export type NodeFilter = z.infer<typeof NodeFilterSchema>;
+export type NodeIfElse = z.infer<typeof NodeIfElseSchema>;
 export type NodeSlackMessage = z.infer<typeof NodeSlackMessageSchema>;
 export type NodeTagMember = z.infer<typeof NodeTagMemberSchema>;
 export type NodeTask = z.infer<typeof NodeTaskSchema>;

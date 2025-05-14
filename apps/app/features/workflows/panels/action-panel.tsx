@@ -120,10 +120,10 @@ export const nodes: WorkflowNode[] = [
     type: "custom",
     position: { x: 0, y: 0 },
     data: {
-      icon: "Filter",
-      label: "Filter",
+      icon: "Split",
+      label: "If / else",
       description: "",
-      type: "filter",
+      type: "if-else",
       groupFilter: {
         filters: [],
         operator: "AND",
