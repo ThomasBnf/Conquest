@@ -4,7 +4,6 @@ import { Slack } from "@conquest/ui/icons/Slack";
 import { ScrollArea } from "@conquest/ui/scroll-area";
 import { Separator } from "@conquest/ui/separator";
 import type { Workflow } from "@conquest/zod/schemas/workflow.schema";
-import { useReactFlow } from "@xyflow/react";
 import { type icons } from "lucide-react";
 import { Description } from "../components/description";
 import { NextNode } from "../components/next-node";
@@ -23,7 +22,6 @@ type Props = {
 
 export const OptionsPanel = ({ workflow }: Props) => {
   const { panel, node, setPanel } = usePanel();
-  const { getEdges, deleteElements } = useReactFlow();
 
   if (!node) return;
 
@@ -63,6 +61,7 @@ export const OptionsPanel = ({ workflow }: Props) => {
               </Button>
             </div>
             <Description id={node.id} />
+            {!isTrigger && <Separator />}
             {type === "filter" && <Filter />}
             {type === "slack-message" && <SlackMessage />}
             {type === "task" && <Task />}

@@ -38,6 +38,7 @@ export const potentialAmbassadors = protectedProcedure
             LEFT JOIN level l ON m.levelId = l.id
             WHERE 
               m.workspaceId = '${workspaceId}'
+              AND m.isStaff = 0
               AND l.number >= 7
               AND l.number <= 9
               AND m.id IN (
@@ -54,6 +55,7 @@ export const potentialAmbassadors = protectedProcedure
             LEFT JOIN level l ON m.levelId = l.id
             WHERE 
               m.workspaceId = '${workspaceId}'
+              AND m.isStaff = 0
               AND l.number >= 7
               AND l.number <= 9
               AND m.id IN (

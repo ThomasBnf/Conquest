@@ -1,6 +1,5 @@
 import type { Source } from "@conquest/zod/enum/source.enum";
 import type { Activity } from "@conquest/zod/schemas/activity.schema";
-import { format } from "date-fns";
 import { randomUUID } from "node:crypto";
 import { getActivityTypeByKey } from "../activity-types/getActivityTypeByKey";
 import { client } from "../client";
@@ -39,8 +38,8 @@ export const createActivity = async (props: Props) => {
         id,
         activityTypeId: activityType.id,
         workspaceId,
-        updatedAt: format(updatedAt ?? new Date(), "yyyy-MM-dd HH:mm:ss"),
-        createdAt: format(createdAt ?? new Date(), "yyyy-MM-dd HH:mm:ss"),
+        updatedAt: updatedAt ?? new Date(),
+        createdAt: createdAt ?? new Date(),
       },
     ],
     format: "JSON",

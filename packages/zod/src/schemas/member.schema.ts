@@ -21,6 +21,7 @@ export const MemberSchema = z.object({
   atRiskMember: z.boolean().optional(),
   potentialAmbassador: z.boolean().optional(),
   companyId: z.string().nullable(),
+  isStaff: z.boolean(),
   workspaceId: z.string(),
   firstActivity: z.coerce.date().nullable(),
   lastActivity: z.coerce.date().nullable(),

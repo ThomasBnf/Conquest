@@ -1,14 +1,15 @@
 import { z } from "zod";
 
 export const TaskSchema = z.object({
-  id: z.string(),
+  id: z.string().uuid(),
   title: z.string(),
-  dueDate: z.date().optional(),
+  dueDate: z.coerce.date(),
   assignee: z.string(),
-  memberId: z.string().optional(),
+  isCompleted: z.boolean(),
+  memberId: z.string().nullable(),
   workspaceId: z.string(),
-  createdAt: z.date(),
-  updatedAt: z.date(),
+  createdAt: z.coerce.date(),
+  updatedAt: z.coerce.date(),
 });
 
 export type Task = z.infer<typeof TaskSchema>;

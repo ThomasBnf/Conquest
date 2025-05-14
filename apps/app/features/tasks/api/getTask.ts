@@ -15,7 +15,7 @@ export const getTask = protectedProcedure
     const result = await client.query({
       query: `
       SELECT * 
-      FROM taks
+      FROM task
       WHERE id = '${id}'
     `,
     });

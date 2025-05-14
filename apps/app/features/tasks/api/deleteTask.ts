@@ -8,13 +8,13 @@ export const deleteTask = protectedProcedure
       id: z.string(),
     }),
   )
-  .query(async ({ input }) => {
+  .mutation(async ({ input }) => {
     const { id } = input;
 
-    return await client.query({
+    await client.query({
       query: `
-      ALTER TABLE task
-      DELETE WHERE id = '${id}'
-    `,
+        ALTER TABLE task
+        DELETE WHERE id = '${id}'
+      `,
     });
   });

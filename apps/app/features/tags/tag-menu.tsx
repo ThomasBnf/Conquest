@@ -1,4 +1,3 @@
-import { trpc } from "@/server/client";
 import { Button } from "@conquest/ui/button";
 import {
   DropdownMenu,
@@ -10,6 +9,7 @@ import type { Tag } from "@conquest/zod/schemas/tag.schema";
 import { AlertDialog } from "components/custom/alert-dialog";
 import { Edit2, MoreHorizontal, Trash2 } from "lucide-react";
 import { useState } from "react";
+import { useDeleteTag } from "./mutations/useDeleteTag";
 
 type Props = {
   tag: Tag;
@@ -19,31 +19,10 @@ type Props = {
 export const TagMenu = ({ tag, setIsEditing }: Props) => {
   const [open, setOpen] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
-  const utils = trpc.useUtils();
-
-  const { mutateAsync } = trpc.tags.delete.useMutation({
-    async onMutate(newTag) {
-      setIsEditing(false);
-      await utils.tags.list.cancel();
-
-      const prevData = utils.tags.list.getData();
-
-      utils.tags.list.setData(undefined, (old) =>
-        old?.filter((tag) => tag.id !== newTag.id),
-      );
-
-      return { prevData };
-    },
-    onError: (_err, _newTag, context) => {
-      utils.tags.list.setData(undefined, context?.prevData);
-    },
-    onSettled: () => {
-      utils.tags.list.invalidate();
-    },
-  });
+  const deleteTag = useDeleteTag();
 
   const onDeleteTag = async () => {
-    await mutateAsync({ id: tag.id });
+    await deleteTag({ id: tag.id });
   };
 
   return (

@@ -26,8 +26,15 @@ export const createListMembers = async ({ web, workspaceId }: Props) => {
 
       if (profile && !isDeleted && !isBot) {
         const { locale } = member;
-        const { first_name, last_name, email, phone, image_1024, title } =
-          profile;
+        const {
+          first_name,
+          last_name,
+          email,
+          phone,
+          image_1024,
+          title,
+          display_name,
+        } = profile;
 
         if (first_name === "slackbot" || !email) continue;
 
@@ -54,6 +61,7 @@ export const createListMembers = async ({ web, workspaceId }: Props) => {
           externalId: id,
           attributes: {
             source: "Slack",
+            displayName: display_name ?? "",
           },
           memberId: createdMember.id,
           workspaceId,

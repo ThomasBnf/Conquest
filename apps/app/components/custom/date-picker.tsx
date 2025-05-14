@@ -15,7 +15,6 @@ type DatePickerProps = {
   className?: string;
   disabled?: (date: Date) => boolean;
   minDate?: Date;
-  maxDate?: Date;
 };
 
 export const DatePicker = React.forwardRef<HTMLButtonElement, DatePickerProps>(
@@ -26,17 +25,11 @@ export const DatePicker = React.forwardRef<HTMLButtonElement, DatePickerProps>(
       placeholder = "Select a date",
       className,
       disabled,
-      minDate = new Date("1900-01-01"),
-      maxDate = new Date(),
+      minDate = new Date(),
       ...props
     },
     ref,
   ) => {
-    const handleDisabled = (date: Date) => {
-      if (disabled) return disabled(date);
-      return date > maxDate || date < minDate;
-    };
-
     return (
       <Popover>
         <PopoverTrigger asChild>
@@ -58,7 +51,7 @@ export const DatePicker = React.forwardRef<HTMLButtonElement, DatePickerProps>(
             mode="single"
             selected={value}
             onSelect={onChange}
-            disabled={handleDisabled}
+            disabled={disabled}
             initialFocus
           />
         </PopoverContent>

@@ -1,7 +1,7 @@
 import { getCurrentUser } from "@/queries/getCurrentUser";
 import { createIntegration } from "@conquest/db/integrations/createIntegration";
 import { encrypt } from "@conquest/db/utils/encrypt";
-import { env } from "@conquest/env";
+import { generateToken } from "@conquest/trigger/github/generateToken";
 import { redirect } from "next/navigation";
 
 type Props = {
@@ -12,54 +12,32 @@ type Props = {
 };
 
 export default async function Page({ searchParams }: Props) {
-  const { code, installation_id } = await searchParams;
+  const { installation_id } = await searchParams;
   const { id: userId, workspaceId } = await getCurrentUser();
 
-  const response = await fetch("https://github.com/login/oauth/access_token", {
-    method: "POST",
-    headers: {
-      Accept: "application/json",
-    },
-    body: new URLSearchParams({
-      code,
-      client_id: env.NEXT_PUBLIC_GITHUB_CLIENT_ID,
-      client_secret: env.GITHUB_CLIENT_SECRET,
-      redirect_uri: `${env.NEXT_PUBLIC_BASE_URL}/connect/github`,
-    }),
-  });
+  const response = await generateToken(installation_id);
 
   if (!response.ok) {
+    console.error(await response.json());
     return redirect("/settings/integrations/github?error=invalid_code");
   }
 
   const data = await response.json();
-  const {
-    access_token,
-    expires_in,
-    refresh_token,
-    refresh_token_expires_in,
-    scope,
-  } = data;
+  const { token, expires_at, permissions } = data;
 
-  console.log("page connect", data);
-
-  const encryptedAccessToken = await encrypt(access_token);
-  const encryptedRefreshToken = await encrypt(refresh_token);
+  const encryptedAccessToken = await encrypt(token);
 
   await createIntegration({
     externalId: null,
     details: {
-      source: "Github",
-      accessToken: encryptedAccessToken.token,
-      accessTokenIv: encryptedAccessToken.iv,
-      refreshToken: encryptedRefreshToken.token,
-      refreshTokenIv: encryptedRefreshToken.iv,
-      refreshTokenExpires: refresh_token_expires_in,
-      expiresIn: expires_in,
-      installationId: installation_id,
-      scope,
       repo: "",
       owner: "",
+      source: "Github",
+      installationId: installation_id,
+      token: encryptedAccessToken.token,
+      tokenIv: encryptedAccessToken.iv,
+      expiresAt: expires_at,
+      permissions,
     },
     createdBy: userId,
     workspaceId,

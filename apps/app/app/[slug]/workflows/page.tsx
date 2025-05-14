@@ -1,3 +1,4 @@
+import { auth } from "@/auth";
 import { Header } from "@/components/layouts/header";
 import { PageLayout } from "@/components/layouts/page-layout";
 import { CreateWorkflow } from "@/features/workflows/components/create-workflow";
@@ -9,6 +10,9 @@ type Props = {
 
 export default async function Page({ params }: Props) {
   const { slug } = await params;
+
+  const session = await auth();
+  const { user } = session ?? {};
 
   return (
     <PageLayout>

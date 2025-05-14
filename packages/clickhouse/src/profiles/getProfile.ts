@@ -33,7 +33,7 @@ export const getProfile = async (props: Props) => {
   const result = await client.query({
     query: `
       SELECT *
-      FROM profile
+      FROM profile FINAL
       WHERE ${where}
     `,
     format: "JSON",

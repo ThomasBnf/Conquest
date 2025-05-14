@@ -1,3 +1,4 @@
+import { prisma } from "@conquest/db/prisma";
 import { client } from "../client";
 
 type Props = {
@@ -25,5 +26,13 @@ export const deleteMember = async ({ id }: Props) => {
       ALTER TABLE member
       DELETE WHERE id = '${id}'
     `,
+  });
+
+  await prisma.duplicate.deleteMany({
+    where: {
+      memberIds: {
+        has: id,
+      },
+    },
   });
 };

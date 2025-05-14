@@ -1,5 +1,4 @@
 import { COLORS } from "@/constant";
-import { trpc } from "@/server/client";
 import { Button } from "@conquest/ui/button";
 import { ColorPicker } from "@conquest/ui/color-picker";
 import { Form, FormControl, FormField, FormItem } from "@conquest/ui/form";
@@ -8,7 +7,11 @@ import { Popover, PopoverContent, PopoverTrigger } from "@conquest/ui/popover";
 import type { Tag } from "@conquest/zod/schemas/tag.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Check } from "lucide-react";
+import { useSession } from "next-auth/react";
 import { useForm } from "react-hook-form";
+import { v4 as uuid } from "uuid";
+import { useCreateTag } from "./mutations/useCreateTag";
+import { useUpdateTag } from "./mutations/useUpdateTag";
 import { type FormTag, FormTagSchema } from "./schema/form.schema";
 
 type Props = {
@@ -18,25 +21,11 @@ type Props = {
 };
 
 export const TagForm = ({ tag, setIsVisible, setIsEditing }: Props) => {
-  const utils = trpc.useUtils();
+  const { data: session } = useSession();
+  const { workspaceId } = session?.user ?? {};
 
-  const { mutateAsync: createTag } = trpc.tags.post.useMutation({
-    onSuccess: () => {
-      utils.tags.list.invalidate();
-      setIsVisible?.(false);
-      setIsEditing?.(false);
-      form.reset();
-    },
-  });
-
-  const { mutateAsync: updateTag } = trpc.tags.update.useMutation({
-    onSuccess: () => {
-      utils.tags.list.invalidate();
-      setIsVisible?.(false);
-      setIsEditing?.(false);
-      form.reset();
-    },
-  });
+  const createTag = useCreateTag({});
+  const updateTag = useUpdateTag({ tag });
 
   const form = useForm<FormTag>({
     resolver: zodResolver(FormTagSchema),
@@ -47,6 +36,10 @@ export const TagForm = ({ tag, setIsVisible, setIsEditing }: Props) => {
   });
 
   const onSubmit = async ({ name, color }: FormTag) => {
+    setIsVisible?.(false);
+    setIsEditing?.(false);
+    form.reset();
+
     if (tag) {
       return await updateTag({
         id: tag.id,
@@ -55,7 +48,20 @@ export const TagForm = ({ tag, setIsVisible, setIsEditing }: Props) => {
       });
     }
 
-    await createTag({ name, color });
+    if (!workspaceId) return;
+
+    const newTag = {
+      id: uuid(),
+      externalId: null,
+      name,
+      color,
+      source: "Manual" as const,
+      workspaceId,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+
+    await createTag(newTag);
   };
 
   const onCancel = () => {
@@ -89,14 +95,14 @@ export const TagForm = ({ tag, setIsVisible, setIsEditing }: Props) => {
                     {COLORS.map((color) => (
                       <button
                         type="button"
-                        key={color}
-                        onClick={() => field.onChange(color)}
+                        key={color.hex}
+                        onClick={() => field.onChange(color.hex)}
                         className="flex size-4 cursor-pointer items-center justify-center rounded-full text-white transition-transform hover:scale-110"
                         style={{
-                          backgroundColor: color,
+                          backgroundColor: color.hex,
                         }}
                       >
-                        {field.value === color && <Check size={13} />}
+                        {field.value === color.hex && <Check size={13} />}
                       </button>
                     ))}
                     <ColorPicker

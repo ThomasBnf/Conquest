@@ -1,1 +1,0 @@
-RENAME TABLE Profile TO profile;

@@ -11,7 +11,7 @@ export const updateTask = protectedProcedure
   )
   .mutation(async ({ input }) => {
     return await client.insert({
-      table: "taks",
+      table: "task",
       values: [
         {
           ...input,

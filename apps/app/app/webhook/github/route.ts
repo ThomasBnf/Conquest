@@ -3,10 +3,9 @@ import { deleteActivity } from "@conquest/clickhouse/activities/deleteActivity";
 import { getActivity } from "@conquest/clickhouse/activities/getActivity";
 import { updateActivity } from "@conquest/clickhouse/activities/updateActivity";
 import { prisma } from "@conquest/db/prisma";
-import { decrypt } from "@conquest/db/utils/decrypt";
 import { env } from "@conquest/env";
 import { createGithubMember } from "@conquest/trigger/github/createGithubMember";
-import { getRefreshToken } from "@conquest/trigger/github/getRefreshToken";
+import { createTokenManager } from "@conquest/trigger/github/createTokenManager";
 import { GithubIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
 import {
   IssueCommentEvent,
@@ -26,24 +25,15 @@ export async function POST(request: NextRequest) {
   const body = JSON.parse(bodyRaw) as WebhookEvent;
   const type = headers.get("x-github-event");
 
-  // console.log("body", body);
-
   const github = await checkSignature(request, bodyRaw);
   if (!github) return NextResponse.json({ status: 200 });
 
   const { details, workspaceId } = github;
-  const { expiresIn, accessToken, accessTokenIv, repo } = details;
+  const { repo } = details;
 
-  const decryptedToken = await decrypt({ accessToken, iv: accessTokenIv });
+  const tokenManager = await createTokenManager(github);
 
-  let token = decryptedToken;
-
-  const expiresAt = new Date(Date.now() + expiresIn * 1000);
-  console.log("expiresAt", expiresAt);
-
-  if (expiresAt < new Date()) {
-    token = await getRefreshToken({ github });
-  }
+  const token = await tokenManager.getToken();
 
   const octokit = new Octokit({ auth: token });
 
@@ -231,7 +221,6 @@ export async function POST(request: NextRequest) {
             break;
           }
           case "deleted": {
-            console.log("deleted", event);
             await deleteActivity({
               externalId: String(commentId),
               workspaceId,

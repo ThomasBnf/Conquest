@@ -15,6 +15,7 @@ import { getMember } from "@conquest/clickhouse/members/getMember";
 import { updateMember } from "@conquest/clickhouse/members/updateMember";
 import { createProfile } from "@conquest/clickhouse/profiles/createProfile";
 import { getProfile } from "@conquest/clickhouse/profiles/getProfile";
+import { updateProfile } from "@conquest/clickhouse/profiles/updateProfile";
 import { getIntegration } from "@conquest/db/integrations/getIntegration";
 import { updateIntegration } from "@conquest/db/integrations/updateIntegration";
 import { decrypt } from "@conquest/db/utils/decrypt";
@@ -197,12 +198,15 @@ export async function POST(req: NextRequest) {
     }
 
     case "user_change": {
+      console.log("user_change", event);
       const { id: externalId, deleted } = event.user;
 
       const profile = await getProfile({
         externalId,
         workspaceId,
       });
+
+      console.log("profile", profile);
 
       if (!profile) return NextResponse.json({ status: 200 });
 
@@ -213,27 +217,52 @@ export async function POST(req: NextRequest) {
 
       const member = await getMember({ id: profile.memberId });
 
+      console.log("member", member);
+
       if (!member) return NextResponse.json({ status: 200 });
 
       const { user } = await web.users.info({ user: externalId });
-      const { first_name, last_name, email, phone, image_1024, title } =
-        user?.profile ?? {};
+      const {
+        first_name,
+        last_name,
+        display_name,
+        email,
+        phone,
+        image_1024,
+        title,
+      } = user?.profile ?? {};
+
+      console.log("user", user);
 
       if (!email) return NextResponse.json({ status: 200 });
 
       const language = user?.locale?.split("-")[0] ?? "";
       const country = user?.locale?.split("-")[1] ?? "";
 
+      const emails = [...new Set([...member.emails, email])];
+      const phones = [...new Set([...member.phones, phone])].filter(
+        (p): p is string => Boolean(p),
+      );
+
       await updateMember({
         ...member,
         firstName: first_name ?? member.firstName,
         lastName: last_name ?? member.lastName,
         primaryEmail: email,
-        phones: phone ? [phone] : member.phones,
+        emails,
+        phones,
         avatarUrl: image_1024 ?? member.avatarUrl,
         jobTitle: title ?? member.jobTitle,
         country,
         language,
+      });
+
+      await updateProfile({
+        id: profile.id,
+        attributes: {
+          source: "Slack",
+          displayName: display_name ?? "",
+        },
       });
 
       return NextResponse.json({ status: 200 });
@@ -249,8 +278,15 @@ export async function POST(req: NextRequest) {
       const { locale } = info ?? {};
 
       const { profile } = info ?? {};
-      const { first_name, last_name, email, phone, image_1024, title } =
-        profile ?? {};
+      const {
+        first_name,
+        last_name,
+        display_name,
+        email,
+        phone,
+        image_1024,
+        title,
+      } = profile ?? {};
 
       const language = locale
         ? ISO6391.getName(locale.split("-")[0] ?? "")
@@ -281,6 +317,7 @@ export async function POST(req: NextRequest) {
           externalId: id,
           attributes: {
             source: "Slack",
+            displayName: display_name ?? "",
           },
           memberId: createdMember.id,
           workspaceId,

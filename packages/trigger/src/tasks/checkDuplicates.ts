@@ -1,41 +1,22 @@
 import { client } from "@conquest/clickhouse/client";
 import { listAllDuplicates } from "@conquest/db/duplicates/listAllDuplicates";
 import { REASON, prisma } from "@conquest/db/prisma";
-import { getWorkspace } from "@conquest/db/workspaces/getWorkspace";
 import { listWorkspaces } from "@conquest/db/workspaces/listWorkspaces";
-import { Workspace } from "@conquest/zod/schemas/workspace.schema";
+import { Reason } from "@conquest/zod/enum/reason.enum";
 import { logger, schemaTask } from "@trigger.dev/sdk/v3";
-import { z } from "zod";
 
 export const checkDuplicates = schemaTask({
   id: "check-duplicates",
-  machine: "small-2x",
-  schema: z.object({
-    workspaceId: z.string().optional(),
-  }),
-  run: async ({ workspaceId }) => {
-    if (workspaceId) {
-      const workspace = await getWorkspace({ id: workspaceId });
-      await check(workspace);
-
-      return;
-    }
-
+  run: async () => {
     const workspaces = await listWorkspaces();
 
     for (const workspace of workspaces) {
-      await check(workspace);
-    }
-  },
-});
+      const { id: workspaceId } = workspace;
 
-export const check = async (workspace: Workspace) => {
-  const { id: workspaceId } = workspace;
+      logger.info(workspaceId);
 
-  logger.info(workspaceId);
-
-  const result = await client.query({
-    query: `
+      const result = await client.query({
+        query: `
           SELECT
             'EMAIL' AS reason,
             m.primaryEmail AS value,
@@ -110,67 +91,69 @@ export const check = async (workspace: Workspace) => {
           HAVING count(DISTINCT memberId) > 1
             AND max(pulse) > 0
         `,
-    format: "JSON",
-  });
+        format: "JSON",
+      });
 
-  const { data } = (await result.json()) as {
-    data: {
-      reason: REASON;
-      value: string;
-      memberIds: string[];
-    }[];
-  };
+      const { data } = (await result.json()) as {
+        data: {
+          reason: Reason;
+          value: string;
+          memberIds: string[];
+        }[];
+      };
 
-  const duplicates = await listAllDuplicates({ workspaceId });
+      const duplicates = await listAllDuplicates({ workspaceId });
 
-  logger.info("duplicates", { duplicates });
+      logger.info("duplicates", { duplicates });
 
-  for (const item of data) {
-    const { memberIds, reason } = item;
+      for (const item of data) {
+        const { memberIds, reason } = item;
 
-    const duplicate = duplicates.find((duplicate) => {
-      const sortedExisting = [...duplicate.memberIds].sort();
-      const sortedNew = [...memberIds].sort();
-      return JSON.stringify(sortedExisting) === JSON.stringify(sortedNew);
-    });
+        const duplicate = duplicates.find((duplicate) => {
+          const sortedExisting = [...duplicate.memberIds].sort();
+          const sortedNew = [...memberIds].sort();
+          return JSON.stringify(sortedExisting) === JSON.stringify(sortedNew);
+        });
 
-    const result = await client.query({
-      query: `
+        const result = await client.query({
+          query: `
             SELECT sum(pulse) 
             FROM member FINAL
             WHERE id IN (${memberIds.map((id) => `'${id}'`).join(",")})
           `,
-    });
+        });
 
-    const { data: pulse } = (await result.json()) as {
-      data: {
-        "sum(pulse)": string;
-      }[];
-    };
+        const { data: pulse } = (await result.json()) as {
+          data: {
+            "sum(pulse)": string;
+          }[];
+        };
 
-    const totalPulse = pulse[0] ? Number(pulse[0]["sum(pulse)"]) : 0;
+        const totalPulse = pulse[0] ? Number(pulse[0]["sum(pulse)"]) : 0;
 
-    if (duplicate) {
-      if (totalPulse === duplicate.totalPulse) continue;
+        if (duplicate) {
+          if (totalPulse === duplicate.totalPulse) continue;
 
-      await prisma.duplicate.update({
-        where: {
-          id: duplicate.id,
-        },
-        data: {
-          totalPulse,
-        },
-      });
-    } else {
-      await prisma.duplicate.create({
-        data: {
-          totalPulse,
-          memberIds,
-          reason,
-          state: "PENDING",
-          workspaceId,
-        },
-      });
+          await prisma.duplicate.update({
+            where: {
+              id: duplicate.id,
+            },
+            data: {
+              totalPulse,
+            },
+          });
+        } else {
+          await prisma.duplicate.create({
+            data: {
+              totalPulse,
+              memberIds,
+              reason: reason as REASON,
+              state: "PENDING",
+              workspaceId,
+            },
+          });
+        }
+      }
     }
-  }
-};
+  },
+});

@@ -1,14 +1,16 @@
 import { env } from "@conquest/env";
-import { GithubIntegration } from "@conquest/zod/schemas/integration.schema";
 import { logger } from "@trigger.dev/sdk/v3";
 import { Octokit } from "octokit";
+import { TokenManager } from "./createTokenManager";
 
-type Props = {
-  octokit: Octokit;
-  github: GithubIntegration;
-};
+export const createWebhook = async (tokenManager: TokenManager) => {
+  const { getToken, getGithub } = tokenManager;
 
-export const createWebhook = async ({ octokit, github }: Props) => {
+  const token = await getToken();
+  const github = getGithub();
+
+  const octokit = new Octokit({ auth: token });
+
   const { details } = github;
   const { owner, repo } = details;
 

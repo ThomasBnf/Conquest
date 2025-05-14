@@ -10,7 +10,6 @@ import { createManyTags } from "../discourse/createManyTags";
 import { checkDuplicates } from "./checkDuplicates";
 import { getAllMembersMetrics } from "./getAllMembersMetrics";
 import { integrationSuccessEmail } from "./integrationSuccessEmail";
-import { deleteIntegration } from "./deleteIntegration";
 
 export const installDiscourse = schemaTask({
   id: "install-discourse",
@@ -55,7 +54,9 @@ export const installDiscourse = schemaTask({
     });
   },
   onFailure: async ({ discourse }) => {
-    await prisma.integration.delete({ where: { id: discourse.id } });
-    await deleteIntegration.trigger({ integration: discourse });
+    await prisma.integration.update({
+      where: { id: discourse.id },
+      data: { status: "DISCONNECTED" },
+    });
   },
 });

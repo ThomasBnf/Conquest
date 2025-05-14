@@ -1,31 +1,37 @@
 "use client";
 
+import { IsLoading } from "@/components/states/is-loading";
 import { trpc } from "@/server/client";
+import { Badge } from "@conquest/ui/badge";
+import { Task } from "@conquest/zod/schemas/task.schema";
+import { isBefore, isToday } from "date-fns";
+import { Suspense } from "react";
+import { TaskItem } from "./task-item";
 
 export const TasksListPage = () => {
-  const { data: tasks } = trpc.tasks.list.useQuery();
+  const { data: tasks, isLoading } = trpc.tasks.list.useQuery();
 
-  const groupedActivities = () => {
-    if (!tasks) return {};
+  const completedTasks = tasks?.filter((task) => task.isCompleted) ?? [];
 
-    return tasks.reduce(
-      (groups, task) => {
-        const dueDate = task.dueDate
-          ? new Date(task.dueDate).toLocaleDateString()
-          : "Sans date";
+  const todayTasks =
+    tasks?.filter((task) => {
+      const isDueToday = isToday(task.dueDate);
+      const isOverdue = isBefore(task.dueDate, new Date());
+      const isNotCompleted = !task.isCompleted;
 
-        if (!groups[dueDate]) {
-          groups[dueDate] = [];
-        }
+      return (isDueToday || isOverdue) && isNotCompleted;
+    }) ?? [];
 
-        groups[dueDate].push(task);
-        return groups;
-      },
-      {} as Record<string, typeof tasks>,
-    );
-  };
+  const upcomingTasks =
+    tasks?.filter((task) => {
+      const isNotToday = !isToday(task.dueDate);
+      const isInFuture = !isBefore(task.dueDate, new Date());
+      const isNotCompleted = !task.isCompleted;
 
-  console.log(groupedActivities);
+      return isNotToday && isInFuture && isNotCompleted;
+    }) ?? [];
+
+  if (isLoading) return <IsLoading />;
 
   return (
     <div className="divide-y">
@@ -34,18 +40,32 @@ export const TasksListPage = () => {
         <p className="flex-1">Due Date</p>
         <p className="flex-1">Member</p>
         <p className="flex-1">Assigned to</p>
+        <div className="w-6" />
       </div>
-      <div className="bg-muted px-4 py-2">
-        <p>Today</p>
+      <div className="divide-y">
+        <TaskSection title="Today" tasks={todayTasks} />
+        <TaskSection title="Upcoming" tasks={upcomingTasks} />
+        <TaskSection title="Completed" tasks={completedTasks} />
       </div>
-      <div>
-        {tasks?.map((task) => (
-          <div key={task.id}>
-            <p>{task.title}</p>
-            <p>{task.memberId}</p>
-            <p>{task.assignee}</p>
-          </div>
-        ))}
+    </div>
+  );
+};
+
+const TaskSection = ({ title, tasks }: { title: string; tasks: Task[] }) => {
+  if (tasks.length === 0) return null;
+
+  return (
+    <div className="divide-y">
+      <div className="flex items-center gap-2 bg-surface px-4 py-2">
+        <p>{title}</p>
+        <Badge variant="secondary">{tasks.length}</Badge>
+      </div>
+      <div className="divide-y">
+        <Suspense fallback={<IsLoading />}>
+          {tasks.map((task) => (
+            <TaskItem key={task.id} task={task} />
+          ))}
+        </Suspense>
       </div>
     </div>
   );

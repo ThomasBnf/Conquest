@@ -5,7 +5,6 @@ import { EditableDate } from "@/components/editable/editable-date";
 import { EditableInput } from "@/components/editable/editable-input";
 import { EditableMembers } from "@/components/editable/editable-members";
 import { FieldCard } from "@/components/editable/field-card";
-import { TagPicker } from "@/features/tags/tag-picker";
 import { trpc } from "@/server/client";
 import { Avatar, AvatarFallback, AvatarImage } from "@conquest/ui/avatar";
 import { ScrollArea } from "@conquest/ui/scroll-area";
@@ -67,10 +66,10 @@ export const CompanySidebar = ({ company }: Props) => {
           <TagIcon size={16} className="shrink-0" />
           <p>Tags</p>
         </div>
-        <TagPicker
+        {/* <TagPicker
           record={company}
           onUpdate={(value) => onUpdateCompany("tags", value)}
-        />
+        /> */}
       </div>
       <Separator />
       <ScrollArea className="flex-1">

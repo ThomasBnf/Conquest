@@ -46,12 +46,13 @@ export const newMembersTable = protectedProcedure
           SELECT 
             memberId,
             groupArray(attributes) as attributes
-          FROM profile
+          FROM profile FINAL
           GROUP BY memberId
         ) p ON m.id = p.memberId
         WHERE 
           m.workspaceId = '${workspaceId}'
           AND m.createdAt BETWEEN '${_from}' AND '${_to}'
+          AND m.isStaff = 0
         ${
           search
             ? `AND (

@@ -46,11 +46,12 @@ export const potentialAmbassadorsTable = protectedProcedure
           SELECT 
             memberId,
             groupArray(attributes) as attributes
-          FROM profile
+          FROM profile FINAL
           GROUP BY memberId
         ) p ON m.id = p.memberId
         WHERE 
           m.workspaceId = '${workspaceId}'
+          AND m.isStaff = 0
           AND l.number >= 7
           AND l.number <= 9
           AND m.id IN (

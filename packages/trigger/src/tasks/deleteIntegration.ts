@@ -9,9 +9,10 @@ import {
   LivestormIntegrationSchema,
 } from "@conquest/zod/schemas/integration.schema";
 import { WebClient } from "@slack/web-api";
-import { schemaTask } from "@trigger.dev/sdk/v3";
+import { logger, schemaTask } from "@trigger.dev/sdk/v3";
 import { Octokit } from "octokit";
 import { z } from "zod";
+import { createTokenManager } from "../github/createTokenManager";
 import { listAndDeleteWebhooks } from "../github/listAndDeleteWebhooks";
 import { deleteWebhook } from "../livestorm/deleteWebhook";
 import { getRefreshToken } from "../livestorm/getRefreshToken";
@@ -22,12 +23,20 @@ export const deleteIntegration = schemaTask({
   machine: "small-2x",
   schema: z.object({
     integration: IntegrationSchema,
+    jwt: z.string().nullable(),
   }),
-  run: async ({ integration }) => {
+  run: async ({ integration, jwt }) => {
     const { workspaceId, details } = integration;
     const { source } = details;
 
     if (source === "Discord") {
+      const { externalId } = integration;
+
+      if (!externalId) {
+        logger.error("No externalId found for Discord integration");
+        return;
+      }
+
       await prisma.tag.deleteMany({
         where: { source, workspaceId },
       });
@@ -35,17 +44,31 @@ export const deleteIntegration = schemaTask({
 
     if (source === "Github") {
       const github = GithubIntegrationSchema.parse(integration);
-      const { accessToken, accessTokenIv } = github.details;
+      const { installationId } = github.details;
 
-      const decryptedToken = await decrypt({
-        accessToken,
-        iv: accessTokenIv,
-      });
-      const octokit = new Octokit({ auth: decryptedToken });
+      const tokenManager = await createTokenManager(github);
+      const token = await tokenManager.getToken();
+      const octokit = new Octokit({ auth: token });
 
       await listAndDeleteWebhooks({ octokit, github });
 
-      client.query({
+      const appOctokit = new Octokit({ auth: jwt });
+
+      try {
+        await appOctokit.request(
+          "DELETE /app/installations/{installation_id}",
+          {
+            installation_id: installationId,
+            headers: {
+              "X-GitHub-Api-Version": "2022-11-28",
+            },
+          },
+        );
+      } catch (error) {
+        console.error("Erreur lors de la suppression du repository:", error);
+      }
+
+      await client.query({
         query: `
           ALTER TABLE profile DELETE
           WHERE memberId IN (
@@ -91,13 +114,18 @@ export const deleteIntegration = schemaTask({
       where: { source, workspaceId },
     });
 
-    client.query({
+    logger.info("ALTER TABLE activity DELETE");
+
+    await client.query({
       query: `
         ALTER TABLE activity DELETE 
         WHERE source = '${source}'
         AND workspaceId = '${workspaceId}'`,
     });
-    client.query({
+
+    logger.info("ALTER TABLE log DELETE");
+
+    await client.query({
       query: `
         ALTER TABLE log DELETE 
         WHERE memberId IN (
@@ -106,39 +134,52 @@ export const deleteIntegration = schemaTask({
           AND workspaceId = '${workspaceId}'
         );`,
     });
-    try {
-      client.query({
-        query: `
-        ALTER TABLE activityType DELETE 
-        WHERE source = '${source}'
-        AND workspaceId = '${workspaceId}'`,
-      });
-    } catch (error) {
-      console.error(error);
-    }
-    client.query({
+
+    logger.info("ALTER TABLE activityType DELETE");
+
+    await client.query({
+      query: `
+      ALTER TABLE activityType DELETE 
+      WHERE source = '${source}'
+      AND workspaceId = '${workspaceId}'`,
+    });
+
+    logger.info("ALTER TABLE channel DELETE");
+
+    await client.query({
       query: `
         ALTER TABLE channel DELETE
         WHERE source = '${source}'
         AND workspaceId = '${workspaceId}'`,
     });
-    client.query({
+
+    logger.info("ALTER TABLE company DELETE");
+
+    await client.query({
       query: `
         ALTER TABLE company DELETE
         WHERE source = '${source}'
         AND workspaceId = '${workspaceId}'`,
     });
-    client.query({
+
+    logger.info("ALTER TABLE member DELETE");
+
+    await client.query({
       query: `
         ALTER TABLE member DELETE
         WHERE source = '${source}'
         AND workspaceId = '${workspaceId}'`,
     });
-    client.query({
+
+    logger.info("ALTER TABLE profile DELETE");
+
+    await client.query({
       query: `
         ALTER TABLE profile DELETE
         WHERE JSONExtractString(CAST(attributes AS String), 'source') = '${source}'
         AND workspaceId = '${workspaceId}'`,
     });
+
+    logger.info("ALTER TABLE tag DELETE");
   },
 });

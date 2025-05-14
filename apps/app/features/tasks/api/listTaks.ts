@@ -8,8 +8,9 @@ export const listTaks = protectedProcedure.query(async ({ ctx: { user } }) => {
   const result = await client.query({
     query: `
       SELECT * 
-      FROM taks
+      FROM task FINAL
       WHERE workspaceId = '${workspaceId}'
+      ORDER BY createdAt DESC
     `,
   });
 

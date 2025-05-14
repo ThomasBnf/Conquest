@@ -97,7 +97,7 @@ export const mergeMembers = async ({
 
   const result = await client.query({
     query: `
-        SELECT * FROM profile
+        SELECT * FROM profile FINAL
         WHERE memberId IN (${otherMembersIds}) AND workspaceId = '${workspaceId}'
       `,
   });

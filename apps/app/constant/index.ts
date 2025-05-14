@@ -5,14 +5,14 @@ import type {
 import type { LEVEL } from "@conquest/zod/schemas/level.schema";
 
 export const COLORS = [
-  "#95999F",
-  "#6E7B8B",
-  "#00A8C1",
-  "#3FAB77",
-  "#F2B200",
-  "#D88234",
-  "#F38E82",
-  "#EB5756",
+  { name: "Gray", hex: "#6E7B8B" },
+  { name: "Blue", hex: "#0070f3" },
+  { name: "Cyan", hex: "#00A8C1" },
+  { name: "Green", hex: "#3FAB77" },
+  { name: "Yellow", hex: "#F2B200" },
+  { name: "Orange", hex: "#D88234" },
+  { name: "Pink", hex: "#EB5756" },
+  { name: "Red", hex: "#F38E82" },
 ];
 
 export const OPERATORS: Operator[] = [

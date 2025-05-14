@@ -22,13 +22,13 @@ export const Filter = () => {
   };
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className="space-y-1">
       <Label>Filter</Label>
       <FiltersProvider
         initialGroupFilters={groupFilter}
         saveFilters={saveFilters}
       >
-        <FiltersList />
+        <FiltersList className="h-9 w-full" />
       </FiltersProvider>
     </div>
   );

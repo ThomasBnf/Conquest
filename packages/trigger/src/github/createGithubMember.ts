@@ -3,7 +3,7 @@ import { getMember } from "@conquest/clickhouse/members/getMember";
 import { createProfile } from "@conquest/clickhouse/profiles/createProfile";
 import { getProfile } from "@conquest/clickhouse/profiles/getProfile";
 import { logger } from "@trigger.dev/sdk/v3";
-import type { Octokit } from "octokit";
+import { Octokit } from "octokit";
 
 type Props = {
   octokit: Octokit;
@@ -11,7 +11,6 @@ type Props = {
   createdAt?: Date;
   workspaceId: string;
 };
-
 export const createGithubMember = async ({
   octokit,
   id,
@@ -20,8 +19,6 @@ export const createGithubMember = async ({
 }: Props) => {
   const response = await octokit.rest.users.getById({ account_id: id });
   const { headers, data } = response;
-
-  logger.info("createGithubMember", { response });
 
   const profile = await getProfile({
     externalId: String(id),
@@ -32,6 +29,8 @@ export const createGithubMember = async ({
     const member = await getMember({ id: profile.memberId });
     return { member, headers };
   }
+
+  logger.info("createGithubMember", { response });
 
   const {
     avatar_url,
@@ -74,15 +73,22 @@ export const createGithubMember = async ({
   });
 
   if (twitter_username) {
-    await createProfile({
-      memberId: member.id,
-      attributes: {
-        source: "Twitter",
-        username: twitter_username,
-      },
-      createdAt,
+    const twitterProfile = await getProfile({
+      externalId: twitter_username,
       workspaceId,
     });
+
+    if (!twitterProfile) {
+      await createProfile({
+        memberId: member.id,
+        attributes: {
+          source: "Twitter",
+          username: twitter_username,
+        },
+        createdAt,
+        workspaceId,
+      });
+    }
   }
 
   return {

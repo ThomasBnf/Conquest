@@ -19,25 +19,26 @@ export const listRepositories = protectedProcedure.query(
     );
 
     const { details } = github;
-    const { accessToken, accessTokenIv, installationId } = details;
+    const { token, tokenIv } = details;
 
-    const token = await decrypt({ accessToken, iv: accessTokenIv });
+    const decryptedToken = await decrypt({ accessToken: token, iv: tokenIv });
 
-    const octokit = new Octokit({ auth: token });
+    const octokit = new Octokit({ auth: decryptedToken });
 
     const repositories: Repository[] = [];
 
     let page = 1;
 
     while (true) {
-      const { data } =
-        await octokit.rest.apps.listInstallationReposForAuthenticatedUser({
-          installation_id: installationId,
-          per_page: 100,
-          sort: "full_name",
-          direction: "asc",
-          page,
-        });
+      const { data } = await octokit.request("GET /installation/repositories", {
+        headers: {
+          "X-GitHub-Api-Version": "2022-11-28",
+        },
+        per_page: 100,
+        sort: "full_name",
+        direction: "asc",
+        page,
+      });
 
       repositories.push(...data.repositories);
 

@@ -10,16 +10,17 @@ import { EditableLink } from "@/components/editable/editable-link";
 import { EditablePhones } from "@/components/editable/editable-phones";
 import { FieldCard } from "@/components/editable/field-card";
 import { TagPicker } from "@/features/tags/tag-picker";
-import { trpc } from "@/server/client";
 import { Avatar, AvatarFallback, AvatarImage } from "@conquest/ui/avatar";
 import { ScrollArea } from "@conquest/ui/scroll-area";
 import { Separator } from "@conquest/ui/separator";
 import type { Member } from "@conquest/zod/schemas/member.schema";
 import type { Profile } from "@conquest/zod/schemas/profile.schema";
 import { format } from "date-fns";
-import { TagIcon } from "lucide-react";
+import { DiscourseFields } from "./DiscourseFields";
+import { GithubFields } from "./GithubFields.tsx";
+import { ProfilesParser } from "./ProfilesParser";
 import { LevelBadge } from "./level-badge";
-import { ProfilesParser } from "./profiles-parser";
+import { useUpdateMember } from "./mutations/useUpdateMember";
 import { PulseBadge } from "./pulse-badge";
 
 type Props = {
@@ -42,34 +43,15 @@ export const MemberSidebar = ({ member, profiles }: Props) => {
     lastActivity,
     createdAt,
   } = member ?? {};
-  const utils = trpc.useUtils();
 
-  const { mutateAsync: updateMember } = trpc.members.update.useMutation({
-    onMutate: (updatedMember) => {
-      const { id } = updatedMember;
-
-      utils.members.get.cancel({ id });
-      const previousMember = utils.members.get.getData({ id });
-
-      utils.members.get.setData({ id }, updatedMember);
-
-      return { previousMember };
-    },
-    onError: (_, __, context) => {
-      utils.members.get.setData({ id }, context?.previousMember);
-    },
-    onSettled: () => {
-      utils.members.get.invalidate({ id });
-      utils.members.invalidate();
-    },
-  });
+  const updateMember = useUpdateMember();
 
   const onUpdateMember = async (
     field: keyof Member,
     value: string | null | string[],
   ) => {
     if (member[field] === value) return;
-    await updateMember({ ...member, [field]: value });
+    updateMember({ ...member, [field]: value });
   };
 
   return (
@@ -97,18 +79,17 @@ export const MemberSidebar = ({ member, profiles }: Props) => {
           </div>
         </div>
         <Separator />
-        <div className="flex flex-col gap-2 p-4">
-          <div className="flex items-center gap-2 text-muted-foreground">
-            <TagIcon size={16} className="shrink-0" />
-            <p>Tags</p>
-          </div>
-          <TagPicker
-            record={member}
-            onUpdate={(value) => onUpdateMember("tags", value)}
-          />
+        <div className="p-4">
+          <FieldCard label="Tags">
+            <TagPicker
+              record={member}
+              onUpdate={(value) => onUpdateMember("tags", value)}
+            />
+          </FieldCard>
         </div>
         <Separator />
         <ProfilesParser profiles={profiles} />
+        <Separator />
         <div className="space-y-4 p-4">
           <FieldCard label="First name">
             <EditableInput
@@ -157,6 +138,7 @@ export const MemberSidebar = ({ member, profiles }: Props) => {
               href={linkedinUrl}
             />
           </FieldCard>
+          {/* <AddCustomField /> */}
         </div>
         <Separator />
         <div className="space-y-4 p-4">
@@ -177,7 +159,9 @@ export const MemberSidebar = ({ member, profiles }: Props) => {
           </FieldCard>
         </div>
         <Separator />
-        <div className="space-y-4 p-4">
+        <DiscourseFields profiles={profiles} />
+        <GithubFields profiles={profiles} />
+        <div className="space-y-4 p-4 pb-32">
           {firstActivity && (
             <FieldCard label="First activity">
               <p className="h-8 place-content-center pl-2">
