@@ -1,4 +1,3 @@
-import { DeleteDialog } from "@/components/custom/delete-dialog";
 import { useReactFlow } from "@xyflow/react";
 import { toast } from "sonner";
 import { usePanel } from "../hooks/usePanel";
@@ -23,7 +22,6 @@ export const OptionsPanel = () => {
     });
 
     setSelected(undefined);
-    setPanel({ panel: "workflow" });
     toast.success("Node deleted");
     return;
   };
