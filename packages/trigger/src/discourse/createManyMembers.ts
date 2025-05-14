@@ -58,7 +58,7 @@ export const createManyMembers = async ({
     members = [...members, ...users];
     page += 1;
 
-    await wait.for({ seconds: 0.5 });
+    await wait.for({ seconds: 1.5 });
   }
 
   let _page = 0;
