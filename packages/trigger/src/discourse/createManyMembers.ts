@@ -6,7 +6,6 @@ import type { DiscourseIntegration } from "@conquest/zod/schemas/integration.sch
 import { DiscourseProfileSchema } from "@conquest/zod/schemas/profile.schema";
 import type { Tag } from "@conquest/zod/schemas/tag.schema";
 import {
-  type AdminListUsers,
   AdminListUsersSchema,
   DirectoryItemsSchema,
   User,
@@ -50,7 +49,6 @@ export const createManyMembers = async ({
       page,
     });
 
-    logger.info("listOfUsers", { listOfUsers });
     const parsedListOfUsers = AdminListUsersSchema.parse(listOfUsers);
     const { users } = parsedListOfUsers;
     logger.info("parsedListOfUsers", { parsedListOfUsers });
@@ -88,9 +86,10 @@ export const createManyMembers = async ({
     });
 
     const data = await response.json();
-    logger.info("data", { data });
     const { directory_items } = DirectoryItemsSchema.parse(data);
     logger.info("directory_items", { directory_items });
+
+    await wait.for({ seconds: 0.5 });
 
     for (const item of directory_items ?? []) {
       const {
@@ -123,6 +122,8 @@ export const createManyMembers = async ({
       )}`;
 
       const { user_badges } = await client.listUserBadges({ username });
+
+      await wait.for({ seconds: 0.5 });
 
       logger.info("user_badges", { username, user_badges });
 
