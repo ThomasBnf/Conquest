@@ -89,8 +89,6 @@ export const createManyMembers = async ({
     const { directory_items } = DirectoryItemsSchema.parse(data);
     logger.info("directory_items", { directory_items });
 
-    await wait.for({ seconds: 0.5 });
-
     for (const item of directory_items ?? []) {
       const {
         id,
@@ -122,8 +120,6 @@ export const createManyMembers = async ({
       )}`;
 
       const { user_badges } = await client.listUserBadges({ username });
-
-      await wait.for({ seconds: 0.5 });
 
       logger.info("user_badges", { username, user_badges });
 

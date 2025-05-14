@@ -648,6 +648,7 @@ const checkSignature = async (request: NextRequest, rawBody: string) => {
 
   const integration = await prisma.integration.findFirst({
     where: {
+      status: "CONNECTED",
       details: {
         path: ["source"],
         equals: "Discourse",
