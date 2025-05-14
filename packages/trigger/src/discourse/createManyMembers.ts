@@ -178,21 +178,21 @@ export const createManyMembers = async ({
         profile: DiscourseProfileSchema.parse(profile),
       });
 
-      await wait.for({ seconds: 0.5 });
+      await wait.for({ seconds: 1 });
 
       await createManyInvites({
         discourse,
         profile: DiscourseProfileSchema.parse(profile),
       });
 
-      await wait.for({ seconds: 0.5 });
+      await wait.for({ seconds: 1 });
 
       await createManyActivities({
         client,
         profile: DiscourseProfileSchema.parse(profile),
       });
 
-      await wait.for({ seconds: 0.5 });
+      await wait.for({ seconds: 1 });
 
       await getPulseAndLevel({ memberId: member.id });
 
