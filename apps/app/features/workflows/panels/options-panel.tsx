@@ -1,24 +1,8 @@
-import { Icon } from "@/components/custom/Icon";
 import { DeleteDialog } from "@/components/custom/delete-dialog";
-import { Button } from "@conquest/ui/button";
-import { Slack } from "@conquest/ui/icons/Slack";
-import { ScrollArea } from "@conquest/ui/scroll-area";
-import { Separator } from "@conquest/ui/separator";
 import { useReactFlow } from "@xyflow/react";
-import type { icons } from "lucide-react";
 import { toast } from "sonner";
-import { Description } from "../components/description";
-import { NextStep } from "../components/next-step";
 import { usePanel } from "../hooks/usePanel";
 import { useSelected } from "../hooks/useSelected";
-import { ListMembers } from "../nodes/list-members";
-import { RecurringWorkflow } from "../nodes/recurring-workflow";
-import { SlackMessage } from "../nodes/slack-message";
-import { TagMember } from "../nodes/tag-member";
-import { Wait } from "../nodes/wait";
-import { Webhook } from "../nodes/webhook";
-import { ActionPanel } from "./action-panel";
-import { TriggerPanel } from "./trigger-panel";
 
 export const OptionsPanel = () => {
   const { panel, setPanel } = usePanel();
@@ -39,14 +23,14 @@ export const OptionsPanel = () => {
     });
 
     setSelected(undefined);
-    setPanel("workflow");
+    setPanel({ panel: "workflow" });
     toast.success("Node deleted");
     return;
   };
 
   return (
     <div className="flex h-full flex-col">
-      {panel === "actions" && <ActionPanel />}
+      {/* {panel === "actions" && <ActionPanel />}
       {panel === "triggers" && <TriggerPanel />}
       {panel === "node" && (
         <ScrollArea className="flex-1">
@@ -74,8 +58,6 @@ export const OptionsPanel = () => {
               </Button>
             </div>
             <Description id={selected.id} />
-            {type === "recurring-workflow" && <RecurringWorkflow />}
-            {type === "list-members" && <ListMembers />}
             {type === "webhook" && <Webhook />}
             {type === "add-tag" && <TagMember />}
             {type === "remove-tag" && <TagMember />}
@@ -85,8 +67,8 @@ export const OptionsPanel = () => {
             <NextStep />
           </div>
         </ScrollArea>
-      )}
-      {panel === "node" && !isTrigger && (
+      )} */}
+      {/* {panel === "node" && !isTrigger && (
         <div className="flex shrink-0 justify-end p-4">
           <DeleteDialog
             title="Delete Workflow"
@@ -94,7 +76,7 @@ export const OptionsPanel = () => {
             onConfirm={onDelete}
           />
         </div>
-      )}
+      )} */}
     </div>
   );
 };

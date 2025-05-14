@@ -56,7 +56,7 @@ export const installDiscourse = schemaTask({
   onFailure: async ({ discourse }) => {
     await prisma.integration.update({
       where: { id: discourse.id },
-      data: { status: "DISCONNECTED" },
+      data: { status: "FAILED" },
     });
   },
 });

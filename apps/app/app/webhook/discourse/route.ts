@@ -630,7 +630,7 @@ export async function POST(request: NextRequest) {
 
 const checkSignature = async (request: NextRequest, rawBody: string) => {
   const signature = request.headers.get("x-discourse-event-signature");
-  const community_url = request.headers.get("x-discourse-instance");
+  const communityUrl = request.headers.get("x-discourse-instance");
 
   if (!signature) return false;
 
@@ -644,7 +644,7 @@ const checkSignature = async (request: NextRequest, rawBody: string) => {
     return false;
   }
 
-  if (!community_url) return false;
+  if (!communityUrl) return false;
 
   const integration = await prisma.integration.findFirst({
     where: {
@@ -655,8 +655,8 @@ const checkSignature = async (request: NextRequest, rawBody: string) => {
       AND: [
         {
           details: {
-            path: ["community_url"],
-            equals: community_url,
+            path: ["communityUrl"],
+            equals: communityUrl,
           },
         },
       ],

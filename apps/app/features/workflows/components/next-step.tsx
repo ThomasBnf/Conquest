@@ -1,10 +1,4 @@
-import { Icon } from "@/components/custom/Icon";
-import { Badge } from "@conquest/ui/badge";
-import { Button } from "@conquest/ui/button";
-import { Slack } from "@conquest/ui/icons/Slack";
-import { Label } from "@conquest/ui/label";
 import { useReactFlow } from "@xyflow/react";
-import { X, type icons } from "lucide-react";
 import { usePanel } from "../hooks/usePanel";
 import { useSelected } from "../hooks/useSelected";
 import type { WorkflowNode } from "../panels/schemas/workflow-node.type";
@@ -34,7 +28,8 @@ export const NextStep = () => {
 
   return (
     <div>
-      <Label>Next node</Label>
+      next-node
+      {/* <Label>Next node</Label>
       <p className="text-muted-foreground">Add the next node in the workflow</p>
       <div className="relative mt-2">
         <div className="relative z-10 flex h-10 items-center gap-2 rounded-md border bg-muted-hover px-2">
@@ -90,7 +85,7 @@ export const NextStep = () => {
             </div>
           </div>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };
