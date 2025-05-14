@@ -4,6 +4,7 @@ import { decrypt } from "@conquest/db/utils/decrypt";
 import type { DiscourseIntegration } from "@conquest/zod/schemas/integration.schema";
 import type { DiscourseProfile } from "@conquest/zod/schemas/profile.schema";
 import { InviteSchema } from "@conquest/zod/types/discourse";
+import { logger } from "@trigger.dev/sdk/v3";
 import { startOfDay, subDays } from "date-fns";
 
 type Props = {
@@ -43,6 +44,7 @@ export const createManyInvites = async ({ discourse, profile }: Props) => {
     );
 
     const data = await response.json();
+    logger.info("invites", { data });
     const invites = InviteSchema.array().parse(data.invites);
 
     if (!response.ok) {
