@@ -5,6 +5,7 @@ import {
   GithubIntegration,
   GithubIntegrationSchema,
 } from "@conquest/zod/schemas/integration.schema";
+import { logger } from "@trigger.dev/sdk/v3";
 import { subMinutes } from "date-fns";
 import { generateToken } from "./generateToken";
 
@@ -31,6 +32,8 @@ export const createTokenManager = async (initialGithub: GithubIntegration) => {
     if (shouldRefresh) {
       const response = await generateToken(installationId);
       const data = await response.json();
+
+      logger.info("createTokenManager", { data });
 
       const { token, expires_at } = data;
 

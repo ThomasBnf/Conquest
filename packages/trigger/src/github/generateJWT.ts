@@ -1,4 +1,5 @@
 import { env } from "@conquest/env";
+import { logger } from "@trigger.dev/sdk/v3";
 import jwt from "jsonwebtoken";
 
 export function generateJWT(): string {
@@ -13,6 +14,8 @@ export function generateJWT(): string {
   const token = jwt.sign(payload, env.GITHUB_PRIVATE_KEY, {
     algorithm: "RS256",
   });
+
+  logger.info("generateJWT", { token });
 
   return token;
 }
