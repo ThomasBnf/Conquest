@@ -196,7 +196,7 @@ export const createManyMembers = async ({
 
       await getPulseAndLevel({ memberId: member.id });
 
-      await wait.for({ seconds: 3 });
+      await wait.for({ seconds: 5 });
     }
 
     if (data.directory_items.length < 50) _hasMore = false;
