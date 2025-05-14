@@ -50,8 +50,8 @@ export const createManyMembers = async ({
     });
 
     const parsedListOfUsers = AdminListUsersSchema.parse(listOfUsers);
-    const { users } = parsedListOfUsers;
     logger.info("parsedListOfUsers", { parsedListOfUsers });
+    const { users } = parsedListOfUsers;
 
     if (users.length < 100) hasMore = false;
 
@@ -86,8 +86,8 @@ export const createManyMembers = async ({
     });
 
     const data = await response.json();
+    logger.info("directory_items", { data });
     const { directory_items } = DirectoryItemsSchema.parse(data);
-    logger.info("directory_items", { directory_items });
 
     for (const item of directory_items ?? []) {
       const {

@@ -138,12 +138,19 @@ export const DirectoryItemsSchema = z.object({
           .optional(),
       }),
     })
-    .array(),
-  meta: z.object({
-    last_updated_at: z.string().nullable(),
-    total_rows_directory_items: z.number(),
-    load_more_directory_items: z.string(),
-  }),
+    .array()
+    .default([]),
+  meta: z
+    .object({
+      last_updated_at: z.string().nullable(),
+      total_rows_directory_items: z.number(),
+      load_more_directory_items: z.string(),
+    })
+    .default({
+      last_updated_at: null,
+      total_rows_directory_items: 0,
+      load_more_directory_items: "",
+    }),
 });
 
 export type DirectoryItems = z.infer<typeof DirectoryItemsSchema>;
