@@ -9,6 +9,7 @@ import {
   type AdminListUsers,
   AdminListUsersSchema,
   DirectoryItemsSchema,
+  User,
 } from "@conquest/zod/types/discourse";
 import { logger, wait } from "@trigger.dev/sdk/v3";
 import { getLocaleByAlpha2 } from "country-locale-map";
@@ -35,7 +36,7 @@ export const createManyMembers = async ({
     iv: apiKeyIv,
   });
 
-  let members: AdminListUsers[] = [];
+  let members: User[] = [];
 
   let page = 0;
   let hasMore = true;
@@ -50,12 +51,13 @@ export const createManyMembers = async ({
     });
 
     logger.info("listOfUsers", { listOfUsers });
-    const parsedListOfUsers = AdminListUsersSchema.array().parse(listOfUsers);
+    const parsedListOfUsers = AdminListUsersSchema.parse(listOfUsers);
+    const { users } = parsedListOfUsers;
     logger.info("parsedListOfUsers", { parsedListOfUsers });
 
-    if (parsedListOfUsers.length < 100) hasMore = false;
+    if (users.length < 100) hasMore = false;
 
-    members = [...members, ...parsedListOfUsers];
+    members = [...members, ...users];
     page += 1;
 
     await wait.for({ seconds: 0.5 });

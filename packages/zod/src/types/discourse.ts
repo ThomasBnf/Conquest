@@ -62,7 +62,7 @@ export const CategorySchema = z.object({
 
 export type Category = z.infer<typeof CategorySchema>;
 
-export const AdminListUsersSchema = z.object({
+export const UsersSchema = z.object({
   id: z.number(),
   username: z.string(),
   name: z.string().nullable(),
@@ -89,6 +89,11 @@ export const AdminListUsersSchema = z.object({
   post_count: z.number(),
 });
 
+export const AdminListUsersSchema = z.object({
+  users: z.array(UsersSchema),
+});
+
+export type User = z.infer<typeof UsersSchema>;
 export type AdminListUsers = z.infer<typeof AdminListUsersSchema>;
 
 export const DirectoryItemsSchema = z.object({
