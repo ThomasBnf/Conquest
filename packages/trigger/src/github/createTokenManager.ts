@@ -5,8 +5,6 @@ import {
   GithubIntegration,
   GithubIntegrationSchema,
 } from "@conquest/zod/schemas/integration.schema";
-import { logger } from "@trigger.dev/sdk/v3";
-import { subMinutes } from "date-fns";
 import { generateToken } from "./generateToken";
 
 export type TokenManager = {
@@ -27,32 +25,30 @@ export const createTokenManager = async (initialGithub: GithubIntegration) => {
   let github = initialGithub;
 
   const getToken = async (): Promise<string> => {
-    const shouldRefresh = subMinutes(expiresAt, 5) < new Date();
+    // const shouldRefresh = subMinutes(expiresAt, 5) < new Date();
+    const shouldRefresh = true;
 
     if (shouldRefresh) {
       const response = await generateToken(installationId);
       const data = await response.json();
 
-      logger.info("createTokenManager", { data });
-
       const { token, expires_at } = data;
 
       const encryptedToken = await encrypt(token);
 
-      console.log("createTokenManager", data);
+      const integration = await updateIntegration({
+        id: github.id,
+        details: {
+          ...initialGithub.details,
+          token: encryptedToken.token,
+          tokenIv: encryptedToken.iv,
+          expiresAt: expires_at,
+        },
+        workspaceId: github.workspaceId,
+      });
 
-      github = GithubIntegrationSchema.parse(
-        await updateIntegration({
-          id: github.id,
-          details: {
-            ...details,
-            token: encryptedToken.token,
-            tokenIv: encryptedToken.iv,
-            expiresAt: expires_at,
-          },
-          workspaceId: github.workspaceId,
-        }),
-      );
+      const parsedIntegration = GithubIntegrationSchema.parse(integration);
+      github = parsedIntegration;
 
       accessToken = token;
     }

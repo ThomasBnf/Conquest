@@ -1,8 +1,7 @@
 import { env } from "@conquest/env";
-import { logger } from "@trigger.dev/sdk/v3";
 import jwt from "jsonwebtoken";
 
-export function generateJWT(): string {
+export const generateJWT = () => {
   const now = Math.floor(Date.now() / 1000);
 
   const payload = {
@@ -11,11 +10,11 @@ export function generateJWT(): string {
     iss: env.GITHUB_APP_ID,
   };
 
-  const token = jwt.sign(payload, env.GITHUB_PRIVATE_KEY, {
+  const formattedPrivateKey = env.GITHUB_PRIVATE_KEY.replace(/\\n/g, "\n");
+
+  const token = jwt.sign(payload, formattedPrivateKey, {
     algorithm: "RS256",
   });
 
-  logger.info("generateJWT", { token });
-
   return token;
-}
+};

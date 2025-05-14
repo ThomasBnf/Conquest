@@ -16,7 +16,7 @@ export const CTA = () => {
           your community value.
         </SubHeading>
         <Link
-          href="https://app.conquest.com/auth/signup"
+          href="https://app.useconquest.com/auth/signup"
           className={cn(
             buttonVariants({ variant: "brand", size: "md" }),
             "mt-6",
