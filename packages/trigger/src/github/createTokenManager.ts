@@ -5,6 +5,7 @@ import {
   GithubIntegration,
   GithubIntegrationSchema,
 } from "@conquest/zod/schemas/integration.schema";
+import { subMinutes } from "date-fns";
 import { generateToken } from "./generateToken";
 
 export type TokenManager = {
@@ -25,8 +26,7 @@ export const createTokenManager = async (initialGithub: GithubIntegration) => {
   let github = initialGithub;
 
   const getToken = async (): Promise<string> => {
-    // const shouldRefresh = subMinutes(expiresAt, 5) < new Date();
-    const shouldRefresh = true;
+    const shouldRefresh = subMinutes(expiresAt, 5) < new Date();
 
     if (shouldRefresh) {
       const response = await generateToken(installationId);
