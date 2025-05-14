@@ -66,11 +66,8 @@ export const createManyIssues = async (tokenManager: TokenManager) => {
       });
 
       if (comments > 0) {
-        const commentToken = await getToken();
-        const commentOctokit = new Octokit({ auth: commentToken });
-
         await createManyComments({
-          octokit: commentOctokit,
+          octokit,
           github,
           issueNumber: number,
         });
