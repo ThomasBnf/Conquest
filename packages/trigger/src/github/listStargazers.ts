@@ -9,16 +9,15 @@ import { TokenManager } from "./createTokenManager";
 export const listStargazers = async (tokenManager: TokenManager) => {
   const { getToken, getGithub } = tokenManager;
 
-  const token = await getToken();
-  const github = getGithub();
-
-  const { details, workspaceId } = github;
-  const { owner, repo } = details;
-
   let page = 1;
   const since = subDays(new Date(), 365).toString();
 
   while (true) {
+    const token = await getToken();
+    const github = getGithub();
+
+    const { details, workspaceId } = github;
+    const { owner, repo } = details;
     const octokit = new Octokit({ auth: token });
 
     const { headers, data } = await octokit.rest.activity.listStargazersForRepo(
@@ -40,9 +39,6 @@ export const listStargazers = async (tokenManager: TokenManager) => {
     logger.info("Stargazers", { count: data.length, data });
 
     for (const stargazer of data) {
-      const stargazerToken = await getToken();
-      const stargazerOctokit = new Octokit({ auth: stargazerToken });
-
       const { starred_at, user } = stargazer as {
         starred_at: string;
         user: {
@@ -52,7 +48,7 @@ export const listStargazers = async (tokenManager: TokenManager) => {
       const { id } = user;
 
       const { headers, member } = await createGithubMember({
-        octokit: stargazerOctokit,
+        octokit,
         id,
         createdAt: new Date(starred_at),
         workspaceId,

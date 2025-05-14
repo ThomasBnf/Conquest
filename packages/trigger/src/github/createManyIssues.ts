@@ -10,16 +10,15 @@ import { TokenManager } from "./createTokenManager";
 export const createManyIssues = async (tokenManager: TokenManager) => {
   const { getToken, getGithub } = tokenManager;
 
-  const token = await getToken();
-  const github = getGithub();
-
-  const { details, workspaceId } = github;
-  const { owner, repo } = details;
-
   let page = 1;
   const since = subDays(new Date(), 365).toString();
 
   while (true) {
+    const token = await getToken();
+    const github = getGithub();
+
+    const { details, workspaceId } = github;
+    const { owner, repo } = details;
     const octokit = new Octokit({ auth: token });
 
     const response = await octokit.rest.issues.listForRepo({
@@ -38,9 +37,6 @@ export const createManyIssues = async (tokenManager: TokenManager) => {
     logger.info("Issues", { count: data.length, data });
 
     for (const issue of data) {
-      const issueToken = await getToken();
-      const issueOctokit = new Octokit({ auth: issueToken });
-
       const { number, user, title, body, comments, created_at, updated_at } =
         issue;
       const { id: userId, login } = user ?? {};
@@ -48,7 +44,7 @@ export const createManyIssues = async (tokenManager: TokenManager) => {
       if (!userId || login?.includes("[bot]")) continue;
 
       const { headers, member } = await createGithubMember({
-        octokit: issueOctokit,
+        octokit,
         id: userId,
         workspaceId,
       });

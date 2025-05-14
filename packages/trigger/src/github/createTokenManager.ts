@@ -26,7 +26,7 @@ export const createTokenManager = async (initialGithub: GithubIntegration) => {
   let github = initialGithub;
 
   const getToken = async (): Promise<string> => {
-    const shouldRefresh = subMinutes(expiresAt, 5) < new Date();
+    const shouldRefresh = subMinutes(expiresAt, 15) < new Date();
 
     if (shouldRefresh) {
       const response = await generateToken(installationId);
