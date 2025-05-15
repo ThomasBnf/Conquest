@@ -59,6 +59,8 @@ export const seed = schemaTask({
           if (profile) {
             const { email, real_name } = profile;
 
+            logger.info("email", { email });
+
             const result = await client.query({
               query: `
                 SELECT * 
