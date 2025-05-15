@@ -27,6 +27,8 @@ export const mergeMembers = async ({
 
   const oldestMember = getOldestMember({ members: allMembers, finalMember });
 
+  console.log("oldestMember", oldestMember);
+
   if (!oldestMember) return;
 
   const mergedEntries = Object.entries(finalMember).map(([key, value]) => {
@@ -70,7 +72,11 @@ export const mergeMembers = async ({
     return [key, value];
   });
 
+  console.log("mergedEntries", mergedEntries);
+
   const mergeMember = MemberSchema.parse(Object.fromEntries(mergedEntries));
+
+  console.log("mergeMember", mergeMember);
 
   const otherMembers = allMembers.filter(
     (member) => member.id !== mergeMember.id,
@@ -87,6 +93,8 @@ export const mergeMembers = async ({
       `,
   });
 
+  console.log("activity updated");
+
   await client.query({
     query: `
       ALTER TABLE activity
@@ -95,15 +103,23 @@ export const mergeMembers = async ({
     `,
   });
 
+  console.log("inviteTo updated");
+
   const result = await client.query({
     query: `
-        SELECT * FROM profile FINAL
+        SELECT *
+        FROM profile FINAL
         WHERE memberId IN (${otherMembersIds}) AND workspaceId = '${workspaceId}'
       `,
   });
 
+  console.log("profile fetched");
+
   const { data } = await result.json();
   const profiles = ProfileSchema.array().parse(data);
+
+  console.log("profiles parsed");
+
   const profilesIds = profiles.map((p) => `'${p.id}'`).join(", ");
 
   await client.query({
@@ -115,11 +131,15 @@ export const mergeMembers = async ({
      `,
   });
 
+  console.log("profiles deleted");
+
   const profilesValues = profiles.map((profile) => ({
     ...profile,
     memberId: mergeMember.id,
     updatedAt: new Date(),
   }));
+
+  console.log("profilesValues", profilesValues);
 
   await client.insert({
     table: "profile",
@@ -127,7 +147,11 @@ export const mergeMembers = async ({
     format: "JSON",
   });
 
+  console.log(mergeMember);
+
   await updateMember({ ...mergeMember });
+
+  console.log("member updated");
 
   await client.query({
     query: `
@@ -136,6 +160,8 @@ export const mergeMembers = async ({
       `,
   });
 
+  console.log("other members deleted");
+
   await client.query({
     query: `
         ALTER TABLE log
@@ -143,7 +169,11 @@ export const mergeMembers = async ({
       `,
   });
 
+  console.log("log deleted");
+
   const levels = await listLevels({ workspaceId });
+
+  console.log("levels fetched");
 
   await getMemberMetrics.trigger(
     { levels, member: mergeMember },
