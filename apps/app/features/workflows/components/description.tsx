@@ -23,24 +23,20 @@ type Props = {
 
 export const Description = ({ id }: Props) => {
   const { getNode, updateNode } = useReactFlow();
+
   const node = getNode(id) as WorkflowNode | undefined;
+
+  const { description } = node?.data ?? {};
+
   const form = useForm<FormDescription>({
     resolver: zodResolver(FormDescriptionSchema),
-    defaultValues: {
-      description: node?.data.description ?? "",
-    },
   });
 
-  useEffect(() => {
+  const onSubmit = () => {
     if (!node) return;
-    form.reset({
-      description: node?.data.description ?? "",
-    });
-  }, [node]);
 
-  if (!node) return null;
+    const { description } = form.getValues();
 
-  const onSubmit = ({ description }: FormDescription) => {
     updateNode(id, {
       data: {
         ...node.data,
@@ -48,6 +44,10 @@ export const Description = ({ id }: Props) => {
       },
     });
   };
+
+  useEffect(() => {
+    form.reset({ description });
+  }, [node]);
 
   return (
     <Form {...form}>
@@ -62,10 +62,7 @@ export const Description = ({ id }: Props) => {
                 <Input
                   {...field}
                   placeholder="Add a description"
-                  onChange={(e) => {
-                    field.onChange(e);
-                    onSubmit({ description: e.target.value });
-                  }}
+                  onBlur={() => onSubmit()}
                 />
               </FormControl>
               <FormMessage />

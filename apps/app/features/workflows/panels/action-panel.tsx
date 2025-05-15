@@ -55,6 +55,8 @@ export const ActionPanel = () => {
       },
     };
 
+    console.log("newNode", newNode);
+
     addNodes(newNode);
 
     const newEdge: Edge = {
@@ -79,19 +81,17 @@ export const ActionPanel = () => {
       <div className="p-4">
         <Label>Next step</Label>
         <p className="text-muted-foreground">
-          Set the next block in the workflow
+          Set the next node in the workflow
         </p>
       </div>
       <Separator />
       <Command>
         <CommandInput placeholder="Search for an action..." />
-        <CommandList>
+        <CommandList className="max-h-full">
           <CommandEmpty>No action found.</CommandEmpty>
-          <CommandGroup>
-            {nodes(user).map((node) => {
-              const { data } = node;
-
-              return (
+          {nodes(user).map((group) => (
+            <CommandGroup key={group.category} heading={group.category}>
+              {group.nodes.map((node) => (
                 <CommandItem
                   key={node.id}
                   value={node.data.label}
@@ -99,88 +99,145 @@ export const ActionPanel = () => {
                   className="space-x-2"
                 >
                   <div className="rounded-md border bg-background p-1">
-                    {data.icon === "Slack" ? (
+                    {node.data.icon === "Slack" ? (
                       <Slack size={16} />
                     ) : (
-                      <Icon name={data.icon as keyof typeof icons} size={16} />
+                      <Icon
+                        name={node.data.icon as keyof typeof icons}
+                        size={16}
+                      />
                     )}
                   </div>
-                  <p className="font-medium">{data.label}</p>
+                  <p>{node.data.label}</p>
                 </CommandItem>
-              );
-            })}
-          </CommandGroup>
+              ))}
+            </CommandGroup>
+          ))}
         </CommandList>
       </Command>
     </>
   );
 };
 
-export const nodes = (user: User | undefined): WorkflowNode[] => [
+export const nodes = (
+  user: User | undefined,
+): {
+  category: string;
+  nodes: WorkflowNode[];
+}[] => [
   {
-    id: uuid(),
-    type: "custom",
-    position: { x: 0, y: 0 },
-    data: {
-      icon: "Slack",
-      label: "Send Slack message",
-      description: "",
-      type: "slack-message",
-      message: "",
-    },
-  },
-  {
-    id: uuid(),
-    type: "custom",
-    position: { x: 0, y: 0 },
-    data: {
-      icon: "Split",
-      label: "If / else",
-      description: "",
-      type: "if-else",
-      groupFilter: {
-        filters: [],
-        operator: "AND",
+    category: "Integrations",
+    nodes: [
+      {
+        id: uuid(),
+        type: "custom",
+        position: { x: 0, y: 0 },
+        data: {
+          icon: "Slack",
+          label: "Send private message",
+          description: "",
+          type: "slack-message",
+          message: "",
+        },
       },
-    },
+    ],
   },
   {
-    id: uuid(),
-    type: "custom",
-    position: { x: 0, y: 0 },
-    data: {
-      icon: "SquareCheckBig",
-      label: "Task",
-      description: "",
-      type: "task",
-      title: "",
-      dueDate: new Date(),
-      assignee: user?.id,
-    },
+    category: "Tags",
+    nodes: [
+      {
+        id: uuid(),
+        type: "custom",
+        position: { x: 0, y: 0 },
+        data: {
+          icon: "Tag",
+          label: "Add tag",
+          description: "",
+          type: "add-tag",
+          tags: [],
+        },
+      },
+      {
+        id: uuid(),
+        type: "custom",
+        position: { x: 0, y: 0 },
+        data: {
+          icon: "Tag",
+          label: "Remove tag",
+          description: "",
+          type: "remove-tag",
+          tags: [],
+        },
+      },
+    ],
   },
   {
-    id: uuid(),
-    type: "custom",
-    position: { x: 0, y: 0 },
-    data: {
-      icon: "Clock",
-      label: "Wait",
-      description: "",
-      type: "wait",
-      duration: 0,
-      unit: "seconds",
-    },
+    category: "Tasks",
+    nodes: [
+      {
+        id: uuid(),
+        type: "custom",
+        position: { x: 0, y: 0 },
+        data: {
+          icon: "SquareCheckBig",
+          label: "Create task",
+          description: "",
+          type: "task",
+          title: "",
+          days: 2,
+          assignee: user?.id ?? "",
+        },
+      },
+    ],
   },
   {
-    id: uuid(),
-    type: "custom",
-    position: { x: 0, y: 0 },
-    data: {
-      icon: "Webhook",
-      label: "Webhook",
-      description: "",
-      type: "webhook",
-      url: undefined,
-    },
+    category: "Conditions",
+    nodes: [
+      {
+        id: uuid(),
+        type: "custom",
+        position: { x: 0, y: 0 },
+        data: {
+          icon: "Split",
+          label: "If / else",
+          description: "",
+          type: "if-else",
+          groupFilter: {
+            filters: [],
+            operator: "AND",
+          },
+        },
+      },
+    ],
+  },
+  {
+    category: "Utilities",
+    nodes: [
+      {
+        id: uuid(),
+        type: "custom",
+        position: { x: 0, y: 0 },
+        data: {
+          icon: "Clock",
+          label: "Wait",
+          description: "",
+          type: "wait",
+          duration: 0,
+          unit: "seconds",
+        },
+      },
+      {
+        id: uuid(),
+        type: "custom",
+        position: { x: 0, y: 0 },
+        data: {
+          icon: "Webhook",
+          label: "Webhook",
+          description: "",
+          type: "webhook",
+          url: undefined,
+        },
+      },
+    ],
   },
 ];

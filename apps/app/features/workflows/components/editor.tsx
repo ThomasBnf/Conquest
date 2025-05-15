@@ -62,6 +62,7 @@ export const Editor = ({ workflow }: Props) => {
 
   const onNodesChange = useCallback(
     (changes: NodeChange[]) => {
+      console.log(changes);
       setNodes((prev) => {
         if (changes[0]?.type === "remove") {
           const { id } = changes[0];
@@ -73,6 +74,7 @@ export const Editor = ({ workflow }: Props) => {
 
           if (node && "isTrigger" in node.data) return prev;
         }
+
         return applyNodeChanges(changes, prev) as WorkflowNode[];
       });
 

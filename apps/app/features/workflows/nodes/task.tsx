@@ -1,12 +1,8 @@
-import { DatePicker } from "@/components/custom/date-picker";
-import {
-  FormCreateTask,
-  FormCreateTaskSchema,
-} from "@/features/tasks/schema/form-create-task.schema";
 import { trpc } from "@/server/client";
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -22,20 +18,24 @@ import {
 import { NodeTaskSchema } from "@conquest/zod/schemas/node.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useReactFlow } from "@xyflow/react";
+import { addDays, format } from "date-fns";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { usePanel } from "../hooks/usePanel";
+import { FormTask, FormTaskSchema } from "../panels/schemas/form-task.schema";
 
 export const Task = () => {
   const { node } = usePanel();
   const { updateNodeData } = useReactFlow();
-  const { title, dueDate, assignee } = NodeTaskSchema.parse(node?.data);
+  const { title, days, assignee } = NodeTaskSchema.parse(node?.data);
 
   const { data: users } = trpc.userInWorkspace.listUsers.useQuery();
 
-  const form = useForm<FormCreateTask>({
-    resolver: zodResolver(FormCreateTaskSchema),
+  const form = useForm<FormTask>({
+    resolver: zodResolver(FormTaskSchema),
   });
+
+  const daysValue = form.getValues("days");
 
   const onUpdateNodeData = () => {
     if (!node) return;
@@ -43,9 +43,8 @@ export const Task = () => {
     updateNodeData(node?.id, {
       ...node.data,
       title: form.getValues("title"),
-      dueDate: form.getValues("dueDate"),
+      days: form.getValues("days"),
       assignee: form.getValues("assignee"),
-      member: form.getValues("member"),
     });
   };
 
@@ -63,17 +62,17 @@ export const Task = () => {
     onUpdateNodeData();
   };
 
-  const onChangeDueDate = (value: Date | undefined) => {
-    if (!node || !value) return;
+  const onChangeDays = (value: number) => {
+    if (!node) return;
 
-    form.setValue("dueDate", value);
+    form.setValue("days", Number(value));
     onUpdateNodeData();
   };
 
   useEffect(() => {
     if (!node) return;
 
-    form.reset({ title, dueDate, assignee });
+    form.reset({ title, days, assignee });
   }, [node]);
 
   return (
@@ -97,17 +96,37 @@ export const Task = () => {
         />
         <FormField
           control={form.control}
-          name="dueDate"
+          name="days"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Due Date</FormLabel>
               <FormControl>
-                <DatePicker
-                  value={field.value}
-                  onChange={onChangeDueDate}
-                  className="w-full justify-start"
-                />
+                <div className="flex items-center divide-x overflow-hidden rounded-md border">
+                  <div className="flex h-9 items-center bg-muted px-4">
+                    <p>In</p>
+                  </div>
+                  <Input
+                    {...field}
+                    type="number"
+                    min={1}
+                    variant="transparent"
+                    value={field.value}
+                    onChange={(e) => onChangeDays(Number(e.target.value))}
+                    onBlur={onUpdateNodeData}
+                  />
+                  <div className="flex h-9 items-center bg-muted px-4">
+                    <p>Days</p>
+                  </div>
+                </div>
               </FormControl>
+              {daysValue && (
+                <FormDescription>
+                  The due date is calculated from the trigger date.
+                  <br />
+                  For example: today + {daysValue} days ={" "}
+                  {format(addDays(new Date(), daysValue), "PP")}
+                </FormDescription>
+              )}
             </FormItem>
           )}
         />
@@ -118,7 +137,11 @@ export const Task = () => {
             <FormItem>
               <FormLabel>Assignee (optional)</FormLabel>
               <FormControl>
-                <Select {...field} onValueChange={onChangeAssignee}>
+                <Select
+                  {...field}
+                  value={field.value || ""}
+                  onValueChange={onChangeAssignee}
+                >
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
