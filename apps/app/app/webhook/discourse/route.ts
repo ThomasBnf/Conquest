@@ -664,5 +664,7 @@ const checkSignature = async (request: NextRequest, rawBody: string) => {
     },
   });
 
+  if (!integration) return false;
+
   return DiscourseIntegrationSchema.parse(integration);
 };
