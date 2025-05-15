@@ -47,7 +47,6 @@ export const listFilteredMembers = async ({
           GROUP BY memberId
         ) p ON m.id = p.memberId
         WHERE m.workspaceId = '${workspaceId}'
-        AND m.isStaff = 0
         ${
           search
             ? `AND (
@@ -55,7 +54,7 @@ export const listFilteredMembers = async ({
                 OR positionCaseInsensitive(primaryEmail, LOWER(trim('${search}'))) > 0
                 OR arrayExists(attr -> attr.source = 'Github' AND positionCaseInsensitive(toString(attr.login), LOWER(trim('${search}'))) > 0, p.attributes)
               )`
-            : ""
+            : "AND m.isStaff = 0"
         }
         ${filterBy.length > 0 ? `AND (${filtersStr})` : ""}
         ${orderBy}

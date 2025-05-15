@@ -11,6 +11,7 @@ import { EditablePhones } from "@/components/editable/editable-phones";
 import { FieldCard } from "@/components/editable/field-card";
 import { TagPicker } from "@/features/tags/tag-picker";
 import { Avatar, AvatarFallback, AvatarImage } from "@conquest/ui/avatar";
+import { Badge } from "@conquest/ui/badge";
 import { ScrollArea } from "@conquest/ui/scroll-area";
 import { Separator } from "@conquest/ui/separator";
 import type { Member } from "@conquest/zod/schemas/member.schema";
@@ -42,6 +43,7 @@ export const MemberSidebar = ({ member, profiles }: Props) => {
     firstActivity,
     lastActivity,
     createdAt,
+    isStaff,
   } = member ?? {};
 
   const updateMember = useUpdateMember();
@@ -74,6 +76,7 @@ export const MemberSidebar = ({ member, profiles }: Props) => {
             </div>
           </div>
           <div className="flex items-center gap-2">
+            {isStaff && <Badge>Staff</Badge>}
             <LevelBadge member={member} />
             <PulseBadge member={member} showIcon={false} />
           </div>
