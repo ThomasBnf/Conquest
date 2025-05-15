@@ -92,7 +92,6 @@ export const MemberSidebar = ({ member, profiles }: Props) => {
         </div>
         <Separator />
         <ProfilesParser profiles={profiles} />
-        <Separator />
         <div className="space-y-4 p-4">
           <FieldCard label="First name">
             <EditableInput
