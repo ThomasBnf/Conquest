@@ -93,7 +93,7 @@ export const PlanPicker = ({ period, setPeriod }: Props) => {
                   })
                 }
               >
-                Start a 14-day trial
+                Start a 7-day free trial
               </Button>
               <p className="text-center text-muted-foreground text-xs">
                 No credit card required

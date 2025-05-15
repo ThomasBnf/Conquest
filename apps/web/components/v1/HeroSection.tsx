@@ -82,7 +82,7 @@ export const HeroSection = () => {
         delay={0.9}
         className="text-muted-foreground"
       >
-        14-day free trial • No CC required
+        7-day free trial • No CC required
       </TextAnimate>
       <AnimatedGroup
         variants={{

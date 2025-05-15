@@ -18,7 +18,7 @@ export default function Pricing() {
               Pricing
             </h1>
             <p className="max-w-xl font-suisse text-lg text-muted-foreground">
-              Try Conquest for free during 14-day trial. Update your plan
+              Try Conquest for free during 7-day free trial. Update your plan
               anytime.
             </p>
           </div>

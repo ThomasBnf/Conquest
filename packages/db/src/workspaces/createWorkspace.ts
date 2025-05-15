@@ -15,7 +15,7 @@ export const createWorkspace = async (props: Props) => {
     data: {
       ...props,
       plan: "ACTIVE",
-      trialEnd: addDays(new Date(), 14),
+      trialEnd: addDays(new Date(), 7),
     },
   });
 

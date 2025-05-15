@@ -170,7 +170,7 @@ export const PlanPicker = ({
                     ) : (
                       <span>
                         {trial ? (
-                          "Start a 14-day trial"
+                          "Start a 7-day free trial"
                         ) : (
                           <span className="capitalize">
                             Start {plan.name.toLowerCase()}
