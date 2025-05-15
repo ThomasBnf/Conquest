@@ -1,12 +1,10 @@
 import { client } from "@conquest/clickhouse/client";
+import { createProfile } from "@conquest/clickhouse/profiles/createProfile";
 import { getIntegrationBySource } from "@conquest/db/integrations/getIntegrationBySource";
 import { decrypt } from "@conquest/db/utils/decrypt";
 import { listWorkspaces } from "@conquest/db/workspaces/listWorkspaces";
 import { SlackIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
-import {
-  SlackProfile,
-  SlackProfileSchema,
-} from "@conquest/zod/schemas/profile.schema";
+import { MemberSchema } from "@conquest/zod/schemas/member.schema";
 import { UserWithWorkspaceSchema } from "@conquest/zod/schemas/user.schema";
 import { WebClient } from "@slack/web-api";
 import { logger, schemaTask } from "@trigger.dev/sdk/v3";
@@ -25,6 +23,7 @@ export const seed = schemaTask({
 
     for (const workspace of workspaces) {
       const { id: workspaceId } = workspace;
+      logger.info("workspace", { workspaceId });
 
       const integration = await getIntegrationBySource({
         source: "Slack",
@@ -43,50 +42,52 @@ export const seed = schemaTask({
 
       const web = new WebClient(token);
 
-      const result = await client.query({
-        query: `
-          SELECT * 
-          FROM profile FINAL
-          WHERE attributes.source = 'Slack'
-          AND workspaceId = '${workspaceId}'
-        `,
-      });
+      let cursor: string | undefined;
 
-      const { data } = await result.json();
-      logger.info("data", { data });
-      const profiles = SlackProfileSchema.array().parse(data);
+      while (true) {
+        const { members, response_metadata } = await web.users.list({
+          limit: 100,
+          include_locale: true,
+          cursor,
+        });
 
-      const newProfiles: SlackProfile[] = [];
+        for (const member of members ?? []) {
+          const { id, deleted: isDeleted, is_bot: isBot, profile } = member;
 
-      for (const profile of profiles) {
-        const { externalId } = profile;
+          if (!id || isDeleted || isBot) continue;
 
-        if (!externalId) continue;
+          if (profile) {
+            const { email, real_name } = profile;
 
-        const { user } = await web.users.info({ user: externalId });
-        const { real_name } = user ?? {};
+            const result = await client.query({
+              query: `
+                SELECT * 
+                FROM member FINAL
+                WHERE primaryEmail = '${email}'
+              `,
+            });
 
-        if (!real_name) {
-          logger.info("real_name not found", { user });
+            const { data } = await result.json();
+            const currentMember = MemberSchema.parse(data[0]);
+
+            if (!currentMember) continue;
+
+            await createProfile({
+              externalId: id,
+              attributes: {
+                source: "Slack",
+                realName: real_name ?? "",
+              },
+              memberId: currentMember.id,
+              workspaceId,
+            });
+          }
         }
 
-        newProfiles.push({
-          ...profile,
-          attributes: {
-            source: "Slack",
-            realName: real_name,
-          },
-          updatedAt: new Date(),
-        });
+        cursor = response_metadata?.next_cursor;
+        logger.info("cursor", { cursor });
+        if (!cursor) break;
       }
-
-      await client.insert({
-        table: "profile",
-        values: newProfiles,
-        format: "JSON",
-      });
-
-      await client.query({ query: "OPTIMIZE TABLE profile FINAL;" });
     }
 
     // const { workspaceId } = user;
