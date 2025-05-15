@@ -66,6 +66,20 @@ export const seed = schemaTask({
           if (profile) {
             const { email, real_name } = profile;
 
+            const resultProfile = await client.query({
+              query: `
+                SELECT * 
+                FROM profile FINAL
+                WHERE attributes.source = 'Slack'
+                AND externalId = '${id}'
+              `,
+            });
+
+            const { data: profileData } = await resultProfile.json();
+            const hasProfile = profileData[0];
+
+            if (hasProfile) continue;
+
             const result = await client.query({
               query: `
                 SELECT * 
@@ -80,19 +94,6 @@ export const seed = schemaTask({
               logger.info("no member found", { member });
               continue;
             }
-
-            const resultProfile = await client.query({
-              query: `
-                SELECT * 
-                FROM profile FINAL
-                WHERE attributes.source = 'Slack'
-                AND externalId = '${id}'
-              `,
-            });
-
-            const { data: hasProfile } = await resultProfile.json();
-
-            if (hasProfile[0]) continue;
 
             const currentMember = MemberSchema.parse(data[0]);
 
