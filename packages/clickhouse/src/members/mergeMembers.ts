@@ -198,9 +198,8 @@ export const mergeMembers = async ({
     );
 
     if (filteredDuplicates.length > 0) {
-      await prisma.duplicate.updateMany({
+      await prisma.duplicate.deleteMany({
         where: { id: { in: filteredDuplicates.map((d) => d.id) } },
-        data: { state: "APPROVED" },
       });
     }
   }
