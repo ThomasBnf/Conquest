@@ -118,15 +118,14 @@ export const mergeMembers = async ({
   const { data } = await result.json();
   const profiles = ProfileSchema.array().parse(data);
 
-  console.log("profiles parsed");
+  console.log("profiles parsed", profiles);
 
   const profilesIds = profiles.map((p) => `'${p.id}'`).join(", ");
 
   await client.query({
     query: `
       ALTER TABLE profile
-      DELETE 
-      WHERE id IN (${profilesIds})
+      DELETE WHERE id IN (${profilesIds})
       AND workspaceId = '${workspaceId}'
      `,
   });
