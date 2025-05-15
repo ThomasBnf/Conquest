@@ -71,7 +71,7 @@ export const seed = schemaTask({
 
             const { data } = await result.json();
 
-            if (data.length === 0) {
+            if (!data[0]) {
               logger.info("no member found", { member });
               continue;
             }
