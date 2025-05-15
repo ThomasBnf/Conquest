@@ -2,7 +2,8 @@
 
 import { trpc } from "@/server/client";
 import { Button } from "@conquest/ui/button";
-import { NodeDataSchema } from "@conquest/zod/schemas/node.schema";
+import { EdgeSchema } from "@conquest/zod/schemas/edge.schema";
+import { NodeSchema } from "@conquest/zod/schemas/node.schema";
 import { Workflow } from "@conquest/zod/schemas/workflow.schema";
 import {
   Background,
@@ -61,7 +62,6 @@ export const Editor = ({ workflow }: Props) => {
 
   const onNodesChange = useCallback(
     (changes: NodeChange[]) => {
-      console.log(changes);
       setNodes((prev) => {
         if (changes[0]?.type === "remove") {
           const { id } = changes[0];
@@ -76,40 +76,37 @@ export const Editor = ({ workflow }: Props) => {
         return applyNodeChanges(changes, prev) as WorkflowNode[];
       });
 
-      setTimeout(() => {
-        onSave();
-      }, 100);
+      if (changes[0]?.type !== "position") {
+        setTimeout(() => onSave(), 100);
+      }
     },
     [getNode, setNodes],
   );
 
   const onEdgesChange = useCallback((changes: EdgeChange[]) => {
     setEdges((eds) => applyEdgeChanges(changes, eds) as Edge[]);
+    setTimeout(() => onSave(), 100);
   }, []);
 
   const onConnect = useCallback(
     (connection: Connection) => {
-      const edge = { ...connection, type: "custom" };
+      const edge = { ...connection };
       setEdges((eds) => addEdge(edge, eds));
+      setTimeout(() => onSave(), 100);
     },
     [setEdges],
   );
 
-  const onSave = async () => {
-    const nodes = toObject().nodes.map((node) => {
-      const nodeData = NodeDataSchema.parse(node.data);
-      return {
-        id: node.id,
-        data: nodeData,
-        position: node.position,
-        type: "custom" as const,
-      };
-    });
+  const onNodeDragStop = useCallback(() => {
+    setTimeout(() => onSave(), 100);
+  }, []);
 
+  const onSave = async () => {
+    console.log("onSave", toObject().nodes);
     updateWorkflow({
       id: workflow.id,
-      nodes,
-      edges: toObject().edges,
+      nodes: NodeSchema.array().parse(toObject().nodes),
+      edges: EdgeSchema.array().parse(toObject().edges),
     });
   };
 
@@ -137,6 +134,7 @@ export const Editor = ({ workflow }: Props) => {
         edges={edges}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
+        onNodeDragStop={onNodeDragStop}
         onConnect={onConnect}
         nodeTypes={nodeTypes}
         edgeTypes={edgeTypes}

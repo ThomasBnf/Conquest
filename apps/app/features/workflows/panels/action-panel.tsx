@@ -1,4 +1,5 @@
 import { Icon } from "@/components/custom/Icon";
+import { User } from "@conquest/db/prisma";
 import {
   Command,
   CommandEmpty,
@@ -10,18 +11,25 @@ import {
 import { Slack } from "@conquest/ui/icons/Slack";
 import { Label } from "@conquest/ui/label";
 import { Separator } from "@conquest/ui/separator";
+import { Edge } from "@conquest/zod/schemas/edge.schema";
 import { useReactFlow } from "@xyflow/react";
 import type { icons } from "lucide-react";
+import { useSession } from "next-auth/react";
 import { v4 as uuid } from "uuid";
 import { usePanel } from "../hooks/usePanel";
 import type { WorkflowNode } from "./schemas/workflow-node.type";
 
 export const ActionPanel = () => {
-  const { panel, node: selectedNode, setPanel } = usePanel();
+  const { data: session } = useSession();
+  const { user } = session ?? {};
+
+  const { panel, condition, node: selectedNode, setPanel } = usePanel();
   const { addNodes, addEdges, updateNodeData } = useReactFlow();
 
   const onSelect = (node: WorkflowNode) => {
     if (!selectedNode) return;
+
+    const isIfElse = selectedNode.data.type === "if-else";
 
     if (panel === "actions-change") {
       const updatedNode = {
@@ -42,18 +50,24 @@ export const ActionPanel = () => {
       ...node,
       id: uuid(),
       position: {
-        x: selectedNode.position.x,
-        y: selectedNode.position.y + 150,
+        x: selectedNode.position.x + (condition === "false" ? 400 : 0),
+        y: selectedNode.position.y + 205,
       },
     };
 
     addNodes(newNode);
 
-    const newEdge = {
+    const newEdge: Edge = {
       id: uuid(),
       source: selectedNode.id,
       target: newNode.id,
       type: "custom",
+      ...(isIfElse && {
+        data: {
+          condition: condition as "true" | "false",
+        },
+        label: condition === "true" ? "is True" : "is False",
+      }),
     };
 
     addEdges(newEdge);
@@ -74,7 +88,7 @@ export const ActionPanel = () => {
         <CommandList>
           <CommandEmpty>No action found.</CommandEmpty>
           <CommandGroup>
-            {nodes.map((node) => {
+            {nodes(user).map((node) => {
               const { data } = node;
 
               return (
@@ -102,7 +116,7 @@ export const ActionPanel = () => {
   );
 };
 
-export const nodes: WorkflowNode[] = [
+export const nodes = (user: User | undefined): WorkflowNode[] => [
   {
     id: uuid(),
     type: "custom",
@@ -139,8 +153,9 @@ export const nodes: WorkflowNode[] = [
       label: "Task",
       description: "",
       type: "task",
-      task: "",
-      assignee: "",
+      title: "",
+      dueDate: new Date(),
+      assignee: user?.id,
     },
   },
   {

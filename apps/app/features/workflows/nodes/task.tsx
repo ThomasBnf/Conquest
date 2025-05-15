@@ -22,28 +22,19 @@ import {
 import { NodeTaskSchema } from "@conquest/zod/schemas/node.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useReactFlow } from "@xyflow/react";
-import { useSession } from "next-auth/react";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { usePanel } from "../hooks/usePanel";
 
 export const Task = () => {
-  const { data: session } = useSession();
-  const { user } = session ?? {};
-
   const { node } = usePanel();
   const { updateNodeData } = useReactFlow();
-  const { task, assignee } = NodeTaskSchema.parse(node?.data);
+  const { title, dueDate, assignee } = NodeTaskSchema.parse(node?.data);
 
   const { data: users } = trpc.userInWorkspace.listUsers.useQuery();
 
   const form = useForm<FormCreateTask>({
     resolver: zodResolver(FormCreateTaskSchema),
-    defaultValues: {
-      title: task,
-      dueDate: new Date(),
-      assignee: assignee ?? user?.id,
-      member: undefined,
-    },
   });
 
   const onUpdateNodeData = () => {
@@ -78,6 +69,12 @@ export const Task = () => {
     form.setValue("dueDate", value);
     onUpdateNodeData();
   };
+
+  useEffect(() => {
+    if (!node) return;
+
+    form.reset({ title, dueDate, assignee });
+  }, [node]);
 
   return (
     <Form {...form}>

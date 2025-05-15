@@ -61,7 +61,8 @@ export const NodeSlackMessageSchema = NodeBaseDataSchema.extend({
 
 export const NodeTaskSchema = NodeBaseDataSchema.extend({
   type: z.literal("task"),
-  task: z.string(),
+  title: z.string(),
+  dueDate: z.coerce.date().optional(),
   assignee: z.string().optional(),
 });
 

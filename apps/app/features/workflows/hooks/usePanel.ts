@@ -10,12 +10,22 @@ type PANEL =
 
 type PanelState = {
   panel: PANEL;
+  condition: "true" | "false" | undefined;
   node: WorkflowNode | undefined;
-  setPanel: ({ panel, node }: { panel: PANEL; node?: WorkflowNode }) => void;
+  setPanel: ({
+    panel,
+    node,
+    condition,
+  }: {
+    panel: PANEL;
+    node?: WorkflowNode;
+    condition?: "true" | "false";
+  }) => void;
 };
 
 export const usePanel = create<PanelState>((set) => ({
   panel: "workflow",
+  condition: undefined,
   node: undefined,
-  setPanel: ({ panel, node }) => set({ panel, node }),
+  setPanel: ({ panel, node, condition }) => set({ panel, node, condition }),
 }));

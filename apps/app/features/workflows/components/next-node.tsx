@@ -29,7 +29,6 @@ export const NextNode = () => {
     ) as WorkflowNode | undefined;
   };
 
-  const nextNode = getNextNode(undefined);
   const trueNode = getNextNode("true");
   const falseNode = getNextNode("false");
 
@@ -45,11 +44,13 @@ export const NextNode = () => {
 
   const renderNodeButton = (
     node: WorkflowNode | undefined,
-    condition?: "true" | "false",
+    condition: "true" | "false",
   ) => (
     <div
       className="relative z-10 flex h-10 cursor-pointer items-center gap-2 rounded-md border px-2 transition-colors-hover hover:bg-muted-hover"
-      onClick={() => setPanel({ panel: "actions", node: selectedNode })}
+      onClick={() =>
+        setPanel({ panel: "actions", condition, node: selectedNode })
+      }
     >
       {node ? (
         node.data.icon === "Slack" ? (
@@ -121,7 +122,7 @@ export const NextNode = () => {
             ) : (
               <>
                 <Badge variant="secondary">Next node</Badge>
-                {renderNodeButton(nextNode)}
+                {renderNodeButton(trueNode, "true")}
               </>
             )}
           </div>
