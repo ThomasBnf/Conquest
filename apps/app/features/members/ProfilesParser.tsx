@@ -19,6 +19,8 @@ type Props = {
 };
 
 export const ProfilesParser = ({ profiles }: Props) => {
+  if (!profiles?.length) return null;
+
   return (
     <div className="space-y-2 p-4">
       {profiles
