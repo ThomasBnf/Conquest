@@ -1,5 +1,7 @@
 import { client } from "@conquest/clickhouse/client";
+import { createMember } from "@conquest/clickhouse/members/createMember";
 import { createProfile } from "@conquest/clickhouse/profiles/createProfile";
+import { getProfile } from "@conquest/clickhouse/profiles/getProfile";
 import { getIntegrationBySource } from "@conquest/db/integrations/getIntegrationBySource";
 import { decrypt } from "@conquest/db/utils/decrypt";
 import { listWorkspaces } from "@conquest/db/workspaces/listWorkspaces";
@@ -8,8 +10,8 @@ import { MemberSchema } from "@conquest/zod/schemas/member.schema";
 import { UserWithWorkspaceSchema } from "@conquest/zod/schemas/user.schema";
 import { WebClient } from "@slack/web-api";
 import { logger, schemaTask } from "@trigger.dev/sdk/v3";
+import ISO6391 from "iso-639-1";
 import { z } from "zod";
-
 export const seed = schemaTask({
   id: "seed",
   machine: "small-2x",
@@ -60,59 +62,86 @@ export const seed = schemaTask({
             profile,
           } = member;
 
-          if (name === "slackbot") continue;
-          if (!id || isDeleted || isBot) continue;
+          if (name === "slackbot" || !id || isDeleted || isBot || !profile) {
+            continue;
+          }
 
-          if (profile) {
-            const { email, real_name } = profile;
+          const { locale } = member;
+          const {
+            first_name,
+            last_name,
+            email,
+            phone,
+            image_1024,
+            title,
+            real_name,
+          } = profile;
 
-            const resultProfile = await client.query({
-              query: `
-                SELECT * 
-                FROM profile FINAL
-                WHERE attributes.source = 'Slack'
-                AND externalId = '${id}'
-              `,
-            });
+          if (!email) continue;
 
-            const { data: profileData } = await resultProfile.json();
-            const hasProfile = profileData[0];
+          const existingProfile = await getProfile({
+            externalId: id,
+            workspaceId,
+          });
 
-            if (hasProfile) continue;
+          if (existingProfile) continue;
 
-            const result = await client.query({
-              query: `
-                SELECT * 
-                FROM member FINAL
-                WHERE primaryEmail = '${email}'
-              `,
-            });
+          const result = await client.query({
+            query: `
+              SELECT * 
+              FROM member FINAL
+              WHERE primaryEmail = '${email}'
+            `,
+          });
 
-            const { data } = await result.json();
+          const { data } = await result.json();
+          let memberId: string | undefined;
 
-            if (!data[0]) {
-              logger.info("no member found", { member });
-              continue;
-            }
+          if (!data[0]) {
+            logger.info("no member found", { member });
 
-            const currentMember = MemberSchema.parse(data[0]);
+            const language = locale
+              ? ISO6391.getName(locale.split("-")[0] ?? "")
+              : "";
+            const country = locale ? locale.split("-")[1] : "";
 
-            if (!currentMember) continue;
-
-            await createProfile({
-              externalId: id,
-              attributes: {
-                source: "Slack",
-                realName: real_name ?? "",
-              },
-              memberId: currentMember.id,
+            const createdMember = await createMember({
+              firstName: first_name,
+              lastName: last_name,
+              primaryEmail: email,
+              emails: [email],
+              phones: phone ? [phone] : [],
+              avatarUrl: image_1024,
+              jobTitle: title,
+              language,
+              country,
+              source: "Slack",
               workspaceId,
             });
+
+            memberId = createdMember.id;
+          } else {
+            logger.info("member found", { id });
+            memberId = MemberSchema.parse(data[0]).id;
           }
+
+          if (!memberId) continue;
+
+          // Échapper les apostrophes dans real_name pour éviter les erreurs SQL
+          const sanitizedRealName = real_name?.replace(/'/g, "\\'") ?? "";
+
+          await createProfile({
+            externalId: id,
+            attributes: {
+              source: "Slack",
+              realName: sanitizedRealName,
+            },
+            memberId,
+            workspaceId,
+          });
         }
 
         cursor = response_metadata?.next_cursor;
-        logger.info("cursor", { cursor });
         if (!cursor) break;
       }
     }
