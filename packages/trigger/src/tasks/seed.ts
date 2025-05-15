@@ -69,7 +69,6 @@ export const seed = schemaTask({
 
             const { data } = await result.json();
             logger.info("data", { data });
-            if (data.length === 0) continue;
             const currentMember = MemberSchema.parse(data[0]);
 
             if (!currentMember) continue;
