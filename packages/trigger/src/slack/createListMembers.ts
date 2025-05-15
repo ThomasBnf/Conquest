@@ -57,6 +57,10 @@ export const createListMembers = async ({ web, workspaceId }: Props) => {
           workspaceId,
         });
 
+        if (!display_name) {
+          logger.info("no display name", { profile });
+        }
+
         await createProfile({
           externalId: id,
           attributes: {
