@@ -70,7 +70,12 @@ export const seed = schemaTask({
             });
 
             const { data } = await result.json();
-            logger.info("data", { data });
+
+            if (data.length === 0) {
+              logger.info("no member found", { member });
+              continue;
+            }
+
             const currentMember = MemberSchema.parse(data[0]);
 
             if (!currentMember) continue;
