@@ -15,6 +15,9 @@ export const checkDuplicates = schemaTask({
 
       logger.info(workspaceId);
 
+      const duplicates = await listAllDuplicates({ workspaceId });
+      const existingMemberIds = new Set(duplicates.flatMap((d) => d.memberIds));
+
       const result = await client.query({
         query: `
           SELECT
@@ -102,18 +105,17 @@ export const checkDuplicates = schemaTask({
         }[];
       };
 
-      const duplicates = await listAllDuplicates({ workspaceId });
+      const newDuplicates = data.filter(
+        (item) => !item.memberIds.some((id) => existingMemberIds.has(id)),
+      );
 
-      logger.info("duplicates", { duplicates });
+      logger.info("duplicates", {
+        total: newDuplicates.length,
+        nouveaux: newDuplicates.length,
+      });
 
-      for (const item of data) {
-        const { memberIds, reason } = item;
-
-        const duplicate = duplicates.find((duplicate) => {
-          const sortedExisting = [...duplicate.memberIds].sort();
-          const sortedNew = [...memberIds].sort();
-          return JSON.stringify(sortedExisting) === JSON.stringify(sortedNew);
-        });
+      for (const duplicate of newDuplicates) {
+        const { memberIds, reason } = duplicate;
 
         const result = await client.query({
           query: `
@@ -131,28 +133,15 @@ export const checkDuplicates = schemaTask({
 
         const totalPulse = pulse[0] ? Number(pulse[0]["sum(pulse)"]) : 0;
 
-        if (duplicate) {
-          if (totalPulse === duplicate.totalPulse) continue;
-
-          await prisma.duplicate.update({
-            where: {
-              id: duplicate.id,
-            },
-            data: {
-              totalPulse,
-            },
-          });
-        } else {
-          await prisma.duplicate.create({
-            data: {
-              totalPulse,
-              memberIds,
-              reason: reason as REASON,
-              state: "PENDING",
-              workspaceId,
-            },
-          });
-        }
+        await prisma.duplicate.create({
+          data: {
+            totalPulse,
+            memberIds,
+            reason: reason as REASON,
+            state: "PENDING",
+            workspaceId,
+          },
+        });
       }
     }
   },
