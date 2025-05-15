@@ -27,8 +27,6 @@ export const mergeMembers = async ({
 
   const oldestMember = getOldestMember({ members: allMembers, finalMember });
 
-  console.log("oldestMember", oldestMember);
-
   if (!oldestMember) return;
 
   const mergedEntries = Object.entries(finalMember).map(([key, value]) => {
@@ -72,11 +70,7 @@ export const mergeMembers = async ({
     return [key, value];
   });
 
-  console.log("mergedEntries", mergedEntries);
-
   const mergeMember = MemberSchema.parse(Object.fromEntries(mergedEntries));
-
-  console.log("mergeMember", mergeMember);
 
   const otherMembers = allMembers.filter(
     (member) => member.id !== mergeMember.id,
@@ -93,8 +87,6 @@ export const mergeMembers = async ({
       `,
   });
 
-  console.log("activity updated");
-
   await client.query({
     query: `
       ALTER TABLE activity
@@ -103,8 +95,6 @@ export const mergeMembers = async ({
     `,
   });
 
-  console.log("inviteTo updated");
-
   const result = await client.query({
     query: `
         SELECT *
@@ -112,8 +102,6 @@ export const mergeMembers = async ({
         WHERE memberId IN (${otherMembersIds}) AND workspaceId = '${workspaceId}'
       `,
   });
-
-  console.log("profile fetched");
 
   const { data } = await result.json();
   const profiles = ProfileSchema.array().parse(data);
@@ -144,16 +132,12 @@ export const mergeMembers = async ({
 
   await updateMember({ ...mergeMember });
 
-  console.log("member updated");
-
   await client.query({
     query: `
         ALTER TABLE member
         DELETE WHERE id IN (${otherMembersIds})
       `,
   });
-
-  console.log("other members deleted");
 
   await client.query({
     query: `
@@ -162,11 +146,7 @@ export const mergeMembers = async ({
       `,
   });
 
-  console.log("log deleted");
-
   const levels = await listLevels({ workspaceId });
-
-  console.log("levels fetched");
 
   await getMemberMetrics.trigger(
     { levels, member: mergeMember },

@@ -66,12 +66,17 @@ export const seed = schemaTask({
         const { user } = await web.users.info({ user: externalId });
         const { real_name } = user ?? {};
 
+        if (!real_name) {
+          logger.info("real_name not found", { user });
+        }
+
         newProfiles.push({
           ...profile,
           attributes: {
             source: "Slack",
             realName: real_name,
           },
+          updatedAt: new Date(),
         });
       }
 
@@ -80,6 +85,8 @@ export const seed = schemaTask({
         values: newProfiles,
         format: "JSON",
       });
+
+      await client.query({ query: "OPTIMIZE TABLE profile FINAL;" });
     }
 
     // const { workspaceId } = user;

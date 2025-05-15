@@ -11,6 +11,7 @@ export const cronHourly = schedules.task({
     if (ctx.environment.type === "DEVELOPMENT") return;
 
     await client.query({ query: "OPTIMIZE TABLE member FINAL;" });
+    await client.query({ query: "OPTIMIZE TABLE profile FINAL;" });
 
     const now = new Date();
     const start = startOfHour(subHours(now, 1));
