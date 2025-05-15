@@ -118,35 +118,29 @@ export const mergeMembers = async ({
   const { data } = await result.json();
   const profiles = ProfileSchema.array().parse(data);
 
-  console.log("profiles parsed", profiles);
-
   const profilesIds = profiles.map((p) => `'${p.id}'`).join(", ");
 
-  await client.query({
-    query: `
+  if (profilesIds.length > 0) {
+    await client.query({
+      query: `
       ALTER TABLE profile
       DELETE WHERE id IN (${profilesIds})
       AND workspaceId = '${workspaceId}'
-     `,
-  });
+      `,
+    });
 
-  console.log("profiles deleted");
+    const profilesValues = profiles.map((profile) => ({
+      ...profile,
+      memberId: mergeMember.id,
+      updatedAt: new Date(),
+    }));
 
-  const profilesValues = profiles.map((profile) => ({
-    ...profile,
-    memberId: mergeMember.id,
-    updatedAt: new Date(),
-  }));
-
-  console.log("profilesValues", profilesValues);
-
-  await client.insert({
-    table: "profile",
-    values: profilesValues,
-    format: "JSON",
-  });
-
-  console.log(mergeMember);
+    await client.insert({
+      table: "profile",
+      values: profilesValues,
+      format: "JSON",
+    });
+  }
 
   await updateMember({ ...mergeMember });
 
