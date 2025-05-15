@@ -86,18 +86,22 @@ export const seed = schemaTask({
 
           if (existingProfile) continue;
 
+          const sanitizedEmail = email.toLowerCase().trim();
+
           const result = await client.query({
             query: `
               SELECT * 
               FROM member FINAL
-              WHERE primaryEmail = '${email}'
+              WHERE primaryEmail = '${sanitizedEmail}'
             `,
           });
 
           const { data } = await result.json();
+          const existingMember = data[0];
+
           let memberId: string | undefined;
 
-          if (!data[0]) {
+          if (!existingMember) {
             logger.info("no member found", { member });
 
             const language = locale
@@ -127,7 +131,6 @@ export const seed = schemaTask({
 
           if (!memberId) continue;
 
-          // Échapper les apostrophes dans real_name pour éviter les erreurs SQL
           const sanitizedRealName = real_name?.replace(/'/g, "\\'") ?? "";
 
           await createProfile({
