@@ -52,7 +52,7 @@ export const seed = schemaTask({
         `,
       });
 
-      const data = await result.json();
+      const { data } = await result.json();
       logger.info("data", { data });
       const profiles = SlackProfileSchema.array().parse(data);
 
