@@ -15,7 +15,7 @@ export const SlackSection = ({ profile }: Props) => {
   const slack = SlackIntegrationSchema.parse(data);
   const { url } = slack.details;
   const { externalId, attributes } = profile;
-  const { displayName } = attributes;
+  const { realName } = attributes;
 
   return (
     <div className="group">
@@ -23,7 +23,7 @@ export const SlackSection = ({ profile }: Props) => {
         <div className="flex size-8 items-center justify-center rounded border bg-background">
           <Slack size={16} />
         </div>
-        <p>{displayName}</p>
+        <p>{realName}</p>
         <MenuProfile href={`${url}team/${externalId}`} profile={profile} />
       </div>
     </div>

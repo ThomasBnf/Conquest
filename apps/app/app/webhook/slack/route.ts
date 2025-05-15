@@ -224,7 +224,7 @@ export async function POST(req: NextRequest) {
       const {
         first_name,
         last_name,
-        display_name,
+        real_name,
         email,
         phone,
         image_1024,
@@ -260,7 +260,7 @@ export async function POST(req: NextRequest) {
         id: profile.id,
         attributes: {
           source: "Slack",
-          displayName: display_name ?? "",
+          realName: real_name ?? "",
         },
       });
 
@@ -280,7 +280,7 @@ export async function POST(req: NextRequest) {
       const {
         first_name,
         last_name,
-        display_name,
+        real_name,
         email,
         phone,
         image_1024,
@@ -316,7 +316,7 @@ export async function POST(req: NextRequest) {
           externalId: id,
           attributes: {
             source: "Slack",
-            displayName: display_name ?? "",
+            realName: real_name ?? "",
           },
           memberId: createdMember.id,
           workspaceId,

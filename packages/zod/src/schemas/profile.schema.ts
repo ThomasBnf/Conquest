@@ -45,6 +45,7 @@ export const LivestormAttributesSchema = z.object({
 export const SlackAttributesSchema = z.object({
   source: z.literal("Slack"),
   displayName: z.string().optional(),
+  realName: z.string().optional(),
 });
 
 export const TwitterAttributesSchema = z.object({

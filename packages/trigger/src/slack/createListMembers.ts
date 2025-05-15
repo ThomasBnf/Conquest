@@ -33,7 +33,7 @@ export const createListMembers = async ({ web, workspaceId }: Props) => {
           phone,
           image_1024,
           title,
-          display_name,
+          real_name,
         } = profile;
 
         if (first_name === "slackbot" || !email) continue;
@@ -57,15 +57,11 @@ export const createListMembers = async ({ web, workspaceId }: Props) => {
           workspaceId,
         });
 
-        if (!display_name) {
-          logger.info("no display name", { profile });
-        }
-
         await createProfile({
           externalId: id,
           attributes: {
             source: "Slack",
-            displayName: display_name ?? "",
+            realName: real_name ?? "",
           },
           memberId: createdMember.id,
           workspaceId,
