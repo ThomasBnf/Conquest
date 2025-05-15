@@ -9,7 +9,7 @@ import {
 } from "@conquest/zod/schemas/profile.schema";
 import { UserWithWorkspaceSchema } from "@conquest/zod/schemas/user.schema";
 import { WebClient } from "@slack/web-api";
-import { schemaTask } from "@trigger.dev/sdk/v3";
+import { logger, schemaTask } from "@trigger.dev/sdk/v3";
 import { z } from "zod";
 
 export const seed = schemaTask({
@@ -53,6 +53,7 @@ export const seed = schemaTask({
       });
 
       const data = await result.json();
+      logger.info("data", { data });
       const profiles = SlackProfileSchema.array().parse(data);
 
       const newProfiles: SlackProfile[] = [];
