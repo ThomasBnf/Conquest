@@ -1,14 +1,13 @@
 import { client } from "@conquest/clickhouse/client";
-import { createMember } from "@conquest/clickhouse/members/createMember";
 import { createProfile } from "@conquest/clickhouse/profiles/createProfile";
 import { getIntegrationBySource } from "@conquest/db/integrations/getIntegrationBySource";
 import { decrypt } from "@conquest/db/utils/decrypt";
 import { listWorkspaces } from "@conquest/db/workspaces/listWorkspaces";
 import { SlackIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
+import { MemberSchema } from "@conquest/zod/schemas/member.schema";
 import { UserWithWorkspaceSchema } from "@conquest/zod/schemas/user.schema";
 import { WebClient } from "@slack/web-api";
 import { logger, schemaTask } from "@trigger.dev/sdk/v3";
-import ISO6391 from "iso-639-1";
 import { z } from "zod";
 
 export const seed = schemaTask({
@@ -65,18 +64,7 @@ export const seed = schemaTask({
           if (!id || isDeleted || isBot) continue;
 
           if (profile) {
-            const { locale } = member;
-            const {
-              first_name,
-              last_name,
-              email,
-              phone,
-              image_1024,
-              title,
-              real_name,
-            } = profile;
-
-            if (!email) continue;
+            const { email, real_name } = profile;
 
             const result = await client.query({
               query: `
@@ -88,29 +76,27 @@ export const seed = schemaTask({
 
             const { data } = await result.json();
 
-            if (data[0]) {
-              logger.info("member found", { member });
+            if (!data[0]) {
+              logger.info("no member found", { member });
               continue;
             }
 
-            const language = locale
-              ? ISO6391.getName(locale.split("-")[0] ?? "")
-              : "";
-            const country = locale ? locale.split("-")[1] : "";
-
-            const createdMember = await createMember({
-              firstName: first_name,
-              lastName: last_name,
-              primaryEmail: email,
-              emails: [email],
-              phones: phone ? [phone] : [],
-              avatarUrl: image_1024,
-              jobTitle: title,
-              language,
-              country,
-              source: "Slack",
-              workspaceId,
+            const resultProfile = await client.query({
+              query: `
+                SELECT * 
+                FROM profile FINAL
+                WHERE attributes.source = 'Slack'
+                AND externalId = '${id}'
+              `,
             });
+
+            const { data: hasProfile } = await resultProfile.json();
+
+            if (hasProfile[0]) continue;
+
+            const currentMember = MemberSchema.parse(data[0]);
+
+            if (!currentMember) continue;
 
             await createProfile({
               externalId: id,
@@ -118,7 +104,7 @@ export const seed = schemaTask({
                 source: "Slack",
                 realName: real_name ?? "",
               },
-              memberId: createdMember.id,
+              memberId: currentMember.id,
               workspaceId,
             });
           }
