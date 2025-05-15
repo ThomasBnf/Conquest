@@ -92,7 +92,7 @@ export const checkDuplicates = schemaTask({
           ) t
           GROUP BY username
           HAVING count(DISTINCT memberId) > 1
-            AND max(pulse) > 0
+          AND max(pulse) > 0
         `,
         format: "JSON",
       });
@@ -104,6 +104,8 @@ export const checkDuplicates = schemaTask({
           memberIds: string[];
         }[];
       };
+
+      logger.info("data", { data });
 
       const newDuplicates = data.filter(
         (item) => !item.memberIds.some((id) => existingMemberIds.has(id)),
