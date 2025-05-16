@@ -24,7 +24,7 @@ export const SlackSection = ({ profile }: Props) => {
           <Slack size={16} />
         </div>
         <p>{realName}</p>
-        <MenuProfile href={`${url}team/${externalId}`} profile={profile} />
+        <MenuProfile href={`${url}/team/${externalId}`} profile={profile} />
       </div>
     </div>
   );
