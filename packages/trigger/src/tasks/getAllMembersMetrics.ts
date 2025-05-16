@@ -18,7 +18,6 @@ export const getAllMembersMetrics = schemaTask({
 
     const BATCH_SIZE = 200;
     let offset = 0;
-    const batchPromises = [];
 
     while (true) {
       const members = await listMembers({
@@ -29,7 +28,7 @@ export const getAllMembersMetrics = schemaTask({
 
       if (members.length === 0) break;
 
-      const batchPromise = batchMemberMetrics.batchTriggerAndWait([
+      await batchMemberMetrics.batchTriggerAndWait([
         {
           payload: {
             members,
@@ -42,7 +41,6 @@ export const getAllMembersMetrics = schemaTask({
         },
       ]);
 
-      batchPromises.push(batchPromise);
       logger.info("members", { count: members.length });
 
       if (members.length < BATCH_SIZE) break;
@@ -67,10 +65,8 @@ export const hasTasksRunning = async ({
   );
 
   if (previousTask) {
-    await Promise.all(
-      previousTask.map(async (run) => {
-        await runs.cancel(run.id);
-      }),
-    );
+    for (const run of previousTask) {
+      await runs.cancel(run.id);
+    }
   }
 };
