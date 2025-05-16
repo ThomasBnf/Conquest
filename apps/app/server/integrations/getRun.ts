@@ -1,4 +1,4 @@
-import { getRun as _getRun } from "@conquest/trigger/getRun";
+import { getRun as _getRun } from "@conquest/trigger/helpers/getRun";
 import { z } from "zod";
 import { protectedProcedure } from "../trpc";
 

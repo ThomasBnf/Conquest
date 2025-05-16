@@ -10,14 +10,14 @@ export const IfElse = () => {
   const { node } = usePanel();
   const { updateNodeData } = useReactFlow();
 
-  const { groupFilter } = NodeIfElseSchema.parse(node?.data);
+  const { groupFilters } = NodeIfElseSchema.parse(node?.data);
 
   const saveFilters = async (newGroupFilters: GroupFilters) => {
     if (!node) return;
 
     updateNodeData(node.id, {
       ...node.data,
-      groupFilter: newGroupFilters,
+      groupFilters: newGroupFilters,
     });
   };
 
@@ -25,7 +25,7 @@ export const IfElse = () => {
     <div className="space-y-1">
       <Label>Filter</Label>
       <FiltersProvider
-        initialGroupFilters={groupFilter}
+        initialGroupFilters={groupFilters}
         saveFilters={saveFilters}
       >
         <FiltersList className="h-9 w-full" />

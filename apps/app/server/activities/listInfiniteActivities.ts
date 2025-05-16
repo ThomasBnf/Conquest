@@ -1,4 +1,4 @@
-import { listInfiniteActivities as _listInfiniteActivities } from "@conquest/clickhouse/activities/listInfiniteActivities";
+import { listInfiniteActivities as _listInfiniteActivities } from "@conquest/clickhouse/activity/listInfiniteActivities";
 import { z } from "zod";
 import { protectedProcedure } from "../trpc";
 

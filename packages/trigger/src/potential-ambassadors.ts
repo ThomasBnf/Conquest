@@ -1,6 +1,6 @@
 import { client } from "@conquest/clickhouse/client";
-import { getMember } from "@conquest/clickhouse/members/getMember";
-import { updateMember } from "@conquest/clickhouse/members/updateMember";
+import { getMember } from "@conquest/clickhouse/member/getMember";
+import { updateMember } from "@conquest/clickhouse/member/updateMember";
 import { logger } from "@trigger.dev/sdk/v3";
 import { format, subDays } from "date-fns";
 import { triggerWorkflows } from "./tasks/triggerWorkflows";

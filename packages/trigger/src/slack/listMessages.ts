@@ -1,5 +1,5 @@
-import { createActivity } from "@conquest/clickhouse/activities/createActivity";
-import { getProfile } from "@conquest/clickhouse/profiles/getProfile";
+import { createActivity } from "@conquest/clickhouse/activity/createActivity";
+import { getProfile } from "@conquest/clickhouse/profile/getProfile";
 import type { Channel } from "@conquest/zod/schemas/channel.schema";
 import type { WebClient } from "@slack/web-api";
 import { getUnixTime, subYears } from "date-fns";

@@ -1,5 +1,5 @@
-import { createManyActivityTypes } from "@conquest/clickhouse/activity-types/createManyActivityTypes";
-import { listActivityTypes } from "@conquest/clickhouse/activity-types/listActivityTypes";
+import { createManyActivityTypes } from "@conquest/clickhouse/activity-type/createManyActivityTypes";
+import { listActivityTypes } from "@conquest/clickhouse/activity-type/listActivityTypes";
 import { LIVESTORM_ACTIVITY_TYPES } from "@conquest/db/constant";
 import { prisma } from "@conquest/db/prisma";
 import { Event } from "@conquest/zod/schemas/event.schema";

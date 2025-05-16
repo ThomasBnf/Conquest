@@ -52,10 +52,10 @@ export const Wait = () => {
   }, [node]);
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-1">
       <Label>Wait</Label>
       <Form {...form}>
-        <form className="flex h-10 flex-1 items-center justify-between divide-x overflow-hidden rounded-md border border-input shadow-sm">
+        <form className="flex h-9 flex-1 items-center justify-between divide-x overflow-hidden rounded-md border border-input shadow-sm">
           <FormField
             control={form.control}
             name="duration"

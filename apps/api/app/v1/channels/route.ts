@@ -1,5 +1,5 @@
 import { getAuthenticatedUser } from "@/utils/getAuthenticatedUser";
-import { getChannel } from "@conquest/clickhouse/channels/getChannel";
+import { getChannel } from "@conquest/clickhouse/channel/getChannel";
 import { client } from "@conquest/clickhouse/client";
 import { ChannelSchema } from "@conquest/zod/schemas/channel.schema";
 import { createZodRoute } from "next-zod-route";

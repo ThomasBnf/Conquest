@@ -9,10 +9,10 @@ import {
   subWeeks,
 } from "date-fns";
 import { randomUUID } from "node:crypto";
-import { listActivities } from "../activities/listActivities";
+import { listActivities } from "../activity/listActivities";
 import { getLevel } from "../helpers/getLevel";
 import { getPulseScore } from "../helpers/getPulseScore";
-import { createManyLogs } from "../logs/createManyLogs";
+import { createManyLogs } from "../log/createManyLogs";
 import { updateMember } from "./updateMember";
 
 type Props = {

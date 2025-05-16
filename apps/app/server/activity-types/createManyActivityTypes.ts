@@ -1,4 +1,4 @@
-import { createManyActivityTypes as _createManyActivityTypes } from "@conquest/clickhouse/activity-types/createManyActivityTypes";
+import { createManyActivityTypes as _createManyActivityTypes } from "@conquest/clickhouse/activity-type/createManyActivityTypes";
 import { SOURCE } from "@conquest/zod/enum/source.enum";
 import { ActivityTypeRuleSchema } from "@conquest/zod/schemas/activity-type.schema";
 import { z } from "zod";

@@ -1,4 +1,4 @@
-import { listMembersProfiles as _listMembersProfiles } from "@conquest/clickhouse/profiles/listMembersProfiles";
+import { listMembersProfiles as _listMembersProfiles } from "@conquest/clickhouse/profile/listMembersProfiles";
 import { MemberSchema } from "@conquest/zod/schemas/member.schema";
 import { z } from "zod";
 import { protectedProcedure } from "../trpc";

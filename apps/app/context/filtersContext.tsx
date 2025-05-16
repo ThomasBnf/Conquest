@@ -1,5 +1,6 @@
 "use client";
 
+import { usePanel } from "@/features/workflows/hooks/usePanel";
 import { trpc } from "@/server/client";
 import {
   type Filter,
@@ -7,7 +8,7 @@ import {
   GroupFiltersSchema,
 } from "@conquest/zod/schemas/filters.schema";
 import { useSession } from "next-auth/react";
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 
 type filtersContext = {
   groupFilters: GroupFilters;
@@ -33,8 +34,10 @@ export const FiltersProvider = ({
 }: Props) => {
   const { data: session, update } = useSession();
   const { user } = session ?? {};
+  const { node } = usePanel();
   const { membersPreferences } = user ?? {};
 
+  const [currentNodeId, setCurrentNodeId] = useState<string | undefined>();
   const [groupFilters, setGroupFilters] = useState<GroupFilters>(
     initialGroupFilters ??
       membersPreferences?.groupFilters ?? {
@@ -128,6 +131,13 @@ export const FiltersProvider = ({
 
     saveFilters?.(newGroupFilters);
   };
+
+  useEffect(() => {
+    if (initialGroupFilters && node && node?.id !== currentNodeId) {
+      setCurrentNodeId(node?.id);
+      setGroupFilters(initialGroupFilters);
+    }
+  }, [initialGroupFilters, node]);
 
   return (
     <FiltersContext.Provider

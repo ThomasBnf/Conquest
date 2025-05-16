@@ -1,7 +1,7 @@
 import type { Source } from "@conquest/zod/enum/source.enum";
 import type { Activity } from "@conquest/zod/schemas/activity.schema";
 import { randomUUID } from "node:crypto";
-import { getActivityTypeByKey } from "../activity-types/getActivityTypeByKey";
+import { getActivityTypeByKey } from "../activity-type/getActivityTypeByKey";
 import { client } from "../client";
 import { getActivity } from "./getActivity";
 

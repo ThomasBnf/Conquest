@@ -1,5 +1,5 @@
 import { client } from "@conquest/clickhouse/client";
-import { getPulseAndLevel } from "@conquest/clickhouse/members/getPulseAndLevel";
+import { getPulseAndLevel } from "@conquest/clickhouse/member/getPulseAndLevel";
 import { logger } from "@trigger.dev/sdk/v3";
 import { endOfHour, format, startOfHour, subHours } from "date-fns";
 

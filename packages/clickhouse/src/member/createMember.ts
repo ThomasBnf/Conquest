@@ -1,8 +1,8 @@
 import { type Member, MemberSchema } from "@conquest/zod/schemas/member.schema";
 import { v4 as uuid } from "uuid";
 import { client } from "../client";
-import { createCompany } from "../companies/createCompany";
-import { getCompanyByDomain } from "../companies/getCompanyByDomain";
+import { createCompany } from "../company/createCompany";
+import { getCompanyByDomain } from "../company/getCompanyByDomain";
 import { filteredDomain } from "../helpers/filteredDomain";
 
 type Props = Partial<Member> & {

@@ -24,7 +24,7 @@ export const NextNode = () => {
         (edge) =>
           edge.source === selectedNode?.id &&
           edge.target === node.id &&
-          edge.data?.condition === condition,
+          (isIfElse ? edge.data?.condition === condition : true),
       ),
     ) as WorkflowNode | undefined;
   };

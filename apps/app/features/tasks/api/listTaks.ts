@@ -10,7 +10,7 @@ export const listTaks = protectedProcedure.query(async ({ ctx: { user } }) => {
       SELECT * 
       FROM task FINAL
       WHERE workspaceId = '${workspaceId}'
-      ORDER BY createdAt DESC
+      ORDER BY dueDate DESC, createdAt ASC
     `,
   });
 

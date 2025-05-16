@@ -1,4 +1,4 @@
-import { listFilteredMembers as _listFilteredMembers } from "@conquest/clickhouse/members/listFilteredMembers";
+import { listFilteredMembers as _listFilteredMembers } from "@conquest/clickhouse/member/listFilteredMembers";
 import { GroupFiltersSchema } from "@conquest/zod/schemas/filters.schema";
 import { z } from "zod";
 import { protectedProcedure } from "../trpc";

@@ -6,7 +6,7 @@ import { MemberSchema } from "@conquest/zod/schemas/member.schema";
 import { ProfileSchema } from "@conquest/zod/schemas/profile.schema";
 import { client } from "../client";
 import { getOldestMember } from "../helpers/getOldestMember";
-import { listLevels } from "../levels/listLevels";
+import { listLevels } from "../level/listLevels";
 import { updateMember } from "./updateMember";
 
 type Props = {

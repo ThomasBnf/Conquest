@@ -49,7 +49,7 @@ export const IsPublished = ({ workflow }: Props) => {
 
   const onTogglePublished = async () => {
     await mutateAsync({
-      id: workflow.id,
+      ...workflow,
       published: !published,
     });
   };

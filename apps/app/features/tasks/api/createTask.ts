@@ -1,14 +1,9 @@
 import { protectedProcedure } from "@/server/trpc";
-import { client } from "@conquest/clickhouse/client";
+import { createTask as _createTask } from "@conquest/clickhouse/task/createTask";
 import { TaskSchema } from "@conquest/zod/schemas/task.schema";
 
 export const createTask = protectedProcedure
   .input(TaskSchema)
   .mutation(async ({ input }) => {
-    console.log(input);
-    return await client.insert({
-      table: "task",
-      values: [input],
-      format: "JSON",
-    });
+    return await _createTask(input);
   });

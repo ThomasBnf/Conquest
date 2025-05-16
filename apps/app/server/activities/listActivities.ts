@@ -1,4 +1,4 @@
-import { listActivities as _listActivities } from "@conquest/clickhouse/activities/listActivities";
+import { listActivities as _listActivities } from "@conquest/clickhouse/activity/listActivities";
 import { z } from "zod";
 import { protectedProcedure } from "../trpc";
 

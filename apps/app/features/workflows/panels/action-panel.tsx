@@ -24,12 +24,10 @@ export const ActionPanel = () => {
   const { user } = session ?? {};
 
   const { panel, condition, node: selectedNode, setPanel } = usePanel();
-  const { addNodes, addEdges, updateNodeData } = useReactFlow();
+  const { addNodes, addEdges, updateNodeData, setEdges } = useReactFlow();
 
   const onSelect = (node: WorkflowNode) => {
     if (!selectedNode) return;
-
-    const isIfElse = selectedNode.data.type === "if-else";
 
     if (panel === "actions-change") {
       const updatedNode = {
@@ -40,8 +38,16 @@ export const ActionPanel = () => {
         },
       };
 
-      updateNodeData(selectedNode.id, updatedNode.data);
+      const isIfElse = node.data.type === "if-else";
+
+      if (isIfElse) {
+        setEdges((eds) =>
+          eds.filter((edge) => edge.source !== selectedNode.id),
+        );
+      }
+
       setPanel({ panel: "node", node: updatedNode });
+      updateNodeData(selectedNode.id, updatedNode.data);
 
       return;
     }
@@ -51,13 +57,13 @@ export const ActionPanel = () => {
       id: uuid(),
       position: {
         x: selectedNode.position.x + (condition === "false" ? 400 : 0),
-        y: selectedNode.position.y + 205,
+        y: selectedNode.position.y + 200,
       },
     };
 
-    console.log("newNode", newNode);
-
     addNodes(newNode);
+
+    const isIfElse = selectedNode.data.type === "if-else";
 
     const newEdge: Edge = {
       id: uuid(),
@@ -202,7 +208,7 @@ export const nodes = (
           label: "If / else",
           description: "",
           type: "if-else",
-          groupFilter: {
+          groupFilters: {
             filters: [],
             operator: "AND",
           },

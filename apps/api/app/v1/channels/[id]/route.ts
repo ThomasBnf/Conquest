@@ -1,8 +1,8 @@
 import { getAuthenticatedUser } from "@/utils/getAuthenticatedUser";
 import { sleep } from "@/utils/sleep";
-import { deleteChannel } from "@conquest/clickhouse/channels/deleteChannel";
-import { getChannel } from "@conquest/clickhouse/channels/getChannel";
-import { updateChannel } from "@conquest/clickhouse/channels/updateChannel";
+import { deleteChannel } from "@conquest/clickhouse/channel/deleteChannel";
+import { getChannel } from "@conquest/clickhouse/channel/getChannel";
+import { updateChannel } from "@conquest/clickhouse/channel/updateChannel";
 import { createZodRoute } from "next-zod-route";
 import { NextResponse } from "next/server";
 import { z } from "zod";

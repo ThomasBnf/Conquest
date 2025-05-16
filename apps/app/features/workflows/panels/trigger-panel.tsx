@@ -37,7 +37,7 @@ export const TriggerPanel = ({ workflow }: Props) => {
       addNodes(node);
     }
 
-    await mutateAsync({ id, trigger: node.data.type as Trigger });
+    await mutateAsync({ ...workflow, trigger: node.data.type as Trigger });
 
     setPanel({ panel: "node", node });
   };

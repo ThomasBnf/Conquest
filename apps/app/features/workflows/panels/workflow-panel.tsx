@@ -60,11 +60,11 @@ export const WorkflowPanel = ({ workflow }: Props) => {
     },
   });
 
-  const onSubmit = (data: FormWorkflow) => {
+  const onSubmit = ({ name, description }: FormWorkflow) => {
     mutateAsync({
-      id,
-      name: data.name,
-      description: data.description ?? undefined,
+      ...workflow,
+      name,
+      description: description ?? "",
     });
   };
 

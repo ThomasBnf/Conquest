@@ -1,22 +1,16 @@
-import { getProfileBySource } from "@conquest/clickhouse/profiles/getProfileBySource";
-import { getIntegrationBySource } from "@conquest/db/integrations/getIntegrationBySource";
-import { decrypt } from "@conquest/db/utils/decrypt";
-import { SlackIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
-import {
-  MemberWithLevel,
-  MemberWithLevelSchema,
-} from "@conquest/zod/schemas/member.schema";
-import {
-  NodeSchema,
-  NodeSlackMessage,
-  NodeWebhook,
-} from "@conquest/zod/schemas/node.schema";
+import { getFilteredMember } from "@conquest/clickhouse/member/getFilteredMember";
+import { MemberWithLevelSchema } from "@conquest/zod/schemas/member.schema";
+import { NodeSchema } from "@conquest/zod/schemas/node.schema";
 import { WorkflowSchema } from "@conquest/zod/schemas/workflow.schema";
-import { WebClient } from "@slack/web-api";
-import { logger, schemaTask, wait } from "@trigger.dev/sdk/v3";
+import { logger, schemaTask } from "@trigger.dev/sdk/v3";
 import { z } from "zod";
-
-let currentMember: MemberWithLevel;
+import { sleep } from "../helpers/sleep";
+import { slackMessage } from "../workflow/slack-message";
+import { task } from "../workflow/task";
+import { waitFor } from "../workflow/wait";
+import { webhook } from "../workflow/webhook";
+import { addTags } from "../workflow/add-tags";
+import { removeTags } from "../workflow/remove-tags";
 
 export const runWorkflow = schemaTask({
   id: "run-workflow",
@@ -26,9 +20,7 @@ export const runWorkflow = schemaTask({
     member: MemberWithLevelSchema,
   }),
   run: async ({ workflow, member }) => {
-    currentMember = member;
-
-    const { nodes, edges, workspaceId } = workflow;
+    const { nodes, edges } = workflow;
 
     let node = nodes.find((node) => "isTrigger" in node.data);
     let hasNextNode = true;
@@ -38,26 +30,62 @@ export const runWorkflow = schemaTask({
       const { type } = parsedNode.data;
 
       switch (type) {
+        case "if-else": {
+          const { groupFilters } = parsedNode.data;
+
+          const result = await getFilteredMember({
+            member,
+            groupFilters,
+          });
+
+          logger.info("result", { result, member });
+
+          const trueEdge = edges.find(
+            (e) =>
+              e.source === parsedNode.id &&
+              e.data?.condition === "true" &&
+              result === 1,
+          );
+          const falseEdge = edges.find(
+            (e) =>
+              e.source === parsedNode.id &&
+              e.data?.condition === "false" &&
+              result === 0,
+          );
+
+          const nextEdge = trueEdge || falseEdge;
+
+          if (nextEdge) {
+            node = nodes.find((n) => n.id === nextEdge.target)!;
+          } else {
+            hasNextNode = false;
+          }
+
+          continue;
+        }
         case "slack-message": {
-          await slackMessage({ node: parsedNode.data, workspaceId });
+          await slackMessage({ node: parsedNode.data, member });
+          break;
+        }
+        case "add-tag": {
+          await addTags({ node: parsedNode.data, member });
+          break;
+        }
+        case "remove-tag": {
+          await removeTags({ node: parsedNode.data, member });
+          break;
+        }
+        case "task": {
+          await sleep(1000);
+          await task({ node: parsedNode.data, member });
           break;
         }
         case "wait": {
-          const { duration, unit } = parsedNode.data;
-
-          const timeMap = {
-            seconds: 1,
-            minutes: 60,
-            hours: 60 * 60,
-            days: 24 * 60 * 60,
-          } as const;
-
-          const milliseconds = duration * timeMap[unit];
-          await wait.for({ seconds: milliseconds });
+          await waitFor({ node: parsedNode.data });
           break;
         }
         case "webhook": {
-          await webhook({ node: parsedNode.data });
+          await webhook({ node: parsedNode.data, member });
           break;
         }
       }
@@ -72,91 +100,3 @@ export const runWorkflow = schemaTask({
     }
   },
 });
-
-export const slackMessage = async ({
-  node,
-  workspaceId,
-}: {
-  node: NodeSlackMessage;
-  workspaceId: string;
-}) => {
-  const slack = await getIntegrationBySource({ source: "Slack", workspaceId });
-
-  if (!slack) return logger.error("No Slack integration found");
-
-  const { details } = SlackIntegrationSchema.parse(slack);
-  const { userToken, userTokenIv } = details;
-  const { message } = node;
-
-  const decryptedUserToken = await decrypt({
-    accessToken: userToken,
-    iv: userTokenIv,
-  });
-
-  if (!userToken) logger.error("No Slack user token found");
-
-  const web = new WebClient(decryptedUserToken);
-
-  const profile = await getProfileBySource({
-    source: "Slack",
-    memberId: currentMember.id,
-  });
-
-  if (!profile?.externalId) return logger.error("No Slack profile found");
-
-  const { channel } = await web.conversations.open({
-    users: profile.externalId,
-  });
-
-  if (!channel?.id) return logger.error("No channel ID found");
-
-  const parsedMessage = replaceMemberVariables(message);
-
-  await web.chat.postMessage({
-    channel: channel?.id,
-    text: parsedMessage,
-    as_user: true,
-  });
-};
-
-export const webhook = async ({ node }: { node: NodeWebhook }) => {
-  const { url, body } = node;
-
-  if (!url) throw new Error("No URL provided");
-
-  const parsedBody = replaceMemberVariables(body);
-
-  await fetch(url, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: parsedBody,
-  });
-};
-
-const replaceMemberVariables = (message: string | undefined) => {
-  if (!message) return "";
-
-  if (message.includes("{{createdMember}}")) {
-    return message.replaceAll(
-      "{{createdMember}}",
-      JSON.stringify(currentMember, null, 2),
-    );
-  }
-
-  const variables = {
-    "{{firstName}}": currentMember.firstName,
-    "{{lastName}}": currentMember.lastName,
-    "{{primaryEmail}}": currentMember.primaryEmail,
-    "{{country}}": currentMember.country,
-    "{{language}}": currentMember.language,
-    "{{jobTitle}}": currentMember.jobTitle,
-    "{{linkedinUrl}}": currentMember.linkedinUrl,
-    "{{emails}}": currentMember.emails.join(", "),
-    "{{phones}}": currentMember.phones.join(", "),
-  };
-
-  return Object.entries(variables).reduce(
-    (acc, [key, value]) => acc.replaceAll(key, value),
-    message,
-  );
-};

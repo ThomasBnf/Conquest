@@ -1,5 +1,5 @@
 import { FormCreateSchema } from "@/features/companies/schema/company-form.schema";
-import { createCompany as _createCompany } from "@conquest/clickhouse/companies/createCompany";
+import { createCompany as _createCompany } from "@conquest/clickhouse/company/createCompany";
 import { protectedProcedure } from "../trpc";
 
 export const createCompany = protectedProcedure

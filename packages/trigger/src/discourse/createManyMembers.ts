@@ -1,6 +1,6 @@
-import { createMember } from "@conquest/clickhouse/members/createMember";
-import { getPulseAndLevel } from "@conquest/clickhouse/members/getPulseAndLevel";
-import { createProfile } from "@conquest/clickhouse/profiles/createProfile";
+import { createMember } from "@conquest/clickhouse/member/createMember";
+import { getPulseAndLevel } from "@conquest/clickhouse/member/getPulseAndLevel";
+import { createProfile } from "@conquest/clickhouse/profile/createProfile";
 import { decrypt } from "@conquest/db/utils/decrypt";
 import type { DiscourseIntegration } from "@conquest/zod/schemas/integration.schema";
 import { DiscourseProfileSchema } from "@conquest/zod/schemas/profile.schema";

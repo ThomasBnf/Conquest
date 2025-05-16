@@ -1,4 +1,4 @@
-import { deleteManyCompanies as _deleteManyCompanies } from "@conquest/clickhouse/companies/deleteManyCompanies";
+import { deleteManyCompanies as _deleteManyCompanies } from "@conquest/clickhouse/company/deleteManyCompanies";
 import { z } from "zod";
 import { protectedProcedure } from "../trpc";
 

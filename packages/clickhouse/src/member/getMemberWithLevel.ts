@@ -12,7 +12,7 @@ export const getMemberWithLevel = async ({ id }: Props) => {
        SELECT 
           m.*,
           l.number as level,
-          l.name as levelName,
+          l.name as levelName
         FROM member m FINAL
       LEFT JOIN level l ON m.levelId = l.id
       WHERE member.id = '${id}'
@@ -22,5 +22,5 @@ export const getMemberWithLevel = async ({ id }: Props) => {
   const { data } = await result.json();
 
   const cleanData = cleanPrefix("m.", data);
-  return MemberWithLevelSchema.parse(cleanData);
+  return MemberWithLevelSchema.parse(cleanData[0]);
 };

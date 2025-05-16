@@ -1,4 +1,4 @@
-import { getProfileBySource as _getProfileBySource } from "@conquest/clickhouse/profiles/getProfileBySource";
+import { getProfileBySource as _getProfileBySource } from "@conquest/clickhouse/profile/getProfileBySource";
 import { SOURCE } from "@conquest/zod/enum/source.enum";
 import { z } from "zod";
 import { protectedProcedure } from "../trpc";

@@ -33,6 +33,11 @@ export const Task = () => {
 
   const form = useForm<FormTask>({
     resolver: zodResolver(FormTaskSchema),
+    defaultValues: {
+      title,
+      days,
+      assignee,
+    },
   });
 
   const daysValue = form.getValues("days");
@@ -72,8 +77,12 @@ export const Task = () => {
   useEffect(() => {
     if (!node) return;
 
-    form.reset({ title, days, assignee });
-  }, [node]);
+    form.reset({
+      title,
+      days,
+      assignee,
+    });
+  }, [node, users]);
 
   return (
     <Form {...form}>
@@ -137,11 +146,7 @@ export const Task = () => {
             <FormItem>
               <FormLabel>Assignee (optional)</FormLabel>
               <FormControl>
-                <Select
-                  {...field}
-                  value={field.value || ""}
-                  onValueChange={onChangeAssignee}
-                >
+                <Select {...field} onValueChange={onChangeAssignee}>
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>

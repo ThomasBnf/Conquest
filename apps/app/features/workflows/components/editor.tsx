@@ -1,6 +1,5 @@
 "use client";
 
-import { trpc } from "@/server/client";
 import { Button } from "@conquest/ui/button";
 import { EdgeSchema } from "@conquest/zod/schemas/edge.schema";
 import { NodeSchema } from "@conquest/zod/schemas/node.schema";
@@ -25,8 +24,8 @@ import {
 import "@xyflow/react/dist/style.css";
 import { Info } from "lucide-react";
 import { useCallback, useEffect } from "react";
-import { toast } from "sonner";
 import { usePanel } from "../hooks/usePanel";
+import { useUpdateWorkflow } from "../mutations/useUpdateWorkflow";
 import { CustomEdge } from "../nodes/custom-edge";
 import { CustomNode } from "../nodes/custom-node";
 import type { WorkflowNode } from "../panels/schemas/workflow-node.type";
@@ -49,20 +48,10 @@ export const Editor = ({ workflow }: Props) => {
   const { toObject, getNode } = useReactFlow();
   const [nodes, setNodes] = useNodesState<WorkflowNode>(workflow.nodes);
   const [edges, setEdges] = useEdgesState<Edge>(workflow.edges);
-  const utils = trpc.useUtils();
-
-  const { mutateAsync: updateWorkflow } = trpc.workflows.update.useMutation({
-    onSuccess: () => {
-      utils.workflows.get.invalidate({ id: workflow.id });
-    },
-    onError: (error) => {
-      toast.error(error.message);
-    },
-  });
+  const updateWorkflow = useUpdateWorkflow();
 
   const onNodesChange = useCallback(
     (changes: NodeChange[]) => {
-      console.log(changes);
       setNodes((prev) => {
         if (changes[0]?.type === "remove") {
           const { id } = changes[0];
@@ -78,7 +67,7 @@ export const Editor = ({ workflow }: Props) => {
         return applyNodeChanges(changes, prev) as WorkflowNode[];
       });
 
-      if (changes[0]?.type !== "position") {
+      if (!["position"].includes(changes[0]?.type ?? "")) {
         setTimeout(() => onSave(), 100);
       }
     },
@@ -92,11 +81,52 @@ export const Editor = ({ workflow }: Props) => {
 
   const onConnect = useCallback(
     (connection: Connection) => {
-      const edge = { ...connection };
-      setEdges((eds) => addEdge(edge, eds));
-      setTimeout(() => onSave(), 100);
+      console.log("onConnect", connection);
+      const sourceNode = getNode(connection.source);
+      const isIfElse = sourceNode?.data.type === "if-else";
+
+      setEdges((currentEdges) => {
+        if (isIfElse) {
+          const existingEdges = currentEdges.filter(
+            (edge) => edge.source === sourceNode?.id,
+          );
+
+          if (existingEdges.length >= 2) return currentEdges;
+
+          const hasEdge = existingEdges.length > 0;
+          const condition = hasEdge ? "false" : "true";
+          const label = hasEdge ? "is False" : "is True";
+
+          const newEdges = addEdge(
+            {
+              ...connection,
+              type: "custom",
+              data: { condition },
+              label,
+            },
+            currentEdges,
+          );
+
+          setTimeout(() => onSave(), 100);
+          return newEdges;
+        }
+
+        const hasExistingConnection = currentEdges.some(
+          (edge) => edge.source === sourceNode?.id,
+        );
+
+        if (hasExistingConnection) return currentEdges;
+
+        const newEdges = addEdge(
+          { ...connection, type: "custom" },
+          currentEdges,
+        );
+
+        setTimeout(() => onSave(), 100);
+        return newEdges;
+      });
     },
-    [setEdges],
+    [getNode],
   );
 
   const onNodeDragStop = useCallback(() => {
@@ -105,8 +135,8 @@ export const Editor = ({ workflow }: Props) => {
 
   const onSave = async () => {
     console.log("onSave", toObject().nodes);
-    updateWorkflow({
-      id: workflow.id,
+    await updateWorkflow({
+      ...workflow,
       nodes: NodeSchema.array().parse(toObject().nodes),
       edges: EdgeSchema.array().parse(toObject().edges),
     });
@@ -114,7 +144,7 @@ export const Editor = ({ workflow }: Props) => {
 
   const onPublish = async () => {
     await updateWorkflow({
-      id: workflow.id,
+      ...workflow,
       published: true,
     });
   };

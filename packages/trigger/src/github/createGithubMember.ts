@@ -1,7 +1,7 @@
-import { createMember } from "@conquest/clickhouse/members/createMember";
-import { getMember } from "@conquest/clickhouse/members/getMember";
-import { createProfile } from "@conquest/clickhouse/profiles/createProfile";
-import { getProfile } from "@conquest/clickhouse/profiles/getProfile";
+import { createMember } from "@conquest/clickhouse/member/createMember";
+import { getMember } from "@conquest/clickhouse/member/getMember";
+import { createProfile } from "@conquest/clickhouse/profile/createProfile";
+import { getProfile } from "@conquest/clickhouse/profile/getProfile";
 import { logger } from "@trigger.dev/sdk/v3";
 import { Octokit } from "octokit";
 

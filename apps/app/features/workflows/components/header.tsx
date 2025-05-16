@@ -86,7 +86,7 @@ export const Header = ({ slug, workflow }: Props) => {
             <BreadcrumbPage>
               <EditableInput
                 defaultValue={name}
-                onUpdate={(name) => mutateAsync({ id, name })}
+                onUpdate={(name) => mutateAsync({ ...workflow, name })}
                 copyable={false}
               />
             </BreadcrumbPage>

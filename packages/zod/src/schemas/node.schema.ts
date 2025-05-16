@@ -51,7 +51,7 @@ export const NodeAmbassadorSchema = NodeBaseDataSchema.extend({
 
 export const NodeIfElseSchema = NodeBaseDataSchema.extend({
   type: z.literal("if-else"),
-  groupFilter: GroupFiltersSchema,
+  groupFilters: GroupFiltersSchema,
 });
 
 export const NodeSlackMessageSchema = NodeBaseDataSchema.extend({

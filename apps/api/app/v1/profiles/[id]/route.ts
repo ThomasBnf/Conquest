@@ -1,8 +1,8 @@
 import { getAuthenticatedUser } from "@/utils/getAuthenticatedUser";
 import { sleep } from "@/utils/sleep";
-import { deleteActivity } from "@conquest/clickhouse/activities/deleteActivity";
-import { getActivity } from "@conquest/clickhouse/activities/getActivity";
-import { getActivityTypeByKey } from "@conquest/clickhouse/activity-types/getActivityTypeByKey";
+import { getActivityTypeByKey } from "@conquest/clickhouse/activity-type/getActivityTypeByKey";
+import { deleteActivity } from "@conquest/clickhouse/activity/deleteActivity";
+import { getActivity } from "@conquest/clickhouse/activity/getActivity";
 import { client } from "@conquest/clickhouse/client";
 import { ActivitySchema } from "@conquest/zod/schemas/activity.schema";
 import { createZodRoute } from "next-zod-route";

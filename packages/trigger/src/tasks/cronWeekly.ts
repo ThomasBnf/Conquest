@@ -1,5 +1,5 @@
 import { client } from "@conquest/clickhouse/client";
-import { listAllMembers } from "@conquest/clickhouse/members/listAllMembers";
+import { listAllMembers } from "@conquest/clickhouse/member/listAllMembers";
 import type { Log } from "@conquest/zod/schemas/logs.schema";
 import { schedules } from "@trigger.dev/sdk/v3";
 import { startOfWeek } from "date-fns";

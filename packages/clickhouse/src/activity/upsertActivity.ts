@@ -1,6 +1,6 @@
 import type { Source } from "@conquest/zod/enum/source.enum";
 import type { Activity } from "@conquest/zod/schemas/activity.schema";
-import { getActivityTypeByKey } from "../activity-types/getActivityTypeByKey";
+import { getActivityTypeByKey } from "../activity-type/getActivityTypeByKey";
 import { createActivity } from "./createActivity";
 import { getActivity } from "./getActivity";
 import { updateActivity } from "./updateActivity";

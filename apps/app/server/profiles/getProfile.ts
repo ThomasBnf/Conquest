@@ -1,4 +1,4 @@
-import { getProfile as _getProfile } from "@conquest/clickhouse/profiles/getProfile";
+import { getProfile as _getProfile } from "@conquest/clickhouse/profile/getProfile";
 import { z } from "zod";
 import { protectedProcedure } from "../trpc";
 

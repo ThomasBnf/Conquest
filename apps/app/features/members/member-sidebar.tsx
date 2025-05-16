@@ -79,12 +79,14 @@ export const MemberSidebar = ({ member, profiles }: Props) => {
           </div>
         </div>
         <Separator />
-        <div className="p-4">
+        <div className="space-y-4 p-4">
           <FieldCard label="Tags">
-            <TagPicker
-              record={member}
-              onUpdate={(value) => onUpdateMember("tags", value)}
-            />
+            <div className="ml-[9px]">
+              <TagPicker
+                tags={member.tags}
+                onUpdate={(value) => onUpdateMember("tags", value)}
+              />
+            </div>
           </FieldCard>
         </div>
         <Separator />
@@ -155,7 +157,9 @@ export const MemberSidebar = ({ member, profiles }: Props) => {
             />
           </FieldCard>
           <FieldCard label="Source">
-            <SourceBadge source={source} className="ml-2" />
+            <div className="ml-[9px]">
+              <SourceBadge source={source} />
+            </div>
           </FieldCard>
         </div>
         <Separator />
@@ -164,20 +168,20 @@ export const MemberSidebar = ({ member, profiles }: Props) => {
         <div className="space-y-4 p-4 pb-32">
           {firstActivity && (
             <FieldCard label="First activity">
-              <p className="h-8 place-content-center pl-2">
+              <p className="ml-[9px] h-8 place-content-center">
                 {format(firstActivity, "PPp")}
               </p>
             </FieldCard>
           )}
           {lastActivity && (
             <FieldCard label="Last activity">
-              <p className="h-8 place-content-center pl-2">
+              <p className="ml-[9px] h-8 place-content-center">
                 {format(lastActivity, "PPp")}
               </p>
             </FieldCard>
           )}
           <FieldCard label="Created at">
-            <p className="h-8 place-content-center pl-2">
+            <p className="ml-[9px] h-8 place-content-center">
               {format(createdAt, "PPp")}
             </p>
           </FieldCard>

@@ -1,8 +1,8 @@
 import { triggerWorkflows } from "@conquest/trigger/tasks/triggerWorkflows";
-import { listActivities } from "../activities/listActivities";
+import { listActivities } from "../activity/listActivities";
 import { getLevel } from "../helpers/getLevel";
 import { getPulseScore } from "../helpers/getPulseScore";
-import { listLevels } from "../levels/listLevels";
+import { listLevels } from "../level/listLevels";
 import { getMember } from "./getMember";
 import { updateMember } from "./updateMember";
 
