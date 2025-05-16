@@ -96,6 +96,7 @@ export const seed = schemaTask({
               SELECT * 
               FROM member FINAL
               WHERE primaryEmail = '${sanitizedEmail}'
+              AND workspaceId = '${workspaceId}'
             `,
           });
 
