@@ -192,7 +192,11 @@ export const EditActivityTypeDialog = ({
                           <p className="h-9 shrink-0 place-content-center border-r bg-muted px-2">
                             In any channel{" "}
                           </p>
-                          <Input {...field} variant="transparent" />
+                          <Input
+                            {...field}
+                            type="number"
+                            variant="transparent"
+                          />
                           <p className="h-9 w-fit place-content-center border-l bg-muted px-2">
                             points
                           </p>
