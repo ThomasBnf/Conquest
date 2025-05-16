@@ -4,10 +4,7 @@ import { SOURCE } from "../enum/source.enum";
 export const ActivityTypeRuleSchema = z.object({
   id: z.string().uuid(),
   channelId: z.string().min(1, { message: "Channel is required" }),
-  points: z.coerce
-    .number()
-    .int()
-    .min(0, { message: "Points must be greater than 0" }),
+  points: z.coerce.number().int().min(0),
 });
 
 export const ActivityTypeSchema = z.object({

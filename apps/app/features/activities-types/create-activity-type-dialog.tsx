@@ -216,11 +216,7 @@ export const CreateActivityTypeDialog = () => {
                                 <p className="h-[34px] w-fit place-content-center border-r bg-muted px-2">
                                   +
                                 </p>
-                                <Input
-                                  {...field}
-                                  type="number"
-                                  variant="transparent"
-                                />
+                                <Input {...field} variant="transparent" />
                                 <p className="h-[34px] w-fit place-content-center border-l bg-muted px-2">
                                   Points
                                 </p>
