@@ -86,7 +86,8 @@ export const seed = schemaTask({
 
           if (existingProfile) continue;
 
-          const sanitizedEmail = email.toLowerCase().trim();
+          const sanitizedEmail =
+            email.toLowerCase().trim()?.replace(/'/g, "\\'") ?? "";
 
           const result = await client.query({
             query: `
