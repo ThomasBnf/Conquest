@@ -21,13 +21,10 @@ export const PageActivities = ({ slug, memberId }: Props) => {
     isLoading: _isLoading,
     fetchNextPage,
     hasNextPage,
-    failureReason,
   } = trpc.activities.listInfinite.useInfiniteQuery(
     { memberId },
     { getNextPageParam: (_, allPages) => allPages.length * 25 },
   );
-
-  console.log(failureReason);
 
   const activities = data?.pages.flat();
 
