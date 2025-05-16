@@ -29,9 +29,21 @@ export const publicProcedure = t.procedure;
 const middleware = t.middleware(async ({ ctx, next }) => {
   if (!ctx.session?.user?.id) throw new TRPCError({ code: "UNAUTHORIZED" });
 
+  const user = UserWithWorkspaceSchema.parse(ctx.session?.user);
+
+  Sentry.setUser({
+    id: user.id,
+    email: user.email,
+  });
+
+  Sentry.setContext("workspace", {
+    id: user.workspace.id,
+    name: user.workspace.name,
+  });
+
   return next({
     ctx: {
-      user: UserWithWorkspaceSchema.parse(ctx.session?.user),
+      user,
     },
   });
 });
