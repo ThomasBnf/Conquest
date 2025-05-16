@@ -89,6 +89,8 @@ export const seed = schemaTask({
           const sanitizedEmail =
             email.toLowerCase().trim()?.replace(/'/g, "\\'") ?? "";
 
+          logger.info("sanitizedEmail", { sanitizedEmail });
+
           const result = await client.query({
             query: `
               SELECT * 
