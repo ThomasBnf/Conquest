@@ -268,6 +268,7 @@ export async function POST(req: NextRequest) {
     }
 
     case "team_join": {
+      console.log("team_join", event);
       const { user } = event;
       const { id, is_bot } = user;
 
