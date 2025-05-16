@@ -23,13 +23,14 @@ export default async function Layout({
   if (!session) redirect("/auth/login");
 
   const { user } = session;
-  const { workspace } = user;
+  const { role, workspace } = user;
+  const isStaff = role === "STAFF";
 
   if (user && !user.onboarding) redirect("/");
 
   const { trialEnd, isPastDue } = workspace;
   const trialEnded = trialEnd && isBefore(trialEnd, new Date());
-  if (trialEnded || isPastDue) redirect("/billing");
+  if (!isStaff && (trialEnded || isPastDue)) redirect("/billing");
 
   if (slug !== workspace.slug) redirect(`/${workspace.slug}`);
 
