@@ -154,7 +154,9 @@ export const MemberCard = ({ memberChecked, onCheckChange }: Props) => {
               return (
                 <div key={`${key}-${id}`} className="space-y-1">
                   <p className="text-muted-foreground text-xs">Emails</p>
-                  <p>{emails.join(", ")}</p>
+                  {emails.map((email) => (
+                    <p key={email}>{email}</p>
+                  ))}
                 </div>
               );
             }
