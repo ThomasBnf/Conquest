@@ -13,11 +13,6 @@ export const checkDuplicates = schemaTask({
     for (const workspace of workspaces) {
       const { id: workspaceId } = workspace;
 
-      logger.info(workspaceId);
-
-      const duplicates = await listAllDuplicates({ workspaceId });
-      const existingMemberIds = new Set(duplicates.flatMap((d) => d.memberIds));
-
       const result = await client.query({
         query: `
           SELECT
@@ -107,13 +102,15 @@ export const checkDuplicates = schemaTask({
 
       logger.info("data", { data });
 
-      const newDuplicates = data.filter(
-        (item) => !item.memberIds.some((id) => existingMemberIds.has(id)),
-      );
+      const duplicates = await listAllDuplicates({ workspaceId });
 
-      logger.info("duplicates", {
-        total: newDuplicates.length,
-        nouveaux: newDuplicates.length,
+      const newDuplicates = data.filter((duplicate) => {
+        const { memberIds } = duplicate;
+
+        return !duplicates.some((existingDuplicate) => {
+          const existingMemberIdsSet = new Set(existingDuplicate.memberIds);
+          return memberIds.some((id) => existingMemberIdsSet.has(id));
+        });
       });
 
       for (const duplicate of newDuplicates) {

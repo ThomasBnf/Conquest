@@ -9,7 +9,6 @@ export const listAllDuplicates = async ({ workspaceId }: Props) => {
   const duplicates = await prisma.duplicate.findMany({
     where: {
       workspaceId,
-      state: "PENDING",
     },
   });
 
