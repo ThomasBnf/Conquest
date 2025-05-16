@@ -62,6 +62,8 @@ export const seed = schemaTask({
             profile,
           } = member;
 
+          logger.info("member", { member });
+
           if (name === "slackbot" || !id || isDeleted || isBot || !profile) {
             continue;
           }
@@ -88,8 +90,6 @@ export const seed = schemaTask({
 
           const sanitizedEmail =
             email.toLowerCase().trim()?.replace(/'/g, "\\'") ?? "";
-
-          logger.info("sanitizedEmail", { sanitizedEmail });
 
           const result = await client.query({
             query: `
