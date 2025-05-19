@@ -1,4 +1,4 @@
-import { listLogs as _listLogs } from "@conquest/clickhouse/logs/listLogs";
+import { listLogs as _listLogs } from "@conquest/clickhouse/log/listLogs";
 import { z } from "zod";
 import { protectedProcedure } from "../trpc";
 

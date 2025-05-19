@@ -1,7 +1,7 @@
 import { client } from "@conquest/clickhouse/client";
-import { createMember } from "@conquest/clickhouse/members/createMember";
-import { createProfile } from "@conquest/clickhouse/profiles/createProfile";
-import { getProfile } from "@conquest/clickhouse/profiles/getProfile";
+import { createMember } from "@conquest/clickhouse/member/createMember";
+import { createProfile } from "@conquest/clickhouse/profile/createProfile";
+import { getProfile } from "@conquest/clickhouse/profile/getProfile";
 import { getIntegrationBySource } from "@conquest/db/integrations/getIntegrationBySource";
 import { decrypt } from "@conquest/db/utils/decrypt";
 import { listWorkspaces } from "@conquest/db/workspaces/listWorkspaces";

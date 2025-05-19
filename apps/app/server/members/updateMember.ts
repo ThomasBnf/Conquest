@@ -1,4 +1,4 @@
-import { updateMember as _updateMember } from "@conquest/clickhouse/members/updateMember";
+import { updateMember as _updateMember } from "@conquest/clickhouse/member/updateMember";
 import { MemberSchema } from "@conquest/zod/schemas/member.schema";
 import { protectedProcedure } from "../trpc";
 

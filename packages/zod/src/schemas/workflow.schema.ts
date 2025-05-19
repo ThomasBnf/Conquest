@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { EdgeSchema } from "./edge.schema";
-import { NodeSchema } from "./node.schema";
+import { NodeSchema, TriggerSchema } from "./node.schema";
 
 export const WorkflowSchema = z.object({
   id: z.string().uuid(),
@@ -8,6 +8,7 @@ export const WorkflowSchema = z.object({
   description: z.string(),
   published: z.boolean(),
   lastRunAt: z.coerce.date(),
+  trigger: TriggerSchema.nullable(),
   nodes: z.array(NodeSchema),
   edges: z.array(EdgeSchema),
   workspaceId: z.string(),

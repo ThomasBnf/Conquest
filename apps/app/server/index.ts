@@ -1,3 +1,4 @@
+import { tasksRouter } from "@/features/tasks/api/router";
 import { activitiesRouter } from "./activities/router";
 import { activityTypesRouter } from "./activity-types/router";
 import { apiKeysRouter } from "./api-keys/router";
@@ -49,6 +50,7 @@ export const appRouter = router({
   slack: slackRouter,
   stripe: stripeRouter,
   tags: tagsRouter,
+  tasks: tasksRouter,
   team: teamRouter,
   users: usersRouter,
   workflows: workflowsRouter,

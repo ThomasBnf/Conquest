@@ -1,5 +1,5 @@
 import { Icon } from "@/components/custom/Icon";
-import { Button } from "@conquest/ui/button";
+import { User } from "@conquest/db/prisma";
 import {
   Command,
   CommandEmpty,
@@ -7,276 +7,243 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-  CommandSeparator,
 } from "@conquest/ui/command";
 import { Slack } from "@conquest/ui/icons/Slack";
 import { Label } from "@conquest/ui/label";
+import { Separator } from "@conquest/ui/separator";
+import { Edge } from "@conquest/zod/schemas/edge.schema";
 import { useReactFlow } from "@xyflow/react";
 import type { icons } from "lucide-react";
+import { useSession } from "next-auth/react";
 import { v4 as uuid } from "uuid";
 import { usePanel } from "../hooks/usePanel";
-import { useSelected } from "../hooks/useSelected";
 import type { WorkflowNode } from "./schemas/workflow-node.type";
 
 export const ActionPanel = () => {
-  const { selected } = useSelected();
-  const { panel } = usePanel();
-  const { addNodes, updateNodeData } = useReactFlow();
+  const { data: session } = useSession();
+  const { user } = session ?? {};
+
+  const { panel, condition, node: selectedNode, setPanel } = usePanel();
+  const { addNodes, addEdges, updateNodeData, setEdges } = useReactFlow();
 
   const onSelect = (node: WorkflowNode) => {
-    if (selected && panel === "actions-change") {
-      return updateNodeData(selected.id, {
-        id: selected.id,
-        ...node.data,
-      });
+    if (!selectedNode) return;
+
+    if (panel === "actions-change") {
+      const updatedNode = {
+        ...selectedNode,
+        data: {
+          ...selectedNode.data,
+          ...node.data,
+        },
+      };
+
+      const isIfElse = node.data.type === "if-else";
+
+      if (isIfElse) {
+        setEdges((eds) =>
+          eds.filter((edge) => edge.source !== selectedNode.id),
+        );
+      }
+
+      setPanel({ panel: "node", node: updatedNode });
+      updateNodeData(selectedNode.id, updatedNode.data);
+
+      return;
     }
 
-    addNodes([
-      {
-        ...node,
-        id: uuid(),
-        position: {
-          x: selected?.position.x ?? 0,
-          y: (selected?.position.y ?? 0) + 200,
-        },
+    const newNode = {
+      ...node,
+      id: uuid(),
+      position: {
+        x: selectedNode.position.x + (condition === "false" ? 400 : 0),
+        y: selectedNode.position.y + 200,
       },
-    ]);
+    };
+
+    addNodes(newNode);
+
+    const isIfElse = selectedNode.data.type === "if-else";
+
+    const newEdge: Edge = {
+      id: uuid(),
+      source: selectedNode.id,
+      target: newNode.id,
+      type: "custom",
+      ...(isIfElse && {
+        data: {
+          condition: condition as "true" | "false",
+        },
+        label: condition === "true" ? "is True" : "is False",
+      }),
+    };
+
+    addEdges(newEdge);
+    setPanel({ panel: "node", node: newNode });
   };
 
   return (
-    <div className="p-4">
-      <div>
+    <>
+      <div className="p-4">
         <Label>Next step</Label>
         <p className="text-muted-foreground">
-          Set the next block in the workflow
+          Set the next node in the workflow
         </p>
       </div>
+      <Separator />
       <Command>
-        <CommandInput placeholder="Type a command or search..." />
-        <CommandList>
-          <CommandEmpty>No results found.</CommandEmpty>
-          <CommandGroup heading="Suggestions">
-            <CommandItem>Calendar</CommandItem>
-            <CommandItem>Search Emoji</CommandItem>
-            <CommandItem>Calculator</CommandItem>
-          </CommandGroup>
-          <CommandSeparator />
-          <CommandGroup heading="Settings">
-            <CommandItem>Profile</CommandItem>
-            <CommandItem>Billing</CommandItem>
-            <CommandItem>Settings</CommandItem>
-          </CommandGroup>
+        <CommandInput placeholder="Search for an action..." />
+        <CommandList className="max-h-full">
+          <CommandEmpty>No action found.</CommandEmpty>
+          {nodes(user).map((group) => (
+            <CommandGroup key={group.category} heading={group.category}>
+              {group.nodes.map((node) => (
+                <CommandItem
+                  key={node.id}
+                  value={node.data.label}
+                  onSelect={() => onSelect(node)}
+                  className="space-x-2"
+                >
+                  <div className="rounded-md border bg-background p-1">
+                    {node.data.icon === "Slack" ? (
+                      <Slack size={16} />
+                    ) : (
+                      <Icon
+                        name={node.data.icon as keyof typeof icons}
+                        size={16}
+                      />
+                    )}
+                  </div>
+                  <p>{node.data.label}</p>
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          ))}
         </CommandList>
       </Command>
-      <div className="mt-2 flex flex-col gap-1">
-        {nodes.map((node) => {
-          const { data } = node;
-
-          return (
-            <Button
-              key={node.id}
-              variant="outline"
-              size="default"
-              className="justify-start px-1.5"
-              onClick={() => onSelect(node)}
-            >
-              <div className="rounded-md border p-1">
-                {data.icon === "Slack" ? (
-                  <Slack size={16} />
-                ) : (
-                  <Icon name={data.icon as keyof typeof icons} size={16} />
-                )}
-              </div>
-              <p className="font-medium">{data.label}</p>
-            </Button>
-          );
-        })}
-      </div>
-    </div>
+    </>
   );
 };
 
-export const nodes: WorkflowNode[] = [
+export const nodes = (
+  user: User | undefined,
+): {
+  category: string;
+  nodes: WorkflowNode[];
+}[] => [
   {
-    id: uuid(),
-    type: "custom",
-    position: { x: 0, y: 0 },
-    data: {
-      icon: "Tag",
-      label: "Add tag to member",
-      description: "",
-      type: "add-tag",
-      category: "mutations",
-      tags: [],
-    },
+    category: "Integrations",
+    nodes: [
+      {
+        id: uuid(),
+        type: "custom",
+        position: { x: 0, y: 0 },
+        data: {
+          icon: "Slack",
+          label: "Send private message",
+          description: "",
+          type: "slack-message",
+          message: "",
+        },
+      },
+    ],
   },
   {
-    id: uuid(),
-    type: "custom",
-    position: { x: 0, y: 0 },
-    data: {
-      icon: "Tag",
-      label: "Remove tag from member",
-      description: "",
-      type: "remove-tag",
-      category: "mutations",
-      tags: [],
-    },
+    category: "Tags",
+    nodes: [
+      {
+        id: uuid(),
+        type: "custom",
+        position: { x: 0, y: 0 },
+        data: {
+          icon: "Tag",
+          label: "Add tag",
+          description: "",
+          type: "add-tag",
+          tags: [],
+        },
+      },
+      {
+        id: uuid(),
+        type: "custom",
+        position: { x: 0, y: 0 },
+        data: {
+          icon: "Tag",
+          label: "Remove tag",
+          description: "",
+          type: "remove-tag",
+          tags: [],
+        },
+      },
+    ],
   },
   {
-    id: uuid(),
-    type: "custom",
-    position: { x: 0, y: 0 },
-    data: {
-      icon: "Slack",
-      label: "Send Slack message",
-      description: "",
-      type: "slack-message",
-      category: "communications",
-      message: "",
-    },
+    category: "Tasks",
+    nodes: [
+      {
+        id: uuid(),
+        type: "custom",
+        position: { x: 0, y: 0 },
+        data: {
+          icon: "SquareCheckBig",
+          label: "Create task",
+          description: "",
+          type: "task",
+          title: "",
+          days: 2,
+          assignee: user?.id ?? "",
+        },
+      },
+    ],
   },
   {
-    id: uuid(),
-    type: "custom",
-    position: { x: 0, y: 0 },
-    data: {
-      icon: "Clock",
-      label: "Wait",
-      description: "",
-      type: "wait",
-      category: "utilities",
-      duration: 0,
-      unit: "seconds",
-    },
+    category: "Conditions",
+    nodes: [
+      {
+        id: uuid(),
+        type: "custom",
+        position: { x: 0, y: 0 },
+        data: {
+          icon: "Split",
+          label: "If / else",
+          description: "",
+          type: "if-else",
+          groupFilters: {
+            filters: [],
+            operator: "AND",
+          },
+        },
+      },
+    ],
   },
   {
-    id: uuid(),
-    type: "custom",
-    position: { x: 0, y: 0 },
-    data: {
-      icon: "Webhook",
-      label: "Webhook",
-      description: "",
-      type: "webhook",
-      category: "utilities",
-      url: undefined,
-    },
+    category: "Utilities",
+    nodes: [
+      {
+        id: uuid(),
+        type: "custom",
+        position: { x: 0, y: 0 },
+        data: {
+          icon: "Clock",
+          label: "Wait",
+          description: "",
+          type: "wait",
+          duration: 0,
+          unit: "seconds",
+        },
+      },
+      {
+        id: uuid(),
+        type: "custom",
+        position: { x: 0, y: 0 },
+        data: {
+          icon: "Webhook",
+          label: "Webhook",
+          description: "",
+          type: "webhook",
+          url: undefined,
+        },
+      },
+    ],
   },
 ];
-// {
-//   categories: [
-//     {
-//       label: "Records",
-//       nodes: [
-//         {
-//           id: uuid(),
-//           type: "custom",
-//           position: { x: 0, y: 0 },
-//           data: {
-//             icon: "FileSearch",
-//             label: "List members",
-//             description: "",
-//             type: "list-members",
-//             category: "records",
-//             filters: [],
-//           },
-//         },
-//       ],
-//     },
-//     {
-//       label: "Mutations",
-//       nodes: [
-//         {
-//           id: uuid(),
-//           type: "custom",
-//           position: { x: 0, y: 0 },
-//           data: {
-//             icon: "Tag",
-//             label: "Add tag to member",
-//             description: "",
-//             type: "add-tag",
-//             category: "mutations",
-//             tags: [],
-//           },
-//         },
-//         {
-//           id: uuid(),
-//           type: "custom",
-//           position: { x: 0, y: 0 },
-//           data: {
-//             icon: "Tag",
-//             label: "Remove tag from member",
-//             description: "",
-//             type: "remove-tag",
-//             category: "mutations",
-//             tags: [],
-//           },
-//         },
-//       ],
-//     },
-//     {
-//       label: "Communications",
-//       nodes: [
-//         {
-//           id: uuid(),
-//           type: "custom",
-//           position: { x: 0, y: 0 },
-//           data: {
-//             icon: "Slack",
-//             label: "Send Slack message",
-//             description: "",
-//             type: "slack-message",
-//             category: "communications",
-//             message: "",
-//           },
-//         },
-//       ],
-//     },
-//     {
-//       label: "Utilities",
-//       nodes: [
-//         {
-//           id: uuid(),
-//           type: "custom",
-//           position: { x: 0, y: 0 },
-//           data: {
-//             icon: "Clock",
-//             label: "Wait",
-//             description: "",
-//             type: "wait",
-//             category: "utilities",
-//             duration: 0,
-//             unit: "seconds",
-//           },
-//         },
-//         {
-//           id: uuid(),
-//           type: "custom",
-//           position: { x: 0, y: 0 },
-//           data: {
-//             icon: "RefreshCw",
-//             label: "Loop",
-//             description: "",
-//             type: "loop",
-//             category: "utilities",
-//             sub_nodes: [],
-//           },
-//         },
-//         {
-//           id: uuid(),
-//           type: "custom",
-//           position: { x: 0, y: 0 },
-//           data: {
-//             icon: "Webhook",
-//             label: "Webhook",
-//             description: "",
-//             type: "webhook",
-//             category: "utilities",
-//             url: undefined,
-//           },
-//         },
-//       ],
-//     },
-//   ],
-// };

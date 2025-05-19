@@ -1,5 +1,6 @@
 "use client";
 
+import { usePanel } from "@/features/workflows/hooks/usePanel";
 import { trpc } from "@/server/client";
 import {
   type Filter,
@@ -7,8 +8,7 @@ import {
   GroupFiltersSchema,
 } from "@conquest/zod/schemas/filters.schema";
 import { useSession } from "next-auth/react";
-import { usePathname } from "next/navigation";
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 
 type filtersContext = {
   groupFilters: GroupFilters;
@@ -22,20 +22,25 @@ type filtersContext = {
 const FiltersContext = createContext<filtersContext>({} as filtersContext);
 
 type Props = {
+  listId?: string;
   initialGroupFilters?: GroupFilters;
+  saveFilters?: (groupFilters: GroupFilters) => void;
   children: React.ReactNode;
 };
 
-export const FiltersProvider = ({ initialGroupFilters, children }: Props) => {
+export const FiltersProvider = ({
+  listId,
+  initialGroupFilters,
+  saveFilters,
+  children,
+}: Props) => {
   const { data: session, update } = useSession();
   const { user } = session ?? {};
+  const { node } = usePanel();
   const { membersPreferences } = user ?? {};
-
   const utils = trpc.useUtils();
-  const pathname = usePathname();
-  const isListPage = pathname.includes("lists");
-  const listId = pathname.split("/").pop();
 
+  const [currentNodeId, setCurrentNodeId] = useState<string | undefined>();
   const [groupFilters, setGroupFilters] = useState<GroupFilters>(
     initialGroupFilters ??
       membersPreferences?.groupFilters ?? {
@@ -45,7 +50,9 @@ export const FiltersProvider = ({ initialGroupFilters, children }: Props) => {
   );
 
   const { mutateAsync } = trpc.users.update.useMutation({
-    onSuccess: () => update(),
+    onSuccess: () => {
+      update();
+    },
   });
 
   const { mutateAsync: updateList } = trpc.lists.update.useMutation({
@@ -63,7 +70,7 @@ export const FiltersProvider = ({ initialGroupFilters, children }: Props) => {
         ...prev,
         filters: [...prev.filters, filter],
       });
-      saveFilters(newGroupFilters);
+      onSaveFilters(newGroupFilters);
       return newGroupFilters;
     });
   };
@@ -78,7 +85,7 @@ export const FiltersProvider = ({ initialGroupFilters, children }: Props) => {
           _filter.id === filter.id ? filter : _filter,
         ),
       });
-      saveFilters(newGroupFilters);
+      onSaveFilters(newGroupFilters);
       return newGroupFilters;
     });
   };
@@ -91,7 +98,7 @@ export const FiltersProvider = ({ initialGroupFilters, children }: Props) => {
         ...prev,
         filters: prev.filters.filter((_filter) => _filter.id !== filter.id),
       });
-      saveFilters(newGroupFilters);
+      onSaveFilters(newGroupFilters);
       return newGroupFilters;
     });
   };
@@ -105,7 +112,7 @@ export const FiltersProvider = ({ initialGroupFilters, children }: Props) => {
     };
 
     setGroupFilters(newGroupFilters);
-    saveFilters(newGroupFilters);
+    onSaveFilters(newGroupFilters);
   };
 
   const onUpdateGroupOperator = async (operator: "AND" | "OR") => {
@@ -116,21 +123,21 @@ export const FiltersProvider = ({ initialGroupFilters, children }: Props) => {
         ...prev,
         operator,
       });
-      saveFilters(newGroupFilters);
+      onSaveFilters(newGroupFilters);
       return newGroupFilters;
     });
   };
 
-  const saveFilters = async (newGroupFilters: GroupFilters) => {
-    if (!user?.id) return;
-
-    if (isListPage && listId) {
-      updateList({
+  const onSaveFilters = async (newGroupFilters: GroupFilters) => {
+    if (listId) {
+      return await updateList({
         id: listId,
         groupFilters: newGroupFilters,
       });
-    } else {
-      mutateAsync({
+    }
+
+    if (!saveFilters && user) {
+      return await mutateAsync({
         id: user.id,
         membersPreferences: {
           ...user.membersPreferences,
@@ -138,7 +145,16 @@ export const FiltersProvider = ({ initialGroupFilters, children }: Props) => {
         },
       });
     }
+
+    saveFilters?.(newGroupFilters);
   };
+
+  useEffect(() => {
+    if (initialGroupFilters && node && node?.id !== currentNodeId) {
+      setCurrentNodeId(node?.id);
+      setGroupFilters(initialGroupFilters);
+    }
+  }, [initialGroupFilters, node]);
 
   return (
     <FiltersContext.Provider

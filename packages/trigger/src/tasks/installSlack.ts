@@ -1,4 +1,4 @@
-import { listChannels } from "@conquest/clickhouse/channels/listChannels";
+import { listChannels } from "@conquest/clickhouse/channel/listChannels";
 import { updateIntegration } from "@conquest/db/integrations/updateIntegration";
 import { prisma } from "@conquest/db/prisma";
 import { decrypt } from "@conquest/db/utils/decrypt";

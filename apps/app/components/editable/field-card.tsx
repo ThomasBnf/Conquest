@@ -12,9 +12,9 @@ export const FieldCard = ({
   className,
 }: PropsWithChildren<Props>) => {
   return (
-    <div className={cn("flex flex-col gap-1", className)}>
-      <p className="text-muted-foreground text-xs">{label}</p>
-      <div className="-translate-x-2">{children}</div>
+    <div className={cn("-ml-[9px] flex flex-col gap-1", className)}>
+      <p className="ml-[9px] text-muted-foreground text-xs">{label}</p>
+      <div>{children}</div>
     </div>
   );
 };

@@ -1,4 +1,4 @@
-import { getMember as _getMember } from "@conquest/clickhouse/members/getMember";
+import { getMember as _getMember } from "@conquest/clickhouse/member/getMember";
 import { z } from "zod";
 import { protectedProcedure } from "../trpc";
 

@@ -7,6 +7,10 @@ const config = {
     "./components/**/*.{ts,tsx}",
     "./app/**/*.{ts,tsx}",
     "./src/**/*.{ts,tsx}",
+    "./constant/**/*.{ts,tsx}",
+    "./features/**/*.{ts,tsx}",
+    "./lib/**/*.{ts,tsx}",
+    "../../packages/ui/**/*.{ts,tsx}",
   ],
   prefix: "",
   theme: {
@@ -27,6 +31,7 @@ const config = {
         ring: "hsl(var(--ring))",
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
+        surface: "hsl(var(--surface))",
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",

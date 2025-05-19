@@ -1,25 +1,26 @@
-import { createActivity } from "@conquest/clickhouse/activities/createActivity";
-import { deleteActivity } from "@conquest/clickhouse/activities/deleteActivity";
-import { deleteManyActivities } from "@conquest/clickhouse/activities/deleteManyActivities";
-import { getActivity } from "@conquest/clickhouse/activities/getActivity";
-import { updateActivity } from "@conquest/clickhouse/activities/updateActivity";
-import { getActivityTypeByKey } from "@conquest/clickhouse/activity-types/getActivityTypeByKey";
-import { createChannel } from "@conquest/clickhouse/channels/createChannel";
-import { deleteChannel } from "@conquest/clickhouse/channels/deleteChannel";
-import { getChannel } from "@conquest/clickhouse/channels/getChannel";
-import { updateChannel } from "@conquest/clickhouse/channels/updateChannel";
+import { getActivityTypeByKey } from "@conquest/clickhouse/activity-type/getActivityTypeByKey";
+import { createActivity } from "@conquest/clickhouse/activity/createActivity";
+import { deleteActivity } from "@conquest/clickhouse/activity/deleteActivity";
+import { deleteManyActivities } from "@conquest/clickhouse/activity/deleteManyActivities";
+import { getActivity } from "@conquest/clickhouse/activity/getActivity";
+import { updateActivity } from "@conquest/clickhouse/activity/updateActivity";
+import { createChannel } from "@conquest/clickhouse/channel/createChannel";
+import { deleteChannel } from "@conquest/clickhouse/channel/deleteChannel";
+import { getChannel } from "@conquest/clickhouse/channel/getChannel";
+import { updateChannel } from "@conquest/clickhouse/channel/updateChannel";
 import { client } from "@conquest/clickhouse/client";
-import { createMember } from "@conquest/clickhouse/members/createMember";
-import { deleteMember } from "@conquest/clickhouse/members/deleteMember";
-import { getMember } from "@conquest/clickhouse/members/getMember";
-import { updateMember } from "@conquest/clickhouse/members/updateMember";
-import { createProfile } from "@conquest/clickhouse/profiles/createProfile";
-import { getProfile } from "@conquest/clickhouse/profiles/getProfile";
-import { updateProfile } from "@conquest/clickhouse/profiles/updateProfile";
+import { createMember } from "@conquest/clickhouse/member/createMember";
+import { deleteMember } from "@conquest/clickhouse/member/deleteMember";
+import { getMember } from "@conquest/clickhouse/member/getMember";
+import { updateMember } from "@conquest/clickhouse/member/updateMember";
+import { createProfile } from "@conquest/clickhouse/profile/createProfile";
+import { getProfile } from "@conquest/clickhouse/profile/getProfile";
+import { updateProfile } from "@conquest/clickhouse/profile/updateProfile";
 import { getIntegration } from "@conquest/db/integrations/getIntegration";
 import { updateIntegration } from "@conquest/db/integrations/updateIntegration";
 import { decrypt } from "@conquest/db/utils/decrypt";
 import { env } from "@conquest/env";
+import { triggerWorkflows } from "@conquest/trigger/tasks/triggerWorkflows";
 import { SlackIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
 import {
   type GenericMessageEvent,
@@ -321,6 +322,11 @@ export async function POST(req: NextRequest) {
           },
           memberId: createdMember.id,
           workspaceId,
+        });
+
+        await triggerWorkflows.trigger({
+          trigger: "member-created",
+          member: createdMember,
         });
       }
 

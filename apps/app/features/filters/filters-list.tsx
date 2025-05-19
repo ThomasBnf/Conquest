@@ -9,9 +9,10 @@ import { FilterPicker } from "./filter-picker";
 
 type Props = {
   align?: "start" | "end";
+  className?: string;
 };
 
-export const FiltersList = ({ align = "start" }: Props) => {
+export const FiltersList = ({ align = "start", className }: Props) => {
   const { groupFilters, resetFilters } = useFilters();
   const { open, setOpen } = useOpenFilters();
   const { filters } = groupFilters;
@@ -19,7 +20,7 @@ export const FiltersList = ({ align = "start" }: Props) => {
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button variant="outline">
+        <Button variant="outline" className={className}>
           <ListFilter size={16} />
           Filters
           {filters.length > 0 && (

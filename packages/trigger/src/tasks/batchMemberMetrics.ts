@@ -1,4 +1,4 @@
-import { listActivities } from "@conquest/clickhouse/activities/listActivities";
+import { listActivities } from "@conquest/clickhouse/activity/listActivities";
 import { client } from "@conquest/clickhouse/client";
 import { getLevel } from "@conquest/clickhouse/helpers/getLevel";
 import { getPulseScore } from "@conquest/clickhouse/helpers/getPulseScore";

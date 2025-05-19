@@ -3,7 +3,6 @@ import type {
   WhoOptions,
 } from "@conquest/zod/schemas/filters.schema";
 import type { LEVEL } from "@conquest/zod/schemas/level.schema";
-import type { RepeatOn } from "@conquest/zod/schemas/node.schema";
 
 export const COLORS = [
   { name: "Gray", hex: "#6E7B8B" },
@@ -30,16 +29,6 @@ export const OPERATORS: Operator[] = [
 ];
 
 export const WHO_OPTIONS: WhoOptions[] = ["who_did", "who_did_not"];
-
-export const REPEAT_ON: RepeatOn[] = [
-  "monday",
-  "tuesday",
-  "wednesday",
-  "thursday",
-  "friday",
-  "saturday",
-  "sunday",
-];
 
 export const WEEKDAYS = ["Mon", "Wed", "Fri", "Sun"];
 

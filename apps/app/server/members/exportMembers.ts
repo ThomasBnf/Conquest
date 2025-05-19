@@ -1,5 +1,5 @@
-import { getCompany } from "@conquest/clickhouse/companies/getCompany";
-import { getLevelById } from "@conquest/clickhouse/levels/getLevelById";
+import { getCompany } from "@conquest/clickhouse/company/getCompany";
+import { getLevelById } from "@conquest/clickhouse/level/getLevelById";
 import { listTags } from "@conquest/db/tags/listTags";
 import { type Member, MemberSchema } from "@conquest/zod/schemas/member.schema";
 import { z } from "zod";

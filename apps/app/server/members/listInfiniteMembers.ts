@@ -1,4 +1,4 @@
-import { listInfiniteMembers as _listInfiniteMembers } from "@conquest/clickhouse/members/listInfiniteMembers";
+import { listInfiniteMembers as _listInfiniteMembers } from "@conquest/clickhouse/member/listInfiniteMembers";
 import { z } from "zod";
 import { protectedProcedure } from "../trpc";
 

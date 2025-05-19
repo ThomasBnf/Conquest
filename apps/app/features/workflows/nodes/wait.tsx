@@ -1,4 +1,3 @@
-import { useSelected } from "@/features/workflows/hooks/useSelected";
 import { Form, FormControl, FormField, FormItem } from "@conquest/ui/form";
 import { Input } from "@conquest/ui/input";
 import { Label } from "@conquest/ui/label";
@@ -14,14 +13,14 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useReactFlow } from "@xyflow/react";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
+import { usePanel } from "../hooks/usePanel";
 import { type FormWait, FormWaitSchema } from "./schemas/form-wait.schema";
 
 export const Wait = () => {
-  const { selected } = useSelected();
+  const { node } = usePanel();
   const { updateNodeData } = useReactFlow();
 
-  const parsedData = NodeWaitSchema.parse(selected?.data);
-  const { duration, unit } = parsedData;
+  const { duration, unit } = NodeWaitSchema.parse(node?.data);
 
   const form = useForm<FormWait>({
     resolver: zodResolver(FormWaitSchema),
@@ -31,18 +30,11 @@ export const Wait = () => {
     },
   });
 
-  useEffect(() => {
-    form.reset({
-      duration,
-      unit,
-    });
-  }, [selected]);
-
   const onSubmit = ({ duration, unit }: FormWait) => {
-    if (!selected) return;
+    if (!node) return;
 
-    updateNodeData(selected.id, {
-      ...parsedData,
+    updateNodeData(node.id, {
+      ...node.data,
       duration,
       unit,
     });
@@ -50,17 +42,20 @@ export const Wait = () => {
 
   const onSelectUnit = (value: "seconds" | "minutes" | "hours" | "days") => {
     form.setValue("unit", value);
-    onSubmit({ duration, unit: value });
+    onSubmit({ duration: form.getValues("duration"), unit: value });
   };
 
+  useEffect(() => {
+    if (!node) return;
+
+    form.reset({ duration, unit });
+  }, [node]);
+
   return (
-    <div>
+    <div className="space-y-1">
       <Label>Wait</Label>
       <Form {...form}>
-        <form
-          onSubmit={form.handleSubmit(onSubmit)}
-          className="flex h-10 flex-1 items-center justify-between divide-x overflow-hidden rounded-md border border-input shadow-sm"
-        >
+        <form className="flex h-9 flex-1 items-center justify-between divide-x overflow-hidden rounded-md border border-input shadow-sm">
           <FormField
             control={form.control}
             name="duration"
@@ -70,7 +65,12 @@ export const Wait = () => {
                   <Input
                     {...field}
                     type="number"
-                    onBlur={() => onSubmit({ duration: field.value, unit })}
+                    onBlur={() =>
+                      onSubmit({
+                        duration: field.value,
+                        unit: form.getValues("unit"),
+                      })
+                    }
                     variant="transparent"
                     className="w-full"
                   />
@@ -85,12 +85,12 @@ export const Wait = () => {
               <FormItem>
                 <FormControl>
                   <Select
+                    value={field.value}
                     onValueChange={(unit) =>
                       onSelectUnit(
                         unit as "seconds" | "minutes" | "hours" | "days",
                       )
                     }
-                    defaultValue={field.value}
                   >
                     <SelectTrigger className="m-0 h-10 w-28 rounded-none border-none bg-muted-hover px-2 shadow-none">
                       <SelectValue />

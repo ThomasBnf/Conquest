@@ -1,42 +1,55 @@
 import { Button } from "@conquest/ui/button";
+import { ScrollArea } from "@conquest/ui/scroll-area";
+import { Workflow } from "@conquest/zod/schemas/workflow.schema";
+import { useReactFlow } from "@xyflow/react";
 import { ArrowLeft } from "lucide-react";
 import { usePanel } from "../hooks/usePanel";
-import { useSelected } from "../hooks/useSelected";
 import { ActionPanel } from "../panels/action-panel";
 import { OptionsPanel } from "../panels/options-panel";
 import { TriggerPanel } from "../panels/trigger-panel";
 import { WorkflowPanel } from "../panels/workflow-panel";
 
-export const Sidebar = () => {
-  const { panel, setPanel } = usePanel();
-  const { selected, setSelected } = useSelected();
+type Props = {
+  workflow: Workflow;
+};
 
-  const hasPanel = panel !== undefined;
+export const Sidebar = ({ workflow }: Props) => {
+  const { panel, node, setPanel } = usePanel();
+  const { getNodes } = useReactFlow();
+
+  const hasTrigger = getNodes().some((node) => "isTrigger" in node.data);
+  const isWorkflowPanel = panel === "workflow";
+
+  const showBackButton = hasTrigger && !isWorkflowPanel;
 
   const onBack = () => {
     if (panel === "node") {
-      setSelected(undefined);
-      setPanel("workflow");
-      return;
+      return setPanel({ panel: "workflow" });
     }
 
-    setPanel("node");
+    if (node) {
+      return setPanel({ panel: "node", node });
+    }
+
+    setPanel({ panel: "node" });
   };
 
   return (
-    <div className="h-full w-full max-w-sm divide-y border-l bg-background">
-      {hasPanel && panel !== "workflow" && (
-        <div className="flex h-12 shrink-0 items-center px-4">
+    <div className="flex h-full w-full max-w-sm flex-col divide-y border-l bg-background">
+      {showBackButton && (
+        <div className="flex h-12 shrink-0 items-center px-2">
           <Button variant="ghost" onClick={onBack}>
             <ArrowLeft size={16} />
             Back
           </Button>
         </div>
       )}
-      {selected && panel === "node" && <OptionsPanel />}
-      {panel === "workflow" && <WorkflowPanel />}
-      {panel === "triggers" && <TriggerPanel />}
-      {panel?.startsWith("actions") && <ActionPanel />}
+      <ScrollArea className="h-[calc(100vh-98px)]">
+        {panel === "workflow" && <WorkflowPanel workflow={workflow} />}
+        {panel === "triggers" && <TriggerPanel workflow={workflow} />}
+        {panel === "node" && node?.id && <OptionsPanel workflow={workflow} />}
+        {panel?.startsWith("actions") && <ActionPanel />}
+      </ScrollArea>
     </div>
   );
 };

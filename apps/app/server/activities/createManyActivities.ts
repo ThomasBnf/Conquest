@@ -1,5 +1,5 @@
 import { BulkActivitySchema } from "@/features/table/schemas/bulk-activity.schema";
-import { getActivityTypeByKey } from "@conquest/clickhouse/activity-types/getActivityTypeByKey";
+import { getActivityTypeByKey } from "@conquest/clickhouse/activity-type/getActivityTypeByKey";
 import { client } from "@conquest/clickhouse/client";
 import { MemberSchema } from "@conquest/zod/schemas/member.schema";
 import { z } from "zod";

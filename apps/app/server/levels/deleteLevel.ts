@@ -1,4 +1,4 @@
-import { deleteLevel as _deleteLevel } from "@conquest/clickhouse/levels/deleteLevel";
+import { deleteLevel as _deleteLevel } from "@conquest/clickhouse/level/deleteLevel";
 import { z } from "zod";
 import { protectedProcedure } from "../trpc";
 

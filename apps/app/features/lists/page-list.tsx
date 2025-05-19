@@ -24,7 +24,7 @@ export const PageList = ({ listId }: Props) => {
       <Header title={`${list.emoji} ${list.name}`}>
         <MenuList list={list} />
       </Header>
-      <FiltersProvider initialGroupFilters={list.groupFilters}>
+      <FiltersProvider listId={listId} initialGroupFilters={list.groupFilters}>
         <MembersPage />
       </FiltersProvider>
     </PageLayout>

@@ -1,0 +1,144 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --surface: 30 33% 98%;
+    --foreground: 250 18% 19%;
+    --primary: 0 0% 9%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 0 0% 95%;
+    --secondary-hover: 0 0% 98%;
+    --secondary-foreground: 0 0% 9%;
+    --muted: 0 0% 95%;
+    --muted-hover: 0 0% 98%;
+    --muted-foreground: 240 4% 46%;
+    --accent: 0 0% 95%;
+    --accent-foreground: 0 0% 9%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 88%;
+    --input: 240 3% 88%;
+    --ring: 248 20% 92%;
+    --radius: 0.5rem;
+
+    --chart-1: 237 61% 89%;
+    --chart-2: 173 58% 39%;
+    --chart-3: 197 37% 24%;
+    --chart-4: 43 74% 66%;
+    --chart-5: 27 87% 67%;
+
+    --sidebar-background: 30 33% 98%;
+    --sidebar-foreground: 240 6% 10%;
+    --sidebar-accent: 10 21% 95%;
+    --sidebar-accent-foreground: 240 6% 10%;
+    --sidebar-border: 240 3% 90%;
+    --sidebar-ring: 248 20% 92%;
+
+    --brand-100: 14 100% 95%;
+    --brand-200: 14 100% 89%;
+    --brand-300: 14 100% 83%;
+    --brand-400: 14 82% 51%;
+    --brand-500: 14 78% 46%;
+    --brand-600: 13 78% 41%;
+    --brand-700: 14 77% 35%;
+    --brand-800: 14 78% 28%;
+    --brand-900: 13 77% 22%;
+    --brand-950: 13 77% 17%;
+
+    --main-100: 237 61% 89%;
+    --main-200: 236 61% 79%;
+    --main-300: 233 63% 68%;
+    --main-400: 230 63% 58%;
+    --main-500: 231 61% 49%;
+    --main-600: 231 59% 40%;
+    --main-700: 231 57% 31%;
+    --main-800: 231 54% 22%;
+    --main-900: 232 53% 13%;
+
+    --slack: 294 54% 27%;
+    --livestorm: 226 94% 32%;
+    --discourse: 202 85% 38%;
+    --linkedin: 210 90% 40%;
+    --discord: 235 86% 65%;
+
+    --brand: oklch(0.623 0.214 259.815);
+  }
+
+  .dark {
+    --background: 0 0% 3.9%;
+    --foreground: 0 0% 98%;
+    --primary: 0 0% 98%;
+    --primary-foreground: 0 0% 9%;
+    --secondary: 0 0% 14.9%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 0 0% 14.9%;
+    --muted-foreground: 0 0% 63.9%;
+    --accent: 0 0% 14.9%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 14.9%;
+    --input: 0 0% 14.9%;
+    --ring: 0 0% 83.1%;
+
+    --chart-1: 220 70% 50%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
+
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+
+    --brand: oklch(0.707 0.165 254.624);
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  p {
+    @apply text-sm;
+  }
+}
+
+.actions-primary {
+  box-shadow: inset 0 8px 16px 0 hsla(0, 0%, 100%, 0.16), inset 0 1px 0 0
+    hsla(0, 7%, 3%, 0.1), 0 1px 2px 0.05px hsla(240, 6%, 10%, 0.24);
+}
+
+.actions-secondary {
+  box-shadow:
+    inset 0 8px 16px 0 hsla(0, 0%, 100%, 0.02),
+    inset 0 -4px 8px 0 hsla(0, 0%, 0%, 0.02),
+    inset 0 2px 0 0 hsla(0, 0%, 0%, 0.02),
+    0 1px 0.5px 0.05px hsla(240, 6%, 10%, 0.05);
+}
+
+.custom-edge {
+  @apply absolute;
+  padding: 0.15rem 0.35rem;
+  font-size: 0.80rem;
+  font-weight: 500;
+}
+
+.edge-true {
+  @apply bg-green-100 text-green-700 border border-green-200 rounded-md;
+}
+
+.edge-false {
+  @apply bg-red-100 text-red-700 border border-red-200 rounded-md;
+}

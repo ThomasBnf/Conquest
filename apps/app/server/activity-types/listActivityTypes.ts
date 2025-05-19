@@ -1,5 +1,5 @@
 import { protectedProcedure } from "@/server/trpc";
-import { listActivityTypes as _listActivityTypes } from "@conquest/clickhouse/activity-types/listActivityTypes";
+import { listActivityTypes as _listActivityTypes } from "@conquest/clickhouse/activity-type/listActivityTypes";
 
 export const listActivityTypes = protectedProcedure.query(
   async ({ ctx: { user } }) => {

@@ -21,9 +21,12 @@ type Props = {
 };
 
 export const UserProvider = ({ initialUser, children }: Props) => {
-  const { data: user, isLoading } = trpc.users.get.useQuery(undefined, {
-    initialData: initialUser,
-  });
+  const { data: user, isLoading } = trpc.users.getCurrentUser.useQuery(
+    undefined,
+    {
+      initialData: initialUser,
+    },
+  );
 
   const { data: workspace } = trpc.workspaces.get.useQuery(undefined, {
     initialData: initialUser.workspace,

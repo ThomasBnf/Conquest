@@ -8,12 +8,14 @@ type Props = {
   defaultValue: string | null;
   placeholder?: string;
   onUpdate: (value: string) => void;
+  copyable?: boolean;
 };
 
 export const EditableInput = ({
   defaultValue,
   placeholder,
   onUpdate,
+  copyable = true,
 }: Props) => {
   const [value, setValue] = useState(defaultValue);
   const [isFocus, setIsFocus] = useState(false);
@@ -58,7 +60,7 @@ export const EditableInput = ({
         >
           {value === "" || value === null ? placeholder : value}
         </Button>
-        {isHover && !isFocus && value && (
+        {isHover && !isFocus && value && copyable && (
           <CopyButton value={value} className="absolute right-1 z-10" />
         )}
       </div>

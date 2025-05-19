@@ -1,5 +1,5 @@
 import { FormActivityTypeSchema } from "@/features/activities-types/schema/form.schema";
-import { createActivityType as _createActivityType } from "@conquest/clickhouse/activity-types/createActivityType";
+import { createActivityType as _createActivityType } from "@conquest/clickhouse/activity-type/createActivityType";
 import { protectedProcedure } from "../trpc";
 
 export const createActivityType = protectedProcedure

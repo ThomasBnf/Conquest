@@ -1,7 +1,7 @@
-import { createActivity } from "@conquest/clickhouse/activities/createActivity";
-import { deleteActivity } from "@conquest/clickhouse/activities/deleteActivity";
-import { getActivity } from "@conquest/clickhouse/activities/getActivity";
-import { updateActivity } from "@conquest/clickhouse/activities/updateActivity";
+import { createActivity } from "@conquest/clickhouse/activity/createActivity";
+import { deleteActivity } from "@conquest/clickhouse/activity/deleteActivity";
+import { getActivity } from "@conquest/clickhouse/activity/getActivity";
+import { updateActivity } from "@conquest/clickhouse/activity/updateActivity";
 import { prisma } from "@conquest/db/prisma";
 import { env } from "@conquest/env";
 import { createGithubMember } from "@conquest/trigger/github/createGithubMember";

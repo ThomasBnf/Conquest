@@ -24,7 +24,7 @@ export const useUpdateTag = ({ tag }: Props) => {
 
       return { previousTags };
     },
-    onError: (error, variables, context) => {
+    onError: (_, __, context) => {
       if (context) {
         utils.tags.list.setData(undefined, context.previousTags);
       }

@@ -1,6 +1,6 @@
-import { createManyActivityTypes } from "@conquest/clickhouse/activity-types/createManyActivityTypes";
-import { listActivityTypes } from "@conquest/clickhouse/activity-types/listActivityTypes";
-import { createChannel } from "@conquest/clickhouse/channels/createChannel";
+import { createManyActivityTypes } from "@conquest/clickhouse/activity-type/createManyActivityTypes";
+import { listActivityTypes } from "@conquest/clickhouse/activity-type/listActivityTypes";
+import { createChannel } from "@conquest/clickhouse/channel/createChannel";
 import { DISCOURSE_ACTIVITY_TYPES } from "@conquest/db/constant";
 import { prisma } from "@conquest/db/prisma";
 import { Channel, ChannelSchema } from "@conquest/zod/schemas/channel.schema";

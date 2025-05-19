@@ -1,10 +1,10 @@
 import { getAuthenticatedUser } from "@/utils/getAuthenticatedUser";
 import { sleep } from "@/utils/sleep";
-import { getActivity } from "@conquest/clickhouse/activities/getActivity";
-import { getActivityTypeByKey } from "@conquest/clickhouse/activity-types/getActivityTypeByKey";
-import { getChannel } from "@conquest/clickhouse/channels/getChannel";
+import { getActivityTypeByKey } from "@conquest/clickhouse/activity-type/getActivityTypeByKey";
+import { getActivity } from "@conquest/clickhouse/activity/getActivity";
+import { getChannel } from "@conquest/clickhouse/channel/getChannel";
 import { client } from "@conquest/clickhouse/client";
-import { getMember } from "@conquest/clickhouse/members/getMember";
+import { getMember } from "@conquest/clickhouse/member/getMember";
 import { getEvent } from "@conquest/db/events/getEvent";
 import { ActivitySchema } from "@conquest/zod/schemas/activity.schema";
 import { createZodRoute } from "next-zod-route";

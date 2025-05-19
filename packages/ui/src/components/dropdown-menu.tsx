@@ -7,7 +7,7 @@ import {
   DotFilledIcon,
 } from "@radix-ui/react-icons";
 import * as React from "react";
-import { cn } from "../utils/cn";
+import { cn } from "../lib/utils";
 
 const DropdownMenu = DropdownMenuPrimitive.Root;
 
@@ -166,7 +166,7 @@ const DropdownMenuSeparator = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <DropdownMenuPrimitive.Separator
     ref={ref}
-    className={cn("-mx-1 my-1 h-px bg-muted", className)}
+    className={cn("-mx-1 my-1 h-px bg-border", className)}
     {...props}
   />
 ));

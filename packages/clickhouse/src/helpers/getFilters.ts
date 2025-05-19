@@ -328,9 +328,11 @@ export const getFilters = ({ groupFilters }: Props) => {
       const dateCondition = displayDate
         ? `AND a.createdAt >= now() - INTERVAL ${dynamicDate}`
         : "";
-      const channelCondition = displayChannel
-        ? `AND a.channelId IN (${channelIds})`
-        : "";
+
+      const channelCondition =
+        displayChannel && channelIds.length > 0
+          ? `AND a.channelId IN (${channelIds})`
+          : "";
 
       const subquery = `
         SELECT memberId

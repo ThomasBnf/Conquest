@@ -26,7 +26,7 @@ import { Label } from "@conquest/ui/label";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
 import { useSession } from "next-auth/react";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { type FormList, FormListSchema } from "./schemas/form-create.schema";
 
@@ -37,8 +37,6 @@ export const CreateListDialog = () => {
   const { open, setOpen } = useOpenList();
 
   const router = useRouter();
-  const pathname = usePathname();
-  const isListPage = pathname.includes("lists");
   const utils = trpc.useUtils();
 
   const { mutateAsync, isPending } = trpc.lists.post.useMutation({
@@ -66,6 +64,8 @@ export const CreateListDialog = () => {
   const onSubmit = async ({ emoji, name }: FormList) => {
     await mutateAsync({ emoji, name, groupFilters });
   };
+
+  const onSaveFilters = () => {};
 
   if (open) {
     return (

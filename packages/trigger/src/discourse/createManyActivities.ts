@@ -1,7 +1,7 @@
-import { createActivity } from "@conquest/clickhouse/activities/createActivity";
-import { getActivity } from "@conquest/clickhouse/activities/getActivity";
-import { upsertActivity } from "@conquest/clickhouse/activities/upsertActivity";
-import { getChannel } from "@conquest/clickhouse/channels/getChannel";
+import { createActivity } from "@conquest/clickhouse/activity/createActivity";
+import { getActivity } from "@conquest/clickhouse/activity/getActivity";
+import { upsertActivity } from "@conquest/clickhouse/activity/upsertActivity";
+import { getChannel } from "@conquest/clickhouse/channel/getChannel";
 import type { DiscourseProfile } from "@conquest/zod/schemas/profile.schema";
 import { startOfDay, subDays } from "date-fns";
 import type DiscourseAPI from "discourse2";

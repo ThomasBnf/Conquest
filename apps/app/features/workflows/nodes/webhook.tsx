@@ -1,4 +1,3 @@
-import { useSelected } from "@/features/workflows/hooks/useSelected";
 import {
   Form,
   FormControl,
@@ -13,18 +12,18 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useReactFlow } from "@xyflow/react";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { useDebouncedCallback } from "use-debounce";
 import { VariablePicker } from "../components/variable-picker";
+import { usePanel } from "../hooks/usePanel";
 import {
   type FormWebhook,
   FormWebhookSchema,
 } from "./schemas/form-webhook.schema";
 
 export const Webhook = () => {
-  const { selected } = useSelected();
-  const { setNodes } = useReactFlow();
+  const { node } = usePanel();
+  const { updateNodeData } = useReactFlow();
 
-  const { url, body } = NodeWebhookSchema.parse(selected?.data);
+  const { url, body } = NodeWebhookSchema.parse(node?.data);
 
   const form = useForm<FormWebhook>({
     resolver: zodResolver(FormWebhookSchema),
@@ -34,42 +33,50 @@ export const Webhook = () => {
     },
   });
 
-  const onSubmit = ({ url, body }: FormWebhook) => {
-    if (!selected) return;
+  const onChangeUrl = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!node) return;
 
-    setNodes((nodes) =>
-      nodes.map((node) =>
-        node.id === selected.id
-          ? { ...node, data: { ...node.data, url, body } }
-          : node,
-      ),
-    );
+    form.setValue("url", e.target.value);
+
+    updateNodeData(node?.id, {
+      ...node.data,
+      url: e.target.value,
+    });
   };
 
-  const debouncedSubmit = useDebouncedCallback(
-    (newBody: string) => onSubmit({ url, body: newBody }),
-    500,
-  );
+  const onChangeBody = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    if (!node) return;
+
+    form.setValue("body", e.target.value);
+
+    updateNodeData(node?.id, {
+      ...node.data,
+      body: e.target.value,
+    });
+  };
 
   const onSetVariable = (variable: string) => {
-    const newBody = (body ?? "") + variable;
+    if (!node) return;
+
+    const currentBody = form.getValues("body");
+    const newBody = currentBody + variable;
 
     form.setValue("body", newBody);
-    onSubmit({ url, body: newBody });
+    updateNodeData(node?.id, {
+      ...node.data,
+      body: newBody,
+    });
   };
 
   useEffect(() => {
-    if (selected) {
-      const { url, body } = NodeWebhookSchema.parse(selected.data);
+    if (!node) return;
 
-      form.setValue("url", url);
-      form.setValue("body", body);
-    }
-  }, [selected]);
+    form.reset({ url, body });
+  }, [node]);
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+      <form className="space-y-4">
         <FormField
           control={form.control}
           name="url"
@@ -80,12 +87,7 @@ export const Webhook = () => {
                 <Input
                   {...field}
                   placeholder="Webhook URL"
-                  onBlur={(e) => {
-                    form.setValue("url", e.target.value);
-                    if (e.target.value !== "") {
-                      onSubmit({ url: e.target.value, body });
-                    }
-                  }}
+                  onChange={onChangeUrl}
                 />
               </FormControl>
             </FormItem>
@@ -102,10 +104,7 @@ export const Webhook = () => {
                   <TextField
                     {...field}
                     placeholder="Body"
-                    onChange={(e) => {
-                      form.setValue("body", e.target.value);
-                      debouncedSubmit(e.target.value);
-                    }}
+                    onChange={onChangeBody}
                   />
                 </FormControl>
               </FormItem>

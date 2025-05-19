@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { useImperativeHandle } from "react";
-import { cn } from "../utils/cn";
+import { cn } from "../lib/utils";
 import { Textarea } from "./textarea";
 
 interface UseAutosizeTextAreaProps {

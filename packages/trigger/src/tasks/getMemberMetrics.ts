@@ -1,8 +1,8 @@
-import { listActivities } from "@conquest/clickhouse/activities/listActivities";
+import { listActivities } from "@conquest/clickhouse/activity/listActivities";
 import { getLevel } from "@conquest/clickhouse/helpers/getLevel";
 import { getPulseScore } from "@conquest/clickhouse/helpers/getPulseScore";
-import { createManyLogs } from "@conquest/clickhouse/logs/createManyLogs";
-import { updateMember } from "@conquest/clickhouse/members/updateMember";
+import { createManyLogs } from "@conquest/clickhouse/log/createManyLogs";
+import { updateMember } from "@conquest/clickhouse/member/updateMember";
 import { LevelSchema } from "@conquest/zod/schemas/level.schema";
 import type { Log } from "@conquest/zod/schemas/logs.schema";
 import { MemberSchema } from "@conquest/zod/schemas/member.schema";

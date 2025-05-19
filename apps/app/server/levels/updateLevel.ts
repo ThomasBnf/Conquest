@@ -1,5 +1,5 @@
 import { FormLevelSchema } from "@/features/levels/schema/form.schema";
-import { updateLevel as _updateLevel } from "@conquest/clickhouse/levels/updateLevel";
+import { updateLevel as _updateLevel } from "@conquest/clickhouse/level/updateLevel";
 import { z } from "zod";
 import { protectedProcedure } from "../trpc";
 

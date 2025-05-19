@@ -20,7 +20,7 @@ import { toast } from "sonner";
 import { FormUserSchema } from "./schema/form.schema";
 
 export const FormUser = () => {
-  const { data: user } = trpc.users.get.useQuery();
+  const { data: user } = trpc.users.getCurrentUser.useQuery();
   const [loading, setLoading] = useState(false);
 
   const { mutateAsync } = trpc.users.update.useMutation({

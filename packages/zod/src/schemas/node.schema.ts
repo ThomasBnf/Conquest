@@ -1,15 +1,11 @@
 import { z } from "zod";
-import { FilterSchema } from "./filters.schema";
+import { GroupFiltersSchema } from "./filters.schema";
 
-export const FrequencySchema = z.enum(["daily", "weekly"]);
-export const RepeatOnSchema = z.enum([
-  "monday",
-  "tuesday",
-  "wednesday",
-  "thursday",
-  "friday",
-  "saturday",
-  "sunday",
+export const TriggerSchema = z.enum([
+  "member-created",
+  "level-up",
+  "at-risk-member",
+  "potential-ambassador",
 ]);
 
 // NODES
@@ -36,81 +32,74 @@ export const NodeMemberCreatedSchema = NodeBaseDataSchema.extend({
   isTrigger: z.boolean().default(true),
 });
 
-export const NodeRecurringSchema = NodeBaseDataSchema.extend({
-  type: z.literal("recurring-workflow"),
-  frequency: FrequencySchema,
-  repeat_on: z.array(RepeatOnSchema),
-  time: z.string().regex(/^([01]?[0-9]|2[0-3]):[0-5][0-9]$/, {
-    message: "Provide a valid time in the format HH:MM",
-  }),
+export const NodeLevelUpSchema = NodeBaseDataSchema.extend({
+  type: z.literal("level-up"),
   isTrigger: z.boolean().default(true),
 });
 
-export const NodeManualRunSchema = NodeBaseDataSchema.extend({
-  type: z.literal("manual-run"),
+export const NodeLevelDownSchema = NodeBaseDataSchema.extend({
+  type: z.literal("level-down"),
   isTrigger: z.boolean().default(true),
 });
 
-export const NodeListMembersSchema = NodeBaseDataSchema.extend({
-  type: z.literal("list-members"),
-  category: z.literal("records"),
-  filters: z.array(FilterSchema),
+export const NodeAtRiskSchema = NodeBaseDataSchema.extend({
+  type: z.literal("at-risk-member"),
+  isTrigger: z.boolean().default(true),
+});
+
+export const NodeAmbassadorSchema = NodeBaseDataSchema.extend({
+  type: z.literal("potential-ambassador"),
+  isTrigger: z.boolean().default(true),
+});
+
+// ACTIONS
+
+export const NodeIfElseSchema = NodeBaseDataSchema.extend({
+  type: z.literal("if-else"),
+  groupFilters: GroupFiltersSchema,
+});
+
+export const NodeSlackMessageSchema = NodeBaseDataSchema.extend({
+  type: z.literal("slack-message"),
+  message: z.string(),
+});
+
+export const NodeTaskSchema = NodeBaseDataSchema.extend({
+  type: z.literal("task"),
+  title: z.string(),
+  days: z.number(),
+  assignee: z.string(),
 });
 
 export const NodeTagMemberSchema = NodeBaseDataSchema.extend({
   type: z.enum(["add-tag", "remove-tag"]),
-  category: z.literal("mutations"),
   tags: z.array(z.string()),
-});
-
-export const NodeSlackMessage = NodeBaseDataSchema.extend({
-  type: z.literal("slack-message"),
-  category: z.literal("communications"),
-  message: z.string(),
 });
 
 export const NodeWaitSchema = NodeBaseDataSchema.extend({
   type: z.literal("wait"),
-  category: z.literal("utilities"),
   duration: z.coerce.number(),
   unit: z.enum(["seconds", "minutes", "hours", "days"]),
 });
 
 export const NodeWebhookSchema = NodeBaseDataSchema.extend({
   type: z.literal("webhook"),
-  category: z.literal("utilities"),
   url: z.string().url().optional(),
   body: z.string().optional(),
 });
 
-export const NodeDataLoopSchema = NodeBaseDataSchema.extend({
-  type: z.literal("loop"),
-  category: z.literal("utilities"),
-  sub_nodes: z.array(
-    z.discriminatedUnion("type", [
-      NodeListMembersSchema,
-      NodeTagMemberSchema,
-      NodeSlackMessage,
-      NodeWaitSchema,
-      NodeWebhookSchema,
-    ]),
-  ),
-});
-
-export const NodeLoopSchema = NodeBaseSchema.extend({
-  data: NodeDataLoopSchema,
-});
-
 export const NodeDataSchema = z.discriminatedUnion("type", [
   NodeMemberCreatedSchema,
-  NodeRecurringSchema,
-  NodeManualRunSchema,
-  NodeListMembersSchema,
+  NodeLevelUpSchema,
+  NodeLevelDownSchema,
+  NodeAtRiskSchema,
+  NodeAmbassadorSchema,
+  NodeIfElseSchema,
+  NodeSlackMessageSchema,
   NodeTagMemberSchema,
-  NodeSlackMessage,
+  NodeTaskSchema,
   NodeWaitSchema,
   NodeWebhookSchema,
-  NodeDataLoopSchema,
 ]);
 
 export const NodeSchema = NodeBaseSchema.extend({
@@ -119,15 +108,17 @@ export const NodeSchema = NodeBaseSchema.extend({
 
 export type Node = z.infer<typeof NodeSchema>;
 export type NodeData = z.infer<typeof NodeDataSchema>;
-export type Frequency = z.infer<typeof FrequencySchema>;
-export type RepeatOn = z.infer<typeof RepeatOnSchema>;
 
 export type NodeMemberCreated = z.infer<typeof NodeMemberCreatedSchema>;
-export type NodeRecurring = z.infer<typeof NodeRecurringSchema>;
-export type NodeManualRun = z.infer<typeof NodeManualRunSchema>;
-export type NodeListMembers = z.infer<typeof NodeListMembersSchema>;
+export type NodeLevelUp = z.infer<typeof NodeLevelUpSchema>;
+export type NodeLevelDown = z.infer<typeof NodeLevelDownSchema>;
+export type NodeAtRisk = z.infer<typeof NodeAtRiskSchema>;
+export type NodeAmbassador = z.infer<typeof NodeAmbassadorSchema>;
+export type Trigger = z.infer<typeof TriggerSchema>;
+
+export type NodeIfElse = z.infer<typeof NodeIfElseSchema>;
+export type NodeSlackMessage = z.infer<typeof NodeSlackMessageSchema>;
 export type NodeTagMember = z.infer<typeof NodeTagMemberSchema>;
-export type NodeSlackMessage = z.infer<typeof NodeSlackMessage>;
+export type NodeTask = z.infer<typeof NodeTaskSchema>;
 export type NodeWait = z.infer<typeof NodeWaitSchema>;
 export type NodeWebhook = z.infer<typeof NodeWebhookSchema>;
-export type NodeLoop = z.infer<typeof NodeLoopSchema>;

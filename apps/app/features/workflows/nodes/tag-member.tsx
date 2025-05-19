@@ -1,104 +1,39 @@
-import { TagBadge } from "@/features/tags/tag-badge";
-import { useSelected } from "@/features/workflows/hooks/useSelected";
-import { trpc } from "@/server/client";
-import { Button } from "@conquest/ui/button";
-import { Checkbox } from "@conquest/ui/checkbox";
+import { TagPicker } from "@/features/tags/tag-picker";
 import { Label } from "@conquest/ui/label";
-import {
-  Popover,
-  PopoverContent,
-  PopoverItem,
-  PopoverTrigger,
-} from "@conquest/ui/popover";
-import { Skeleton } from "@conquest/ui/skeleton";
 import { NodeTagMemberSchema } from "@conquest/zod/schemas/node.schema";
-import type { Tag } from "@conquest/zod/schemas/tag.schema";
 import { useReactFlow } from "@xyflow/react";
-import { Plus, TagIcon } from "lucide-react";
-import { useEffect, useState } from "react";
+import { usePanel } from "../hooks/usePanel";
 
 export const TagMember = () => {
-  const { selected } = useSelected();
+  const { node, setPanel } = usePanel();
   const { updateNodeData } = useReactFlow();
-  const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
-  const { data: tags, isLoading } = trpc.tags.list.useQuery();
+  const parsedData = NodeTagMemberSchema.parse(node?.data);
 
-  const parsedData = NodeTagMemberSchema.parse(selected?.data);
+  const onSelectTag = (tags: string[]) => {
+    if (!node) return;
 
-  useEffect(() => {
-    if (selected) {
-      setSelectedTags(parsedData.tags);
-    }
-  }, [selected]);
+    const updatedNode = {
+      ...node,
+      data: {
+        ...parsedData,
+        tags,
+      },
+    };
 
-  const handleSelectTag = (tag: Tag) => {
-    if (!selected) return;
-
-    const updatedTags = selectedTags.includes(tag.id)
-      ? selectedTags.filter((selectedTag) => selectedTag !== tag.id)
-      : [...selectedTags, tag.id];
-
-    setSelectedTags(updatedTags);
-
-    updateNodeData(selected.id, {
-      ...parsedData,
-      tags: updatedTags,
-    });
+    setPanel({ panel: "node", node: updatedNode });
+    updateNodeData(node.id, updatedNode.data);
   };
 
   return (
-    <div className="flex flex-col gap-1.5">
+    <div className="space-y-1">
       <Label>Tags</Label>
-      <Popover>
-        <PopoverTrigger asChild>
-          <div className="flex flex-wrap items-center gap-1 rounded-md border px-2 py-[0.4375rem]">
-            {selectedTags.map((tagId) => {
-              const tag = tags?.find((t) => t.id === tagId);
-              return tag ? <TagBadge key={tagId} tag={tag} /> : null;
-            })}
-            {isLoading ? (
-              <Skeleton className="h-6 w-28" />
-            ) : (
-              <Button
-                variant="ghost"
-                size="xs"
-                className="text-muted-foreground"
-              >
-                {selectedTags.length === 0 ? (
-                  <TagIcon size={14} />
-                ) : (
-                  <Plus size={14} />
-                )}
-                {selectedTags.length === 0 ? "Select tags" : ""}
-              </Button>
-            )}
-          </div>
-        </PopoverTrigger>
-        <PopoverContent
-          onOpenAutoFocus={(e) => e.preventDefault()}
-          className="w-52"
-          align="start"
-        >
-          {!isLoading && tags?.length === 0 && (
-            <p className="text-muted-foreground text-sm">No tags found</p>
-          )}
-          {isLoading ? (
-            <Skeleton className="h-5 w-full" />
-          ) : (
-            tags?.map((tag) => (
-              <PopoverItem key={tag.id} onClick={() => handleSelectTag(tag)}>
-                <Checkbox checked={selectedTags.includes(tag.id)} />
-                <div
-                  className="size-3 shrink-0 rounded-full"
-                  style={{ backgroundColor: tag.color }}
-                />
-                <p className="truncate">{tag.name}</p>
-              </PopoverItem>
-            ))
-          )}
-        </PopoverContent>
-      </Popover>
+      <TagPicker
+        tags={parsedData.tags}
+        onUpdate={onSelectTag}
+        variant="outline"
+        className="h-9"
+      />
     </div>
   );
 };

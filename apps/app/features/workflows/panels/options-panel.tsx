@@ -1,35 +1,48 @@
+import { Icon } from "@/components/custom/Icon";
+import { Button } from "@conquest/ui/button";
+import { Slack } from "@conquest/ui/icons/Slack";
+import { ScrollArea } from "@conquest/ui/scroll-area";
+import { Separator } from "@conquest/ui/separator";
+import type { Workflow } from "@conquest/zod/schemas/workflow.schema";
 import { useReactFlow } from "@xyflow/react";
-import { toast } from "sonner";
+import { RefreshCcw, Trash2, type icons } from "lucide-react";
+import { Description } from "../components/description";
+import { NextNode } from "../components/next-node";
 import { usePanel } from "../hooks/usePanel";
-import { useSelected } from "../hooks/useSelected";
+import { IfElse } from "../nodes/if-else";
+import { SlackMessage } from "../nodes/slack-message";
+import { TagMember } from "../nodes/tag-member";
+import { Task } from "../nodes/task";
+import { Wait } from "../nodes/wait";
+import { Webhook } from "../nodes/webhook";
+import { ActionPanel } from "./action-panel";
+import { TriggerPanel } from "./trigger-panel";
 
-export const OptionsPanel = () => {
-  const { panel, setPanel } = usePanel();
-  const { selected, setSelected } = useSelected();
-  const { getEdges, deleteElements } = useReactFlow();
+type Props = {
+  workflow: Workflow;
+};
 
-  if (!selected) return;
+export const OptionsPanel = ({ workflow }: Props) => {
+  const { panel, node, setPanel } = usePanel();
+  const { deleteElements } = useReactFlow();
 
-  const { type, icon, label } = selected.data;
-  const isTrigger = "isTrigger" in selected.data;
+  if (!node) return;
 
-  const onDelete = async () => {
+  const { type, icon, label } = node.data;
+  const isTrigger = "isTrigger" in node.data;
+
+  const onDelete = () => {
+    if (!node) return;
+
     deleteElements({
-      nodes: [{ id: selected.id }],
-      edges: getEdges().filter(
-        (edge) => edge.source === selected.id || edge.target === selected.id,
-      ),
+      nodes: [node],
     });
-
-    setSelected(undefined);
-    toast.success("Node deleted");
-    return;
   };
 
   return (
-    <div className="flex h-full flex-col">
-      {/* {panel === "actions" && <ActionPanel />}
-      {panel === "triggers" && <TriggerPanel />}
+    <>
+      {panel === "actions" && <ActionPanel />}
+      {panel === "triggers" && <TriggerPanel workflow={workflow} />}
       {panel === "node" && (
         <ScrollArea className="flex-1">
           <div className="flex flex-col gap-4 p-4">
@@ -46,35 +59,45 @@ export const OptionsPanel = () => {
                 )}
                 <p className="font-medium text-sm">{label}</p>
               </div>
-              <Button
-                variant="outline"
-                onClick={() => {
-                  setPanel(isTrigger ? "triggers" : "actions-change");
-                }}
-              >
-                Change
-              </Button>
+              <div className="space-x-2">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={() => {
+                    setPanel({
+                      panel: isTrigger ? "triggers" : "actions-change",
+                      node: node,
+                    });
+                  }}
+                >
+                  <RefreshCcw size={16} />
+                </Button>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={() => {
+                    onDelete();
+                    setPanel({ node: undefined, panel: "workflow" });
+                  }}
+                >
+                  <Trash2 size={16} className="text-destructive" />
+                </Button>
+              </div>
             </div>
-            <Description id={selected.id} />
-            {type === "webhook" && <Webhook />}
+            <Description id={node.id} />
+            {!isTrigger && <Separator />}
+            {type === "if-else" && <IfElse />}
+            {type === "slack-message" && <SlackMessage />}
             {type === "add-tag" && <TagMember />}
             {type === "remove-tag" && <TagMember />}
-            {type === "slack-message" && <SlackMessage />}
+            {type === "task" && <Task />}
             {type === "wait" && <Wait />}
+            {type === "webhook" && <Webhook />}
             <Separator />
-            <NextStep />
+            <NextNode />
           </div>
         </ScrollArea>
-      )} */}
-      {/* {panel === "node" && !isTrigger && (
-        <div className="flex shrink-0 justify-end p-4">
-          <DeleteDialog
-            title="Delete Workflow"
-            description="Are you sure you want to delete this workflow?"
-            onConfirm={onDelete}
-          />
-        </div>
-      )} */}
-    </div>
+      )}
+    </>
   );
 };

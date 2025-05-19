@@ -1,3 +1,4 @@
+import { trpc } from "@/server/client";
 import {
   Form,
   FormControl,
@@ -8,47 +9,64 @@ import {
 } from "@conquest/ui/form";
 import { Input } from "@conquest/ui/input";
 import { TextField } from "@conquest/ui/text-field";
+import { Workflow } from "@conquest/zod/schemas/workflow.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { usePathname } from "next/navigation";
-import { useEffect } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import {
   type FormWorkflow,
   FormWorkflowSchema,
 } from "./schemas/form-workflow.schema";
 
-export const WorkflowPanel = () => {
-  const pathname = usePathname();
-  const id = pathname.split("/").at(-1) as string;
-  const queryClient = useQueryClient();
+type Props = {
+  workflow: Workflow;
+};
 
-  // const { data: workflow } = getWorkflow({ workflow_id: id });
+export const WorkflowPanel = ({ workflow }: Props) => {
+  const { id, name, description } = workflow;
+  const utils = trpc.useUtils();
 
   const form = useForm<FormWorkflow>({
     resolver: zodResolver(FormWorkflowSchema),
-    // defaultValues: {
-    //   name: workflow?.name ?? "",
-    //   description: workflow?.description ?? "",
-    // },
+    defaultValues: {
+      name,
+      description,
+    },
   });
 
-  // const { mutate } = useMutation({
-  //   mutationFn: updateWorkflow,
-  //   onSuccess: () => {
-  //     queryClient.refetchQueries({ queryKey: ["workflow", id] });
-  //   },
-  // });
+  const { mutateAsync } = trpc.workflows.update.useMutation({
+    onMutate: async () => {
+      await utils.workflows.get.cancel();
 
-  const onSubmit = async ({ name, description }: FormWorkflow) => {
-    // if (!workflow?.id) return;
-    // mutate({ id: workflow.id, name, description });
+      const previousWorkflow = utils.workflows.get.getData({ id });
+
+      utils.workflows.get.setData({ id }, (old) => {
+        if (!old) return undefined;
+        return {
+          ...old,
+          name: form.getValues().name,
+          description: form.getValues().description ?? "",
+        };
+      });
+
+      return { previousWorkflow };
+    },
+    onError: (error, __, context) => {
+      utils.workflows.get.setData({ id }, context?.previousWorkflow);
+      toast.error(error.message);
+    },
+    onSettled: () => {
+      utils.workflows.get.invalidate({ id });
+    },
+  });
+
+  const onSubmit = ({ name, description }: FormWorkflow) => {
+    mutateAsync({
+      ...workflow,
+      name,
+      description: description ?? "",
+    });
   };
-
-  // useEffect(() => {
-  //   form.setValue("name", workflow?.name ?? "");
-  //   form.setValue("description", workflow?.description ?? "");
-  // }, [workflow]);
 
   return (
     <>

@@ -9,6 +9,7 @@ import { Documentation } from "@conquest/ui/icons/Documentation";
 import { Members } from "@conquest/ui/icons/Members";
 import { Settings } from "@conquest/ui/icons/Settings";
 import { SlackCommunity } from "@conquest/ui/icons/Slack-Community";
+import { Tasks } from "@conquest/ui/icons/Tasks";
 import { Workflows } from "@conquest/ui/icons/Workflows";
 import { Separator } from "@conquest/ui/separator";
 import {
@@ -50,6 +51,12 @@ export const AppSidebar = ({ workspace }: Props) => {
       isActive: pathname === `/${slug}`,
     },
     {
+      label: "Tasks",
+      icon: <Tasks size={18} />,
+      href: `/${slug}/tasks`,
+      isActive: pathname.startsWith(`/${slug}/tasks`),
+    },
+    {
       label: "Members",
       icon: <Members size={18} />,
       href: `/${slug}/members`,
@@ -66,7 +73,7 @@ export const AppSidebar = ({ workspace }: Props) => {
       icon: <Workflows size={18} />,
       href: `/${slug}/workflows`,
       isActive: pathname.startsWith(`/${slug}/workflows`),
-      soon: true,
+      isBeta: true,
     },
   ];
 
@@ -105,12 +112,13 @@ export const AppSidebar = ({ workspace }: Props) => {
                   asChild
                   tooltip={route.label}
                   isActive={route.isActive}
-                  className={cn(route.soon && "cursor-default opacity-50")}
+                  disabled={route.isBeta}
+                  className={cn(route.isBeta && "opacity-50")}
                 >
-                  <Link href={route.soon ? "" : route.href} prefetch>
+                  <Link href={route.isBeta ? "" : route.href} prefetch>
                     {route.icon}
                     <span>{route.label}</span>
-                    {route.soon && <Badge variant="secondary">Soon</Badge>}
+                    {route.isBeta && <Badge variant="secondary">Beta</Badge>}
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>

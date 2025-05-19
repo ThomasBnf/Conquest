@@ -1,16 +1,29 @@
-import { BaseEdge, type EdgeProps, getSmoothStepPath } from "@xyflow/react";
+import {
+  BaseEdge,
+  EdgeLabelRenderer,
+  type EdgeProps,
+  getSmoothStepPath,
+} from "@xyflow/react";
 
 export const CustomEdge = (props: EdgeProps) => {
-  const [edgePath] = getSmoothStepPath(props);
+  const [edgePath, labelX, labelY] = getSmoothStepPath(props);
+  const condition = props.data?.condition;
 
   return (
-    <BaseEdge
-      path={edgePath}
-      style={{
-        strokeWidth: 3,
-        stroke: props.selected ? "hsl(257 80% 32%)" : "hsl(240 3% 50%)",
-      }}
-      {...props}
-    />
+    <>
+      <BaseEdge path={edgePath} />
+      {condition && (
+        <EdgeLabelRenderer>
+          <div
+            style={{
+              transform: `translate(-50%, -50%) translate(${labelX}px,${labelY}px)`,
+            }}
+            className={`custom-edge edge-${condition} nodrag nopan`}
+          >
+            {props.label}
+          </div>
+        </EdgeLabelRenderer>
+      )}
+    </>
   );
 };

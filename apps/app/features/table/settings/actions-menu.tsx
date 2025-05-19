@@ -28,7 +28,8 @@ export const ActionsMenu = <TData extends Member | Company>({
   const { mutateAsync: deleteMembers } =
     trpc.members.deleteManyMembers.useMutation({
       onSuccess: () => {
-        utils.members.invalidate();
+        utils.members.list.invalidate();
+        utils.members.count.invalidate();
         toast.success(`${selectedRows.length} members deleted`);
         onReset();
       },
@@ -37,7 +38,8 @@ export const ActionsMenu = <TData extends Member | Company>({
   const { mutateAsync: deleteCompanies } =
     trpc.companies.deleteManyCompanies.useMutation({
       onSuccess: () => {
-        utils.companies.invalidate();
+        utils.companies.list.invalidate();
+        utils.companies.count.invalidate();
         toast.success(`${selectedRows.length} companies deleted`);
         onReset();
       },

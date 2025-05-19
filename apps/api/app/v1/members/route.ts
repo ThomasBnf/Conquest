@@ -1,7 +1,7 @@
 import { getAuthenticatedUser } from "@/utils/getAuthenticatedUser";
 import { sleep } from "@/utils/sleep";
 import { client } from "@conquest/clickhouse/client";
-import { getMember } from "@conquest/clickhouse/members/getMember";
+import { getMember } from "@conquest/clickhouse/member/getMember";
 import { MemberSchema } from "@conquest/zod/schemas/member.schema";
 import { createZodRoute } from "next-zod-route";
 import { NextResponse } from "next/server";

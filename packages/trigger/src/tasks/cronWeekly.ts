@@ -1,5 +1,5 @@
 import { client } from "@conquest/clickhouse/client";
-import { listMembers } from "@conquest/clickhouse/members/listMembers";
+import { listMembers } from "@conquest/clickhouse/member/listMembers";
 import { listWorkspaces } from "@conquest/db/workspaces/listWorkspaces";
 import { logger, schedules } from "@trigger.dev/sdk/v3";
 import { batchWeeklyLog } from "./batchWeeklyLog";
