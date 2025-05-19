@@ -1,5 +1,6 @@
 import { protectedProcedure } from "@/server/trpc";
 import { client } from "@conquest/clickhouse/client";
+import { prisma } from "@conquest/db/prisma";
 import { TaskSchema } from "@conquest/zod/schemas/task.schema";
 import { z } from "zod";
 
@@ -10,14 +11,10 @@ export const updateTask = protectedProcedure
     }),
   )
   .mutation(async ({ input }) => {
-    return await client.insert({
-      table: "task",
-      values: [
-        {
-          ...input,
-          updatedAt: new Date(),
-        },
-      ],
-      format: "JSON",
+    await prisma.task.update({
+      where: {
+        id: input.id,
+      },
+      data: input,
     });
   });

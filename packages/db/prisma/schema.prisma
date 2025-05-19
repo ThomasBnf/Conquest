@@ -183,6 +183,22 @@ model Tag {
     @@index([workspaceId])
 }
 
+model Task {
+    id          String    @id @default(uuid())
+    title       String
+    dueDate     DateTime?
+    assignee    String?
+    isCompleted Boolean   @default(false)
+    memberId    String?
+    workspaceId String
+    workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@index([workspaceId])
+}
+
 model User {
     id                   String    @id @default(cuid())
     email                String    @unique
@@ -281,6 +297,7 @@ model Workspace {
     integrations     Integration[]
     lists            List[]
     tags             Tag[]
+    tasks            Task[]
     users            User[]
     workflows        Workflow[]
     duplicates       Duplicate[]

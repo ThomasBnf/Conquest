@@ -1,12 +1,10 @@
 import { Task } from "@conquest/zod/schemas/task.schema";
-import { client } from "../client";
+import { prisma } from "../prisma";
 
 type Props = Task;
 
 export const createTask = async (props: Props) => {
-  await client.insert({
-    table: "task",
-    values: [props],
-    format: "JSON",
+  await prisma.task.create({
+    data: props,
   });
 };

@@ -1,4 +1,4 @@
-import { createTask } from "@conquest/clickhouse/task/createTask";
+import { createTask } from "@conquest/db/task/createTask";
 import { MemberWithLevel } from "@conquest/zod/schemas/member.schema";
 import { NodeTask } from "@conquest/zod/schemas/node.schema";
 import { Task } from "@conquest/zod/schemas/task.schema";

@@ -1,5 +1,5 @@
 import { protectedProcedure } from "@/server/trpc";
-import { client } from "@conquest/clickhouse/client";
+import { prisma } from "@conquest/db/prisma";
 import { TaskSchema } from "@conquest/zod/schemas/task.schema";
 import { z } from "zod";
 
@@ -12,14 +12,11 @@ export const getTask = protectedProcedure
   .query(async ({ input }) => {
     const { id } = input;
 
-    const result = await client.query({
-      query: `
-      SELECT * 
-      FROM task
-      WHERE id = '${id}'
-    `,
+    const task = await prisma.task.findUnique({
+      where: {
+        id,
+      },
     });
 
-    const { data } = await result.json();
-    return TaskSchema.array().parse(data);
+    return TaskSchema.parse(task);
   });

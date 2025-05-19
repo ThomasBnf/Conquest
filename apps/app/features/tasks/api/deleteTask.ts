@@ -1,5 +1,5 @@
 import { protectedProcedure } from "@/server/trpc";
-import { client } from "@conquest/clickhouse/client";
+import { prisma } from "@conquest/db/prisma";
 import { z } from "zod";
 
 export const deleteTask = protectedProcedure
@@ -11,10 +11,9 @@ export const deleteTask = protectedProcedure
   .mutation(async ({ input }) => {
     const { id } = input;
 
-    await client.query({
-      query: `
-        ALTER TABLE task
-        DELETE WHERE id = '${id}'
-      `,
+    await prisma.task.delete({
+      where: {
+        id,
+      },
     });
   });
