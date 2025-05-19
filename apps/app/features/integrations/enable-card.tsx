@@ -1,7 +1,6 @@
 import { useIntegration } from "@/context/integrationContext";
 import { Button, buttonVariants } from "@conquest/ui/button";
 import { Card, CardContent, CardHeader } from "@conquest/ui/card";
-import { cn } from "@conquest/ui/cn";
 import type { Source } from "@conquest/zod/enum/source.enum";
 import type { Integration } from "@conquest/zod/schemas/integration.schema";
 import { CirclePlus, ExternalLink, Loader2 } from "lucide-react";
@@ -9,6 +8,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { type PropsWithChildren, useEffect } from "react";
 import { toast } from "sonner";
+import { cn } from "../../../../packages/ui/src/lib/utils";
 import { DisconnectButton } from "./disconnect-button";
 
 type Props = {

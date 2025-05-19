@@ -1,7 +1,7 @@
 import { EmptyState } from "@/components/states/empty-state";
 import { IsLoading } from "@/components/states/is-loading";
 import { IntegrationProvider } from "@/context/integrationContext";
-import { cn } from "@conquest/ui/cn";
+import { cn } from "../../../../packages/ui/src/lib/utils";
 import { Activities as ActivitiesIcon } from "@conquest/ui/icons/Activities";
 import { Separator } from "@conquest/ui/separator";
 import type { ActivityWithType } from "@conquest/zod/schemas/activity.schema";

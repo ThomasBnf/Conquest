@@ -1,6 +1,5 @@
-import { getMemberWithLevel } from "@conquest/clickhouse/member/getMemberWithLevel";
 import { prisma } from "@conquest/db/prisma";
-import { MemberSchema } from "@conquest/zod/schemas/member.schema";
+import { MemberWithLevelSchema } from "@conquest/zod/schemas/member.schema";
 import { TriggerSchema } from "@conquest/zod/schemas/node.schema";
 import { WorkflowSchema } from "@conquest/zod/schemas/workflow.schema";
 import { logger, schemaTask } from "@trigger.dev/sdk/v3";
@@ -12,7 +11,7 @@ export const triggerWorkflows = schemaTask({
   machine: "small-2x",
   schema: z.object({
     trigger: TriggerSchema,
-    member: MemberSchema,
+    member: MemberWithLevelSchema,
   }),
   run: async ({ trigger, member }) => {
     const { workspaceId } = member;
@@ -30,9 +29,7 @@ export const triggerWorkflows = schemaTask({
     logger.info("workflows", { workflows });
 
     for (const workflow of workflows) {
-      const memberWithLevel = await getMemberWithLevel({ id: member.id });
-
-      await runWorkflow.trigger({ workflow, member: memberWithLevel });
+      await runWorkflow.trigger({ workflow, member });
     }
   },
 });

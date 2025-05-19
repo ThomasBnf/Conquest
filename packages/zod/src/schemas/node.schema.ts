@@ -37,6 +37,11 @@ export const NodeLevelUpSchema = NodeBaseDataSchema.extend({
   isTrigger: z.boolean().default(true),
 });
 
+export const NodeLevelDownSchema = NodeBaseDataSchema.extend({
+  type: z.literal("level-down"),
+  isTrigger: z.boolean().default(true),
+});
+
 export const NodeAtRiskSchema = NodeBaseDataSchema.extend({
   type: z.literal("at-risk-member"),
   isTrigger: z.boolean().default(true),
@@ -86,6 +91,7 @@ export const NodeWebhookSchema = NodeBaseDataSchema.extend({
 export const NodeDataSchema = z.discriminatedUnion("type", [
   NodeMemberCreatedSchema,
   NodeLevelUpSchema,
+  NodeLevelDownSchema,
   NodeAtRiskSchema,
   NodeAmbassadorSchema,
   NodeIfElseSchema,
@@ -105,6 +111,7 @@ export type NodeData = z.infer<typeof NodeDataSchema>;
 
 export type NodeMemberCreated = z.infer<typeof NodeMemberCreatedSchema>;
 export type NodeLevelUp = z.infer<typeof NodeLevelUpSchema>;
+export type NodeLevelDown = z.infer<typeof NodeLevelDownSchema>;
 export type NodeAtRisk = z.infer<typeof NodeAtRiskSchema>;
 export type NodeAmbassador = z.infer<typeof NodeAmbassadorSchema>;
 export type Trigger = z.infer<typeof TriggerSchema>;

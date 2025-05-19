@@ -1,4 +1,4 @@
-import { cn } from "@conquest/ui/cn";
+import { cn } from "../../../../packages/ui/src/lib/utils";
 import { Skeleton } from "@conquest/ui/skeleton";
 import { v4 as uuid } from "uuid";
 

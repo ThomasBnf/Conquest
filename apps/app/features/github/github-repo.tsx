@@ -3,7 +3,7 @@ import { useIntegration } from "@/context/integrationContext";
 import { trpc } from "@/server/client";
 import { GITHUB_ACTIVITY_TYPES } from "@conquest/db/constant";
 import { Button } from "@conquest/ui/button";
-import { cn } from "@conquest/ui/cn";
+import { cn } from "../../../../packages/ui/src/lib/utils";
 import { Label } from "@conquest/ui/label";
 import { RadioGroup, RadioGroupItem } from "@conquest/ui/radio-group";
 import type { Endpoints } from "@octokit/types";

@@ -1,4 +1,4 @@
-import { cn } from "@conquest/ui/cn";
+import { cn } from "../../../../packages/ui/src/lib/utils";
 import Link from "next/link";
 import type { ReactNode } from "react";
 

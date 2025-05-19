@@ -2,7 +2,7 @@
 
 import { Heatmap } from "@/components/custom/heatmap";
 import { trpc } from "@/server/client";
-import { cn } from "@conquest/ui/cn";
+import { cn } from "../../../../packages/ui/src/lib/utils";
 import { ScrollArea } from "@conquest/ui/scroll-area";
 import { Separator } from "@conquest/ui/separator";
 

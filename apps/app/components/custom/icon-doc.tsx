@@ -1,4 +1,4 @@
-import { cn } from "@conquest/ui/cn";
+import { cn } from "../../../../packages/ui/src/lib/utils";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@conquest/ui/tooltip";
 import { ExternalLink, InfoIcon } from "lucide-react";
 import Link from "next/link";

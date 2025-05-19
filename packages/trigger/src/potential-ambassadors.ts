@@ -1,6 +1,6 @@
 import { client } from "@conquest/clickhouse/client";
-import { getMember } from "@conquest/clickhouse/member/getMember";
-import { updateMember } from "@conquest/clickhouse/member/updateMember";
+import { getMemberWithLevel } from "@conquest/clickhouse/member/getMemberWithLevel";
+import { updateManyMembers } from "@conquest/clickhouse/member/updateManyMembers";
 import { logger } from "@trigger.dev/sdk/v3";
 import { format, subDays } from "date-fns";
 import { triggerWorkflows } from "./tasks/triggerWorkflows";
@@ -23,7 +23,7 @@ const tagAmbassadors = async ({ from, to }: { from: string; to: string }) => {
       FROM member m FINAL
       LEFT JOIN level l ON m.levelId = l.id
       WHERE 
-        m.potentialAmbassador = 0
+        m.potentialAmbassador = false
         AND l.number >= 7
         AND l.number <= 9
         AND m.id IN (
@@ -43,8 +43,10 @@ const tagAmbassadors = async ({ from, to }: { from: string; to: string }) => {
     members,
   });
 
+  const updatedMembers = [];
+
   for (const member of members) {
-    const currentMember = await getMember({ id: member.memberId });
+    const currentMember = await getMemberWithLevel({ id: member.memberId });
 
     if (!currentMember) continue;
 
@@ -53,13 +55,15 @@ const tagAmbassadors = async ({ from, to }: { from: string; to: string }) => {
       potentialAmbassador: true,
     };
 
-    await updateMember(updatedMember);
+    updatedMembers.push(updatedMember);
 
     await triggerWorkflows.trigger({
       trigger: "potential-ambassador",
       member: updatedMember,
     });
   }
+
+  await updateManyMembers({ members: updatedMembers });
 };
 
 const removeAmbassadors = async ({
@@ -72,7 +76,7 @@ const removeAmbassadors = async ({
       FROM member m FINAL
       LEFT JOIN level l ON m.levelId = l.id
       WHERE 
-        m.potentialAmbassador = 1
+        m.potentialAmbassador = true
         AND l.number >= 7
         AND l.number <= 9
         AND m.id NOT IN (
@@ -92,8 +96,10 @@ const removeAmbassadors = async ({
     members,
   });
 
+  const updatedMembers = [];
+
   for (const member of members) {
-    const currentMember = await getMember({ id: member.memberId });
+    const currentMember = await getMemberWithLevel({ id: member.memberId });
 
     if (!currentMember) continue;
 
@@ -102,6 +108,8 @@ const removeAmbassadors = async ({
       potentialAmbassador: false,
     };
 
-    await updateMember(updatedMember);
+    updatedMembers.push(updatedMember);
   }
+
+  await updateManyMembers({ members: updatedMembers });
 };

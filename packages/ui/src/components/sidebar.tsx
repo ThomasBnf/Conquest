@@ -1,5 +1,6 @@
 "use client";
 
+import { cn } from "@conquest/ui/cn";
 import { Separator } from "@conquest/ui/separator";
 import { Sheet, SheetContent } from "@conquest/ui/sheet";
 import { Skeleton } from "@conquest/ui/skeleton";
@@ -14,7 +15,6 @@ import { type VariantProps, cva } from "class-variance-authority";
 import { PanelLeft } from "lucide-react";
 import * as React from "react";
 import { useIsMobile } from "../hooks/use-mobile";
-import { cn } from "../utils/cn";
 import { Button } from "./button";
 import { Input } from "./input";
 

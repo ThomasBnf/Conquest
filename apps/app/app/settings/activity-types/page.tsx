@@ -1,10 +1,10 @@
 import { ActivityTypesList } from "@/features/activities-types/activity-types-list";
 import { buttonVariants } from "@conquest/ui/button";
-import { cn } from "@conquest/ui/cn";
 import { ScrollArea } from "@conquest/ui/scroll-area";
 import { Separator } from "@conquest/ui/separator";
 import { ExternalLink } from "lucide-react";
 import Link from "next/link";
+import { cn } from "../../../../../packages/ui/src/lib/utils";
 
 export default function Page() {
   return (

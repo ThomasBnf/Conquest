@@ -1,5 +1,5 @@
 import { Button, buttonVariants } from "@conquest/ui/button";
-import { cn } from "@conquest/ui/cn";
+import { cn } from "../../../../packages/ui/src/lib/utils";
 import { Input } from "@conquest/ui/input";
 import { ExternalLink } from "lucide-react";
 import Link from "next/link";

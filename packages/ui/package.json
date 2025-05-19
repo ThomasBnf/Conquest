@@ -10,18 +10,17 @@
     "format": "biome --write .",
     "typecheck": "tsc --noEmit"
   },
-
   "exports": {
     "./*": "./src/components/*.tsx",
-    "./cn": "./src/utils/cn.ts",
+    "./cn": "./src/lib/utils.ts",
     "./icons/*": "./src/icons/*.tsx",
     "./brand/*": "./src/brand/*.tsx",
     "./hooks/*": "./src/hooks/*.tsx",
-    "./globals.css": "./globals.css",
-    "./tailwind.config": "./tailwind.config.ts",
-    "./postcss": "./postcss.config.js"
+    "./globals.css": "./src/styles/globals.css",
+    "./tailwind.config.ts": "./tailwind.config.ts"
   },
   "dependencies": {
+    "@ariakit/react": "^0.4.17",
     "@hookform/resolvers": "^3.9.0",
     "@radix-ui/react-alert-dialog": "^1.1.2",
     "@radix-ui/react-avatar": "^1.1.1",

@@ -167,12 +167,16 @@ export const Editor = ({ workflow }: Props) => {
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onNodeDragStop={onNodeDragStop}
+        defaultEdgeOptions={{
+          type: "custom",
+        }}
         onConnect={onConnect}
         nodeTypes={nodeTypes}
         edgeTypes={edgeTypes}
-        fitViewOptions={{
-          maxZoom: 1,
-        }}
+        // fitViewOptions={{
+        //   minZoom: 5,
+        //   maxZoom: 5,
+        // }}
         proOptions={{ hideAttribution: true }}
         fitView
         snapToGrid

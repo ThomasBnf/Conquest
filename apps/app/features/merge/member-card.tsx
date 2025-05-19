@@ -5,7 +5,7 @@ import { ProfileIconParser } from "@/utils/profile-icon-parser";
 import { Avatar, AvatarFallback, AvatarImage } from "@conquest/ui/avatar";
 import { Button } from "@conquest/ui/button";
 import { Checkbox } from "@conquest/ui/checkbox";
-import { cn } from "@conquest/ui/cn";
+import { cn } from "../../../../packages/ui/src/lib/utils";
 import {
   Dialog,
   DialogBody,

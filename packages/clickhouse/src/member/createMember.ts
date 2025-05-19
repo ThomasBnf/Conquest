@@ -1,8 +1,12 @@
-import { type Member, MemberSchema } from "@conquest/zod/schemas/member.schema";
+import {
+  type Member,
+  MemberWithLevelSchema,
+} from "@conquest/zod/schemas/member.schema";
 import { v4 as uuid } from "uuid";
 import { client } from "../client";
 import { createCompany } from "../company/createCompany";
 import { getCompanyByDomain } from "../company/getCompanyByDomain";
+import { cleanPrefix } from "../helpers/cleanPrefix";
 import { filteredDomain } from "../helpers/filteredDomain";
 
 type Props = Partial<Member> & {
@@ -58,12 +62,18 @@ export const createMember = async (props: Props) => {
 
   const result = await client.query({
     query: `
-      SELECT * 
-      FROM member FINAL
-      WHERE id = '${id}'
+      SELECT 
+        m.*,
+        l.number as level,
+        l.name as levelName
+      FROM member m FINAL
+      LEFT JOIN level l ON m.levelId = l.id
+      WHERE m.id = '${id}'
     `,
   });
 
   const { data } = await result.json();
-  return MemberSchema.parse(data[0]);
+
+  const cleanData = cleanPrefix("m.", data);
+  return MemberWithLevelSchema.parse(cleanData[0]);
 };

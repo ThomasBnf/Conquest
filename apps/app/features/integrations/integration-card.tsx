@@ -1,10 +1,10 @@
 import { trpc } from "@/server/client";
 import { Badge } from "@conquest/ui/badge";
-import { cn } from "@conquest/ui/cn";
 import type { Source } from "@conquest/zod/enum/source.enum";
 import { Loader2 } from "lucide-react";
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { cn } from "../../../../packages/ui/src/lib/utils";
 
 type Props = {
   integration: {

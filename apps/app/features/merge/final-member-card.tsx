@@ -3,7 +3,7 @@ import { LanguageBadge } from "@/components/badges/language-badge";
 import { ProfileIconParser } from "@/utils/profile-icon-parser";
 import { Avatar, AvatarFallback, AvatarImage } from "@conquest/ui/avatar";
 import { Checkbox } from "@conquest/ui/checkbox";
-import { cn } from "@conquest/ui/cn";
+import { cn } from "../../../../packages/ui/src/lib/utils";
 import { RadioGroup, RadioGroupItem } from "@conquest/ui/radio-group";
 import {
   Member,

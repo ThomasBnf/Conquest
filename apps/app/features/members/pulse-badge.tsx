@@ -1,7 +1,6 @@
 import { trpc } from "@/server/client";
 import { getPulseScoreDetails } from "@/utils/getPulseScoreDetails";
 import { Badge } from "@conquest/ui/badge";
-import { cn } from "@conquest/ui/cn";
 import { Pulse } from "@conquest/ui/icons/Pulse";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@conquest/ui/tooltip";
 import type { Member } from "@conquest/zod/schemas/member.schema";
@@ -9,6 +8,7 @@ import { skipToken } from "@tanstack/react-query";
 import { endOfHour, startOfDay, subDays, subHours } from "date-fns";
 import { Hash, InfoIcon, Loader2 } from "lucide-react";
 import { useState } from "react";
+import { cn } from "../../../../packages/ui/src/lib/utils";
 
 type Props = {
   member: Member;

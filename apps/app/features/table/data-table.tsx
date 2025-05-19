@@ -1,5 +1,5 @@
 import { useTable } from "@/hooks/useTable";
-import { cn } from "@conquest/ui/cn";
+import { cn } from "../../../../packages/ui/src/lib/utils";
 import { ScrollArea, ScrollBar } from "@conquest/ui/scroll-area";
 import { Company } from "@conquest/zod/schemas/company.schema";
 import { FullMember } from "@conquest/zod/schemas/member.schema";

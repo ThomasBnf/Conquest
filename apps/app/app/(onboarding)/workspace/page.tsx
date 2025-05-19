@@ -15,7 +15,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@conquest/ui/card";
-import { cn } from "@conquest/ui/cn";
 import {
   Form,
   FormControl,
@@ -32,6 +31,7 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { cn } from "@conquest/ui/cn";
 
 export default function Page() {
   const { data: session } = useSession();

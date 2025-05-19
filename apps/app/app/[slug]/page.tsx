@@ -23,12 +23,17 @@ export default async function Page({ searchParams }: Props) {
 
   return (
     <PageLayout>
-      <Header title="Dashboard">
-        <DateRangePicker />
-      </Header>
+      <Header title="Dashboard" />
       <ScrollArea>
         <div className="divide-y">
-          <p className="bg-sidebar p-4 font-medium text-base">Metrics</p>
+          <div className="grid grid-cols-2 gap-3 p-3">
+            <AtRiskMembers />
+            <PotentialAmbassadors />
+          </div>
+          <div className="flex h-12 items-center justify-between bg-surface px-4">
+            <p className="font-medium text-base">Metrics</p>
+            <DateRangePicker />
+          </div>
           <div className="grid grid-cols-4 gap-3 p-3">
             <TotalMembers />
             <NewMembers />
@@ -37,16 +42,11 @@ export default async function Page({ searchParams }: Props) {
           </div>
         </div>
         <Separator />
-        <div className="divide-y">
-          <p className="bg-sidebar p-4 font-medium text-base">Engagement</p>
-          <div className="grid grid-cols-2 gap-3 p-3">
-            <AtRiskMembers />
-            <PotentialAmbassadors />
-            <WorkspaceHeatmap className="col-span-3" />
-            <div className="col-span-3 grid grid-cols-2 gap-3">
-              <TopActivityType />
-              <TopChannels />
-            </div>
+        <div className="grid grid-cols-2 gap-3 p-3">
+          <WorkspaceHeatmap className="col-span-3" />
+          <div className="col-span-3 grid grid-cols-2 gap-3">
+            <TopActivityType />
+            <TopChannels />
           </div>
         </div>
       </ScrollArea>

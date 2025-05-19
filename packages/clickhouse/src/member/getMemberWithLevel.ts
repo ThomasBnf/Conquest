@@ -9,13 +9,13 @@ type Props = {
 export const getMemberWithLevel = async ({ id }: Props) => {
   const result = await client.query({
     query: `
-       SELECT 
+      SELECT 
           m.*,
           l.number as level,
           l.name as levelName
         FROM member m FINAL
       LEFT JOIN level l ON m.levelId = l.id
-      WHERE member.id = '${id}'
+      WHERE m.id = '${id}'
     `,
   });
 

@@ -1,5 +1,5 @@
 import { Icon } from "@/components/custom/Icon";
-import { cn } from "@conquest/ui/cn";
+import { cn } from "../../../../../packages/ui/src/lib/utils";
 import { Slack } from "@conquest/ui/icons/Slack";
 import { Separator } from "@conquest/ui/separator";
 import { type NodeProps, Position, useReactFlow } from "@xyflow/react";

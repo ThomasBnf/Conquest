@@ -1,5 +1,4 @@
 import { Badge } from "@conquest/ui/badge";
-import { cn } from "@conquest/ui/cn";
 import { Discord } from "@conquest/ui/icons/Discord";
 import { Discourse } from "@conquest/ui/icons/Discourse";
 import { Github } from "@conquest/ui/icons/Github";
@@ -8,6 +7,7 @@ import { Livestorm } from "@conquest/ui/icons/Livestorm";
 import { Slack } from "@conquest/ui/icons/Slack";
 import { Twitter } from "@conquest/ui/icons/Twitter";
 import type { Source } from "@conquest/zod/enum/source.enum";
+import { cn } from "../../../../packages/ui/src/lib/utils";
 
 type Props = {
   source: Source;

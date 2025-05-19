@@ -1,6 +1,6 @@
 import { Badge } from "@conquest/ui/badge";
-import { cn } from "@conquest/ui/cn";
 import ISO6391 from "iso-639-1";
+import { cn } from "../../../../packages/ui/src/lib/utils";
 
 type Props = {
   language: string | null;

@@ -1,6 +1,6 @@
 import { client } from "@conquest/clickhouse/client";
-import { getMember } from "@conquest/clickhouse/member/getMember";
-import { updateMember } from "@conquest/clickhouse/member/updateMember";
+import { getMemberWithLevel } from "@conquest/clickhouse/member/getMemberWithLevel";
+import { updateManyMembers } from "@conquest/clickhouse/member/updateManyMembers";
 import { logger } from "@trigger.dev/sdk/v3";
 import { format, subDays } from "date-fns";
 import { triggerWorkflows } from "./tasks/triggerWorkflows";
@@ -24,7 +24,7 @@ const tagAtRiskMembers = async ({ from, to }: { from: string; to: string }) => {
       LEFT JOIN level l ON m.levelId = l.id
       WHERE 
         l.number >= 4
-        AND m.atRiskMember = 0
+        AND m.atRiskMember = false
         AND m.id NOT IN (
           SELECT memberId 
           FROM activity 
@@ -42,8 +42,10 @@ const tagAtRiskMembers = async ({ from, to }: { from: string; to: string }) => {
     members,
   });
 
+  const updatedMembers = [];
+
   for (const member of members) {
-    const currentMember = await getMember({ id: member.memberId });
+    const currentMember = await getMemberWithLevel({ id: member.memberId });
 
     if (!currentMember) continue;
 
@@ -52,13 +54,15 @@ const tagAtRiskMembers = async ({ from, to }: { from: string; to: string }) => {
       atRiskMember: true,
     };
 
-    await updateMember(updatedMember);
+    updatedMembers.push(updatedMember);
 
     await triggerWorkflows.trigger({
       trigger: "at-risk-member",
       member: updatedMember,
     });
   }
+
+  await updateManyMembers({ members: updatedMembers });
 };
 
 const removeTagAtRiskMembers = async ({
@@ -72,7 +76,7 @@ const removeTagAtRiskMembers = async ({
       LEFT JOIN level l ON m.levelId = l.id
       WHERE 
         l.number >= 4
-        AND m.atRiskMember = 1
+        AND m.atRiskMember = true
         AND m.id IN (
           SELECT memberId 
           FROM activity 
@@ -90,8 +94,10 @@ const removeTagAtRiskMembers = async ({
     members,
   });
 
+  const updatedMembers = [];
+
   for (const member of members) {
-    const currentMember = await getMember({ id: member.memberId });
+    const currentMember = await getMemberWithLevel({ id: member.memberId });
 
     if (!currentMember) continue;
 
@@ -100,6 +106,8 @@ const removeTagAtRiskMembers = async ({
       atRisksMembers: false,
     };
 
-    await updateMember(updatedMember);
+    updatedMembers.push(updatedMember);
   }
+
+  await updateManyMembers({ members: updatedMembers });
 };

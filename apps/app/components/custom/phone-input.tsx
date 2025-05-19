@@ -1,5 +1,5 @@
 import { Button } from "@conquest/ui/button";
-import { cn } from "@conquest/ui/cn";
+import { cn } from "../../../../packages/ui/src/lib/utils";
 import {
   Command,
   CommandEmpty,

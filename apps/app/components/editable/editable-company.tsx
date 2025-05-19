@@ -1,6 +1,6 @@
 import { trpc } from "@/server/client";
 import { Button, buttonVariants } from "@conquest/ui/button";
-import { cn } from "@conquest/ui/cn";
+import { cn } from "../../../../packages/ui/src/lib/utils";
 import {
   Command,
   CommandEmpty,

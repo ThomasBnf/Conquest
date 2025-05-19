@@ -5,17 +5,16 @@
   "tsx": true,
   "tailwind": {
     "config": "tailwind.config.ts",
-    "css": "./globals.css",
+    "css": "./src/styles/globals.css",
     "baseColor": "gray",
-    "cssVariables": true,
-    "prefix": ""
+    "cssVariables": true
   },
+  "iconLibrary": "lucide",
   "aliases": {
-    "components": "./src/components",
-    "hooks": "./src/hooks",
-    "lib": "./src/lib",
-    "ui": "./src/components",
-    "utils": "./src/utils"
-  },
-  "iconLibrary": "lucide"
+    "components": "@conquest/ui/components",
+    "utils": "@conquest/ui/lib/utils",
+    "hooks": "@conquest/ui/hooks",
+    "lib": "@conquest/ui/lib",
+    "ui": "@conquest/ui/components"
+  }
 }

@@ -3,7 +3,7 @@
 import { trpc } from "@/server/client";
 import { Button } from "@conquest/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@conquest/ui/card";
-import { cn } from "@conquest/ui/cn";
+import { cn } from "../../../../packages/ui/src/lib/utils";
 import {
   Form,
   FormControl,

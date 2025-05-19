@@ -53,7 +53,7 @@ export const TriggerPanel = ({ workflow }: Props) => {
       <Separator />
       <Command>
         <CommandInput placeholder="Search for a trigger..." />
-        <CommandList>
+        <CommandList className="max-h-full">
           <CommandEmpty>No trigger found.</CommandEmpty>
           <CommandGroup>
             {nodes.map((node) => {
@@ -103,8 +103,20 @@ export const nodes: Node[] = [
     data: {
       icon: "TrendingUp",
       label: "Level up",
-      description: "When a member has reached a new level",
+      description: "When a member has level up",
       type: "level-up" as const,
+      isTrigger: true,
+    },
+  },
+  {
+    id: uuid(),
+    type: "custom",
+    position: { x: 0, y: 0 },
+    data: {
+      icon: "TrendingDown",
+      label: "Level down",
+      description: "When a member has level down",
+      type: "level-down" as const,
       isTrigger: true,
     },
   },
@@ -115,7 +127,8 @@ export const nodes: Node[] = [
     data: {
       icon: "TriangleAlert",
       label: "At-risk member",
-      description: "When a member becomes at-risk",
+      description:
+        "When a member is level 4 and has not been active for 30 days",
       type: "at-risk-member" as const,
       isTrigger: true,
     },
@@ -127,7 +140,8 @@ export const nodes: Node[] = [
     data: {
       icon: "Megaphone",
       label: "Potential ambassador",
-      description: "When a member becomes a potential mbassador",
+      description:
+        "When a member is level 7 to 9 and has been active for 30 days",
       type: "potential-ambassador" as const,
       isTrigger: true,
     },

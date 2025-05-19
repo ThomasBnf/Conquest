@@ -1,5 +1,5 @@
 import { Button } from "@conquest/ui/button";
-import { cn } from "@conquest/ui/cn";
+import { cn } from "../../../../packages/ui/src/lib/utils";
 import { Input } from "@conquest/ui/input";
 import { useState } from "react";
 import { CopyButton } from "../custom/copy-button";

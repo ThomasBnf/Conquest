@@ -2,7 +2,7 @@
 
 import { ACTIVITY_COLORS, WEEKDAYS } from "@/constant";
 import { trpc } from "@/server/client";
-import { cn } from "@conquest/ui/cn";
+import { cn } from "../../../../packages/ui/src/lib/utils";
 import { ScrollArea, ScrollBar } from "@conquest/ui/scroll-area";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@conquest/ui/tooltip";
 import type {

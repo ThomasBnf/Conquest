@@ -6,7 +6,6 @@ import { trpc } from "@/server/client";
 import { tableCompaniesParams, tableMembersParams } from "@/utils/tableParams";
 import { Badge } from "@conquest/ui/badge";
 import { Checkbox } from "@conquest/ui/checkbox";
-import { cn } from "@conquest/ui/cn";
 import {
   Command,
   CommandGroup,
@@ -21,6 +20,7 @@ import { useQueryStates } from "nuqs";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { v4 as uuid } from "uuid";
+import { cn } from "../../../../../packages/ui/src/lib/utils";
 type Props<TData extends Member | Company> = {
   data: TData;
 };

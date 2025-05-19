@@ -1,4 +1,4 @@
-import { cn } from "@conquest/ui/cn";
+import { cn } from "../../../../packages/ui/src/lib/utils";
 import { Loader2 } from "lucide-react";
 type Props = {
   isAbsolute?: boolean;

@@ -1,5 +1,5 @@
 import { FieldCard } from "@/components/editable/field-card";
-import { cn } from "@conquest/ui/cn";
+import { cn } from "../../../../packages/ui/src/lib/utils";
 import { Separator } from "@conquest/ui/separator";
 import { GithubProfile, Profile } from "@conquest/zod/schemas/profile.schema";
 

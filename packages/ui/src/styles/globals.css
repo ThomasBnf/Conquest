@@ -63,6 +63,8 @@
     --discourse: 202 85% 38%;
     --linkedin: 210 90% 40%;
     --discord: 235 86% 65%;
+
+    --brand: oklch(0.623 0.214 259.815);
   }
 
   .dark {
@@ -96,6 +98,8 @@
     --sidebar-accent-foreground: 240 4.8% 95.9%;
     --sidebar-border: 240 3.7% 15.9%;
     --sidebar-ring: 217.2 91.2% 59.8%;
+
+    --brand: oklch(0.707 0.165 254.624);
   }
 }
 

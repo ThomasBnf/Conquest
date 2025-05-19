@@ -5,7 +5,7 @@ import { trpc } from "@/server/client";
 import { DISCORD_ACTIVITY_TYPES } from "@conquest/db/constant";
 import { Button } from "@conquest/ui/button";
 import { Checkbox } from "@conquest/ui/checkbox";
-import { cn } from "@conquest/ui/cn";
+import { cn } from "../../../../packages/ui/src/lib/utils";
 import type { APIGuildCategoryChannel } from "discord-api-types/v10";
 import { ArrowRight, Hash, Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";

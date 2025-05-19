@@ -3,7 +3,7 @@ import { listActivities } from "../activity/listActivities";
 import { getLevel } from "../helpers/getLevel";
 import { getPulseScore } from "../helpers/getPulseScore";
 import { listLevels } from "../level/listLevels";
-import { getMember } from "./getMember";
+import { getMemberWithLevel } from "./getMemberWithLevel";
 import { updateMember } from "./updateMember";
 
 type Props = {
@@ -11,7 +11,7 @@ type Props = {
 };
 
 export const getPulseAndLevel = async ({ memberId }: Props) => {
-  const member = await getMember({ id: memberId });
+  const member = await getMemberWithLevel({ id: memberId });
 
   if (!member) return;
 
@@ -37,12 +37,7 @@ export const getPulseAndLevel = async ({ memberId }: Props) => {
   const previousLevel = levels.find((l) => l.id === member.levelId);
   const newLevel = levels.find((l) => l.id === level?.id);
 
-  if (!previousLevel || !newLevel) return;
-
-  if (previousLevel?.number < newLevel?.number) {
-    await triggerWorkflows.trigger({
-      trigger: "level-up",
-      member,
-    });
+  if (previousLevel && newLevel && previousLevel.number < newLevel.number) {
+    await triggerWorkflows.trigger({ trigger: "level-up", member });
   }
 };

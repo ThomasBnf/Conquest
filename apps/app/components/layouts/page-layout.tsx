@@ -1,4 +1,4 @@
-import { cn } from "@conquest/ui/cn";
+import { cn } from "../../../../packages/ui/src/lib/utils";
 import { type PropsWithChildren, forwardRef } from "react";
 
 type Props = PropsWithChildren<React.HTMLAttributes<HTMLDivElement>>;

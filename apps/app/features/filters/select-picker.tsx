@@ -5,7 +5,7 @@ import { useFilters } from "@/context/filtersContext";
 import { trpc } from "@/server/client";
 import { Button } from "@conquest/ui/button";
 import { Checkbox } from "@conquest/ui/checkbox";
-import { cn } from "@conquest/ui/cn";
+import { cn } from "../../../../packages/ui/src/lib/utils";
 import {
   Command,
   CommandEmpty,
