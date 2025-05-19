@@ -1,8 +1,8 @@
 import { client } from "@conquest/clickhouse/client";
-import { listAllMembers } from "@conquest/clickhouse/members/listAllMembers";
-import type { Log } from "@conquest/zod/schemas/logs.schema";
-import { schedules } from "@trigger.dev/sdk/v3";
-import { startOfWeek } from "date-fns";
+import { listMembers } from "@conquest/clickhouse/members/listMembers";
+import { listWorkspaces } from "@conquest/db/workspaces/listWorkspaces";
+import { logger, schedules } from "@trigger.dev/sdk/v3";
+import { batchWeeklyLog } from "./batchWeeklyLog";
 
 export const cronWeekly = schedules.task({
   id: "cron-weekly",
@@ -10,34 +10,40 @@ export const cronWeekly = schedules.task({
   run: async (_, { ctx }) => {
     if (ctx.environment.type === "DEVELOPMENT") return;
 
-    const members = await listAllMembers();
+    const workspaces = await listWorkspaces();
 
-    const logs: Omit<Log, "id">[] = [];
+    for (const workspace of workspaces) {
+      const { id: workspaceId } = workspace;
 
-    for (const member of members) {
-      const { levelId, pulse } = member;
+      const BATCH_SIZE = 200;
+      let offset = 0;
 
-      logs.push({
-        date: startOfWeek(new Date(), { weekStartsOn: 1 }),
-        pulse,
-        levelId: levelId ?? null,
-        memberId: member.id,
-        workspaceId: member.workspaceId,
-      });
+      while (true) {
+        const members = await listMembers({
+          workspaceId,
+          limit: BATCH_SIZE,
+          offset,
+        });
+
+        logger.info("members", { count: members.length });
+
+        await batchWeeklyLog.batchTrigger([
+          {
+            payload: { members },
+            options: { metadata: { workspaceId } },
+          },
+        ]);
+
+        if (members.length < BATCH_SIZE) break;
+        offset += BATCH_SIZE;
+      }
     }
-
-    await client.insert({
-      table: "log",
-      values: logs,
-      format: "JSON",
-    });
 
     await client.query({
       query: `
         ALTER TABLE log
         DELETE WHERE date < subtractWeeks(now(), 53)
-        `,
-      format: "JSON",
+      `,
     });
   },
 });
