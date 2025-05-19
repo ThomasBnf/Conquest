@@ -15,7 +15,7 @@ export const cronWeekly = schedules.task({
     for (const workspace of workspaces) {
       const { id: workspaceId } = workspace;
 
-      const BATCH_SIZE = 200;
+      const BATCH_SIZE = 500;
       let offset = 0;
 
       while (true) {
