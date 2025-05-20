@@ -18,7 +18,7 @@ export const task = async ({ node, member }: Props) => {
     id: uuid(),
     title,
     dueDate: endOfDay(addDays(new Date(), days)),
-    assignee,
+    assignee: assignee ?? undefined,
     isCompleted: false,
     memberId: member.id,
     workspaceId,

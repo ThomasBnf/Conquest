@@ -4,7 +4,7 @@ export const TaskSchema = z.object({
   id: z.string().uuid(),
   title: z.string(),
   dueDate: z.coerce.date(),
-  assignee: z.string(),
+  assignee: z.string().optional(),
   isCompleted: z.boolean(),
   memberId: z.string().nullable(),
   workspaceId: z.string(),
