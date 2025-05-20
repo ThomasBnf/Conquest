@@ -71,7 +71,7 @@ export const AppSidebar = ({ workspace }: Props) => {
       icon: <Workflows size={18} />,
       href: `/${slug}/workflows`,
       isActive: pathname.startsWith(`/${slug}/workflows`),
-      isBeta: true,
+      isSoon: true,
     },
   ];
 
@@ -110,13 +110,13 @@ export const AppSidebar = ({ workspace }: Props) => {
                   asChild
                   tooltip={route.label}
                   isActive={route.isActive}
-                  disabled={route.isBeta}
-                  className={cn(route.isBeta && "opacity-50")}
+                  disabled={route.isSoon}
+                  className={cn(route.isSoon && "opacity-50")}
                 >
-                  <Link href={route.isBeta ? "" : route.href} prefetch>
+                  <Link href={route.isSoon ? "" : route.href} prefetch>
                     {route.icon}
                     <span>{route.label}</span>
-                    {route.isBeta && <Badge variant="secondary">Beta</Badge>}
+                    {route.isSoon && <Badge variant="secondary">Soon</Badge>}
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
