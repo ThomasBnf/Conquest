@@ -7,7 +7,7 @@ export const listWorkspaceUsers = protectedProcedure.query(async ({ ctx }) => {
 
   const users = await prisma.userInWorkspace.findMany({
     where: {
-      userId: user.id,
+      workspaceId: user.workspaceId,
     },
     include: {
       user: true,
