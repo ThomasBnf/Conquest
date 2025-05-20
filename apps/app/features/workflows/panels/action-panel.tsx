@@ -16,6 +16,7 @@ import { useReactFlow } from "@xyflow/react";
 import type { icons } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { v4 as uuid } from "uuid";
+import { useNode } from "../hooks/useNode";
 import { usePanel } from "../hooks/usePanel";
 import type { WorkflowNode } from "./schemas/workflow-node.type";
 
@@ -23,7 +24,8 @@ export const ActionPanel = () => {
   const { data: session } = useSession();
   const { user } = session ?? {};
 
-  const { panel, condition, node: selectedNode, setPanel } = usePanel();
+  const { node: selectedNode, setNode } = useNode();
+  const { panel, condition, setPanel } = usePanel();
   const { addNodes, addEdges, updateNodeData, setEdges } = useReactFlow();
 
   const onSelect = (node: WorkflowNode) => {
@@ -46,7 +48,8 @@ export const ActionPanel = () => {
         );
       }
 
-      setPanel({ panel: "node", node: updatedNode });
+      setPanel({ panel: "node" });
+      setNode(updatedNode);
       updateNodeData(selectedNode.id, updatedNode.data);
 
       return;
@@ -79,7 +82,8 @@ export const ActionPanel = () => {
     };
 
     addEdges(newEdge);
-    setPanel({ panel: "node", node: newNode });
+    setPanel({ panel: "node" });
+    setNode(newNode);
   };
 
   return (

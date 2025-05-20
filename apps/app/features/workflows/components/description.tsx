@@ -15,6 +15,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useReactFlow } from "@xyflow/react";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
+import { useNode } from "../hooks/useNode";
 import type { WorkflowNode } from "../panels/schemas/workflow-node.type";
 
 type Props = {
@@ -22,7 +23,8 @@ type Props = {
 };
 
 export const Description = ({ id }: Props) => {
-  const { getNode, updateNode } = useReactFlow();
+  const { setNode } = useNode();
+  const { getNode, updateNodeData } = useReactFlow();
 
   const node = getNode(id) as WorkflowNode | undefined;
 
@@ -30,6 +32,9 @@ export const Description = ({ id }: Props) => {
 
   const form = useForm<FormDescription>({
     resolver: zodResolver(FormDescriptionSchema),
+    defaultValues: {
+      description: "",
+    },
   });
 
   const onSubmit = () => {
@@ -37,12 +42,16 @@ export const Description = ({ id }: Props) => {
 
     const { description } = form.getValues();
 
-    updateNode(id, {
+    const updatedNode: WorkflowNode = {
+      ...node,
       data: {
         ...node.data,
-        description,
+        description: description ?? "",
       },
-    });
+    };
+
+    setNode(updatedNode);
+    updateNodeData(id, updatedNode.data);
   };
 
   useEffect(() => {

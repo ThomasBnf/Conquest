@@ -4,7 +4,7 @@ import { ScrollArea } from "@conquest/ui/scroll-area";
 import { Separator } from "@conquest/ui/separator";
 import { ExternalLink } from "lucide-react";
 import Link from "next/link";
-import { cn } from "../../../../../packages/ui/src/lib/utils";
+import { cn } from "@conquest/ui/cn";
 
 export default function Page() {
   return (

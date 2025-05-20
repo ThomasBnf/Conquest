@@ -1,14 +1,13 @@
+import { useGetSlug } from "@/hooks/useGetSlug";
 import { trpc } from "@/server/client";
 import { Badge } from "@conquest/ui/badge";
 import { Duplicate } from "@conquest/ui/icons/Duplicate";
 import { SidebarMenuButton, SidebarMenuItem } from "@conquest/ui/sidebar";
-import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 export const DuplicateMenu = () => {
-  const { data: session } = useSession();
-  const { slug } = session?.user?.workspace ?? {};
+  const slug = useGetSlug();
 
   const pathname = usePathname();
   const isActive = pathname.startsWith(`/${slug}/duplicates`);

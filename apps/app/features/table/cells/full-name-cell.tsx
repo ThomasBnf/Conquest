@@ -1,10 +1,10 @@
+import { useGetSlug } from "@/hooks/useGetSlug";
 import { trpc } from "@/server/client";
 import { Avatar, AvatarFallback, AvatarImage } from "@conquest/ui/avatar";
 import { Skeleton } from "@conquest/ui/skeleton";
 import type { Member } from "@conquest/zod/schemas/member.schema";
 import { GithubProfileSchema } from "@conquest/zod/schemas/profile.schema";
 import { skipToken } from "@tanstack/react-query";
-import { useSession } from "next-auth/react";
 import Link from "next/link";
 
 type Props = {
@@ -12,10 +12,8 @@ type Props = {
 };
 
 export const FullNameCell = ({ member }: Props) => {
-  const { data: session } = useSession();
-  const { slug } = session?.user.workspace ?? {};
-
   const { id, firstName, lastName, avatarUrl } = member;
+  const slug = useGetSlug();
 
   const hasName = !!firstName || !!lastName;
 

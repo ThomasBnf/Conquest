@@ -4,7 +4,6 @@ import { CardContent, CardFooter } from "@conquest/ui/card";
 import { Form } from "@conquest/ui/form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowRightIcon, Loader2 } from "lucide-react";
-import { useSession } from "next-auth/react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -20,13 +19,11 @@ type Props = {
 };
 
 export const QuestionsStep = ({ setStep }: Props) => {
-  const { data: session, update } = useSession();
-  const { workspace } = session?.user ?? {};
   const [loading, setLoading] = useState(false);
+  const { data: workspace } = trpc.workspaces.get.useQuery();
 
   const { mutateAsync: mutateWorkspace } = trpc.workspaces.update.useMutation({
     onSuccess: () => {
-      update();
       setStep(3);
     },
     onError: (error) => {
@@ -45,7 +42,7 @@ export const QuestionsStep = ({ setStep }: Props) => {
     setLoading(true);
 
     await mutateWorkspace({
-      id: workspace.id,
+      ...workspace,
       companySize,
       source,
     });

@@ -108,11 +108,7 @@ export const createAuthPrismaAdapter = (
     const userAndSession = await prisma.session.findUnique({
       where: { sessionToken },
       include: {
-        user: {
-          include: {
-            workspace: true,
-          },
-        },
+        user: true,
       },
     });
 

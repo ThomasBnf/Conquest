@@ -1,13 +1,17 @@
 import { z } from "zod";
 import { SOURCE } from "../enum/source.enum";
-import { ProfileAttributesSchema, ProfileSchema } from "./profile.schema";
+import {
+  CustomFieldSchema,
+  ProfileAttributesSchema,
+  ProfileSchema,
+} from "./profile.schema";
 
 export const MemberSchema = z.object({
   id: z.string().uuid(),
   firstName: z.string(),
   lastName: z.string(),
-  primaryEmail: z.string(),
-  emails: z.array(z.string()),
+  primaryEmail: z.string().email(),
+  emails: z.array(z.string().email()),
   phones: z.array(z.string()),
   jobTitle: z.string(),
   avatarUrl: z.string(),
@@ -20,6 +24,9 @@ export const MemberSchema = z.object({
   source: SOURCE,
   atRiskMember: z.boolean().optional(),
   potentialAmbassador: z.boolean().optional(),
+  customFields: z.object({
+    fields: z.array(CustomFieldSchema),
+  }),
   companyId: z.string().nullable(),
   isStaff: z.boolean(),
   workspaceId: z.string(),

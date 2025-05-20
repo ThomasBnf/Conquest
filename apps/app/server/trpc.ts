@@ -1,4 +1,4 @@
-import { UserWithWorkspaceSchema } from "@conquest/zod/schemas/user.schema";
+import { UserSchema } from "@conquest/zod/schemas/user.schema";
 import * as Sentry from "@sentry/node";
 import { TRPCError, initTRPC } from "@trpc/server";
 import superjson from "superjson";
@@ -29,7 +29,7 @@ export const publicProcedure = t.procedure;
 const middleware = t.middleware(async ({ ctx, next }) => {
   if (!ctx.session?.user?.id) throw new TRPCError({ code: "UNAUTHORIZED" });
 
-  const user = UserWithWorkspaceSchema.parse(ctx.session?.user);
+  const user = UserSchema.parse(ctx.session?.user);
 
   Sentry.setUser({
     id: user.id,
@@ -37,8 +37,7 @@ const middleware = t.middleware(async ({ ctx, next }) => {
   });
 
   Sentry.setContext("workspace", {
-    id: user.workspace.id,
-    name: user.workspace.name,
+    id: user.workspaceId,
   });
 
   return next({

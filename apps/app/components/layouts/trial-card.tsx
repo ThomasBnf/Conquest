@@ -9,8 +9,8 @@ import { useState } from "react";
 import { toast } from "sonner";
 
 export const TrialCard = () => {
-  const { data: session } = useSession();
-  const { trialEnd, isPastDue } = session?.user.workspace ?? {};
+  const { data: workspace } = trpc.workspaces.get.useQuery();
+  const { trialEnd, isPastDue } = workspace ?? {};
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 

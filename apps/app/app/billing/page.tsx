@@ -12,9 +12,6 @@ import { useState } from "react";
 import { toast } from "sonner";
 
 export default function Page() {
-  const { data: session } = useSession();
-  const { workspace } = session?.user ?? {};
-
   const [period, setPeriod] = useState<PlanPeriod>("annually");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
@@ -51,7 +48,6 @@ export default function Page() {
         setPeriod={setPeriod}
         loading={loading}
         onSelectPlan={onSelectPlan}
-        workspace={workspace}
       />
       <PlansTable period={period} setPeriod={setPeriod} />
     </BillingPage>

@@ -9,14 +9,12 @@ import { trpc } from "@/server/client";
 import { getSubscriptionDetails } from "@/utils/getSubscriptionDetails";
 import { Separator } from "@conquest/ui/separator";
 import type { Plan } from "@conquest/zod/enum/plan.enum";
-import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 
 export default function Page() {
-  const { data: session, update } = useSession();
-  const { workspace } = session?.user ?? {};
+  const { data: workspace } = trpc.workspaces.get.useQuery();
   const { stripeCustomerId, priceId } = workspace ?? {};
   const router = useRouter();
 
@@ -34,7 +32,6 @@ export default function Page() {
     onSuccess: (url) => {
       if (!url) return;
       router.push(url);
-      update();
     },
     onError: (error) => {
       toast.error(error.message);
@@ -48,7 +45,6 @@ export default function Page() {
         setLoading(true);
       },
       onSuccess: () => {
-        update();
         toast.success("Subscription updated");
       },
       onError: (error) => {
@@ -96,7 +92,6 @@ export default function Page() {
         setPeriod={setPeriod}
         loading={loading}
         onSelectPlan={onSelectPlan}
-        workspace={workspace}
       />
       <PlansTable period={period} setPeriod={setPeriod} />
     </BillingPage>

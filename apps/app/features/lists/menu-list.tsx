@@ -14,6 +14,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 import { EditListDialog } from "./edit-list-dialog";
+import { useGetSlug } from "@/hooks/useGetSlug";
 
 type Props = {
   list: List;
@@ -21,10 +22,10 @@ type Props = {
 };
 
 export const MenuList = ({ list, transparent = false }: Props) => {
-  const { data: session } = useSession();
-  const { slug } = session?.user.workspace ?? {};
   const [open, setOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
+
+  const slug = useGetSlug();
   const router = useRouter();
   const utils = trpc.useUtils();
 

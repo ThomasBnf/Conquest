@@ -291,6 +291,7 @@ model Workspace {
     priceId          String?
     trialEnd         DateTime?
     isPastDue        DateTime?
+    customFields     Json[]
 
     apiKeys          ApiKey[]
     events           Event[]

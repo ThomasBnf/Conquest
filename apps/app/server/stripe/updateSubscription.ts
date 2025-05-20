@@ -1,4 +1,5 @@
 import { stripe } from "@/lib/stripe";
+import { getWorkspace } from "@conquest/db/workspaces/getWorkspace";
 import { PLAN } from "@conquest/zod/enum/plan.enum";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
@@ -12,9 +13,9 @@ export const updateSubscription = protectedProcedure
     }),
   )
   .mutation(async ({ ctx: { user }, input }) => {
-    const { workspace } = user;
+    const { workspaceId } = user;
     const { plan, priceId } = input;
-    const { id, stripeCustomerId } = workspace;
+    const { stripeCustomerId } = await getWorkspace({ id: workspaceId });
 
     if (!stripeCustomerId) {
       throw new TRPCError({
@@ -59,7 +60,7 @@ export const updateSubscription = protectedProcedure
       metadata: {
         plan,
         priceId,
-        workspaceId: id,
+        workspaceId,
       },
     });
   });

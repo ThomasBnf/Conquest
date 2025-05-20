@@ -21,11 +21,11 @@ import { useReactFlow } from "@xyflow/react";
 import { addDays, format } from "date-fns";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { usePanel } from "../hooks/usePanel";
+import { useNode } from "../hooks/useNode";
 import { FormTask, FormTaskSchema } from "../panels/schemas/form-task.schema";
 
 export const Task = () => {
-  const { node } = usePanel();
+  const { node } = useNode();
   const { updateNodeData } = useReactFlow();
   const { title, days, assignee } = NodeTaskSchema.parse(node?.data);
 
@@ -44,6 +44,8 @@ export const Task = () => {
 
   const onUpdateNodeData = () => {
     if (!node) return;
+
+    console.log("node", node);
 
     updateNodeData(node?.id, {
       ...node.data,
@@ -117,25 +119,23 @@ export const Task = () => {
                   <Input
                     {...field}
                     type="number"
-                    min={1}
+                    min={0}
                     variant="transparent"
-                    value={field.value}
-                    onChange={(e) => onChangeDays(Number(e.target.value))}
+                    value={field.value === 0 ? "" : field.value}
+                    onChange={(e) => onChangeDays(Number(e.target.value || 0))}
                     onBlur={onUpdateNodeData}
                   />
                   <div className="flex h-9 items-center bg-muted px-4">
-                    <p>Days</p>
+                    <p>days</p>
                   </div>
                 </div>
               </FormControl>
-              {daysValue && (
-                <FormDescription>
-                  The due date is calculated from the trigger date.
-                  <br />
-                  For example: today + {daysValue} days ={" "}
-                  {format(addDays(new Date(), daysValue), "PP")}
-                </FormDescription>
-              )}
+              <FormDescription>
+                The due date is calculated from the trigger date.
+                <br />
+                For example: today + {daysValue} days ={" "}
+                {format(addDays(new Date(), daysValue), "PP")}
+              </FormDescription>
             </FormItem>
           )}
         />

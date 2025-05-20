@@ -29,13 +29,13 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { type FormList, FormListSchema } from "./schemas/form-create.schema";
+import { useGetSlug } from "@/hooks/useGetSlug";
 
 export const CreateListDialog = () => {
   const { groupFilters, resetFilters } = useFilters();
-  const { data: session } = useSession();
-  const { slug } = session?.user.workspace ?? {};
   const { open, setOpen } = useOpenList();
 
+  const slug = useGetSlug();
   const router = useRouter();
   const utils = trpc.useUtils();
 

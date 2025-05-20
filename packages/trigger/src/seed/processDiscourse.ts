@@ -4,7 +4,7 @@ import { createChannel } from "@conquest/clickhouse/channel/createChannel";
 import { DISCOURSE_ACTIVITY_TYPES } from "@conquest/db/constant";
 import { prisma } from "@conquest/db/prisma";
 import { Channel, ChannelSchema } from "@conquest/zod/schemas/channel.schema";
-import { UserWithWorkspace } from "@conquest/zod/schemas/user.schema";
+import { User, UserSchema } from "@conquest/zod/schemas/user.schema";
 import { randomUUID } from "node:crypto";
 
 export const DISCOURSE_CHANNELS = [
@@ -40,9 +40,7 @@ export const DISCOURSE_CHANNELS = [
   },
 ];
 
-export const processDiscourse = async ({
-  user,
-}: { user: UserWithWorkspace }) => {
+export const processDiscourse = async ({ user }: { user: User }) => {
   const { workspaceId } = user;
 
   const discourse = await prisma.integration.create({

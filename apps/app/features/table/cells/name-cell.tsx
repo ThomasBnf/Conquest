@@ -1,6 +1,6 @@
+import { useGetSlug } from "@/hooks/useGetSlug";
 import { Avatar, AvatarFallback, AvatarImage } from "@conquest/ui/avatar";
 import { Company } from "@conquest/zod/schemas/company.schema";
-import { useSession } from "next-auth/react";
 import Link from "next/link";
 
 type Props = {
@@ -8,9 +8,8 @@ type Props = {
 };
 
 export const NameCell = ({ company }: Props) => {
-  const { data: session } = useSession();
-  const { slug } = session?.user.workspace ?? {};
   const { id, name, logoUrl } = company;
+  const slug = useGetSlug();
 
   return (
     <Link

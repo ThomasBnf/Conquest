@@ -1,15 +1,13 @@
-import { auth } from "@/auth";
 import { SignOut } from "@/features/onboarding/sign-out";
+import { getCurrentWorkspace } from "@/queries/getCurrentWorkspace";
 import { redirect } from "next/navigation";
 import type { PropsWithChildren } from "react";
 
 export default async function Layout({ children }: PropsWithChildren) {
-  const session = await auth();
-  if (!session) redirect("/auth/login");
+  const { user, workspace } = await getCurrentWorkspace();
+  const { slug } = workspace;
 
-  const { user } = session;
-  const { workspace } = user;
-  if (user?.onboarding) redirect(`/${workspace.slug}`);
+  if (user?.onboarding) redirect(`/${slug}`);
 
   return (
     <div className="flex h-full flex-col justify-between bg-muted/30 p-4 lg:px-8">

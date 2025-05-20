@@ -13,14 +13,14 @@ import { useReactFlow } from "@xyflow/react";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { VariablePicker } from "../components/variable-picker";
-import { usePanel } from "../hooks/usePanel";
+import { useNode } from "../hooks/useNode";
 import {
   type FormWebhook,
   FormWebhookSchema,
 } from "./schemas/form-webhook.schema";
 
 export const Webhook = () => {
-  const { node } = usePanel();
+  const { node } = useNode();
   const { updateNodeData } = useReactFlow();
 
   const { url, body } = NodeWebhookSchema.parse(node?.data);

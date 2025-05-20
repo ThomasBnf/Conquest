@@ -1,6 +1,7 @@
 "use client";
 
 import { WorkspaceMenu } from "@/features/workspaces/workspace-menu";
+import { useGetSlug } from "@/hooks/useGetSlug";
 import { Badge } from "@conquest/ui/badge";
 import { cn } from "@conquest/ui/cn";
 import { Companies } from "@conquest/ui/icons/Companies";
@@ -24,7 +25,6 @@ import {
   useSidebar,
 } from "@conquest/ui/sidebar";
 import type { Workspace } from "@conquest/zod/schemas/workspace.schema";
-import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { LoadingIntegrations } from "../states/loading-integrations";
@@ -37,10 +37,9 @@ type Props = {
 };
 
 export const AppSidebar = ({ workspace }: Props) => {
-  const { data: session } = useSession();
-  const { slug } = session?.user.workspace ?? {};
   const { state } = useSidebar();
   const pathname = usePathname();
+  const slug = useGetSlug();
 
   const routes = [
     {

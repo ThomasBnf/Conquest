@@ -1,5 +1,6 @@
 import { CountryBadge } from "@/components/badges/country-badge";
 import { LanguageBadge } from "@/components/badges/language-badge";
+import { useGetSlug } from "@/hooks/useGetSlug";
 import { trpc } from "@/server/client";
 import { ProfileIconParser } from "@/utils/profile-icon-parser";
 import { Avatar, AvatarFallback, AvatarImage } from "@conquest/ui/avatar";
@@ -19,7 +20,6 @@ import type { MemberWithProfiles } from "@conquest/zod/schemas/member.schema";
 import { skipToken } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { ExternalLink } from "lucide-react";
-import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { LevelBadge } from "../members/level-badge";
 import { PulseBadge } from "../members/pulse-badge";
@@ -33,9 +33,8 @@ type Props = {
 };
 
 export const MemberCard = ({ memberChecked, onCheckChange }: Props) => {
-  const { data: session } = useSession();
-  const { slug } = session?.user?.workspace ?? {};
   const { member, checked } = memberChecked;
+  const slug = useGetSlug();
 
   const {
     id,

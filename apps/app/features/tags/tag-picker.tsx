@@ -67,10 +67,12 @@ export const TagPicker = ({ tags = [], onUpdate, className }: Props) => {
     setValue("");
   };
 
+  console.log(tags);
+
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild onClick={onClick}>
-        <div className="flex min-h-8 w-full cursor-pointer flex-wrap items-center gap-1">
+        <div className="flex w-full cursor-pointer flex-wrap items-center gap-1">
           {tags.map((tagId) => (
             <TagBadge
               key={tagId}

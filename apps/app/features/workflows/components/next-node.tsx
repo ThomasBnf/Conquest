@@ -5,11 +5,13 @@ import { Slack } from "@conquest/ui/icons/Slack";
 import { Label } from "@conquest/ui/label";
 import { useReactFlow } from "@xyflow/react";
 import { X, type icons } from "lucide-react";
+import { useNode } from "../hooks/useNode";
 import { usePanel } from "../hooks/usePanel";
 import type { WorkflowNode } from "../panels/schemas/workflow-node.type";
 
 export const NextNode = () => {
-  const { node: selectedNode, setPanel } = usePanel();
+  const { setPanel } = usePanel();
+  const { node: selectedNode } = useNode();
   const { getNodes, getEdges, deleteElements } = useReactFlow();
   const { icon, label, type } = selectedNode?.data ?? {};
 
@@ -48,9 +50,7 @@ export const NextNode = () => {
   ) => (
     <div
       className="relative z-10 flex h-10 cursor-pointer items-center gap-2 rounded-md border px-2 transition-colors-hover hover:bg-muted-hover"
-      onClick={() =>
-        setPanel({ panel: "actions", condition, node: selectedNode })
-      }
+      onClick={() => setPanel({ panel: "actions", condition })}
     >
       {node ? (
         node.data.icon === "Slack" ? (

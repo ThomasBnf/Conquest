@@ -1,18 +1,18 @@
 import { Icon } from "@/components/custom/Icon";
-import { cn } from "../../../../../packages/ui/src/lib/utils";
 import { Slack } from "@conquest/ui/icons/Slack";
 import { Separator } from "@conquest/ui/separator";
 import { type NodeProps, Position, useReactFlow } from "@xyflow/react";
 import { Target, type icons } from "lucide-react";
 import { useMemo } from "react";
-import { usePanel } from "../hooks/usePanel";
+import { cn } from "@conquest/ui/cn";
+import { useNode } from "../hooks/useNode";
 import type { WorkflowNode } from "../panels/schemas/workflow-node.type";
 import { CustomHandle } from "./custom-handle";
 
 type Props = NodeProps<WorkflowNode>;
 
 export const CustomNode = ({ ...props }: Props) => {
-  const { node: selectedNode, setPanel } = usePanel();
+  const { node: selectedNode } = useNode();
   const { getNode } = useReactFlow();
 
   const node = getNode(props.id) as WorkflowNode;
@@ -21,7 +21,7 @@ export const CustomNode = ({ ...props }: Props) => {
   const isTrigger = useMemo(() => "isTrigger" in node.data, [node]);
 
   return (
-    <div className="relative" onClick={() => setPanel({ panel: "node", node })}>
+    <div className="relative">
       {isTrigger && (
         <div
           className={cn(

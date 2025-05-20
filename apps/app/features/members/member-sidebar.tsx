@@ -142,6 +142,7 @@ export const MemberSidebar = ({ member, profiles }: Props) => {
               href={linkedinUrl}
             />
           </FieldCard>
+          {/* <CustomFieldsParser member={member} /> */}
           {/* <AddCustomField /> */}
         </div>
         <Separator />

@@ -2,10 +2,10 @@ import { TagPicker } from "@/features/tags/tag-picker";
 import { Label } from "@conquest/ui/label";
 import { NodeTagMemberSchema } from "@conquest/zod/schemas/node.schema";
 import { useReactFlow } from "@xyflow/react";
-import { usePanel } from "../hooks/usePanel";
+import { useNode } from "../hooks/useNode";
 
 export const TagMember = () => {
-  const { node, setPanel } = usePanel();
+  const { node, setNode } = useNode();
   const { updateNodeData } = useReactFlow();
 
   const parsedData = NodeTagMemberSchema.parse(node?.data);
@@ -21,7 +21,7 @@ export const TagMember = () => {
       },
     };
 
-    setPanel({ panel: "node", node: updatedNode });
+    setNode(updatedNode);
     updateNodeData(node.id, updatedNode.data);
   };
 
@@ -32,7 +32,6 @@ export const TagMember = () => {
         tags={parsedData.tags}
         onUpdate={onSelectTag}
         variant="outline"
-        className="h-9"
       />
     </div>
   );

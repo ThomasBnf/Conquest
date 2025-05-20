@@ -1,3 +1,4 @@
+import { useGetSlug } from "@/hooks/useGetSlug";
 import { trpc } from "@/server/client";
 import { Avatar, AvatarFallback, AvatarImage } from "@conquest/ui/avatar";
 import { Button } from "@conquest/ui/button";
@@ -13,7 +14,6 @@ import { Popover, PopoverContent, PopoverTrigger } from "@conquest/ui/popover";
 import { Skeleton } from "@conquest/ui/skeleton";
 import type { Company } from "@conquest/zod/schemas/company.schema";
 import { X } from "lucide-react";
-import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useInView } from "react-intersection-observer";
@@ -24,11 +24,10 @@ type Props = {
 };
 
 export const EditableMembers = ({ company }: Props) => {
-  const { data: session } = useSession();
-  const { slug } = session?.user.workspace ?? {};
   const { ref, inView } = useInView();
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
+  const slug = useGetSlug();
   const router = useRouter();
   const utils = trpc.useUtils();
 

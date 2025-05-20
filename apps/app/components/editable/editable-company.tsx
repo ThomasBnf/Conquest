@@ -1,3 +1,4 @@
+import { useGetSlug } from "@/hooks/useGetSlug";
 import { trpc } from "@/server/client";
 import { Button, buttonVariants } from "@conquest/ui/button";
 import { cn } from "@conquest/ui/cn";
@@ -23,7 +24,6 @@ import type { Member } from "@conquest/zod/schemas/member.schema";
 import { skipToken } from "@tanstack/react-query";
 import { CommandLoading } from "cmdk";
 import { Building2, Ellipsis, Plus } from "lucide-react";
-import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useInView } from "react-intersection-observer";
@@ -35,13 +35,12 @@ type Props = {
 };
 
 export const EditableCompany = ({ member, onUpdate }: Props) => {
-  const { data: session } = useSession();
-  const { slug } = session?.user.workspace ?? {};
   const [query, setQuery] = useState("");
   const [search, setSearch] = useDebounce(query, 500);
   const [open, setOpen] = useState(false);
   const [openMenu, setOpenMenu] = useState(false);
   const { ref, inView } = useInView();
+  const slug = useGetSlug();
 
   const utils = trpc.useUtils();
 

@@ -1,12 +1,12 @@
 "use client";
 
+import { useGetSlug } from "@/hooks/useGetSlug";
 import { APIKey } from "@conquest/ui/icons/APIKey";
 import { ActivityType } from "@conquest/ui/icons/ActivityType";
 import { Billing } from "@conquest/ui/icons/Billing";
 import { General } from "@conquest/ui/icons/General";
 import { Integration } from "@conquest/ui/icons/Integration";
 import { Level } from "@conquest/ui/icons/Level";
-import { Members } from "@conquest/ui/icons/Members";
 import { Tags } from "@conquest/ui/icons/Tags";
 import { User } from "@conquest/ui/icons/User";
 import {
@@ -20,16 +20,14 @@ import {
   SidebarMenuItem,
 } from "@conquest/ui/sidebar";
 import { ArrowLeft } from "lucide-react";
-import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { LoadingIntegrations } from "../states/loading-integrations";
 import { TrialCard } from "./trial-card";
 
 export const SettingsSidebar = () => {
-  const { data: session } = useSession();
-  const { slug } = session?.user.workspace ?? {};
   const pathname = usePathname();
+  const slug = useGetSlug();
 
   const menu = [
     {

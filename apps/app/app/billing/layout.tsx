@@ -1,5 +1,4 @@
-import { auth } from "@/auth";
-import { UserProvider } from "@/context/userContext";
+import { getCurrentWorkspace } from "@/queries/getCurrentWorkspace";
 import { redirect } from "next/navigation";
 import type { PropsWithChildren } from "react";
 
@@ -8,18 +7,10 @@ type Props = {
 };
 
 export default async function Layout({ children }: PropsWithChildren<Props>) {
-  const session = await auth();
-  if (!session?.user) redirect("/auth/login");
+  const { workspace } = await getCurrentWorkspace();
+  const { trialEnd, isPastDue, slug } = workspace;
 
-  const { user } = session;
-  if (!user?.onboarding) redirect("/");
-
-  const { trialEnd, isPastDue, slug } = user.workspace ?? {};
   if (!trialEnd && !isPastDue) redirect(`/${slug}`);
 
-  return (
-    <UserProvider initialUser={user}>
-      <main className="h-dvh flex-1 overflow-hidden">{children}</main>
-    </UserProvider>
-  );
+  return <main className="h-dvh flex-1 overflow-hidden">{children}</main>;
 }

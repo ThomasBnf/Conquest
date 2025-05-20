@@ -15,6 +15,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@conquest/ui/card";
+import { cn } from "@conquest/ui/cn";
 import {
   Form,
   FormControl,
@@ -27,26 +28,25 @@ import { Input } from "@conquest/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import slugify from "@sindresorhus/slugify";
 import { ArrowRightIcon, Loader2 } from "lucide-react";
-import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { cn } from "@conquest/ui/cn";
 
 export default function Page() {
-  const { data: session } = useSession();
-  const { user } = session ?? {};
+  const { data: workspace } = trpc.workspaces.get.useQuery();
 
   const [loading, setLoading] = useState(false);
   const [focus, setFocus] = useState(false);
   const router = useRouter();
+  const utils = trpc.useUtils();
 
   const { mutateAsync: mutateWorkspace } = trpc.workspaces.update.useMutation({
     onMutate: () => {
       setLoading(true);
     },
     onSuccess: () => {
-      router.push("/questions");
+      utils.workspaces.get.invalidate();
+      router.replace("/questions");
     },
     onError: (error) => {
       setLoading(false);
@@ -59,12 +59,12 @@ export default function Page() {
   });
 
   const onSubmit = async ({ name, slug }: Workspace) => {
-    if (!user) return;
+    if (!workspace) return;
 
     const formattedSlug = slugify(slug, { decamelize: false });
 
     await mutateWorkspace({
-      id: user.workspaceId,
+      ...workspace,
       name: name.charAt(0).toUpperCase() + name.slice(1),
       slug: formattedSlug,
     });

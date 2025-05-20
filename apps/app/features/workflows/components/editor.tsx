@@ -13,6 +13,7 @@ import {
   type EdgeProps,
   NodeChange,
   type NodeProps,
+  OnSelectionChangeParams,
   ReactFlow,
   addEdge,
   applyEdgeChanges,
@@ -24,12 +25,13 @@ import {
 import "@xyflow/react/dist/style.css";
 import { Info } from "lucide-react";
 import { useCallback, useEffect } from "react";
+import { useNode } from "../hooks/useNode";
 import { usePanel } from "../hooks/usePanel";
 import { useUpdateWorkflow } from "../mutations/useUpdateWorkflow";
 import { CustomEdge } from "../nodes/custom-edge";
 import { CustomNode } from "../nodes/custom-node";
 import type { WorkflowNode } from "../panels/schemas/workflow-node.type";
-import { Sidebar } from "./sidebar";
+import { Sidebar } from "../panels/sidebar";
 
 type Props = {
   workflow: Workflow;
@@ -45,6 +47,7 @@ const edgeTypes = {
 
 export const Editor = ({ workflow }: Props) => {
   const { panel, setPanel } = usePanel();
+  const { setNode } = useNode();
   const { toObject, getNode } = useReactFlow();
   const [nodes, setNodes] = useNodesState<WorkflowNode>(workflow.nodes);
   const [edges, setEdges] = useEdgesState<Edge>(workflow.edges);
@@ -57,19 +60,24 @@ export const Editor = ({ workflow }: Props) => {
           const { id } = changes[0];
           const node = getNode(id);
 
-          setTimeout(() => {
-            setPanel({ panel: "workflow", node: undefined });
-          }, 0);
+          if (node?.data) {
+            const isTrigger = "isTrigger" in node.data;
 
-          if (node && "isTrigger" in node.data) return prev;
+            setTimeout(() => {
+              setPanel({ panel: isTrigger ? "node" : "workflow" });
+            }, 0);
+
+            if (isTrigger) return prev;
+          }
         }
 
         return applyNodeChanges(changes, prev) as WorkflowNode[];
       });
 
-      if (!["position"].includes(changes[0]?.type ?? "")) {
-        setTimeout(() => onSave(), 100);
-      }
+      if (changes[0]?.type === "select") return;
+      if (changes[0]?.type === "position") return;
+
+      setTimeout(() => onSave(), 100);
     },
     [getNode, setNodes],
   );
@@ -81,7 +89,6 @@ export const Editor = ({ workflow }: Props) => {
 
   const onConnect = useCallback(
     (connection: Connection) => {
-      console.log("onConnect", connection);
       const sourceNode = getNode(connection.source);
       const isIfElse = sourceNode?.data.type === "if-else";
 
@@ -129,9 +136,25 @@ export const Editor = ({ workflow }: Props) => {
     [getNode],
   );
 
-  const onNodeDragStop = useCallback(() => {
-    setTimeout(() => onSave(), 100);
+  const onNodeDragStop = useCallback((_event: unknown, node: WorkflowNode) => {
+    setTimeout(() => {
+      setNode(node);
+      onSave();
+    }, 100);
   }, []);
+
+  const onSelectionChange = useCallback(
+    (selection: OnSelectionChangeParams<WorkflowNode, Edge>) => {
+      console.log("onSelectionChange", selection);
+      const currentNode = selection.nodes[0];
+
+      if (currentNode) {
+        setPanel({ panel: "node" });
+        setNode(currentNode);
+      }
+    },
+    [setNode],
+  );
 
   const onSave = async () => {
     console.log("onSave", toObject().nodes);
@@ -167,16 +190,17 @@ export const Editor = ({ workflow }: Props) => {
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onNodeDragStop={onNodeDragStop}
+        onSelectionChange={onSelectionChange}
         defaultEdgeOptions={{
           type: "custom",
         }}
         onConnect={onConnect}
         nodeTypes={nodeTypes}
         edgeTypes={edgeTypes}
-        // fitViewOptions={{
-        //   minZoom: 5,
-        //   maxZoom: 5,
-        // }}
+        fitViewOptions={{
+          minZoom: 0.5,
+          maxZoom: 1,
+        }}
         proOptions={{ hideAttribution: true }}
         fitView
         snapToGrid

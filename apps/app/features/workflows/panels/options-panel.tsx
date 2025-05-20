@@ -8,6 +8,7 @@ import { useReactFlow } from "@xyflow/react";
 import { RefreshCcw, Trash2, type icons } from "lucide-react";
 import { Description } from "../components/description";
 import { NextNode } from "../components/next-node";
+import { useNode } from "../hooks/useNode";
 import { usePanel } from "../hooks/usePanel";
 import { IfElse } from "../nodes/if-else";
 import { SlackMessage } from "../nodes/slack-message";
@@ -23,7 +24,8 @@ type Props = {
 };
 
 export const OptionsPanel = ({ workflow }: Props) => {
-  const { panel, node, setPanel } = usePanel();
+  const { node } = useNode();
+  const { panel, setPanel } = usePanel();
   const { deleteElements } = useReactFlow();
 
   if (!node) return;
@@ -66,7 +68,6 @@ export const OptionsPanel = ({ workflow }: Props) => {
                   onClick={() => {
                     setPanel({
                       panel: isTrigger ? "triggers" : "actions-change",
-                      node: node,
                     });
                   }}
                 >
@@ -77,7 +78,7 @@ export const OptionsPanel = ({ workflow }: Props) => {
                   size="icon"
                   onClick={() => {
                     onDelete();
-                    setPanel({ node: undefined, panel: "workflow" });
+                    setPanel({ panel: "workflow" });
                   }}
                 >
                   <Trash2 size={16} className="text-destructive" />

@@ -1,5 +1,6 @@
 "use client";
 
+import { trpc } from "@/server/client";
 import { Button } from "@conquest/ui/button";
 import {
   Command,
@@ -10,16 +11,32 @@ import {
   CommandList,
 } from "@conquest/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@conquest/ui/popover";
+import { CustomField } from "@conquest/zod/schemas/custom-fields.schema";
 import { Plus } from "lucide-react";
-import * as React from "react";
+import { useState } from "react";
+import { v4 as uuid } from "uuid";
+import { useUpdateWorkspace } from "../workspaces/mutations/useUpdateWorkspace";
 
 export const AddCustomField = () => {
-  const [open, setOpen] = React.useState(false);
+  const { data: workspace } = trpc.workspaces.get.useQuery();
+
+  const [open, setOpen] = useState(false);
+  const updateWorkspace = useUpdateWorkspace();
+
+  const onClick = (field: CustomField) => {
+    if (!workspace) return;
+
+    updateWorkspace({
+      ...workspace,
+      customFields: [...workspace.customFields, field],
+    });
+    setOpen(false);
+  };
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button variant="ghost">
+        <Button variant="outline" className="w-full">
           <Plus size={16} />
           New custom field
         </Button>
@@ -31,7 +48,9 @@ export const AddCustomField = () => {
             <CommandEmpty>No field found.</CommandEmpty>
             <CommandGroup>
               {customFields.map((field) => (
-                <CommandItem key={field.type}>{field.label}</CommandItem>
+                <CommandItem key={field.id} onSelect={() => onClick(field)}>
+                  {field.label}
+                </CommandItem>
               ))}
             </CommandGroup>
           </CommandList>
@@ -41,29 +60,35 @@ export const AddCustomField = () => {
   );
 };
 
-const customFields = [
+const customFields: CustomField[] = [
   {
-    type: "boolean",
-    label: "Boolean",
-  },
-  {
-    type: "date",
+    id: uuid(),
     label: "Date",
+    type: "date",
+    value: new Date().toISOString(),
   },
   {
-    type: "multi-select",
+    id: uuid(),
     label: "Multi-select",
+    type: "multi-select",
+    values: [],
   },
   {
-    type: "number",
+    id: uuid(),
     label: "Number",
+    type: "number",
+    value: 0,
   },
   {
-    type: "select",
+    id: uuid(),
     label: "Select",
+    type: "select",
+    value: "",
   },
   {
-    type: "text",
+    id: uuid(),
     label: "Text",
+    type: "text",
+    value: "",
   },
 ];

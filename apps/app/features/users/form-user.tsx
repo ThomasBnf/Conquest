@@ -12,15 +12,16 @@ import {
   FormMessage,
 } from "@conquest/ui/form";
 import { Input } from "@conquest/ui/input";
+import { Skeleton } from "@conquest/ui/skeleton";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { FormUserSchema } from "./schema/form.schema";
 
 export const FormUser = () => {
-  const { data: user } = trpc.users.getCurrentUser.useQuery();
+  const { data: user, isLoading } = trpc.users.getCurrentUser.useQuery();
   const [loading, setLoading] = useState(false);
 
   const { mutateAsync } = trpc.users.update.useMutation({
@@ -38,9 +39,9 @@ export const FormUser = () => {
   const form = useForm<FormUserSchema>({
     resolver: zodResolver(FormUserSchema),
     defaultValues: {
-      firstName: user?.firstName ?? "",
-      lastName: user?.lastName ?? "",
-      email: user?.email,
+      firstName: "",
+      lastName: "",
+      email: "",
     },
   });
 
@@ -50,6 +51,14 @@ export const FormUser = () => {
     setLoading(true);
     await mutateAsync({ ...user, ...data });
   };
+
+  useEffect(() => {
+    form.reset({
+      firstName: user?.firstName ?? "",
+      lastName: user?.lastName ?? "",
+      email: user?.email ?? "",
+    });
+  }, [user]);
 
   return (
     <Card>
@@ -66,7 +75,11 @@ export const FormUser = () => {
                 <FormItem>
                   <FormLabel>Name</FormLabel>
                   <FormControl>
-                    <Input {...field} />
+                    {isLoading ? (
+                      <Skeleton className="h-9" />
+                    ) : (
+                      <Input {...field} />
+                    )}
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -79,7 +92,11 @@ export const FormUser = () => {
                 <FormItem>
                   <FormLabel>Last Name</FormLabel>
                   <FormControl>
-                    <Input {...field} />
+                    {isLoading ? (
+                      <Skeleton className="h-9" />
+                    ) : (
+                      <Input {...field} />
+                    )}
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -92,7 +109,11 @@ export const FormUser = () => {
                 <FormItem>
                   <FormLabel>Email</FormLabel>
                   <FormControl>
-                    <Input {...field} />
+                    {isLoading ? (
+                      <Skeleton className="h-9" />
+                    ) : (
+                      <Input {...field} />
+                    )}
                   </FormControl>
                   <FormMessage />
                 </FormItem>

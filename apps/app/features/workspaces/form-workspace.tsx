@@ -13,16 +13,17 @@ import {
   FormMessage,
 } from "@conquest/ui/form";
 import { Input } from "@conquest/ui/input";
+import { Skeleton } from "@conquest/ui/skeleton";
 import { zodResolver } from "@hookform/resolvers/zod";
 import slugify from "@sindresorhus/slugify";
 import { Loader2 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { FormWorkspaceSchema } from "./schema/form.schema";
 
 export const FormWorkspace = () => {
-  const { data: workspace } = trpc.workspaces.get.useQuery();
+  const { data: workspace, isLoading } = trpc.workspaces.get.useQuery();
   const [loading, setLoading] = useState(false);
   const [focus, setFocus] = useState(false);
 
@@ -41,8 +42,8 @@ export const FormWorkspace = () => {
   const form = useForm<FormWorkspaceSchema>({
     resolver: zodResolver(FormWorkspaceSchema),
     defaultValues: {
-      name: workspace?.name ?? "",
-      slug: workspace?.slug ?? "",
+      name: "",
+      slug: "",
     },
   });
 
@@ -52,6 +53,13 @@ export const FormWorkspace = () => {
     setLoading(true);
     await mutateAsync({ ...workspace, ...data });
   };
+
+  useEffect(() => {
+    form.reset({
+      name: workspace?.name ?? "",
+      slug: workspace?.slug ?? "",
+    });
+  }, [workspace]);
 
   return (
     <Card>
@@ -68,17 +76,21 @@ export const FormWorkspace = () => {
                 <FormItem>
                   <FormLabel>Workspace name</FormLabel>
                   <FormControl>
-                    <Input
-                      {...field}
-                      placeholder="Acme"
-                      onChange={(e) => {
-                        field.onChange(e);
-                        form.setValue(
-                          "slug",
-                          slugify(e.target.value, { decamelize: false }),
-                        );
-                      }}
-                    />
+                    {isLoading ? (
+                      <Skeleton className="h-9" />
+                    ) : (
+                      <Input
+                        {...field}
+                        placeholder="Acme"
+                        onChange={(e) => {
+                          field.onChange(e);
+                          form.setValue(
+                            "slug",
+                            slugify(e.target.value, { decamelize: false }),
+                          );
+                        }}
+                      />
+                    )}
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -100,13 +112,17 @@ export const FormWorkspace = () => {
                       <p className="h-9 place-content-center border-r bg-muted px-3">
                         useconquest.com
                       </p>
-                      <Input
-                        {...field}
-                        variant="transparent"
-                        placeholder="acme"
-                        onFocus={() => setFocus(true)}
-                        onBlur={() => setFocus(false)}
-                      />
+                      {isLoading ? (
+                        <Skeleton className="h-9 w-full rounded-l-none" />
+                      ) : (
+                        <Input
+                          {...field}
+                          variant="transparent"
+                          placeholder="acme"
+                          onFocus={() => setFocus(true)}
+                          onBlur={() => setFocus(false)}
+                        />
+                      )}
                     </div>
                   </FormControl>
                   <FormMessage />

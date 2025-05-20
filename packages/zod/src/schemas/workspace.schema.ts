@@ -1,6 +1,7 @@
 import type { Workspace as WorkspacePrisma } from "@prisma/client";
 import { z } from "zod";
 import { PLAN } from "../enum/plan.enum";
+import { CustomFieldSchema } from "./custom-fields.schema";
 
 export const WorkspaceSchema = z.object({
   id: z.string().uuid(),
@@ -13,6 +14,7 @@ export const WorkspaceSchema = z.object({
   priceId: z.string().nullable(),
   trialEnd: z.coerce.date().nullable(),
   isPastDue: z.coerce.date().nullable(),
+  customFields: z.array(CustomFieldSchema),
   createdAt: z.coerce.date(),
   updatedAt: z.coerce.date(),
 }) satisfies z.ZodType<WorkspacePrisma>;

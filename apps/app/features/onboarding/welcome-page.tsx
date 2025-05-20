@@ -22,7 +22,7 @@ export const WelcomePage = () => {
     },
     onSuccess: () => {
       update();
-      router.push("/settings/integrations");
+      router.replace("/settings/integrations");
     },
     onError: (error) => {
       setLoading(false);

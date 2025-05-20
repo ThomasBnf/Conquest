@@ -4,6 +4,7 @@ import { GroupFiltersSchema } from "./filters.schema";
 export const TriggerSchema = z.enum([
   "member-created",
   "level-up",
+  "level-down",
   "at-risk-member",
   "potential-ambassador",
 ]);

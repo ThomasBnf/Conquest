@@ -1,4 +1,5 @@
 import { stripe } from "@/lib/stripe";
+import { getWorkspace } from "@conquest/db/workspaces/getWorkspace";
 import { env } from "@conquest/env";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
@@ -11,8 +12,8 @@ export const createBillingPortal = protectedProcedure
     }),
   )
   .mutation(async ({ ctx: { user }, input }) => {
-    const { workspace } = user;
-    const { stripeCustomerId } = workspace;
+    const { workspaceId } = user;
+    const { stripeCustomerId } = await getWorkspace({ id: workspaceId });
     const { paymentMethodUpdate } = input;
 
     if (!stripeCustomerId) {

@@ -31,13 +31,13 @@ import {
   type FormCreate,
   FormCreateSchema,
 } from "./schema/company-form.schema";
+import { useGetSlug } from "@/hooks/useGetSlug";
 
 export const CreateCompanyDialog = () => {
-  const { data: session } = useSession();
-  const { slug } = session?.user.workspace ?? {};
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const slug = useGetSlug();
 
   const { mutateAsync } = trpc.companies.post.useMutation({
     onSuccess: (data) => {

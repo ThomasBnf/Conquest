@@ -16,6 +16,7 @@ import type { Workflow } from "@conquest/zod/schemas/workflow.schema";
 import { useReactFlow } from "@xyflow/react";
 import { type icons } from "lucide-react";
 import { v4 as uuid } from "uuid";
+import { useNode } from "../hooks/useNode";
 import { usePanel } from "../hooks/usePanel";
 import type { WorkflowNode } from "./schemas/workflow-node.type";
 
@@ -24,8 +25,8 @@ type Props = {
 };
 
 export const TriggerPanel = ({ workflow }: Props) => {
-  const { id } = workflow;
-  const { node: selectedNode, setPanel } = usePanel();
+  const { setPanel } = usePanel();
+  const { node: selectedNode, setNode } = useNode();
   const { addNodes, updateNode } = useReactFlow();
 
   const { mutateAsync } = trpc.workflows.update.useMutation();
@@ -34,12 +35,13 @@ export const TriggerPanel = ({ workflow }: Props) => {
     if (selectedNode) {
       updateNode(selectedNode.id, node);
     } else {
-      addNodes(node);
+      addNodes([node]);
     }
 
     await mutateAsync({ ...workflow, trigger: node.data.type as Trigger });
 
-    setPanel({ panel: "node", node });
+    setPanel({ panel: "node" });
+    setNode(node);
   };
 
   return (

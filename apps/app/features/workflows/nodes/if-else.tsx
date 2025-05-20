@@ -4,10 +4,10 @@ import { Label } from "@conquest/ui/label";
 import { GroupFilters } from "@conquest/zod/schemas/filters.schema";
 import { NodeIfElseSchema } from "@conquest/zod/schemas/node.schema";
 import { useReactFlow } from "@xyflow/react";
-import { usePanel } from "../hooks/usePanel";
+import { useNode } from "../hooks/useNode";
 
 export const IfElse = () => {
-  const { node } = usePanel();
+  const { node } = useNode();
   const { updateNodeData } = useReactFlow();
 
   const { groupFilters } = NodeIfElseSchema.parse(node?.data);

@@ -43,7 +43,7 @@ export default function Page() {
     },
     onSuccess: () => {
       update();
-      router.push("/workspace");
+      router.replace("/workspace");
     },
     onError: (error) => {
       setLoading(false);

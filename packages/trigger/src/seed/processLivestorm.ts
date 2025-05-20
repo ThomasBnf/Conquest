@@ -3,13 +3,11 @@ import { listActivityTypes } from "@conquest/clickhouse/activity-type/listActivi
 import { LIVESTORM_ACTIVITY_TYPES } from "@conquest/db/constant";
 import { prisma } from "@conquest/db/prisma";
 import { Event } from "@conquest/zod/schemas/event.schema";
-import { UserWithWorkspace } from "@conquest/zod/schemas/user.schema";
+import { User } from "@conquest/zod/schemas/user.schema";
 import { faker } from "@faker-js/faker";
 import { randomUUID } from "node:crypto";
 
-export const processLivestorm = async ({
-  user,
-}: { user: UserWithWorkspace }) => {
+export const processLivestorm = async ({ user }: { user: User }) => {
   const { workspaceId } = user;
 
   const livestorm = await prisma.integration.create({

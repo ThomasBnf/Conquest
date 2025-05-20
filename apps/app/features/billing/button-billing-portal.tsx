@@ -2,14 +2,14 @@ import { trpc } from "@/server/client";
 import { getSubscriptionDetails } from "@/utils/getSubscriptionDetails";
 import { Button } from "@conquest/ui/button";
 import { Loader2 } from "lucide-react";
-import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 
 export const ButtonBillingPortal = () => {
-  const { data: session } = useSession();
-  const { priceId } = session?.user.workspace ?? {};
+  const { data: workspace } = trpc.workspaces.get.useQuery();
+  const { priceId } = workspace ?? {};
+
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 

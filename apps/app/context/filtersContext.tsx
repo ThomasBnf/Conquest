@@ -1,6 +1,6 @@
 "use client";
 
-import { usePanel } from "@/features/workflows/hooks/usePanel";
+import { useNode } from "@/features/workflows/hooks/useNode";
 import { trpc } from "@/server/client";
 import {
   type Filter,
@@ -36,7 +36,7 @@ export const FiltersProvider = ({
 }: Props) => {
   const { data: session, update } = useSession();
   const { user } = session ?? {};
-  const { node } = usePanel();
+  const { node } = useNode();
   const { membersPreferences } = user ?? {};
   const utils = trpc.useUtils();
 

@@ -7,16 +7,17 @@ import { decrypt } from "@conquest/db/utils/decrypt";
 import { listWorkspaces } from "@conquest/db/workspaces/listWorkspaces";
 import { SlackIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
 import { MemberSchema } from "@conquest/zod/schemas/member.schema";
-import { UserWithWorkspaceSchema } from "@conquest/zod/schemas/user.schema";
+import { UserSchema } from "@conquest/zod/schemas/user.schema";
 import { WebClient } from "@slack/web-api";
 import { logger, schemaTask } from "@trigger.dev/sdk/v3";
 import ISO6391 from "iso-639-1";
 import { z } from "zod";
+
 export const seed = schemaTask({
   id: "seed",
   machine: "small-2x",
   schema: z.object({
-    user: UserWithWorkspaceSchema,
+    user: UserSchema,
   }),
   run: async ({ user }) => {
     if (user.role !== "STAFF") return;

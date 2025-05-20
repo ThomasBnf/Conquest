@@ -2,7 +2,6 @@ import type { User as UserPrisma } from "@prisma/client";
 import { z } from "zod";
 import { ROLE } from "../enum/role.enum";
 import { GroupFiltersSchema } from "./filters.schema";
-import { WorkspaceSchema } from "./workspace.schema";
 
 export const PreferencesSchema = z.object({
   id: z.string(),
@@ -29,10 +28,5 @@ export const UserSchema = z.object({
   updatedAt: z.coerce.date(),
 }) satisfies z.ZodType<UserPrisma>;
 
-export const UserWithWorkspaceSchema = UserSchema.extend({
-  workspace: WorkspaceSchema,
-});
-
 export type User = z.infer<typeof UserSchema>;
-export type UserWithWorkspace = z.infer<typeof UserWithWorkspaceSchema>;
 export type Preferences = z.infer<typeof PreferencesSchema>;

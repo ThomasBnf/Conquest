@@ -1,3 +1,4 @@
+import { trpc } from "@/server/client";
 import { Button } from "@conquest/ui/button";
 import { cn } from "@conquest/ui/cn";
 import {
@@ -10,7 +11,6 @@ import {
 } from "@conquest/ui/dialog";
 import { ScrollArea } from "@conquest/ui/scroll-area";
 import type { Plan } from "@conquest/zod/enum/plan.enum";
-import type { Workspace } from "@conquest/zod/schemas/workspace.schema";
 import { Check, Loader2 } from "lucide-react";
 import { type Dispatch, type SetStateAction, useState } from "react";
 import { PeriodToggle } from "./period-toggle";
@@ -30,7 +30,6 @@ type Props = {
     priceId: string;
   }) => void;
   trial?: boolean;
-  workspace: Workspace | undefined;
 };
 
 export const PlanPicker = ({
@@ -39,8 +38,8 @@ export const PlanPicker = ({
   onSelectPlan,
   loading,
   trial,
-  workspace,
 }: Props) => {
+  const { data: workspace } = trpc.workspaces.get.useQuery();
   const [open, setOpen] = useState(false);
 
   const { priceId, isPastDue } = workspace ?? {};

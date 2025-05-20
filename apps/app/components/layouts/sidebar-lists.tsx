@@ -1,4 +1,5 @@
 import { MenuList } from "@/features/lists/menu-list";
+import { useGetSlug } from "@/hooks/useGetSlug";
 import { useOpenList } from "@/hooks/useOpenList";
 import { trpc } from "@/server/client";
 import { Button } from "@conquest/ui/button";
@@ -10,15 +11,13 @@ import {
 } from "@conquest/ui/sidebar";
 import { Skeleton } from "@conquest/ui/skeleton";
 import { Plus } from "lucide-react";
-import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 export const SidebarLists = () => {
-  const { data: session } = useSession();
-  const { slug } = session?.user.workspace ?? {};
   const { setOpen } = useOpenList();
   const pathname = usePathname();
+  const slug = useGetSlug();
 
   const { data: lists, isLoading } = trpc.lists.list.useQuery();
 

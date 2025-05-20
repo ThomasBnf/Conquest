@@ -20,7 +20,7 @@ import { useQueryStates } from "nuqs";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { v4 as uuid } from "uuid";
-import { cn } from "../../../../../packages/ui/src/lib/utils";
+import { cn } from "@conquest/ui/cn";
 type Props<TData extends Member | Company> = {
   data: TData;
 };

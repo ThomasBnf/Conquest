@@ -31,15 +31,13 @@ import {
 } from "@conquest/ui/select";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowRightIcon, Loader2 } from "lucide-react";
-import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
 export default function Page() {
-  const { data: session, update } = useSession();
-  const { user } = session ?? {};
+  const { data: workspace } = trpc.workspaces.get.useQuery();
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
@@ -48,8 +46,7 @@ export default function Page() {
       setLoading(true);
     },
     onSuccess: () => {
-      update();
-      router.push("/welcome");
+      router.replace("/welcome");
     },
     onError: (error) => {
       setLoading(false);
@@ -62,10 +59,10 @@ export default function Page() {
   });
 
   const onSubmit = async ({ companySize, source }: Questions) => {
-    if (!user) return;
+    if (!workspace) return;
 
     await mutateAsync({
-      id: user.workspaceId,
+      ...workspace,
       companySize,
       source,
     });

@@ -1,3 +1,4 @@
+import { useGetSlug } from "@/hooks/useGetSlug";
 import { trpc } from "@/server/client";
 import { Avatar, AvatarFallback, AvatarImage } from "@conquest/ui/avatar";
 import { buttonVariants } from "@conquest/ui/button";
@@ -6,7 +7,6 @@ import { cn } from "@conquest/ui/cn";
 import { Task } from "@conquest/zod/schemas/task.schema";
 import { skipToken } from "@tanstack/react-query";
 import { addDays, format, isBefore } from "date-fns";
-import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useState } from "react";
 import { EditTaskDialog } from "./edit-task-dialog";
@@ -18,11 +18,9 @@ type Props = {
 };
 
 export const TaskItem = ({ task }: Props) => {
-  const { data: session } = useSession();
-  const { slug } = session?.user.workspace ?? {};
   const [open, setOpen] = useState(false);
-
   const { dueDate, isCompleted, memberId, assignee } = task;
+  const slug = useGetSlug();
 
   const { data: member } = trpc.members.get.useQuery(
     memberId ? { id: memberId } : skipToken,

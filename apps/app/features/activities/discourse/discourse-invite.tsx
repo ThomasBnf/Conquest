@@ -1,13 +1,13 @@
 import { SourceBadge } from "@/components/badges/source-badge";
+import { useGetSlug } from "@/hooks/useGetSlug";
 import { trpc } from "@/server/client";
 import { Avatar, AvatarFallback, AvatarImage } from "@conquest/ui/avatar";
 import type { ActivityWithType } from "@conquest/zod/schemas/activity.schema";
 import type { Member } from "@conquest/zod/schemas/member.schema";
+import { skipToken } from "@tanstack/react-query";
 import { format } from "date-fns";
-import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { ActivityMenu } from "../activity-menu";
-import { skipToken } from "@tanstack/react-query";
 
 type Props = {
   activity: ActivityWithType;
@@ -15,8 +15,7 @@ type Props = {
 };
 
 export const DiscourseInvite = ({ activity, member }: Props) => {
-  const { data: session } = useSession();
-  const { slug } = session?.user.workspace ?? {};
+  const slug = useGetSlug();
 
   const { createdAt, inviteTo } = activity;
   const { source } = activity.activityType;

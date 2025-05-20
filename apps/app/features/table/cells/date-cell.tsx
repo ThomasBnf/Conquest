@@ -1,6 +1,6 @@
 import { Tooltip, TooltipContent, TooltipTrigger } from "@conquest/ui/tooltip";
 import { format, formatDistance } from "date-fns";
-import { cn } from "../../../../../packages/ui/src/lib/utils";
+import { cn } from "@conquest/ui/cn";
 
 type Props = {
   date: Date | undefined | null;

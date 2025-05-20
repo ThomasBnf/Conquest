@@ -2,10 +2,10 @@ import { createManyActivityTypes } from "@conquest/clickhouse/activity-type/crea
 import { listActivityTypes } from "@conquest/clickhouse/activity-type/listActivityTypes";
 import { GITHUB_ACTIVITY_TYPES } from "@conquest/db/constant";
 import { prisma } from "@conquest/db/prisma";
-import { UserWithWorkspace } from "@conquest/zod/schemas/user.schema";
+import { User, UserSchema } from "@conquest/zod/schemas/user.schema";
 import { faker } from "@faker-js/faker";
 
-export const processGithub = async ({ user }: { user: UserWithWorkspace }) => {
+export const processGithub = async ({ user }: { user: User }) => {
   const { workspaceId } = user;
 
   const github = await prisma.integration.create({

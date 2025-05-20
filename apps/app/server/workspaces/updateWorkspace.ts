@@ -2,17 +2,10 @@ import { prisma } from "@conquest/db/prisma";
 import { updateWorkspace as _updateWorkspace } from "@conquest/db/workspaces/updateWorkspace";
 import { WorkspaceSchema } from "@conquest/zod/schemas/workspace.schema";
 import { TRPCError } from "@trpc/server";
-import { z } from "zod";
 import { protectedProcedure } from "../trpc";
 
 export const updateWorkspace = protectedProcedure
-  .input(
-    z
-      .object({
-        id: z.string(),
-      })
-      .and(WorkspaceSchema.partial()),
-  )
+  .input(WorkspaceSchema)
   .mutation(async ({ ctx: { user }, input }) => {
     const { slug } = input;
 
