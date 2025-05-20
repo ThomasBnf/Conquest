@@ -29,7 +29,11 @@ export const Task = () => {
   const { updateNodeData } = useReactFlow();
   const { title, days, assignee } = NodeTaskSchema.parse(node?.data);
 
-  const { data: users } = trpc.userInWorkspace.listUsers.useQuery();
+  const { data: users, failureReason } =
+    trpc.userInWorkspace.listUsers.useQuery();
+
+  console.log("users", users);
+  console.log("failureReason", failureReason);
 
   const form = useForm<FormTask>({
     resolver: zodResolver(FormTaskSchema),
@@ -44,8 +48,6 @@ export const Task = () => {
 
   const onUpdateNodeData = () => {
     if (!node) return;
-
-    console.log("node", node);
 
     updateNodeData(node?.id, {
       ...node.data,

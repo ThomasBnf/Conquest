@@ -69,7 +69,7 @@ export const NodeTaskSchema = NodeBaseDataSchema.extend({
   type: z.literal("task"),
   title: z.string(),
   days: z.number(),
-  assignee: z.string(),
+  assignee: z.string().optional(),
 });
 
 export const NodeTagMemberSchema = NodeBaseDataSchema.extend({
