@@ -3,7 +3,7 @@ import { getProfile } from "@conquest/clickhouse/profile/getProfile";
 import { discordClient } from "@conquest/db/discord";
 import type { Channel } from "@conquest/zod/schemas/channel.schema";
 import { logger } from "@trigger.dev/sdk/v3";
-import { isBefore, parseISO, subYears } from "date-fns";
+import { isBefore, parseISO, subDays } from "date-fns";
 import { type APIMessage, Routes } from "discord-api-types/v10";
 
 type Props = {
@@ -13,7 +13,7 @@ type Props = {
 
 export const listChannelMessages = async ({ channel, workspaceId }: Props) => {
   const { externalId } = channel;
-  const oneYearAgo = subYears(new Date(), 1);
+  const ninetyDaysAgo = subDays(new Date(), 90);
 
   if (!externalId) return;
 
@@ -97,7 +97,7 @@ export const listChannelMessages = async ({ channel, workspaceId }: Props) => {
 
       if (lastMessage?.timestamp) {
         const lastMessageDate = parseISO(lastMessage.timestamp);
-        if (isBefore(lastMessageDate, oneYearAgo)) break;
+        if (isBefore(lastMessageDate, ninetyDaysAgo)) break;
       }
     } catch (error) {
       const { name } = error as Error;

@@ -4,7 +4,7 @@ import { discordClient } from "@conquest/db/discord";
 import type { Channel } from "@conquest/zod/schemas/channel.schema";
 import type { DiscordIntegration } from "@conquest/zod/schemas/integration.schema";
 import { logger } from "@trigger.dev/sdk/v3";
-import { isBefore, parseISO, subYears } from "date-fns";
+import { isBefore, parseISO, subDays, subYears } from "date-fns";
 import {
   type APIMessage,
   type APIThreadChannel,
@@ -22,8 +22,8 @@ export const createManyArchivedThreads = async ({
   channel,
 }: Props) => {
   const { workspaceId } = discord;
-  const { id, externalId } = channel;
-  const oneYearAgo = subYears(new Date(), 1);
+  const { externalId } = channel;
+  const ninetyDaysAgo = subDays(new Date(), 90);
 
   if (!externalId) return;
 
@@ -56,7 +56,7 @@ export const createManyArchivedThreads = async ({
         const lastThreadDate = parseISO(
           lastThread.thread_metadata.archive_timestamp,
         );
-        if (isBefore(lastThreadDate, oneYearAgo)) break;
+        if (isBefore(lastThreadDate, ninetyDaysAgo)) break;
       }
     } catch (error) {
       const { name } = error as Error;
