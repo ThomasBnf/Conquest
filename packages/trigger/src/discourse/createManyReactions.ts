@@ -23,7 +23,7 @@ export const createManyReactions = async ({ discourse, profile }: Props) => {
   });
 
   const today = startOfDay(new Date());
-  const last365Days = subDays(today, 365);
+  const last90Days = subDays(today, 90);
 
   let before = 0;
   let hasMore = true;
@@ -56,7 +56,7 @@ export const createManyReactions = async ({ discourse, profile }: Props) => {
     }
 
     const recentReactions = dataReactions.filter(
-      (reaction) => new Date(reaction.post.created_at) >= last365Days,
+      (reaction) => new Date(reaction.post.created_at) >= last90Days,
     );
 
     if (recentReactions.length === 0) {

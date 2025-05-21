@@ -11,7 +11,7 @@ export const createManyIssues = async (tokenManager: TokenManager) => {
   const { getToken, getGithub } = tokenManager;
 
   let page = 1;
-  const since = subDays(new Date(), 365).toString();
+  const last90Days = subDays(new Date(), 90).toString();
 
   while (true) {
     const token = await getToken();
@@ -27,7 +27,7 @@ export const createManyIssues = async (tokenManager: TokenManager) => {
       page,
       state: "all",
       per_page: 100,
-      since,
+      since: last90Days,
       sort: "created",
       direction: "desc",
     });

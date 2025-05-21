@@ -24,7 +24,7 @@ export const createManyInvites = async ({ discourse, profile }: Props) => {
   });
 
   const today = startOfDay(new Date());
-  const last365Days = subDays(today, 365);
+  const last90Days = subDays(today, 90);
 
   let offSet = 0;
   let hasMore = true;
@@ -53,7 +53,7 @@ export const createManyInvites = async ({ discourse, profile }: Props) => {
     }
 
     const recentInvites = invites.filter(
-      (invite) => new Date(invite.redeemed_at) >= last365Days,
+      (invite) => new Date(invite.redeemed_at) >= last90Days,
     );
 
     if (recentInvites.length === 0) {

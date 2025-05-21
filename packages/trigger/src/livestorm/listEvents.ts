@@ -1,5 +1,6 @@
 import { ListEventsSchema } from "@conquest/zod/types/livestorm";
 import { logger } from "@trigger.dev/sdk/v3";
+import { subDays } from "date-fns";
 
 type Props = {
   accessToken: string;
@@ -8,12 +9,12 @@ type Props = {
 };
 
 export const listEvents = async ({ accessToken, page, filter }: Props) => {
+  const last90Days = subDays(new Date(), 90);
+
   const params = new URLSearchParams({
     "page[size]": "100",
     "page[number]": page.toString(),
-    "filter[created_since]": new Date(
-      Date.now() - 365 * 24 * 60 * 60 * 1000,
-    ).toISOString(),
+    "filter[created_since]": last90Days.toISOString(),
   });
 
   if (filter) params.set("filter[title]", filter);

@@ -16,7 +16,7 @@ export const createManyActivities = async ({ client, profile }: Props) => {
   const { username } = attributes;
 
   const today = startOfDay(new Date());
-  const last365Days = subDays(today, 365);
+  const last90Days = subDays(today, 90);
 
   let offset = 0;
   let hasMore = true;
@@ -34,7 +34,7 @@ export const createManyActivities = async ({ client, profile }: Props) => {
     }
 
     const recentActions = user_actions.filter(
-      (action) => new Date(action.created_at) >= last365Days,
+      (action) => new Date(action.created_at) >= last90Days,
     );
 
     if (recentActions.length === 0) {

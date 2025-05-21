@@ -13,7 +13,8 @@ type Props = {
 
 export const listChannelMessages = async ({ channel, workspaceId }: Props) => {
   const { externalId } = channel;
-  const ninetyDaysAgo = subDays(new Date(), 90);
+
+  const last90Days = subDays(new Date(), 90);
 
   if (!externalId) return;
 
@@ -97,7 +98,7 @@ export const listChannelMessages = async ({ channel, workspaceId }: Props) => {
 
       if (lastMessage?.timestamp) {
         const lastMessageDate = parseISO(lastMessage.timestamp);
-        if (isBefore(lastMessageDate, ninetyDaysAgo)) break;
+        if (isBefore(lastMessageDate, last90Days)) break;
       }
     } catch (error) {
       const { name } = error as Error;
