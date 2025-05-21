@@ -92,7 +92,7 @@ export const NextNode = () => {
       <div className="relative mt-2">
         <div className="relative z-10 flex h-10 items-center gap-2 rounded-md border bg-muted px-2">
           {icon === "Slack" ? (
-            <Slack size={24} className="rounded-md border p-1" />
+            <Slack size={24} className="rounded-md border bg-background p-1" />
           ) : (
             <Icon
               name={icon as keyof typeof icons}

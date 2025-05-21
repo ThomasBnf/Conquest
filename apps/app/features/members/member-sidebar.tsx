@@ -12,6 +12,7 @@ import { FieldCard } from "@/components/editable/field-card";
 import { TagPicker } from "@/features/tags/tag-picker";
 import { Avatar, AvatarFallback, AvatarImage } from "@conquest/ui/avatar";
 import { Badge } from "@conquest/ui/badge";
+import { cn } from "@conquest/ui/cn";
 import { ScrollArea } from "@conquest/ui/scroll-area";
 import { Separator } from "@conquest/ui/separator";
 import type { Member } from "@conquest/zod/schemas/member.schema";
@@ -84,12 +85,15 @@ export const MemberSidebar = ({ member, profiles }: Props) => {
         <Separator />
         <div className="space-y-4 p-4">
           <FieldCard label="Tags">
-            <div className="ml-[9px]">
-              <TagPicker
-                tags={member.tags}
-                onUpdate={(value) => onUpdateMember("tags", value)}
-              />
-            </div>
+            <TagPicker
+              variant="ghost"
+              tags={member.tags}
+              onUpdate={(value) => onUpdateMember("tags", value)}
+              className={cn(
+                "text-muted-foreground",
+                member.tags.length > 0 ? "ml-2" : "",
+              )}
+            />
           </FieldCard>
         </div>
         <Separator />

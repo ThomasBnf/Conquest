@@ -2,6 +2,7 @@ import { trpc } from "@/server/client";
 import { Badge } from "@conquest/ui/badge";
 import { Button, ButtonProps } from "@conquest/ui/button";
 import { Checkbox } from "@conquest/ui/checkbox";
+import { cn } from "@conquest/ui/cn";
 import {
   Command,
   CommandGroup,
@@ -25,7 +26,12 @@ type Props = {
   className?: string;
 };
 
-export const TagPicker = ({ tags = [], onUpdate, className }: Props) => {
+export const TagPicker = ({
+  tags = [],
+  onUpdate,
+  variant,
+  className,
+}: Props) => {
   const { data: session } = useSession();
   const { workspaceId } = session?.user ?? {};
 
@@ -72,7 +78,12 @@ export const TagPicker = ({ tags = [], onUpdate, className }: Props) => {
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild onClick={onClick}>
-        <div className="flex w-full cursor-pointer flex-wrap items-center gap-1">
+        <div
+          className={cn(
+            "flex w-full cursor-pointer flex-wrap items-center gap-1",
+            className,
+          )}
+        >
           {tags.map((tagId) => (
             <TagBadge
               key={tagId}
@@ -81,11 +92,7 @@ export const TagPicker = ({ tags = [], onUpdate, className }: Props) => {
               deletable={open}
             />
           ))}
-          <Button
-            variant="outline"
-            size={tags.length > 0 ? "icon_sm" : "sm"}
-            className={className}
-          >
+          <Button variant={variant} size={tags.length > 0 ? "icon_sm" : "sm"}>
             {tags.length > 0 ? <Plus size={16} /> : <TagIcon size={14} />}
             {tags.length === 0 && "Add tags"}
           </Button>

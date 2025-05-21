@@ -11,8 +11,8 @@ export const checkDuplicates = schemaTask({
     const workspaces = await listWorkspaces();
 
     for (const workspace of workspaces) {
-      const { id: workspaceId } = workspace;
-      logger.info("workspace", { workspaceId });
+      const { id: workspaceId, name } = workspace;
+      logger.info("workspace", { name, workspaceId });
 
       const result = await client.query({
         query: `
