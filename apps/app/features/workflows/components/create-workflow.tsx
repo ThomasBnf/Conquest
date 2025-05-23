@@ -19,7 +19,7 @@ export const CreateWorkflow = ({ slug }: Props) => {
   const { mutateAsync } = trpc.workflows.post.useMutation({
     onSuccess: ({ id }) => {
       utils.workflows.list.invalidate();
-      router.push(`/${slug}/workflows/${id}`);
+      router.push(`/${slug}/workflows/${id}/editor`);
     },
     onError: (error) => {
       toast.error(error.message);
