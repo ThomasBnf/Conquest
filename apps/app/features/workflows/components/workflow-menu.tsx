@@ -32,8 +32,8 @@ export const WorkflowMenu = ({ workflow, hasRuns }: Props) => {
 
   const deleteWorkflow = useDeleteWorkflow();
   const updateWorkflow = useUpdateWorkflow();
-  const slug = useGetSlug();
 
+  const slug = useGetSlug();
   const router = useRouter();
   const utils = trpc.useUtils();
 
