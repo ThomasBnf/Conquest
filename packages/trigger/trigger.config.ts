@@ -5,7 +5,12 @@ export default defineConfig({
   project: "proj_svkvhdhlspmnalydmzbs",
   logLevel: "log",
   build: {
-    external: ["react", "react-dom"],
+    external: [
+      "react",
+      "react-dom",
+      "@react-email/render",
+      "@react-email/components",
+    ],
     extensions: [
       prismaExtension({
         schema: "../../packages/db/prisma/schema.prisma",
