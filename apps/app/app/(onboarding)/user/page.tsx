@@ -53,6 +53,10 @@ export default function Page() {
 
   const form = useForm<UserForm>({
     resolver: zodResolver(UserFormSchema),
+    defaultValues: {
+      firstName: "",
+      lastName: "",
+    },
   });
 
   const onSubmit = async ({ firstName, lastName }: UserForm) => {
@@ -67,7 +71,7 @@ export default function Page() {
 
   return (
     <>
-      <Card className="mx-auto w-full max-w-lg">
+      <Card className="w-full max-w-lg mx-auto">
         <CardHeader>
           <CardTitle>Welcome to Conquest</CardTitle>
           <CardDescription>Tell us a bit about yourself.</CardDescription>

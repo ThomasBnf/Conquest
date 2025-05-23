@@ -70,7 +70,7 @@ export default function Page() {
 
   return (
     <>
-      <Card className="mx-auto w-full max-w-lg">
+      <Card className="w-full max-w-lg mx-auto">
         <CardHeader>
           <CardTitle>About you</CardTitle>
           <CardDescription>Tell us a bit about your company.</CardDescription>

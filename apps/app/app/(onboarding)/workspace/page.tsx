@@ -56,6 +56,10 @@ export default function Page() {
 
   const form = useForm<Workspace>({
     resolver: zodResolver(WorkspaceSchema),
+    defaultValues: {
+      name: "",
+      slug: "",
+    },
   });
 
   const onSubmit = async ({ name, slug }: Workspace) => {
@@ -72,7 +76,7 @@ export default function Page() {
 
   return (
     <>
-      <Card className="mx-auto w-full max-w-lg">
+      <Card className="w-full max-w-lg mx-auto">
         <CardHeader>
           <CardTitle>Create your workspace</CardTitle>
           <CardDescription>
@@ -119,7 +123,7 @@ export default function Page() {
                           focus && "border-main-200 ring-2 ring-ring",
                         )}
                       >
-                        <p className="h-9 place-content-center border-r bg-muted px-3">
+                        <p className="px-3 border-r h-9 place-content-center bg-muted">
                           useconquest.com
                         </p>
                         <Input
