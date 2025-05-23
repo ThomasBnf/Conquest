@@ -74,8 +74,6 @@ client.on(Events.GuildMemberAdd, async (member) => {
   const { user, guild } = member;
   const { id, bot, username, globalName, avatar } = user;
 
-  console.dir(member, { depth: null });
-
   if (bot) return;
 
   const integration = await getIntegration({
