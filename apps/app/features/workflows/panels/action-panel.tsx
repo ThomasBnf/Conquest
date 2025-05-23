@@ -201,7 +201,7 @@ export const nodes = (
           title: "",
           days: 2,
           assignee: user?.id ?? null,
-          alertByEmail: false,
+          alertByEmail: true,
         },
       },
     ],
