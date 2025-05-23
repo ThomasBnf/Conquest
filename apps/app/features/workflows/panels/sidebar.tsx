@@ -47,7 +47,7 @@ export const Sidebar = ({ workflow }: Props) => {
           </Button>
         </div>
       )}
-      <ScrollArea className="h-[calc(100vh-98px)]">
+      <ScrollArea className="h-[calc(100vh-128px)]">
         {panel === "workflow" && <WorkflowPanel workflow={workflow} />}
         {panel === "triggers" && <TriggerPanel workflow={workflow} />}
         {panel === "node" && node?.id && <OptionsPanel workflow={workflow} />}
