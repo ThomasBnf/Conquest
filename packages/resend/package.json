@@ -2,9 +2,7 @@
   "name": "@conquest/resend",
   "type": "module",
   "scripts": {
-    "dev": "email dev -p 3003",
-    "build": "email build",
-    "start": "email start"
+    "dev": "email dev -p 3003"
   },
   "exports": {
     "./emails/*": "./emails/*.tsx",
