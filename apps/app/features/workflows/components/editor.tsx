@@ -25,8 +25,7 @@ import {
 import "@xyflow/react/dist/style.css";
 import { Info } from "lucide-react";
 import { useCallback, useEffect } from "react";
-import { useNode } from "../hooks/useNode";
-import { usePanel } from "../hooks/usePanel";
+import { useWorkflow } from "../context/workflowContext";
 import { useUpdateWorkflow } from "../mutations/useUpdateWorkflow";
 import { CustomEdge } from "../nodes/custom-edge";
 import { CustomNode } from "../nodes/custom-node";
@@ -46,8 +45,7 @@ const edgeTypes = {
 };
 
 export const Editor = ({ workflow }: Props) => {
-  const { panel, setPanel } = usePanel();
-  const { setNode } = useNode();
+  const { setNode, panel, setPanel } = useWorkflow();
   const { toObject, getNode } = useReactFlow();
   const [nodes, setNodes] = useNodesState<WorkflowNode>(workflow.nodes);
   const [edges, setEdges] = useEdgesState<Edge>(workflow.edges);
@@ -64,7 +62,7 @@ export const Editor = ({ workflow }: Props) => {
             const isTrigger = "isTrigger" in node.data;
 
             setTimeout(() => {
-              setPanel({ panel: isTrigger ? "node" : "workflow" });
+              setPanel(isTrigger ? "node" : "workflow");
             }, 0);
 
             if (isTrigger) return prev;
@@ -145,11 +143,11 @@ export const Editor = ({ workflow }: Props) => {
 
   const onSelectionChange = useCallback(
     (selection: OnSelectionChangeParams<WorkflowNode, Edge>) => {
-      console.log("onSelectionChange", selection);
       const currentNode = selection.nodes[0];
 
       if (currentNode) {
-        setPanel({ panel: "node" });
+        console.log("currentNode", currentNode);
+        setPanel("node");
         setNode(currentNode);
       }
     },
@@ -176,14 +174,14 @@ export const Editor = ({ workflow }: Props) => {
     const hasTrigger = nodes.find((node) => "isTrigger" in node.data);
 
     if (!hasTrigger) {
-      setPanel({ panel: "triggers" });
+      setPanel("triggers");
     } else if (!panel) {
-      setPanel({ panel: "workflow" });
+      setPanel("workflow");
     }
   }, [nodes]);
 
   return (
-    <div className="relative flex h-full ">
+    <div className="relative flex h-full">
       <ReactFlow
         nodes={nodes}
         edges={edges}

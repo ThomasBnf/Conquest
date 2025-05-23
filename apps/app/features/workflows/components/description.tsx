@@ -15,7 +15,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useReactFlow } from "@xyflow/react";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { useNode } from "../hooks/useNode";
+import { useWorkflow } from "../context/workflowContext";
 import type { WorkflowNode } from "../panels/schemas/workflow-node.type";
 
 type Props = {
@@ -23,7 +23,7 @@ type Props = {
 };
 
 export const Description = ({ id }: Props) => {
-  const { setNode } = useNode();
+  const { setNode } = useWorkflow();
   const { getNode, updateNodeData } = useReactFlow();
 
   const node = getNode(id) as WorkflowNode | undefined;

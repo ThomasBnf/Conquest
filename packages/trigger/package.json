@@ -13,7 +13,7 @@
   "dependencies": {
     "@conquest/clickhouse": "workspace:*",
     "@conquest/db": "workspace:*",
-    "@conquest/emails": "workspace:*",
+    "@conquest/resend": "workspace:*",
     "@conquest/zod": "workspace:*",
     "@faker-js/faker": "^9.6.0",
     "@trigger.dev/react-hooks": "3.3.17",

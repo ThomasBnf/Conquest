@@ -41,6 +41,9 @@ export const EnableCard = ({
   useEffect(() => {
     if (error) {
       switch (error) {
+        case "missing_permissions":
+          toast.error("Error: Missing permissions", { duration: 10000 });
+          break;
         case "access_denied":
           toast.error("Error: Access denied", { duration: 10000 });
           break;

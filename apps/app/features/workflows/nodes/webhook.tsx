@@ -13,16 +13,15 @@ import { useReactFlow } from "@xyflow/react";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { VariablePicker } from "../components/variable-picker";
-import { useNode } from "../hooks/useNode";
+import { useWorkflow } from "../context/workflowContext";
 import {
   type FormWebhook,
   FormWebhookSchema,
 } from "./schemas/form-webhook.schema";
 
 export const Webhook = () => {
-  const { node } = useNode();
+  const { node } = useWorkflow();
   const { updateNodeData } = useReactFlow();
-
   const { url, body } = NodeWebhookSchema.parse(node?.data);
 
   const form = useForm<FormWebhook>({

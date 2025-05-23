@@ -141,7 +141,7 @@ export const CreateTaskDialog = () => {
                     <FormItem>
                       <FormControl>
                         <Select
-                          value={field.value}
+                          value={field.value ?? ""}
                           onValueChange={field.onChange}
                         >
                           <SelectTrigger className="h-8 bg-background">
@@ -167,7 +167,7 @@ export const CreateTaskDialog = () => {
                     <FormItem>
                       <FormControl>
                         <MemberPicker
-                          value={field.value}
+                          value={field.value ?? null}
                           onChange={field.onChange}
                         />
                       </FormControl>

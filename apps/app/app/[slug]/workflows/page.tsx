@@ -1,7 +1,7 @@
 import { Header } from "@/components/layouts/header";
 import { PageLayout } from "@/components/layouts/page-layout";
 import { CreateWorkflow } from "@/features/workflows/components/create-workflow";
-import { WorkflowsListPage } from "@/features/workflows/components/workflowsListPage";
+import { WorkflowsListPage } from "@/features/workflows/components/workflows-list-page";
 
 type Props = {
   params: Promise<{ slug: string }>;

@@ -34,6 +34,9 @@ export const LoginForm = () => {
 
   const form = useForm<Login>({
     resolver: zodResolver(LoginSchema),
+    defaultValues: {
+      email: "",
+    },
   });
 
   const onSubmit = async ({ email }: Login) => {

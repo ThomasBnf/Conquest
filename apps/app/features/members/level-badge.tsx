@@ -28,6 +28,6 @@ export const LevelBadge = ({ member, isBadge = true }: Props) => {
     </div>
   );
 
-  if (isBadge) return <Badge variant="secondary">{LevelInfo}</Badge>;
+  if (isBadge) return <Badge variant="outline">{LevelInfo}</Badge>;
   return LevelInfo;
 };

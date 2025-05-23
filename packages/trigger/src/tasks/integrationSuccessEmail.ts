@@ -1,9 +1,9 @@
-import { resend } from "@conquest/db/resend";
 import { getUserById } from "@conquest/db/users/getUserById";
-import { SuccessIntegrationEmail } from "@conquest/emails/templates/SuccessIntegrationEmail";
 import { env } from "@conquest/env";
+import { resend } from "@conquest/resend";
+import SuccessIntegration from "@conquest/resend/emails/sucess-integration";
 import { IntegrationSchema } from "@conquest/zod/schemas/integration.schema";
-import { render } from "@react-email/components";
+import { render } from "@react-email/render";
 import { logger, schemaTask } from "@trigger.dev/sdk/v3";
 import { z } from "zod";
 
@@ -25,7 +25,7 @@ export const integrationSuccessEmail = schemaTask({
 
     if (!email) return;
 
-    const html = await render(SuccessIntegrationEmail({ source, url }), {
+    const html = await render(SuccessIntegration({ source, url }), {
       pretty: true,
     });
 

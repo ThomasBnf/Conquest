@@ -13,13 +13,12 @@ import { useReactFlow } from "@xyflow/react";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { VariablePicker } from "../components/variable-picker";
-import { useNode } from "../hooks/useNode";
+import { useWorkflow } from "../context/workflowContext";
 import { type FormSlack, FormSlackSchema } from "./schemas/form-slack.schema";
 
 export const SlackMessage = () => {
-  const { node } = useNode();
+  const { node } = useWorkflow();
   const { updateNodeData } = useReactFlow();
-
   const { message } = NodeSlackMessageSchema.parse(node?.data);
 
   const form = useForm<FormSlack>({

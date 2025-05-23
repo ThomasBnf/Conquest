@@ -16,19 +16,25 @@ export const triggerWorkflows = schemaTask({
   run: async ({ trigger, member }) => {
     const { workspaceId } = member;
 
+    logger.info("trigger", { trigger });
+    logger.info("member", { member });
+
     const workflows = WorkflowSchema.array().parse(
       await prisma.workflow.findMany({
         where: {
-          trigger,
           published: true,
           workspaceId,
         },
       }),
     );
 
-    logger.info("workflows", { workflows });
+    const filteredWorkflows = workflows.filter((workflow) =>
+      workflow.nodes.some((node) => node.data.type === trigger),
+    );
 
-    for (const workflow of workflows) {
+    logger.info("workflows", { filteredWorkflows });
+
+    for (const workflow of filteredWorkflows) {
       await runWorkflow.trigger({ workflow, member });
     }
   },

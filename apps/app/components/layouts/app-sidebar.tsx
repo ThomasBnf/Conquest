@@ -3,13 +3,13 @@
 import { WorkspaceMenu } from "@/features/workspaces/workspace-menu";
 import { useGetSlug } from "@/hooks/useGetSlug";
 import { Badge } from "@conquest/ui/badge";
-import { cn } from "@conquest/ui/cn";
 import { Companies } from "@conquest/ui/icons/Companies";
 import { Dashboard } from "@conquest/ui/icons/Dashboard";
 import { Documentation } from "@conquest/ui/icons/Documentation";
 import { Members } from "@conquest/ui/icons/Members";
 import { Settings } from "@conquest/ui/icons/Settings";
 import { SlackCommunity } from "@conquest/ui/icons/Slack-Community";
+import { Tasks } from "@conquest/ui/icons/Tasks";
 import { Workflows } from "@conquest/ui/icons/Workflows";
 import { Separator } from "@conquest/ui/separator";
 import {
@@ -48,12 +48,13 @@ export const AppSidebar = ({ workspace }: Props) => {
       href: `/${slug}`,
       isActive: pathname === `/${slug}`,
     },
-    // {
-    //   label: "Tasks",
-    //   icon: <Tasks size={18} />,
-    //   href: `/${slug}/tasks`,
-    //   isActive: pathname.startsWith(`/${slug}/tasks`),
-    // },
+    {
+      label: "Tasks",
+      icon: <Tasks size={18} />,
+      href: `/${slug}/tasks`,
+      isActive: pathname.startsWith(`/${slug}/tasks`),
+      isBeta: true,
+    },
     {
       label: "Members",
       icon: <Members size={18} />,
@@ -71,7 +72,7 @@ export const AppSidebar = ({ workspace }: Props) => {
       icon: <Workflows size={18} />,
       href: `/${slug}/workflows`,
       isActive: pathname.startsWith(`/${slug}/workflows`),
-      isSoon: true,
+      isBeta: true,
     },
   ];
 
@@ -110,13 +111,11 @@ export const AppSidebar = ({ workspace }: Props) => {
                   asChild
                   tooltip={route.label}
                   isActive={route.isActive}
-                  disabled={route.isSoon}
-                  className={cn(route.isSoon && "opacity-50")}
                 >
-                  <Link href={route.isSoon ? "" : route.href} prefetch>
+                  <Link href={route.href} prefetch>
                     {route.icon}
                     <span>{route.label}</span>
-                    {route.isSoon && <Badge variant="secondary">Soon</Badge>}
+                    {route.isBeta && <Badge variant="outline">Beta</Badge>}
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>

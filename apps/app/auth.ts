@@ -1,7 +1,7 @@
 import { prisma } from "@conquest/db/prisma";
-import { resend } from "@conquest/db/resend";
-import { SignupEmail } from "@conquest/emails/templates/SignupEmail";
 import { env } from "@conquest/env";
+import { resend } from "@conquest/resend";
+import MagicLink from "@conquest/resend/emails/magic-link";
 import { type User, UserSchema } from "@conquest/zod/schemas/user.schema";
 import type { DefaultSession } from "next-auth";
 import NextAuth from "next-auth";
@@ -26,7 +26,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           from: "Conquest <hello@useconquest.com>",
           to: identifier,
           subject: "Login for Conquest",
-          react: SignupEmail({ url }),
+          react: MagicLink({ url }),
         });
       },
     }),

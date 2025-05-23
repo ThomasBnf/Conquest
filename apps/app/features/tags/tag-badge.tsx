@@ -18,7 +18,7 @@ export const TagBadge = ({
   if (!tag) return null;
 
   return (
-    <Badge variant={transparent ? "transparent" : "secondary"}>
+    <Badge variant={transparent ? "transparent" : "outline"}>
       <div
         className="size-2 shrink-0 rounded-full"
         style={{ backgroundColor: tag.color }}

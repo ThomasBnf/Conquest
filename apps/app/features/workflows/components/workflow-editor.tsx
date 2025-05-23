@@ -7,13 +7,15 @@ import { Header } from "@/features/workflows/components/header";
 import { trpc } from "@/server/client";
 import { ReactFlowProvider } from "@xyflow/react";
 import { redirect } from "next/navigation";
+import { WorkflowProvider } from "../context/workflowContext";
+import { WorkflowTabs } from "./workflow-tabs";
 
 type Props = {
   slug: string;
   workflowId: string;
 };
 
-export const WorkflowPage = ({ slug, workflowId }: Props) => {
+export const WorkflowEditor = ({ slug, workflowId }: Props) => {
   const { data, isLoading } = trpc.workflows.get.useQuery({ id: workflowId });
 
   if (isLoading) return <IsLoading />;
@@ -21,10 +23,13 @@ export const WorkflowPage = ({ slug, workflowId }: Props) => {
 
   return (
     <PageLayout>
-      <Header slug={slug} workflow={data} />
-      <ReactFlowProvider>
-        <Editor workflow={data} />
-      </ReactFlowProvider>
+      <Header workflow={data} />
+      <WorkflowTabs workflowId={workflowId} />
+      <WorkflowProvider>
+        <ReactFlowProvider>
+          <Editor workflow={data} />
+        </ReactFlowProvider>
+      </WorkflowProvider>
     </PageLayout>
   );
 };

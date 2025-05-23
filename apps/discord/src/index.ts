@@ -74,6 +74,8 @@ client.on(Events.GuildMemberAdd, async (member) => {
   const { user, guild } = member;
   const { id, bot, username, globalName, avatar } = user;
 
+  console.dir(member, { depth: null });
+
   if (bot) return;
 
   const integration = await getIntegration({
@@ -154,6 +156,9 @@ client.on(Events.GuildMemberRemove, async (member) => {
 
 client.on(Events.UserUpdate, async (_, user) => {
   const { id, username, globalName, avatar } = user;
+
+  console.log("UserUpdate");
+  console.dir(user, { depth: null });
 
   const firstName = globalName?.split(" ")[0] ?? "";
   const lastName = globalName?.split(" ")[1] ?? "";
@@ -687,6 +692,7 @@ client.on(Events.MessageReactionAdd, async (reaction, user) => {
     externalId,
     workspaceId,
   });
+
   if (!profile) return;
 
   const channel = await getChannel({

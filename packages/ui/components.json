@@ -11,10 +11,10 @@
   },
   "iconLibrary": "lucide",
   "aliases": {
-    "components": "@conquest/ui/components",
-    "utils": "@conquest/ui/lib/utils",
-    "hooks": "@conquest/ui/hooks",
-    "lib": "@conquest/ui/lib",
-    "ui": "@conquest/ui/components"
+    "components": "@conquest/ui/src/components",
+    "utils": "@conquest/ui/src/lib/utils",
+    "hooks": "@conquest/ui/src/hooks",
+    "lib": "@conquest/ui/src/lib",
+    "ui": "@conquest/ui/src/components"
   }
 }

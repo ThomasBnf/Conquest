@@ -24,6 +24,8 @@ export const NodeBaseDataSchema = z.object({
   icon: z.string(),
   label: z.string(),
   description: z.string(),
+  status: z.enum(["COMPLETED", "FAILED"]).optional(),
+  error: z.string().optional(),
 });
 
 // TRIGGERS
@@ -69,7 +71,8 @@ export const NodeTaskSchema = NodeBaseDataSchema.extend({
   type: z.literal("task"),
   title: z.string(),
   days: z.number(),
-  assignee: z.string().optional(),
+  assignee: z.string().nullable(),
+  alertByEmail: z.boolean(),
 });
 
 export const NodeTagMemberSchema = NodeBaseDataSchema.extend({

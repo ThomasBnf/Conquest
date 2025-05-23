@@ -1,4 +1,3 @@
-import { trpc } from "@/server/client";
 import {
   Form,
   FormControl,
@@ -12,7 +11,7 @@ import { TextField } from "@conquest/ui/text-field";
 import { Workflow } from "@conquest/zod/schemas/workflow.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { toast } from "sonner";
+import { useUpdateWorkflow } from "../mutations/useUpdateWorkflow";
 import {
   type FormWorkflow,
   FormWorkflowSchema,
@@ -23,8 +22,8 @@ type Props = {
 };
 
 export const WorkflowPanel = ({ workflow }: Props) => {
-  const { id, name, description } = workflow;
-  const utils = trpc.useUtils();
+  const { name, description } = workflow;
+  const updateWorkflow = useUpdateWorkflow();
 
   const form = useForm<FormWorkflow>({
     resolver: zodResolver(FormWorkflowSchema),
@@ -34,34 +33,8 @@ export const WorkflowPanel = ({ workflow }: Props) => {
     },
   });
 
-  const { mutateAsync } = trpc.workflows.update.useMutation({
-    onMutate: async () => {
-      await utils.workflows.get.cancel();
-
-      const previousWorkflow = utils.workflows.get.getData({ id });
-
-      utils.workflows.get.setData({ id }, (old) => {
-        if (!old) return undefined;
-        return {
-          ...old,
-          name: form.getValues().name,
-          description: form.getValues().description ?? "",
-        };
-      });
-
-      return { previousWorkflow };
-    },
-    onError: (error, __, context) => {
-      utils.workflows.get.setData({ id }, context?.previousWorkflow);
-      toast.error(error.message);
-    },
-    onSettled: () => {
-      utils.workflows.get.invalidate({ id });
-    },
-  });
-
   const onSubmit = ({ name, description }: FormWorkflow) => {
-    mutateAsync({
+    updateWorkflow({
       ...workflow,
       name,
       description: description ?? "",

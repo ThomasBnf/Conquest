@@ -29,7 +29,7 @@ export const DuplicateMenu = () => {
         <Link href={`/${slug}/duplicates`} prefetch>
           <Duplicate size={18} />
           <span>Duplicates</span>
-          <Badge variant="secondary" className="ml-auto">
+          <Badge variant="outline" className="ml-auto">
             {count}
           </Badge>
         </Link>

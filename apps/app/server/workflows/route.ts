@@ -1,6 +1,7 @@
 import { router } from "../trpc";
 import { createWorkflow } from "./createWorkflow";
 import { deleteWorkflow } from "./deleteWorkflow";
+import { duplicateWorkflow } from "./duplicateWorkflow";
 import { getWorkflow } from "./getWorkflow";
 import { listWorkflows } from "./listWorkflows";
 import { updateWorkflow } from "./updateWorkflow";
@@ -11,4 +12,5 @@ export const workflowsRouter = router({
   get: getWorkflow,
   update: updateWorkflow,
   delete: deleteWorkflow,
+  duplicate: duplicateWorkflow,
 });

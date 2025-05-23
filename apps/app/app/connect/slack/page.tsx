@@ -18,7 +18,9 @@ export default async function Page({ searchParams }: Props) {
   const { error, code } = await searchParams;
   const { id, workspaceId } = await getCurrentUser();
 
-  if (error) redirect("/settings/integrations/slack?error=access_denied");
+  if (error) {
+    redirect("/settings/integrations/slack?error=access_denied");
+  }
 
   const response = await fetch("https://slack.com/api/oauth.v2.access", {
     method: "POST",
@@ -33,7 +35,7 @@ export default async function Page({ searchParams }: Props) {
   });
 
   if (!response.ok) {
-    return redirect("/settings/integrations/slack?error=invalid_code");
+    redirect("/settings/integrations/slack?error=invalid_code");
   }
 
   const data = await response.json();
@@ -43,13 +45,13 @@ export default async function Page({ searchParams }: Props) {
   const { team } = await web.team.info();
 
   if (!team?.id || !team?.name || !team?.url) {
-    return redirect("/settings/integrations/slack?error=invalid_code");
+    redirect("/settings/integrations/slack?error=invalid_code");
   }
 
   const integration = await getIntegration({ externalId: team.id });
 
   if (integration) {
-    return redirect("/settings/integrations/slack?error=already_connected");
+    redirect("/settings/integrations/slack?error=already_connected");
   }
 
   const encryptedAccessToken = await encrypt(access_token);

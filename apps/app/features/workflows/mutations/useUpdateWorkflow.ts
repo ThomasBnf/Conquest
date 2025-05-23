@@ -22,6 +22,7 @@ export const useUpdateWorkflow = () => {
     },
     onSettled: (_, __, { id }) => {
       utils.workflows.get.invalidate({ id });
+      utils.workflows.list.invalidate();
     },
   });
 

@@ -4,12 +4,11 @@ import { Label } from "@conquest/ui/label";
 import { GroupFilters } from "@conquest/zod/schemas/filters.schema";
 import { NodeIfElseSchema } from "@conquest/zod/schemas/node.schema";
 import { useReactFlow } from "@xyflow/react";
-import { useNode } from "../hooks/useNode";
+import { useWorkflow } from "../context/workflowContext";
 
 export const IfElse = () => {
-  const { node } = useNode();
+  const { node } = useWorkflow();
   const { updateNodeData } = useReactFlow();
-
   const { groupFilters } = NodeIfElseSchema.parse(node?.data);
 
   const saveFilters = async (newGroupFilters: GroupFilters) => {

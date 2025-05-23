@@ -53,6 +53,12 @@ enum STATE {
     REJECTED
 }
 
+enum RUN_STATUS {
+    RUNNING
+    COMPLETED
+    FAILED
+}
+
 model Account {
     id                String  @id @default(cuid())
     userId            String
@@ -157,6 +163,22 @@ model List {
     @@index([id, workspaceId])
 }
 
+model Run {
+    id          String     @id @default(uuid())
+    workflowId  String
+    workflow    Workflow   @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+    completedAt DateTime?
+    failedAt    DateTime?
+    status      RUN_STATUS @default(RUNNING)
+    runNodes    Json[]
+    credits     Int        @default(0)
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@index([workflowId])
+}
+
 model Session {
     id           String   @id @default(cuid())
     sessionToken String   @unique
@@ -220,6 +242,7 @@ model User {
     accounts        Account[]
     sessions        Session[]
     userInWorkspace UserInWorkspace[]
+    Workflow        Workflow[]
 
     @@index([id])
     @@index([email])
@@ -261,20 +284,22 @@ model VerificationToken {
 }
 
 model Workflow {
-    id          String    @id @default(uuid())
+    id          String  @id @default(uuid())
     name        String
     description String?
-    trigger     String?
     nodes       Json[]
     edges       Json[]
-    published   Boolean   @default(false)
-    lastRunAt   DateTime?
+    published   Boolean @default(false)
+    runs        Run[]
+    createdBy   String
+    user        User    @relation(fields: [createdBy], references: [id])
 
     workspaceId String
     workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
 
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+    createdAt  DateTime  @default(now())
+    updatedAt  DateTime  @updatedAt
+    archivedAt DateTime?
 
     @@index([id, workspaceId])
     @@index([workspaceId])

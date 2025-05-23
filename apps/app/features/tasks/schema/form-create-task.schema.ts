@@ -4,8 +4,8 @@ import { z } from "zod";
 export const FormCreateTaskSchema = z.object({
   title: z.string().min(1, { message: "Title is required" }),
   dueDate: z.date(),
-  assignee: z.string(),
-  member: MemberSchema.optional(),
+  assignee: z.string().nullable(),
+  member: MemberSchema.nullable(),
 });
 
 export type FormCreateTask = z.infer<typeof FormCreateTaskSchema>;

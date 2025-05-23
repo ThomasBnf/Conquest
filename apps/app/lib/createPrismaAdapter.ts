@@ -7,10 +7,9 @@ import type {
 } from "@auth/core/adapters";
 import { client } from "@conquest/clickhouse/client";
 import { PrismaClientKnownRequestError } from "@conquest/db/enum";
-import { resend } from "@conquest/db/resend";
 import type { Prisma } from "@conquest/db/types";
 import { createWorkspace } from "@conquest/db/workspaces/createWorkspace";
-import { createContact } from "@conquest/emails/brevo/createContact";
+import { resend } from "@conquest/resend";
 import { UserSchema } from "@conquest/zod/schemas/user.schema";
 import { isBefore, subHours } from "date-fns";
 import { v4 as uuid } from "uuid";
@@ -57,7 +56,6 @@ export const createAuthPrismaAdapter = (
 
     if (process.env.NODE_ENV === "development") return user as AdapterUser;
 
-    await createContact({ user });
     await resend.emails.send({
       from: "Conquest <hello@useconquest.com>",
       to: ["audrey@useconquest.com", "thomas.bnfls@gmail.com"],

@@ -1,10 +1,14 @@
 {
-  "name": "@conquest/emails",
+  "name": "@conquest/resend",
   "type": "module",
+  "scripts": {
+    "dev": "email dev -p 3003",
+    "build": "email build",
+    "start": "email start"
+  },
   "exports": {
-    "./brevo/*": "./src/brevo/*.ts",
-    "./templates/*": "./src/templates/*.tsx",
-    "./*": "./src/*.ts"
+    "./emails/*": "./emails/*.tsx",
+    ".": "./src/index.ts"
   },
   "dependencies": {
     "@react-email/components": "^0.0.24",
@@ -14,6 +18,7 @@
   },
   "devDependencies": {
     "@conquest/tsconfig": "workspace:*",
+    "@conquest/zod": "workspace:*",
     "react-email": "^3.0.1"
   }
 }

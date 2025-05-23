@@ -60,6 +60,9 @@ export const CreateMemberDialog = () => {
   const form = useForm<MemberForm>({
     resolver: zodResolver(MemberFormSchema),
     defaultValues: {
+      firstName: "",
+      lastName: "",
+      primaryEmail: "",
       source: "Manual",
     },
   });

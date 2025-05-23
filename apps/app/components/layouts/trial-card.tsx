@@ -3,7 +3,6 @@ import { Badge } from "@conquest/ui/badge";
 import { Button } from "@conquest/ui/button";
 import { differenceInDays } from "date-fns";
 import { Loader2 } from "lucide-react";
-import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -42,7 +41,7 @@ export const TrialCard = () => {
           className="ml-auto animate-spin text-muted-foreground"
         />
       ) : (
-        <Badge variant="secondary">Add billing</Badge>
+        <Badge variant="outline">Add billing</Badge>
       )}
     </Button>
   );

@@ -6,7 +6,7 @@ import { Container, Heading, Section, SubHeading } from "./Section";
 export const UseCases = () => {
   return (
     <Section id="use-cases">
-      <Badge variant="secondary" className="mb-4 h-7 shadow-sm">
+      <Badge variant="outline" className="mb-4 h-7 shadow-sm">
         <Image src="use-cases.svg" alt="use-cases" width={16} height={16} />
         <p className="text-sm">USE CASES</p>
       </Badge>

@@ -48,13 +48,13 @@ export const IntegrationCard = ({ integration }: Props) => {
         </Badge>
       )}
       {isSyncing && (
-        <Badge variant="secondary" className="absolute top-2 right-2">
+        <Badge variant="outline" className="absolute top-2 right-2">
           <Loader2 className="mr-1 size-3 animate-spin" />
           Syncing
         </Badge>
       )}
       {isSyncing && (
-        <Badge variant="secondary" className="absolute top-2 right-2">
+        <Badge variant="outline" className="absolute top-2 right-2">
           <Loader2 className="mr-1 size-3 animate-spin" />
           Syncing
         </Badge>
@@ -70,7 +70,7 @@ export const IntegrationCard = ({ integration }: Props) => {
         </Badge>
       )}
       {soon && (
-        <Badge variant="secondary" className="absolute top-2 right-2">
+        <Badge variant="outline" className="absolute top-2 right-2">
           Coming soon
         </Badge>
       )}

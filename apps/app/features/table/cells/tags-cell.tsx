@@ -6,6 +6,7 @@ import { trpc } from "@/server/client";
 import { tableCompaniesParams, tableMembersParams } from "@/utils/tableParams";
 import { Badge } from "@conquest/ui/badge";
 import { Checkbox } from "@conquest/ui/checkbox";
+import { cn } from "@conquest/ui/cn";
 import {
   Command,
   CommandGroup,
@@ -20,7 +21,6 @@ import { useQueryStates } from "nuqs";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { v4 as uuid } from "uuid";
-import { cn } from "@conquest/ui/cn";
 type Props<TData extends Member | Company> = {
   data: TData;
 };
@@ -223,7 +223,7 @@ export const TagsCell = <TData extends Member | Company>({
               <CommandGroup>
                 <CommandItem value={value} onSelect={onAddTag}>
                   <span className="mr-2">Create</span>
-                  <Badge variant="secondary">
+                  <Badge variant="outline">
                     <div
                       className="size-2 shrink-0 rounded-full"
                       style={{ backgroundColor: "#0070f3" }}

@@ -17,7 +17,7 @@ import { useEffect, useState } from "react";
 import { useInView } from "react-intersection-observer";
 
 type Props = {
-  value: Member | undefined;
+  value: Member | null | undefined;
   onChange: (member: Member) => void;
 };
 

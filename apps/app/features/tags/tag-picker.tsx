@@ -127,7 +127,7 @@ export const TagPicker = ({
               <CommandGroup>
                 <CommandItem value={value} onSelect={onAddTag}>
                   <span className="mr-2">Create</span>
-                  <Badge variant="secondary">
+                  <Badge variant="outline">
                     <div
                       className="size-2 shrink-0 rounded-full"
                       style={{ backgroundColor: "#0070f3" }}

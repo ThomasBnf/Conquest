@@ -88,8 +88,8 @@ export const EditTaskDialog = ({ open, setOpen, task }: Props) => {
     defaultValues: {
       title,
       dueDate,
-      assignee,
-      member: member ?? undefined,
+      assignee: assignee ?? null,
+      member: member ?? null,
       isCompleted,
     },
   });
@@ -193,7 +193,7 @@ export const EditTaskDialog = ({ open, setOpen, task }: Props) => {
                     <FormItem>
                       <FormControl>
                         <Select
-                          value={field.value}
+                          value={field.value ?? ""}
                           onValueChange={field.onChange}
                         >
                           <SelectTrigger className="h-8 bg-background">

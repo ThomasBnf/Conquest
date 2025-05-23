@@ -8,8 +8,7 @@ import { useReactFlow } from "@xyflow/react";
 import { RefreshCcw, Trash2, type icons } from "lucide-react";
 import { Description } from "../components/description";
 import { NextNode } from "../components/next-node";
-import { useNode } from "../hooks/useNode";
-import { usePanel } from "../hooks/usePanel";
+import { useWorkflow } from "../context/workflowContext";
 import { IfElse } from "../nodes/if-else";
 import { SlackMessage } from "../nodes/slack-message";
 import { TagMember } from "../nodes/tag-member";
@@ -24,8 +23,7 @@ type Props = {
 };
 
 export const OptionsPanel = ({ workflow }: Props) => {
-  const { node } = useNode();
-  const { panel, setPanel } = usePanel();
+  const { node, panel, setPanel } = useWorkflow();
   const { deleteElements } = useReactFlow();
 
   if (!node) return;
@@ -66,23 +64,23 @@ export const OptionsPanel = ({ workflow }: Props) => {
                   variant="outline"
                   size="icon"
                   onClick={() => {
-                    setPanel({
-                      panel: isTrigger ? "triggers" : "actions-change",
-                    });
+                    setPanel(isTrigger ? "triggers" : "actions-change");
                   }}
                 >
                   <RefreshCcw size={16} />
                 </Button>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  onClick={() => {
-                    onDelete();
-                    setPanel({ panel: "workflow" });
-                  }}
-                >
-                  <Trash2 size={16} className="text-destructive" />
-                </Button>
+                {!isTrigger && (
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={() => {
+                      onDelete();
+                      setPanel("workflow");
+                    }}
+                  >
+                    <Trash2 size={16} className="text-destructive" />
+                  </Button>
+                )}
               </div>
             </div>
             <Description id={node.id} />

@@ -135,6 +135,6 @@ export const PulseBadge = ({
     </Tooltip>
   );
 
-  if (isBadge) return <Badge variant="secondary">{ToolTip}</Badge>;
+  if (isBadge) return <Badge variant="outline">{ToolTip}</Badge>;
   return ToolTip;
 };

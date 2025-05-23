@@ -10,14 +10,21 @@ type Props = {
   searchParams: Promise<{
     error?: string;
     code: string;
+    permissions?: string;
   }>;
 };
 
 export default async function Page({ searchParams }: Props) {
-  const { code, error } = await searchParams;
+  const { code, error, permissions } = await searchParams;
   const { id: userId, workspaceId } = await getCurrentUser();
 
-  if (error) redirect("/settings/integrations/discord?error=access_denied");
+  if (permissions !== DISCORD_PERMISSIONS) {
+    redirect("/settings/integrations/discord?error=missing_permissions");
+  }
+
+  if (error) {
+    redirect("/settings/integrations/discord?error=access_denied");
+  }
 
   const response = await fetch("https://discord.com/api/oauth2/token", {
     method: "POST",
@@ -35,7 +42,7 @@ export default async function Page({ searchParams }: Props) {
   const data = await response.json();
 
   if (!response.ok) {
-    return redirect("/settings/integrations/discord?error=invalid_code");
+    redirect("/settings/integrations/discord?error=invalid_code");
   }
 
   const { access_token, expires_in, refresh_token, guild } = data;
@@ -44,7 +51,7 @@ export default async function Page({ searchParams }: Props) {
   const integration = await getIntegration({ externalId: id });
 
   if (integration) {
-    return redirect("/settings/integrations/discord?error=already_connected");
+    redirect("/settings/integrations/discord?error=already_connected");
   }
 
   const encryptedAccessToken = await encrypt(access_token);
@@ -67,5 +74,5 @@ export default async function Page({ searchParams }: Props) {
     workspaceId,
   });
 
-  redirect("/settings/integrations/discord");
+  // redirect("/settings/integrations/discord");
 }

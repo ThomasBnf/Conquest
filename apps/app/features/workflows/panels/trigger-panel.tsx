@@ -1,5 +1,4 @@
 import { Icon } from "@/components/custom/Icon";
-import { trpc } from "@/server/client";
 import {
   Command,
   CommandEmpty,
@@ -11,13 +10,12 @@ import {
 import { Label } from "@conquest/ui/label";
 import { ScrollArea } from "@conquest/ui/scroll-area";
 import { Separator } from "@conquest/ui/separator";
-import { Node, Trigger } from "@conquest/zod/schemas/node.schema";
+import { Node } from "@conquest/zod/schemas/node.schema";
 import type { Workflow } from "@conquest/zod/schemas/workflow.schema";
 import { useReactFlow } from "@xyflow/react";
 import { type icons } from "lucide-react";
 import { v4 as uuid } from "uuid";
-import { useNode } from "../hooks/useNode";
-import { usePanel } from "../hooks/usePanel";
+import { useWorkflow } from "../context/workflowContext";
 import type { WorkflowNode } from "./schemas/workflow-node.type";
 
 type Props = {
@@ -25,11 +23,8 @@ type Props = {
 };
 
 export const TriggerPanel = ({ workflow }: Props) => {
-  const { setPanel } = usePanel();
-  const { node: selectedNode, setNode } = useNode();
+  const { setPanel, node: selectedNode, setNode } = useWorkflow();
   const { addNodes, updateNode } = useReactFlow();
-
-  const { mutateAsync } = trpc.workflows.update.useMutation();
 
   const onSelect = async (node: WorkflowNode) => {
     if (selectedNode) {
@@ -38,9 +33,7 @@ export const TriggerPanel = ({ workflow }: Props) => {
       addNodes([node]);
     }
 
-    await mutateAsync({ ...workflow, trigger: node.data.type as Trigger });
-
-    setPanel({ panel: "node" });
+    setPanel("node");
     setNode(node);
   };
 

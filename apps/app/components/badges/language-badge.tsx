@@ -20,7 +20,7 @@ export const LanguageBadge = ({
 
   return (
     <Badge
-      variant={transparent ? "transparent" : "secondary"}
+      variant={transparent ? "transparent" : "outline"}
       className={cn("gap-2", className)}
     >
       <p className="truncate font-medium">{currentLanguage}</p>

@@ -11,12 +11,10 @@ export const deleteWorkflow = protectedProcedure
   .mutation(async ({ ctx: { user }, input: { id } }) => {
     const { workspaceId } = user;
 
-    await prisma.workflow.delete({
+    return await prisma.workflow.delete({
       where: {
         id,
         workspaceId,
       },
     });
-
-    return { success: true };
   });

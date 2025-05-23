@@ -2,10 +2,10 @@ import { TagPicker } from "@/features/tags/tag-picker";
 import { Label } from "@conquest/ui/label";
 import { NodeTagMemberSchema } from "@conquest/zod/schemas/node.schema";
 import { useReactFlow } from "@xyflow/react";
-import { useNode } from "../hooks/useNode";
+import { useWorkflow } from "../context/workflowContext";
 
 export const TagMember = () => {
-  const { node, setNode } = useNode();
+  const { node, setNode } = useWorkflow();
   const { updateNodeData } = useReactFlow();
 
   const parsedData = NodeTagMemberSchema.parse(node?.data);

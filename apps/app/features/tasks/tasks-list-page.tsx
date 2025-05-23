@@ -67,7 +67,7 @@ const TaskSection = ({ title, tasks }: { title: string; tasks: Task[] }) => {
     <div className="divide-y">
       <div className="flex items-center gap-2 bg-surface px-4 py-2">
         <p>{title}</p>
-        <Badge variant="secondary">{tasks.length}</Badge>
+        <Badge variant="outline">{tasks.length}</Badge>
       </div>
       <div className="divide-y">
         <Suspense fallback={<IsLoading />}>

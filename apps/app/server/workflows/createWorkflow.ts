@@ -13,6 +13,7 @@ export const createWorkflow = protectedProcedure.mutation(
         nodes: [],
         edges: [],
         workspaceId,
+        createdBy: user.id,
       },
     });
 

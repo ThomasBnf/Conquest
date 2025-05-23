@@ -3,8 +3,7 @@ import { ScrollArea } from "@conquest/ui/scroll-area";
 import { Workflow } from "@conquest/zod/schemas/workflow.schema";
 import { useReactFlow } from "@xyflow/react";
 import { ArrowLeft } from "lucide-react";
-import { useNode } from "../hooks/useNode";
-import { usePanel } from "../hooks/usePanel";
+import { useWorkflow } from "../context/workflowContext";
 import { ActionPanel } from "../panels/action-panel";
 import { OptionsPanel } from "../panels/options-panel";
 import { TriggerPanel } from "../panels/trigger-panel";
@@ -15,8 +14,7 @@ type Props = {
 };
 
 export const Sidebar = ({ workflow }: Props) => {
-  const { panel, setPanel } = usePanel();
-  const { node, setNode } = useNode();
+  const { node, setNode, panel, setPanel } = useWorkflow();
   const { getNodes } = useReactFlow();
 
   const hasTrigger = getNodes().some((node) => "isTrigger" in node.data);
@@ -26,17 +24,17 @@ export const Sidebar = ({ workflow }: Props) => {
 
   const onBack = () => {
     if (panel === "node") {
-      setPanel({ panel: "workflow" });
+      setPanel("workflow");
       return;
     }
 
     if (node) {
       setNode(node);
-      setPanel({ panel: "node" });
+      setPanel("node");
       return;
     }
 
-    setPanel({ panel: "node" });
+    setPanel("node");
   };
 
   return (

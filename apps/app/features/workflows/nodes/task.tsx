@@ -15,25 +15,24 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@conquest/ui/select";
+import { Switch } from "@conquest/ui/switch";
 import { NodeTaskSchema } from "@conquest/zod/schemas/node.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useReactFlow } from "@xyflow/react";
 import { addDays, format } from "date-fns";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { useNode } from "../hooks/useNode";
+import { useWorkflow } from "../context/workflowContext";
 import { FormTask, FormTaskSchema } from "../panels/schemas/form-task.schema";
 
 export const Task = () => {
-  const { node } = useNode();
+  const { node } = useWorkflow();
   const { updateNodeData } = useReactFlow();
-  const { title, days, assignee } = NodeTaskSchema.parse(node?.data);
+  const { title, days, assignee, alertByEmail } = NodeTaskSchema.parse(
+    node?.data,
+  );
 
-  const { data: users, failureReason } =
-    trpc.userInWorkspace.listUsers.useQuery();
-
-  console.log("users", users);
-  console.log("failureReason", failureReason);
+  const { data: users } = trpc.userInWorkspace.listUsers.useQuery();
 
   const form = useForm<FormTask>({
     resolver: zodResolver(FormTaskSchema),
@@ -41,6 +40,7 @@ export const Task = () => {
       title,
       days,
       assignee,
+      alertByEmail,
     },
   });
 
@@ -54,14 +54,8 @@ export const Task = () => {
       title: form.getValues("title"),
       days: form.getValues("days"),
       assignee: form.getValues("assignee"),
+      alertByEmail: form.getValues("alertByEmail"),
     });
-  };
-
-  const onChangeTask = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!node) return;
-
-    form.setValue("title", e.target.value);
-    onUpdateNodeData();
   };
 
   const onChangeAssignee = (value: string) => {
@@ -85,6 +79,7 @@ export const Task = () => {
       title,
       days,
       assignee,
+      alertByEmail,
     });
   }, [node, users]);
 
@@ -98,11 +93,7 @@ export const Task = () => {
             <FormItem>
               <FormLabel>Task</FormLabel>
               <FormControl>
-                <Input
-                  {...field}
-                  onChange={onChangeTask}
-                  onBlur={onUpdateNodeData}
-                />
+                <Input {...field} onBlur={onUpdateNodeData} />
               </FormControl>
             </FormItem>
           )}
@@ -146,9 +137,12 @@ export const Task = () => {
           name="assignee"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Assignee (optional)</FormLabel>
+              <FormLabel>Assignee</FormLabel>
               <FormControl>
-                <Select {...field} onValueChange={onChangeAssignee}>
+                <Select
+                  value={field.value ?? ""}
+                  onValueChange={onChangeAssignee}
+                >
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
@@ -161,6 +155,27 @@ export const Task = () => {
                   </SelectContent>
                 </Select>
               </FormControl>
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="alertByEmail"
+          render={({ field }) => (
+            <FormItem className="w-full">
+              <div className="flex items-center justify-between">
+                <FormLabel>Alert by email</FormLabel>
+                <FormControl>
+                  <Switch
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                </FormControl>
+              </div>
+              <FormDescription>
+                If enabled, the assignee will receive an email when the task is
+                created.
+              </FormDescription>
             </FormItem>
           )}
         />

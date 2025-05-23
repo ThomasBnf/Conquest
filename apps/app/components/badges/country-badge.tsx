@@ -1,7 +1,7 @@
 import { Badge } from "@conquest/ui/badge";
+import { cn } from "@conquest/ui/cn";
 import { countries } from "country-data-list";
 import { CircleFlag } from "react-circle-flags";
-import { cn } from "@conquest/ui/cn";
 import type { Country } from "../editable/editable-country";
 
 type Props = {
@@ -26,7 +26,7 @@ export const CountryBadge = ({
 
   return (
     <Badge
-      variant={transparent ? "transparent" : "secondary"}
+      variant={transparent ? "transparent" : "outline"}
       className={cn("gap-2 truncate", className)}
     >
       <CircleFlag

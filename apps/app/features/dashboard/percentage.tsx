@@ -35,5 +35,5 @@ export const Percentage = ({ variation, isLoading, inverse }: Props) => {
     );
   }
 
-  return <Badge variant="secondary">0%</Badge>;
+  return <Badge variant="outline">0%</Badge>;
 };

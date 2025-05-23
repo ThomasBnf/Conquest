@@ -5,13 +5,11 @@ import { Slack } from "@conquest/ui/icons/Slack";
 import { Label } from "@conquest/ui/label";
 import { useReactFlow } from "@xyflow/react";
 import { X, type icons } from "lucide-react";
-import { useNode } from "../hooks/useNode";
-import { usePanel } from "../hooks/usePanel";
+import { useWorkflow } from "../context/workflowContext";
 import type { WorkflowNode } from "../panels/schemas/workflow-node.type";
 
 export const NextNode = () => {
-  const { setPanel } = usePanel();
-  const { node: selectedNode } = useNode();
+  const { node: selectedNode, setPanel, setCondition } = useWorkflow();
   const { getNodes, getEdges, deleteElements } = useReactFlow();
   const { icon, label, type } = selectedNode?.data ?? {};
 
@@ -50,7 +48,10 @@ export const NextNode = () => {
   ) => (
     <div
       className="relative z-10 flex h-10 cursor-pointer items-center gap-2 rounded-md border px-2 transition-colors-hover hover:bg-muted-hover"
-      onClick={() => setPanel({ panel: "actions", condition })}
+      onClick={() => {
+        setPanel("actions");
+        setCondition(condition);
+      }}
     >
       {node ? (
         node.data.icon === "Slack" ? (
@@ -111,17 +112,17 @@ export const NextNode = () => {
             {isIfElse ? (
               <div className="flex flex-col gap-4">
                 <div className="space-y-1.5">
-                  <Badge variant="secondary">is True</Badge>
+                  <Badge variant="outline">is True</Badge>
                   {renderNodeButton(trueNode, "true")}
                 </div>
                 <div className="space-y-1.5">
-                  <Badge variant="secondary">is False</Badge>
+                  <Badge variant="outline">is False</Badge>
                   {renderNodeButton(falseNode, "false")}
                 </div>
               </div>
             ) : (
               <>
-                <Badge variant="secondary">Next node</Badge>
+                <Badge variant="outline">Next node</Badge>
                 {renderNodeButton(trueNode, "true")}
               </>
             )}

@@ -3,32 +3,49 @@ import { getIntegrationBySource } from "@conquest/db/integrations/getIntegration
 import { decrypt } from "@conquest/db/utils/decrypt";
 import { SlackIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
 import { MemberWithLevel } from "@conquest/zod/schemas/member.schema";
-import { NodeSlackMessage } from "@conquest/zod/schemas/node.schema";
+import {
+  Node,
+  NodeSlackMessageSchema,
+} from "@conquest/zod/schemas/node.schema";
 import { WebClient } from "@slack/web-api";
-import { logger } from "@trigger.dev/sdk/v3";
+import { nodeStatus } from "./nodeStatus";
 import { replaceVariables } from "./replace-variables";
 
 type Props = {
-  node: NodeSlackMessage;
+  node: Node;
   member: MemberWithLevel;
 };
 
-export const slackMessage = async ({ node, member }: Props) => {
+export const slackMessage = async ({ node, member }: Props): Promise<Node> => {
+  const parsedNode = NodeSlackMessageSchema.parse(node.data);
+  const { message } = parsedNode;
+
   const { id: memberId, workspaceId } = member;
   const slack = await getIntegrationBySource({ source: "Slack", workspaceId });
 
-  if (!slack) return logger.error("No Slack integration found");
+  if (!slack) {
+    return nodeStatus({
+      node,
+      status: "FAILED",
+      error: "Slack integration not configured for this workspace",
+    });
+  }
 
   const { details } = SlackIntegrationSchema.parse(slack);
   const { userToken, userTokenIv } = details;
-  const { message } = node;
 
   const decryptedUserToken = await decrypt({
     accessToken: userToken,
     iv: userTokenIv,
   });
 
-  if (!userToken) logger.error("No Slack user token found");
+  if (!decryptedUserToken) {
+    return nodeStatus({
+      node,
+      status: "FAILED",
+      error: "Failed to decrypt Slack user token",
+    });
+  }
 
   const web = new WebClient(decryptedUserToken);
 
@@ -37,19 +54,41 @@ export const slackMessage = async ({ node, member }: Props) => {
     memberId,
   });
 
-  if (!profile?.externalId) return logger.error("No Slack profile found");
+  if (!profile?.externalId) {
+    return nodeStatus({
+      node,
+      status: "FAILED",
+      error: "Member has no associated Slack account",
+    });
+  }
 
   const { channel } = await web.conversations.open({
     users: profile.externalId,
   });
 
-  if (!channel?.id) return logger.error("No channel ID found");
+  if (!channel?.id) {
+    return nodeStatus({
+      node,
+      status: "FAILED",
+      error: "Failed to open Slack conversation with user",
+    });
+  }
 
   const parsedMessage = replaceVariables({ message, member });
 
-  await web.chat.postMessage({
-    channel: channel?.id,
-    text: parsedMessage,
-    as_user: true,
-  });
+  try {
+    await web.chat.postMessage({
+      channel: channel?.id,
+      text: parsedMessage,
+      as_user: true,
+    });
+  } catch (error) {
+    return nodeStatus({
+      node,
+      status: "FAILED",
+      error: `Failed to send Slack message: ${error instanceof Error ? error.message : "Unknown error"}`,
+    });
+  }
+
+  return nodeStatus({ node, status: "COMPLETED" });
 };

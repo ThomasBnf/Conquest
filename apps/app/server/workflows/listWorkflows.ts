@@ -1,5 +1,5 @@
 import { prisma } from "@conquest/db/prisma";
-import { WorkflowSchema } from "@conquest/zod/schemas/workflow.schema";
+import { WorkflowItemSchema } from "@conquest/zod/schemas/workflow.schema";
 import { protectedProcedure } from "../trpc";
 
 export const listWorkflows = protectedProcedure.query(
@@ -10,8 +10,26 @@ export const listWorkflows = protectedProcedure.query(
       where: {
         workspaceId,
       },
+      orderBy: {
+        createdAt: "asc",
+      },
+      include: {
+        _count: true,
+        runs: {
+          orderBy: {
+            createdAt: "desc",
+          },
+          take: 1,
+        },
+      },
     });
 
-    return WorkflowSchema.array().parse(workflows);
+    const sortedWorkflows = workflows.sort((a, b) => {
+      if (a.archivedAt && !b.archivedAt) return 1;
+      if (!a.archivedAt && b.archivedAt) return -1;
+      return 0;
+    });
+
+    return WorkflowItemSchema.array().parse(sortedWorkflows);
   },
 );

@@ -1,6 +1,6 @@
 "use client";
 
-import { useNode } from "@/features/workflows/hooks/useNode";
+import { WorkflowNode } from "@/features/workflows/panels/schemas/workflow-node.type";
 import { trpc } from "@/server/client";
 import {
   type Filter,
@@ -25,6 +25,7 @@ type Props = {
   listId?: string;
   initialGroupFilters?: GroupFilters;
   saveFilters?: (groupFilters: GroupFilters) => void;
+  node?: WorkflowNode;
   children: React.ReactNode;
 };
 
@@ -32,11 +33,11 @@ export const FiltersProvider = ({
   listId,
   initialGroupFilters,
   saveFilters,
+  node,
   children,
 }: Props) => {
   const { data: session, update } = useSession();
   const { user } = session ?? {};
-  const { node } = useNode();
   const { membersPreferences } = user ?? {};
   const utils = trpc.useUtils();
 

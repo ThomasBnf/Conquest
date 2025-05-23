@@ -121,7 +121,7 @@ export const membersColumns = (): Column<FullMember>[] => {
         />
       ),
       cell: ({ item }) => (
-        <Badge variant="secondary">
+        <Badge variant="outline">
           <Level size={18} />
           {item.level ? (
             <p>

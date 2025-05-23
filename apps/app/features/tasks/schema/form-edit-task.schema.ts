@@ -4,8 +4,8 @@ import { z } from "zod";
 export const FormEditTaskSchema = z.object({
   title: z.string().min(1, { message: "Title is required" }),
   dueDate: z.date().optional(),
-  assignee: z.string(),
-  member: MemberSchema.optional(),
+  assignee: z.string().nullable(),
+  member: MemberSchema.nullable(),
   isCompleted: z.boolean(),
 });
 

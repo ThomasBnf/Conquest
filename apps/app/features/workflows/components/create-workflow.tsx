@@ -27,13 +27,13 @@ export const CreateWorkflow = ({ slug }: Props) => {
     },
   });
 
-  const handleCreateWorkflow = async () => {
+  const onCreateWorkflow = async () => {
     setLoading(true);
     await mutateAsync();
   };
 
   return (
-    <Button onClick={handleCreateWorkflow} disabled={loading}>
+    <Button onClick={onCreateWorkflow} disabled={loading}>
       {loading ? (
         <Loader2 className="size-4 animate-spin" />
       ) : (

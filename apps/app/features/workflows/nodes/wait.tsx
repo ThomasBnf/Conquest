@@ -13,13 +13,12 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useReactFlow } from "@xyflow/react";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { useNode } from "../hooks/useNode";
+import { useWorkflow } from "../context/workflowContext";
 import { type FormWait, FormWaitSchema } from "./schemas/form-wait.schema";
 
 export const Wait = () => {
-  const { node } = useNode();
+  const { node } = useWorkflow();
   const { updateNodeData } = useReactFlow();
-
   const { duration, unit } = NodeWaitSchema.parse(node?.data);
 
   const form = useForm<FormWait>({

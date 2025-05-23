@@ -33,7 +33,7 @@ export const integrations = [
 export const HowItWorks = () => {
   return (
     <Section id="how-it-works">
-      <Badge variant="secondary" className="mb-4 h-7 shadow-sm">
+      <Badge variant="outline" className="mb-4 h-7 shadow-sm">
         <Image src="/settings.svg" alt="how-it-works" width={16} height={16} />
         <p className="text-sm">HOW IT WORKS</p>
       </Badge>

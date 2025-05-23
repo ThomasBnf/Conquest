@@ -34,7 +34,7 @@ export default async function Page({ searchParams }: Props) {
   const data = await response.json();
 
   if (!response.ok) {
-    return redirect("/settings/integrations/livestorm?error=invalid_code");
+    redirect("/settings/integrations/livestorm?error=invalid_code");
   }
 
   const { access_token, expires_in, refresh_token, scope } = data;
@@ -48,7 +48,7 @@ export default async function Page({ searchParams }: Props) {
   const integration = await getIntegration({ externalId: organization_id });
 
   if (integration) {
-    return redirect("/settings/integrations/livestorm?error=already_connected");
+    redirect("/settings/integrations/livestorm?error=already_connected");
   }
 
   const encryptedAccessToken = await encrypt(access_token);

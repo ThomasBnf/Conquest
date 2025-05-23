@@ -1,4 +1,4 @@
-import { WorkflowPage } from "@/features/workflows/components/workflowPage";
+import { WorkflowEditor } from "@/features/workflows/components/workflow-editor";
 
 type Props = {
   params: Promise<{ slug: string; workflowId: string }>;
@@ -7,5 +7,5 @@ type Props = {
 export default async function Page({ params }: Props) {
   const { slug, workflowId } = await params;
 
-  return <WorkflowPage slug={slug} workflowId={workflowId} />;
+  return <WorkflowEditor slug={slug} workflowId={workflowId} />;
 }
