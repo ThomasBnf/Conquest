@@ -47,13 +47,15 @@ export const TagMenu = ({ tag, setIsEditing }: Props) => {
             <Edit2 size={16} />
             Edit
           </DropdownMenuItem>
-          <DropdownMenuItem
-            onClick={() => setShowAlert(true)}
-            className="text-destructive focus:text-destructive"
-          >
-            <Trash2 size={16} />
-            Delete
-          </DropdownMenuItem>
+          {tag.source === "Manual" && (
+            <DropdownMenuItem
+              onClick={() => setShowAlert(true)}
+              className="text-destructive focus:text-destructive"
+            >
+              <Trash2 size={16} />
+              Delete
+            </DropdownMenuItem>
+          )}
         </DropdownMenuContent>
       </DropdownMenu>
     </>
