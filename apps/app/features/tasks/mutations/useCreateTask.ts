@@ -22,11 +22,8 @@ export const useCreateTask = ({ setOpen, reset }: Props) => {
       return { previousTasks, newTask };
     },
     onError: (_, __, context) => {
-      console.log(_);
       toast.error("Failed to create task");
-      if (context?.previousTasks) {
-        utils.tasks.list.setData(undefined, context.previousTasks);
-      }
+      utils.tasks.list.setData(undefined, context?.previousTasks);
     },
     onSettled: () => {
       utils.tasks.invalidate();

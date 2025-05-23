@@ -13,9 +13,8 @@ export const deleteWebhook = async ({ accessToken, id }: Props) => {
   });
 
   if (!response.ok) {
-    console.log(response.statusText);
-    const data = await response.json();
-    console.log("deleteWebhook", data);
+    await response.json();
+
     throw new Error("Failed to delete webhook");
   }
 

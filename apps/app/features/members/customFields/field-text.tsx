@@ -12,8 +12,6 @@ export const FieldText = ({ field, member }: Props) => {
   const { customFields } = member;
   const value = customFields?.fields?.find((f) => f.id === field.id)?.value;
 
-  console.log(customFields);
-
   const updateMember = useUpdateMember();
 
   const updateFieldValue = async (newValue: string) => {

@@ -157,9 +157,6 @@ client.on(Events.GuildMemberRemove, async (member) => {
 client.on(Events.UserUpdate, async (_, user) => {
   const { id, username, globalName, avatar } = user;
 
-  console.log("UserUpdate");
-  console.dir(user, { depth: null });
-
   const firstName = globalName?.split(" ")[0] ?? "";
   const lastName = globalName?.split(" ")[1] ?? "";
 

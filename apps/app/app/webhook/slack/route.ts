@@ -198,15 +198,12 @@ export async function POST(req: NextRequest) {
     }
 
     case "user_change": {
-      console.log("user_change", event);
       const { id: externalId, deleted } = event.user;
 
       const profile = await getProfile({
         externalId,
         workspaceId,
       });
-
-      console.log("profile", profile);
 
       if (!profile) return NextResponse.json({ status: 200 });
 
@@ -216,8 +213,6 @@ export async function POST(req: NextRequest) {
       }
 
       const member = await getMember({ id: profile.memberId });
-
-      console.log("member", member);
 
       if (!member) return NextResponse.json({ status: 200 });
 
@@ -231,8 +226,6 @@ export async function POST(req: NextRequest) {
         image_1024,
         title,
       } = user?.profile ?? {};
-
-      console.log("user", user);
 
       if (!email) return NextResponse.json({ status: 200 });
 
@@ -269,7 +262,6 @@ export async function POST(req: NextRequest) {
     }
 
     case "team_join": {
-      console.log("team_join", event);
       const { user } = event;
       const { id, is_bot } = user;
 

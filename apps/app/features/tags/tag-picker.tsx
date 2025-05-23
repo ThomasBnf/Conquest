@@ -73,8 +73,6 @@ export const TagPicker = ({
     setValue("");
   };
 
-  console.log(tags);
-
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild onClick={onClick}>
@@ -110,7 +108,7 @@ export const TagPicker = ({
               {allTags?.map((tag) => (
                 <CommandItem key={tag.id} className="group">
                   <div
-                    className="flex h-full w-full items-center"
+                    className="flex items-center w-full h-full"
                     onClick={() => onSelectTag(tag.id)}
                   >
                     <Checkbox
@@ -129,10 +127,10 @@ export const TagPicker = ({
                   <span className="mr-2">Create</span>
                   <Badge variant="outline">
                     <div
-                      className="size-2 shrink-0 rounded-full"
+                      className="rounded-full size-2 shrink-0"
                       style={{ backgroundColor: "#0070f3" }}
                     />
-                    <p className="whitespace-nowrap leading-none">{value}</p>
+                    <p className="leading-none whitespace-nowrap">{value}</p>
                   </Badge>
                 </CommandItem>
               </CommandGroup>
