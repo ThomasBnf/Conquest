@@ -6,10 +6,12 @@
   },
   "exports": {
     "./emails/*": "./emails/*.tsx",
+    "./renderEmail": "./src/renderEmail.ts",
     ".": "./src/index.ts"
   },
   "dependencies": {
     "@react-email/components": "^0.0.41",
+    "@react-email/render": "^1.1.2",
     "@react-email/tailwind": "^1.0.5",
     "resend": "^4.5.1"
   },
