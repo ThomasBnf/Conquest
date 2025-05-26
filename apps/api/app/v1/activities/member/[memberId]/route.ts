@@ -1,4 +1,4 @@
-import { getAuthenticatedUser } from "@/utils/getAuthenticatedUser";
+import { getAuthenticatedUser } from "@/getAuthenticatedUser";
 import { client } from "@conquest/clickhouse/client";
 import { ActivitySchema } from "@conquest/zod/schemas/activity.schema";
 import { createZodRoute } from "next-zod-route";

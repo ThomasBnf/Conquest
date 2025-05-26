@@ -1,5 +1,5 @@
-import { getAuthenticatedUser } from "@/utils/getAuthenticatedUser";
-import { sleep } from "@/utils/sleep";
+import { getAuthenticatedUser } from "@/getAuthenticatedUser";
+import { sleep } from "@/sleep";
 import { client } from "@conquest/clickhouse/client";
 import { getCompany } from "@conquest/clickhouse/company/getCompany";
 import { CompanySchema } from "@conquest/zod/schemas/company.schema";

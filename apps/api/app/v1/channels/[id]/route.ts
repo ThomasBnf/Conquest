@@ -1,5 +1,5 @@
-import { getAuthenticatedUser } from "@/utils/getAuthenticatedUser";
-import { sleep } from "@/utils/sleep";
+import { getAuthenticatedUser } from "@/getAuthenticatedUser";
+import { sleep } from "@/sleep";
 import { deleteChannel } from "@conquest/clickhouse/channel/deleteChannel";
 import { getChannel } from "@conquest/clickhouse/channel/getChannel";
 import { updateChannel } from "@conquest/clickhouse/channel/updateChannel";
