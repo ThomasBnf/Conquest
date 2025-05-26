@@ -5,11 +5,11 @@ import TaskCreated from "@conquest/resend/emails/task-created";
 import { MemberWithLevel } from "@conquest/zod/schemas/member.schema";
 import { Node, NodeTaskSchema } from "@conquest/zod/schemas/node.schema";
 import { Task } from "@conquest/zod/schemas/task.schema";
+import { render } from "@react-email/components";
 import { logger } from "@trigger.dev/sdk/v3";
 import { addDays, endOfDay, format } from "date-fns";
 import { v4 as uuid } from "uuid";
 import { nodeStatus } from "./nodeStatus";
-import { render } from "@react-email/components";
 
 type Props = {
   node: Node;
