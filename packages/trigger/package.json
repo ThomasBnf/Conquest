@@ -17,6 +17,7 @@
     "@conquest/zod": "workspace:*",
     "@faker-js/faker": "^9.6.0",
     "@react-email/components": "^0.0.41",
+    "@react-email/render": "^1.1.2",
     "@trigger.dev/react-hooks": "3.3.17",
     "@trigger.dev/sdk": "3.3.17",
     "@types/jsonwebtoken": "^9.0.9",
