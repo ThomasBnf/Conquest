@@ -27,16 +27,16 @@ const TaskCreated = ({ slug, taskId, taskTitle, taskDueDate }: Props) => {
       <Head />
       <Preview>New task "{taskTitle}" has been created</Preview>
       <Tailwind>
-        <Body className="mx-auto my-auto font-sans bg-white">
+        <Body className="mx-auto my-auto bg-white font-sans">
           <Container className="mx-auto my-10 max-w-[600px] rounded border border-neutral-200 border-solid px-10 pb-5">
             <Logo />
-            <Heading className="p-0 mx-0 text-xl font-medium text-black mt-7">
+            <Heading className="mx-0 mt-7 p-0 font-medium text-black text-xl">
               New task "{taskTitle}" has been created
             </Heading>
-            <Text className="leading-6 text-gray-700">
+            <Text className="text-gray-700 leading-6">
               A new task has been created for you.
             </Text>
-            <Text className="leading-6 text-gray-700">
+            <Text className="text-gray-700 leading-6">
               The task is due on {taskDueDate}.
             </Text>
             <Section className="mt-8 mb-8">
