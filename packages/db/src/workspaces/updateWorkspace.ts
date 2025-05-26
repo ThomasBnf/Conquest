@@ -16,7 +16,7 @@ export const updateWorkspace = async ({ id, ...data }: Props) => {
     },
     data: {
       ...data,
-      trialEnd: addDays(new Date(), 14),
+      trialEnd: addDays(new Date(), 7),
     },
   });
 
