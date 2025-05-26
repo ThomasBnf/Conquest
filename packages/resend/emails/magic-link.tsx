@@ -22,13 +22,13 @@ const MagicLink = ({ url }: Props) => (
     <Head />
     <Preview>Your login code for Conquest</Preview>
     <Tailwind>
-      <Body className="mx-auto my-auto bg-white font-sans">
+      <Body className="mx-auto my-auto font-sans bg-white">
         <Container className="mx-auto my-10 max-w-[600px] rounded border border-neutral-200 border-solid px-10 pb-5">
           <Logo />
-          <Heading className="mx-0 mt-7 p-0 font-medium text-2xl text-black">
+          <Heading className="p-0 mx-0 text-2xl font-medium text-black mt-7">
             Your login code for Conquest
           </Heading>
-          <Text className="text-gray-700 leading-6">
+          <Text className="leading-6 text-gray-700">
             This link and code will only be valid for the next 5 minutes.
           </Text>
           <Section className="py-4">
