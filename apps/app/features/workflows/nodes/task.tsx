@@ -105,8 +105,8 @@ export const Task = () => {
             <FormItem>
               <FormLabel>Due Date</FormLabel>
               <FormControl>
-                <div className="flex items-center divide-x overflow-hidden rounded-md border">
-                  <div className="flex h-9 items-center bg-muted px-4">
+                <div className="flex items-center overflow-hidden border divide-x rounded-md">
+                  <div className="flex items-center px-4 h-9 bg-muted">
                     <p>In</p>
                   </div>
                   <Input
@@ -118,7 +118,7 @@ export const Task = () => {
                     onChange={(e) => onChangeDays(Number(e.target.value || 0))}
                     onBlur={onUpdateNodeData}
                   />
-                  <div className="flex h-9 items-center bg-muted px-4">
+                  <div className="flex items-center px-4 h-9 bg-muted">
                     <p>days</p>
                   </div>
                 </div>
