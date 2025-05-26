@@ -70,7 +70,6 @@ export const task = async ({ node, member, slug }: Props): Promise<Node> => {
             taskDueDate: formattedDueDate,
           }),
         });
-        logger.info("Resend", { data, error });
       } catch (error) {
         logger.info("Resend", { error });
         return nodeStatus({

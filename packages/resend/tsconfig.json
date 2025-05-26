@@ -1,8 +1,5 @@
 {
-  "extends": "@conquest/tsconfig/react-library.json",
-  "compilerOptions": {
-    "jsx": "react-jsx"
-  },
+  "extends": "@conquest/tsconfig/base.json",
   "include": ["."],
   "exclude": ["node_modules"]
 }
