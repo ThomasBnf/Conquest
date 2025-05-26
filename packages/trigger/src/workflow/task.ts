@@ -72,6 +72,7 @@ export const task = async ({ node, member, slug }: Props): Promise<Node> => {
         });
         logger.info("Resend", { data, error });
       } catch (error) {
+        logger.info("Resend", { error });
         return nodeStatus({
           node,
           status: "FAILED",
