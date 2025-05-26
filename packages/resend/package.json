@@ -10,9 +10,9 @@
   },
   "dependencies": {
     "@react-email/components": "^0.0.41",
-    "@react-email/tailwind": "^0.1.0",
+    "@react-email/tailwind": "^1.0.5",
     "react": "^19.1.0",
-    "resend": "^4.1.1"
+    "resend": "^4.5.1"
   },
   "devDependencies": {
     "@conquest/tsconfig": "workspace:*",

@@ -59,7 +59,7 @@ export const task = async ({ node, member, slug }: Props): Promise<Node> => {
       const formattedDueDate = format(dueDate, "PP");
 
       try {
-        const { data, error } = await resend.emails.send({
+        await resend.emails.send({
           from: "Conquest <team@useconquest.com>",
           to: user.email,
           subject: `New Task: ${title}`,
