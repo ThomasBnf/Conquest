@@ -6,7 +6,6 @@ import { TextAnimate } from "@conquest/ui/text-animate";
 import { ArrowRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 
 const transitionVariants = {
   item: {
@@ -29,24 +28,23 @@ const transitionVariants = {
 };
 
 export const HeroSection = () => {
-  const router = useRouter();
-
   return (
     <section className="flex flex-col items-center gap-4 text-balance bg-sidebar px-4 pt-32 pb-12 text-center">
       <TextAnimate
         as="h1"
         animation="blurInUp"
-        className="max-w-3xl font-bold font-telegraf text-4xl lg:text-6xl"
+        className="max-w-4xl font-bold font-telegraf text-4xl lg:text-6xl"
       >
-        Your community is powerful. Now prove it.
+        Generate revenue by delivering the value your members need.
       </TextAnimate>
       <TextAnimate
         as="p"
         animation="blurInUp"
         delay={0.5}
-        className="font-suisse text-lg text-muted-foreground"
+        className="max-w-3xl font-suisse text-lg text-muted-foreground"
       >
-        Track, measure and prove your community impact. All in one place.
+        Consolidate key engagement signals from across data sources and act on
+        it at the right time with enriched community alerts and automations.
       </TextAnimate>
       <AnimatedGroup
         variants={{

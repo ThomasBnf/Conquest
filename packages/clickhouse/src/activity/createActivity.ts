@@ -30,6 +30,17 @@ export const createActivity = async (props: Props) => {
 
   const id = randomUUID();
 
+  // const { message, title } = rest;
+  // if (
+  //   message &&
+  //   !["invite", "join", "reaction", "login", "star", "livestorm"].includes(
+  //     activityTypeKey,
+  //   )
+  // ) {
+  //   const { object } = await sentimentAnalysis(message, title);
+  //   console.log(object);
+  // }
+
   await client.insert({
     table: "activity",
     values: [

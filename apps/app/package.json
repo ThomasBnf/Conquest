@@ -8,12 +8,14 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@ai-sdk/openai": "^1.3.22",
+    "@ai-sdk/react": "^1.2.12",
     "@auth/core": "^0.37.4",
     "@clickhouse/client-web": "^1.10.1",
     "@conquest/clickhouse": "workspace:*",
     "@conquest/db": "workspace:*",
-    "@conquest/resend": "workspace:*",
     "@conquest/env": "workspace:*",
+    "@conquest/resend": "workspace:*",
     "@conquest/trigger": "workspace:*",
     "@conquest/ui": "workspace:*",
     "@conquest/zod": "workspace:*",
@@ -35,6 +37,7 @@
     "@trpc/server": "^11.0.0-rc.730",
     "@types/bcryptjs": "^2.4.6",
     "@xyflow/react": "^12.3.2",
+    "ai": "^4.3.16",
     "aws-sdk": "^2.1692.0",
     "bcryptjs": "^2.4.3",
     "cmdk": "^1.0.0",
