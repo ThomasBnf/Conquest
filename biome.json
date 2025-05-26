@@ -38,6 +38,7 @@
     }
   },
   "formatter": {
-    "indentStyle": "space"
+    "indentStyle": "space",
+    "enabled": true
   }
 }
