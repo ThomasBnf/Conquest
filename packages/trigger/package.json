@@ -16,11 +16,15 @@
     "@conquest/resend": "workspace:*",
     "@conquest/zod": "workspace:*",
     "@faker-js/faker": "^9.6.0",
+    "@react-email/components": "^0.0.41",
+    "@react-email/render": "^1.1.2",
     "@trigger.dev/react-hooks": "3.3.17",
     "@trigger.dev/sdk": "3.3.17",
     "@types/jsonwebtoken": "^9.0.9",
     "date-fns": "^4.1.0",
     "jsonwebtoken": "^9.0.2",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
     "trigger.dev": "^3.3.15"
   },
   "devDependencies": {
