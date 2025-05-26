@@ -16,6 +16,6 @@
   "devDependencies": {
     "@conquest/tsconfig": "workspace:*",
     "@conquest/zod": "workspace:*",
-    "react-email": "^3.0.1"
+    "react-email": "^4.0.15"
   }
 }
