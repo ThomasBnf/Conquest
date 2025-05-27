@@ -67,14 +67,12 @@ export const task = async ({ node, member, slug }: Props): Promise<Node> => {
         from: "Conquest <team@useconquest.com>",
         to: user.email,
         subject: `New Task: ${title}`,
-        react: (
-          <TaskCreated
-            slug={slug}
-            taskId={id}
-            taskTitle={title}
-            taskDueDate={formattedDueDate}
-          />
-        ),
+        react: TaskCreated({
+          slug,
+          taskId: id,
+          taskTitle: title,
+          taskDueDate: formattedDueDate,
+        }),
       });
 
       return nodeStatus({ node, status: "COMPLETED" });

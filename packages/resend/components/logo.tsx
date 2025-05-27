@@ -5,6 +5,7 @@ export const Logo = () => {
     <Section className="mt-8">
       <Img
         src="https://conquest-brand.s3.eu-central-1.amazonaws.com/Orange%20-%20Icone.svg"
+        width="32"
         height="32"
         alt="Conquest"
       />

@@ -6,6 +6,6 @@
   "include": [
     "src/**/*.ts",
     "src/tasks/runWorkflow.tsx",
-    "src/workflow/task.tsx"
+    "src/workflow/task.ts"
   ]
 }

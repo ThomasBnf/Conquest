@@ -1,5 +1,5 @@
-import { getAuthenticatedUser } from "@/getAuthenticatedUser";
-import { sleep } from "@/sleep";
+import { getAuthenticatedUser } from "@/utils/getAuthenticatedUser";
+import { sleep } from "@/utils/sleep";
 import { getActivityTypeByKey } from "@conquest/clickhouse/activity-type/getActivityTypeByKey";
 import { getActivity } from "@conquest/clickhouse/activity/getActivity";
 import { getChannel } from "@conquest/clickhouse/channel/getChannel";
