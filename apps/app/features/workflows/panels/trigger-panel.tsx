@@ -89,6 +89,7 @@ export const nodes: Node[] = [
       description: "When a member is created",
       type: "member-created" as const,
       isTrigger: true,
+      alertByEmail: true,
     },
   },
   {
@@ -101,6 +102,7 @@ export const nodes: Node[] = [
       description: "When a member has level up",
       type: "level-up" as const,
       isTrigger: true,
+      alertByEmail: true,
     },
   },
   {
@@ -113,6 +115,7 @@ export const nodes: Node[] = [
       description: "When a member has level down",
       type: "level-down" as const,
       isTrigger: true,
+      alertByEmail: true,
     },
   },
   {
@@ -126,6 +129,7 @@ export const nodes: Node[] = [
         "When a member is level 4 and has not been active for 30 days",
       type: "at-risk-member" as const,
       isTrigger: true,
+      alertByEmail: true,
     },
   },
   {
@@ -139,6 +143,7 @@ export const nodes: Node[] = [
         "When a member is level 7 to 9 and has been active for 30 days",
       type: "potential-ambassador" as const,
       isTrigger: true,
+      alertByEmail: true,
     },
   },
 ];

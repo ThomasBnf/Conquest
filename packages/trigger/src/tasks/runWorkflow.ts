@@ -5,6 +5,7 @@ import { getUserById } from "@conquest/db/users/getUserById";
 import { getWorkspace } from "@conquest/db/workspaces/getWorkspace";
 import { resend } from "@conquest/resend";
 import WorkflowFailed from "@conquest/resend/emails/workflow-failed";
+import WorkflowRun from "@conquest/resend/emails/workflow-run";
 import { Edge } from "@conquest/zod/schemas/edge.schema";
 import {
   MemberWithLevel,
@@ -14,6 +15,7 @@ import {
   Node,
   NodeIfElseSchema,
   NodeSchema,
+  NodeTriggerSchema,
 } from "@conquest/zod/schemas/node.schema";
 import { WorkflowSchema } from "@conquest/zod/schemas/workflow.schema";
 import { logger, schemaTask } from "@trigger.dev/sdk/v3";
@@ -34,7 +36,7 @@ export const runWorkflow = schemaTask({
     member: MemberWithLevelSchema,
   }),
   run: async ({ workflow, member }) => {
-    const { nodes, edges, workspaceId } = workflow;
+    const { nodes, edges, createdBy, workspaceId } = workflow;
     const { slug } = await getWorkspace({ id: workspaceId });
 
     const run = await createRun({ workflowId: workflow.id });
@@ -50,10 +52,30 @@ export const runWorkflow = schemaTask({
       const isTrigger = "isTrigger" in parsedNode.data;
 
       if (isTrigger) {
+        const { alertByEmail } = NodeTriggerSchema.parse(parsedNode.data);
+
         runNodes.set(parsedNode.id, {
           ...parsedNode,
           data: { ...parsedNode.data, status: "COMPLETED" },
         });
+
+        if (alertByEmail) {
+          const user = await getUserById({ id: createdBy });
+
+          if (!user) return;
+
+          await resend.emails.send({
+            from: "Conquest <team@useconquest.com>",
+            to: user.email,
+            subject: `Workflow "${workflow.name}" has run`,
+            react: WorkflowRun({
+              slug,
+              workflowId: workflow.id,
+              workflowName: workflow.name,
+              runId: run.id,
+            }),
+          });
+        }
       }
 
       switch (type) {

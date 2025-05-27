@@ -33,26 +33,31 @@ export const NodeBaseDataSchema = z.object({
 export const NodeMemberCreatedSchema = NodeBaseDataSchema.extend({
   type: z.literal("member-created"),
   isTrigger: z.boolean().default(true),
+  alertByEmail: z.boolean(),
 });
 
 export const NodeLevelUpSchema = NodeBaseDataSchema.extend({
   type: z.literal("level-up"),
   isTrigger: z.boolean().default(true),
+  alertByEmail: z.boolean(),
 });
 
 export const NodeLevelDownSchema = NodeBaseDataSchema.extend({
   type: z.literal("level-down"),
   isTrigger: z.boolean().default(true),
+  alertByEmail: z.boolean(),
 });
 
 export const NodeAtRiskSchema = NodeBaseDataSchema.extend({
   type: z.literal("at-risk-member"),
   isTrigger: z.boolean().default(true),
+  alertByEmail: z.boolean(),
 });
 
 export const NodeAmbassadorSchema = NodeBaseDataSchema.extend({
   type: z.literal("potential-ambassador"),
   isTrigger: z.boolean().default(true),
+  alertByEmail: z.boolean(),
 });
 
 // ACTIONS
@@ -92,6 +97,14 @@ export const NodeWebhookSchema = NodeBaseDataSchema.extend({
   body: z.string().optional(),
 });
 
+export const NodeTriggerSchema = z.discriminatedUnion("type", [
+  NodeMemberCreatedSchema,
+  NodeLevelUpSchema,
+  NodeLevelDownSchema,
+  NodeAtRiskSchema,
+  NodeAmbassadorSchema,
+]);
+
 export const NodeDataSchema = z.discriminatedUnion("type", [
   NodeMemberCreatedSchema,
   NodeLevelUpSchema,
@@ -111,6 +124,7 @@ export const NodeSchema = NodeBaseSchema.extend({
 });
 
 export type Node = z.infer<typeof NodeSchema>;
+export type NodeTrigger = z.infer<typeof NodeTriggerSchema>;
 export type NodeData = z.infer<typeof NodeDataSchema>;
 
 export type NodeMemberCreated = z.infer<typeof NodeMemberCreatedSchema>;
