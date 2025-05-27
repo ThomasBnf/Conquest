@@ -21,7 +21,12 @@ type Props = {
   taskDueDate: string;
 };
 
-const TaskCreated = ({ slug, taskId, taskTitle, taskDueDate }: Props) => {
+export const TaskCreated = ({
+  slug,
+  taskId,
+  taskTitle,
+  taskDueDate,
+}: Props) => {
   return (
     <Html>
       <Head />
@@ -54,5 +59,3 @@ const TaskCreated = ({ slug, taskId, taskTitle, taskDueDate }: Props) => {
     </Html>
   );
 };
-
-export default TaskCreated;
