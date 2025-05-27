@@ -10,7 +10,7 @@
     "dev:docs": "turbo dev --filter=docs",
     "dev:discord": "turbo dev --filter=discord",
     "dev:web": "turbo dev --filter=web",
-    "trigger:dev": "cd packages/trigger && bun trigger:dev",
+    "trigger:dev": "cd packages/trigger && bun dev",
     "format-and-lint": "biome check .",
     "typecheck": "turbo typecheck"
   },
