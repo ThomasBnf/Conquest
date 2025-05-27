@@ -50,7 +50,7 @@ export const LoginForm = () => {
     setLoading(true);
     await signIn("google", {
       redirect: true,
-      redirectTo: env.NEXT_PUBLIC_BASE_URL,
+      redirectTo: env.NEXT_PUBLIC_URL,
     });
   };
 

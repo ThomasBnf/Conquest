@@ -3,8 +3,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "trigger:dev": "dotenv -e ./.env -e ../../.env -- bunx trigger.dev dev",
-    "trigger:deploy": "dotenv -e ./.env -e ../../.env -- bunx trigger.dev@latest deploy",
+    "dev": "dotenv -e ./.env -e ../../.env -- bunx trigger.dev dev",
+    "deploy": "dotenv -e ./.env -e ../../.env -- bunx trigger.dev@latest deploy",
     "typecheck": "tsc --noEmit"
   },
   "exports": {
@@ -21,7 +21,8 @@
     "@types/jsonwebtoken": "^9.0.9",
     "date-fns": "^4.1.0",
     "jsonwebtoken": "^9.0.2",
-    "react-dom": "^19.1.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
     "trigger.dev": "^3.3.15"
   },
   "devDependencies": {

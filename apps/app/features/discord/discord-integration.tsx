@@ -29,7 +29,7 @@ export const DiscordIntegration = ({ error }: Props) => {
       response_type: "code",
       client_id: env.NEXT_PUBLIC_DISCORD_CLIENT_ID,
       permissions: DISCORD_PERMISSIONS,
-      redirect_uri: `${env.NEXT_PUBLIC_BASE_URL}/connect/discord`,
+      redirect_uri: `${env.NEXT_PUBLIC_URL}/connect/discord`,
     });
 
     router.push(

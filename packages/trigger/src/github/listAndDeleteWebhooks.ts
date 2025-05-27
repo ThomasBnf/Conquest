@@ -25,7 +25,7 @@ export const listAndDeleteWebhooks = async ({ octokit, github }: Props) => {
 
     const filteredWebhooks = response.data.filter(
       (webhook) =>
-        webhook.config.url === `${env.NEXT_PUBLIC_BASE_URL}/webhook/github`,
+        webhook.config.url === `${env.NEXT_PUBLIC_URL}/webhook/github`,
     );
 
     for (const webhook of filteredWebhooks) {

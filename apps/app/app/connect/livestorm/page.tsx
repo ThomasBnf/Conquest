@@ -21,7 +21,7 @@ export default async function Page({ searchParams }: Props) {
     grant_type: "authorization_code",
     client_id: env.NEXT_PUBLIC_LIVESTORM_CLIENT_ID,
     client_secret: env.LIVESTORM_CLIENT_SECRET,
-    redirect_uri: `${env.NEXT_PUBLIC_BASE_URL}/connect/livestorm`,
+    redirect_uri: `${env.NEXT_PUBLIC_URL}/connect/livestorm`,
   });
 
   const response = await fetch(

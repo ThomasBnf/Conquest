@@ -8,10 +8,10 @@ const baseEnv = {
     DIRECT_URL: z.string(),
   },
   client: {
-    NEXT_PUBLIC_BASE_URL: z.string(),
+    NEXT_PUBLIC_URL: z.string(),
   },
   runtimeEnv: {
-    NEXT_PUBLIC_BASE_URL: process.env.NEXT_PUBLIC_BASE_URL,
+    NEXT_PUBLIC_URL: process.env.NEXT_PUBLIC_URL,
     DIRECT_URL: process.env.DIRECT_URL,
   },
 };

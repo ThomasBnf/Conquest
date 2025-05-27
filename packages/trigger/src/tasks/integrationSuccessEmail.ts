@@ -20,7 +20,7 @@ export const integrationSuccessEmail = schemaTask({
     const user = await getUserById({ id: createdBy });
     const { email } = user ?? {};
 
-    const url = `${env.NEXT_PUBLIC_BASE_URL}/settings/integrations/${source?.toLowerCase()}`;
+    const url = `${env.NEXT_PUBLIC_URL}/settings/integrations/${source?.toLowerCase()}`;
 
     if (!email) return;
 

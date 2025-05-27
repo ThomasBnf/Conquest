@@ -30,7 +30,7 @@ export const SlackIntegration = ({ error }: Props) => {
       client_id: env.NEXT_PUBLIC_SLACK_CLIENT_ID,
       scope: SLACK_SCOPES,
       user_scope: SLACK_USER_SCOPES,
-      redirect_uri: `${env.NEXT_PUBLIC_BASE_URL}/connect/slack`,
+      redirect_uri: `${env.NEXT_PUBLIC_URL}/connect/slack`,
     });
 
     router.push(`https://slack.com/oauth/v2/authorize?${params.toString()}`);

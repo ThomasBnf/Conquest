@@ -68,8 +68,8 @@ export const createCheckoutSession = protectedProcedure
       subscription_data: {
         trial_end: trialEnd ? Math.floor(trialEnd.getTime() / 1000) : undefined,
       },
-      success_url: `${env.NEXT_PUBLIC_BASE_URL}/settings/billing`,
-      cancel_url: `${env.NEXT_PUBLIC_BASE_URL}/settings/billing`,
+      success_url: `${env.NEXT_PUBLIC_URL}/settings/billing`,
+      cancel_url: `${env.NEXT_PUBLIC_URL}/settings/billing`,
     });
 
     return session.url;

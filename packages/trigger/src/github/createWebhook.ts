@@ -21,7 +21,7 @@ export const createWebhook = async (tokenManager: TokenManager) => {
 
   logger.info("existingHooks", { existingHooks });
 
-  const webhookUrl = `${env.NEXT_PUBLIC_BASE_URL}/webhook/github`;
+  const webhookUrl = `${env.NEXT_PUBLIC_URL}/webhook/github`;
 
   if (existingHooks.some((hook) => hook.config.url === webhookUrl)) {
     logger.info("Webhook already exists");
@@ -35,7 +35,7 @@ export const createWebhook = async (tokenManager: TokenManager) => {
     active: true,
     events: ["star", "issues", "issue_comment", "pull_request"],
     config: {
-      url: `${env.NEXT_PUBLIC_BASE_URL}/webhook/github`,
+      url: `${env.NEXT_PUBLIC_URL}/webhook/github`,
       content_type: "json",
       secret: env.GITHUB_WEBHOOK_SECRET,
       insecure_ssl: "0",

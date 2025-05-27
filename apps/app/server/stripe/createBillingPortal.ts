@@ -25,7 +25,7 @@ export const createBillingPortal = protectedProcedure
 
     const portal = await stripe.billingPortal.sessions.create({
       customer: stripeCustomerId,
-      return_url: `${env.NEXT_PUBLIC_BASE_URL}/settings/billing`,
+      return_url: `${env.NEXT_PUBLIC_URL}/settings/billing`,
       ...(paymentMethodUpdate && {
         flow_data: { type: "payment_method_update" },
       }),

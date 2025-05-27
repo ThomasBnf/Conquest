@@ -47,7 +47,7 @@ export const TaskCreated = ({
             <Section className="mt-8 mb-8">
               <Link
                 className="block w-fit rounded bg-[#5067D7] px-5 py-2.5 text-center font-medium text-sm text-white no-underline"
-                href={`${env.NEXT_PUBLIC_BASE_URL}/${slug}/tasks/${taskId}`}
+                href={`${env.NEXT_PUBLIC_URL}/${slug}/tasks/${taskId}`}
               >
                 View task
               </Link>

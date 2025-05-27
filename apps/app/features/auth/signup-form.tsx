@@ -54,7 +54,7 @@ export const SignupForm = ({ plan, priceId }: Props) => {
     setLoading(true);
     await signIn("google", {
       redirect: true,
-      redirectTo: env.NEXT_PUBLIC_BASE_URL,
+      redirectTo: env.NEXT_PUBLIC_URL,
     });
   };
 
