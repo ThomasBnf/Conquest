@@ -19,6 +19,7 @@
     "@conquest/clickhouse": "workspace:*",
     "@conquest/db": "workspace:*",
     "@conquest/env": "workspace:*",
+    "@conquest/trigger": "workspace:*",
     "@conquest/zod": "workspace:*",
     "@conquest/tsconfig": "workspace:*",
     "@types/express": "^5.0.0",
