@@ -18,7 +18,7 @@ export default async function Page({ searchParams }: Props) {
   const response = await generateToken(installation_id);
 
   if (!response.ok) {
-    redirect("/settings/integrations/github?error=invalid_code");
+    redirect("/settings/integrations/github?message=invalid_code");
   }
 
   const data = await response.json();
