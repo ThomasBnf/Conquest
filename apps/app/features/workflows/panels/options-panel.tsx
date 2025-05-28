@@ -1,26 +1,16 @@
 import { Icon } from "@/components/custom/Icon";
 import { Button } from "@conquest/ui/button";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-} from "@conquest/ui/form";
+import { Discord } from "@conquest/ui/icons/Discord";
 import { Slack } from "@conquest/ui/icons/Slack";
 import { ScrollArea } from "@conquest/ui/scroll-area";
 import { Separator } from "@conquest/ui/separator";
-import { Switch } from "@conquest/ui/switch";
-import { NodeTriggerSchema } from "@conquest/zod/schemas/node.schema";
 import type { Workflow } from "@conquest/zod/schemas/workflow.schema";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { useReactFlow } from "@xyflow/react";
 import { RefreshCcw, Trash2, type icons } from "lucide-react";
-import { useForm } from "react-hook-form";
 import { Description } from "../components/description";
 import { NextNode } from "../components/next-node";
 import { useWorkflow } from "../context/workflowContext";
+import { DiscordMessage } from "../nodes/discord-message";
 import { IfElse } from "../nodes/if-else";
 import { SlackMessage } from "../nodes/slack-message";
 import { TagMember } from "../nodes/tag-member";
@@ -28,7 +18,6 @@ import { Task } from "../nodes/task";
 import { Wait } from "../nodes/wait";
 import { Webhook } from "../nodes/webhook";
 import { ActionPanel } from "./action-panel";
-import { FormTrigger, FormTriggerSchema } from "./schemas/form-trigger.schema";
 import { TriggerPanel } from "./trigger-panel";
 
 type Props = {
@@ -43,16 +32,6 @@ export const OptionsPanel = ({ workflow }: Props) => {
 
   const { type, icon, label } = node.data;
   const isTrigger = "isTrigger" in node.data;
-
-  const parsedTrigger = isTrigger ? NodeTriggerSchema.parse(node.data) : null;
-  const { alertByEmail } = parsedTrigger ?? {};
-
-  const form = useForm<FormTrigger>({
-    resolver: zodResolver(FormTriggerSchema),
-    defaultValues: {
-      alertByEmail,
-    },
-  });
 
   const onDelete = () => {
     if (!node) return;
@@ -73,6 +52,8 @@ export const OptionsPanel = ({ workflow }: Props) => {
               <div className="flex items-center gap-2">
                 {icon === "Slack" ? (
                   <Slack size={44} className="rounded-md border p-2.5" />
+                ) : icon === "Discord" ? (
+                  <Discord size={44} className="rounded-md border p-2.5" />
                 ) : (
                   <Icon
                     name={icon as keyof typeof icons}
@@ -106,36 +87,11 @@ export const OptionsPanel = ({ workflow }: Props) => {
                 )}
               </div>
             </div>
-            {isTrigger && (
-              <Form {...form}>
-                <form>
-                  <FormField
-                    control={form.control}
-                    name="alertByEmail"
-                    render={({ field }) => (
-                      <FormItem className="w-full">
-                        <div className="flex items-center justify-between">
-                          <FormLabel>Alert by email</FormLabel>
-                          <FormControl>
-                            <Switch
-                              checked={field.value}
-                              onCheckedChange={field.onChange}
-                            />
-                          </FormControl>
-                        </div>
-                        <FormDescription>
-                          Get notified by email when this trigger runs.
-                        </FormDescription>
-                      </FormItem>
-                    )}
-                  />
-                </form>
-              </Form>
-            )}
             <Description id={node.id} />
             {!isTrigger && <Separator />}
             {type === "if-else" && <IfElse />}
             {type === "slack-message" && <SlackMessage />}
+            {type === "discord-message" && <DiscordMessage />}
             {type === "add-tag" && <TagMember />}
             {type === "remove-tag" && <TagMember />}
             {type === "task" && <Task />}

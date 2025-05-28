@@ -1,6 +1,7 @@
 import { Icon } from "@/components/custom/Icon";
 import { Badge } from "@conquest/ui/badge";
 import { cn } from "@conquest/ui/cn";
+import { Discord } from "@conquest/ui/icons/Discord";
 import { Slack } from "@conquest/ui/icons/Slack";
 import { Separator } from "@conquest/ui/separator";
 import { type NodeProps, Position, useReactFlow } from "@xyflow/react";
@@ -64,6 +65,8 @@ export const CustomNode = ({ ...props }: Props) => {
           <div className="rounded-md border p-1">
             {icon === "Slack" ? (
               <Slack size={16} />
+            ) : icon === "Discord" ? (
+              <Discord size={16} />
             ) : (
               <Icon name={icon as keyof typeof icons} size={16} />
             )}

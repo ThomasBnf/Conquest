@@ -14,10 +14,10 @@ import { IntegrationHeader } from "../integrations/integration-header";
 import { DiscordForm } from "./discord-form";
 
 type Props = {
-  error: string;
+  message: string;
 };
 
-export const DiscordIntegration = ({ error }: Props) => {
+export const DiscordIntegration = ({ message }: Props) => {
   const { discord, channels, setLoading } = useIntegration();
   const { name } = discord?.details ?? {};
   const router = useRouter();
@@ -47,7 +47,7 @@ export const DiscordIntegration = ({ error }: Props) => {
         <p className="font-medium text-lg">Discord</p>
       </div>
       <EnableCard
-        error={error}
+        message={message}
         integration={discord}
         docUrl="https://docs.useconquest.com/integrations/discord"
         description="Connect your Discord community to get a complete overview of your members and community activity."

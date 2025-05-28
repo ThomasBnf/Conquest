@@ -45,7 +45,7 @@ const edgeTypes = {
 };
 
 export const Editor = ({ workflow }: Props) => {
-  const { setNode, panel, setPanel } = useWorkflow();
+  const { node, setNode, panel, setPanel } = useWorkflow();
   const { toObject, getNode } = useReactFlow();
   const [nodes, setNodes] = useNodesState<WorkflowNode>(workflow.nodes);
   const [edges, setEdges] = useEdgesState<Edge>(workflow.edges);
@@ -68,11 +68,9 @@ export const Editor = ({ workflow }: Props) => {
             if (isTrigger) return prev;
           }
         }
-
         return applyNodeChanges(changes, prev) as WorkflowNode[];
       });
 
-      if (changes[0]?.type === "select") return;
       if (changes[0]?.type === "position") return;
 
       setTimeout(() => onSave(), 100);
@@ -146,7 +144,6 @@ export const Editor = ({ workflow }: Props) => {
       const currentNode = selection.nodes[0];
 
       if (currentNode) {
-        console.log("currentNode", currentNode);
         setPanel("node");
         setNode(currentNode);
       }
@@ -155,7 +152,6 @@ export const Editor = ({ workflow }: Props) => {
   );
 
   const onSave = async () => {
-    console.log("onSave", toObject().nodes);
     await updateWorkflow({
       ...workflow,
       nodes: NodeSchema.array().parse(toObject().nodes),

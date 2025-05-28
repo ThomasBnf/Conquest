@@ -33,31 +33,26 @@ export const NodeBaseDataSchema = z.object({
 export const NodeMemberCreatedSchema = NodeBaseDataSchema.extend({
   type: z.literal("member-created"),
   isTrigger: z.boolean().default(true),
-  alertByEmail: z.boolean(),
 });
 
 export const NodeLevelUpSchema = NodeBaseDataSchema.extend({
   type: z.literal("level-up"),
   isTrigger: z.boolean().default(true),
-  alertByEmail: z.boolean(),
 });
 
 export const NodeLevelDownSchema = NodeBaseDataSchema.extend({
   type: z.literal("level-down"),
   isTrigger: z.boolean().default(true),
-  alertByEmail: z.boolean(),
 });
 
 export const NodeAtRiskSchema = NodeBaseDataSchema.extend({
   type: z.literal("at-risk-member"),
   isTrigger: z.boolean().default(true),
-  alertByEmail: z.boolean(),
 });
 
 export const NodeAmbassadorSchema = NodeBaseDataSchema.extend({
   type: z.literal("potential-ambassador"),
   isTrigger: z.boolean().default(true),
-  alertByEmail: z.boolean(),
 });
 
 // ACTIONS
@@ -69,6 +64,11 @@ export const NodeIfElseSchema = NodeBaseDataSchema.extend({
 
 export const NodeSlackMessageSchema = NodeBaseDataSchema.extend({
   type: z.literal("slack-message"),
+  message: z.string(),
+});
+
+export const NodeDiscordMessageSchema = NodeBaseDataSchema.extend({
+  type: z.literal("discord-message"),
   message: z.string(),
 });
 
@@ -113,6 +113,7 @@ export const NodeDataSchema = z.discriminatedUnion("type", [
   NodeAmbassadorSchema,
   NodeIfElseSchema,
   NodeSlackMessageSchema,
+  NodeDiscordMessageSchema,
   NodeTagMemberSchema,
   NodeTaskSchema,
   NodeWaitSchema,
@@ -136,6 +137,7 @@ export type Trigger = z.infer<typeof TriggerSchema>;
 
 export type NodeIfElse = z.infer<typeof NodeIfElseSchema>;
 export type NodeSlackMessage = z.infer<typeof NodeSlackMessageSchema>;
+export type NodeDiscordMessage = z.infer<typeof NodeDiscordMessageSchema>;
 export type NodeTagMember = z.infer<typeof NodeTagMemberSchema>;
 export type NodeTask = z.infer<typeof NodeTaskSchema>;
 export type NodeWait = z.infer<typeof NodeWaitSchema>;

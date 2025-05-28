@@ -15,8 +15,10 @@ import { updateMember } from "@conquest/clickhouse/member/updateMember";
 import { createProfile } from "@conquest/clickhouse/profile/createProfile";
 import { deleteProfile } from "@conquest/clickhouse/profile/deleteProfile";
 import { getProfile } from "@conquest/clickhouse/profile/getProfile";
+import { updateProfile } from "@conquest/clickhouse/profile/updateProfile";
 import { getIntegration } from "@conquest/db/integrations/getIntegration";
 import { prisma } from "@conquest/db/prisma";
+import { triggerWorkflows } from "@conquest/trigger/tasks/triggerWorkflows";
 import { ActivitySchema } from "@conquest/zod/schemas/activity.schema";
 import {
   ActivityType,
@@ -71,6 +73,7 @@ client.once("ready", () => {
 });
 
 client.on(Events.GuildMemberAdd, async (member) => {
+  console.log("GuildMemberAdd");
   const { user, guild } = member;
   const { id, bot, username, globalName, avatar } = user;
 
@@ -96,6 +99,8 @@ client.on(Events.GuildMemberAdd, async (member) => {
       workspaceId,
     });
 
+    console.log("existingProfile", existingProfile);
+
     if (!existingProfile) {
       const createdMember = await createMember({
         firstName,
@@ -114,6 +119,11 @@ client.on(Events.GuildMemberAdd, async (member) => {
         memberId: createdMember.id,
         workspaceId,
       });
+
+      await triggerWorkflows.trigger({
+        trigger: "member-created",
+        member: createdMember,
+      });
     }
   } catch (error) {
     console.error("GuildMemberAdd", error);
@@ -121,6 +131,7 @@ client.on(Events.GuildMemberAdd, async (member) => {
 });
 
 client.on(Events.GuildMemberRemove, async (member) => {
+  console.log("GuildMemberRemove");
   const { user, guild } = member;
   const { id } = user;
 
@@ -153,7 +164,6 @@ client.on(Events.GuildMemberRemove, async (member) => {
 });
 
 client.on(Events.UserUpdate, async (_, user) => {
-  console.log("UserUpdate", user);
   const { id, username, globalName, avatar } = user;
 
   const firstName = globalName?.split(" ")[0] ?? "";
@@ -181,14 +191,12 @@ client.on(Events.UserUpdate, async (_, user) => {
       avatarUrl,
     });
 
-    await createProfile({
-      externalId: id,
+    await updateProfile({
+      id: profile.id,
       attributes: {
         username: username ?? "",
         source: "Discord",
       },
-      memberId: profile.memberId,
-      workspaceId: profile.workspaceId,
     });
   } catch (error) {
     console.error("UserUpdate", error);
@@ -274,7 +282,6 @@ client.on(Events.ChannelDelete, async (channel) => {
 });
 
 client.on(Events.MessageCreate, async (message) => {
-  console.log("MessageCreate", message);
   const { id, channelId, guildId, type, content, author, reference } = message;
   const { id: externalId } = author;
 
@@ -407,7 +414,6 @@ client.on(Events.MessageCreate, async (message) => {
 });
 
 client.on(Events.MessageUpdate, async (message) => {
-  console.log("MessageUpdate", message);
   const { id, guildId, reactions } = message;
   const { message: updatedMessage } = reactions;
   const { content } = updatedMessage;
@@ -707,7 +713,6 @@ client.on(Events.MessageReactionAdd, async (reaction, user) => {
       message: emoji.name ?? "",
       reactTo: id,
       memberId: profile.memberId,
-      //TO DO: Add thread channel NAME IN Activities
       channelId: thread?.channelId ?? channel?.id,
       source: "Discord",
       workspaceId,

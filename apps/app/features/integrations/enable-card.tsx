@@ -12,7 +12,7 @@ import { toast } from "sonner";
 import { DisconnectButton } from "./disconnect-button";
 
 type Props = {
-  error: string;
+  message: string;
   integration: Integration | null;
   description: string;
   docUrl: string;
@@ -21,7 +21,7 @@ type Props = {
 };
 
 export const EnableCard = ({
-  error,
+  message,
   integration,
   docUrl,
   description,
@@ -39,8 +39,11 @@ export const EnableCard = ({
   const isExpired = expiresAt && expiresAt < new Date();
 
   useEffect(() => {
-    if (error) {
-      switch (error) {
+    if (message) {
+      switch (message) {
+        case "updated":
+          toast.success("Integration updated", { duration: 10000 });
+          break;
         case "missing_permissions":
           toast.error("Error: Missing permissions", { duration: 10000 });
           break;
@@ -64,7 +67,7 @@ export const EnableCard = ({
       }
       router.replace(`/settings/integrations/${source.toLowerCase()}`);
     }
-  }, [expiresAt, error]);
+  }, [expiresAt, message]);
 
   if (isConnected) return;
 

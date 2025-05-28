@@ -85,7 +85,7 @@ export const EUROPEAN_COUNTRIES = [
   "SE",
 ];
 
-export const DISCORD_PERMISSIONS = "268502016";
+export const DISCORD_PERMISSIONS = "268504080";
 export const DISCORD_SCOPES = "bot+messages.read";
 
 export const LINKEDIN_SCOPES =

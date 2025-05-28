@@ -1,12 +1,14 @@
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from "@conquest/ui/form";
 import { Input } from "@conquest/ui/input";
+import { Switch } from "@conquest/ui/switch";
 import { TextField } from "@conquest/ui/text-field";
 import { Workflow } from "@conquest/zod/schemas/workflow.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -22,7 +24,7 @@ type Props = {
 };
 
 export const WorkflowPanel = ({ workflow }: Props) => {
-  const { name, description } = workflow;
+  const { name, description, alertOnSuccess, alertOnFailure } = workflow;
   const updateWorkflow = useUpdateWorkflow();
 
   const form = useForm<FormWorkflow>({
@@ -30,14 +32,23 @@ export const WorkflowPanel = ({ workflow }: Props) => {
     defaultValues: {
       name,
       description,
+      alertOnSuccess,
+      alertOnFailure,
     },
   });
 
-  const onSubmit = ({ name, description }: FormWorkflow) => {
+  const onSubmit = ({
+    name,
+    description,
+    alertOnSuccess,
+    alertOnFailure,
+  }: FormWorkflow) => {
     updateWorkflow({
       ...workflow,
       name,
       description: description ?? "",
+      alertOnSuccess,
+      alertOnFailure,
     });
   };
 
@@ -77,6 +88,55 @@ export const WorkflowPanel = ({ workflow }: Props) => {
                   />
                 </FormControl>
                 <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="alertOnSuccess"
+            render={({ field }) => (
+              <FormItem>
+                <div className="flex items-center justify-between">
+                  <FormLabel>Community alert</FormLabel>
+                  <FormControl>
+                    <Switch
+                      checked={field.value}
+                      onCheckedChange={() => {
+                        field.onChange(!field.value);
+                        form.handleSubmit(onSubmit)();
+                      }}
+                    />
+                  </FormControl>
+                </div>
+                <FormMessage />
+                <FormDescription>
+                  Get notified by email when the workflow runs successfully.
+                </FormDescription>
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="alertOnFailure"
+            render={({ field }) => (
+              <FormItem>
+                <div className="flex items-center justify-between">
+                  <FormLabel>Workflow failure alert</FormLabel>
+                  <FormControl>
+                    <Switch
+                      checked={field.value}
+                      onCheckedChange={() => {
+                        field.onChange(!field.value);
+                        form.handleSubmit(onSubmit)();
+                      }}
+                    />
+                  </FormControl>
+                </div>
+                <FormMessage />
+                <FormDescription>
+                  Get notified by email when failures occur in runs of this
+                  workflow.
+                </FormDescription>
               </FormItem>
             )}
           />

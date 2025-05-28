@@ -10,6 +10,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@conquest/trigger": "workspace:*",
     "date-fns": "^4.1.0",
     "discord-api-types": "^0.37.118",
     "discord.js": "^14.14.1",

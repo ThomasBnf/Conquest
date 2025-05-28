@@ -11,6 +11,8 @@ export const WorkflowSchema = z.object({
   nodes: z.array(NodeSchema),
   edges: z.array(EdgeSchema),
   createdBy: z.string(),
+  alertOnSuccess: z.boolean(),
+  alertOnFailure: z.boolean(),
   workspaceId: z.string(),
   createdAt: z.coerce.date(),
   updatedAt: z.coerce.date(),

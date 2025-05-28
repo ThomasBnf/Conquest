@@ -13,10 +13,10 @@ import { EventCard } from "./event-card";
 import { LivestormForm } from "./livestorm-form";
 
 type Props = {
-  error: string;
+  message: string;
 };
 
-export const LivestormIntegration = ({ error }: Props) => {
+export const LivestormIntegration = ({ message }: Props) => {
   const { livestorm, setLoading } = useIntegration();
   const { name } = livestorm?.details ?? {};
   const router = useRouter();
@@ -48,7 +48,7 @@ export const LivestormIntegration = ({ error }: Props) => {
         <p className="font-medium text-lg">Livestorm</p>
       </div>
       <EnableCard
-        error={error}
+        message={message}
         integration={livestorm}
         docUrl="https://docs.useconquest.com/integrations/livestorm"
         description="Connect your Livestorm workspace to access all your webinar sessions and participant data."

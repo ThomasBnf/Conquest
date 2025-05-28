@@ -2,15 +2,18 @@ import { DISCORD_PERMISSIONS, DISCORD_SCOPES } from "@/constant";
 import { getCurrentUser } from "@/queries/getCurrentUser";
 import { createIntegration } from "@conquest/db/integrations/createIntegration";
 import { getIntegration } from "@conquest/db/integrations/getIntegration";
+import { updateIntegration } from "@conquest/db/integrations/updateIntegration";
+import { prisma } from "@conquest/db/prisma";
 import { encrypt } from "@conquest/db/utils/encrypt";
 import { env } from "@conquest/env";
+import { DiscordIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
 import { redirect } from "next/navigation";
 
 type Props = {
   searchParams: Promise<{
     error?: string;
     code: string;
-    permissions?: string;
+    permissions: string;
   }>;
 };
 
@@ -48,31 +51,55 @@ export default async function Page({ searchParams }: Props) {
   const { access_token, expires_in, refresh_token, guild } = data;
   const { id, name } = guild;
 
-  const integration = await getIntegration({ externalId: id });
+  const existingIntegration = await prisma.integration.findUnique({
+    where: {
+      externalId: id,
+      NOT: {
+        workspaceId,
+      },
+    },
+  });
 
-  if (integration) {
+  if (existingIntegration) {
     redirect("/settings/integrations/discord?error=already_connected");
   }
 
-  const encryptedAccessToken = await encrypt(access_token);
-  const encryptedRefreshToken = await encrypt(refresh_token);
+  const integration = await getIntegration({ externalId: id, workspaceId });
 
-  await createIntegration({
-    externalId: id,
+  if (!integration) {
+    const encryptedAccessToken = await encrypt(access_token);
+    const encryptedRefreshToken = await encrypt(refresh_token);
+
+    await createIntegration({
+      externalId: id,
+      details: {
+        source: "Discord",
+        name,
+        accessToken: encryptedAccessToken.token,
+        accessTokenIv: encryptedAccessToken.iv,
+        refreshToken: encryptedRefreshToken.token,
+        refreshTokenIv: encryptedRefreshToken.iv,
+        expiresIn: expires_in,
+        scopes: DISCORD_SCOPES,
+        permissions: DISCORD_PERMISSIONS,
+      },
+      createdBy: userId,
+      workspaceId,
+    });
+
+    redirect("/settings/integrations/discord");
+  }
+
+  const discord = DiscordIntegrationSchema.parse(integration);
+
+  await updateIntegration({
+    id: discord.id,
+    workspaceId,
     details: {
-      source: "Discord",
-      name,
-      accessToken: encryptedAccessToken.token,
-      accessTokenIv: encryptedAccessToken.iv,
-      refreshToken: encryptedRefreshToken.token,
-      refreshTokenIv: encryptedRefreshToken.iv,
-      expiresIn: expires_in,
-      scopes: DISCORD_SCOPES,
+      ...discord.details,
       permissions: DISCORD_PERMISSIONS,
     },
-    createdBy: userId,
-    workspaceId,
   });
 
-  // redirect("/settings/integrations/discord");
+  redirect("/settings/integrations/discord?message=updated");
 }

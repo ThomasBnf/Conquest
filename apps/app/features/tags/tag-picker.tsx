@@ -22,6 +22,7 @@ import { TagMenuDialog } from "./tag-menu-dialog";
 type Props = {
   tags: string[];
   onUpdate: (tags: string[]) => void;
+  source?: "Discord";
   variant?: ButtonProps["variant"];
   className?: string;
 };
@@ -29,6 +30,7 @@ type Props = {
 export const TagPicker = ({
   tags = [],
   onUpdate,
+  source,
   variant,
   className,
 }: Props) => {
@@ -105,21 +107,23 @@ export const TagPicker = ({
           />
           <CommandList>
             <CommandGroup heading="Select or create tag">
-              {allTags?.map((tag) => (
-                <CommandItem key={tag.id} className="group">
-                  <div
-                    className="flex items-center w-full h-full"
-                    onClick={() => onSelectTag(tag.id)}
-                  >
-                    <Checkbox
-                      checked={tags.includes(tag.id)}
-                      className="mr-2"
-                    />
-                    <TagBadge tag={tag} />
-                  </div>
-                  <TagMenuDialog tag={tag} />
-                </CommandItem>
-              ))}
+              {allTags
+                ?.filter((tag) => tag.source === source)
+                ?.map((tag) => (
+                  <CommandItem key={tag.id} className="group">
+                    <div
+                      className="flex h-full w-full items-center"
+                      onClick={() => onSelectTag(tag.id)}
+                    >
+                      <Checkbox
+                        checked={tags.includes(tag.id)}
+                        className="mr-2"
+                      />
+                      <TagBadge tag={tag} />
+                    </div>
+                    <TagMenuDialog tag={tag} />
+                  </CommandItem>
+                ))}
             </CommandGroup>
             {value && !existingTag && (
               <CommandGroup>
@@ -127,10 +131,10 @@ export const TagPicker = ({
                   <span className="mr-2">Create</span>
                   <Badge variant="outline">
                     <div
-                      className="rounded-full size-2 shrink-0"
+                      className="size-2 shrink-0 rounded-full"
                       style={{ backgroundColor: "#0070f3" }}
                     />
-                    <p className="leading-none whitespace-nowrap">{value}</p>
+                    <p className="whitespace-nowrap leading-none">{value}</p>
                   </Badge>
                 </CommandItem>
               </CommandGroup>

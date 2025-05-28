@@ -284,15 +284,17 @@ model VerificationToken {
 }
 
 model Workflow {
-    id          String  @id @default(uuid())
-    name        String
-    description String?
-    nodes       Json[]
-    edges       Json[]
-    published   Boolean @default(false)
-    runs        Run[]
-    createdBy   String
-    user        User    @relation(fields: [createdBy], references: [id])
+    id             String  @id @default(uuid())
+    name           String
+    description    String?
+    nodes          Json[]
+    edges          Json[]
+    published      Boolean @default(false)
+    runs           Run[]
+    createdBy      String
+    user           User    @relation(fields: [createdBy], references: [id])
+    alertOnSuccess Boolean @default(true)
+    alertOnFailure Boolean @default(true)
 
     workspaceId String
     workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)

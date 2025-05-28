@@ -44,7 +44,11 @@ export const VariablePicker = ({ onClick }: Props) => {
         ].map((key) => (
           <DropdownMenuItem
             key={key}
-            onClick={() => onClick(`{{${key.replaceAll(" ", "")}}}`)}
+            onClick={() =>
+              onClick(
+                `{{${key.slice(0, 1).toLowerCase()}${key.slice(1).replaceAll(" ", "")}}}`,
+              )
+            }
             className="capitalize"
           >
             {key.replace(/_/g, " ")}

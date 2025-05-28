@@ -20,16 +20,16 @@ type Props = {
   runId: string;
 };
 
-const WorkflowRun = ({ slug, workflowId, workflowName, runId }: Props) => (
+const WorkflowSuccess = ({ slug, workflowId, workflowName, runId }: Props) => (
   <Html>
     <Head />
-    <Preview>Workflow "{workflowName}" has just run</Preview>
+    <Preview>Workflow "{workflowName}" has run successfully</Preview>
     <Tailwind>
       <Body className="mx-auto my-auto bg-white font-sans">
         <Container className="mx-auto my-10 max-w-[600px] rounded border border-neutral-200 border-solid px-10 pb-5">
           <Logo />
           <Heading className="mx-0 mt-7 p-0 font-medium text-black text-xl">
-            Workflow "{workflowName}" has just run
+            Workflow "{workflowName}" has run successfully
           </Heading>
           <Section className="mt-8 mb-8">
             <Link
@@ -46,4 +46,4 @@ const WorkflowRun = ({ slug, workflowId, workflowName, runId }: Props) => (
   </Html>
 );
 
-export default WorkflowRun;
+export default WorkflowSuccess;

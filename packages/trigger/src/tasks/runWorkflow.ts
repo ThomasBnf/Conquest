@@ -1,11 +1,12 @@
 import { getFilteredMember } from "@conquest/clickhouse/member/getFilteredMember";
+import { Run, User } from "@conquest/db/prisma";
 import { createRun } from "@conquest/db/runs/createRun";
 import { updateRun } from "@conquest/db/runs/updateRun";
 import { getUserById } from "@conquest/db/users/getUserById";
 import { getWorkspace } from "@conquest/db/workspaces/getWorkspace";
 import { resend } from "@conquest/resend";
 import WorkflowFailed from "@conquest/resend/emails/workflow-failed";
-import WorkflowRun from "@conquest/resend/emails/workflow-run";
+import WorkflowSuccess from "@conquest/resend/emails/workflow-success";
 import { Edge } from "@conquest/zod/schemas/edge.schema";
 import {
   MemberWithLevel,
@@ -15,13 +16,16 @@ import {
   Node,
   NodeIfElseSchema,
   NodeSchema,
-  NodeTriggerSchema,
 } from "@conquest/zod/schemas/node.schema";
-import { WorkflowSchema } from "@conquest/zod/schemas/workflow.schema";
+import {
+  Workflow,
+  WorkflowSchema,
+} from "@conquest/zod/schemas/workflow.schema";
 import { logger, schemaTask } from "@trigger.dev/sdk/v3";
 import { z } from "zod";
 import { sleep } from "../helpers/sleep";
 import { addTags } from "../workflow/add-tags";
+import { discordMessage } from "../workflow/discord-message";
 import { removeTags } from "../workflow/remove-tags";
 import { slackMessage } from "../workflow/slack-message";
 import { task } from "../workflow/task";
@@ -36,46 +40,32 @@ export const runWorkflow = schemaTask({
     member: MemberWithLevelSchema,
   }),
   run: async ({ workflow, member }) => {
-    const { nodes, edges, createdBy, workspaceId } = workflow;
+    const {
+      nodes,
+      edges,
+      createdBy,
+      workspaceId,
+      alertOnSuccess,
+      alertOnFailure,
+    } = workflow;
     const { slug } = await getWorkspace({ id: workspaceId });
-
+    const user = await getUserById({ id: createdBy });
     const run = await createRun({ workflowId: workflow.id });
-
     const runNodes = new Map(nodes.map((node) => [node.id, node]));
 
     let node = nodes.find((node) => "isTrigger" in node.data);
     let hasNextNode = true;
 
-    while (hasNextNode) {
+    while (hasNextNode && node) {
       const parsedNode = NodeSchema.parse(node);
       const { type } = parsedNode.data;
       const isTrigger = "isTrigger" in parsedNode.data;
 
       if (isTrigger) {
-        const { alertByEmail } = NodeTriggerSchema.parse(parsedNode.data);
-
         runNodes.set(parsedNode.id, {
           ...parsedNode,
           data: { ...parsedNode.data, status: "COMPLETED" },
         });
-
-        if (alertByEmail) {
-          const user = await getUserById({ id: createdBy });
-
-          if (!user) return;
-
-          await resend.emails.send({
-            from: "Conquest <team@useconquest.com>",
-            to: user.email,
-            subject: `Workflow "${workflow.name}" has run`,
-            react: WorkflowRun({
-              slug,
-              workflowId: workflow.id,
-              workflowName: workflow.name,
-              runId: run.id,
-            }),
-          });
-        }
       }
 
       switch (type) {
@@ -103,8 +93,14 @@ export const runWorkflow = schemaTask({
           hasNextNode = false;
           break;
         }
+
         case "slack-message": {
           const result = await slackMessage({ node: parsedNode, member });
+          runNodes.set(parsedNode.id, result);
+          break;
+        }
+        case "discord-message": {
+          const result = await discordMessage({ node: parsedNode, member });
           runNodes.set(parsedNode.id, result);
           break;
         }
@@ -151,25 +147,17 @@ export const runWorkflow = schemaTask({
       if (hasFailed) {
         updateRun({ id: run.id, status: "FAILED", runNodes });
 
-        const user = await getUserById({ id: workflow.createdBy });
-
-        if (!user) return;
-
-        return await resend.emails.send({
-          from: "Conquest <team@useconquest.com>",
-          to: user.email,
-          subject: `Workflow "${workflow.name}" has failed to run`,
-          react: WorkflowFailed({
-            slug,
-            workflowId: workflow.id,
-            workflowName: workflow.name,
-            runId: run.id,
-          }),
-        });
+        if (alertOnFailure) {
+          sendAlertyByEmail({ slug, state: "failure", user, workflow, run });
+        }
       }
     }
 
-    return updateRun({ id: run.id, status: "COMPLETED", runNodes });
+    await updateRun({ id: run.id, status: "COMPLETED", runNodes });
+
+    if (alertOnSuccess) {
+      sendAlertyByEmail({ slug, state: "success", user, workflow, run });
+    }
   },
 });
 
@@ -208,4 +196,46 @@ const IfElse = async ({
   }
 
   return null;
+};
+
+const sendAlertyByEmail = async ({
+  slug,
+  state,
+  user,
+  workflow,
+  run,
+}: {
+  slug: string;
+  state: "success" | "failure";
+  user: User | null;
+  workflow: Workflow;
+  run: Run;
+}) => {
+  if (!user) return;
+
+  if (state === "success") {
+    return await resend.emails.send({
+      from: "Conquest <team@useconquest.com>",
+      to: user.email,
+      subject: `Workflow "${workflow.name}" has run successfully`,
+      react: WorkflowSuccess({
+        slug,
+        workflowId: workflow.id,
+        workflowName: workflow.name,
+        runId: run.id,
+      }),
+    });
+  }
+
+  await resend.emails.send({
+    from: "Conquest <team@useconquest.com>",
+    to: user.email,
+    subject: `Workflow "${workflow.name}" has failed to run`,
+    react: WorkflowFailed({
+      slug,
+      workflowId: workflow.id,
+      workflowName: workflow.name,
+      runId: run.id,
+    }),
+  });
 };

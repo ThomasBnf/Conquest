@@ -1,5 +1,8 @@
 import { Icon } from "@/components/custom/Icon";
+import { DISCORD_PERMISSIONS, DISCORD_SCOPES } from "@/constant";
+import { trpc } from "@/server/client";
 import { User } from "@conquest/db/prisma";
+import { env } from "@conquest/env";
 import {
   Command,
   CommandEmpty,
@@ -8,13 +11,16 @@ import {
   CommandItem,
   CommandList,
 } from "@conquest/ui/command";
+import { Discord } from "@conquest/ui/icons/Discord";
 import { Slack } from "@conquest/ui/icons/Slack";
 import { Label } from "@conquest/ui/label";
 import { Separator } from "@conquest/ui/separator";
 import { Edge } from "@conquest/zod/schemas/edge.schema";
+import { DiscordIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
 import { useReactFlow } from "@xyflow/react";
-import type { icons } from "lucide-react";
+import { Plus, type icons } from "lucide-react";
 import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import { v4 as uuid } from "uuid";
 import { useWorkflow } from "../context/workflowContext";
 import type { WorkflowNode } from "./schemas/workflow-node.type";
@@ -22,6 +28,7 @@ import type { WorkflowNode } from "./schemas/workflow-node.type";
 export const ActionPanel = () => {
   const { data: session } = useSession();
   const { user } = session ?? {};
+  const router = useRouter();
 
   const {
     node: selectedNode,
@@ -33,8 +40,32 @@ export const ActionPanel = () => {
 
   const { addNodes, addEdges, updateNodeData, setEdges } = useReactFlow();
 
+  const { data } = trpc.integrations.bySource.useQuery({ source: "Discord" });
+  const discord = data ? DiscordIntegrationSchema.parse(data) : null;
+
+  const { permissions } = discord?.details ?? {};
+  const hasPermissions = permissions === DISCORD_PERMISSIONS;
+
+  const onUpdatePermissions = () => {
+    const params = new URLSearchParams({
+      response_type: "code",
+      client_id: env.NEXT_PUBLIC_DISCORD_CLIENT_ID,
+      permissions: DISCORD_PERMISSIONS,
+      redirect_uri: `${env.NEXT_PUBLIC_URL}/connect/discord`,
+    });
+
+    router.push(
+      `https://discord.com/oauth2/authorize?${params.toString()}&scope=${DISCORD_SCOPES}`,
+    );
+  };
+
   const onSelect = (node: WorkflowNode) => {
     if (!selectedNode) return;
+
+    if (!hasPermissions && node.data.type.startsWith("discord")) {
+      onUpdatePermissions();
+      return;
+    }
 
     if (panel === "actions-change") {
       const updatedNode = {
@@ -116,6 +147,8 @@ export const ActionPanel = () => {
                   <div className="rounded-md border bg-background p-1">
                     {node.data.icon === "Slack" ? (
                       <Slack size={16} />
+                    ) : node.data.icon === "Discord" ? (
+                      <Discord size={16} />
                     ) : (
                       <Icon
                         name={node.data.icon as keyof typeof icons}
@@ -123,7 +156,12 @@ export const ActionPanel = () => {
                       />
                     )}
                   </div>
-                  <p>{node.data.label}</p>
+                  <p className="flex-1">{node.data.label}</p>
+                  {!hasPermissions && group.category === "Discord" && (
+                    <div className="rounded-md border bg-background p-1">
+                      <Plus size={16} />
+                    </div>
+                  )}
                 </CommandItem>
               ))}
             </CommandGroup>
@@ -141,7 +179,24 @@ export const nodes = (
   nodes: WorkflowNode[];
 }[] => [
   {
-    category: "Integrations",
+    category: "Discord",
+    nodes: [
+      {
+        id: uuid(),
+        type: "custom",
+        position: { x: 0, y: 0 },
+        data: {
+          icon: "Discord",
+          label: "Send DM as Bot",
+          description: "",
+          type: "discord-message",
+          message: "",
+        },
+      },
+    ],
+  },
+  {
+    category: "Slack",
     nodes: [
       {
         id: uuid(),
@@ -149,7 +204,7 @@ export const nodes = (
         position: { x: 0, y: 0 },
         data: {
           icon: "Slack",
-          label: "Send private message",
+          label: "Send DM as user",
           description: "",
           type: "slack-message",
           message: "",
@@ -157,6 +212,7 @@ export const nodes = (
       },
     ],
   },
+
   {
     category: "Tags",
     nodes: [

@@ -40,7 +40,6 @@ export const getProfile = async (props: Props) => {
   });
 
   const { data } = await result.json();
-  console.log("getProfile", data);
   if (data.length === 0) return null;
   return ProfileSchema.parse(data[0]);
 };

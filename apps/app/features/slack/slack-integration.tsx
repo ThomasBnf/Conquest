@@ -14,10 +14,10 @@ import { IntegrationHeader } from "../integrations/integration-header";
 import { SlackForm } from "./slack-form";
 
 type Props = {
-  error: string;
+  message: string;
 };
 
-export const SlackIntegration = ({ error }: Props) => {
+export const SlackIntegration = ({ message }: Props) => {
   const { slack, channels, setLoading } = useIntegration();
   const { name } = slack?.details ?? {};
   const router = useRouter();
@@ -46,7 +46,7 @@ export const SlackIntegration = ({ error }: Props) => {
         <p className="font-medium text-lg">Slack</p>
       </div>
       <EnableCard
-        error={error}
+        message={message}
         integration={slack}
         docUrl="https://docs.useconquest.com/integrations/slack"
         description="Connect your Slack community to get a complete overview of your members and community activity."

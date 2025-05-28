@@ -38,9 +38,9 @@ export const Sidebar = ({ workflow }: Props) => {
   };
 
   return (
-    <div className="flex flex-col w-full h-full max-w-sm border-l divide-y bg-background">
+    <div className="flex h-full w-full max-w-sm flex-col divide-y border-l bg-background">
       {showBackButton && (
-        <div className="flex items-center h-12 px-2 shrink-0">
+        <div className="flex h-12 shrink-0 items-center px-2">
           <Button variant="ghost" onClick={onBack}>
             <ArrowLeft size={16} />
             Back

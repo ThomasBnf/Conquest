@@ -1,6 +1,7 @@
 import { Icon } from "@/components/custom/Icon";
 import { Badge } from "@conquest/ui/badge";
 import { Button } from "@conquest/ui/button";
+import { Discord } from "@conquest/ui/icons/Discord";
 import { Slack } from "@conquest/ui/icons/Slack";
 import { Label } from "@conquest/ui/label";
 import { useReactFlow } from "@xyflow/react";
@@ -56,6 +57,8 @@ export const NextNode = () => {
       {node ? (
         node.data.icon === "Slack" ? (
           <Slack size={24} className="rounded-md border p-1" />
+        ) : node.data.icon === "Discord" ? (
+          <Discord size={24} className="rounded-md border p-1" />
         ) : (
           <Icon
             name={node.data.icon as keyof typeof icons}
@@ -94,6 +97,11 @@ export const NextNode = () => {
         <div className="relative z-10 flex h-10 items-center gap-2 rounded-md border bg-muted px-2">
           {icon === "Slack" ? (
             <Slack size={24} className="rounded-md border bg-background p-1" />
+          ) : icon === "Discord" ? (
+            <Discord
+              size={24}
+              className="rounded-md border bg-background p-1"
+            />
           ) : (
             <Icon
               name={icon as keyof typeof icons}

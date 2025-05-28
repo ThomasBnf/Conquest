@@ -10,10 +10,10 @@ import { IntegrationHeader } from "../integrations/integration-header";
 import { GithubForm } from "./github-form";
 
 type Props = {
-  error: string;
+  message: string;
 };
 
-export const GithubIntegration = ({ error }: Props) => {
+export const GithubIntegration = ({ message }: Props) => {
   const { github, setLoading } = useIntegration();
   const { repo } = github?.details ?? {};
   const router = useRouter();
@@ -36,7 +36,7 @@ export const GithubIntegration = ({ error }: Props) => {
         <p className="font-medium text-lg">Github</p>
       </div>
       <EnableCard
-        error={error}
+        message={message}
         integration={github}
         docUrl="https://docs.useconquest.com/integrations/github"
         description="Connect your GitHub repository to track stargazers, issues, and pull requests."
