@@ -2,6 +2,7 @@
   "extends": "@conquest/tsconfig/base.json",
   "compilerOptions": {
     "baseUrl": ".",
+    "rootDir": ".",
     "paths": {
       "@/*": ["./*"]
     },
