@@ -18,7 +18,6 @@ import { getProfile } from "@conquest/clickhouse/profile/getProfile";
 import { updateProfile } from "@conquest/clickhouse/profile/updateProfile";
 import { getIntegration } from "@conquest/db/integrations/getIntegration";
 import { prisma } from "@conquest/db/prisma";
-import { triggerWorkflows } from "@conquest/trigger/tasks/triggerWorkflows";
 import { ActivitySchema } from "@conquest/zod/schemas/activity.schema";
 import {
   ActivityType,
@@ -120,10 +119,10 @@ client.on(Events.GuildMemberAdd, async (member) => {
         workspaceId,
       });
 
-      await triggerWorkflows.trigger({
-        trigger: "member-created",
-        member: createdMember,
-      });
+      // await triggerWorkflows.trigger({
+      //   trigger: "member-created",
+      //   member: createdMember,
+      // });
     }
   } catch (error) {
     console.error("GuildMemberAdd", error);
