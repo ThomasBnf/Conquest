@@ -50,15 +50,15 @@ export default function Page() {
   return (
     <MainLayout>
       <section>
-        <div className="flex flex-col items-center gap-4 bg-sidebar pt-32 pb-24 text-center">
-          <h1 className="max-w-3xl font-bold font-telegraf text-4xl lg:text-6xl">
+        <div className="flex flex-col items-center gap-4 pt-32 pb-24 text-center bg-sidebar">
+          <h1 className="max-w-3xl text-4xl font-bold font-telegraf lg:text-6xl">
             Integrations
           </h1>
-          <p className="max-w-xl text-balance font-suisse text-lg text-muted-foreground">
+          <p className="max-w-xl text-lg text-balance font-suisse text-muted-foreground">
             No dev required – Connect your community and tools to Conquest in
             just 5 clicks
           </p>
-          <div className="mt-4 flex items-center gap-2">
+          <div className="flex items-center gap-2 mt-4">
             <Link
               href="https://app.useconquest.com/auth/signup"
               className={buttonVariants({ variant: "brand", size: "md" })}
@@ -75,7 +75,7 @@ export default function Page() {
           </div>
         </div>
       </section>
-      <section className="mx-auto grid w-full max-w-5xl gap-4 px-4 pt-24 md:grid-cols-2">
+      <section className="grid w-full max-w-5xl gap-4 px-4 pt-24 mx-auto md:grid-cols-2">
         {integrations.map((integration) => (
           <Link
             key={integration.name}
@@ -84,7 +84,7 @@ export default function Page() {
             className="rounded-md border p-4 shadow-sm transition-all hover:scale-[1.02]"
           >
             {integration.logo}
-            <h3 className="mt-4 font-bold font-telegraf text-2xl">
+            <h3 className="mt-4 text-2xl font-bold font-telegraf">
               {integration.name}
             </h3>
             <p className="text-base text-muted-foreground">
