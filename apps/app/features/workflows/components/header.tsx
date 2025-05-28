@@ -44,7 +44,7 @@ export const Header = ({ workflow }: Props) => {
   }, [name]);
 
   return (
-    <div className="flex h-12 shrink-0 items-center justify-between gap-2 px-4">
+    <div className="flex items-center justify-between h-12 gap-2 px-4 shrink-0">
       <Breadcrumb>
         <BreadcrumbList>
           <BreadcrumbItem>

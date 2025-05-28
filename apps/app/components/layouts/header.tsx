@@ -26,7 +26,6 @@ export const Header = ({ title, children, className }: Props) => {
             <Separator orientation="vertical" className="mr-1 h-4" />
           </>
         )}
-
         <h2 className="font-medium">{title}</h2>
       </div>
       {children}

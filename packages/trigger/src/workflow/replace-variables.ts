@@ -1,15 +1,54 @@
+import { listChannels } from "@conquest/clickhouse/channel/listChannels";
+import { getProfileBySource } from "@conquest/clickhouse/profile/getProfileBySource";
 import { MemberWithLevel } from "@conquest/zod/schemas/member.schema";
 
 type Props = {
   message: string | undefined;
   member: MemberWithLevel;
+  source?: "Slack" | "Discord";
 };
 
-export const replaceVariables = ({ message, member }: Props) => {
+export const replaceVariables = async ({ message, member, source }: Props) => {
   if (!message) return "";
 
-  if (message.includes("{{createdMember}}")) {
-    return message.replaceAll(
+  const { workspaceId } = member;
+  let processedMessage = message;
+
+  if (processedMessage.includes("{{#")) {
+    const channels = await listChannels({ source, workspaceId });
+    const channelRegex = /\{\{#([a-zA-Z0-9_-]+)\}\}/g;
+    const channelMatches = [...processedMessage.matchAll(channelRegex)];
+
+    for (const match of channelMatches) {
+      const channelName = match[1];
+      const channel = channels.find((c) => c.name === channelName);
+
+      if (channel?.externalId) {
+        processedMessage = processedMessage.replace(
+          `{{#${channelName}}}`,
+          `<#${channel.externalId}>`,
+        );
+      }
+    }
+  }
+
+  if (source && processedMessage.includes("{{@")) {
+    const profile = await getProfileBySource({
+      source,
+      memberId: member.id,
+    });
+
+    if (profile?.externalId) {
+      const profileRegex = /\{\{@([a-zA-Z0-9_-]+)\}\}/g;
+      processedMessage = processedMessage.replace(
+        profileRegex,
+        `<@${profile.externalId}>`,
+      );
+    }
+  }
+
+  if (processedMessage.includes("{{createdMember}}")) {
+    processedMessage = processedMessage.replaceAll(
       "{{createdMember}}",
       JSON.stringify(member, null, 2),
     );
@@ -28,7 +67,7 @@ export const replaceVariables = ({ message, member }: Props) => {
   };
 
   return Object.entries(variables).reduce(
-    (acc, [key, value]) => acc.replaceAll(key, value),
-    message,
+    (acc, [key, value]) => acc.replaceAll(key, value || ""),
+    processedMessage,
   );
 };

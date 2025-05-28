@@ -12,7 +12,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useReactFlow } from "@xyflow/react";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { VariablePicker } from "../components/variable-picker";
+import { ChannelVariablePicker } from "../components/channel-variable-picker";
+import { MemberVariablePicker } from "../components/member-variable-picker";
 import { useWorkflow } from "../context/workflowContext";
 import { type FormSlack, FormSlackSchema } from "./schemas/form-slack.schema";
 
@@ -32,10 +33,16 @@ export const SlackMessage = () => {
     if (!node) return;
 
     form.setValue("message", e.target.value);
+  };
+
+  const onBlur = () => {
+    if (!node) return;
+
+    const message = form.getValues("message");
 
     updateNodeData(node?.id, {
       ...node.data,
-      message: e.target.value,
+      message,
     });
   };
 
@@ -71,13 +78,17 @@ export const SlackMessage = () => {
                   {...field}
                   placeholder="Add a message"
                   onChange={onChange}
+                  onBlur={onBlur}
                 />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
-        <VariablePicker onClick={onSetVariable} />
+        <div className="flex gap-2">
+          <MemberVariablePicker onClick={onSetVariable} />
+          <ChannelVariablePicker source="Slack" onClick={onSetVariable} />
+        </div>
       </form>
     </Form>
   );

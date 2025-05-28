@@ -74,7 +74,11 @@ export const slackMessage = async ({ node, member }: Props): Promise<Node> => {
     });
   }
 
-  const parsedMessage = replaceVariables({ message, member });
+  const parsedMessage = await replaceVariables({
+    message,
+    member,
+    source: "Slack",
+  });
 
   try {
     await web.chat.postMessage({

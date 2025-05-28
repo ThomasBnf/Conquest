@@ -21,7 +21,7 @@ export const webhook = async ({ node, member }: Props): Promise<Node> => {
     });
   }
 
-  const parsedBody = replaceVariables({ message: body, member });
+  const parsedBody = await replaceVariables({ message: body, member });
 
   try {
     const response = await fetch(url, {

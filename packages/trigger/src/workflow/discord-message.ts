@@ -86,7 +86,11 @@ export const discordMessage = async ({
     });
   }
 
-  const parsedMessage = replaceVariables({ message, member });
+  const parsedMessage = await replaceVariables({
+    message,
+    member,
+    source: "Discord",
+  });
   logger.info("parsedMessage", { parsedMessage });
 
   try {
