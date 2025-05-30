@@ -14,21 +14,42 @@ export const processTags = async ({
 }: Props): Promise<Tag[]> => {
   const tags = [...new Set(members.map((member) => member.tags))];
 
-  const createdTags: Tag[] = tags.filter(Boolean).map((name) => ({
-    id: randomUUID(),
-    externalId: null,
-    name: name ?? "",
-    color: COLORS[Math.floor(Math.random() * COLORS.length)]?.hex ?? "#0070f3",
-    source: "Manual",
-    workspaceId,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  }));
+  const createdTags: Tag[] = [];
 
-  await prisma.tag.createMany({
-    data: createdTags,
-    skipDuplicates: true,
-  });
+  for (const tag of tags) {
+    if (!tag) continue;
+
+    const existingTag = await prisma.tag.findFirst({
+      where: {
+        name: tag,
+        workspaceId,
+      },
+    });
+
+    if (existingTag) {
+      createdTags.push(existingTag);
+      continue;
+    }
+
+    const createdTag: Tag = {
+      id: randomUUID(),
+      externalId: null,
+      name: tag,
+      color:
+        COLORS[Math.floor(Math.random() * COLORS.length)]?.hex ?? "#0070f3",
+      source: "Manual",
+      workspaceId,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+
+    await prisma.tag.createMany({
+      data: createdTags,
+      skipDuplicates: true,
+    });
+
+    createdTags.push(createdTag);
+  }
 
   return TagSchema.array().parse(createdTags);
 };

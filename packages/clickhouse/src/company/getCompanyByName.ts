@@ -7,13 +7,16 @@ type Props = {
 };
 
 export const getCompanyByName = async ({ name, workspaceId }: Props) => {
+  const sanitizedName = name.replace(/'/g, "\\'");
+
   const result = await client.query({
     query: `
       SELECT *
       FROM company
-      WHERE name = '${name}'
+      WHERE name = '${sanitizedName}'
       AND workspaceId = '${workspaceId}'
     `,
+    format: "JSON",
   });
 
   const { data } = await result.json();

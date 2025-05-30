@@ -59,6 +59,13 @@ export const CSVMapColumns = ({ csvInfo, onDelete, setStep }: Props) => {
 
     const validationErrors = [];
 
+    const uniqueValues = new Set(mappedValues);
+    if (uniqueValues.size !== mappedValues.length) {
+      validationErrors.push(
+        "Cannot map multiple columns to the same attribute",
+      );
+    }
+
     if (hasDiscordUsername && !hasDiscordId) {
       validationErrors.push("Discord Username requires Discord ID");
     }
@@ -84,7 +91,6 @@ export const CSVMapColumns = ({ csvInfo, onDelete, setStep }: Props) => {
       errors: validationErrors,
     };
   }, [mappedColumns]);
-
   return (
     <div className="flex h-full flex-col divide-y">
       <div className="flex h-full divide-x">

@@ -63,8 +63,6 @@ export const seed = schemaTask({
             profile,
           } = member;
 
-          logger.info("member", { member });
-
           if (name === "slackbot" || !id || isDeleted || isBot || !profile) {
             continue;
           }
