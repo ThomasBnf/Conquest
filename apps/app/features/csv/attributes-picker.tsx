@@ -20,6 +20,54 @@ type Props = {
 export const AttributesPicker = ({ value, onValueChange }: Props) => {
   const [open, setOpen] = useState(false);
 
+  const onSelect = (value: string) => {
+    onValueChange(value);
+    setOpen(false);
+  };
+
+  const MEMBER_ATTRIBUTES = [
+    "firstName",
+    "lastName",
+    "primaryEmail",
+    "emails",
+    "tags",
+    "phones",
+    "jobTitle",
+    "avatarUrl",
+    "country",
+    "language",
+    "linkedinUrl",
+    "isStaff",
+    "createdAt",
+    "updatedAt",
+  ];
+
+  const SOCIAL_ATTRIBUTES = {
+    Company: [{ value: "company", label: "Company Name" }],
+    Discord: [
+      { value: "discordId", label: "Discord Id" },
+      { value: "discordUsername", label: "Discord Username" },
+    ],
+    Discourse: [
+      { value: "discourseId", label: "Discourse Id" },
+      { value: "discourseUsername", label: "Discourse Username" },
+    ],
+    GitHub: [
+      { value: "githubLogin", label: "GitHub Login" },
+      { value: "githubBio", label: "GitHub Bio" },
+      { value: "githubFollowers", label: "GitHub Followers" },
+      { value: "githubLocation", label: "GitHub Location" },
+    ],
+    Slack: [
+      { value: "slackId", label: "Slack Id" },
+      { value: "slackRealName", label: "Slack Real Name" },
+    ],
+    Twitter: [
+      { value: "twitterId", label: "Twitter Id" },
+      { value: "twitterUsername", label: "Twitter Username" },
+    ],
+  };
+
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
@@ -43,37 +91,15 @@ export const AttributesPicker = ({ value, onValueChange }: Props) => {
           <CommandEmpty>No attribute found.</CommandEmpty>
           <CommandList>
             <CommandGroup>
-              {[
-                "company",
-                ...Object.entries(MemberSchema.shape)
-                  .filter(([key]) =>
-                    [
-                      "firstName",
-                      "lastName",
-                      "primaryEmail",
-                      "emails",
-                      "phones",
-                      "jobTitle",
-                      "avatarUrl",
-                      "country",
-                      "language",
-                      "linkedinUrl",
-                      "isStaff",
-                      "createdAt",
-                      "updatedAt",
-                    ].includes(key),
-                  )
-                  .map(([key]) => key),
-              ]
+              {Object.entries(MemberSchema.shape)
+                .filter(([key]) => MEMBER_ATTRIBUTES.includes(key))
+                .map(([key]) => key)
                 .sort()
                 .map((key) => (
                   <CommandItem
                     key={key}
                     value={key}
-                    onSelect={(currentValue) => {
-                      onValueChange(currentValue);
-                      setOpen(false);
-                    }}
+                    onSelect={onSelect}
                     className="capitalize"
                   >
                     {key
@@ -84,6 +110,22 @@ export const AttributesPicker = ({ value, onValueChange }: Props) => {
                   </CommandItem>
                 ))}
             </CommandGroup>
+            {Object.entries(SOCIAL_ATTRIBUTES).map(([heading, items]) => (
+              <CommandGroup key={heading} heading={heading}>
+                {items.map(({ value: itemValue, label }) => (
+                  <CommandItem
+                    key={itemValue}
+                    value={itemValue}
+                    onSelect={onSelect}
+                  >
+                    {label}
+                    {value === itemValue && (
+                      <Check size={16} className="ml-auto" />
+                    )}
+                  </CommandItem>
+                ))}
+              </CommandGroup>
+            ))}
           </CommandList>
         </Command>
       </PopoverContent>

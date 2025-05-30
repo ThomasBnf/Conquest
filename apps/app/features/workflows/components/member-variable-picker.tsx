@@ -15,6 +15,8 @@ type Props = {
 
 export const MemberVariablePicker = ({ onClick }: Props) => {
   const { node } = useWorkflow();
+
+  const isWebhook = node?.data.type === "webhook";
   const isSlack = node?.data.type === "slack-message";
   const isDiscord = node?.data.type === "discord-message";
 
@@ -27,17 +29,19 @@ export const MemberVariablePicker = ({ onClick }: Props) => {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" className="w-48">
-        <DropdownMenuItem onClick={() => onClick("{{createdMember}}")}>
-          Created Member Data
-        </DropdownMenuItem>
+        {isWebhook && (
+          <DropdownMenuItem onClick={() => onClick("{{createdMember}}")}>
+            Created Member Data
+          </DropdownMenuItem>
+        )}
         {isSlack && (
           <DropdownMenuItem onClick={() => onClick("{{@slackProfile}}")}>
-            Slack Profile
+            Mention member
           </DropdownMenuItem>
         )}
         {isDiscord && (
           <DropdownMenuItem onClick={() => onClick("{{@discordProfile}}")}>
-            Discord Profile
+            Mention member
           </DropdownMenuItem>
         )}
         <DropdownMenuSeparator />

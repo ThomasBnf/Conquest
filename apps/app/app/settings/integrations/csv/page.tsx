@@ -48,12 +48,13 @@ export default function Page() {
   const onDelete = () => {
     setFiles([]);
     setCsvInfo(null);
+    setStep(1);
   };
 
   return (
     <PageLayout>
       <Header title="Import CSV" />
-      <CSVSteps />
+      <CSVSteps step={step} />
       {step === 1 && (
         <div className="h-full p-4">
           {files?.length ? (
@@ -65,7 +66,6 @@ export default function Page() {
           ) : (
             <Dropzone
               maxSize={1024 * 1024 * 10}
-              minSize={1024}
               maxFiles={1}
               accept={{ "text/csv": [] }}
               onDrop={onDrop}
@@ -79,7 +79,13 @@ export default function Page() {
           )}
         </div>
       )}
-      {step === 2 && <CSVMapColumns csvInfo={csvInfo} setStep={setStep} />}
+      {step === 2 && (
+        <CSVMapColumns
+          csvInfo={csvInfo}
+          setStep={setStep}
+          onDelete={onDelete}
+        />
+      )}
     </PageLayout>
   );
 }

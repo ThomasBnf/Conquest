@@ -14,8 +14,8 @@ export const CSVUploadPreview = ({ csvInfo, onDelete, setStep }: Props) => {
   return (
     <div className="flex h-full w-full items-center justify-center rounded-md border">
       <div className="w-full max-w-md space-y-4 rounded-md border bg-surface p-4">
-        <div className="flex items-center justify-between">
-          <p className="font-medium text-base">{csvInfo.name}</p>
+        <div className="flex items-center justify-between gap-4">
+          <p className="truncate font-medium">{csvInfo.name}</p>
           <Button variant="outline" size="icon" onClick={onDelete}>
             <Trash2 size={16} />
           </Button>

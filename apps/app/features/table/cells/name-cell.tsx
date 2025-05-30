@@ -14,7 +14,7 @@ export const NameCell = ({ company }: Props) => {
   return (
     <Link
       href={`/${slug}/companies/${id}`}
-      className="group flex items-center gap-2"
+      className="group flex items-center gap-2 truncate"
       prefetch
     >
       <Avatar className="size-6">

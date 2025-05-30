@@ -74,7 +74,7 @@ export const DataTable = <TData extends FullMember | Company>({
                     <div
                       key={column.key}
                       className={cn(
-                        "flex h-11 items-center border-r bg-background ",
+                        "flex h-11 items-center border-r bg-background",
                         column.isFixed && "sticky left-0",
                         column.key === "tags" ? "p-O" : "px-2",
                       )}

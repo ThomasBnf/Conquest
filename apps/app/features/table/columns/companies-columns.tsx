@@ -60,7 +60,7 @@ export const companiesColumns = (): Column<Company>[] => {
         const { selectedRows, setSelectedRows } = table;
 
         return (
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 overflow-hidden">
             <Checkbox
               checked={selectedRows.includes(item)}
               onCheckedChange={(value) =>
