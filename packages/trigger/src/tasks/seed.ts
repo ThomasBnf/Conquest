@@ -45,6 +45,11 @@ export const seed = schemaTask({
 
       const web = new WebClient(token);
 
+      const test = await web.auth.test();
+      logger.info("test", { test });
+
+      if (!test.ok) continue;
+
       let cursor: string | undefined;
 
       while (true) {

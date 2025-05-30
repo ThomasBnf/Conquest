@@ -15,8 +15,7 @@ type Props = {
 export const createManyInvites = async ({ discourse, profile }: Props) => {
   const { details, workspaceId } = discourse;
   const { communityUrl, apiKey, apiKeyIv } = details;
-  const { memberId, attributes } = profile;
-  const { username } = attributes;
+  const { externalId, memberId } = profile;
 
   const decryptedApiKey = await decrypt({
     accessToken: apiKey,
@@ -31,7 +30,7 @@ export const createManyInvites = async ({ discourse, profile }: Props) => {
 
   while (hasMore) {
     const response = await fetch(
-      `${communityUrl}/u/${username}/invited.json?filter=redeemed${
+      `${communityUrl}/u/${externalId}/invited.json?filter=redeemed${
         offSet ? `&offset=${offSet}` : ""
       }`,
       {

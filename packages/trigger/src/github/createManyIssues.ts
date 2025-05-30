@@ -39,13 +39,13 @@ export const createManyIssues = async (tokenManager: TokenManager) => {
     for (const issue of data) {
       const { number, user, title, body, comments, created_at, updated_at } =
         issue;
-      const { id: userId, login } = user ?? {};
+      const { login } = user ?? {};
 
-      if (!userId || login?.includes("[bot]")) continue;
+      if (!login || login?.includes("bot")) continue;
 
       const { headers, member } = await createGithubMember({
         octokit,
-        id: userId,
+        login,
         workspaceId,
       });
 

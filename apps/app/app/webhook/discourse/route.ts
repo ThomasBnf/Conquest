@@ -55,7 +55,7 @@ export async function POST(request: NextRequest) {
     if (user_id < 0) return NextResponse.json({ status: 200 });
 
     const profile = await getProfile({
-      username,
+      externalId: username,
       workspaceId,
     });
 
@@ -135,7 +135,7 @@ export async function POST(request: NextRequest) {
     if (user_id < 0) return NextResponse.json({ status: 200 });
 
     const profile = await getProfile({
-      username,
+      externalId: username,
       workspaceId,
     });
 
@@ -233,7 +233,7 @@ export async function POST(request: NextRequest) {
     const { id, username } = post;
 
     const profile = await getProfile({
-      username,
+      externalId: username,
       workspaceId,
     });
 
@@ -251,7 +251,7 @@ export async function POST(request: NextRequest) {
     const { username } = user;
 
     const profile = await getProfile({
-      username,
+      externalId: username,
       workspaceId,
     });
 
@@ -296,13 +296,12 @@ export async function POST(request: NextRequest) {
       memberId: member.id,
       attributes: {
         source: "Discourse",
-        username,
       },
       workspaceId,
     });
 
     const inviter = await getProfile({
-      username: String(invited_by.username),
+      externalId: String(invited_by.username),
       workspaceId,
     });
 
@@ -333,7 +332,7 @@ export async function POST(request: NextRequest) {
     const avatarUrl = avatar_template.replace("{size}", "500");
 
     const profile = await getProfile({
-      username,
+      externalId: username,
       workspaceId,
     });
 
@@ -363,7 +362,6 @@ export async function POST(request: NextRequest) {
       externalId: String(id),
       memberId: member.id,
       attributes: {
-        username,
         source: "Discourse",
       },
       workspaceId,
@@ -374,7 +372,7 @@ export async function POST(request: NextRequest) {
     const { username } = user;
 
     const profile = await getProfile({
-      username,
+      externalId: username,
       workspaceId,
     });
 
@@ -393,7 +391,7 @@ export async function POST(request: NextRequest) {
   if (user && event === "user_logged_in") {
     const { username } = user;
     const profile = await getProfile({
-      username,
+      externalId: username,
       workspaceId,
     });
 
@@ -589,7 +587,7 @@ export async function POST(request: NextRequest) {
     const { id, username, category_id } = solved;
 
     const profile = await getProfile({
-      username,
+      externalId: username,
       workspaceId,
     });
 

@@ -7,7 +7,7 @@ type Props = {
 };
 
 export const GithubSection = ({ profile }: Props) => {
-  const { login } = profile.attributes;
+  const { externalId } = profile;
 
   return (
     <div className="group">
@@ -15,8 +15,11 @@ export const GithubSection = ({ profile }: Props) => {
         <div className="flex size-8 items-center justify-center rounded border bg-background">
           <Github size={16} />
         </div>
-        <p>{login}</p>
-        <MenuProfile href={`https://github.com/${login}`} profile={profile} />
+        <p>{externalId}</p>
+        <MenuProfile
+          href={`https://github.com/${externalId}`}
+          profile={profile}
+        />
       </div>
     </div>
   );

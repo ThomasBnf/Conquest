@@ -42,13 +42,13 @@ export async function POST(request: NextRequest) {
       case "star": {
         const event = body as StarEvent;
         const { sender, starred_at } = event;
-        const { id } = sender;
+        const { login } = sender;
 
         if (!starred_at) return NextResponse.json({ status: 200 });
 
         const { member } = await createGithubMember({
           octokit,
-          id,
+          login,
           createdAt: new Date(starred_at),
           workspaceId,
         });
@@ -71,11 +71,11 @@ export async function POST(request: NextRequest) {
         const event = body as IssuesEvent;
         const { action, sender, issue } = event;
         const { number, title, body: message, created_at, updated_at } = issue;
-        const { id } = sender;
+        const { login } = sender;
 
         const { member } = await createGithubMember({
           octokit,
-          id,
+          login,
           workspaceId,
         });
 
@@ -129,11 +129,11 @@ export async function POST(request: NextRequest) {
         const event = body as PullRequestEvent;
         const { action, sender, pull_request } = event;
         const { number, title, body: message } = pull_request;
-        const { id } = sender;
+        const { login } = sender;
 
         const { member } = await createGithubMember({
           octokit,
-          id,
+          login,
           workspaceId,
         });
 
@@ -179,11 +179,11 @@ export async function POST(request: NextRequest) {
         const { action, sender, issue, comment } = event;
         const { id: commentId, body: message } = comment;
         const { number } = issue;
-        const { id } = sender;
+        const { login } = sender;
 
         const { member } = await createGithubMember({
           octokit,
-          id,
+          login,
           workspaceId,
         });
 

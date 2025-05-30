@@ -7,21 +7,21 @@ import { Octokit } from "octokit";
 
 type Props = {
   octokit: Octokit;
-  id: number;
+  login: string;
   createdAt?: Date;
   workspaceId: string;
 };
 export const createGithubMember = async ({
   octokit,
-  id,
+  login,
   createdAt,
   workspaceId,
 }: Props) => {
-  const response = await octokit.rest.users.getById({ account_id: id });
+  const response = await octokit.rest.users.getByUsername({ username: login });
   const { headers, data } = response;
 
   const profile = await getProfile({
-    externalId: String(id),
+    externalId: login,
     workspaceId,
   });
 
@@ -39,7 +39,6 @@ export const createGithubMember = async ({
     email,
     followers,
     location,
-    login,
     name,
     twitter_username,
   } = data;
@@ -58,10 +57,9 @@ export const createGithubMember = async ({
   });
 
   await createProfile({
-    externalId: String(id),
+    externalId: login,
     attributes: {
       source: "Github",
-      login: login ?? null,
       bio: bio ?? null,
       blog: blog ?? null,
       followers: followers ?? 0,
@@ -80,9 +78,9 @@ export const createGithubMember = async ({
 
     if (!twitterProfile) {
       await createProfile({
+        externalId: twitter_username,
         attributes: {
           source: "Twitter",
-          username: twitter_username,
         },
         memberId: member.id,
         createdAt,

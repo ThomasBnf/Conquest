@@ -17,9 +17,7 @@ export const processProfiles = async ({
   const {
     discordId,
     discordUsername,
-    discourseId,
     discourseUsername,
-    githubId,
     githubLogin,
     githubBio,
     githubFollowers,
@@ -58,25 +56,21 @@ export const processProfiles = async ({
     profiles.push(profile);
   }
 
-  if (discourseId && discourseUsername) {
+  if (discourseUsername) {
     const existingProfile = await getProfile({
-      externalId: discourseId,
+      externalId: discourseUsername,
       workspaceId,
     });
 
     const profile = existingProfile
       ? await updateProfile({
           id: existingProfile.id,
-          attributes: {
-            source: "Discourse",
-            username: discourseUsername,
-          },
+          externalId: discourseUsername,
         })
       : await createProfile({
-          externalId: discourseId,
+          externalId: discourseUsername,
           attributes: {
             source: "Discourse",
-            username: discourseUsername,
           },
           memberId,
           workspaceId,
@@ -85,9 +79,9 @@ export const processProfiles = async ({
     profiles.push(profile);
   }
 
-  if (githubId && githubLogin) {
+  if (githubLogin) {
     const existingProfile = await getProfile({
-      externalId: githubId,
+      externalId: githubLogin,
       workspaceId,
     });
 
@@ -96,17 +90,15 @@ export const processProfiles = async ({
           id: existingProfile.id,
           attributes: {
             source: "Github",
-            login: githubLogin,
             followers: Number(githubFollowers) ?? 0,
             bio: githubBio,
             blog: githubLocation,
           },
         })
       : await createProfile({
-          externalId: githubId,
+          externalId: githubLogin,
           attributes: {
             source: "Github",
-            login: githubLogin,
             followers: Number(githubFollowers) ?? 0,
             bio: githubBio,
             blog: githubLocation,
@@ -147,22 +139,19 @@ export const processProfiles = async ({
 
   if (twitterUsername) {
     const existingProfile = await getProfile({
-      username: twitterUsername,
+      externalId: twitterUsername,
       workspaceId,
     });
 
     const profile = existingProfile
       ? await updateProfile({
           id: existingProfile.id,
-          attributes: {
-            source: "Twitter",
-            username: twitterUsername,
-          },
+          externalId: twitterUsername,
         })
       : await createProfile({
+          externalId: twitterUsername,
           attributes: {
             source: "Twitter",
-            username: twitterUsername,
           },
           memberId,
           workspaceId,

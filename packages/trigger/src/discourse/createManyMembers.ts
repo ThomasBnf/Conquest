@@ -162,10 +162,9 @@ export const createManyMembers = async ({
       });
 
       const profile = await createProfile({
-        externalId: String(id),
+        externalId: username,
         attributes: {
           source: "Discourse",
-          username: username,
           customFields,
         },
         memberId: member.id,
@@ -173,23 +172,25 @@ export const createManyMembers = async ({
         workspaceId,
       });
 
+      const parsedProfile = DiscourseProfileSchema.parse(profile);
+
       await createManyReactions({
         discourse,
-        profile: DiscourseProfileSchema.parse(profile),
+        profile: parsedProfile,
       });
 
       await wait.for({ seconds: 1 });
 
       await createManyInvites({
         discourse,
-        profile: DiscourseProfileSchema.parse(profile),
+        profile: parsedProfile,
       });
 
       await wait.for({ seconds: 1 });
 
       await createManyActivities({
         client,
-        profile: DiscourseProfileSchema.parse(profile),
+        profile: parsedProfile,
       });
 
       await wait.for({ seconds: 1 });

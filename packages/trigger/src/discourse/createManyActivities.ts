@@ -12,8 +12,7 @@ type Props = {
 };
 
 export const createManyActivities = async ({ client, profile }: Props) => {
-  const { attributes, workspaceId } = profile;
-  const { username } = attributes;
+  const { externalId, workspaceId } = profile;
 
   const today = startOfDay(new Date());
   const last90Days = subDays(today, 90);
@@ -23,7 +22,7 @@ export const createManyActivities = async ({ client, profile }: Props) => {
 
   while (hasMore) {
     const { user_actions } = await client.listUserActions({
-      username,
+      username: externalId,
       filter: "1,4,5,6,15",
       offset,
     });

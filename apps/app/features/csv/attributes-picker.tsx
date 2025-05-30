@@ -49,10 +49,7 @@ export const AttributesPicker = ({ value, onValueChange, onClear }: Props) => {
       { value: "discordId", label: "Discord Id" },
       { value: "discordUsername", label: "Discord Username" },
     ],
-    Discourse: [
-      { value: "discourseId", label: "Discourse Id" },
-      { value: "discourseUsername", label: "Discourse Username" },
-    ],
+    Discourse: [{ value: "discourseUsername", label: "Discourse Username" }],
     GitHub: [
       { value: "githubLogin", label: "GitHub Login" },
       { value: "githubBio", label: "GitHub Bio" },
@@ -63,10 +60,7 @@ export const AttributesPicker = ({ value, onValueChange, onClear }: Props) => {
       { value: "slackId", label: "Slack Id" },
       { value: "slackRealName", label: "Slack Real Name" },
     ],
-    Twitter: [
-      { value: "twitterId", label: "Twitter Id" },
-      { value: "twitterUsername", label: "Twitter Username" },
-    ],
+    Twitter: [{ value: "twitterUsername", label: "Twitter Username" }],
   };
 
   return (

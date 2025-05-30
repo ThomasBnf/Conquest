@@ -79,13 +79,7 @@ export default function Page() {
           )}
         </div>
       )}
-      {step === 2 && (
-        <CSVMapColumns
-          csvInfo={csvInfo}
-          setStep={setStep}
-          onDelete={onDelete}
-        />
-      )}
+      {step === 2 && <CSVMapColumns csvInfo={csvInfo} onDelete={onDelete} />}
     </PageLayout>
   );
 }

@@ -28,13 +28,13 @@ export const createManyComments = async ({
 
   for (const comment of comments) {
     const { id: commentId, user, body, created_at, updated_at } = comment;
-    const { id: userId, login } = user ?? {};
+    const { login } = user ?? {};
 
-    if (!userId || login?.includes("[bot]")) continue;
+    if (!login || login?.includes("bot")) continue;
 
     const { headers, member } = await createGithubMember({
       octokit,
-      id: userId,
+      login,
       workspaceId,
     });
 

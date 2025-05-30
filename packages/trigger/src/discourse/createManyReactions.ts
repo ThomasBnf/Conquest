@@ -14,8 +14,7 @@ type Props = {
 export const createManyReactions = async ({ discourse, profile }: Props) => {
   const { details, workspaceId } = discourse;
   const { communityUrl, apiKey, apiKeyIv } = details;
-  const { memberId, attributes } = profile;
-  const { username } = attributes;
+  const { externalId, memberId } = profile;
 
   const decryptedApiKey = await decrypt({
     accessToken: apiKey,
@@ -30,7 +29,7 @@ export const createManyReactions = async ({ discourse, profile }: Props) => {
 
   while (hasMore) {
     const response = await fetch(
-      `${communityUrl}/discourse-reactions/posts/reactions.json?username=${username}${
+      `${communityUrl}/discourse-reactions/posts/reactions.json?username=${externalId}${
         before ? `&before_reaction_user_id=${before}` : ""
       }`,
       {

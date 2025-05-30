@@ -42,14 +42,14 @@ export const listStargazers = async (tokenManager: TokenManager) => {
       const { starred_at, user } = stargazer as {
         starred_at: string;
         user: {
-          id: number;
+          login: string;
         };
       };
-      const { id } = user;
+      const { login } = user;
 
       const { headers, member } = await createGithubMember({
         octokit,
-        id,
+        login,
         createdAt: new Date(starred_at),
         workspaceId,
       });

@@ -22,7 +22,7 @@ export const FullNameCell = ({ member }: Props) => {
   );
 
   const profile = data ? GithubProfileSchema.parse(data) : null;
-  const { login } = profile?.attributes ?? {};
+  const { externalId } = profile ?? {};
 
   return (
     <Link
@@ -41,7 +41,7 @@ export const FullNameCell = ({ member }: Props) => {
       ) : hasName ? (
         <p className="truncate group-hover:underline">{`${firstName} ${lastName}`}</p>
       ) : (
-        <p className="truncate group-hover:underline">{login}</p>
+        <p className="truncate group-hover:underline">{externalId}</p>
       )}
     </Link>
   );

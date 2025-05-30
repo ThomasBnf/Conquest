@@ -23,7 +23,7 @@ export const getMemberByExternalId = async ({
   }
 
   if (discordUsername) {
-    profile = await getProfile({ username: discordUsername, workspaceId });
+    profile = await getProfile({ externalId: discordUsername, workspaceId });
   }
 
   if (githubId) {

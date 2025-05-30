@@ -7,7 +7,7 @@ type Props = {
 };
 
 export const TwitterSection = ({ profile }: Props) => {
-  const { username } = profile.attributes;
+  const { externalId } = profile;
 
   return (
     <div className="group">
@@ -15,8 +15,8 @@ export const TwitterSection = ({ profile }: Props) => {
         <div className="flex size-8 items-center justify-center rounded border bg-background">
           <Twitter size={16} />
         </div>
-        <p>{username}</p>
-        <MenuProfile href={`https://x.com/${username}`} profile={profile} />
+        <p>{externalId}</p>
+        <MenuProfile href={`https://x.com/${externalId}`} profile={profile} />
       </div>
     </div>
   );

@@ -35,13 +35,13 @@ export const createManyPullRequests = async (tokenManager: TokenManager) => {
 
     for (const pullRequest of data) {
       const { number, user, title, body, created_at, updated_at } = pullRequest;
-      const { id: userId, login } = user ?? {};
+      const { login } = user ?? {};
 
-      if (!userId || login?.includes("[bot]")) continue;
+      if (!login || login?.includes("bot")) continue;
 
       const { headers, member } = await createGithubMember({
         octokit,
-        id: userId,
+        login,
         workspaceId,
       });
 

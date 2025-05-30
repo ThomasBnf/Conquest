@@ -3,23 +3,21 @@ import { Badge } from "@conquest/ui/badge";
 import { Button } from "@conquest/ui/button";
 import { cn } from "@conquest/ui/cn";
 import { ArrowRight } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { AttributesPicker } from "./attributes-picker";
+import { getValidationError } from "./helpers/getValidationError";
 import { CSVInfo } from "./schemas/csv-info.schema";
 
 type Props = {
   csvInfo: CSVInfo | null;
   onDelete: () => void;
-  setStep: (step: number) => void;
 };
 
-export const CSVMapColumns = ({ csvInfo, onDelete, setStep }: Props) => {
+export const CSVMapColumns = ({ csvInfo, onDelete }: Props) => {
   const [hover, setHover] = useState<string | null>(null);
   const [mappedColumns, setMappedColumns] = useState<Record<string, string>>(
     {},
   );
-
-  console.log(mappedColumns);
 
   const { mutateAsync } = trpc.csv.import.useMutation();
 
@@ -40,57 +38,8 @@ export const CSVMapColumns = ({ csvInfo, onDelete, setStep }: Props) => {
     mutateAsync({ csvInfo, mappedColumns });
   };
 
-  const { isValid, errors } = useMemo(() => {
-    const mappedValues = Object.values(mappedColumns);
-    const hasDiscordUsername = mappedValues.includes("discordUsername");
-    const hasDiscordId = mappedValues.includes("discordId");
+  const { isValid, errors } = getValidationError({ mappedColumns });
 
-    const hasDiscourseId = mappedValues.includes("discourseId");
-    const hasDiscourseUsername = mappedValues.includes("discourseUsername");
-
-    const hasGithubId = mappedValues.includes("githubId");
-    const hasGithubLogin = mappedValues.includes("githubLogin");
-
-    const hasLivestormId = mappedValues.includes("livestormId");
-    const hasLivestormUsername = mappedValues.includes("livestormUsername");
-
-    const hasSlackId = mappedValues.includes("slackId");
-    const hasSlackRealName = mappedValues.includes("slackRealName");
-
-    const validationErrors = [];
-
-    const uniqueValues = new Set(mappedValues);
-    if (uniqueValues.size !== mappedValues.length) {
-      validationErrors.push(
-        "Cannot map multiple columns to the same attribute",
-      );
-    }
-
-    if (hasDiscordUsername && !hasDiscordId) {
-      validationErrors.push("Discord Username requires Discord ID");
-    }
-
-    if (hasDiscourseUsername && !hasDiscourseId) {
-      validationErrors.push("Discourse Username requires Discourse ID");
-    }
-
-    if (hasGithubLogin && !hasGithubId) {
-      validationErrors.push("GitHub Login requires GitHub ID");
-    }
-
-    if (hasLivestormUsername && !hasLivestormId) {
-      validationErrors.push("Livestorm Username requires Livestorm ID");
-    }
-
-    if (hasSlackRealName && !hasSlackId) {
-      validationErrors.push("Slack Username requires Slack ID");
-    }
-
-    return {
-      isValid: validationErrors.length === 0,
-      errors: validationErrors,
-    };
-  }, [mappedColumns]);
   return (
     <div className="flex h-full flex-col divide-y">
       <div className="flex h-full divide-x">
@@ -150,11 +99,9 @@ export const CSVMapColumns = ({ csvInfo, onDelete, setStep }: Props) => {
           <div className="rounded-md border border-red-200 bg-red-50 p-4 text-red-600 shadow-sm">
             <div className="flex items-center gap-2">
               <p>⚠️</p>
-              <p className="font-medium">
-                Please fix the following issues before importing
-              </p>
+              <p className="font-medium">Error mapping columns</p>
             </div>
-            <div className="mt-2 space-y-1 pl-6">
+            <div className="mt-2 space-y-1">
               {errors.map((error, index) => (
                 <p key={index}>- {error}</p>
               ))}

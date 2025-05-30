@@ -17,7 +17,7 @@ export const DiscourseSection = ({ profile }: Props) => {
     : null;
 
   const { communityUrl } = details ?? {};
-  const { username } = profile.attributes;
+  const { externalId } = profile;
 
   return (
     <div className="group">
@@ -25,9 +25,9 @@ export const DiscourseSection = ({ profile }: Props) => {
         <div className="flex size-8 items-center justify-center rounded border bg-background">
           <Discourse size={16} />
         </div>
-        <p>{username}</p>
+        <p>{externalId}</p>
         <MenuProfile
-          href={`${communityUrl}/u/${username}/summary`}
+          href={`${communityUrl}/u/${externalId}/summary`}
           profile={profile}
         />
       </div>

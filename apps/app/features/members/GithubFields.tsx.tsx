@@ -13,7 +13,7 @@ export const GithubFields = ({ profiles }: Props) => {
   ) as GithubProfile;
 
   if (!githubProfile) return null;
-  const { source, login, ...rest } = githubProfile.attributes;
+  const { source, ...rest } = githubProfile.attributes;
 
   return (
     <>

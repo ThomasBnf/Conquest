@@ -17,8 +17,8 @@ export const ProfileIconParser = ({
   profile,
   displayUsername = false,
 }: Props) => {
-  const { source } = profile.attributes;
-  const IconComponent = getIconComponent(source);
+  const { attributes, externalId } = profile;
+  const IconComponent = getIconComponent(attributes.source);
 
   if (!displayUsername) {
     return (
@@ -28,12 +28,10 @@ export const ProfileIconParser = ({
     );
   }
 
-  const username = getUsernameBySource(profile);
-
   return (
     <Badge variant="outline" className="truncate">
       <IconComponent size={16} />
-      <p>{username}</p>
+      <p>{externalId}</p>
     </Badge>
   );
 };
@@ -56,28 +54,5 @@ const getIconComponent = (source: string) => {
       return Twitter;
     default:
       return Discord;
-  }
-};
-
-const getUsernameBySource = (profile: Profile) => {
-  const { source } = profile.attributes;
-
-  switch (source) {
-    case "Discord":
-      return profile.attributes.username;
-    case "Discourse":
-      return profile.attributes.username;
-    case "Github":
-      return profile.attributes.login;
-    case "Livestorm":
-      return profile.externalId;
-    case "Linkedin":
-      return profile.externalId;
-    case "Slack":
-      return profile.externalId;
-    case "Twitter":
-      return profile.attributes.username;
-    default:
-      return null;
   }
 };

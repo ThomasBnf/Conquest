@@ -7,7 +7,7 @@ export const CustomFieldSchema = z.object({
 
 export const BaseProfileSchema = z.object({
   id: z.string().uuid(),
-  externalId: z.string().nullable(),
+  externalId: z.string(),
   memberId: z.string().uuid(),
   workspaceId: z.string().uuid(),
   createdAt: z.coerce.date(),
@@ -21,13 +21,11 @@ export const DiscordAttributesSchema = z.object({
 
 export const DiscourseAttributesSchema = z.object({
   source: z.literal("Discourse"),
-  username: z.string(),
   customFields: z.array(CustomFieldSchema).optional(),
 });
 
 export const GithubAttributesSchema = z.object({
   source: z.literal("Github"),
-  login: z.string(),
   bio: z.string().nullish(),
   blog: z.string().nullish(),
   followers: z.coerce.number(),
@@ -50,7 +48,6 @@ export const SlackAttributesSchema = z.object({
 
 export const TwitterAttributesSchema = z.object({
   source: z.literal("Twitter"),
-  username: z.string(),
 });
 
 export const ProfileAttributesSchema = z.discriminatedUnion("source", [
