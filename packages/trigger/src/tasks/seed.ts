@@ -130,7 +130,6 @@ export const seed = schemaTask({
 
             memberId = createdMember.id;
           } else {
-            logger.info("member found", { id });
             memberId = MemberSchema.parse(data[0]).id;
           }
 

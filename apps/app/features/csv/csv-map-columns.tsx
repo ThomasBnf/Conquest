@@ -19,13 +19,20 @@ export const CSVMapColumns = ({ csvInfo, onDelete, setStep }: Props) => {
     {},
   );
 
+  console.log(mappedColumns);
+
   const { mutateAsync } = trpc.csv.import.useMutation();
 
   const onMapColumn = (column: string, attribute: string) => {
     setMappedColumns((prev) => ({ ...prev, [column]: attribute }));
   };
 
-  console.log(mappedColumns);
+  const onClearColumn = (column: string) => {
+    setMappedColumns((prev) => {
+      const { [column]: _, ...rest } = prev;
+      return rest;
+    });
+  };
 
   const onImport = () => {
     if (!csvInfo) return;
@@ -106,6 +113,7 @@ export const CSVMapColumns = ({ csvInfo, onDelete, setStep }: Props) => {
                     onValueChange={(attribute) =>
                       onMapColumn(header, attribute)
                     }
+                    onClear={() => onClearColumn(header)}
                   />
                 </div>
               </div>

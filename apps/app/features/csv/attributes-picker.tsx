@@ -9,15 +9,16 @@ import {
 } from "@conquest/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@conquest/ui/popover";
 import { MemberSchema } from "@conquest/zod/schemas/member.schema";
-import { Check, ChevronDown } from "lucide-react";
+import { Check, ChevronDown, X } from "lucide-react";
 import { useState } from "react";
 
 type Props = {
   value: string | undefined;
   onValueChange: (value: string) => void;
+  onClear: () => void;
 };
 
-export const AttributesPicker = ({ value, onValueChange }: Props) => {
+export const AttributesPicker = ({ value, onValueChange, onClear }: Props) => {
   const [open, setOpen] = useState(false);
 
   const onSelect = (value: string) => {
@@ -73,19 +74,29 @@ export const AttributesPicker = ({ value, onValueChange }: Props) => {
       <PopoverTrigger asChild>
         <Button variant="outline" className="w-full justify-between">
           {value ? (
-            <span className="capitalize">
-              {value
-                .replace(/([A-Z])/g, " $1")
-                .trim()
-                .toLowerCase()}
-            </span>
+            <>
+              <span className="capitalize">
+                {value
+                  .replace(/([A-Z])/g, " $1")
+                  .trim()
+                  .toLowerCase()}
+              </span>
+              <div onClick={onClear}>
+                <X size={14} />
+              </div>
+            </>
           ) : (
-            <span className="text-muted-foreground">Select attribute</span>
+            <>
+              <span className="text-muted-foreground">Select attribute</span>
+              <ChevronDown size={16} className="text-muted-foreground" />
+            </>
           )}
-          <ChevronDown size={16} className="text-muted-foreground" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[200px] p-0">
+      <PopoverContent
+        className="w-[var(--radix-popover-trigger-width)] p-0"
+        align="start"
+      >
         <Command>
           <CommandInput placeholder="Search attribute..." />
           <CommandEmpty>No attribute found.</CommandEmpty>
