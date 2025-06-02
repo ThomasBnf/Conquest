@@ -16,7 +16,7 @@ export const checkSlackProfiles = async () => {
 
   for (const workspace of workspaces) {
     const { id: workspaceId } = workspace;
-    logger.info("workspace", { workspaceId });
+    logger.info(workspace.name, { workspaceId });
 
     const integration = await getIntegrationBySource({
       source: "Slack",
@@ -142,7 +142,6 @@ export const checkSlackProfiles = async () => {
       }
     } catch (error) {
       logger.error("error", { error });
-      break;
     }
   }
 };
