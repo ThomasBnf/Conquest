@@ -18,7 +18,8 @@ export const updateProfiles = async () => {
 
     const result = await client.query({
       query: `
-        SELECT * FROM profiles
+        SELECT *
+        FROM profile
         WHERE workspaceId = '${workspace.id}'
       `,
     });
@@ -38,53 +39,61 @@ export const updateProfiles = async () => {
       profiles.filter((profile) => profile.attributes.source === "Twitter"),
     );
 
-    updatedProfiles.push(
-      ...githubProfiles.map((profile) => ({
-        ...profile,
-        externalId: profile.attributes.login,
-        attributes: {
-          source: "Github",
-          bio: profile.attributes.bio,
-          blog: profile.attributes.blog,
-          followers: profile.attributes.followers,
-          location: profile.attributes.location,
-        },
-        updatedAt: new Date(),
-      })),
-    );
+    if (githubProfiles.length > 0) {
+      updatedProfiles.push(
+        ...githubProfiles.map((profile) => ({
+          ...profile,
+          externalId: profile.attributes.login,
+          attributes: {
+            source: "Github",
+            bio: profile.attributes.bio,
+            blog: profile.attributes.blog,
+            followers: profile.attributes.followers,
+            location: profile.attributes.location,
+          },
+          updatedAt: new Date(),
+        })),
+      );
 
-    logger.info("Updated Github profiles");
+      logger.info("Updated Github profiles");
+    }
 
-    updatedProfiles.push(
-      ...discourseProfiles.map((profile) => ({
-        ...profile,
-        externalId: profile.attributes.username,
-        attributes: {
-          source: "Discourse",
-        },
-        updatedAt: new Date(),
-      })),
-    );
+    if (discourseProfiles.length > 0) {
+      updatedProfiles.push(
+        ...discourseProfiles.map((profile) => ({
+          ...profile,
+          externalId: profile.attributes.username,
+          attributes: {
+            source: "Discourse",
+          },
+          updatedAt: new Date(),
+        })),
+      );
 
-    logger.info("Updated Discourse profiles");
+      logger.info("Updated Discourse profiles");
+    }
 
-    updatedProfiles.push(
-      ...twitterProfiles.map((profile) => ({
-        ...profile,
-        externalId: profile.attributes.username,
-        attributes: {
-          source: "Twitter",
-        },
-        updatedAt: new Date(),
-      })),
-    );
+    if (twitterProfiles.length > 0) {
+      updatedProfiles.push(
+        ...twitterProfiles.map((profile) => ({
+          ...profile,
+          externalId: profile.attributes.username,
+          attributes: {
+            source: "Twitter",
+          },
+          updatedAt: new Date(),
+        })),
+      );
 
-    logger.info("Updated Twitter profiles");
+      logger.info("Updated Twitter profiles");
+    }
 
-    await client.insert({
-      table: "profiles",
-      values: updatedProfiles,
-      format: "JSON",
-    });
+    if (updateProfiles.length > 0) {
+      await client.insert({
+        table: "profiles",
+        values: updatedProfiles,
+        format: "JSON",
+      });
+    }
   }
 };
