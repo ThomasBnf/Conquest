@@ -90,7 +90,7 @@ export const updateProfiles = async () => {
 
     if (updateProfiles.length > 0) {
       await client.insert({
-        table: "profiles",
+        table: "profile",
         values: updatedProfiles,
         format: "JSON",
       });

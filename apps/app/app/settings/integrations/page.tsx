@@ -44,7 +44,7 @@ export default function Page() {
             {loading ? (
               <Loader2 size={16} className="animate-spin" />
             ) : (
-              "Seed dabatase"
+              "Admin Task"
             )}
           </Button>
         )}
