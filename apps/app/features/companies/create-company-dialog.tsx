@@ -1,5 +1,6 @@
 "use client";
 
+import { useGetSlug } from "@/hooks/useGetSlug";
 import { trpc } from "@/server/client";
 import { Button } from "@conquest/ui/button";
 import {
@@ -22,7 +23,6 @@ import {
 import { Input } from "@conquest/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2, Plus } from "lucide-react";
-import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -31,7 +31,6 @@ import {
   type FormCreate,
   FormCreateSchema,
 } from "./schema/company-form.schema";
-import { useGetSlug } from "@/hooks/useGetSlug";
 
 export const CreateCompanyDialog = () => {
   const [open, setOpen] = useState(false);

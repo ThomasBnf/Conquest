@@ -1,6 +1,6 @@
+import { CSVInfo } from "@conquest/trigger/csv/schemas/csv-info.schema";
 import { Button } from "@conquest/ui/button";
 import { Columns, Rows, Trash2 } from "lucide-react";
-import { CSVInfo } from "./schemas/csv-info.schema";
 
 type Props = {
   csvInfo: CSVInfo | null;

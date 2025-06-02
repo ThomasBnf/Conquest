@@ -1,4 +1,5 @@
 import { trpc } from "@/server/client";
+import { CSVInfo } from "@conquest/trigger/csv/schemas/csv-info.schema";
 import { Badge } from "@conquest/ui/badge";
 import { Button } from "@conquest/ui/button";
 import { cn } from "@conquest/ui/cn";
@@ -6,7 +7,6 @@ import { ArrowRight } from "lucide-react";
 import { useState } from "react";
 import { AttributesPicker } from "./attributes-picker";
 import { getValidationError } from "./helpers/getValidationError";
-import { CSVInfo } from "./schemas/csv-info.schema";
 
 type Props = {
   csvInfo: CSVInfo | null;

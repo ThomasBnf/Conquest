@@ -3,9 +3,5 @@
   "compilerOptions": {
     "jsx": "react-jsx"
   },
-  "include": [
-    "src/**/*.ts",
-    "src/tasks/runWorkflow.tsx",
-    "src/workflow/task.ts"
-  ]
+  "include": ["src/**/*.ts"]
 }

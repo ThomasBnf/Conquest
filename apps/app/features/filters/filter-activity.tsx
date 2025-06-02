@@ -21,7 +21,7 @@ export const FilterActivity = ({ index, filter }: Props) => {
   return (
     <div className="flex items-center gap-1">
       {index === 0 ? (
-        <p className="w-[70px] pl-1.5 text-muted-foreground">Where</p>
+        <p className="w-[75px] pl-1.5 text-muted-foreground">Where</p>
       ) : (
         <AndOrPicker />
       )}

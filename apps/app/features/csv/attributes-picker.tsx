@@ -45,22 +45,13 @@ export const AttributesPicker = ({ value, onValueChange, onClear }: Props) => {
 
   const SOCIAL_ATTRIBUTES = {
     Company: [{ value: "company", label: "Company Name" }],
-    Discord: [
+    Profiles: [
       { value: "discordId", label: "Discord Id" },
-      { value: "discordUsername", label: "Discord Username" },
-    ],
-    Discourse: [{ value: "discourseUsername", label: "Discourse Username" }],
-    GitHub: [
+      { value: "discourseUsername", label: "Discourse Username" },
       { value: "githubLogin", label: "GitHub Login" },
-      { value: "githubBio", label: "GitHub Bio" },
-      { value: "githubFollowers", label: "GitHub Followers" },
-      { value: "githubLocation", label: "GitHub Location" },
-    ],
-    Slack: [
       { value: "slackId", label: "Slack Id" },
-      { value: "slackRealName", label: "Slack Real Name" },
+      { value: "twitterUsername", label: "Twitter Username" },
     ],
-    Twitter: [{ value: "twitterUsername", label: "Twitter Username" }],
   };
 
   return (

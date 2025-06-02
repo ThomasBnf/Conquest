@@ -18,10 +18,6 @@ export const updateProfile = async (props: Props) => {
     format: "JSON",
   });
 
-  await client.query({
-    query: "OPTIMIZE TABLE profile FINAL;",
-  });
-
   const result = await client.query({
     query: `
       SELECT *

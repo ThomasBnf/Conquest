@@ -1,7 +1,12 @@
 import { createProfile } from "@conquest/clickhouse/profile/createProfile";
 import { getProfile } from "@conquest/clickhouse/profile/getProfile";
 import { updateProfile } from "@conquest/clickhouse/profile/updateProfile";
-import { Profile } from "@conquest/zod/schemas/profile.schema";
+import {
+  DiscordProfileSchema,
+  GithubProfileSchema,
+  Profile,
+  SlackProfileSchema,
+} from "@conquest/zod/schemas/profile.schema";
 
 type Props = {
   memberId: string;
@@ -29,31 +34,40 @@ export const processProfiles = async ({
 
   const profiles: Profile[] = [];
 
-  if (discordId && discordUsername) {
+  if (discordId) {
     const existingProfile = await getProfile({
       externalId: discordId,
       workspaceId,
     });
 
-    const profile = existingProfile
-      ? await updateProfile({
+    if (existingProfile) {
+      const {
+        attributes: { username },
+      } = DiscordProfileSchema.parse(existingProfile);
+
+      profiles.push(
+        await updateProfile({
+          ...existingProfile,
           id: existingProfile.id,
           attributes: {
             source: "Discord",
-            username: discordUsername,
+            username: discordUsername || username || "",
           },
-        })
-      : await createProfile({
+        }),
+      );
+    } else {
+      profiles.push(
+        await createProfile({
           externalId: discordId,
           attributes: {
             source: "Discord",
-            username: discordUsername,
+            username: discordUsername || "",
           },
           memberId,
           workspaceId,
-        });
-
-    profiles.push(profile);
+        }),
+      );
+    }
   }
 
   if (discourseUsername) {
@@ -62,21 +76,20 @@ export const processProfiles = async ({
       workspaceId,
     });
 
-    const profile = existingProfile
-      ? await updateProfile({
-          id: existingProfile.id,
-          externalId: discourseUsername,
-        })
-      : await createProfile({
+    if (existingProfile) {
+      profiles.push(existingProfile);
+    } else {
+      profiles.push(
+        await createProfile({
           externalId: discourseUsername,
           attributes: {
             source: "Discourse",
           },
           memberId,
           workspaceId,
-        });
-
-    profiles.push(profile);
+        }),
+      );
+    }
   }
 
   if (githubLogin) {
@@ -85,29 +98,38 @@ export const processProfiles = async ({
       workspaceId,
     });
 
-    const profile = existingProfile
-      ? await updateProfile({
+    if (existingProfile) {
+      const {
+        attributes: { followers, bio, blog },
+      } = GithubProfileSchema.parse(existingProfile);
+
+      profiles.push(
+        await updateProfile({
+          ...existingProfile,
           id: existingProfile.id,
           attributes: {
             source: "Github",
-            followers: Number(githubFollowers) ?? 0,
-            bio: githubBio,
-            blog: githubLocation,
+            followers: followers ?? Number(githubFollowers || 0),
+            bio: bio ?? githubBio,
+            blog: blog ?? githubLocation,
           },
-        })
-      : await createProfile({
+        }),
+      );
+    } else {
+      profiles.push(
+        await createProfile({
           externalId: githubLogin,
           attributes: {
             source: "Github",
-            followers: Number(githubFollowers) ?? 0,
+            followers: Number(githubFollowers || 0),
             bio: githubBio,
             blog: githubLocation,
           },
           memberId,
           workspaceId,
-        });
-
-    profiles.push(profile);
+        }),
+      );
+    }
   }
 
   if (slackId && slackRealName) {
@@ -116,25 +138,34 @@ export const processProfiles = async ({
       workspaceId,
     });
 
-    const profile = existingProfile
-      ? await updateProfile({
+    if (existingProfile) {
+      const {
+        attributes: { realName },
+      } = SlackProfileSchema.parse(existingProfile);
+
+      profiles.push(
+        await updateProfile({
+          ...existingProfile,
           id: existingProfile.id,
           attributes: {
             source: "Slack",
-            displayName: slackRealName,
+            realName: realName ?? slackRealName,
           },
-        })
-      : await createProfile({
+        }),
+      );
+    } else {
+      profiles.push(
+        await createProfile({
           externalId: slackId,
           attributes: {
             source: "Slack",
-            displayName: slackRealName,
+            realName: slackRealName,
           },
           memberId,
           workspaceId,
-        });
-
-    profiles.push(profile);
+        }),
+      );
+    }
   }
 
   if (twitterUsername) {
@@ -145,6 +176,7 @@ export const processProfiles = async ({
 
     const profile = existingProfile
       ? await updateProfile({
+          ...existingProfile,
           id: existingProfile.id,
           externalId: twitterUsername,
         })

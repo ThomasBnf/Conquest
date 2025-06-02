@@ -2,11 +2,11 @@ import { CSVRouter } from "@/features/csv/api/router";
 import { tasksRouter } from "@/features/tasks/api/router";
 import { activitiesRouter } from "./activities/router";
 import { activityTypesRouter } from "./activity-types/router";
+import { adminRouter } from "./admin/router";
 import { apiKeysRouter } from "./api-keys/router";
 import { channelsRouter } from "./channels/router";
 import { companiesRouter } from "./companies/router";
 import { dashboardRouter } from "./dashboard/router";
-import { dbRouter } from "./db/router";
 import { discordRouter } from "./discord/router";
 import { discourseRouter } from "./discourse/router";
 import { duplicateRouter } from "./duplicate/router";
@@ -32,12 +32,12 @@ import { workspacesRouter } from "./workspaces/router";
 export const appRouter = router({
   activityTypes: activityTypesRouter,
   activities: activitiesRouter,
+  admin: adminRouter,
   apiKeys: apiKeysRouter,
   channels: channelsRouter,
   companies: companiesRouter,
   csv: CSVRouter,
   dashboard: dashboardRouter,
-  db: dbRouter,
   discord: discordRouter,
   discourse: discourseRouter,
   duplicate: duplicateRouter,

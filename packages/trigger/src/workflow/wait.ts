@@ -1,3 +1,4 @@
+import { prisma } from "@conquest/db/prisma";
 import { Node, NodeWaitSchema } from "@conquest/zod/schemas/node.schema";
 import { wait } from "@trigger.dev/sdk/v3";
 import { nodeStatus } from "./nodeStatus";
@@ -18,6 +19,7 @@ export const waitFor = async ({ node }: Props): Promise<Node> => {
   const { duration, unit } = parsedNode;
 
   const seconds = duration * TIME_UNITS[unit];
+  await prisma.$disconnect();
   await wait.for({ seconds });
 
   return nodeStatus({ node, status: "COMPLETED" });

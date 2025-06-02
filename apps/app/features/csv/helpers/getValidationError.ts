@@ -1,3 +1,5 @@
+import { trpc } from "@/server/client";
+
 type Props = {
   mappedColumns: Record<string, string>;
 };
@@ -6,15 +8,20 @@ export const getValidationError = ({ mappedColumns }: Props) => {
   const mappedValues = Object.values(mappedColumns);
 
   const hasDiscordId = mappedValues.includes("discordId");
-  const hasDiscordUsername = mappedValues.includes("discordUsername");
-
-  const githubLogin = mappedValues.includes("githubLogin");
-  const githubBio = mappedValues.includes("githubBio");
-  const githubFollowers = mappedValues.includes("githubFollowers");
-  const githubLocation = mappedValues.includes("githubLocation");
-
+  const hasGithubLogin = mappedValues.includes("githubLogin");
   const hasSlackId = mappedValues.includes("slackId");
-  const hasSlackRealName = mappedValues.includes("slackRealName");
+
+  const { data: discord } = trpc.integrations.bySource.useQuery({
+    source: "Discord",
+  });
+
+  const { data: github } = trpc.integrations.bySource.useQuery({
+    source: "Github",
+  });
+
+  const { data: slack } = trpc.integrations.bySource.useQuery({
+    source: "Slack",
+  });
 
   const validationErrors = [];
 
@@ -24,29 +31,24 @@ export const getValidationError = ({ mappedColumns }: Props) => {
     validationErrors.push("Cannot map multiple columns to the same attribute");
   }
 
-  if (!hasDiscordId && hasDiscordUsername) {
-    validationErrors.push("Discord ID is required to import Discord profile");
-  }
-
-  if (hasDiscordId && !hasDiscordUsername) {
+  if (hasDiscordId && !discord) {
     validationErrors.push(
-      "Discord Username is required to import Discord profile",
+      "You must must connect Discord integration first to import Discord profiles",
     );
   }
 
-  if (!githubLogin && (githubBio || githubFollowers || githubLocation)) {
-    validationErrors.push("GitHub Login is required to import GitHub profile");
-  }
-
-  if (!hasSlackId && hasSlackRealName) {
-    validationErrors.push("Slack ID is required to import Slack profile");
-  }
-
-  if (hasSlackId && !hasSlackRealName) {
+  if (hasGithubLogin && !github) {
     validationErrors.push(
-      "Slack Real Name is required to import Slack profile",
+      "You must must connect Github integration first to import Github profiles",
     );
   }
+
+  if (hasSlackId && !slack) {
+    validationErrors.push(
+      "You must must connect Slack integration first to import Slack profiles",
+    );
+  }
+
   return {
     isValid: validationErrors.length === 0,
     errors: validationErrors,

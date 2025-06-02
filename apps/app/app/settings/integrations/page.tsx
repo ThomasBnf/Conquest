@@ -15,7 +15,7 @@ export default function Page() {
 
   const [loading, setLoading] = useState(false);
 
-  const { mutate: seed } = trpc.db.seed.useMutation({
+  const { mutate: seed } = trpc.admin.adminTask.useMutation({
     onMutate: () => {
       setLoading(true);
     },

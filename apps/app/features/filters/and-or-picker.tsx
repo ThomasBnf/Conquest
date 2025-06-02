@@ -13,7 +13,7 @@ export const AndOrPicker = () => {
 
   return (
     <Select value={operator} onValueChange={onUpdateGroupOperator}>
-      <SelectTrigger className="h-8 w-[70px] shrink-0">
+      <SelectTrigger className="h-8 w-[75px] shrink-0">
         <SelectValue />
       </SelectTrigger>
       <SelectContent>

@@ -21,11 +21,13 @@ export const DiscordAttributesSchema = z.object({
 
 export const DiscourseAttributesSchema = z.object({
   source: z.literal("Discourse"),
+  username: z.string().optional(),
   customFields: z.array(CustomFieldSchema).optional(),
 });
 
 export const GithubAttributesSchema = z.object({
   source: z.literal("Github"),
+  login: z.string().optional(),
   bio: z.string().nullish(),
   blog: z.string().nullish(),
   followers: z.coerce.number(),
@@ -42,12 +44,12 @@ export const LivestormAttributesSchema = z.object({
 
 export const SlackAttributesSchema = z.object({
   source: z.literal("Slack"),
-  displayName: z.string().optional(),
   realName: z.string().optional(),
 });
 
 export const TwitterAttributesSchema = z.object({
   source: z.literal("Twitter"),
+  username: z.string().optional(),
 });
 
 export const ProfileAttributesSchema = z.discriminatedUnion("source", [

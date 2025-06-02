@@ -1,4 +1,5 @@
 import { AlertDialog } from "@/components/custom/alert-dialog";
+import { useGetSlug } from "@/hooks/useGetSlug";
 import { trpc } from "@/server/client";
 import { Button } from "@conquest/ui/button";
 import {
@@ -9,12 +10,10 @@ import {
 } from "@conquest/ui/dropdown-menu";
 import type { List } from "@conquest/zod/schemas/list.schema";
 import { MoreHorizontal, Pen, Trash2 } from "lucide-react";
-import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 import { EditListDialog } from "./edit-list-dialog";
-import { useGetSlug } from "@/hooks/useGetSlug";
 
 type Props = {
   list: List;

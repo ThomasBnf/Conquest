@@ -2,6 +2,7 @@
 
 import { EmojiPicker } from "@/components/custom/emoji-picker";
 import { useFilters } from "@/context/filtersContext";
+import { useGetSlug } from "@/hooks/useGetSlug";
 import { useOpenList } from "@/hooks/useOpenList";
 import { trpc } from "@/server/client";
 import { Button } from "@conquest/ui/button";
@@ -25,11 +26,9 @@ import { Input } from "@conquest/ui/input";
 import { Label } from "@conquest/ui/label";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
-import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { type FormList, FormListSchema } from "./schemas/form-create.schema";
-import { useGetSlug } from "@/hooks/useGetSlug";
 
 export const CreateListDialog = () => {
   const { groupFilters, resetFilters } = useFilters();
