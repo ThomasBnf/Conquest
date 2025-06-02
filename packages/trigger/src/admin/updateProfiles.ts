@@ -3,6 +3,7 @@ import { listWorkspaces } from "@conquest/db/workspaces/listWorkspaces";
 import {
   DiscourseProfileSchema,
   GithubProfileSchema,
+  Profile,
   ProfileSchema,
   TwitterProfileSchema,
 } from "@conquest/zod/schemas/profile.schema";
@@ -14,7 +15,7 @@ export const updateProfiles = async () => {
   for (const workspace of workspaces) {
     logger.info(workspace.name);
 
-    const updatedProfiles = [];
+    const updatedProfiles: Profile[] = [];
 
     const result = await client.query({
       query: `
@@ -40,55 +41,56 @@ export const updateProfiles = async () => {
     );
 
     if (githubProfiles.length > 0) {
-      updatedProfiles.push(
-        ...githubProfiles.map((profile) => ({
-          ...profile,
-          externalId: profile.attributes.login,
-          attributes: {
-            source: "Github",
-            bio: profile.attributes.bio,
-            blog: profile.attributes.blog,
-            followers: profile.attributes.followers,
-            location: profile.attributes.location,
-          },
-          updatedAt: new Date(),
-        })),
-      );
+      const profiles = githubProfiles.map((profile) => ({
+        ...profile,
+        externalId: profile.attributes.login!,
+        attributes: {
+          source: "Github" as const,
+          bio: profile.attributes.bio,
+          blog: profile.attributes.blog,
+          followers: profile.attributes.followers,
+          location: profile.attributes.location,
+        },
+        updatedAt: new Date(),
+      }));
 
+      logger.info("profiles", { count: profiles.length });
+      updatedProfiles.push(...profiles);
       logger.info("Updated Github profiles");
     }
 
     if (discourseProfiles.length > 0) {
-      updatedProfiles.push(
-        ...discourseProfiles.map((profile) => ({
-          ...profile,
-          externalId: profile.attributes.username,
-          attributes: {
-            source: "Discourse",
-          },
-          updatedAt: new Date(),
-        })),
-      );
+      const profiles = discourseProfiles.map((profile) => ({
+        ...profile,
+        externalId: profile.attributes.username!,
+        attributes: {
+          source: "Discourse" as const,
+        },
+        updatedAt: new Date(),
+      }));
 
+      logger.info("profiles", { count: profiles.length });
+      updatedProfiles.push(...profiles);
       logger.info("Updated Discourse profiles");
     }
 
     if (twitterProfiles.length > 0) {
-      updatedProfiles.push(
-        ...twitterProfiles.map((profile) => ({
-          ...profile,
-          externalId: profile.attributes.username,
-          attributes: {
-            source: "Twitter",
-          },
-          updatedAt: new Date(),
-        })),
-      );
+      const profiles = twitterProfiles.map((profile) => ({
+        ...profile,
+        externalId: profile.attributes.username!,
+        attributes: {
+          source: "Twitter" as const,
+        },
+        updatedAt: new Date(),
+      }));
 
+      logger.info("profiles", { count: profiles.length });
+      updatedProfiles.push(...profiles);
       logger.info("Updated Twitter profiles");
     }
 
-    if (updateProfiles.length > 0) {
+    if (updatedProfiles.length > 0) {
+      logger.info("inserting profiles", { count: updatedProfiles.length });
       await client.insert({
         table: "profile",
         values: updatedProfiles,
@@ -96,4 +98,10 @@ export const updateProfiles = async () => {
       });
     }
   }
+
+  await client.query({
+    query: `
+      OPTIMIZE TABLE profile FINAL;
+    `,
+  });
 };
