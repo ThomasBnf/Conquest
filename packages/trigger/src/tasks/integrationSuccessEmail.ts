@@ -25,7 +25,7 @@ export const integrationSuccessEmail = schemaTask({
     if (!email) return;
 
     const { data, error } = await resend.emails.send({
-      from: "Conquest <noreply@useconquest.com>",
+      from: "Conquest <team@useconquest.com>",
       to: email,
       subject: `Your ${source} integration is ready`,
       react: SuccessIntegration({ source, url }),

@@ -1,6 +1,10 @@
 import { client } from "@conquest/clickhouse/client";
 import { getMember } from "@conquest/clickhouse/member/getMember";
+import { getWorkspace } from "@conquest/db/workspaces/getWorkspace";
+import { resend } from "@conquest/resend";
+import ImportSuccess from "@conquest/resend/emails/import-success";
 import { Member } from "@conquest/zod/schemas/member.schema";
+import { UserSchema } from "@conquest/zod/schemas/user.schema";
 import { logger, schemaTask } from "@trigger.dev/sdk/v3";
 import { randomUUID } from "node:crypto";
 import { z } from "zod";
@@ -17,11 +21,12 @@ export const importMembers = schemaTask({
   id: "import-members",
   machine: "small-2x",
   schema: z.object({
+    user: UserSchema,
     csvInfo: csvInfoSchema,
     mappedColumns: z.record(z.string(), z.string()),
     workspaceId: z.string(),
   }),
-  run: async ({ csvInfo, mappedColumns, workspaceId }) => {
+  run: async ({ user, csvInfo, mappedColumns, workspaceId }) => {
     const { rows } = csvInfo;
 
     const members: Record<string, string>[] = rows.map((row) =>
@@ -196,6 +201,15 @@ export const importMembers = schemaTask({
       logger.info("Processing Slack profiles");
       await processSlackProfiles({ members, workspaceId });
     }
+
+    const workspace = await getWorkspace({ id: workspaceId });
+
+    await resend.emails.send({
+      from: "Conquest <team@useconquest.com>",
+      to: user.email,
+      subject: "Contacts successfully imported",
+      react: ImportSuccess({ slug: workspace.slug }),
+    });
 
     logger.info("success");
   },

@@ -15,28 +15,25 @@ import { Logo } from "../components/logo";
 
 type Props = {
   slug: string;
-  workflowId: string;
-  workflowName: string;
-  runId: string;
 };
 
-const WorkflowSuccess = ({ slug, workflowId, workflowName, runId }: Props) => (
+const ImportSuccess = ({ slug }: Props) => (
   <Html>
     <Head />
-    <Preview>Workflow "{workflowName}" has run successfully</Preview>
+    <Preview>Contacts successfully imported</Preview>
     <Tailwind>
       <Body className="mx-auto my-auto font-sans bg-white">
         <Container className="mx-auto my-10 max-w-[600px] rounded border border-neutral-200 border-solid px-10 pb-5">
           <Logo />
           <Heading className="p-0 mx-0 text-xl font-medium text-black mt-7">
-            Workflow "{workflowName}" has run successfully
+            Contacts successfully imported
           </Heading>
           <Section className="mt-8 mb-8">
             <Link
               className="block w-fit rounded bg-[#5067D7] px-5 py-2.5 text-center font-medium text-sm text-white no-underline"
-              href={`${env.NEXT_PUBLIC_URL}/${slug}/workflows/${workflowId}/runs/${runId}`}
+              href={`${env.NEXT_PUBLIC_URL}/${slug}`}
             >
-              View run
+              Go to Conquest
             </Link>
           </Section>
           <Footer />
@@ -46,4 +43,4 @@ const WorkflowSuccess = ({ slug, workflowId, workflowName, runId }: Props) => (
   </Html>
 );
 
-export default WorkflowSuccess;
+export default ImportSuccess;

@@ -4,16 +4,17 @@ import { Badge } from "@conquest/ui/badge";
 import { Button } from "@conquest/ui/button";
 import { cn } from "@conquest/ui/cn";
 import { ArrowRight, Loader2 } from "lucide-react";
-import { useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import { AttributesPicker } from "./attributes-picker";
 import { getValidationError } from "./helpers/getValidationError";
 
 type Props = {
   csvInfo: CSVInfo | null;
   onDelete: () => void;
+  setStep: Dispatch<SetStateAction<number>>;
 };
 
-export const CSVMapColumns = ({ csvInfo, onDelete }: Props) => {
+export const CSVMapColumns = ({ csvInfo, onDelete, setStep }: Props) => {
   const [loading, setLoading] = useState(false);
   const [hover, setHover] = useState<string | null>(null);
   const [mappedColumns, setMappedColumns] = useState<Record<string, string>>(
@@ -23,9 +24,7 @@ export const CSVMapColumns = ({ csvInfo, onDelete }: Props) => {
   const { mutateAsync } = trpc.csv.import.useMutation({
     onMutate: () => {
       setLoading(true);
-    },
-    onSuccess: () => {
-      setLoading(false);
+      setStep(3);
     },
   });
 

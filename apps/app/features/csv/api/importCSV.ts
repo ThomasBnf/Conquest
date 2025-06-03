@@ -15,6 +15,7 @@ export const importCSV = protectedProcedure
     const { csvInfo, mappedColumns } = input;
 
     await importMembers.trigger({
+      user,
       csvInfo,
       mappedColumns,
       workspaceId,

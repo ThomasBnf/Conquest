@@ -9,6 +9,7 @@ import { Header } from "@/components/layouts/header";
 import { PageLayout } from "@/components/layouts/page-layout";
 import { CSVMapColumns } from "@/features/csv/csv-map-columns";
 import { CSVSteps } from "@/features/csv/csv-steps";
+import { CSVSuccess } from "@/features/csv/csv-success";
 import { CSVUploadPreview } from "@/features/csv/csv-upload-preview";
 import { parse } from "papaparse";
 import { useState } from "react";
@@ -81,7 +82,14 @@ export default function Page() {
           )}
         </div>
       )}
-      {step === 2 && <CSVMapColumns csvInfo={csvInfo} onDelete={onDelete} />}
+      {step === 2 && (
+        <CSVMapColumns
+          csvInfo={csvInfo}
+          onDelete={onDelete}
+          setStep={setStep}
+        />
+      )}
+      {step === 3 && <CSVSuccess />}
     </PageLayout>
   );
 }
