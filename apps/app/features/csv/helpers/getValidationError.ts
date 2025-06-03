@@ -33,19 +33,19 @@ export const getValidationError = ({ mappedColumns }: Props) => {
 
   if (hasDiscordId && !discord) {
     validationErrors.push(
-      "You must must connect Discord integration first to import Discord profiles",
+      "You must connect Discord integration first to import Discord profiles",
     );
   }
 
   if (hasGithubLogin && !github) {
     validationErrors.push(
-      "You must must connect Github integration first to import Github profiles",
+      "You must connect Github integration first to import Github profiles",
     );
   }
 
   if (hasSlackId && !slack) {
     validationErrors.push(
-      "You must must connect Slack integration first to import Slack profiles",
+      "You must connect Slack integration first to import Slack profiles",
     );
   }
 

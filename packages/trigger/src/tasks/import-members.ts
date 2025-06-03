@@ -163,8 +163,8 @@ export const importMembers = schemaTask({
       }
     }
 
-    console.log("importedMembers", importedMembers.length);
-    console.log("updatedMembers", updatedMembers.length);
+    logger.info("importedMembers", { count: importedMembers.length });
+    logger.info("updatedMembers", { count: updatedMembers.length });
 
     if (importedMembers.length > 0) {
       await client.insert({
@@ -182,23 +182,21 @@ export const importMembers = schemaTask({
       });
     }
 
-    if (Object.keys(mappedColumns).includes("discordId")) {
+    if (Object.values(mappedColumns).includes("discordId")) {
       logger.info("Processing Discord profiles");
       await processDiscordProfiles({ members, workspaceId });
     }
 
-    if (Object.keys(mappedColumns).includes("githubLogin")) {
+    if (Object.values(mappedColumns).includes("githubLogin")) {
       logger.info("Processing Github profiles");
       await processGithubProfiles({ members, workspaceId });
     }
 
-    if (Object.keys(mappedColumns).includes("slackId")) {
+    if (Object.values(mappedColumns).includes("slackId")) {
       logger.info("Processing Slack profiles");
       await processSlackProfiles({ members, workspaceId });
     }
 
-    console.log("success");
-
-    return { success: true };
+    logger.info("success");
   },
 });

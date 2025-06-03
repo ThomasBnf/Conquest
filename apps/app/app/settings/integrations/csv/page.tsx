@@ -37,7 +37,9 @@ export default function Page() {
 
         setCsvInfo({
           name: file!.name,
-          rows: data,
+          rows: data.filter((row) =>
+            Object.values(row).some((value) => value !== ""),
+          ),
           columns: headers,
           headers: headers,
         });

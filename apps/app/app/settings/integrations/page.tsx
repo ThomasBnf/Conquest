@@ -1,5 +1,6 @@
 "use client";
 
+import { CSVImport } from "@/features/csv/csv-import";
 import { IntegrationCard } from "@/features/integrations/integration-card";
 import { categories } from "@/features/integrations/integrations";
 import { trpc } from "@/server/client";
@@ -61,7 +62,10 @@ export default function Page() {
             </div>
           </div>
         ))}
-        {/* <CSVImport /> */}
+        <div>
+          <p className="mt-4 mb-2 font-medium text-base">Import</p>
+          <CSVImport />
+        </div>
       </div>
     </ScrollArea>
   );

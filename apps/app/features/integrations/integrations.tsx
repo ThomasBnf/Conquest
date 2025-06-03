@@ -3,29 +3,40 @@ import { Discourse } from "@conquest/ui/icons/Discourse";
 import { Github } from "@conquest/ui/icons/Github";
 import { Livestorm } from "@conquest/ui/icons/Livestorm";
 import { Slack } from "@conquest/ui/icons/Slack";
+import { Source } from "@conquest/zod/enum/source.enum";
+import { ReactNode } from "react";
 
-export const categories = [
+export const categories: {
+  label: string;
+  integrations: {
+    href: string;
+    logo: ReactNode;
+    source: Source;
+    description: string;
+    soon: boolean;
+  }[];
+}[] = [
   {
     label: "Community",
     integrations: [
       {
         href: "/settings/integrations/discord",
         logo: <Discord />,
-        source: "Discord" as const,
+        source: "Discord",
         description: "Sync your Discord community members",
         soon: false,
       },
       {
         href: "/settings/integrations/discourse",
         logo: <Discourse />,
-        source: "Discourse" as const,
+        source: "Discourse",
         description: "Sync your Discourse community members",
         soon: false,
       },
       {
         href: "/settings/integrations/slack",
         logo: <Slack />,
-        source: "Slack" as const,
+        source: "Slack",
         description: "Sync your Slack community members",
         soon: false,
       },
@@ -37,7 +48,7 @@ export const categories = [
       // {
       //   href: "/settings/integrations/linkedin",
       //   logo: <Linkedin />,
-      //   source: "Linkedin" as const,
+      //   source: "Linkedin"
       //   description: "Sync your Linkedin organization page",
       //   soon: true,
       // },
