@@ -1,4 +1,5 @@
 import { CSVRouter } from "@/features/csv/api/router";
+import { dashboardV2Router } from "@/features/dashboard-v2/api/router";
 import { tasksRouter } from "@/features/tasks/api/router";
 import { activitiesRouter } from "./activities/router";
 import { activityTypesRouter } from "./activity-types/router";
@@ -38,6 +39,7 @@ export const appRouter = router({
   companies: companiesRouter,
   csv: CSVRouter,
   dashboard: dashboardRouter,
+  dashboardV2: dashboardV2Router,
   discord: discordRouter,
   discourse: discourseRouter,
   duplicate: duplicateRouter,
