@@ -1,7 +1,7 @@
 import { UserSchema } from "@conquest/zod/schemas/user.schema";
 import { schemaTask } from "@trigger.dev/sdk/v3";
 import { z } from "zod";
-import { checkSlackProfiles } from "../admin/checkSlackProfiles";
+import { seedDb } from "../admin/seedDb";
 
 export const adminTask = schemaTask({
   id: "admin",
@@ -12,6 +12,6 @@ export const adminTask = schemaTask({
   run: async ({ user }) => {
     if (user.role !== "STAFF") return;
 
-    await checkSlackProfiles();
+    await seedDb({ user });
   },
 });
