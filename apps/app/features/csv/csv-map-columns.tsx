@@ -3,7 +3,7 @@ import { CSVInfo } from "@conquest/trigger/csv/schemas/csv-info.schema";
 import { Badge } from "@conquest/ui/badge";
 import { Button } from "@conquest/ui/button";
 import { cn } from "@conquest/ui/cn";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { AttributesPicker } from "./attributes-picker";
 import { getValidationError } from "./helpers/getValidationError";
@@ -14,12 +14,20 @@ type Props = {
 };
 
 export const CSVMapColumns = ({ csvInfo, onDelete }: Props) => {
+  const [loading, setLoading] = useState(false);
   const [hover, setHover] = useState<string | null>(null);
   const [mappedColumns, setMappedColumns] = useState<Record<string, string>>(
     {},
   );
 
-  const { mutateAsync } = trpc.csv.import.useMutation();
+  const { mutateAsync } = trpc.csv.import.useMutation({
+    onMutate: () => {
+      setLoading(true);
+    },
+    onSuccess: () => {
+      setLoading(false);
+    },
+  });
 
   const onMapColumn = (column: string, attribute: string) => {
     setMappedColumns((prev) => ({ ...prev, [column]: attribute }));
@@ -114,8 +122,8 @@ export const CSVMapColumns = ({ csvInfo, onDelete }: Props) => {
         <Button variant="outline" onClick={onDelete}>
           Cancel
         </Button>
-        <Button onClick={onImport} disabled={!isValid}>
-          Import
+        <Button onClick={onImport} disabled={!isValid || loading}>
+          {loading ? <Loader2 size={16} className="animate-spin" /> : "Import"}
         </Button>
       </div>
     </div>
