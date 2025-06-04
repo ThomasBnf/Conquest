@@ -11,13 +11,11 @@ export const importCSV = protectedProcedure
     }),
   )
   .mutation(async ({ ctx: { user }, input }) => {
-    const { workspaceId } = user;
     const { csvInfo, mappedColumns } = input;
 
     await importMembers.trigger({
       user,
-      csvInfo,
       mappedColumns,
-      workspaceId,
+      csvInfo,
     });
   });
