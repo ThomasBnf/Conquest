@@ -1,6 +1,6 @@
 "use client";
 
-import { DateRangePicker } from "@/components/custom/date-range-picker";
+import { IsLoading } from "@/components/states/is-loading";
 import { trpc } from "@/server/client";
 import {
   ChartConfig,
@@ -8,138 +8,206 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@conquest/ui/chart";
+import { Skeleton } from "@conquest/ui/skeleton";
 import { Source } from "@conquest/zod/enum/source.enum";
-import { format } from "date-fns";
 import {
-  Area,
-  AreaChart,
+  differenceInDays,
+  endOfDay,
+  format,
+  startOfDay,
+  subWeeks,
+} from "date-fns";
+// Removed date-fns import - using native Date formatting
+import { ReactNode, useMemo, useState } from "react";
+import {
   CartesianGrid,
+  Line,
+  LineChart,
   ResponsiveContainer,
   XAxis,
+  YAxis,
 } from "recharts";
+import { DateRangePicker } from "./date-range-picker";
 import { IntegrationsPicker } from "./integrations-picker";
 
-const chartConfig = {
+type WeeklyProfileData = {
+  week: string;
+  [key: string]: string | number;
+};
+
+type SourceConfig = {
+  label: string;
+  color: string;
+  logo?: ReactNode;
+};
+
+const chartConfig: Record<string, SourceConfig> = {
   Discord: {
     label: "Discord",
-    color: "hsl(var(--chart-1))",
+    color: "hsl(var(--discord))",
+  },
+  Discourse: {
+    label: "Discourse",
+    color: "hsl(var(--discourse))",
   },
   Github: {
     label: "Github",
-    color: "hsl(var(--chart-2))",
+    color: "hsl(var(--foreground))",
+  },
+  Livestorm: {
+    label: "Livestorm",
+    color: "hsl(var(--livestorm))",
   },
   Slack: {
     label: "Slack",
-    color: "hsl(var(--chart-3))",
+    color: "hsl(var(--slack))",
+  },
+  Twitter: {
+    label: "Twitter",
+    color: "hsl(var(--twitter))",
   },
 } satisfies ChartConfig;
 
-type Props = {
-  sources?: Source[];
-};
+export const TotalMembers = () => {
+  const [sources, setSources] = useState<Source[]>([]);
+  const [dateRange, setDateRange] = useState<{ from: Date; to: Date }>({
+    from: subWeeks(startOfDay(new Date()), 4),
+    to: endOfDay(new Date()),
+  });
 
-type WeeklyEntry = {
-  week: string;
-  Discord: string;
-  Github: string;
-  Slack: string;
-};
+  const { from, to } = dateRange;
+  const days = differenceInDays(to, from);
+  const dateFormat = days > 30 ? "MMM yyyy" : "MMM dd";
 
-export const TotalMembers = ({
-  sources = ["Discord", "Github", "Slack"],
-}: Props) => {
-  const { data } = trpc.dashboardV2.totalMembers.useQuery({ sources });
+  const { data, isLoading, failureReason } =
+    trpc.dashboardV2.totalMembers.useQuery({
+      sources,
+      from,
+      to,
+    });
 
-  const parsedData = data as WeeklyEntry[];
+  console.log(data, failureReason);
 
-  const totalMembers = parsedData?.reduce((sum, entry) => {
-    return (
-      sum +
-      sources.reduce(
-        (acc, source) => acc + Number(entry[source as keyof WeeklyEntry] || 0),
-        0,
-      )
-    );
-  }, 0);
+  const profilesData = data?.profiles;
+  const totalMembers = data?.total || 0;
+
+  const maxValue = useMemo(
+    () => calculateMaxValue(profilesData as WeeklyProfileData[], sources),
+    [profilesData, sources],
+  );
 
   return (
-    <div className="flex w-full flex-col gap-2 rounded-md border p-4 shadow-sm">
-      <div className="flex items-center justify-between gap-2">
-        <p className="font-medium text-base">Total members over time</p>
-        <DateRangePicker />
-      </div>
-      <div>
-        <IntegrationsPicker />
+    <div className="flex w-full flex-col gap-2 rounded-md border p-6 shadow-sm">
+      <div className="flex justify-between gap-1">
+        <p className="font-semibold text-lg">Members growth by integration</p>
+        <div className="flex items-center gap-1">
+          <IntegrationsPicker sources={sources} setSources={setSources} />
+          <DateRangePicker dateRange={dateRange} setDateRange={setDateRange} />
+        </div>
       </div>
       <div className="flex gap-4">
-        <ResponsiveContainer width="100%" height={400}>
-          <ChartContainer config={chartConfig}>
-            <AreaChart
-              accessibilityLayer
-              data={data}
-              margin={{
-                left: 12,
-                right: 12,
-              }}
-            >
-              <CartesianGrid vertical={false} />
-              <XAxis
-                dataKey="week"
-                tickLine={false}
-                axisLine={false}
-                tickMargin={8}
-                tickFormatter={(value) => format(value, "PP")}
-              />
-              <ChartTooltip
-                content={<ChartTooltipContent indicator="line" />}
-              />
-              {sources.map((source) => (
-                <Area
-                  key={source}
-                  type="basis"
-                  dataKey={source}
-                  stroke={chartConfig[source as keyof typeof chartConfig].color}
-                  fill="none"
+        <ResponsiveContainer width="100%" height={350}>
+          {isLoading ? (
+            <IsLoading />
+          ) : (
+            <ChartContainer config={chartConfig}>
+              <LineChart
+                data={profilesData}
+                margin={{
+                  top: 20,
+                  left: -25,
+                  right: 20,
+                  bottom: 20,
+                }}
+              >
+                <CartesianGrid vertical={false} />
+                <XAxis
+                  dataKey="week"
+                  tickMargin={10}
+                  tickFormatter={(value) => format(value, dateFormat)}
+                  stroke="#D1D1D1"
+                  interval={days === 7 ? "preserveStartEnd" : 4}
                 />
-              ))}
-            </AreaChart>
-          </ChartContainer>
+                <YAxis
+                  axisLine={false}
+                  tickMargin={10}
+                  stroke="hsl(var(--border))"
+                  domain={[0, maxValue]}
+                />
+                <ChartTooltip
+                  content={
+                    <ChartTooltipContent
+                      indicator="line"
+                      labelFormatter={(value) => format(value, dateFormat)}
+                    />
+                  }
+                />
+                {sources.map((source) => (
+                  <Line
+                    key={source}
+                    type="natural"
+                    dataKey={source}
+                    stroke={chartConfig[source]?.color}
+                    strokeWidth={2}
+                    dot={false}
+                  />
+                ))}
+              </LineChart>
+            </ChartContainer>
+          )}
         </ResponsiveContainer>
         <div className="w-full max-w-xs p-4">
-          <div className="mb-4">
-            <p className="font-medium text-muted-foreground text-sm">
-              Total members
+          <div className="mb-4 space-y-2">
+            <p className="text-muted-foreground text-sm">
+              Total unique members
             </p>
-            <p className="font-medium text-2xl">{totalMembers || 0}</p>
+            {isLoading ? (
+              <Skeleton className="h-9 w-14" />
+            ) : (
+              <p className="font-medium text-3xl">{totalMembers}</p>
+            )}
           </div>
           <div className="space-y-2">
-            {sources.map((source) => {
-              const sourceTotal =
-                parsedData?.reduce(
-                  (sum, entry) =>
-                    sum + Number(entry[source as keyof WeeklyEntry] || 0),
-                  0,
-                ) || 0;
-
-              return (
-                <div key={source} className="flex items-center justify-between">
+            <p className="text-muted-foreground text-sm">
+              Total members by source
+            </p>
+            <div>
+              {sources.map((source) => (
+                <div
+                  key={source}
+                  className="flex h-8 items-center justify-between"
+                >
                   <div className="flex items-center gap-2">
                     <div
                       className="size-4 rounded-md"
-                      style={{
-                        backgroundColor:
-                          chartConfig[source as keyof typeof chartConfig].color,
-                      }}
+                      style={{ backgroundColor: chartConfig[source]?.color }}
                     />
                     <p className="font-medium">{source}</p>
                   </div>
-                  <p className="font-medium text-base">{sourceTotal}</p>
+                  <p className="font-medium text-base">
+                    {profilesData?.at(-1)?.[source]}
+                  </p>
                 </div>
-              );
-            })}
+              ))}
+            </div>
           </div>
         </div>
       </div>
     </div>
   );
+};
+
+const calculateMaxValue = (
+  data: WeeklyProfileData[] | undefined,
+  sources: Source[],
+): number => {
+  if (!data) return 0;
+
+  return data.reduce((max, entry) => {
+    const weekMax = sources.reduce((weekMax, source) => {
+      const value = Number(entry[source] || 0);
+      return Math.max(weekMax, value);
+    }, 0);
+    return Math.max(max, weekMax);
+  }, 0);
 };

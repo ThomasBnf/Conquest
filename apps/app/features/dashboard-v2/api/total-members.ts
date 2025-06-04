@@ -1,45 +1,111 @@
 import { protectedProcedure } from "@/server/trpc";
 import { client } from "@conquest/clickhouse/client";
 import { SOURCE } from "@conquest/zod/enum/source.enum";
+import { differenceInDays, format } from "date-fns";
 import z from "zod";
 
 export const totalMembers = protectedProcedure
   .input(
     z.object({
+      from: z.coerce.date(),
+      to: z.coerce.date(),
       sources: z.array(SOURCE),
     }),
   )
   .query(async ({ ctx: { user }, input }) => {
     const { workspaceId } = user;
-    const { sources } = input;
+    const { from, to, sources } = input;
 
-    const result = await client.query({
+    const formattedFrom = format(from, "yyyy-MM-dd");
+    const formattedTo = format(to, "yyyy-MM-dd");
+    const days = differenceInDays(to, from);
+
+    console.log(formattedFrom, formattedTo);
+
+    const profilesResult = await client.query({
       query: `
           SELECT
-            week,
-            countDistinctIf(memberId, attributes.source = 'Discord') AS Discord,
-            countDistinctIf(memberId, attributes.source = 'Github') AS Github,
-            countDistinctIf(memberId, attributes.source = 'Slack') AS Slack
+            ${days > 30 ? "week" : "day"} as week,
+            ${sources
+              .map(
+                (source) =>
+                  `countDistinctIf(memberId, source = '${source}') AS ${source}`,
+              )
+              .join(",\n      ")}
           FROM (
             SELECT
-              toStartOfWeek(createdAt) AS week,
+              ${days > 30 ? "toStartOfWeek(createdAt)" : "toDate(createdAt)"} AS ${
+                days > 30 ? "week" : "day"
+              },
               memberId,
-              attributes.source
+              attributes.source AS source
             FROM profile FINAL
-            WHERE createdAt >= toDateTime('2025-01-01')
-              AND createdAt <= now()
+            WHERE createdAt >= '${formattedFrom}'
+              AND createdAt <= '${formattedTo}'
               AND workspaceId = '${workspaceId}'
+              AND attributes.source IN (${sources
+                .map((source) => `'${source}'`)
+                .join(", ")})
           )
-          GROUP BY week
-          ORDER BY week ASC
+          GROUP BY ${days > 30 ? "week" : "day"}
+          ORDER BY ${days > 30 ? "week" : "day"} ASC
           WITH FILL
-            FROM toStartOfWeek(toDateTime('2025-01-01'))
-            TO toStartOfWeek(now())
-            STEP toIntervalWeek(1)
+            FROM ${
+              days > 30
+                ? `toStartOfWeek(toDateTime('${formattedFrom}'))`
+                : `toDate('${formattedFrom}')`
+            }
+            TO ${
+              days > 30
+                ? `toStartOfWeek(toDateTime('${formattedTo}'))`
+                : `toDate('${formattedTo}')`
+            }
+            ${days > 30 ? "STEP toIntervalWeek(1)" : "STEP toIntervalDay(1)"}
         `,
-      format: "JSON",
     });
 
-    const { data } = await result.json();
-    return data;
+    const totalResult = await client.query({
+      query: `
+        SELECT
+          countDistinct(memberId) AS total
+        FROM profile FINAL
+        WHERE createdAt >= '${formattedFrom}'
+          AND createdAt <= '${formattedTo}'
+          AND workspaceId = '${workspaceId}'
+          AND attributes.source IN (${sources.map((source) => `'${source}'`).join(",")})
+      `,
+    });
+
+    const { data: profilesData } = await profilesResult.json();
+    const { data: totalData } = (await totalResult.json()) as {
+      data: { total: number }[];
+    };
+
+    type ProfileData = {
+      week: string;
+      [key: string]: number | string | null;
+    };
+
+    const profilesWithGrowth = (profilesData as ProfileData[]).map(
+      (current: ProfileData, index: number) => {
+        const result: ProfileData = {
+          week: current.week,
+        };
+
+        for (const source of sources) {
+          const cumulativeTotal = (profilesData as ProfileData[])
+            .slice(0, index + 1)
+            .reduce((sum, data) => sum + Number(data[source] || 0), 0);
+
+          result[source] = cumulativeTotal;
+        }
+
+        return result;
+      },
+    );
+
+    return {
+      profiles: profilesWithGrowth,
+      total: totalData?.[0]?.total || 0,
+    };
   });

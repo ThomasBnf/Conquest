@@ -106,6 +106,7 @@ export const seedDb = async ({ user }: Props) => {
                 },
               ],
             },
+            createdAt,
             memberId: memberId,
             workspaceId,
           },
@@ -182,6 +183,12 @@ export const seedDb = async ({ user }: Props) => {
   const livestormProfileInserts = [];
 
   for (const memberId of hasLivestormProfile) {
+    const createdAt = faker.date
+      .recent({ days: 180 })
+      .toISOString()
+      .replace("T", " ")
+      .substring(0, 19);
+
     livestormProfileInserts.push(
       client.insert({
         table: "profile",
@@ -192,6 +199,7 @@ export const seedDb = async ({ user }: Props) => {
               source: "Livestorm",
             },
             memberId,
+            createdAt,
             workspaceId,
           },
         ],
@@ -286,6 +294,12 @@ export const seedDb = async ({ user }: Props) => {
   const githubProfileInserts = [];
 
   for (const memberId of hasGithubProfile) {
+    const createdAt = faker.date
+      .recent({ days: 180 })
+      .toISOString()
+      .replace("T", " ")
+      .substring(0, 19);
+
     githubProfileInserts.push(
       client.insert({
         table: "profile",
@@ -301,6 +315,7 @@ export const seedDb = async ({ user }: Props) => {
               followers: faker.number.int({ min: 0, max: 1000 }),
             },
             memberId,
+            createdAt,
             workspaceId,
           },
         ],

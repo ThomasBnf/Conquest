@@ -78,10 +78,10 @@ export const DateRangePicker = () => {
     <div className="flex items-center gap-2">
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
-          <Button variant="outline" className="min-w-62 justify-start">
+          <Button variant="outline" className="justify-start min-w-62">
             <CalendarIcon
               size={16}
-              className="-ms-1 shrink-0 opacity-40 transition-colors group-hover:text-foreground"
+              className="transition-colors -ms-1 shrink-0 opacity-40 group-hover:text-foreground"
               aria-hidden="true"
             />
             <span className={cn("truncate", !date && "text-muted-foreground")}>
@@ -91,12 +91,12 @@ export const DateRangePicker = () => {
             </span>
           </Button>
         </PopoverTrigger>
-        <PopoverContent align="end" className="flex divide-x p-0">
-          <div className="max-w-44 p-2">
+        <PopoverContent align="end" className="flex p-0 divide-x">
+          <div className="p-2 max-w-44">
             <Button
               variant="ghost"
               size="sm"
-              className="w-full justify-start"
+              className="justify-start w-full"
               onClick={() => onSelect(last7Days)}
             >
               Last 7 days
@@ -108,7 +108,7 @@ export const DateRangePicker = () => {
             <Button
               variant="ghost"
               size="sm"
-              className="w-full justify-start"
+              className="justify-start w-full"
               onClick={() => onSelect(last30Days)}
             >
               Last 30 days
@@ -120,7 +120,7 @@ export const DateRangePicker = () => {
             <Button
               variant="ghost"
               size="sm"
-              className="w-full justify-start"
+              className="justify-start w-full"
               onClick={() => onSelect(last90Days)}
             >
               Last 90 days
@@ -132,7 +132,7 @@ export const DateRangePicker = () => {
             <Button
               variant="ghost"
               size="sm"
-              className="w-full justify-start"
+              className="justify-start w-full"
               onClick={() => onSelect(last180Days)}
             >
               Last 180 days
@@ -144,7 +144,7 @@ export const DateRangePicker = () => {
             <Button
               variant="ghost"
               size="sm"
-              className="w-full justify-start"
+              className="justify-start w-full"
               onClick={() => onSelect(monthToDate)}
             >
               Month to date
@@ -156,7 +156,7 @@ export const DateRangePicker = () => {
             <Button
               variant="ghost"
               size="sm"
-              className="w-full justify-start"
+              className="justify-start w-full"
               onClick={() => onSelect(lastMonth)}
             >
               Last month
@@ -168,7 +168,7 @@ export const DateRangePicker = () => {
             <Button
               variant="ghost"
               size="sm"
-              className="w-full justify-start"
+              className="justify-start w-full"
               onClick={() => onSelect(yearToDate)}
             >
               Year to date
@@ -180,7 +180,7 @@ export const DateRangePicker = () => {
             <Button
               variant="ghost"
               size="sm"
-              className="w-full justify-start"
+              className="justify-start w-full"
               onClick={() => onSelect(lastYear)}
             >
               Last year
@@ -212,7 +212,7 @@ export const DateRangePicker = () => {
             : "outline"
         }
         size="sm"
-        className="w-full justify-start"
+        className="justify-start w-full"
         onClick={() => onSelect(last7Days)}
       >
         7D
@@ -224,7 +224,7 @@ export const DateRangePicker = () => {
             : "outline"
         }
         size="sm"
-        className="w-full justify-start"
+        className="justify-start w-full"
         onClick={() => onSelect(last30Days)}
       >
         30D
@@ -236,7 +236,7 @@ export const DateRangePicker = () => {
             : "outline"
         }
         size="sm"
-        className="w-full justify-start"
+        className="justify-start w-full"
         onClick={() => onSelect(last90Days)}
       >
         90D
@@ -249,7 +249,7 @@ export const DateRangePicker = () => {
             : "outline"
         }
         size="sm"
-        className="w-full justify-start"
+        className="justify-start w-full"
         onClick={() => onSelect(last180Days)}
       >
         180D
@@ -262,7 +262,7 @@ export const DateRangePicker = () => {
             : "outline"
         }
         size="sm"
-        className="w-full justify-start"
+        className="justify-start w-full"
         onClick={() => onSelect(monthToDate)}
       >
         MTD
@@ -274,7 +274,7 @@ export const DateRangePicker = () => {
             : "outline"
         }
         size="sm"
-        className="w-full justify-start"
+        className="justify-start w-full"
         onClick={() => onSelect(yearToDate)}
       >
         YTD

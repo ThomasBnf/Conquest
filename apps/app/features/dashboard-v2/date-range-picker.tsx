@@ -1,53 +1,70 @@
+import { formatDateRange } from "@/utils/format-date-range";
 import { Button } from "@conquest/ui/button";
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@conquest/ui/command";
+import { Calendar } from "@conquest/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@conquest/ui/popover";
+import {
+  endOfDay,
+  isEqual,
+  startOfDay,
+  startOfMonth,
+  startOfQuarter,
+  startOfYear,
+  subDays,
+  subMonths,
+  subWeeks,
+} from "date-fns";
 import { ChevronDown } from "lucide-react";
 import { useState } from "react";
 
-export const DateRangePicker = () => {
-  const [open, setOpen] = useState(false);
-  const [dateRange, setDateRange] = useState("last-7-days");
+type Props = {
+  dateRange: { from: Date; to: Date };
+  setDateRange: (dateRange: { from: Date; to: Date }) => void;
+};
 
-  const onSelect = (dateRange: string) => {
-    setDateRange(dateRange);
+export const DateRangePicker = ({ dateRange, setDateRange }: Props) => {
+  const [open, setOpen] = useState(false);
+
+  const onSelect = (newDate: { from: Date; to: Date }) => {
+    setDateRange(newDate);
     setOpen(false);
   };
 
   const dateRanges = [
     {
-      label: "Today",
-      value: "today",
-    },
-    {
-      label: "Yesterday",
-      value: "yesterday",
-    },
-    {
       label: "Last 7 days",
       value: "last-7-days",
+      from: subDays(startOfDay(new Date()), 7),
+      to: endOfDay(new Date()),
     },
     {
-      label: "Last 30 days",
-      value: "last-30-days",
+      label: "Last 4 weeks",
+      value: "last-4-weeks",
+      from: subWeeks(startOfDay(new Date()), 4),
+      to: endOfDay(new Date()),
     },
     {
-      label: "Last 90 days",
-      value: "last-90-days",
+      label: "Last 3 months",
+      value: "last-3-months",
+      from: subMonths(startOfDay(new Date()), 3),
+      to: endOfDay(new Date()),
     },
     {
-      label: "Last 180 days",
-      value: "last-180-days",
+      label: "Month to date",
+      value: "month-to-date",
+      from: startOfMonth(new Date()),
+      to: endOfDay(new Date()),
     },
     {
-      label: "Last 365 days",
-      value: "last-365-days",
+      label: "Quarter to date",
+      value: "quarter-to-date",
+      from: startOfQuarter(new Date()),
+      to: endOfDay(new Date()),
+    },
+    {
+      label: "Year to date",
+      value: "year-to-date",
+      from: startOfYear(new Date()),
+      to: endOfDay(new Date()),
     },
   ];
 
@@ -55,28 +72,46 @@ export const DateRangePicker = () => {
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button variant="outline">
-          {dateRanges.find((range) => range.value === dateRange)?.label}
+          {dateRanges.find(
+            (range) =>
+              isEqual(range.from, dateRange.from) &&
+              isEqual(range.to, dateRange.to),
+          )?.label ?? formatDateRange(dateRange.from, dateRange.to)}
           <ChevronDown size={16} className="text-muted-foreground" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="p-0" align="start">
-        <Command>
-          <CommandInput placeholder="Search integration..." />
-          <CommandEmpty>No integration found.</CommandEmpty>
-          <CommandList>
-            <CommandGroup>
-              {dateRanges.map((dateRange) => (
-                <CommandItem
-                  key={dateRange.value}
-                  value={dateRange.value}
-                  onSelect={onSelect}
-                >
-                  {dateRange.label}
-                </CommandItem>
-              ))}
-            </CommandGroup>
-          </CommandList>
-        </Command>
+      <PopoverContent className="flex gap-4" align="end">
+        <div className="flex flex-col gap-1">
+          {dateRanges.map((range) => (
+            <Button
+              key={range.value}
+              variant={
+                isEqual(range.from, dateRange.from) &&
+                isEqual(range.to, dateRange.to)
+                  ? "secondary"
+                  : "ghost"
+              }
+              className="w-full justify-start"
+              onClick={() => onSelect(range)}
+            >
+              {range.label}
+            </Button>
+          ))}
+        </div>
+        <div>
+          <Calendar
+            mode="range"
+            numberOfMonths={2}
+            onSelect={(newDate) => {
+              if (newDate?.from) {
+                onSelect({
+                  from: newDate.from,
+                  to: newDate.to ? newDate.to : endOfDay(new Date()),
+                });
+              }
+            }}
+          />
+        </div>
       </PopoverContent>
     </Popover>
   );
