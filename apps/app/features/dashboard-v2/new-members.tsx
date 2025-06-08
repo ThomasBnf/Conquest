@@ -17,7 +17,7 @@ import {
   startOfDay,
   subWeeks,
 } from "date-fns";
-import { useMemo, useState } from "react";
+import { ReactNode, useMemo, useState } from "react";
 import {
   CartesianGrid,
   Line,
@@ -37,6 +37,7 @@ type WeeklyProfileData = {
 type SourceConfig = {
   label: string;
   color: string;
+  logo?: ReactNode;
 };
 
 const chartConfig: Record<string, SourceConfig> = {
@@ -66,7 +67,7 @@ const chartConfig: Record<string, SourceConfig> = {
   },
 } satisfies ChartConfig;
 
-export const TotalMembers = () => {
+export const NewMembers = () => {
   const [sources, setSources] = useState<Source[]>([]);
   const [dateRange, setDateRange] = useState<{ from: Date; to: Date }>({
     from: subWeeks(startOfDay(new Date()), 4),
@@ -77,7 +78,7 @@ export const TotalMembers = () => {
   const days = differenceInDays(to, from);
   const dateFormat = days > 30 ? "MMM yyyy" : "MMM dd";
 
-  const { data, isLoading } = trpc.dashboardV2.total.useQuery({
+  const { data, isLoading } = trpc.dashboardV2.new.useQuery({
     sources,
     from,
     to,
@@ -95,7 +96,7 @@ export const TotalMembers = () => {
     <div className="flex w-full flex-col gap-2 rounded-md border p-6 shadow-sm">
       <div className="flex justify-between gap-1">
         <p className="font-semibold text-lg">
-          Total members growth by integration
+          New members growth by integration
         </p>
         <div className="flex items-center gap-1">
           <IntegrationsPicker sources={sources} setSources={setSources} />
@@ -156,7 +157,7 @@ export const TotalMembers = () => {
         <div className="w-full max-w-xs p-4">
           <div className="mb-4 space-y-2">
             <p className="text-muted-foreground text-sm">
-              Total unique members
+              Total unique new members
             </p>
             {isLoading ? (
               <Skeleton className="h-9 w-14" />
@@ -166,7 +167,7 @@ export const TotalMembers = () => {
           </div>
           <div className="space-y-2">
             <p className="text-muted-foreground text-sm">
-              Total members by integration
+              Active members by integration
             </p>
             <div>
               {sources.map((source) => (

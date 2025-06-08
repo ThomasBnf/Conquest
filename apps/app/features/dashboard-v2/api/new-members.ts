@@ -10,7 +10,7 @@ import {
 } from "date-fns";
 import z from "zod";
 
-export const totalMembers = protectedProcedure
+export const newMembers = protectedProcedure
   .input(
     z.object({
       from: z.coerce.date(),
@@ -85,50 +85,52 @@ export const totalMembers = protectedProcedure
       }
     }
 
-    const periodIndexMap = new Map<string, number>();
-    for (const [index, period] of periods.entries()) {
-      periodIndexMap.set(period, index);
-    }
+    const profilesByPeriodAndSource = new Map<
+      string,
+      Map<string, Set<string>>
+    >();
 
-    const profilesBySource = new Map<string, ProfileData[]>();
-    for (const source of sources) {
-      profilesBySource.set(source, []);
+    for (const period of periods) {
+      const sourceMap = new Map<string, Set<string>>();
+      for (const source of sources) {
+        sourceMap.set(source, new Set<string>());
+      }
+      profilesByPeriodAndSource.set(period, sourceMap);
     }
 
     for (const profile of profiles) {
-      if (profile && profilesBySource.has(profile.source)) {
-        profilesBySource.get(profile.source)!.push(profile);
+      const periodMap = profilesByPeriodAndSource.get(profile.period);
+      if (periodMap?.has(profile.source)) {
+        periodMap.get(profile.source)!.add(profile.memberId);
       }
     }
 
-    const profilesWithGrowth: ResultData[] = periods.map(
-      (period, periodIndex) => {
-        const result: ResultData = { week: period };
+    const newMembersData: ResultData[] = periods.map((period, periodIndex) => {
+      const result: ResultData = { week: period };
 
-        for (const source of sources) {
-          const uniqueMembers = new Set<string>();
-          const sourceProfiles = profilesBySource.get(source) || [];
+      for (const source of sources) {
+        const uniqueMembers = new Set<string>();
 
-          for (const profile of sourceProfiles) {
-            const profilePeriodIndex = periodIndexMap.get(profile.period);
+        for (let i = 0; i <= periodIndex; i++) {
+          const currentPeriod = periods[i];
+          const periodMap = profilesByPeriodAndSource.get(currentPeriod!);
+          const memberSet = periodMap?.get(source);
 
-            if (
-              profilePeriodIndex !== undefined &&
-              profilePeriodIndex <= periodIndex
-            ) {
-              uniqueMembers.add(profile.memberId);
+          if (memberSet) {
+            for (const memberId of memberSet) {
+              uniqueMembers.add(memberId);
             }
           }
-
-          result[source] = uniqueMembers.size;
         }
 
-        return result;
-      },
-    );
+        result[source] = uniqueMembers.size;
+      }
+
+      return result;
+    });
 
     return {
-      profiles: profilesWithGrowth,
+      profiles: newMembersData,
       total: totalData?.[0]?.total || 0,
     };
   });
