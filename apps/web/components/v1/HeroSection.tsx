@@ -35,7 +35,7 @@ export const HeroSection = () => {
         animation="blurInUp"
         className="max-w-4xl font-bold font-telegraf text-4xl lg:text-6xl"
       >
-        Generate revenue by delivering the value your members need.
+        Scale your community with dedicated CRM
       </TextAnimate>
       <TextAnimate
         as="p"
@@ -43,8 +43,8 @@ export const HeroSection = () => {
         delay={0.5}
         className="max-w-3xl font-suisse text-lg text-muted-foreground"
       >
-        Consolidate key engagement signals from across data sources and act on
-        it at the right time with enriched community alerts and automations.
+        Score your community members and act on it at the right time with
+        enriched community alerts and automations.
       </TextAnimate>
       <AnimatedGroup
         variants={{
@@ -56,7 +56,23 @@ export const HeroSection = () => {
               },
             },
           },
-          ...transitionVariants,
+          item: {
+            hidden: {
+              opacity: 0,
+              filter: "blur(12px)",
+              y: 12,
+            },
+            visible: {
+              opacity: 1,
+              filter: "blur(0px)",
+              y: 0,
+              transition: {
+                type: "spring" as const,
+                bounce: 0.3,
+                duration: 1.5,
+              },
+            },
+          },
         }}
         className="mt-4 flex justify-center gap-2 "
       >
@@ -92,7 +108,23 @@ export const HeroSection = () => {
               },
             },
           },
-          ...transitionVariants,
+          item: {
+            hidden: {
+              opacity: 0,
+              filter: "blur(12px)",
+              y: 12,
+            },
+            visible: {
+              opacity: 1,
+              filter: "blur(0px)",
+              y: 0,
+              transition: {
+                type: "spring" as const,
+                bounce: 0.3,
+                duration: 1.5,
+              },
+            },
+          },
         }}
       >
         <Image
