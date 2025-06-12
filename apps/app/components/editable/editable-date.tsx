@@ -1,14 +1,6 @@
-import { MONTHS } from "@/constant";
 import { Button } from "@conquest/ui/button";
 import { Calendar } from "@conquest/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@conquest/ui/popover";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@conquest/ui/select";
 import { format } from "date-fns";
 import { useState } from "react";
 
@@ -40,7 +32,7 @@ export const EditableDate = ({ defaultValue, onUpdate }: Props) => {
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild className="w-full cursor-pointer">
+      <PopoverTrigger asChild className="-ml-[9px] w-full cursor-pointer">
         {date ? (
           <Button variant="ghost" className="w-full justify-start">
             {format(date, "PPP")}
@@ -57,63 +49,14 @@ export const EditableDate = ({ defaultValue, onUpdate }: Props) => {
       </PopoverTrigger>
       <PopoverContent
         align="start"
-        className="w-[var(--radix-popover-width)] p-0"
+        className="w-[var(--radix-popover-width)] overflow-hidden p-0"
       >
-        <div className="flex gap-2 px-3 pt-3">
-          <Select
-            value={date ? format(date, "MMMM") : undefined}
-            onValueChange={(value: (typeof MONTHS)[number]) => {
-              const newDate = date
-                ? new Date(
-                    date.getFullYear(),
-                    MONTHS.indexOf(value),
-                    date.getDate(),
-                  )
-                : new Date();
-              setDate(newDate);
-            }}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Month" />
-            </SelectTrigger>
-            <SelectContent>
-              {MONTHS.map((month) => (
-                <SelectItem key={month} value={month}>
-                  {month}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <Select
-            value={date ? format(date, "yyyy") : undefined}
-            onValueChange={(value) => {
-              const newDate = date
-                ? new Date(Number(value), date.getMonth(), date.getDate())
-                : new Date();
-              setDate(newDate);
-            }}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Year" />
-            </SelectTrigger>
-            <SelectContent>
-              {years.map((year) => (
-                <SelectItem key={year} value={year.toString()}>
-                  {year}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
         <Calendar
-          mode="single"
-          selected={date}
-          month={date}
-          onSelect={(newDate) => onUpdateDate(newDate)}
           initialFocus
-          ISOWeek
-          fromYear={years[0]}
-          toYear={years[years.length - 1]}
+          mode="single"
+          captionLayout="dropdown"
+          selected={date}
+          onSelect={(newDate) => onUpdateDate(newDate)}
         />
       </PopoverContent>
     </Popover>

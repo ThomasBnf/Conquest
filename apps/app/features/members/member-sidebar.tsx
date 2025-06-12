@@ -18,6 +18,8 @@ import { Separator } from "@conquest/ui/separator";
 import type { Member } from "@conquest/zod/schemas/member.schema";
 import type { Profile } from "@conquest/zod/schemas/profile.schema";
 import { format } from "date-fns";
+import { AddCustomField } from "../custom-fields/add-custom-field";
+import { CustomFieldsParser } from "../custom-fields/custom-fields-parser";
 import { DiscourseFields } from "./DiscourseFields";
 import { GithubFields } from "./GithubFields.tsx";
 import { ProfilesParser } from "./ProfilesParser";
@@ -51,7 +53,7 @@ export const MemberSidebar = ({ member, profiles }: Props) => {
 
   const onUpdateMember = async (
     field: keyof Member,
-    value: string | null | string[],
+    value: string | string[] | Date | null,
   ) => {
     if (member[field] === value) return;
     updateMember({ ...member, [field]: value });
@@ -91,7 +93,7 @@ export const MemberSidebar = ({ member, profiles }: Props) => {
               onUpdate={(value) => onUpdateMember("tags", value)}
               className={cn(
                 "text-muted-foreground",
-                member.tags.length > 0 ? "ml-2" : "",
+                member.tags.length > 0 ? "ml-2" : "-ml-[7px]",
               )}
             />
           </FieldCard>
@@ -146,8 +148,8 @@ export const MemberSidebar = ({ member, profiles }: Props) => {
               href={linkedinUrl}
             />
           </FieldCard>
-          {/* <CustomFieldsParser member={member} /> */}
-          {/* <AddCustomField /> */}
+          <CustomFieldsParser record="MEMBER" member={member} />
+          <AddCustomField record="MEMBER" />
         </div>
         <Separator />
         <div className="space-y-4 p-4">
@@ -164,9 +166,7 @@ export const MemberSidebar = ({ member, profiles }: Props) => {
             />
           </FieldCard>
           <FieldCard label="Source">
-            <div className="ml-[9px]">
-              <SourceBadge source={source} />
-            </div>
+            <SourceBadge source={source} />
           </FieldCard>
         </div>
         <Separator />
@@ -175,20 +175,20 @@ export const MemberSidebar = ({ member, profiles }: Props) => {
         <div className="space-y-4 p-4 pb-32">
           {firstActivity && (
             <FieldCard label="First activity">
-              <p className="ml-[9px] h-8 place-content-center">
+              <p className="h-8 place-content-center">
                 {format(firstActivity, "PPp")}
               </p>
             </FieldCard>
           )}
           {lastActivity && (
             <FieldCard label="Last activity">
-              <p className="ml-[9px] h-8 place-content-center">
+              <p className="h-8 place-content-center">
                 {format(lastActivity, "PPp")}
               </p>
             </FieldCard>
           )}
           <FieldCard label="Created at">
-            <p className="ml-[9px] h-8 place-content-center">
+            <p className="h-8 place-content-center">
               {format(createdAt, "PPp")}
             </p>
           </FieldCard>

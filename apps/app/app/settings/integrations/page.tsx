@@ -1,6 +1,5 @@
 "use client";
 
-import { CSVImport } from "@/features/csv/csv-import";
 import { IntegrationCard } from "@/features/integrations/integration-card";
 import { categories } from "@/features/integrations/integrations";
 import { trpc } from "@/server/client";
@@ -13,7 +12,6 @@ import { toast } from "sonner";
 
 export default function Page() {
   const { data: session } = useSession();
-
   const [loading, setLoading] = useState(false);
 
   const { mutate: seed } = trpc.admin.adminTask.useMutation({
@@ -62,10 +60,6 @@ export default function Page() {
             </div>
           </div>
         ))}
-        <div>
-          <p className="mt-4 mb-2 font-medium text-base">Import</p>
-          <CSVImport />
-        </div>
       </div>
     </ScrollArea>
   );

@@ -1,3 +1,4 @@
+import { useWorkspace } from "@/hooks/useWorkspace";
 import { trpc } from "@/server/client";
 import { Badge } from "@conquest/ui/badge";
 import { Button, ButtonProps } from "@conquest/ui/button";
@@ -12,7 +13,6 @@ import {
 } from "@conquest/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@conquest/ui/popover";
 import { Plus, TagIcon } from "lucide-react";
-import { useSession } from "next-auth/react";
 import { useState } from "react";
 import { v4 as uuid } from "uuid";
 import { useCreateTag } from "./mutations/useCreateTag";
@@ -34,8 +34,7 @@ export const TagPicker = ({
   variant,
   className,
 }: Props) => {
-  const { data: session } = useSession();
-  const { workspaceId } = session?.user ?? {};
+  const { workspace } = useWorkspace();
 
   const { data: allTags } = trpc.tags.list.useQuery();
   const [value, setValue] = useState("");
@@ -59,7 +58,7 @@ export const TagPicker = ({
   };
 
   const onAddTag = () => {
-    if (!workspaceId) return;
+    if (!workspace?.id) return;
 
     createTag({
       id: uuid(),
@@ -67,7 +66,7 @@ export const TagPicker = ({
       name: value,
       color: "#0070f3",
       source: "Manual" as const,
-      workspaceId,
+      workspaceId: workspace.id,
       createdAt: new Date(),
       updatedAt: new Date(),
     });
@@ -108,7 +107,7 @@ export const TagPicker = ({
           <CommandList>
             <CommandGroup heading="Select or create tag">
               {allTags
-                ?.filter((tag) => tag.source === source)
+                ?.filter((tag) => (source ? tag.source === source : true))
                 ?.map((tag) => (
                   <CommandItem key={tag.id} className="group">
                     <div

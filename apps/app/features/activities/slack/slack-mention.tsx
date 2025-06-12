@@ -1,4 +1,4 @@
-import { useGetSlug } from "@/hooks/useGetSlug";
+import { useWorkspace } from "@/hooks/useWorkspace";
 import { trpc } from "@/server/client";
 import Link from "next/link";
 
@@ -7,7 +7,7 @@ type Props = {
 };
 
 export const SlackMention = ({ slackId }: Props) => {
-  const slug = useGetSlug();
+  const { slug } = useWorkspace();
 
   const { data: profile } = trpc.profiles.get.useQuery({
     externalId: slackId,

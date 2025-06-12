@@ -14,6 +14,7 @@
     "@conquest/clickhouse": "workspace:*",
     "@conquest/db": "workspace:*",
     "@conquest/resend": "workspace:*",
+    "@conquest/utils": "workspace:*",
     "@conquest/zod": "workspace:*",
     "@faker-js/faker": "^9.6.0",
     "@trigger.dev/react-hooks": "3.3.17",

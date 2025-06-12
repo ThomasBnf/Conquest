@@ -1,6 +1,6 @@
 import { MenuList } from "@/features/lists/menu-list";
-import { useGetSlug } from "@/hooks/useGetSlug";
 import { useOpenList } from "@/hooks/useOpenList";
+import { useWorkspace } from "@/hooks/useWorkspace";
 import { trpc } from "@/server/client";
 import { Button } from "@conquest/ui/button";
 import {
@@ -15,9 +15,9 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 export const SidebarLists = () => {
+  const { slug } = useWorkspace();
   const { setOpen } = useOpenList();
   const pathname = usePathname();
-  const slug = useGetSlug();
 
   const { data: lists, isLoading } = trpc.lists.list.useQuery();
 
@@ -25,7 +25,7 @@ export const SidebarLists = () => {
     <SidebarGroup>
       <SidebarMenu>
         <SidebarMenuItem className="flex h-6 items-center justify-between pr-[5px] pl-0.5">
-          <p className="text-muted-foreground text-xs">Lists</p>
+          <p className="text-xs text-muted-foreground">Lists</p>
           {lists && lists?.length > 0 && (
             <Button
               variant="ghost"
@@ -38,15 +38,15 @@ export const SidebarLists = () => {
         </SidebarMenuItem>
         {isLoading ? (
           <>
-            <Skeleton className="h-8 w-full" />
-            <Skeleton className="h-8 w-full" />
-            <Skeleton className="h-8 w-full" />
+            <Skeleton className="w-full h-8" />
+            <Skeleton className="w-full h-8" />
+            <Skeleton className="w-full h-8" />
           </>
         ) : lists?.length === 0 ? (
           <SidebarMenu>
             <SidebarMenuItem>
               <SidebarMenuButton
-                className="justify-center border-border border-dashed bg-background"
+                className="justify-center border-dashed border-border bg-background"
                 onClick={() => setOpen(true)}
               >
                 <Plus size={16} />
@@ -66,7 +66,7 @@ export const SidebarLists = () => {
                   <div className="flex items-center justify-between">
                     <Link
                       href={`/${slug}/lists/${list.id}`}
-                      className="min-w-0 flex-1"
+                      className="flex-1 min-w-0"
                     >
                       <div className="flex items-center gap-2 overflow-hidden">
                         <p className="text-base">{list.emoji}</p>

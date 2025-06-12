@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "typecheck": "tsc --noEmit",
-    "clickhouse:migrate": "dotenv -e ./.env -e ../../.env -- clickhouse-migrations migrate"
+    "db:migrate": "dotenv -e ./.env -e ../../.env -- clickhouse-migrations migrate"
   },
   "exports": {
     "./*": "./src/*.ts"

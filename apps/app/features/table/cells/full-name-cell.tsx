@@ -1,4 +1,4 @@
-import { useGetSlug } from "@/hooks/useGetSlug";
+import { useWorkspace } from "@/hooks/useWorkspace";
 import { trpc } from "@/server/client";
 import { Avatar, AvatarFallback, AvatarImage } from "@conquest/ui/avatar";
 import { Skeleton } from "@conquest/ui/skeleton";
@@ -13,7 +13,7 @@ type Props = {
 
 export const FullNameCell = ({ member }: Props) => {
   const { id, firstName, lastName, avatarUrl } = member;
-  const slug = useGetSlug();
+  const { slug } = useWorkspace();
 
   const hasName = !!firstName || !!lastName;
 
@@ -27,7 +27,7 @@ export const FullNameCell = ({ member }: Props) => {
   return (
     <Link
       href={`/${slug}/members/${id}/analytics`}
-      className="group flex items-center gap-2 truncate font-medium"
+      className="flex items-center gap-2 font-medium truncate group"
       prefetch
     >
       <Avatar className="size-6">
@@ -37,7 +37,7 @@ export const FullNameCell = ({ member }: Props) => {
         </AvatarFallback>
       </Avatar>
       {isLoading ? (
-        <Skeleton className="h-4 w-24" />
+        <Skeleton className="w-24 h-4" />
       ) : hasName ? (
         <p className="truncate group-hover:underline">{`${firstName} ${lastName}`}</p>
       ) : (

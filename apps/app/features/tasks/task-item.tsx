@@ -1,4 +1,4 @@
-import { useGetSlug } from "@/hooks/useGetSlug";
+import { useWorkspace } from "@/hooks/useWorkspace";
 import { trpc } from "@/server/client";
 import { Avatar, AvatarFallback, AvatarImage } from "@conquest/ui/avatar";
 import { buttonVariants } from "@conquest/ui/button";
@@ -20,7 +20,7 @@ type Props = {
 export const TaskItem = ({ task }: Props) => {
   const [open, setOpen] = useState(false);
   const { dueDate, isCompleted, memberId, assignee } = task;
-  const slug = useGetSlug();
+  const { slug } = useWorkspace();
 
   const { data: member } = trpc.members.get.useQuery(
     memberId ? { id: memberId } : skipToken,
@@ -50,7 +50,7 @@ export const TaskItem = ({ task }: Props) => {
       >
         <div
           onClick={() => setOpen(true)}
-          className="flex flex-1 cursor-pointer items-center"
+          className="flex items-center flex-1 cursor-pointer"
         >
           <div className="flex flex-[2] items-center gap-2">
             <Checkbox
@@ -71,7 +71,7 @@ export const TaskItem = ({ task }: Props) => {
           >
             Due {format(dueDate, "PP")}
           </p>
-          <div className="h-7 flex-1">
+          <div className="flex-1 h-7">
             {member && (
               <Link
                 href={`/${slug}/members/${member?.id}/analytics`}

@@ -10,7 +10,8 @@ const config = {
     "./constant/**/*.{ts,tsx}",
     "./features/**/*.{ts,tsx}",
     "./lib/**/*.{ts,tsx}",
-    "../../packages/ui/**/*.{ts,tsx}",
+    "./utils/**/*.{ts,tsx}",
+    "../../packages/*/**/*.{ts,tsx}",
   ],
   prefix: "",
   theme: {

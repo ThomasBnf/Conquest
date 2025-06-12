@@ -18,7 +18,6 @@ type Props = {
 export const TagMenuDialog = ({ tag }: Props) => {
   const [open, setOpen] = useState(false);
   const [openAlert, setOpenAlert] = useState(false);
-  const [name, setName] = useState(tag.name);
 
   const updateTag = useUpdateTag({ tag });
   const deleteTag = useDeleteTag();
@@ -27,13 +26,13 @@ export const TagMenuDialog = ({ tag }: Props) => {
     await deleteTag({ id: tag.id });
   };
 
-  const onBlur = () => {
-    updateTag({ id: tag.id, name });
+  const onBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    updateTag({ id: tag.id, name: e.target.value });
   };
 
-  const onKeyDown = (e: React.KeyboardEvent) => {
+  const onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
-      updateTag({ id: tag.id, name });
+      updateTag({ id: tag.id, name: e.currentTarget.value });
     }
   };
 
@@ -64,8 +63,7 @@ export const TagMenuDialog = ({ tag }: Props) => {
           <div className="space-y-2 p-2">
             <Input
               autoFocus
-              value={name}
-              onChange={(e) => setName(e.target.value)}
+              defaultValue={tag.name}
               onBlur={onBlur}
               onKeyDown={onKeyDown}
             />

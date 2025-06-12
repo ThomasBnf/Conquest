@@ -15,7 +15,7 @@ import { membersColumns } from "../table/columns/members-columns";
 import { DataTable } from "../table/data-table";
 import { EmptyTable } from "../table/empty-table-members";
 import { ColumnSettings } from "../table/settings/columnSettings";
-import { ExportListMembers } from "./export-list-members";
+import { ExportListMembers } from "./import-export-members";
 
 export const MembersPage = () => {
   const { groupFilters } = useFilters();

@@ -1,4 +1,4 @@
-import { useGetSlug } from "@/hooks/useGetSlug";
+import { useWorkspace } from "@/hooks/useWorkspace";
 import { trpc } from "@/server/client";
 import { Avatar, AvatarFallback, AvatarImage } from "@conquest/ui/avatar";
 import { Button } from "@conquest/ui/button";
@@ -13,7 +13,7 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from "@conquest/ui/popover";
 import { Skeleton } from "@conquest/ui/skeleton";
 import type { Company } from "@conquest/zod/schemas/company.schema";
-import { X } from "lucide-react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useInView } from "react-intersection-observer";
@@ -24,10 +24,10 @@ type Props = {
 };
 
 export const EditableMembers = ({ company }: Props) => {
+  const { slug } = useWorkspace();
   const { ref, inView } = useInView();
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
-  const slug = useGetSlug();
   const router = useRouter();
   const utils = trpc.useUtils();
 
@@ -59,7 +59,7 @@ export const EditableMembers = ({ company }: Props) => {
 
     await updateMember({
       ...member,
-      companyId: isInCompany ? "" : company.id,
+      companyId: isInCompany ? null : company.id,
     });
 
     toast.success(
@@ -75,33 +75,19 @@ export const EditableMembers = ({ company }: Props) => {
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild className="w-full cursor-pointer">
+      <PopoverTrigger asChild className="-ml-[9px] w-full cursor-pointer">
         {companyMembers && companyMembers?.length > 0 ? (
           <div className="flex w-full flex-col gap-1 rounded-md p-1 hover:bg-muted">
             {companyMembers?.map((member) => (
               <Button
                 key={member.id}
-                variant="outline"
+                variant="ghost"
                 size="xs"
-                className="w-fit max-w-[225px] justify-start border-blue-200 text-blue-500 hover:bg-background hover:text-blue-500"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  router.push(`/${slug}/members/${member.id}/analytics`);
-                }}
+                className="w-fit justify-start hover:underline"
               >
-                <span className="truncate">
+                <Link href={`/${slug}/members/${member.id}/analytics`} prefetch>
                   {member.firstName} {member.lastName}
-                </span>
-                {open && (
-                  <div
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onUpdate(member.id);
-                    }}
-                  >
-                    <X size={16} />
-                  </div>
-                )}
+                </Link>
               </Button>
             ))}
           </div>

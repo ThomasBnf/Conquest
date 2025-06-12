@@ -1,4 +1,4 @@
-import { useGetSlug } from "@/hooks/useGetSlug";
+import { useWorkspace } from "@/hooks/useWorkspace";
 import { Run } from "@conquest/db/prisma";
 import { Button } from "@conquest/ui/button";
 import { cn } from "@conquest/ui/cn";
@@ -13,7 +13,7 @@ type Props = {
 };
 
 export const RunItem = ({ run, index }: Props) => {
-  const slug = useGetSlug();
+  const { slug } = useWorkspace();
   const pathname = usePathname();
   const currentRun = pathname.split("/").pop();
 

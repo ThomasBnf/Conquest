@@ -1,7 +1,7 @@
 "use client";
 
 import { WorkspaceMenu } from "@/features/workspaces/workspace-menu";
-import { useGetSlug } from "@/hooks/useGetSlug";
+import { useWorkspace } from "@/hooks/useWorkspace";
 import { Badge } from "@conquest/ui/badge";
 import { Companies } from "@conquest/ui/icons/Companies";
 import { Dashboard } from "@conquest/ui/icons/Dashboard";
@@ -37,9 +37,9 @@ type Props = {
 };
 
 export const AppSidebar = ({ workspace }: Props) => {
+  const { slug } = useWorkspace();
   const { state } = useSidebar();
   const pathname = usePathname();
-  const slug = useGetSlug();
 
   const routes = [
     {

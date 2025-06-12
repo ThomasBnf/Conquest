@@ -23,7 +23,7 @@ import { PanelRight } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { useQueryStates } from "nuqs";
 import { useState } from "react";
-import { ExportListMembers } from "../members/export-list-members";
+import { ExportListMembers } from "../members/import-export-members";
 import { membersColumns } from "../table/columns/members-columns";
 import { DataTable } from "../table/data-table";
 import { ColumnSettings } from "../table/settings/columnSettings";

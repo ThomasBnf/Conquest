@@ -19,7 +19,7 @@ export const listInfiniteCompanies = protectedProcedure
     const result = await client.query({
       query: `
         SELECT *
-        FROM company c
+        FROM company c FINAL
         WHERE (
           ${searchParsed ? `positionCaseInsensitive(c.name, '${searchParsed}') > 0` : "true"}
         )

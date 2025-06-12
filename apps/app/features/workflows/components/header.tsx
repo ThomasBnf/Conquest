@@ -1,7 +1,7 @@
 "use client";
 
 import { EditableInput } from "@/components/editable/editable-input";
-import { useGetSlug } from "@/hooks/useGetSlug";
+import { useWorkspace } from "@/hooks/useWorkspace";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -28,8 +28,8 @@ type Props = {
 };
 
 export const Header = ({ workflow }: Props) => {
+  const { slug } = useWorkspace();
   const { name } = workflow;
-  const slug = useGetSlug();
   const updateWorkflow = useUpdateWorkflow();
 
   const form = useForm<FormName>({
@@ -57,6 +57,7 @@ export const Header = ({ workflow }: Props) => {
             <BreadcrumbPage>
               <EditableInput
                 defaultValue={name}
+                placeholder="Workflow name"
                 onUpdate={(name) => updateWorkflow({ ...workflow, name })}
                 copyable={false}
               />

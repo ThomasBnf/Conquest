@@ -1,6 +1,7 @@
 import { timeParser } from "@/utils/time-parser";
 import { Button } from "@conquest/ui/button";
 import { Run } from "@conquest/zod/schemas/run.schema";
+import { format } from "date-fns";
 import { ArrowLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { RunStatus } from "./run-status";
@@ -42,6 +43,10 @@ export const RunDetails = ({ run }: Props) => {
         <div className="space-y-1">
           <p className="text-muted-foreground">Credits</p>
           <p>{nodesWithStatus.length - 1}</p>
+        </div>
+        <div className="space-y-1">
+          <p className="text-muted-foreground">Run at</p>
+          <p>{format(run.createdAt, "PPp")}</p>
         </div>
         {error && (
           <div className="col-span-2 space-y-1">

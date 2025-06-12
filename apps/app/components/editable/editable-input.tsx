@@ -1,13 +1,15 @@
 import { Button } from "@conquest/ui/button";
 import { cn } from "@conquest/ui/cn";
 import { Input } from "@conquest/ui/input";
-import { useState } from "react";
+import { TextField } from "@conquest/ui/text-field";
+import { KeyboardEvent, useState } from "react";
 import { CopyButton } from "../custom/copy-button";
 
 type Props = {
-  defaultValue: string | null;
-  placeholder?: string;
+  defaultValue: string | null | undefined;
+  placeholder: string;
   onUpdate: (value: string) => void;
+  customField?: boolean;
   copyable?: boolean;
 };
 
@@ -15,25 +17,29 @@ export const EditableInput = ({
   defaultValue,
   placeholder,
   onUpdate,
+  customField = false,
   copyable = true,
 }: Props) => {
-  const [value, setValue] = useState(defaultValue);
   const [isFocus, setIsFocus] = useState(false);
   const [isHover, setIsHover] = useState(false);
 
   const onBlur = (value: string) => {
     onUpdate(value);
-    setIsFocus(false);
+    onCancel();
   };
 
-  const onKeyDown = (key: string) => {
+  const onKeyDown = (
+    event: KeyboardEvent<HTMLTextAreaElement | HTMLInputElement>,
+  ) => {
+    const { key, shiftKey } = event;
+    const value = event.currentTarget.value;
+
     if (key === "Escape") {
-      setValue(defaultValue ?? "");
       onCancel();
     }
 
-    if (key === "Enter") {
-      onUpdate(value ?? "");
+    if (key === "Enter" && !shiftKey) {
+      onUpdate(value);
       onCancel();
     }
   };
@@ -46,37 +52,51 @@ export const EditableInput = ({
   if (!isFocus) {
     return (
       <div
-        className="relative flex items-center"
+        className="-ml-[9px] relative flex items-center"
         onMouseEnter={() => setIsHover(true)}
         onMouseLeave={() => setIsHover(false)}
       >
         <Button
           variant="ghost"
           className={cn(
-            "h-8 w-full justify-start border border-transparent",
-            !value && "text-muted-foreground",
+            "h-fit min-h-8 w-full justify-start whitespace-pre-wrap border border-transparent text-left",
+            !defaultValue && "text-muted-foreground",
           )}
           onClick={() => setIsFocus(true)}
         >
-          {value === "" || value === null ? placeholder : value}
+          {!defaultValue || defaultValue === ""
+            ? placeholder
+            : defaultValue.trim()}
         </Button>
-        {isHover && !isFocus && value && copyable && (
-          <CopyButton value={value} className="absolute right-1 z-10" />
+        {isHover && !isFocus && defaultValue && copyable && (
+          <CopyButton
+            value={defaultValue}
+            className="absolute top-1 right-1 z-10"
+          />
         )}
       </div>
+    );
+  }
+
+  if (customField) {
+    return (
+      <TextField
+        autoFocus
+        rows={3}
+        defaultValue={defaultValue ?? ""}
+        onBlur={(event) => onBlur(event.target.value)}
+        onKeyDown={(event) => onKeyDown(event)}
+        className="h-8"
+      />
     );
   }
 
   return (
     <Input
       autoFocus
-      value={value ?? ""}
-      onChange={(event) => setValue(event.target.value)}
-      onBlur={(event) => {
-        onBlur(event.target.value);
-        onCancel();
-      }}
-      onKeyDown={(event) => onKeyDown(event.key)}
+      defaultValue={defaultValue ?? ""}
+      onBlur={(event) => onBlur(event.target.value)}
+      onKeyDown={(event) => onKeyDown(event)}
       className="h-8"
     />
   );

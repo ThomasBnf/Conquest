@@ -12,7 +12,7 @@ export const getCompanyByName = async ({ name, workspaceId }: Props) => {
   const result = await client.query({
     query: `
       SELECT *
-      FROM company
+      FROM company FINAL
       WHERE name = '${sanitizedName}'
       AND workspaceId = '${workspaceId}'
     `,

@@ -1,0 +1,8 @@
+{
+  "name": "@conquest/utils",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./getRandomColor": "./src/getRandomColor.ts"
+  }
+}

@@ -4,21 +4,25 @@ import { EditableAddress } from "@/components/editable/editable-address";
 import { EditableDate } from "@/components/editable/editable-date";
 import { EditableInput } from "@/components/editable/editable-input";
 import { EditableMembers } from "@/components/editable/editable-members";
+import { EditableNumber } from "@/components/editable/editable-number";
 import { FieldCard } from "@/components/editable/field-card";
-import { trpc } from "@/server/client";
 import { Avatar, AvatarFallback, AvatarImage } from "@conquest/ui/avatar";
+import { cn } from "@conquest/ui/cn";
 import { ScrollArea } from "@conquest/ui/scroll-area";
 import { Separator } from "@conquest/ui/separator";
 import type { Company } from "@conquest/zod/schemas/company.schema";
 import { format } from "date-fns";
-import { TagIcon } from "lucide-react";
+import { AddCustomField } from "../custom-fields/add-custom-field";
+import { CustomFieldsParser } from "../custom-fields/custom-fields-parser";
+import { TagPicker } from "../tags/tag-picker";
+import { useUpdateCompany } from "./mutations/useUpdateCompany";
 
 type Props = {
   company: Company;
 };
 
 export const CompanySidebar = ({ company }: Props) => {
-  const { mutateAsync } = trpc.companies.update.useMutation();
+  const updateCompany = useUpdateCompany();
 
   const {
     id,
@@ -33,19 +37,12 @@ export const CompanySidebar = ({ company }: Props) => {
   } = company;
 
   const onUpdateCompany = async (
-    field:
-      | "name"
-      | "tags"
-      | "domain"
-      | "industry"
-      | "employees"
-      | "address"
-      | "foundedAt",
-    value: string | Date | string[] | null,
+    field: keyof Company,
+    value: string | string[] | Date | number | null,
   ) => {
-    await mutateAsync({ ...company, [field]: value });
+    if (company[field] === value) return;
+    updateCompany({ ...company, [field]: value });
   };
-
   return (
     <div className="flex h-full max-w-sm flex-1 flex-col bg-sidebar">
       <div className="flex items-center gap-2 p-4">
@@ -61,15 +58,18 @@ export const CompanySidebar = ({ company }: Props) => {
         </div>
       </div>
       <Separator />
-      <div className="flex flex-col gap-2 p-4">
-        <div className="flex items-center gap-2 text-muted-foreground">
-          <TagIcon size={16} className="shrink-0" />
-          <p>Tags</p>
-        </div>
-        {/* <TagPicker
-          record={company}
-          onUpdate={(value) => onUpdateCompany("tags", value)}
-        /> */}
+      <div className="space-y-4 p-4">
+        <FieldCard label="Tags">
+          <TagPicker
+            variant="ghost"
+            tags={company.tags}
+            onUpdate={(value) => onUpdateCompany("tags", value)}
+            className={cn(
+              "text-muted-foreground",
+              company.tags.length > 0 ? "ml-2" : "-ml-[7px]",
+            )}
+          />
+        </FieldCard>
       </div>
       <Separator />
       <ScrollArea className="flex-1">
@@ -99,8 +99,8 @@ export const CompanySidebar = ({ company }: Props) => {
             />
           </FieldCard>
           <FieldCard label="Employees">
-            <EditableInput
-              defaultValue={employees?.toString() ?? ""}
+            <EditableNumber
+              defaultValue={employees ?? ""}
               placeholder="Set employees"
               onUpdate={(value) => onUpdateCompany("employees", value)}
             />
@@ -111,6 +111,8 @@ export const CompanySidebar = ({ company }: Props) => {
               onUpdate={(value) => onUpdateCompany("address", value)}
             />
           </FieldCard>
+          <CustomFieldsParser record="COMPANY" company={company} />
+          <AddCustomField record="COMPANY" />
         </div>
         <Separator />
         <div className="space-y-4 p-4">
@@ -121,8 +123,8 @@ export const CompanySidebar = ({ company }: Props) => {
             />
           </FieldCard>
           <FieldCard label="Created at">
-            <p className="h-8 place-content-center pl-0.5">
-              <span className="px-[7px]">{format(createdAt, "PPp")}</span>
+            <p className="h-8 place-content-center">
+              {format(createdAt, "PPp")}
             </p>
           </FieldCard>
         </div>

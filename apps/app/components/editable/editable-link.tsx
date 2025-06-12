@@ -51,7 +51,7 @@ export const EditableLink = ({
   if (!isFocus) {
     return (
       <div
-        className="flex flex-1 items-center"
+        className="-ml-[9px] flex flex-1 items-center"
         onMouseEnter={() => setIsHover(true)}
         onMouseLeave={() => setIsHover(false)}
       >

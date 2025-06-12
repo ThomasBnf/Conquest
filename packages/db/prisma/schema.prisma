@@ -9,56 +9,6 @@ datasource db {
     directUrl = env("DIRECT_URL")
 }
 
-enum PLAN {
-    EXPLORER
-    ACTIVE
-    CONTRIBUTOR
-    AMBASSADOR
-}
-
-enum REASON {
-    EMAIL
-    NAME
-    USERNAME
-}
-
-enum ROLE {
-    STAFF
-    ADMIN
-}
-
-enum SOURCE {
-    Api
-    Discourse
-    Discord
-    Github
-    Linkedin
-    Livestorm
-    Manual
-    Slack
-    Twitter
-}
-
-enum STATUS {
-    ENABLED
-    CONNECTED
-    SYNCING
-    DISCONNECTED
-    FAILED
-}
-
-enum STATE {
-    PENDING
-    APPROVED
-    REJECTED
-}
-
-enum RUN_STATUS {
-    RUNNING
-    COMPLETED
-    FAILED
-}
-
 model Account {
     id                String  @id @default(cuid())
     userId            String
@@ -90,6 +40,20 @@ model ApiKey {
 
     @@index([id])
     @@index([workspaceId])
+}
+
+model CustomField {
+    id      String @id @default(uuid())
+    label   String
+    type    TYPE
+    options Json[]
+    record  RECORD
+
+    workspaceId String
+    workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 }
 
 model Duplicate {
@@ -144,6 +108,18 @@ model Integration {
 
     @@index([id, workspaceId])
     @@index([externalId])
+}
+
+model Invitation {
+    id          String    @id @default(uuid())
+    email       String
+    workspaceId String
+    workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@index([workspaceId])
 }
 
 model List {
@@ -262,18 +238,6 @@ model UserInWorkspace {
     @@index([workspaceId])
 }
 
-model UserInvitation {
-    id          String    @id @default(uuid())
-    email       String
-    workspaceId String
-    workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-
-    @@index([workspaceId])
-}
-
 model VerificationToken {
     id         String   @id @default(uuid())
     identifier String
@@ -318,11 +282,12 @@ model Workspace {
     priceId          String?
     trialEnd         DateTime?
     isPastDue        DateTime?
-    customFields     Json[]
 
     apiKeys          ApiKey[]
     events           Event[]
+    customFields     CustomField[]
     integrations     Integration[]
+    invitations      Invitation[]
     lists            List[]
     tags             Tag[]
     tasks            Task[]
@@ -331,9 +296,71 @@ model Workspace {
     duplicates       Duplicate[]
     userInWorkspaces UserInWorkspace[]
 
-    createdAt       DateTime         @default(now())
-    updatedAt       DateTime         @updatedAt
-    userInvitations UserInvitation[]
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 
     @@index([id])
+}
+
+enum PLAN {
+    EXPLORER
+    ACTIVE
+    CONTRIBUTOR
+    AMBASSADOR
+}
+
+enum REASON {
+    EMAIL
+    NAME
+    USERNAME
+}
+
+enum RECORD {
+    MEMBER
+    COMPANY
+}
+
+enum ROLE {
+    STAFF
+    ADMIN
+}
+
+enum RUN_STATUS {
+    RUNNING
+    COMPLETED
+    FAILED
+}
+
+enum SOURCE {
+    Api
+    Discourse
+    Discord
+    Github
+    Linkedin
+    Livestorm
+    Manual
+    Slack
+    Twitter
+}
+
+enum STATUS {
+    ENABLED
+    CONNECTED
+    SYNCING
+    DISCONNECTED
+    FAILED
+}
+
+enum STATE {
+    PENDING
+    APPROVED
+    REJECTED
+}
+
+enum TYPE {
+    TEXT
+    NUMBER
+    DATE
+    SELECT
+    MULTISELECT
 }

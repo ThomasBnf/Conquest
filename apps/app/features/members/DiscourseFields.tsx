@@ -39,9 +39,7 @@ export const DiscourseFields = ({ profiles }: Props) => {
 
           return (
             <FieldCard key={id} label={key}>
-              <p className="h-full place-content-center truncate px-2">
-                {value}
-              </p>
+              <p className="h-full place-content-center truncate">{value}</p>
             </FieldCard>
           );
         })}

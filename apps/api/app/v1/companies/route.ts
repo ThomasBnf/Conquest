@@ -34,7 +34,7 @@ export const GET = createZodRoute()
     const resultCount = await client.query({
       query: `
         SELECT COUNT(*) as total
-        FROM company
+        FROM company FINAL
         WHERE workspaceId = '${workspaceId}'
       `,
       format: "JSON",
@@ -47,7 +47,7 @@ export const GET = createZodRoute()
     const result = await client.query({
       query: `
         SELECT * 
-        FROM company
+        FROM company FINAL
         WHERE workspaceId = '${workspaceId}'  
         ORDER BY createdAt DESC
         LIMIT ${pageSize}

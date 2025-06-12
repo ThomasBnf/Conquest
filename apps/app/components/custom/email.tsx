@@ -50,7 +50,7 @@ export const Email = ({ member, onUpdate, onCancel }: Props) => {
     <Input
       autoFocus
       placeholder="Add email"
-      className="h-8"
+      className="h-8 w-full"
       value={email}
       onChange={(event) => setEmail(event.target.value)}
       onBlur={onBlur}

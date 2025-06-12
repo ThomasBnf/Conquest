@@ -1,4 +1,4 @@
-import { useGetSlug } from "@/hooks/useGetSlug";
+import { useWorkspace } from "@/hooks/useWorkspace";
 import { trpc } from "@/server/client";
 import { Badge } from "@conquest/ui/badge";
 import { Duplicate } from "@conquest/ui/icons/Duplicate";
@@ -7,7 +7,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 export const DuplicateMenu = () => {
-  const slug = useGetSlug();
+  const { slug } = useWorkspace();
 
   const pathname = usePathname();
   const isActive = pathname.startsWith(`/${slug}/duplicates`);

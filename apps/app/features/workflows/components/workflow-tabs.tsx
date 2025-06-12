@@ -1,4 +1,4 @@
-import { useGetSlug } from "@/hooks/useGetSlug";
+import { useWorkspace } from "@/hooks/useWorkspace";
 import { trpc } from "@/server/client";
 import { Badge } from "@conquest/ui/badge";
 import { cn } from "@conquest/ui/cn";
@@ -10,7 +10,7 @@ type Props = {
 };
 
 export const WorkflowTabs = ({ workflowId }: Props) => {
-  const slug = useGetSlug();
+  const { slug } = useWorkspace();
   const pathname = usePathname();
 
   const { data } = trpc.runs.count.useQuery({ workflowId });

@@ -28,7 +28,7 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { type MemberForm, MemberFormSchema } from "./schema/member-form.schema";
 
-export const CreateMemberDialog = () => {
+export const AddMemberDialog = () => {
   const { slug } = useParams();
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -47,7 +47,7 @@ export const CreateMemberDialog = () => {
         duration: 5000,
       });
     },
-    onError: (error) => {
+    onError: () => {
       toast.error("Failed to create member");
     },
     onSettled: () => {

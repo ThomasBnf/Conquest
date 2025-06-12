@@ -2,8 +2,8 @@
 
 import { EmojiPicker } from "@/components/custom/emoji-picker";
 import { useFilters } from "@/context/filtersContext";
-import { useGetSlug } from "@/hooks/useGetSlug";
 import { useOpenList } from "@/hooks/useOpenList";
+import { useWorkspace } from "@/hooks/useWorkspace";
 import { trpc } from "@/server/client";
 import { Button } from "@conquest/ui/button";
 import {
@@ -31,10 +31,10 @@ import { useForm } from "react-hook-form";
 import { type FormList, FormListSchema } from "./schemas/form-create.schema";
 
 export const CreateListDialog = () => {
+  const { slug } = useWorkspace();
   const { groupFilters, resetFilters } = useFilters();
   const { open, setOpen } = useOpenList();
 
-  const slug = useGetSlug();
   const router = useRouter();
   const utils = trpc.useUtils();
 
@@ -76,7 +76,7 @@ export const CreateListDialog = () => {
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)}>
               <DialogBody onWheel={(e) => e.stopPropagation()}>
-                <div className="flex flex-1 flex-col gap-2">
+                <div className="flex flex-col flex-1 gap-2">
                   <Label>Name</Label>
                   <div className="flex items-center gap-2">
                     <FormField

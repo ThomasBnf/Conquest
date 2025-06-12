@@ -1,5 +1,5 @@
 import { SourceBadge } from "@/components/badges/source-badge";
-import { useGetSlug } from "@/hooks/useGetSlug";
+import { useWorkspace } from "@/hooks/useWorkspace";
 import { trpc } from "@/server/client";
 import { Avatar, AvatarFallback, AvatarImage } from "@conquest/ui/avatar";
 import type { ActivityWithType } from "@conquest/zod/schemas/activity.schema";
@@ -15,7 +15,7 @@ type Props = {
 };
 
 export const DiscourseInvite = ({ activity, member }: Props) => {
-  const slug = useGetSlug();
+  const { slug } = useWorkspace();
 
   const { createdAt, inviteTo } = activity;
   const { source } = activity.activityType;

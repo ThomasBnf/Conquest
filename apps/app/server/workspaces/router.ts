@@ -1,5 +1,4 @@
 import { router } from "../trpc";
-import { deleteCustomField } from "./deleteCustomField";
 import { deleteWorkspace } from "./deleteWorkspace";
 import { getSlug } from "./getSlug";
 import { getWorkspace } from "./getWorkspace";
@@ -10,5 +9,4 @@ export const workspacesRouter = router({
   update: updateWorkspace,
   getSlug,
   delete: deleteWorkspace,
-  deleteField: deleteCustomField,
 });

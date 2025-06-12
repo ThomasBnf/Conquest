@@ -25,7 +25,6 @@ export default function Page() {
   } | null>(null);
 
   const onDrop = (files: File[]) => {
-    console.log(files);
     setFiles(files);
 
     const file = files[0];

@@ -5,7 +5,7 @@ export const listInvitations = protectedProcedure.query(async ({ ctx }) => {
   const { user } = ctx;
   const { workspaceId } = user;
 
-  return await prisma.userInvitation.findMany({
+  return await prisma.invitation.findMany({
     where: {
       workspaceId,
     },

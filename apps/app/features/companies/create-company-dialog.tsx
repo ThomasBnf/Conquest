@@ -1,6 +1,6 @@
 "use client";
 
-import { useGetSlug } from "@/hooks/useGetSlug";
+import { useWorkspace } from "@/hooks/useWorkspace";
 import { trpc } from "@/server/client";
 import { Button } from "@conquest/ui/button";
 import {
@@ -33,10 +33,11 @@ import {
 } from "./schema/company-form.schema";
 
 export const CreateCompanyDialog = () => {
+  const { slug } = useWorkspace();
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
-  const slug = useGetSlug();
+  const utils = trpc.useUtils();
 
   const { mutateAsync } = trpc.companies.post.useMutation({
     onSuccess: (data) => {
@@ -53,6 +54,7 @@ export const CreateCompanyDialog = () => {
       toast.error("Failed to create company");
     },
     onSettled: () => {
+      utils.companies.listInfinite.invalidate();
       setOpen(false);
       setLoading(false);
       form.reset();

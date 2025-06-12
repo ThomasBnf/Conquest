@@ -3,7 +3,7 @@
 import { PageLayout } from "@/components/layouts/page-layout";
 import { IsLoading } from "@/components/states/is-loading";
 import { Header } from "@/features/workflows/components/header";
-import { useGetSlug } from "@/hooks/useGetSlug";
+import { useWorkspace } from "@/hooks/useWorkspace";
 import { trpc } from "@/server/client";
 import { skipToken } from "@tanstack/react-query";
 import {
@@ -36,7 +36,7 @@ const edgeTypes = {
 };
 
 export const RunWorkflow = ({ workflowId, runId }: Props) => {
-  const slug = useGetSlug();
+  const { slug } = useWorkspace();
   const { data, isLoading } = trpc.workflows.get.useQuery({ id: workflowId });
 
   const { data: run } = trpc.runs.get.useQuery(

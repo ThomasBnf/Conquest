@@ -49,7 +49,7 @@ export function EditableAddress({ address, onUpdate }: Props) {
       <PopoverTrigger
         className={cn(
           buttonVariants({ variant: "ghost" }),
-          "w-full cursor-pointer justify-start",
+          "-ml-[9px] w-full cursor-pointer justify-start",
         )}
         asChild
       >
@@ -73,7 +73,10 @@ export function EditableAddress({ address, onUpdate }: Props) {
           <span className="text-muted-foreground">Set address</span>
         )}
       </PopoverTrigger>
-      <PopoverContent className="w-[233px] p-0" align="start">
+      <PopoverContent
+        className="w-[var(--radix-popover-trigger-width)] p-0"
+        align="start"
+      >
         <Command className="relative">
           <CommandInput
             ref={ref}

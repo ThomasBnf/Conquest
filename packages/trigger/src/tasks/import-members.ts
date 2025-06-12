@@ -9,10 +9,12 @@ import { UserSchema } from "@conquest/zod/schemas/user.schema";
 import { logger, schemaTask } from "@trigger.dev/sdk/v3";
 import { randomUUID } from "node:crypto";
 import { z } from "zod";
+import { getFieldsValue } from "../csv/getFieldsValue";
 import { getMemberByExternalId } from "../csv/getMemberByExternalId";
 import { processCompanies } from "../csv/processCompanies";
 import { processDiscordProfiles } from "../csv/processDiscordProfiles";
 import { processGithubProfiles } from "../csv/processGithubProfiles";
+import { processOptions } from "../csv/processOptions";
 import { processProfiles } from "../csv/processProfiles";
 import { processSlackProfiles } from "../csv/processSlackProfiles";
 import { processTags } from "../csv/processTags";
@@ -39,6 +41,16 @@ export const importMembers = schemaTask({
           .map(([key, value]) => [mappedColumns[key], value]),
       ),
     );
+
+    console.log(mappedColumns);
+
+    const customFields = await processOptions({
+      members,
+      mappedColumns,
+      workspaceId,
+    });
+
+    console.dir(customFields, { depth: null });
 
     const createdTags = await processTags({ members, workspaceId });
     const createdCompanies = await processCompanies({ members, workspaceId });
@@ -75,6 +87,8 @@ export const importMembers = schemaTask({
         ? await getMember({ primaryEmail, workspaceId })
         : null;
 
+      const fields = getFieldsValue({ customFields, member });
+
       if (existingMember) {
         const updatedMember = {
           ...existingMember,
@@ -89,6 +103,9 @@ export const importMembers = schemaTask({
           companyId: _company?.id ?? existingMember.companyId,
           emails: _emails.filter(Boolean) as string[],
           phones: _phones.filter(Boolean) as string[],
+          customFields: {
+            fields: [...(existingMember.customFields?.fields ?? []), ...fields],
+          },
           updatedAt: new Date(),
         };
 
@@ -119,6 +136,12 @@ export const importMembers = schemaTask({
             companyId: _company?.id ?? existingMember.companyId,
             emails: _emails.filter(Boolean) as string[],
             phones: _phones.filter(Boolean) as string[],
+            customFields: {
+              fields: [
+                ...(existingMember.customFields?.fields ?? []),
+                ...fields,
+              ],
+            },
             updatedAt: new Date(),
           };
 
@@ -148,7 +171,7 @@ export const importMembers = schemaTask({
             pulse: 0,
             source: "Manual" as const,
             isStaff: false,
-            customFields: { fields: [] },
+            customFields: { fields },
             atRiskMember: false,
             potentialAmbassador: false,
             firstActivity: null,

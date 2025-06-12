@@ -32,7 +32,10 @@ export const EditableLanguage = ({ language, onUpdate }: Props) => {
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button variant="ghost" className="w-full justify-start truncate">
+        <Button
+          variant="ghost"
+          className="-ml-[9px] w-full justify-start truncate"
+        >
           {value ? (
             <LanguageBadge language={value} />
           ) : (

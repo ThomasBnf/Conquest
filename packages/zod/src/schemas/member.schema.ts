@@ -1,10 +1,7 @@
 import { z } from "zod";
 import { SOURCE } from "../enum/source.enum";
-import {
-  CustomFieldSchema,
-  ProfileAttributesSchema,
-  ProfileSchema,
-} from "./profile.schema";
+import { CustomFieldRecordSchema } from "./custom-field.schema";
+import { ProfileAttributesSchema, ProfileSchema } from "./profile.schema";
 
 export const MemberSchema = z.object({
   id: z.string().uuid(),
@@ -25,7 +22,7 @@ export const MemberSchema = z.object({
   atRiskMember: z.boolean().optional(),
   potentialAmbassador: z.boolean().optional(),
   customFields: z.object({
-    fields: z.array(CustomFieldSchema),
+    fields: z.array(CustomFieldRecordSchema),
   }),
   companyId: z.string().nullable(),
   isStaff: z.boolean(),

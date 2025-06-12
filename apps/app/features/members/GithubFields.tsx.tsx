@@ -26,7 +26,7 @@ export const GithubFields = ({ profiles }: Props) => {
             <FieldCard key={key} label={formattedKey} className="group">
               <p
                 className={cn(
-                  "h-full px-2",
+                  "h-full",
                   key !== "bio" && "place-content-center truncate",
                 )}
               >

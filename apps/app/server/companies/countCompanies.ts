@@ -17,7 +17,7 @@ export const countCompanies = protectedProcedure
     const result = await client.query({
       query: `
         SELECT count(*) as total
-        FROM company AS c
+        FROM company AS c FINAL
         WHERE (
           ${searchParsed ? `positionCaseInsensitive(c.name, '${searchParsed}') > 0` : "true"}
         )

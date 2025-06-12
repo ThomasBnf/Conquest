@@ -14,7 +14,7 @@ export const EditableEmails = ({ member, onUpdate }: Props) => {
   const [adding, setAdding] = useState(false);
 
   return (
-    <div className="flex flex-col gap-0.5">
+    <div className="-ml-[9px] flex w-full flex-col gap-0.5">
       {emails.map((email) => (
         <EditEmail
           key={email}

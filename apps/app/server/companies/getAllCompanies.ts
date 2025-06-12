@@ -16,7 +16,7 @@ export const getAllCompanies = protectedProcedure
     const companies = await client.query({
       query: `
         SELECT *
-        FROM company
+        FROM company FINAL
         WHERE workspaceId = '${workspaceId}'
         ${search ? `AND name ILIKE '%${search}%'` : ""}
         ORDER BY name ASC

@@ -1,6 +1,6 @@
 "use client";
 
-import { useGetSlug } from "@/hooks/useGetSlug";
+import { useWorkspace } from "@/hooks/useWorkspace";
 import { APIKey } from "@conquest/ui/icons/APIKey";
 import { ActivityType } from "@conquest/ui/icons/ActivityType";
 import { Billing } from "@conquest/ui/icons/Billing";
@@ -26,8 +26,8 @@ import { LoadingIntegrations } from "../states/loading-integrations";
 import { TrialCard } from "./trial-card";
 
 export const SettingsSidebar = () => {
+  const { slug } = useWorkspace();
   const pathname = usePathname();
-  const slug = useGetSlug();
 
   const menu = [
     {

@@ -1,5 +1,5 @@
 import { AlertDialog } from "@/components/custom/alert-dialog";
-import { useGetSlug } from "@/hooks/useGetSlug";
+import { useWorkspace } from "@/hooks/useWorkspace";
 import { trpc } from "@/server/client";
 import { Button } from "@conquest/ui/button";
 import {
@@ -21,10 +21,10 @@ type Props = {
 };
 
 export const MenuList = ({ list, transparent = false }: Props) => {
+  const { slug } = useWorkspace();
   const [open, setOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
 
-  const slug = useGetSlug();
   const router = useRouter();
   const utils = trpc.useUtils();
 

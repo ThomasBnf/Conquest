@@ -109,6 +109,11 @@ export const EditEmail = ({ member, email, onUpdate }: Props) => {
                   Mark as primary
                 </DropdownMenuItem>
               )}
+              <DropdownMenuItem
+                onClick={() => navigator.clipboard.writeText(email)}
+              >
+                Copy
+              </DropdownMenuItem>
               <DropdownMenuItem onClick={() => setEditing(true)}>
                 Edit
               </DropdownMenuItem>

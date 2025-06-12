@@ -1,4 +1,4 @@
-import { useGetSlug } from "@/hooks/useGetSlug";
+import { useWorkspace } from "@/hooks/useWorkspace";
 import { trpc } from "@/server/client";
 import { Button, buttonVariants } from "@conquest/ui/button";
 import { cn } from "@conquest/ui/cn";
@@ -35,13 +35,12 @@ type Props = {
 };
 
 export const EditableCompany = ({ member, onUpdate }: Props) => {
+  const { slug } = useWorkspace();
+  const { ref, inView } = useInView();
   const [query, setQuery] = useState("");
   const [search, setSearch] = useDebounce(query, 500);
   const [open, setOpen] = useState(false);
   const [openMenu, setOpenMenu] = useState(false);
-  const { ref, inView } = useInView();
-  const slug = useGetSlug();
-
   const utils = trpc.useUtils();
 
   const { data: company } = trpc.companies.get.useQuery(
@@ -89,7 +88,7 @@ export const EditableCompany = ({ member, onUpdate }: Props) => {
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild className="group w-full">
+      <PopoverTrigger asChild className="group -ml-[9px] w-full">
         {company?.name ? (
           <div
             className={cn(
@@ -122,7 +121,12 @@ export const EditableCompany = ({ member, onUpdate }: Props) => {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={() => onUpdateMemberCompany(null)}>
+                <DropdownMenuItem
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onUpdateMemberCompany(null);
+                  }}
+                >
                   Remove
                 </DropdownMenuItem>
               </DropdownMenuContent>

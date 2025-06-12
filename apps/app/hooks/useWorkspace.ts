@@ -1,7 +1,7 @@
 import { trpc } from "@/server/client";
 
-export const useGetSlug = () => {
+export const useWorkspace = () => {
   const { data: workspace } = trpc.workspaces.get.useQuery();
 
-  return workspace?.slug;
+  return { workspace, slug: workspace?.slug };
 };

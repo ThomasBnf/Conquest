@@ -1,6 +1,6 @@
 import { CountryBadge } from "@/components/badges/country-badge";
 import { LanguageBadge } from "@/components/badges/language-badge";
-import { useGetSlug } from "@/hooks/useGetSlug";
+import { useWorkspace } from "@/hooks/useWorkspace";
 import { trpc } from "@/server/client";
 import { ProfileIconParser } from "@/utils/profile-icon-parser";
 import { Avatar, AvatarFallback, AvatarImage } from "@conquest/ui/avatar";
@@ -33,8 +33,8 @@ type Props = {
 };
 
 export const MemberCard = ({ memberChecked, onCheckChange }: Props) => {
+  const { slug } = useWorkspace();
   const { member, checked } = memberChecked;
-  const slug = useGetSlug();
 
   const {
     id,
@@ -75,13 +75,13 @@ export const MemberCard = ({ memberChecked, onCheckChange }: Props) => {
         checked ? "bg-sidebar" : "bg-background",
       )}
     >
-      <div className="flex items-center justify-between overflow-hidden py-2 pr-2 pl-4">
+      <div className="flex items-center justify-between py-2 pl-4 pr-2 overflow-hidden">
         <div
-          className="flex cursor-pointer items-center gap-2"
+          className="flex items-center gap-2 cursor-pointer"
           onClick={() => onCheckChange(id, !checked)}
         >
           <Checkbox checked={checked} />
-          <p className="truncate font-medium">
+          <p className="font-medium truncate">
             {firstName} {lastName}
           </p>
         </div>
@@ -91,7 +91,7 @@ export const MemberCard = ({ memberChecked, onCheckChange }: Props) => {
           </Button>
         </Link>
       </div>
-      <div className="flex flex-1 flex-col gap-4 truncate p-4">
+      <div className="flex flex-col flex-1 gap-4 p-4 truncate">
         {entries.map(([key, value]) => {
           switch (key) {
             case "avatarUrl": {
@@ -125,21 +125,21 @@ export const MemberCard = ({ memberChecked, onCheckChange }: Props) => {
                     </Dialog>
                     {firstActivity ? (
                       <div>
-                        <p className="text-muted-foreground text-xs">
+                        <p className="text-xs text-muted-foreground">
                           First activity
                         </p>
                         <p>{format(firstActivity, "PPp")}</p>
                       </div>
                     ) : (
                       <div>
-                        <p className="text-muted-foreground text-xs">
+                        <p className="text-xs text-muted-foreground">
                           Created at
                         </p>
                         <p>{format(createdAt, "PPp")}</p>
                       </div>
                     )}
                   </div>
-                  <div className="mt-2 flex items-center gap-2">
+                  <div className="flex items-center gap-2 mt-2">
                     <LevelBadge member={member} />
                     <PulseBadge member={member} />
                   </div>
@@ -152,7 +152,7 @@ export const MemberCard = ({ memberChecked, onCheckChange }: Props) => {
 
               return (
                 <div key={`${key}-${id}`} className="space-y-1">
-                  <p className="text-muted-foreground text-xs">Emails</p>
+                  <p className="text-xs text-muted-foreground">Emails</p>
                   {emails.map((email) => (
                     <p key={email}>{email}</p>
                   ))}
@@ -163,11 +163,11 @@ export const MemberCard = ({ memberChecked, onCheckChange }: Props) => {
               if (value === null) return;
               return (
                 <div key={`${key}-${id}`} className="space-y-1">
-                  <p className="text-muted-foreground text-xs capitalize">
+                  <p className="text-xs capitalize text-muted-foreground">
                     Company
                   </p>
                   {isLoading ? (
-                    <Skeleton className="h-5 w-24" />
+                    <Skeleton className="w-24 h-5" />
                   ) : (
                     <p>{company?.name}</p>
                   )}
@@ -178,7 +178,7 @@ export const MemberCard = ({ memberChecked, onCheckChange }: Props) => {
               if (value === "") return;
               return (
                 <div key={`${key}-${id}`} className="space-y-1">
-                  <p className="text-muted-foreground text-xs">Job title</p>
+                  <p className="text-xs text-muted-foreground">Job title</p>
                   <p className="truncate">{value}</p>
                 </div>
               );
@@ -187,7 +187,7 @@ export const MemberCard = ({ memberChecked, onCheckChange }: Props) => {
               if (value === "") return;
               return (
                 <div key={`${key}-${id}`} className="space-y-1">
-                  <p className="text-muted-foreground text-xs">LinkedIn URL</p>
+                  <p className="text-xs text-muted-foreground">LinkedIn URL</p>
                   <p className="truncate">{value}</p>
                 </div>
               );
@@ -197,7 +197,7 @@ export const MemberCard = ({ memberChecked, onCheckChange }: Props) => {
               if (phones.length === 0) return;
               return (
                 <div key={`${key}-${id}`} className="space-y-1">
-                  <p className="text-muted-foreground text-xs">Phones</p>
+                  <p className="text-xs text-muted-foreground">Phones</p>
                   <p>{phones.join(", ")}</p>
                 </div>
               );
@@ -206,7 +206,7 @@ export const MemberCard = ({ memberChecked, onCheckChange }: Props) => {
               if (value === "") return;
               return (
                 <div key={`${key}-${id}`} className="space-y-1">
-                  <p className="text-muted-foreground text-xs">Country</p>
+                  <p className="text-xs text-muted-foreground">Country</p>
                   <CountryBadge country={value as string} />
                 </div>
               );
@@ -215,7 +215,7 @@ export const MemberCard = ({ memberChecked, onCheckChange }: Props) => {
               if (value === "") return;
               return (
                 <div key={`${key}-${id}`} className="space-y-1">
-                  <p className="text-muted-foreground text-xs">Language</p>
+                  <p className="text-xs text-muted-foreground">Language</p>
                   <LanguageBadge language={value as string} />
                 </div>
               );
@@ -224,7 +224,7 @@ export const MemberCard = ({ memberChecked, onCheckChange }: Props) => {
         })}
         {profiles && profiles.length > 0 && (
           <div className="space-y-2">
-            <p className="text-muted-foreground text-xs">Profiles</p>
+            <p className="text-xs text-muted-foreground">Profiles</p>
             <div className="flex flex-col gap-1">
               {profiles
                 ?.sort((a, b) =>

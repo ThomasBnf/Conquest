@@ -87,6 +87,11 @@ export const EditPhone = ({ member, phone, onUpdate }: Props) => {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
+              <DropdownMenuItem
+                onClick={() => navigator.clipboard.writeText(phone)}
+              >
+                Copy
+              </DropdownMenuItem>
               <DropdownMenuItem onClick={() => setEditing(true)}>
                 Edit
               </DropdownMenuItem>
