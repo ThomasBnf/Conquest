@@ -32,7 +32,7 @@ export const processCompanies = async ({
       industry: "",
       address: "",
       domain: "",
-      employees: "",
+      employees: null,
       foundedAt: null,
       logoUrl: "",
       tags: [],

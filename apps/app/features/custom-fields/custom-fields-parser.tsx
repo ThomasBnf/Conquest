@@ -53,7 +53,7 @@ export const CustomFieldsParser = ({ member, company, record }: Props) => {
 
   const onUpdateField = async (
     field: CustomField,
-    value: string | string[] | null,
+    value: string | string[] | number | null,
   ) => {
     const isExistingField = customFields?.fields.some((f) => f.id === field.id);
     let updatedFields = [...(customFields?.fields ?? [])];
@@ -70,7 +70,11 @@ export const CustomFieldsParser = ({ member, company, record }: Props) => {
               value: value as string,
             };
           case "NUMBER":
-            return { id: field.id, type: field.type, value: value as string };
+            return {
+              id: field.id,
+              type: field.type,
+              value: value as number | null,
+            };
           case "DATE":
             return {
               id: field.id,
@@ -100,7 +104,7 @@ export const CustomFieldsParser = ({ member, company, record }: Props) => {
           updatedFields.push({
             id: field.id,
             type: field.type,
-            value: value as string,
+            value: value as number | null,
           });
           break;
         case "DATE":
@@ -157,7 +161,7 @@ export const CustomFieldsParser = ({ member, company, record }: Props) => {
         return (
           <EditableNumber
             key={field.id}
-            defaultValue={numberField?.value ?? ""}
+            defaultValue={numberField?.value ?? null}
             placeholder="Add number"
             onUpdate={(value) => onUpdateField(field, value)}
           />

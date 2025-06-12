@@ -5,9 +5,9 @@ import { useState } from "react";
 import { CopyButton } from "../custom/copy-button";
 
 type Props = {
-  defaultValue: string;
+  defaultValue: number | null;
   placeholder: string;
-  onUpdate: (value: string) => void;
+  onUpdate: (value: number | null) => void;
   copyable?: boolean;
 };
 
@@ -21,7 +21,8 @@ export const EditableNumber = ({
   const [isHover, setIsHover] = useState(false);
 
   const onBlur = (value: string) => {
-    onUpdate(value);
+    console.log("onBlur", value);
+    onUpdate(value ? Number(value) : null);
     onCancel();
   };
 
@@ -31,7 +32,7 @@ export const EditableNumber = ({
     }
 
     if (key === "Enter") {
-      onUpdate(value);
+      onUpdate(value ? Number(value) : null);
       onCancel();
     }
   };
@@ -56,7 +57,7 @@ export const EditableNumber = ({
           )}
           onClick={() => setIsFocus(true)}
         >
-          {defaultValue === "" ? placeholder : defaultValue}
+          {defaultValue === null ? placeholder : defaultValue}
         </Button>
         {isHover && !isFocus && copyable && (
           <CopyButton

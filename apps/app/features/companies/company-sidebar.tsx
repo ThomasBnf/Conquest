@@ -40,6 +40,7 @@ export const CompanySidebar = ({ company }: Props) => {
     field: keyof Company,
     value: string | string[] | Date | number | null,
   ) => {
+    console.log(field, value);
     if (company[field] === value) return;
     updateCompany({ ...company, [field]: value });
   };
@@ -100,7 +101,7 @@ export const CompanySidebar = ({ company }: Props) => {
           </FieldCard>
           <FieldCard label="Employees">
             <EditableNumber
-              defaultValue={employees ?? ""}
+              defaultValue={employees ?? null}
               placeholder="Set employees"
               onUpdate={(value) => onUpdateCompany("employees", value)}
             />

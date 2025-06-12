@@ -75,7 +75,7 @@ export const EditableMembers = ({ company }: Props) => {
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild className="-ml-[9px] w-full cursor-pointer">
+      <PopoverTrigger asChild className="-ml-[7px] w-full cursor-pointer">
         {companyMembers && companyMembers?.length > 0 ? (
           <div className="flex w-full flex-col gap-1 rounded-md p-1 hover:bg-muted">
             {companyMembers?.map((member) => (

@@ -31,7 +31,7 @@ export const CustomFieldTextSchema = z.object({
 export const CustomFieldNumberSchema = z.object({
   id: z.string(),
   type: z.literal("NUMBER"),
-  value: z.string(),
+  value: z.coerce.number().nullable(),
 });
 
 export const CustomFieldDateSchema = z.object({
