@@ -23,8 +23,8 @@ export const CSVMapColumns = ({ csvInfo, onDelete, setStep }: Props) => {
 
   const { mutateAsync } = trpc.csv.import.useMutation({
     onMutate: () => {
-      // setLoading(true);
-      // setStep(3);
+      setLoading(true);
+      setStep(3);
     },
   });
 
@@ -121,10 +121,7 @@ export const CSVMapColumns = ({ csvInfo, onDelete, setStep }: Props) => {
         <Button variant="outline" onClick={onDelete}>
           Cancel
         </Button>
-        <Button
-          onClick={onImport}
-          // disabled={!isValid || loading}
-        >
+        <Button onClick={onImport} disabled={!isValid || loading}>
           {loading ? <Loader2 size={16} className="animate-spin" /> : "Import"}
         </Button>
       </div>
