@@ -42,15 +42,11 @@ export const importMembers = schemaTask({
       ),
     );
 
-    console.log(mappedColumns);
-
     const customFields = await processOptions({
       members,
       mappedColumns,
       workspaceId,
     });
-
-    console.dir(customFields, { depth: null });
 
     const createdTags = await processTags({ members, workspaceId });
     const createdCompanies = await processCompanies({ members, workspaceId });
