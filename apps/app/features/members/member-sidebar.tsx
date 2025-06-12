@@ -93,7 +93,7 @@ export const MemberSidebar = ({ member, profiles }: Props) => {
               onUpdate={(value) => onUpdateMember("tags", value)}
               className={cn(
                 "text-muted-foreground",
-                member.tags.length > 0 ? "ml-2" : "-ml-[7px]",
+                member.tags.length > 0 ? "min-h-8" : "-ml-[7px]",
               )}
             />
           </FieldCard>

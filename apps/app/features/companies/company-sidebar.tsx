@@ -67,7 +67,7 @@ export const CompanySidebar = ({ company }: Props) => {
             onUpdate={(value) => onUpdateCompany("tags", value)}
             className={cn(
               "text-muted-foreground",
-              company.tags.length > 0 ? "ml-2" : "-ml-[7px]",
+              company.tags.length > 0 ? "min-h-8" : "-ml-[7px]",
             )}
           />
         </FieldCard>
