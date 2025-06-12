@@ -13,11 +13,11 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from "@conquest/ui/popover";
 import { Skeleton } from "@conquest/ui/skeleton";
 import type { Company } from "@conquest/zod/schemas/company.schema";
+import { Member } from "@conquest/zod/schemas/member.schema";
+import { X } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useInView } from "react-intersection-observer";
-import { toast } from "sonner";
 
 type Props = {
   company: Company;
@@ -28,7 +28,6 @@ export const EditableMembers = ({ company }: Props) => {
   const { ref, inView } = useInView();
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
-  const router = useRouter();
   const utils = trpc.useUtils();
 
   const { data: companyMembers } = trpc.companies.listCompanyMembers.useQuery({
@@ -51,20 +50,11 @@ export const EditableMembers = ({ company }: Props) => {
   const members = data?.pages.flat();
   const hasNextPage = data?.pages.at(-1)?.length === 25;
 
-  const onUpdate = async (memberId: string) => {
-    const member = companyMembers?.find((member) => member.id === memberId);
-    const isInCompany = member?.companyId === company.id;
-
-    if (!isInCompany) return;
-
+  const onUpdate = async (member: Member, companyId: string | null) => {
     await updateMember({
       ...member,
-      companyId: isInCompany ? null : company.id,
+      companyId,
     });
-
-    toast.success(
-      isInCompany ? "Member removed from company" : "Member added to company",
-    );
   };
 
   useEffect(() => {
@@ -74,77 +64,94 @@ export const EditableMembers = ({ company }: Props) => {
   }, [inView]);
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild className="-ml-[7px] w-full cursor-pointer">
-        {companyMembers && companyMembers?.length > 0 ? (
-          <div className="flex w-full flex-col gap-1 rounded-md p-1 hover:bg-muted">
-            {companyMembers?.map((member) => (
-              <Button
+    <>
+      {companyMembers && companyMembers.length > 0 && (
+        <div className="flex flex-col gap-1">
+          {companyMembers.map((member) => (
+            <Button
+              key={member.id}
+              variant="ghost"
+              className="group -ml-[8px] flex items-center justify-between"
+            >
+              <Link
                 key={member.id}
-                variant="ghost"
-                size="xs"
-                className="w-fit justify-start hover:underline"
+                href={`/${slug}/members/${member.id}/analytics`}
+                className="hover:underline"
+                prefetch
               >
-                <Link href={`/${slug}/members/${member.id}/analytics`} prefetch>
+                <p>
                   {member.firstName} {member.lastName}
-                </Link>
+                </p>
+              </Link>
+              <Button
+                size="icon_sm"
+                variant="outline"
+                className="opacity-0 group-hover:opacity-100"
+                onClick={() => onUpdate(member, null)}
+              >
+                <X size={16} />
               </Button>
-            ))}
-          </div>
-        ) : (
+            </Button>
+          ))}
+        </div>
+      )}
+      <Popover open={open} onOpenChange={setOpen}>
+        <PopoverTrigger asChild className="-ml-[7px] w-full cursor-pointer">
           <Button
             variant="ghost"
             size="xs"
             className="h-8 justify-start px-[7px] text-muted-foreground"
             onClick={() => setOpen(true)}
           >
-            Set members
+            Add member
           </Button>
-        )}
-      </PopoverTrigger>
-      <PopoverContent
-        align="start"
-        className="w-[var(--radix-popover-trigger-width)] p-0"
-      >
-        <Command loop shouldFilter={false}>
-          <CommandInput
-            placeholder="Search..."
-            value={search}
-            onValueChange={setSearch}
-          />
-          <CommandList>
-            <CommandGroup>
-              {isLoading && <Skeleton className="h-8 w-full" />}
-              {!isLoading && <CommandEmpty>No members found</CommandEmpty>}
-              {members?.map((member) => (
-                <CommandItem
-                  key={member.id}
-                  onSelect={() => {
-                    setOpen(false);
-                    onUpdate(member.id);
-                  }}
-                  className="flex items-center gap-2"
-                >
-                  <Avatar className="size-7">
-                    <AvatarImage src={member.avatarUrl ?? ""} />
-                    <AvatarFallback className="text-sm">
-                      {member.firstName?.charAt(0).toUpperCase()}
-                      {member.lastName?.charAt(0).toUpperCase()}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="flex w-full flex-col text-xs">
-                    {member.firstName} {member.lastName}
-                    <span className="text-muted-foreground">
-                      {member.primaryEmail}
-                    </span>
-                  </div>
-                </CommandItem>
-              ))}
-              <div ref={ref} />
-            </CommandGroup>
-          </CommandList>
-        </Command>
-      </PopoverContent>
-    </Popover>
+        </PopoverTrigger>
+        <PopoverContent
+          align="start"
+          className="w-[var(--radix-popover-trigger-width)] p-0"
+        >
+          <Command loop shouldFilter={false}>
+            <CommandInput
+              placeholder="Search..."
+              value={search}
+              onValueChange={setSearch}
+            />
+            <CommandList>
+              <CommandGroup>
+                {isLoading && <Skeleton className="h-8 w-full" />}
+                {!isLoading && <CommandEmpty>No members found</CommandEmpty>}
+                {members
+                  ?.filter(
+                    (member) =>
+                      !companyMembers?.some((m) => m.id === member.id),
+                  )
+                  ?.map((member) => (
+                    <CommandItem
+                      key={member.id}
+                      onSelect={() => onUpdate(member, company.id)}
+                      className="flex items-center gap-2"
+                    >
+                      <Avatar className="size-7">
+                        <AvatarImage src={member.avatarUrl ?? ""} />
+                        <AvatarFallback className="text-sm">
+                          {member.firstName?.charAt(0).toUpperCase()}
+                          {member.lastName?.charAt(0).toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="flex w-full flex-col text-xs">
+                        {member.firstName} {member.lastName}
+                        <span className="text-muted-foreground">
+                          {member.primaryEmail}
+                        </span>
+                      </div>
+                    </CommandItem>
+                  ))}
+                <div ref={ref} />
+              </CommandGroup>
+            </CommandList>
+          </Command>
+        </PopoverContent>
+      </Popover>
+    </>
   );
 };

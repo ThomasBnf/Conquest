@@ -2,7 +2,6 @@ import { Button, buttonVariants } from "@conquest/ui/button";
 import { cn } from "@conquest/ui/cn";
 import {
   Command,
-  CommandEmpty,
   CommandGroup,
   CommandInput,
   CommandItem,
@@ -38,8 +37,9 @@ export function EditableAddress({ address, onUpdate }: Props) {
     },
   });
 
-  const onSelect = (newAddress: string | null) => {
+  const onSelect = (newAddress: string) => {
     setOpen(false);
+    setValue("");
     setSelectedAddress(newAddress);
     onUpdate(newAddress);
   };
@@ -61,9 +61,9 @@ export function EditableAddress({ address, onUpdate }: Props) {
             {open && (
               <Button
                 variant="outline"
-                size="icon"
+                size="icon_sm"
                 className="absolute inset-y right-1"
-                onClick={() => onSelect(null)}
+                onClick={() => onSelect("")}
               >
                 <X size={16} />
               </Button>
@@ -80,7 +80,7 @@ export function EditableAddress({ address, onUpdate }: Props) {
         <Command className="relative">
           <CommandInput
             ref={ref}
-            placeholder="Search address..."
+            placeholder="Search..."
             value={value}
             onValueChange={(text) => {
               setValue(text);
@@ -93,7 +93,7 @@ export function EditableAddress({ address, onUpdate }: Props) {
           {value && (
             <Button
               variant="outline"
-              size="icon"
+              size="icon_sm"
               className="absolute top-1.5 right-1"
               onClick={() => {
                 setValue("");
@@ -104,14 +104,12 @@ export function EditableAddress({ address, onUpdate }: Props) {
             </Button>
           )}
           <CommandList>
-            {status === "" && value ? (
+            {status === "" && value && (
               <CommandLoading className="p-1">
                 <Skeleton className="h-8 w-full bg-muted" />
               </CommandLoading>
-            ) : (
-              <CommandEmpty>No address found.</CommandEmpty>
             )}
-            <CommandGroup>
+            <CommandGroup heading="Start typing to search for an address">
               {status === "OK" &&
                 data.map(({ place_id, description }) => (
                   <CommandItem
