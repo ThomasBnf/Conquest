@@ -6,7 +6,11 @@ import { Linkedin } from "@conquest/ui/icons/Linkedin";
 import { Livestorm } from "@conquest/ui/icons/Livestorm";
 import { Slack } from "@conquest/ui/icons/Slack";
 import { Twitter } from "@conquest/ui/icons/Twitter";
-import { Profile } from "@conquest/zod/schemas/profile.schema";
+import {
+  DiscordProfileSchema,
+  Profile,
+  SlackProfileSchema,
+} from "@conquest/zod/schemas/profile.schema";
 
 type Props = {
   profile: Profile;
@@ -28,10 +32,12 @@ export const ProfileIconParser = ({
     );
   }
 
+  const username = getUsername(attributes.source, profile);
+
   return (
     <Badge variant="outline" className="truncate">
       <IconComponent size={16} />
-      <p>{externalId}</p>
+      <p>{username}</p>
     </Badge>
   );
 };
@@ -54,5 +60,20 @@ const getIconComponent = (source: string) => {
       return Twitter;
     default:
       return Discord;
+  }
+};
+
+const getUsername = (source: string, profile: Profile) => {
+  switch (source) {
+    case "Discord": {
+      const discord = DiscordProfileSchema.parse(profile);
+      return discord.attributes.username;
+    }
+    case "Slack": {
+      const slack = SlackProfileSchema.parse(profile);
+      return slack.attributes.realName;
+    }
+    default:
+      return profile.externalId;
   }
 };
