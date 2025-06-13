@@ -16,6 +16,7 @@ import { ChannelVariablePicker } from "../components/channel-variable-picker";
 import { MemberVariablePicker } from "../components/member-variable-picker";
 import { useWorkflow } from "../context/workflowContext";
 import { FormDiscord, FormDiscordSchema } from "./schemas/form-discord.schema";
+import { TestDiscordMessage } from "./test-discord-message";
 
 export const DiscordMessage = () => {
   const { node } = useWorkflow();
@@ -88,6 +89,7 @@ export const DiscordMessage = () => {
         <div className="flex gap-2">
           <MemberVariablePicker onClick={onSetVariable} />
           <ChannelVariablePicker source="Discord" onClick={onSetVariable} />
+          <TestDiscordMessage message={message} />
         </div>
       </form>
     </Form>

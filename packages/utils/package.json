@@ -3,6 +3,9 @@
   "private": true,
   "type": "module",
   "exports": {
-    "./getRandomColor": "./src/getRandomColor.ts"
+    "./*": "./src/*.ts"
+  },
+  "dependencies": {
+    "date-fns": "^4.1.0"
   }
 }

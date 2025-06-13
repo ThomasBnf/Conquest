@@ -1,6 +1,6 @@
+import { replaceVariables } from "@conquest/utils/replace-variables";
 import { MemberWithLevel } from "@conquest/zod/schemas/member.schema";
 import { Node, NodeWebhookSchema } from "@conquest/zod/schemas/node.schema";
-import { replaceVariables } from "./replace-variables";
 
 import { nodeStatus } from "./nodeStatus";
 

@@ -322,6 +322,9 @@
     },
     "packages/utils": {
       "name": "@conquest/utils",
+      "dependencies": {
+        "date-fns": "^4.1.0",
+      },
     },
     "packages/zod": {
       "name": "@conquest/zod",

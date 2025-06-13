@@ -2,6 +2,7 @@ import { getProfileBySource } from "@conquest/clickhouse/profile/getProfileBySou
 import { discordClient } from "@conquest/db/discord";
 import { getIntegrationBySource } from "@conquest/db/integrations/getIntegrationBySource";
 import { decrypt } from "@conquest/db/utils/decrypt";
+import { replaceVariables } from "@conquest/utils/replace-variables";
 import { DiscordIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
 import { MemberWithLevel } from "@conquest/zod/schemas/member.schema";
 import {
@@ -11,7 +12,6 @@ import {
 import { logger } from "@trigger.dev/sdk/v3";
 import { APIDMChannel, Routes } from "discord-api-types/v10";
 import { nodeStatus } from "./nodeStatus";
-import { replaceVariables } from "./replace-variables";
 
 type Props = {
   node: Node;

@@ -1,6 +1,6 @@
 import { prisma } from "@conquest/db/prisma";
 import { WorkflowSchema } from "@conquest/zod/schemas/workflow.schema";
-import { protectedProcedure } from "../trpc";
+import { protectedProcedure } from "@/server/trpc";
 
 export const duplicateWorkflow = protectedProcedure
   .input(WorkflowSchema)

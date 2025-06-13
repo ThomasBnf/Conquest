@@ -16,6 +16,7 @@ import { ChannelVariablePicker } from "../components/channel-variable-picker";
 import { MemberVariablePicker } from "../components/member-variable-picker";
 import { useWorkflow } from "../context/workflowContext";
 import { type FormSlack, FormSlackSchema } from "./schemas/form-slack.schema";
+import { TestSlackMessage } from "./test-slack-message";
 
 export const SlackMessage = () => {
   const { node } = useWorkflow();
@@ -88,6 +89,7 @@ export const SlackMessage = () => {
         <div className="flex gap-2">
           <MemberVariablePicker onClick={onSetVariable} />
           <ChannelVariablePicker source="Slack" onClick={onSetVariable} />
+          <TestSlackMessage message={message ?? ""} />
         </div>
       </form>
     </Form>

@@ -1,6 +1,6 @@
 import { prisma } from "@conquest/db/prisma";
 import { z } from "zod";
-import { protectedProcedure } from "../trpc";
+import { protectedProcedure } from "@/server/trpc";
 
 export const deleteWorkflow = protectedProcedure
   .input(

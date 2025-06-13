@@ -28,7 +28,6 @@ import type { Workspace } from "@conquest/zod/schemas/workspace.schema";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { LoadingIntegrations } from "../states/loading-integrations";
-import { DuplicateMenu } from "./duplicate-menu";
 import { SidebarLists } from "./sidebar-lists";
 import { TrialCard } from "./trial-card";
 
@@ -120,7 +119,6 @@ export const AppSidebar = ({ workspace }: Props) => {
                 </SidebarMenuButton>
               </SidebarMenuItem>
             ))}
-            <DuplicateMenu />
           </SidebarMenu>
         </SidebarGroup>
         {state === "expanded" && <SidebarLists />}
