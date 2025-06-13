@@ -35,7 +35,7 @@ export const HeroSection = () => {
         animation="blurInUp"
         className="max-w-4xl font-bold font-telegraf text-4xl lg:text-6xl"
       >
-        Scale your community with dedicated CRM
+        Scale your community with a dedicated CRM
       </TextAnimate>
       <TextAnimate
         as="p"
@@ -43,8 +43,7 @@ export const HeroSection = () => {
         delay={0.5}
         className="max-w-3xl font-suisse text-lg text-muted-foreground"
       >
-        Score your community members and act on it at the right time with
-        enriched community alerts and automations.
+        ⁠See which members drive business value across data sources and engage them at the right time to accelerate growth, reduce churn or boost adoption.
       </TextAnimate>
       <AnimatedGroup
         variants={{
