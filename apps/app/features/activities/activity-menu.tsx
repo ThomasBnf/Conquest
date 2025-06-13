@@ -50,7 +50,7 @@ export const ActivityMenu = ({ activity, href }: Props) => {
         setOpen={setOpen}
       />
       <div className="flex items-center gap-2">
-        <ActivityLink href={href} />
+        <ActivityLink activity={activity} href={href} />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" size="icon">
