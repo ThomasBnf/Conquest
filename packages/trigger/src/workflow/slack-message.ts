@@ -1,6 +1,7 @@
 import { getProfileBySource } from "@conquest/clickhouse/profile/getProfileBySource";
 import { getIntegrationBySource } from "@conquest/db/integrations/getIntegrationBySource";
 import { decrypt } from "@conquest/db/utils/decrypt";
+import { replaceVariables } from "@conquest/utils/replace-variables";
 import { SlackIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
 import { MemberWithLevel } from "@conquest/zod/schemas/member.schema";
 import {
@@ -9,7 +10,6 @@ import {
 } from "@conquest/zod/schemas/node.schema";
 import { WebClient } from "@slack/web-api";
 import { nodeStatus } from "./nodeStatus";
-import { replaceVariables } from "./replace-variables";
 
 type Props = {
   node: Node;

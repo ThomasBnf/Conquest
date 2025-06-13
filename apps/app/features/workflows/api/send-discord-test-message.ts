@@ -1,0 +1,89 @@
+import { protectedProcedure } from "@/server/trpc";
+import { getProfileBySource } from "@conquest/clickhouse/profile/getProfileBySource";
+import { discordClient } from "@conquest/db/discord";
+import { getIntegrationBySource } from "@conquest/db/integrations/getIntegrationBySource";
+import { decrypt } from "@conquest/db/utils/decrypt";
+import { replaceVariables } from "@conquest/utils/replace-variables";
+import { DiscordIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
+import { MemberSchema } from "@conquest/zod/schemas/member.schema";
+import { TRPCError } from "@trpc/server";
+import { APIDMChannel, Routes } from "discord-api-types/v10";
+import { z } from "zod";
+
+export const sendDiscordTestMessage = protectedProcedure
+  .input(
+    z.object({
+      member: MemberSchema,
+      message: z.string(),
+    }),
+  )
+  .mutation(async ({ ctx: { user }, input }) => {
+    const { member, message } = input;
+    const { workspaceId } = user;
+
+    const discord = await getIntegrationBySource({
+      source: "Discord",
+      workspaceId,
+    });
+
+    if (!discord) {
+      throw new TRPCError({
+        code: "BAD_REQUEST",
+        message: "Discord integration not configured for this workspace",
+      });
+    }
+
+    const { details } = DiscordIntegrationSchema.parse(discord);
+    const { accessToken, accessTokenIv } = details;
+
+    const decryptedUserToken = await decrypt({
+      accessToken,
+      iv: accessTokenIv,
+    });
+
+    if (!decryptedUserToken) {
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "Failed to decrypt Discord access token",
+      });
+    }
+
+    const profile = await getProfileBySource({
+      source: "Discord",
+      memberId: member.id,
+    });
+
+    if (!profile?.externalId) {
+      throw new TRPCError({
+        code: "BAD_REQUEST",
+        message: "Member has no associated Discord account",
+      });
+    }
+
+    const channel = (await discordClient.post(Routes.userChannels(), {
+      body: {
+        recipient_id: profile.externalId,
+      },
+    })) as APIDMChannel;
+
+    if (!channel?.id) {
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "Failed to open Slack conversation with user",
+      });
+    }
+
+    const parsedMessage = await replaceVariables({
+      message,
+      member,
+      source: "Discord",
+    });
+
+    await discordClient.post(Routes.channelMessages(channel.id), {
+      body: {
+        content: parsedMessage,
+      },
+    });
+
+    return { success: true };
+  });

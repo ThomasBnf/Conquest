@@ -29,7 +29,7 @@ export default function Page() {
 
   return (
     <PageLayout>
-      <Header title="Duplicates" />
+      <Header title="Members" currentPage="Duplicates" />
       <div className="flex-1 overflow-y-auto">
         {duplicates?.length === 0 ? (
           <EmptyDuplicates />

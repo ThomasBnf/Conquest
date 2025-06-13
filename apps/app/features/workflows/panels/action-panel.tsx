@@ -15,10 +15,11 @@ import { Discord } from "@conquest/ui/icons/Discord";
 import { Slack } from "@conquest/ui/icons/Slack";
 import { Label } from "@conquest/ui/label";
 import { Separator } from "@conquest/ui/separator";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@conquest/ui/tooltip";
 import { Edge } from "@conquest/zod/schemas/edge.schema";
 import { DiscordIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
 import { useReactFlow } from "@xyflow/react";
-import { Plus, type icons } from "lucide-react";
+import { Info, Plus, type icons } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { v4 as uuid } from "uuid";
@@ -156,7 +157,30 @@ export const ActionPanel = () => {
                       />
                     )}
                   </div>
-                  <p className="flex-1">{node.data.label}</p>
+                  <div className="flex items-center gap-2">
+                    <p className="flex-1">{node.data.label}</p>
+                    {node.data.type === "discord-message" && (
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Info size={16} className="text-muted-foreground" />
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          The direct message will be sent as "Conquest" bot
+                        </TooltipContent>
+                      </Tooltip>
+                    )}
+                    {node.data.type === "slack-message" && (
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Info size={16} className="text-muted-foreground" />
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          The direct message will be sent as the user who
+                          installed the Slack integration
+                        </TooltipContent>
+                      </Tooltip>
+                    )}
+                  </div>
                   {!hasPermissions && group.category === "Discord" && (
                     <div className="rounded-md border bg-background p-1">
                       <Plus size={16} />
@@ -187,7 +211,7 @@ export const nodes = (
         position: { x: 0, y: 0 },
         data: {
           icon: "Discord",
-          label: "Send DM as Bot",
+          label: "Send Discord DM",
           description: "",
           type: "discord-message",
           message: "",
@@ -204,7 +228,7 @@ export const nodes = (
         position: { x: 0, y: 0 },
         data: {
           icon: "Slack",
-          label: "Send DM as user",
+          label: "Send Slack DM",
           description: "",
           type: "slack-message",
           message: "",

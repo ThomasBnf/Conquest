@@ -1,6 +1,7 @@
 import { CSVRouter } from "@/features/csv/api/router";
 import { customFieldsRouter } from "@/features/custom-fields/api/router";
 import { tasksRouter } from "@/features/tasks/api/router";
+import { workflowsRouter } from "@/features/workflows/api/route";
 import { activitiesRouter } from "./activities/router";
 import { activityTypesRouter } from "./activity-types/router";
 import { adminRouter } from "./admin/router";
@@ -27,7 +28,6 @@ import { teamRouter } from "./team/router";
 import { router } from "./trpc";
 import { userInWorkspaceRouter } from "./userInWorkspace/router";
 import { usersRouter } from "./users/router";
-import { workflowsRouter } from "./workflows/route";
 import { workspacesRouter } from "./workspaces/router";
 
 export const appRouter = router({

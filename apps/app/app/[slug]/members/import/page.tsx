@@ -55,7 +55,7 @@ export default function Page() {
 
   return (
     <PageLayout>
-      <Header title="Import CSV" />
+      <Header title="Members" currentPage="Import CSV" />
       <CSVSteps step={step} />
       {step === 1 && (
         <div className="h-full p-4">

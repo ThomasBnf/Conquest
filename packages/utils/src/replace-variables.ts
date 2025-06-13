@@ -1,10 +1,10 @@
 import { listChannels } from "@conquest/clickhouse/channel/listChannels";
 import { getProfileBySource } from "@conquest/clickhouse/profile/getProfileBySource";
-import { MemberWithLevel } from "@conquest/zod/schemas/member.schema";
+import { Member, MemberWithLevel } from "@conquest/zod/schemas/member.schema";
 
 type Props = {
   message: string | undefined;
-  member: MemberWithLevel;
+  member: Member | MemberWithLevel;
   source?: "Slack" | "Discord";
 };
 

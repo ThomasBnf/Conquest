@@ -1,7 +1,7 @@
 import { trpc } from "@/server/client";
-import { formatDate } from "@/utils/formatDate";
 import { Badge } from "@conquest/ui/badge";
 import { cn } from "@conquest/ui/cn";
+import { formatDate } from "@conquest/utils/formatDate";
 import { WorkflowItem as WorkflowItemType } from "@conquest/zod/schemas/workflow.schema";
 import Link from "next/link";
 import { IsPublished } from "./is-published";

@@ -1,5 +1,6 @@
 import { Header } from "@/components/layouts/header";
 import { PageLayout } from "@/components/layouts/page-layout";
+import { DuplicatesButton } from "@/features/duplicates/duplicates-button";
 import { AddMemberDialog } from "@/features/members/add-member-dialog";
 import { MembersPage } from "@/features/members/members-page";
 import { loaderTableMembers } from "@/utils/tableParams";
@@ -14,7 +15,10 @@ export default async function Page({ searchParams }: Props) {
   return (
     <PageLayout>
       <Header title="Members">
-        <AddMemberDialog />
+        <div className="flex items-center gap-2">
+          <DuplicatesButton />
+          <AddMemberDialog />
+        </div>
       </Header>
       <MembersPage />
     </PageLayout>

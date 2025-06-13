@@ -1,6 +1,6 @@
 import { prisma } from "@conquest/db/prisma";
 import { WorkflowItemSchema } from "@conquest/zod/schemas/workflow.schema";
-import { protectedProcedure } from "../trpc";
+import { protectedProcedure } from "@/server/trpc";
 
 export const listWorkflows = protectedProcedure.query(
   async ({ ctx: { user } }) => {

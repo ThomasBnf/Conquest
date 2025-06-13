@@ -1,9 +1,11 @@
-import { router } from "../trpc";
+import { router } from "@/server/trpc";
 import { createWorkflow } from "./createWorkflow";
 import { deleteWorkflow } from "./deleteWorkflow";
 import { duplicateWorkflow } from "./duplicateWorkflow";
 import { getWorkflow } from "./getWorkflow";
 import { listWorkflows } from "./listWorkflows";
+import { sendDiscordTestMessage } from "./send-discord-test-message";
+import { sendSlackTestMessage } from "./send-slack-test-message";
 import { updateWorkflow } from "./updateWorkflow";
 
 export const workflowsRouter = router({
@@ -13,4 +15,6 @@ export const workflowsRouter = router({
   update: updateWorkflow,
   delete: deleteWorkflow,
   duplicate: duplicateWorkflow,
+  sendSlackTestMessage,
+  sendDiscordTestMessage,
 });
