@@ -50,6 +50,7 @@ export const seedDb = async ({ user }: Props) => {
 
     const locale = getLocaleByAlpha2(country.toUpperCase());
     const languageCode = locale?.split("_")[0] ?? "";
+
     language = languageCode ? ISO6391.getName(languageCode) : "";
 
     const createdAt = faker.date
