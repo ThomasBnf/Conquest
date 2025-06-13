@@ -31,7 +31,7 @@ export const getPulseAndLevel = async ({ memberId }: Props) => {
     ...member,
     pulse,
     levelId: level?.id ?? null,
-    lastActivity: activities?.at(-1)?.createdAt ?? null,
+    lastActivity: activities?.at(0)?.createdAt ?? null,
   });
 
   const previousLevel = levels.find((l) => l.id === member.levelId);
