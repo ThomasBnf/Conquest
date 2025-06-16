@@ -48,7 +48,7 @@ export const Providers = ({ children }: Props) => {
         {process.env.NODE_ENV === "development" && (
           <ReactQueryDevtools
             initialIsOpen={false}
-            buttonPosition="bottom-right"
+            buttonPosition="top-right"
           />
         )}
       </QueryClientProvider>

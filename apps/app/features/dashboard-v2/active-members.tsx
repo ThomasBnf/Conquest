@@ -93,104 +93,91 @@ export const ActiveMembers = () => {
   );
 
   return (
-    <div className="flex w-full flex-col gap-2 rounded-md border p-6 shadow-sm">
-      <div className="flex justify-between gap-1">
-        <p className="font-semibold text-lg">
-          Active members growth by integration
-        </p>
+    <div className="flex flex-col gap-6 rounded-md border p-6 shadow-sm">
+      <div className="flex justify-between gap-2">
+        <p className="font-semibold text-lg">Active members growth</p>
         <div className="flex items-center gap-1">
           <IntegrationsPicker sources={sources} setSources={setSources} />
           <DateRangePicker dateRange={dateRange} setDateRange={setDateRange} />
         </div>
       </div>
-      <div className="flex gap-4">
-        <ResponsiveContainer width="100%" height={350}>
+      <div className="flex gap-10">
+        <div className="mb-4 space-y-2">
+          <p className="text-muted-foreground">Total unique active members</p>
           {isLoading ? (
-            <IsLoading />
+            <Skeleton className="h-8 w-14" />
           ) : (
-            <ChartContainer config={chartConfig}>
-              <LineChart
-                data={profiles}
-                margin={{
-                  top: 20,
-                  left: -25,
-                  right: 20,
-                  bottom: 20,
-                }}
-              >
-                <CartesianGrid vertical={false} />
-                <XAxis
-                  dataKey="week"
-                  tickMargin={10}
-                  tickFormatter={(value) => format(value, dateFormat)}
-                  stroke="#D1D1D1"
-                  interval={days === 7 ? "preserveStartEnd" : 4}
-                />
-                <YAxis
-                  axisLine={false}
-                  tickMargin={10}
-                  stroke="hsl(var(--border))"
-                  domain={[0, maxValue]}
-                />
-                <ChartTooltip
-                  content={
-                    <ChartTooltipContent
-                      indicator="line"
-                      labelFormatter={(value) => format(value, dateFormat)}
-                    />
-                  }
-                />
-                {sources.map((source) => (
-                  <Line
-                    key={source}
-                    type="bump"
-                    dataKey={source}
-                    stroke={chartConfig[source]?.color}
-                    strokeWidth={2}
-                    dot={false}
-                  />
-                ))}
-              </LineChart>
-            </ChartContainer>
+            <p className="font-medium text-2xl">{total}</p>
           )}
-        </ResponsiveContainer>
-        <div className="w-full max-w-xs p-4">
-          <div className="mb-4 space-y-2">
-            <p className="text-muted-foreground text-sm">
-              Total unique active members
-            </p>
-            {isLoading ? (
-              <Skeleton className="h-9 w-14" />
-            ) : (
-              <p className="font-medium text-3xl">{total}</p>
-            )}
-          </div>
-          <div className="space-y-2">
-            <p className="text-muted-foreground text-sm">
-              Active members by integration
-            </p>
-            <div>
-              {sources.map((source) => (
-                <div
-                  key={source}
-                  className="flex h-8 items-center justify-between"
-                >
-                  <div className="flex items-center gap-2">
-                    <div
-                      className="size-4 rounded-md"
-                      style={{ backgroundColor: chartConfig[source]?.color }}
-                    />
-                    <p className="font-medium">{source}</p>
-                  </div>
-                  <p className="font-medium text-base">
-                    {profiles?.at(-1)?.[source]}
-                  </p>
+        </div>
+        <div className="space-y-2">
+          <p className="text-muted-foreground">Active members by integration</p>
+          <div>
+            {sources.map((source) => (
+              <div key={source} className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <div
+                    className="size-3 rounded"
+                    style={{ backgroundColor: chartConfig[source]?.color }}
+                  />
+                  <p>{source}</p>
                 </div>
-              ))}
-            </div>
+                <p className="font-medium">{profiles?.at(-1)?.[source]}</p>
+              </div>
+            ))}
           </div>
         </div>
       </div>
+      <ResponsiveContainer width="100%" height={350}>
+        {isLoading ? (
+          <IsLoading />
+        ) : (
+          <ChartContainer config={chartConfig}>
+            <LineChart
+              data={profiles}
+              margin={{
+                top: 20,
+                left: -25,
+                right: 20,
+                bottom: 20,
+              }}
+            >
+              <CartesianGrid vertical={false} />
+              <XAxis
+                dataKey="week"
+                tickMargin={10}
+                tickFormatter={(value) => format(value, dateFormat)}
+                stroke="#D1D1D1"
+                interval={days === 7 ? "preserveStartEnd" : 4}
+              />
+              <YAxis
+                axisLine={false}
+                tickMargin={10}
+                stroke="hsl(var(--border))"
+                domain={[0, maxValue]}
+              />
+              <ChartTooltip
+                content={
+                  <ChartTooltipContent
+                    indicator="line"
+                    labelFormatter={(value) => format(value, dateFormat)}
+                  />
+                }
+              />
+              {sources.map((source) => (
+                <Line
+                  key={source}
+                  type="bump"
+                  dataKey={source}
+                  stroke={chartConfig[source]?.color}
+                  strokeWidth={2}
+                  dot={false}
+                />
+              ))}
+            </LineChart>
+          </ChartContainer>
+        )}
+      </ResponsiveContainer>
     </div>
   );
 };
