@@ -1,5 +1,5 @@
 import { getAuthenticatedUser } from "@/utils/getAuthenticatedUser";
-import { sleep } from "@/utils/sleep";
+import { sleep } from "@conquest/utils/sleep";
 import { getActivityTypeByKey } from "@conquest/clickhouse/activity-type/getActivityTypeByKey";
 import { deleteActivity } from "@conquest/clickhouse/activity/deleteActivity";
 import { getActivity } from "@conquest/clickhouse/activity/getActivity";

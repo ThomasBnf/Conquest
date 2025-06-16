@@ -1,7 +1,6 @@
 import { cn } from "@conquest/ui/cn";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@conquest/ui/tooltip";
-import { formatDate } from "@conquest/utils/formatDate";
-import { format } from "date-fns";
+import { differenceInDays, format } from "date-fns";
 
 type Props = {
   date: Date | undefined | null;
@@ -10,11 +9,12 @@ type Props = {
 
 export const DateCell = ({ date, className }: Props) => {
   if (!date) return;
+  const days = differenceInDays(new Date(), date);
 
   return (
     <Tooltip>
       <TooltipTrigger>
-        <p className={cn(className)}>{formatDate(date)}</p>
+        <p className={cn(className)}>{days > 0 ? `${days} days ago` : ""}</p>
       </TooltipTrigger>
       <TooltipContent side="right">
         <p>{format(date, "PPp")}</p>

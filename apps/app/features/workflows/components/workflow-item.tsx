@@ -1,8 +1,8 @@
 import { trpc } from "@/server/client";
 import { Badge } from "@conquest/ui/badge";
 import { cn } from "@conquest/ui/cn";
-import { formatDate } from "@conquest/utils/formatDate";
 import { WorkflowItem as WorkflowItemType } from "@conquest/zod/schemas/workflow.schema";
+import { format } from "date-fns";
 import Link from "next/link";
 import { IsPublished } from "./is-published";
 import { WorkflowMenu } from "./workflow-menu";
@@ -37,8 +37,12 @@ export const WorkflowItem = ({ workflow, slug }: Props) => {
         <div className="flex-1">
           <IsPublished workflow={workflow} displaySwitch={false} />
         </div>
-        <p className="flex-1">{formatDate(lastRun?.createdAt)}</p>
-        <p className="flex-1">{formatDate(failedRun?.failedAt)}</p>
+        <p className="flex-1">
+          {lastRun?.createdAt ? format(lastRun?.createdAt, "PPp") : ""}
+        </p>
+        <p className="flex-1">
+          {failedRun?.failedAt ? format(failedRun?.failedAt, "PPp") : ""}
+        </p>
       </Link>
       <WorkflowMenu workflow={workflow} hasRuns={workflow._count.runs > 0} />
     </div>

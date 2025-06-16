@@ -11,6 +11,7 @@
     "@conquest/clickhouse": "workspace:*",
     "@conquest/db": "workspace:*",
     "@conquest/env": "workspace:*",
+    "@conquest/utils": "workspace:*",
     "@conquest/zod": "workspace:*",
     "next": "15.2.1",
     "next-zod-route": "^0.2.4",
