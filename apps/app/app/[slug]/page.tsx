@@ -2,6 +2,7 @@ import { Header } from "@/components/layouts/header";
 import { PageLayout } from "@/components/layouts/page-layout";
 import { ActiveMembers } from "@/features/dashboard-v2/active-members";
 import { EngagementRate } from "@/features/dashboard-v2/engagement-rate";
+import { Leaderboard } from "@/features/dashboard-v2/leaderboard";
 import { NewMembers } from "@/features/dashboard-v2/new-members";
 import { TopActivityTypes } from "@/features/dashboard-v2/top-activity-types";
 import { TotalMembers } from "@/features/dashboard-v2/total-members";
@@ -36,7 +37,10 @@ export default async function Page({ searchParams }: Props) {
             <EngagementRate />
           </div>
           <WorkspaceHeatmap />
-          <TopActivityTypes />
+          <div className="grid grid-cols-2 gap-4">
+            <TopActivityTypes />
+            <Leaderboard />
+          </div>
         </div>
       </ScrollArea>
     </PageLayout>

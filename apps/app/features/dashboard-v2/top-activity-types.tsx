@@ -3,6 +3,7 @@
 import { trpc } from "@/server/client";
 import { getIcon } from "@/utils/getIcon";
 import { Badge } from "@conquest/ui/badge";
+import { ScrollArea, ScrollBar } from "@conquest/ui/scroll-area";
 import { Source } from "@conquest/zod/enum/source.enum";
 import { endOfDay, startOfDay, subWeeks } from "date-fns";
 import { Hash } from "lucide-react";
@@ -19,14 +20,11 @@ export const TopActivityTypes = () => {
 
   const { from, to } = dateRange;
 
-  const { data, failureReason } = trpc.dashboardV2.topActivityTypes.useQuery({
+  const { data } = trpc.dashboardV2.topActivityTypes.useQuery({
     sources,
     from,
     to,
   });
-
-  console.log(failureReason);
-  console.dir(data, { depth: null });
 
   return (
     <div className="flex flex-col gap-6 rounded-md border p-6 shadow-sm">
@@ -37,33 +35,43 @@ export const TopActivityTypes = () => {
           <DateRangePicker dateRange={dateRange} setDateRange={setDateRange} />
         </div>
       </div>
-      <div className="divide-y rounded-md border">
-        {data
-          ?.sort((a, b) => a.channel.localeCompare(b.channel))
-          .map((group) => {
-            const IconComponent = getIcon(group.source);
+      <div>
+        <div className="flex rounded-md border">
+          <div className="divide-y border-r">
+            {data?.map((group) => {
+              const IconComponent = getIcon(group.source);
 
-            return (
-              <div key={group.channel} className="flex">
-                <div className="flex flex-1 items-center gap-1 border-r p-2">
+              return (
+                <div
+                  key={group.channel}
+                  className="flex h-12 min-w-max flex-1 items-center gap-1 p-2 pr-6"
+                >
                   <Hash size={16} />
                   <p className="mr-1">{group.channel}</p>
                   <IconComponent size={14} />
                 </div>
-                <div className="flex flex-1 divide-x">
+              );
+            })}
+          </div>
+          <ScrollArea className="flex-1">
+            <div className="flex flex-1 flex-col divide-y">
+              {data?.map((group) => (
+                <div key={group.channel} className="flex h-12 gap-4 divide-x">
                   {group.activityTypes.map((activityType) => (
                     <div
                       key={activityType.name}
-                      className="flex flex-1 items-center gap-1 p-2"
+                      className="flex items-center gap-1 p-2"
                     >
-                      <p>{activityType.name}</p>
+                      <p className="shrink-0">{activityType.name}</p>
                       <Badge variant="secondary">{activityType.count}</Badge>
                     </div>
                   ))}
                 </div>
-              </div>
-            );
-          })}
+              ))}
+            </div>
+            <ScrollBar orientation="horizontal" />
+          </ScrollArea>
+        </div>
       </div>
     </div>
   );

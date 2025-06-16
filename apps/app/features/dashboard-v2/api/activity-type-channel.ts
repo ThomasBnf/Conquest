@@ -19,11 +19,12 @@ export const activityTypesByChannel = protectedProcedure
     const formattedFrom = format(from, "yyyy-MM-dd");
     const formattedTo = format(to, "yyyy-MM-dd");
 
+    // Query pour récupérer les activités avec les détails des types
     const activitiesResult = await client.query({
       query: `
         SELECT 
           channel.name as channel,
-          activity.source as source,
+          channel.source as source,
           activityType.name as activityTypeName,
           COUNT(*) as count
         FROM activity
@@ -35,12 +36,12 @@ export const activityTypesByChannel = protectedProcedure
           AND activity.createdAt <= '${formattedTo}'
           AND channel.name IS NOT NULL
           AND activityType.name IS NOT NULL
-        GROUP BY channel.name, activity.source, activityType.name
+        GROUP BY channel.name, channel.source, activityType.name
         ORDER BY channel.name, count DESC
       `,
     });
 
-    const { data: activitiesData } = await activitiesResult.json();
+    const { data } = await activitiesResult.json();
 
     type ActivityData = {
       channel: string;
@@ -58,9 +59,10 @@ export const activityTypesByChannel = protectedProcedure
       channel: string;
       source: string;
       activityTypes: ActivityType[];
+      total: number;
     };
 
-    const activities = activitiesData as ActivityData[];
+    const activities = data as ActivityData[];
 
     const channelMap = new Map<
       string,
@@ -76,21 +78,20 @@ export const activityTypesByChannel = protectedProcedure
 
       channelMap.get(key)!.activityTypes.push({
         name: activity.activityTypeName,
-        count: activity.count,
+        count: Number(activity.count),
       });
     }
 
     const result: ChannelData[] = [];
 
-    for (const [channel, data] of channelMap) {
+    for (const [channel, { source, activityTypes }] of channelMap) {
       result.push({
         channel,
-        source: data.source,
-        activityTypes: data.activityTypes.sort((a, b) => b.count - a.count),
+        source,
+        activityTypes: activityTypes.sort((a, b) => b.count - a.count),
+        total: activityTypes.reduce((a, b) => a + b.count, 0),
       });
     }
 
-    result.sort((a, b) => a.channel.localeCompare(b.channel));
-
-    return result;
+    return result.sort((a, b) => b.total - a.total);
   });
