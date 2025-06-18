@@ -30,7 +30,6 @@ export const totalMembers = protectedProcedure
       };
     }
 
-    const formattedFrom = format(from, "yyyy-MM-dd HH:mm:ss");
     const formattedTo = format(to, "yyyy-MM-dd HH:mm:ss");
     const days = differenceInDays(to, from);
     const isWeekly = days > 30;
@@ -46,7 +45,6 @@ export const totalMembers = protectedProcedure
             count() as count
           FROM profile FINAL
           WHERE workspaceId = '${workspaceId}'
-            AND createdAt >= '${formattedFrom}'
             AND createdAt <= '${formattedTo}'
             AND attributes.source IN (${sources.map((s) => `'${s}'`).join(",")})
           GROUP BY week, source
