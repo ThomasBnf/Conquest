@@ -31,6 +31,7 @@ export const activityTypesByChannel = protectedProcedure
     const activitiesResult = await client.query({
       query: `
         SELECT 
+          channel.id as channelId,
           channel.name as channel,
           channel.source as source,
           activityType.name as activityTypeName,
@@ -44,12 +45,14 @@ export const activityTypesByChannel = protectedProcedure
           AND activity.createdAt <= '${formattedTo}'
           AND channel.name IS NOT NULL
           AND activityType.name IS NOT NULL
-        GROUP BY channel.name, channel.source, activityType.name
+        GROUP BY channel.name, channel.source, activityType.name, channel.id
         ORDER BY channel.name, count DESC
       `,
     });
 
     const { data } = await activitiesResult.json();
+
+    console.log(data);
 
     type ActivityData = {
       channel: string;
