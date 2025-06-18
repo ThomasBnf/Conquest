@@ -42,10 +42,10 @@ export const ChannelVariablePicker = ({ source, onClick }: Props) => {
                 <CommandItem
                   key={key.id}
                   onSelect={() => onClick(`{{#${key.name}}}`)}
-                  className="gap-1 truncate"
+                  className="gap-1"
                 >
                   <Hash size={14} className="shrink-0" />
-                  {key.name}
+                  <p className="truncate">{key.name}</p>
                 </CommandItem>
               ))}
             </CommandGroup>
