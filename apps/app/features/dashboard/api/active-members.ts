@@ -36,7 +36,7 @@ export const activeMembers = protectedProcedure
     const isWeekly = days > 30;
 
     const previousFrom = format(subDays(from, days), "yyyy-MM-dd HH:mm:ss");
-    const previousTo = format(subDays(to, days), "yyyy-MM-dd HH:mm:ss");
+    const previousTo = format(subDays(from, 1), "yyyy-MM-dd HH:mm:ss");
 
     const result = await client.query({
       query: `
