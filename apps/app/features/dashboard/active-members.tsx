@@ -122,7 +122,9 @@ export const ActiveMembers = () => {
                   />
                   <p>{source}</p>
                 </div>
-                <p className="font-medium">{profiles?.at(-1)?.[source]}</p>
+                <p className="font-medium">
+                  {profiles?.reduce((acc, curr) => acc + curr[source], 0) || 0}
+                </p>
               </div>
             ))}
           </div>
