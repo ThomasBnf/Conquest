@@ -9,6 +9,8 @@ type Props = {
 };
 
 export const Percentage = ({ variation, isLoading, inverse }: Props) => {
+  const fixedVariation = Number(variation?.toFixed(2));
+
   if (isLoading) {
     return <Skeleton className="h-[25.5px] w-14 shrink-0" />;
   }
@@ -17,7 +19,7 @@ export const Percentage = ({ variation, isLoading, inverse }: Props) => {
     return <p className="text-muted-foreground">N/A</p>;
   }
 
-  if (variation > 0) {
+  if (fixedVariation > 0) {
     return (
       <Badge variant={inverse ? "destructive" : "success"} className="gap-1">
         {variation.toFixed(0)}%
@@ -26,7 +28,7 @@ export const Percentage = ({ variation, isLoading, inverse }: Props) => {
     );
   }
 
-  if (variation < 0) {
+  if (fixedVariation < 0) {
     return (
       <Badge variant={inverse ? "success" : "destructive"} className="gap-1">
         {variation.toFixed(0)}%
@@ -35,5 +37,5 @@ export const Percentage = ({ variation, isLoading, inverse }: Props) => {
     );
   }
 
-  return <Badge variant="outline">0%</Badge>;
+  return <Badge variant="outline">-%</Badge>;
 };
