@@ -4,7 +4,6 @@ import { trpc } from "@/server/client";
 import { env } from "@conquest/env";
 import { TooltipProvider } from "@conquest/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { httpBatchLink } from "@trpc/client";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { type ReactNode, useState } from "react";
@@ -45,12 +44,12 @@ export const Providers = ({ children }: Props) => {
         <TooltipProvider>
           <NuqsAdapter>{children}</NuqsAdapter>
         </TooltipProvider>
-        {process.env.NODE_ENV === "development" && (
+        {/* {process.env.NODE_ENV === "development" && (
           <ReactQueryDevtools
             initialIsOpen={false}
             buttonPosition="bottom-right"
           />
-        )}
+        )} */}
       </QueryClientProvider>
     </trpc.Provider>
   );

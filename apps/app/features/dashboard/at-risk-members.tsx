@@ -28,6 +28,7 @@ import { ExportListMembers } from "../members/import-export-members";
 import { membersColumns } from "../table/columns/members-columns";
 import { DataTable } from "../table/data-table";
 import { ColumnSettings } from "../table/settings/columnSettings";
+import { DateRangePicker } from "./date-range-picker";
 
 export const AtRiskMembers = () => {
   const { globalDateRange } = useDateRange();
@@ -48,7 +49,7 @@ export const AtRiskMembers = () => {
   }, [globalDateRange]);
 
   return (
-    <div className="flex flex-col gap-6 rounded-md border p-4 shadow-sm">
+    <div className="flex flex-col gap-4 rounded-md border p-4 shadow-sm">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <div className="flex items-center justify-center rounded border border-red-200 bg-red-100 p-1">
@@ -60,7 +61,10 @@ export const AtRiskMembers = () => {
           selected period."
           />
         </div>
-        <AtRiskMembersSheet count={current} loading={isLoading} />
+        <div className="flex items-center gap-2">
+          <DateRangePicker dateRange={dateRange} setDateRange={setDateRange} />
+          <AtRiskMembersSheet count={current} loading={isLoading} />
+        </div>
       </div>
       <div className="flex flex-1 flex-col items-center justify-center gap-2 py-8">
         {isLoading ? (

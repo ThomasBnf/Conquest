@@ -28,6 +28,7 @@ import { ExportListMembers } from "../members/import-export-members";
 import { membersColumns } from "../table/columns/members-columns";
 import { DataTable } from "../table/data-table";
 import { ColumnSettings } from "../table/settings/columnSettings";
+import { DateRangePicker } from "./date-range-picker";
 
 export const PotentialAmbassadors = () => {
   const { globalDateRange } = useDateRange();
@@ -57,7 +58,10 @@ export const PotentialAmbassadors = () => {
           <p className="font-medium text-lg">Potential ambassadors</p>
           <TooltipInfo content="Contributor members (min level 7) with activities in the selected period." />
         </div>
-        <PotentialAmbassadorsSheet count={current} loading={isLoading} />
+        <div className="flex items-center gap-2">
+          <DateRangePicker dateRange={dateRange} setDateRange={setDateRange} />
+          <PotentialAmbassadorsSheet count={current} loading={isLoading} />
+        </div>
       </div>
       <div className="flex flex-1 flex-col items-center justify-center gap-2 py-8">
         {isLoading ? (

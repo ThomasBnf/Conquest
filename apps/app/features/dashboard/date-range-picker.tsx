@@ -1,12 +1,9 @@
 "use client";
 
-import { useDateRange } from "@/hooks/useDateRange";
-import { useWorkspace } from "@/hooks/useWorkspace";
 import { formatDateRange } from "@/utils/format-date-range";
 import { Button } from "@conquest/ui/button";
 import { Calendar } from "@conquest/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@conquest/ui/popover";
-import { Skeleton } from "@conquest/ui/skeleton";
 import {
   endOfDay,
   isEqual,
@@ -28,19 +25,15 @@ type Props = {
 };
 
 export const DateRangePicker = ({ dateRange, setDateRange }: Props) => {
-  const { globalDateRange } = useDateRange();
-  const { workspace, isLoading } = useWorkspace();
   const [open, setOpen] = useState(false);
 
   const onSelect = (newDate: DateRange) => {
     const { from, to } = newDate;
 
-    if (!from || !to || !workspace) return;
+    if (!from || !to) return;
 
-    const { createdAt } = workspace;
-    const adjustedFrom = from < createdAt ? createdAt : from;
-
-    setDateRange({ from: startOfDay(adjustedFrom), to });
+    setOpen(false);
+    setDateRange({ from: startOfDay(from), to });
   };
 
   const dateRanges = [
@@ -80,27 +73,17 @@ export const DateRangePicker = ({ dateRange, setDateRange }: Props) => {
       from: startOfYear(new Date()),
       to: endOfDay(new Date()),
     },
-    {
-      label: "All time",
-      value: "all-time",
-      from: startOfDay(new Date(workspace?.createdAt || new Date())),
-      to: endOfDay(new Date()),
-    },
   ];
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button variant="outline" disabled={isLoading}>
-          {isLoading ? (
-            <Skeleton className="h-5 w-14" />
-          ) : dateRange?.from && dateRange?.to ? (
-            formatDateRange(dateRange.from, dateRange.to, {
-              includeTime: false,
-            })
-          ) : (
-            "Select date"
-          )}
+        <Button variant="outline">
+          {dateRange?.from && dateRange?.to
+            ? formatDateRange(dateRange.from, dateRange.to, {
+                includeTime: false,
+              })
+            : "Select date"}
           <ChevronDown size={16} className="text-muted-foreground" />
         </Button>
       </PopoverTrigger>
@@ -132,9 +115,7 @@ export const DateRangePicker = ({ dateRange, setDateRange }: Props) => {
             onSelect={onSelect}
             numberOfMonths={2}
             disabled={(date) => {
-              if (workspace && date < subDays(workspace.createdAt, 1)) {
-                return true;
-              }
+              if (date > new Date()) return true;
               return false;
             }}
             required

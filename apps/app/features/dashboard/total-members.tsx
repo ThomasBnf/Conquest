@@ -89,10 +89,10 @@ export const TotalMembers = () => {
   }, [globalDateRange]);
 
   return (
-    <div className="flex flex-col gap-6 rounded-md border p-4 shadow-sm">
+    <div className="flex flex-col gap-4 rounded-md border p-4 shadow-sm">
       <div className="flex justify-between gap-2">
         <p className="font-medium text-lg">Total members</p>
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-2">
           <IntegrationsPicker sources={sources} setSources={setSources} />
           <DateRangePicker dateRange={dateRange} setDateRange={setDateRange} />
         </div>

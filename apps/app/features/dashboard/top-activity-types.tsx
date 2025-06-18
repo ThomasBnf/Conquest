@@ -30,12 +30,12 @@ export const TopActivityTypes = () => {
   }, [globalDateRange]);
 
   return (
-    <div className="flex flex-col gap-6 rounded-md border p-4 shadow-sm">
+    <div className="flex flex-col gap-4 rounded-md border p-4 shadow-sm">
       <div className="flex justify-between gap-2">
         <p className="font-medium text-lg">
           Top activity types by top channels
         </p>
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-2">
           <IntegrationsPicker sources={sources} setSources={setSources} />
           <DateRangePicker dateRange={dateRange} setDateRange={setDateRange} />
         </div>
@@ -65,10 +65,19 @@ export const TopActivityTypes = () => {
               <div className="flex flex-1 flex-col divide-y">
                 {data?.map((group) => (
                   <div key={group.channel} className="flex h-12 gap-4 divide-x">
+                    <div className="flex min-w-44 shrink-0 items-center gap-2 p-2">
+                      <p>Total activities</p>
+                      <Badge variant="secondary">
+                        {group.activityTypes.reduce(
+                          (acc, activityType) => acc + activityType.count,
+                          0,
+                        )}
+                      </Badge>
+                    </div>
                     {group.activityTypes.map((activityType) => (
                       <div
                         key={activityType.name}
-                        className="flex items-center gap-1 p-2"
+                        className="flex min-w-44 shrink-0 items-center gap-1 p-2"
                       >
                         <p className="shrink-0">{activityType.name}</p>
                         <Badge variant="secondary">{activityType.count}</Badge>

@@ -90,10 +90,10 @@ export const EngagementRate = () => {
   }, [globalDateRange]);
 
   return (
-    <div className="flex w-full flex-col gap-2 rounded-md border p-4 shadow-sm">
+    <div className="flex w-full flex-col gap-4 rounded-md border p-4 shadow-sm">
       <div className="flex justify-between gap-1">
         <p className="font-medium text-lg">Engagement Rate</p>
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-2">
           <IntegrationsPicker sources={sources} setSources={setSources} />
           <DateRangePicker dateRange={dateRange} setDateRange={setDateRange} />
         </div>
