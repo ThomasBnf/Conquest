@@ -141,7 +141,7 @@ const AtRiskMembersSheet = ({
         <SheetHeader>
           <SheetTitle>At risk members</SheetTitle>
           <SheetDescription>
-            Active members (min level 4) with no activity in the selected
+            Active members (min pulse score 20) with no activity in the selected
             period.
           </SheetDescription>
         </SheetHeader>

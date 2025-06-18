@@ -56,7 +56,7 @@ export const PotentialAmbassadors = () => {
             <Megaphone size={16} className="text-green-500" />
           </div>
           <p className="font-medium text-lg">Potential ambassadors</p>
-          <TooltipInfo content="Contributor members (min level 7) with activities in the selected period." />
+          <TooltipInfo content="Contributor members (min pulse score 150 and max 199) with activities in the selected period." />
         </div>
         <div className="flex items-center gap-2">
           <DateRangePicker dateRange={dateRange} setDateRange={setDateRange} />
