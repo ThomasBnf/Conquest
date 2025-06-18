@@ -32,7 +32,7 @@ export const ChannelVariablePicker = ({ source, onClick }: Props) => {
           <ChevronDown size={14} />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-48 p-0" align="start">
+      <PopoverContent className="w-60 p-0" align="start">
         <Command>
           <CommandInput placeholder="Search..." />
           <CommandList>
@@ -42,9 +42,9 @@ export const ChannelVariablePicker = ({ source, onClick }: Props) => {
                 <CommandItem
                   key={key.id}
                   onSelect={() => onClick(`{{#${key.name}}}`)}
-                  className="gap-1"
+                  className="gap-1 truncate"
                 >
-                  <Hash size={14} />
+                  <Hash size={14} className="shrink-0" />
                   {key.name}
                 </CommandItem>
               ))}
