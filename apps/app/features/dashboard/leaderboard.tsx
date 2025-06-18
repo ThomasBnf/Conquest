@@ -3,11 +3,10 @@
 import { useDateRange } from "@/hooks/useDateRange";
 import { useWorkspace } from "@/hooks/useWorkspace";
 import { trpc } from "@/server/client";
-import { Avatar, AvatarFallback, AvatarImage } from "@conquest/ui/avatar";
 import { Source } from "@conquest/zod/enum/source.enum";
-import Link from "next/link";
 import { useEffect, useState } from "react";
 import { type DateRange } from "react-day-picker";
+import { FullNameCell } from "../table/cells/full-name-cell";
 import { DateRangePicker } from "./date-range-picker";
 import { IntegrationsPicker } from "./integrations-picker";
 
@@ -19,7 +18,7 @@ export const Leaderboard = () => {
     globalDateRange,
   );
 
-  const { data } = trpc.dashboard.leaderboard.useQuery({
+  const { data, failureReason } = trpc.dashboard.leaderboard.useQuery({
     sources,
     dateRange,
   });
@@ -45,24 +44,10 @@ export const Leaderboard = () => {
         {data?.length ? (
           <div className="flex flex-col">
             {data.map((member) => (
-              <div key={member.memberId} className="flex items-center py-2">
+              <div key={member.id} className="flex items-center py-2">
                 <div className="flex w-full items-center justify-between">
-                  <Link
-                    href={`/${slug}/members/${member.memberId}/analytics`}
-                    className="flex items-center gap-2 hover:underline"
-                  >
-                    <Avatar className="size-7">
-                      <AvatarImage src={member.avatarUrl ?? ""} />
-                      <AvatarFallback>
-                        {member.firstName?.charAt(0).toUpperCase()}
-                        {member.lastName?.charAt(0).toUpperCase()}
-                      </AvatarFallback>
-                    </Avatar>
-                    <p>
-                      {member.firstName} {member.lastName}
-                    </p>
-                  </Link>
-                  <p>{member.pulseScore}</p>
+                  <FullNameCell member={member} />
+                  <p>{member.pulse}</p>
                 </div>
               </div>
             ))}
