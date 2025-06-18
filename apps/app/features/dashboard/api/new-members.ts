@@ -53,17 +53,21 @@ export const newMembers = protectedProcedure
         ),
         current_total AS (
           SELECT count() as total
-          FROM member FINAL
-          WHERE workspaceId = '${workspaceId}'
-            AND createdAt >= '${formattedFrom}'
-            AND createdAt <= '${formattedTo}'
+          FROM member FINAL m
+          JOIN profile FINAL p ON p.memberId = m.id AND p.workspaceId = m.workspaceId
+          WHERE m.workspaceId = '${workspaceId}'
+            AND m.createdAt >= '${formattedFrom}'
+            AND m.createdAt <= '${formattedTo}'
+            AND p.attributes.source IN (${sources.map((source) => `'${source}'`).join(", ")})
         ),
         previous_total AS (
           SELECT count() as total
-          FROM member FINAL
-          WHERE workspaceId = '${workspaceId}'
-            AND createdAt >= '${formattedFrom}'
-            AND createdAt <= '${previousTo}'
+          FROM member FINAL m
+          JOIN profile FINAL p ON p.memberId = m.id AND p.workspaceId = m.workspaceId
+          WHERE m.workspaceId = '${workspaceId}'
+            AND m.createdAt >= '${formattedFrom}'
+            AND m.createdAt <= '${previousTo}'
+            AND p.attributes.source IN (${sources.map((source) => `'${source}'`).join(", ")})
         )
         SELECT 
           period_data.*,
