@@ -27,6 +27,7 @@ export const activeMembers = protectedProcedure
         profiles: [],
         total: 0,
         growthRate: 0,
+        byIntegration: {},
       };
     }
 
@@ -38,22 +39,9 @@ export const activeMembers = protectedProcedure
     const previousFrom = format(subDays(from, days), "yyyy-MM-dd HH:mm:ss");
     const previousTo = format(subDays(from, 1), "yyyy-MM-dd HH:mm:ss");
 
-    const result = await client.query({
+    const totalsResult = await client.query({
       query: `
-        WITH period_data AS (
-          SELECT
-            ${isWeekly ? "toStartOfWeek(a.createdAt)" : "toDate(a.createdAt)"} AS week,
-            p.attributes.source AS source,
-            groupArray(DISTINCT a.memberId) AS memberIds
-          FROM activity a
-          JOIN profile p FINAL ON p.memberId = a.memberId AND p.workspaceId = a.workspaceId
-          WHERE a.createdAt >= '${formattedFrom}'
-            AND a.createdAt <= '${formattedTo}'
-            AND a.workspaceId = '${workspaceId}'
-            AND p.attributes.source IN (${sources.map((source) => `'${source}'`).join(", ")})
-          GROUP BY week, source
-        ),
-        current_total AS (
+        WITH current_total AS (
           SELECT countDistinct(a.memberId) AS total
           FROM activity a
           JOIN profile p FINAL ON p.memberId = a.memberId AND p.workspaceId = a.workspaceId
@@ -72,30 +60,84 @@ export const activeMembers = protectedProcedure
             AND p.attributes.source IN (${sources.map((source) => `'${source}'`).join(", ")})
         )
         SELECT 
-          period_data.*,
           (SELECT total FROM current_total) AS currentTotal,
           (SELECT total FROM previous_total) AS previousTotal
-        FROM period_data
+      `,
+    });
+
+    const periodDataResult = await client.query({
+      query: `
+        SELECT
+          ${isWeekly ? "toStartOfWeek(a.createdAt)" : "toDate(a.createdAt)"} AS week,
+          p.attributes.source AS source,
+          groupArray(DISTINCT a.memberId) AS memberIds
+        FROM activity a
+        JOIN profile p FINAL ON p.memberId = a.memberId AND p.workspaceId = a.workspaceId
+        WHERE a.createdAt >= '${formattedFrom}'
+          AND a.createdAt <= '${formattedTo}'
+          AND a.workspaceId = '${workspaceId}'
+          AND p.attributes.source IN (${sources.map((source) => `'${source}'`).join(", ")})
+        GROUP BY week, source
         ORDER BY week ASC
       `,
     });
 
-    const { data } = await result.json<{
-      week: string;
-      source: string;
-      memberIds: string[];
+    const totalsBySourceResult = await client.query({
+      query: `
+        SELECT 
+          p.attributes.source AS source,
+          countDistinct(a.memberId) AS total
+        FROM activity a
+        JOIN profile p FINAL ON p.memberId = a.memberId AND p.workspaceId = a.workspaceId
+        WHERE a.createdAt >= '${formattedFrom}'
+          AND a.createdAt <= '${formattedTo}'
+          AND a.workspaceId = '${workspaceId}'
+          AND p.attributes.source IN (${sources.map((source) => `'${source}'`).join(", ")})
+        GROUP BY source
+      `,
+    });
+
+    const { data: totals } = await totalsResult.json<{
       currentTotal: number;
       previousTotal: number;
     }>();
 
+    const { data: periodData } = await periodDataResult.json<{
+      week: string;
+      source: string;
+      memberIds: string[];
+    }>();
+
+    const { data: totalsBySource } = await totalsBySourceResult.json<{
+      source: string;
+      total: number;
+    }>();
+
     const periods = getUniquePeriods(from, to);
 
-    const currentTotal = Number(data[0]?.currentTotal) || 0;
-    const previousTotal = Number(data[0]?.previousTotal) || 0;
+    const currentTotal = Number(totals[0]?.currentTotal) || 0;
+    const previousTotal = Number(totals[0]?.previousTotal) || 0;
+
     const growthRate =
       previousTotal > 0
-        ? ((currentTotal - previousTotal) / previousTotal) * 100
-        : 0;
+        ? Math.round(
+            ((currentTotal - previousTotal) / previousTotal) * 100 * 100,
+          ) / 100
+        : currentTotal > 0
+          ? 100
+          : 0;
+
+    const byIntegration: Record<Source, number> = {} as Record<Source, number>;
+
+    for (const item of totalsBySource) {
+      byIntegration[item.source as Source] = Number(item.total) || 0;
+    }
+
+    for (const source of sources) {
+      if (byIntegration[source] === undefined) {
+        byIntegration[source] = 0;
+      }
+    }
 
     const profiles: Array<{
       week: string;
@@ -116,7 +158,7 @@ export const activeMembers = protectedProcedure
       const detailData: Record<Source, number> = {} as Record<Source, number>;
 
       for (const source of sources) {
-        const sourceData = data.find(
+        const sourceData = periodData.find(
           (d) => d.week === period && d.source === source,
         );
 
@@ -141,5 +183,6 @@ export const activeMembers = protectedProcedure
       total: currentTotal,
       growthRate,
       profiles,
+      byIntegration,
     };
   });
