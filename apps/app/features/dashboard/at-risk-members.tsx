@@ -2,12 +2,11 @@
 
 import { TooltipInfo } from "@/components/badges/tooltip-info";
 import { QueryInput } from "@/components/custom/query-input";
+import { useDateRange } from "@/hooks/useDateRange";
 import { useTable } from "@/hooks/useTable";
 import { trpc } from "@/server/client";
-import { dateParams } from "@/utils/dateParams";
 import { tableMembersParams } from "@/utils/tableParams";
 import { Button } from "@conquest/ui/button";
-import { Separator } from "@conquest/ui/separator";
 import {
   Sheet,
   SheetContent,
@@ -22,20 +21,20 @@ import { skipToken } from "@tanstack/react-query";
 import { PanelRight, TriangleAlert } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { useQueryStates } from "nuqs";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { Percentage } from "../dashboard/percentage";
+import { PeriodFormatter } from "../dashboard/period-formatter";
 import { ExportListMembers } from "../members/import-export-members";
 import { membersColumns } from "../table/columns/members-columns";
 import { DataTable } from "../table/data-table";
 import { ColumnSettings } from "../table/settings/columnSettings";
-import { Percentage } from "./percentage";
-import { PeriodFormatter } from "./period-formatter";
 
 export const AtRiskMembers = () => {
-  const [{ from, to }] = useQueryStates(dateParams);
+  const { globalDateRange } = useDateRange();
+  const [dateRange, setDateRange] = useState(globalDateRange);
 
   const { data, isLoading } = trpc.dashboard.atRiskMembers.useQuery({
-    from,
-    to,
+    dateRange,
   });
 
   const { current, previous, variation } = data ?? {
@@ -44,22 +43,25 @@ export const AtRiskMembers = () => {
     variation: 0,
   };
 
+  useEffect(() => {
+    setDateRange(globalDateRange);
+  }, [globalDateRange]);
+
   return (
-    <div className="mb-0.5 flex flex-col overflow-hidden rounded-md border shadow-sm">
-      <div className="flex h-[48px] items-center justify-between bg-sidebar p-3">
+    <div className="flex flex-col gap-6 rounded-md border p-4 shadow-sm">
+      <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <div className="flex size-6 items-center justify-center rounded-md border border-red-200 bg-red-100">
-            <TriangleAlert className="size-4 text-red-500" />
+          <div className="flex items-center justify-center rounded border border-red-200 bg-red-100 p-1">
+            <TriangleAlert size={16} className="text-red-500" />
           </div>
-          <p className="font-medium text-base">At risk members</p>
+          <p className="font-medium text-lg">At risk members</p>
           <TooltipInfo
-            content="Active members (min level 4) with no activity in the
-            selected period."
+            content="Active members (min pulse score 20) with no activity in the
+          selected period."
           />
         </div>
         <AtRiskMembersSheet count={current} loading={isLoading} />
       </div>
-      <Separator />
       <div className="flex flex-1 flex-col items-center justify-center gap-2 py-8">
         {isLoading ? (
           <Skeleton className="h-10 w-16" />
@@ -90,10 +92,12 @@ const AtRiskMembersSheet = ({
   count: number;
   loading: boolean;
 }) => {
+  const { globalDateRange } = useDateRange();
+  const [dateRange, setDateRange] = useState(globalDateRange);
+
   const { data: session } = useSession();
   const { user } = session ?? {};
   const [open, setOpen] = useState(false);
-  const [{ from, to }] = useQueryStates(dateParams);
   const columns = membersColumns();
 
   const params = useQueryStates(tableMembersParams);
@@ -101,7 +105,7 @@ const AtRiskMembersSheet = ({
 
   const { data, isLoading, fetchNextPage } =
     trpc.dashboard.atRiskMembersTable.useInfiniteQuery(
-      open ? { from, to, search, id, desc } : skipToken,
+      open ? { dateRange, search, id, desc } : skipToken,
       { getNextPageParam: (_, allPages) => allPages.length * 25 },
     );
 
@@ -117,6 +121,10 @@ const AtRiskMembersSheet = ({
     count,
     preferences: user?.membersPreferences,
   });
+
+  useEffect(() => {
+    setDateRange(globalDateRange);
+  }, [globalDateRange]);
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>

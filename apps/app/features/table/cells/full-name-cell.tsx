@@ -27,17 +27,15 @@ export const FullNameCell = ({ member }: Props) => {
   return (
     <Link
       href={`/${slug}/members/${id}/analytics`}
-      className="flex items-center gap-2 font-medium truncate group"
+      className="group flex items-center gap-2 truncate font-medium"
       prefetch
     >
       <Avatar className="size-6">
         <AvatarImage src={avatarUrl ?? ""} />
-        <AvatarFallback className="text-sm">
-          {firstName?.charAt(0).toUpperCase()}
-        </AvatarFallback>
+        <AvatarFallback>{firstName?.charAt(0).toUpperCase()}</AvatarFallback>
       </Avatar>
       {isLoading ? (
-        <Skeleton className="w-24 h-4" />
+        <Skeleton className="h-4 w-24" />
       ) : hasName ? (
         <p className="truncate group-hover:underline">{`${firstName} ${lastName}`}</p>
       ) : (

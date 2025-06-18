@@ -24,8 +24,8 @@ const tagAmbassadors = async ({ from, to }: { from: string; to: string }) => {
       LEFT JOIN level l ON m.levelId = l.id
       WHERE 
         m.potentialAmbassador = false
-        AND l.number >= 7
-        AND l.number <= 9
+        AND m.pulse >= 150
+        AND m.pulse <= 199
         AND m.id IN (
           SELECT memberId 
           FROM activity 
@@ -77,8 +77,8 @@ const removeAmbassadors = async ({
       LEFT JOIN level l ON m.levelId = l.id
       WHERE 
         m.potentialAmbassador = true
-        AND l.number >= 7
-        AND l.number <= 9
+        AND m.pulse >= 150
+        AND m.pulse <= 199
         AND m.id NOT IN (
           SELECT memberId 
           FROM activity 

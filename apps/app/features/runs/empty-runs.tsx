@@ -6,9 +6,7 @@ export const EmptyRuns = () => {
       <Workflows />
       <div className="mt-2 mb-4">
         <p className="font-medium text-base">No runs found</p>
-        <p className="text-muted-foreground text-sm">
-          This workflow has no runs yet.
-        </p>
+        <p className="text-muted-foreground">This workflow has no runs yet.</p>
       </div>
     </div>
   );

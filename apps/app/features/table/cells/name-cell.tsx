@@ -14,16 +14,14 @@ export const NameCell = ({ company }: Props) => {
   return (
     <Link
       href={`/${slug}/companies/${id}`}
-      className="flex items-center gap-2 truncate group"
+      className="group flex items-center gap-2 truncate"
       prefetch
     >
       <Avatar className="size-6">
         <AvatarImage src={logoUrl ?? ""} />
-        <AvatarFallback className="text-sm">
-          {name?.charAt(0).toUpperCase()}
-        </AvatarFallback>
+        <AvatarFallback>{name?.charAt(0).toUpperCase()}</AvatarFallback>
       </Avatar>
-      <p className="font-medium truncate group-hover:underline">{name}</p>
+      <p className="truncate font-medium group-hover:underline">{name}</p>
     </Link>
   );
 };

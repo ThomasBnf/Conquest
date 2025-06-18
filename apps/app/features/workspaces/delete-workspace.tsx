@@ -40,8 +40,8 @@ export const DeleteWorkspace = () => {
         </CardHeader>
         <CardContent>
           <div>
-            <p className="font-medium text-base">Delete workspace</p>
-            <p className="text-muted-foreground text-sm">
+            <p className="text-base font-medium">Delete workspace</p>
+            <p className="text-muted-foreground">
               Once deleted, your workspace cannot be recovered
             </p>
           </div>

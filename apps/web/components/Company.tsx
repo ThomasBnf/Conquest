@@ -25,10 +25,8 @@ export const Company = () => {
         {items.map((item) => (
           <div key={item.id}>
             <h3 className="font-medium text-white text-xl">{item.title}</h3>
-            <p className="text-primary-foreground/70 text-sm">
-              {item.subtitle}
-            </p>
-            <ul className="list-inside list-disc text-primary-foreground/70 text-sm">
+            <p className="text-primary-foreground/70">{item.subtitle}</p>
+            <ul className="list-inside list-disc text-primary-foreground/70">
               {item.arguments.map((argument) => (
                 <li key={argument}>{argument}</li>
               ))}

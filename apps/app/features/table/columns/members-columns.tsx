@@ -156,10 +156,10 @@ export const membersColumns = (): Column<FullMember>[] => {
       width: 250,
     },
     {
-      key: "job_title",
+      key: "jobTitle",
       header: ({ table }) => (
         <ColumnHeader
-          columnId="job_title"
+          columnId="jobTitle"
           title="Job title"
           type="string"
           table={table}
@@ -169,10 +169,10 @@ export const membersColumns = (): Column<FullMember>[] => {
       width: 250,
     },
     {
-      key: "primary_email",
+      key: "primaryEmail",
       header: ({ table }) => (
         <ColumnHeader
-          columnId="primary_email"
+          columnId="primaryEmail"
           title="Email"
           type="string"
           table={table}
@@ -208,10 +208,10 @@ export const membersColumns = (): Column<FullMember>[] => {
       width: 250,
     },
     {
-      key: "first_activity",
+      key: "firstActivity",
       header: ({ table }) => (
         <ColumnHeader
-          columnId="first_activity"
+          columnId="firstActivity"
           title="First activity"
           type="Date"
           table={table}
@@ -221,10 +221,10 @@ export const membersColumns = (): Column<FullMember>[] => {
       width: 250,
     },
     {
-      key: "last_activity",
+      key: "lastActivity",
       header: ({ table }) => (
         <ColumnHeader
-          columnId="last_activity"
+          columnId="lastActivity"
           title="Last activity"
           type="Date"
           table={table}
@@ -247,10 +247,10 @@ export const membersColumns = (): Column<FullMember>[] => {
       width: 250,
     },
     {
-      key: "created_at",
+      key: "createdAt",
       header: ({ table }) => (
         <ColumnHeader
-          columnId="created_at"
+          columnId="createdAt"
           title="Created at"
           type="Date"
           table={table}

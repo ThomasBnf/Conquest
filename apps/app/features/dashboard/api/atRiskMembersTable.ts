@@ -5,14 +5,18 @@ import { FullMemberSchema } from "@conquest/zod/schemas/member.schema";
 import { format } from "date-fns";
 import { toZonedTime } from "date-fns-tz";
 import { z } from "zod";
-import { protectedProcedure } from "../trpc";
+import { protectedProcedure } from "../../../server/trpc";
 
-export const activeMembersTable = protectedProcedure
+export const atRiskMembersTable = protectedProcedure
   .input(
     z.object({
       cursor: z.number().nullish(),
-      from: z.date(),
-      to: z.date(),
+      dateRange: z
+        .object({
+          from: z.coerce.date().optional(),
+          to: z.coerce.date().optional(),
+        })
+        .optional(),
       search: z.string(),
       id: z.string(),
       desc: z.boolean(),
@@ -20,7 +24,12 @@ export const activeMembersTable = protectedProcedure
   )
   .query(async ({ ctx: { user }, input }) => {
     const { workspaceId } = user;
-    const { cursor, from, to, search, id, desc } = input;
+    const { cursor, dateRange, search, id, desc } = input;
+    const { from, to } = dateRange ?? {};
+
+    if (!from || !to) {
+      return [];
+    }
 
     const orderBy = orderByParser({ id, desc, type: "members" });
 
@@ -33,14 +42,13 @@ export const activeMembersTable = protectedProcedure
 
     const result = await client.query({
       query: `
-        SELECT DISTINCT
+        SELECT
           m.*,
           c.name as company,
           l.number as level,
           l.name as levelName,
-          p.attributes,
+          p.attributes
         FROM member m FINAL
-        LEFT JOIN activity a ON m.id = a.memberId
         LEFT JOIN level l ON m.levelId = l.id
         LEFT JOIN company c ON m.companyId = c.id
         LEFT JOIN (
@@ -53,16 +61,22 @@ export const activeMembersTable = protectedProcedure
         WHERE 
           m.workspaceId = '${workspaceId}'
           AND m.isStaff = 0
-          AND a.createdAt BETWEEN '${_from}' AND '${_to}'
-          ${
-            search
-              ? `AND (
+          AND m.pulse >= 20
+          AND m.id NOT IN (
+            SELECT memberId 
+            FROM activity 
+            WHERE workspaceId = '${workspaceId}'
+            AND createdAt BETWEEN '${_from}' AND '${_to}'
+          )
+        ${
+          search
+            ? `AND (
                 positionCaseInsensitive(concat(firstName, ' ', lastName), LOWER(trim('${search}'))) > 0
                 OR positionCaseInsensitive(primaryEmail, LOWER(trim('${search}'))) > 0
                 OR arrayExists(attr -> attr.source = 'Github' AND positionCaseInsensitive(toString(attr.login), LOWER(trim('${search}'))) > 0, p.attributes)
               )`
-              : ""
-          }
+            : ""
+        }
         ${orderBy}
         ${cursor ? `LIMIT 25 OFFSET ${cursor}` : "LIMIT 25"}
       `,

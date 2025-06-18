@@ -15,7 +15,7 @@ export default async function Layout({ children }: PropsWithChildren) {
         <SignOut />
         <div>
           <p className="text-muted-foreground text-xs">Logged in as:</p>
-          <p className="text-sm">{user.email}</p>
+          <p>{user.email}</p>
         </div>
       </div>
       {children}

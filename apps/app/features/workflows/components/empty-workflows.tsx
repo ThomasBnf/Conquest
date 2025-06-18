@@ -1,5 +1,5 @@
 import { Workflows } from "@conquest/ui/icons/Workflows";
-import { CreateWorkflow } from "./create-workflow";
+import { AddWorkflow } from "./add-workflow";
 
 type Props = {
   slug: string;
@@ -11,11 +11,11 @@ export const EmptyWorkflows = ({ slug }: Props) => {
       <Workflows />
       <div className="mt-2 mb-4">
         <p className="font-medium text-base">No workflows found</p>
-        <p className="text-muted-foreground text-sm">
+        <p className="text-muted-foreground">
           You don't have any workflows yet in workspace.
         </p>
       </div>
-      <CreateWorkflow slug={slug} />
+      <AddWorkflow slug={slug} />
     </div>
   );
 };

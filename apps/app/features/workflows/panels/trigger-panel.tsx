@@ -11,18 +11,13 @@ import { Label } from "@conquest/ui/label";
 import { ScrollArea } from "@conquest/ui/scroll-area";
 import { Separator } from "@conquest/ui/separator";
 import { Node } from "@conquest/zod/schemas/node.schema";
-import type { Workflow } from "@conquest/zod/schemas/workflow.schema";
 import { useReactFlow } from "@xyflow/react";
 import { type icons } from "lucide-react";
 import { v4 as uuid } from "uuid";
 import { useWorkflow } from "../context/workflowContext";
 import type { WorkflowNode } from "./schemas/workflow-node.type";
 
-type Props = {
-  workflow: Workflow;
-};
-
-export const TriggerPanel = ({ workflow }: Props) => {
+export const TriggerPanel = () => {
   const { setPanel, node: selectedNode, setNode } = useWorkflow();
   const { addNodes, updateNode } = useReactFlow();
 

@@ -2,6 +2,7 @@ import { useTable } from "@/hooks/useTable";
 import { Button } from "@conquest/ui/button";
 import { Checkbox } from "@conquest/ui/checkbox";
 import { CommandItem } from "@conquest/ui/command";
+import { formatCamelCase } from "@conquest/utils/formatCamelCase";
 import { Company } from "@conquest/zod/schemas/company.schema";
 import { Member } from "@conquest/zod/schemas/member.schema";
 import { useSortable } from "@dnd-kit/sortable";
@@ -49,7 +50,7 @@ export const ColumnItem = <TData extends Member | Company>({
         onCheckedChange={() => onVisibilityChange(column.key)}
       />
       <span className="ml-2 truncate first-letter:uppercase">
-        {column.key.replaceAll("_", " ")}
+        {formatCamelCase(column.key)}
       </span>
       {!search ? (
         <Button

@@ -35,7 +35,7 @@ export const HowItWorks = () => {
     <Section id="how-it-works">
       <Badge variant="outline" className="mb-4 h-7 shadow-sm">
         <Image src="/settings.svg" alt="how-it-works" width={16} height={16} />
-        <p className="text-sm">HOW IT WORKS</p>
+        <p>HOW IT WORKS</p>
       </Badge>
       <Heading>Integrates everywhere your community lives</Heading>
       <SubHeading>No-code integrations that make your life easier </SubHeading>

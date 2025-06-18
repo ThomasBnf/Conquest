@@ -7,7 +7,7 @@ export const Benefits = () => {
     <Section id="benefits">
       <Badge variant="outline" className="mb-4 h-7 shadow-sm">
         <Image src="/circle-plus.svg" alt="benfits" width={16} height={16} />
-        <p className="text-sm">BENEFITS</p>
+        <p>BENEFITS</p>
       </Badge>
       <Heading>Understand your community in seconds</Heading>
       <SubHeading>Gather every single event and gain visibility</SubHeading>

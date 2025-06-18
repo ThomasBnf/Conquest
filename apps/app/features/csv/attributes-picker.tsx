@@ -10,6 +10,7 @@ import {
   CommandSeparator,
 } from "@conquest/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@conquest/ui/popover";
+import { formatCamelCase } from "@conquest/utils/formatCamelCase";
 import { MemberSchema } from "@conquest/zod/schemas/member.schema";
 import { Check, ChevronDown, Plus, X } from "lucide-react";
 import { useState } from "react";
@@ -78,12 +79,7 @@ export const AttributesPicker = ({ value, onValueChange, onClear }: Props) => {
             {value ? (
               <>
                 <span className="capitalize">
-                  {isCustomField
-                    ? customField
-                    : value
-                        .replace(/([A-Z])/g, " $1")
-                        .trim()
-                        .toLowerCase()}
+                  {isCustomField ? customField : formatCamelCase(value)}
                 </span>
                 <div onClick={onClear}>
                   <X size={14} />
@@ -114,10 +110,7 @@ export const AttributesPicker = ({ value, onValueChange, onClear }: Props) => {
                       onSelect={onSelect}
                       className="capitalize"
                     >
-                      {key
-                        .replace(/([A-Z])/g, " $1")
-                        .trim()
-                        .toLowerCase()}
+                      {formatCamelCase(key)}
                       {value === key && <Check size={16} className="ml-auto" />}
                     </CommandItem>
                   ))}

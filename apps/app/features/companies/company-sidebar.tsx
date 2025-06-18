@@ -49,9 +49,7 @@ export const CompanySidebar = ({ company }: Props) => {
       <div className="flex items-center gap-2 p-4">
         <Avatar className="size-12">
           <AvatarImage src={logoUrl ?? ""} />
-          <AvatarFallback className="text-sm">
-            {name?.charAt(0).toUpperCase()}
-          </AvatarFallback>
+          <AvatarFallback>{name?.charAt(0).toUpperCase()}</AvatarFallback>
         </Avatar>
         <div className="overflow-hidden">
           <p className="truncate font-medium text-base leading-tight">{name}</p>

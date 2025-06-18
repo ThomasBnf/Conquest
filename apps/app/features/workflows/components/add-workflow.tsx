@@ -11,7 +11,7 @@ type Props = {
   slug: string;
 };
 
-export const CreateWorkflow = ({ slug }: Props) => {
+export const AddWorkflow = ({ slug }: Props) => {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const utils = trpc.useUtils();
@@ -39,7 +39,7 @@ export const CreateWorkflow = ({ slug }: Props) => {
       ) : (
         <>
           <Plus size={16} />
-          Create workflow
+          New
         </>
       )}
     </Button>

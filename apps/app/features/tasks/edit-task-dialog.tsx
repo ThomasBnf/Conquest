@@ -266,7 +266,7 @@ export const EditTaskDialog = ({ open, setOpen, task }: Props) => {
                                         <AvatarImage
                                           src={member.avatarUrl ?? ""}
                                         />
-                                        <AvatarFallback className="text-sm">
+                                        <AvatarFallback>
                                           {member.firstName
                                             ?.charAt(0)
                                             .toUpperCase()}

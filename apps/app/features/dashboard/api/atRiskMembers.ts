@@ -2,18 +2,31 @@ import { client } from "@conquest/clickhouse/client";
 import { differenceInDays, format, subDays } from "date-fns";
 import { toZonedTime } from "date-fns-tz";
 import { z } from "zod";
-import { protectedProcedure } from "../trpc";
+import { protectedProcedure } from "../../../server/trpc";
 
 export const atRiskMembers = protectedProcedure
   .input(
     z.object({
-      from: z.date(),
-      to: z.date(),
+      dateRange: z
+        .object({
+          from: z.coerce.date().optional(),
+          to: z.coerce.date().optional(),
+        })
+        .optional(),
     }),
   )
   .query(async ({ ctx: { user }, input }) => {
     const { workspaceId } = user;
-    const { from, to } = input;
+    const { dateRange } = input;
+    const { from, to } = dateRange ?? {};
+
+    if (!from || !to) {
+      return {
+        current: 0,
+        previous: 0,
+        variation: 0,
+      };
+    }
 
     const timeZone = "Europe/Paris";
     const fromInParis = toZonedTime(from, timeZone);
@@ -39,11 +52,10 @@ export const atRiskMembers = protectedProcedure
         (
           SELECT count(*) as count
           FROM member m FINAL
-          LEFT JOIN level l ON m.levelId = l.id
           WHERE 
             m.workspaceId = '${workspaceId}'
             AND m.isStaff = 0
-            AND l.number >= 4
+            AND m.pulse >= 20
             AND m.id NOT IN (
               SELECT memberId 
               FROM activity 
@@ -55,11 +67,10 @@ export const atRiskMembers = protectedProcedure
         (
           SELECT count(*) as count
           FROM member m FINAL
-          LEFT JOIN level l ON m.levelId = l.id
           WHERE 
             m.workspaceId = '${workspaceId}'
             AND m.isStaff = 0
-            AND l.number >= 4
+            AND m.pulse >= 20
             AND m.id NOT IN (
               SELECT memberId 
               FROM activity 

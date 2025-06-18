@@ -8,7 +8,7 @@ export const UseCases = () => {
     <Section id="use-cases">
       <Badge variant="outline" className="mb-4 h-7 shadow-sm">
         <Image src="use-cases.svg" alt="use-cases" width={16} height={16} />
-        <p className="text-sm">USE CASES</p>
+        <p>USE CASES</p>
       </Badge>
       <Heading>Grow smarter with community data-driven decisions</Heading>
       <SubHeading>Beneficial for every member of your team</SubHeading>

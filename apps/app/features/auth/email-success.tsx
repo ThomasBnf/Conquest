@@ -13,7 +13,7 @@ export const EmailSuccess = ({ sentTo, setSentTo, buttonLabel }: Props) => {
     <div className="flex w-full max-w-lg flex-col items-center justify-center gap-6">
       <Logo size={72} />
       <p className="font-medium text-xl">Check your email</p>
-      <div className="text-center text-muted-foreground text-sm">
+      <div className="text-center text-muted-foreground">
         <p>We've sent a temporary login link.</p>
         <p className="mt-2">Please check your inbox at </p>
         <p className="text-foreground">{sentTo}</p>

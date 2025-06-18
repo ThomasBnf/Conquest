@@ -23,7 +23,7 @@ const tagAtRiskMembers = async ({ from, to }: { from: string; to: string }) => {
       FROM member m FINAL
       LEFT JOIN level l ON m.levelId = l.id
       WHERE 
-        l.number >= 4
+        m.pulse >= 20
         AND m.atRiskMember = false
         AND m.id NOT IN (
           SELECT memberId 
@@ -75,7 +75,7 @@ const removeTagAtRiskMembers = async ({
       FROM member m FINAL
       LEFT JOIN level l ON m.levelId = l.id
       WHERE 
-        l.number >= 4
+        m.pulse < 20
         AND m.atRiskMember = true
         AND m.id IN (
           SELECT memberId 

@@ -34,7 +34,7 @@ const MagicLink = ({ url }: Props) => (
           <Section className="py-4">
             <Button
               href={url}
-              className="block w-fit rounded bg-[#5067D7] px-5 py-2.5 text-center font-medium text-sm text-white no-underline"
+              className="block w-fit rounded bg-[#5067D7] px-5 py-2.5 text-center font-medium text-white no-underline"
             >
               Login to Conquest
             </Button>

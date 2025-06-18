@@ -124,7 +124,7 @@ export const TestSlackMessage = ({ message }: Props) => {
                   >
                     <Avatar className="size-7">
                       <AvatarImage src={member.avatarUrl ?? ""} />
-                      <AvatarFallback className="text-sm">
+                      <AvatarFallback>
                         {member.firstName?.charAt(0).toUpperCase()}
                         {member.lastName?.charAt(0).toUpperCase()}
                       </AvatarFallback>

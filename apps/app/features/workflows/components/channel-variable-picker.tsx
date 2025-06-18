@@ -1,12 +1,16 @@
 import { trpc } from "@/server/client";
 import { Button } from "@conquest/ui/button";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@conquest/ui/dropdown-menu";
-import { Braces, Hash } from "lucide-react";
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@conquest/ui/command";
+import { Popover, PopoverContent, PopoverTrigger } from "@conquest/ui/popover";
+import { Braces, ChevronDown, Hash } from "lucide-react";
+import { useState } from "react";
 
 type Props = {
   source: "Slack" | "Discord";
@@ -14,28 +18,40 @@ type Props = {
 };
 
 export const ChannelVariablePicker = ({ source, onClick }: Props) => {
+  const [open, setOpen] = useState(false);
   const { data } = trpc.channels.list.useQuery({ source });
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="outline" className="gap-2">
-          <Braces size={14} />
-          Channels
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <Button variant="outline" className="justify-between gap-2">
+          <div className="flex items-center gap-2">
+            <Braces size={14} />
+            Channels
+          </div>
+          <ChevronDown size={14} />
         </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="start" className="w-48">
-        {data?.map((key) => (
-          <DropdownMenuItem
-            key={key.id}
-            onClick={() => onClick(`{{#${key.name}}}`)}
-            className="gap-1"
-          >
-            <Hash size={14} />
-            {key.name}
-          </DropdownMenuItem>
-        ))}
-      </DropdownMenuContent>
-    </DropdownMenu>
+      </PopoverTrigger>
+      <PopoverContent className="w-48 p-0" align="start">
+        <Command>
+          <CommandInput placeholder="Search..." />
+          <CommandList>
+            <CommandEmpty>No channels found.</CommandEmpty>
+            <CommandGroup>
+              {data?.map((key) => (
+                <CommandItem
+                  key={key.id}
+                  onSelect={() => onClick(`{{#${key.name}}}`)}
+                  className="gap-1"
+                >
+                  <Hash size={14} />
+                  {key.name}
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          </CommandList>
+        </Command>
+      </PopoverContent>
+    </Popover>
   );
 };

@@ -141,6 +141,7 @@ model List {
 
 model Run {
     id          String     @id @default(uuid())
+    memberId    String?
     workflowId  String
     workflow    Workflow   @relation(fields: [workflowId], references: [id], onDelete: Cascade)
     completedAt DateTime?

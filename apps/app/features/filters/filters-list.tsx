@@ -1,8 +1,8 @@
 import { useFilters } from "@/context/filtersContext";
-import { useOpenFilters } from "@/hooks/useOpenFilters";
 import { Button } from "@conquest/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@conquest/ui/popover";
 import { ListFilter } from "lucide-react";
+import { useState } from "react";
 import { FilterActivity } from "./filter-activity";
 import { FilterButton } from "./filter-button";
 import { FilterPicker } from "./filter-picker";
@@ -14,7 +14,7 @@ type Props = {
 
 export const FiltersList = ({ align = "start", className }: Props) => {
   const { groupFilters, resetFilters } = useFilters();
-  const { open, setOpen } = useOpenFilters();
+  const [open, setOpen] = useState(false);
   const { filters } = groupFilters;
 
   return (

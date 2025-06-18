@@ -126,7 +126,7 @@ export const companiesColumns = (): Column<Company>[] => {
       width: 250,
     },
     {
-      key: "founded_at",
+      key: "foundedAt",
       header: ({ table }) => (
         <ColumnHeader
           columnId="founded_at"

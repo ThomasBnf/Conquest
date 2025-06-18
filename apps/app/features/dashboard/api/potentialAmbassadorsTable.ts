@@ -3,16 +3,19 @@ import { cleanPrefix } from "@conquest/clickhouse/helpers/cleanPrefix";
 import { orderByParser } from "@conquest/clickhouse/helpers/orderByParser";
 import { FullMemberSchema } from "@conquest/zod/schemas/member.schema";
 import { format } from "date-fns";
-import { toZonedTime } from "date-fns-tz";
 import { z } from "zod";
-import { protectedProcedure } from "../trpc";
+import { protectedProcedure } from "../../../server/trpc";
 
 export const potentialAmbassadorsTable = protectedProcedure
   .input(
     z.object({
       cursor: z.number().nullish(),
-      from: z.date(),
-      to: z.date(),
+      dateRange: z
+        .object({
+          from: z.coerce.date().optional(),
+          to: z.coerce.date().optional(),
+        })
+        .optional(),
       search: z.string(),
       id: z.string(),
       desc: z.boolean(),
@@ -20,16 +23,17 @@ export const potentialAmbassadorsTable = protectedProcedure
   )
   .query(async ({ ctx: { user }, input }) => {
     const { workspaceId } = user;
-    const { cursor, from, to, search, id, desc } = input;
+    const { cursor, dateRange, search, id, desc } = input;
+    const { from, to } = dateRange ?? {};
+
+    if (!from || !to) {
+      return [];
+    }
 
     const orderBy = orderByParser({ id, desc, type: "members" });
 
-    const timeZone = "Europe/Paris";
-    const fromInParis = toZonedTime(from, timeZone);
-    const toInParis = toZonedTime(to, timeZone);
-
-    const _from = format(fromInParis, "yyyy-MM-dd HH:mm:ss");
-    const _to = format(toInParis, "yyyy-MM-dd HH:mm:ss");
+    const formattedFrom = format(from, "yyyy-MM-dd HH:mm:ss");
+    const formattedTo = format(to, "yyyy-MM-dd HH:mm:ss");
 
     const result = await client.query({
       query: `
@@ -52,14 +56,14 @@ export const potentialAmbassadorsTable = protectedProcedure
         WHERE 
           m.workspaceId = '${workspaceId}'
           AND m.isStaff = 0
-          AND l.number >= 7
-          AND l.number <= 9
+          AND m.pulse >= 150
+          AND m.pulse <= 199
           AND m.id IN (
             SELECT memberId 
             FROM activity 
             WHERE
               workspaceId = '${workspaceId}'
-              AND createdAt BETWEEN '${_from}' AND '${_to}'
+              AND createdAt BETWEEN '${formattedFrom}' AND '${formattedTo}'
           )
           ${
             search

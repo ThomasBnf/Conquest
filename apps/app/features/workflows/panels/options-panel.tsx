@@ -44,7 +44,7 @@ export const OptionsPanel = ({ workflow }: Props) => {
   return (
     <>
       {panel === "actions" && <ActionPanel />}
-      {panel === "triggers" && <TriggerPanel workflow={workflow} />}
+      {panel === "triggers" && <TriggerPanel />}
       {panel === "node" && (
         <ScrollArea className="flex-1">
           <div className="flex flex-col gap-4 p-4">
@@ -61,7 +61,7 @@ export const OptionsPanel = ({ workflow }: Props) => {
                     className="rounded-md border p-2.5"
                   />
                 )}
-                <p className="font-medium text-sm">{label}</p>
+                <p className="font-medium">{label}</p>
               </div>
               <div className="space-x-2">
                 <Button

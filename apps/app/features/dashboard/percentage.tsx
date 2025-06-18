@@ -14,7 +14,7 @@ export const Percentage = ({ variation, isLoading, inverse }: Props) => {
   }
 
   if (variation === undefined) {
-    return <p className="text-muted-foreground text-sm">N/A</p>;
+    return <p className="text-muted-foreground">N/A</p>;
   }
 
   if (variation > 0) {

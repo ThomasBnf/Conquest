@@ -50,7 +50,11 @@ export const runWorkflow = schemaTask({
     } = workflow;
     const { slug } = await getWorkspace({ id: workspaceId });
     const user = await getUserById({ id: createdBy });
-    const run = await createRun({ workflowId: workflow.id });
+    const run = await createRun({
+      memberId: member.id,
+      workflowId: workflow.id,
+    });
+
     const runNodes = new Map(nodes.map((node) => [node.id, node]));
 
     let node = nodes.find((node) => "isTrigger" in node.data);
@@ -148,7 +152,14 @@ export const runWorkflow = schemaTask({
         updateRun({ id: run.id, status: "FAILED", runNodes });
 
         if (alertOnFailure) {
-          sendAlertyByEmail({ slug, state: "failure", user, workflow, run });
+          sendAlertyByEmail({
+            slug,
+            state: "failure",
+            user,
+            member,
+            workflow,
+            run,
+          });
         }
       }
     }
@@ -156,7 +167,14 @@ export const runWorkflow = schemaTask({
     await updateRun({ id: run.id, status: "COMPLETED", runNodes });
 
     if (alertOnSuccess) {
-      sendAlertyByEmail({ slug, state: "success", user, workflow, run });
+      sendAlertyByEmail({
+        slug,
+        state: "success",
+        user,
+        member,
+        workflow,
+        run,
+      });
     }
   },
 });
@@ -202,12 +220,14 @@ const sendAlertyByEmail = async ({
   slug,
   state,
   user,
+  member,
   workflow,
   run,
 }: {
   slug: string;
   state: "success" | "failure";
   user: User | null;
+  member: MemberWithLevel;
   workflow: Workflow;
   run: Run;
 }) => {
@@ -220,8 +240,8 @@ const sendAlertyByEmail = async ({
       subject: `Workflow "${workflow.name}" has run successfully`,
       react: WorkflowSuccess({
         slug,
-        workflowId: workflow.id,
-        workflowName: workflow.name,
+        member,
+        workflow,
         runId: run.id,
       }),
     });

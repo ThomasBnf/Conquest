@@ -1,5 +1,6 @@
 import { CSVRouter } from "@/features/csv/api/router";
 import { customFieldsRouter } from "@/features/custom-fields/api/router";
+import { dashboardRouter } from "@/features/dashboard/api/router";
 import { tasksRouter } from "@/features/tasks/api/router";
 import { workflowsRouter } from "@/features/workflows/api/route";
 import { activitiesRouter } from "./activities/router";
@@ -8,7 +9,6 @@ import { adminRouter } from "./admin/router";
 import { apiKeysRouter } from "./api-keys/router";
 import { channelsRouter } from "./channels/router";
 import { companiesRouter } from "./companies/router";
-import { dashboardRouter } from "./dashboard/router";
 import { discordRouter } from "./discord/router";
 import { discourseRouter } from "./discourse/router";
 import { duplicateRouter } from "./duplicate/router";

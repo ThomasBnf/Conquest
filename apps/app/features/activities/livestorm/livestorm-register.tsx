@@ -3,9 +3,9 @@ import { trpc } from "@/server/client";
 import { Avatar, AvatarFallback, AvatarImage } from "@conquest/ui/avatar";
 import type { ActivityWithType } from "@conquest/zod/schemas/activity.schema";
 import type { Member } from "@conquest/zod/schemas/member.schema";
+import { skipToken } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { ActivityMenu } from "../activity-menu";
-import { skipToken } from "@tanstack/react-query";
 
 type Props = {
   activity: ActivityWithType;
@@ -28,7 +28,7 @@ export const LivestormRegister = ({ activity, member }: Props) => {
       <div className="flex items-center gap-2">
         <Avatar className="size-6">
           <AvatarImage src={avatarUrl ?? ""} />
-          <AvatarFallback className="text-sm">
+          <AvatarFallback>
             {firstName?.charAt(0).toUpperCase()}
             {lastName?.charAt(0).toUpperCase()}
           </AvatarFallback>

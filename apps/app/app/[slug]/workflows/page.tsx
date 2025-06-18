@@ -1,6 +1,6 @@
 import { Header } from "@/components/layouts/header";
 import { PageLayout } from "@/components/layouts/page-layout";
-import { CreateWorkflow } from "@/features/workflows/components/create-workflow";
+import { AddWorkflow } from "@/features/workflows/components/add-workflow";
 import { WorkflowsListPage } from "@/features/workflows/components/workflows-list-page";
 
 type Props = {
@@ -13,7 +13,7 @@ export default async function Page({ params }: Props) {
   return (
     <PageLayout>
       <Header title="Workflows">
-        <CreateWorkflow slug={slug} />
+        <AddWorkflow slug={slug} />
       </Header>
       <WorkflowsListPage slug={slug} />
     </PageLayout>

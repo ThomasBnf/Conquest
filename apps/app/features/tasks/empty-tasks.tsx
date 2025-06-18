@@ -7,7 +7,7 @@ export const EmptyTasks = () => {
       <Tasks />
       <div className="mt-2 mb-4">
         <p className="font-medium text-base">No tasks found</p>
-        <p className="text-muted-foreground text-sm">
+        <p className="text-muted-foreground">
           You don't have any tasks yet in workspace.
         </p>
       </div>

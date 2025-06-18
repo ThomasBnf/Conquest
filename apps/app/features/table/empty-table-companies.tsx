@@ -17,7 +17,7 @@ export const EmptyTable = () => {
         <Members />
         <div className="mt-2 mb-4">
           <p className="font-medium text-base">No companies found</p>
-          <p className="text-muted-foreground text-sm">
+          <p className="text-muted-foreground">
             Please try a different search.
           </p>
         </div>
@@ -39,7 +39,7 @@ export const EmptyTable = () => {
       <Members />
       <div className="mt-2 mb-4">
         <p className="font-medium text-base">No companies found</p>
-        <p className="text-muted-foreground text-sm">
+        <p className="text-muted-foreground">
           You don't have any companies yet in workspace.
         </p>
       </div>

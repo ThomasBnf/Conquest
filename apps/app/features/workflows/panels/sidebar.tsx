@@ -49,7 +49,7 @@ export const Sidebar = ({ workflow }: Props) => {
       )}
       <ScrollArea className="h-[calc(100vh-138px)]">
         {panel === "workflow" && <WorkflowPanel workflow={workflow} />}
-        {panel === "triggers" && <TriggerPanel workflow={workflow} />}
+        {panel === "triggers" && <TriggerPanel />}
         {panel === "node" && node?.id && <OptionsPanel workflow={workflow} />}
         {panel?.startsWith("actions") && <ActionPanel />}
       </ScrollArea>

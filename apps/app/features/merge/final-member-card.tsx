@@ -82,8 +82,8 @@ export const FinalMemberCard = ({
                         />
                         <Avatar className="size-9">
                           <AvatarImage src={avatarUrl} />
-                          <AvatarFallback className="text-sm">
-                            <AvatarFallback className="text-sm">
+                          <AvatarFallback>
+                            <AvatarFallback>
                               {firstName?.charAt(0).toUpperCase()}
                               {lastName?.charAt(0).toUpperCase()}
                             </AvatarFallback>

@@ -2,12 +2,11 @@
 
 import { TooltipInfo } from "@/components/badges/tooltip-info";
 import { QueryInput } from "@/components/custom/query-input";
+import { useDateRange } from "@/hooks/useDateRange";
 import { useTable } from "@/hooks/useTable";
 import { trpc } from "@/server/client";
-import { dateParams } from "@/utils/dateParams";
 import { tableMembersParams } from "@/utils/tableParams";
 import { Button } from "@conquest/ui/button";
-import { Separator } from "@conquest/ui/separator";
 import {
   Sheet,
   SheetContent,
@@ -18,25 +17,24 @@ import {
 } from "@conquest/ui/sheet";
 import { Skeleton } from "@conquest/ui/skeleton";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@conquest/ui/tooltip";
-import { InfoCircledIcon } from "@radix-ui/react-icons";
 import { skipToken } from "@tanstack/react-query";
-import { PanelRight } from "lucide-react";
+import { Megaphone, PanelRight } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { useQueryStates } from "nuqs";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { Percentage } from "../dashboard/percentage";
+import { PeriodFormatter } from "../dashboard/period-formatter";
 import { ExportListMembers } from "../members/import-export-members";
 import { membersColumns } from "../table/columns/members-columns";
 import { DataTable } from "../table/data-table";
 import { ColumnSettings } from "../table/settings/columnSettings";
-import { Percentage } from "./percentage";
-import { PeriodFormatter } from "./period-formatter";
 
 export const PotentialAmbassadors = () => {
-  const [{ from, to }] = useQueryStates(dateParams);
+  const { globalDateRange } = useDateRange();
+  const [dateRange, setDateRange] = useState(globalDateRange);
 
   const { data, isLoading } = trpc.dashboard.potentialAmbassadors.useQuery({
-    from,
-    to,
+    dateRange,
   });
 
   const { current, previous, variation } = data ?? {
@@ -45,19 +43,22 @@ export const PotentialAmbassadors = () => {
     variation: 0,
   };
 
+  useEffect(() => {
+    setDateRange(globalDateRange);
+  }, [globalDateRange]);
+
   return (
-    <div className="mb-0.5 flex flex-col overflow-hidden rounded-md border shadow-sm">
-      <div className="flex h-[48px] items-center justify-between bg-sidebar p-3">
+    <div className="flex flex-col gap-6 rounded-md border p-4 shadow-sm">
+      <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <div className="flex size-6 items-center justify-center rounded-md border border-green-200 bg-green-100">
-            <InfoCircledIcon className="size-4 text-green-500" />
+          <div className="flex items-center justify-center rounded border border-green-200 bg-green-100 p-1">
+            <Megaphone size={16} className="text-green-500" />
           </div>
-          <p className="font-medium text-base">Potential ambassadors</p>
+          <p className="font-medium text-lg">Potential ambassadors</p>
           <TooltipInfo content="Contributor members (min level 7) with activities in the selected period." />
         </div>
         <PotentialAmbassadorsSheet count={current} loading={isLoading} />
       </div>
-      <Separator />
       <div className="flex flex-1 flex-col items-center justify-center gap-2 py-8">
         {isLoading ? (
           <Skeleton className="h-10 w-16" />
@@ -88,10 +89,12 @@ const PotentialAmbassadorsSheet = ({
   count: number;
   loading: boolean;
 }) => {
+  const { globalDateRange } = useDateRange();
+  const [dateRange, setDateRange] = useState(globalDateRange);
+
   const { data: session } = useSession();
   const { user } = session ?? {};
   const [open, setOpen] = useState(false);
-  const [{ from, to }] = useQueryStates(dateParams);
   const columns = membersColumns();
 
   const params = useQueryStates(tableMembersParams);
@@ -99,7 +102,7 @@ const PotentialAmbassadorsSheet = ({
 
   const { data, isLoading, fetchNextPage } =
     trpc.dashboard.potentialAmbassadorsTable.useInfiniteQuery(
-      open ? { from, to, search, id, desc } : skipToken,
+      open ? { dateRange, search, id, desc } : skipToken,
       { getNextPageParam: (_, allPages) => allPages.length * 25 },
     );
 
@@ -116,6 +119,10 @@ const PotentialAmbassadorsSheet = ({
     preferences: user?.membersPreferences,
   });
 
+  useEffect(() => {
+    setDateRange(globalDateRange);
+  }, [globalDateRange]);
+
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
@@ -127,8 +134,8 @@ const PotentialAmbassadorsSheet = ({
         <SheetHeader>
           <SheetTitle>Potential ambassadors</SheetTitle>
           <SheetDescription>
-            Contributor members (min level 7) with activities in the selected
-            period.
+            Contributor members (min pulse score 150 and max 199) with
+            activities in the period.
           </SheetDescription>
         </SheetHeader>
         <div className="flex h-full flex-col divide-y overflow-hidden rounded-md border">

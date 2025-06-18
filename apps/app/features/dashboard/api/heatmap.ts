@@ -2,7 +2,7 @@ import { client } from "@conquest/clickhouse/client";
 import { ActivityHeatmapSchema } from "@conquest/zod/schemas/activity.schema";
 import { format, subDays } from "date-fns";
 import { z } from "zod";
-import { protectedProcedure } from "../trpc";
+import { protectedProcedure } from "../../../server/trpc";
 
 export const heatmap = protectedProcedure
   .input(

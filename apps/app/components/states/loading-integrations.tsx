@@ -42,7 +42,7 @@ export const LoadingIntegrations = () => {
       {syncingIntegrations.map(({ data, Icon }) => (
         <div
           key={data!.id}
-          className="flex h-10 items-center gap-2 border-t bg-background px-4 text-sm"
+          className="flex items-center h-10 gap-2 px-4 border-t bg-background"
         >
           {Icon && <Icon size={16} />}
           <p>Collecting data</p>

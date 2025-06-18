@@ -1,33 +1,44 @@
 import { client } from "@conquest/clickhouse/client";
 import { differenceInDays, format, subDays } from "date-fns";
-import { toZonedTime } from "date-fns-tz";
 import { z } from "zod";
-import { protectedProcedure } from "../trpc";
+import { protectedProcedure } from "../../../server/trpc";
 
 export const potentialAmbassadors = protectedProcedure
   .input(
     z.object({
-      from: z.date(),
-      to: z.date(),
+      dateRange: z
+        .object({
+          from: z.coerce.date().optional(),
+          to: z.coerce.date().optional(),
+        })
+        .optional(),
     }),
   )
   .query(async ({ ctx: { user }, input }) => {
     const { workspaceId } = user;
-    const { from, to } = input;
+    const { dateRange } = input;
+    const { from, to } = dateRange ?? {};
 
-    const timeZone = "Europe/Paris";
-    const fromInParis = toZonedTime(from, timeZone);
-    const toInParis = toZonedTime(to, timeZone);
+    if (!from || !to) {
+      return {
+        current: 0,
+        previous: 0,
+        variation: 0,
+      };
+    }
 
-    const _from = format(fromInParis, "yyyy-MM-dd HH:mm:ss");
-    const _to = format(toInParis, "yyyy-MM-dd HH:mm:ss");
+    const formattedFrom = format(from, "yyyy-MM-dd HH:mm:ss");
+    const formattedTo = format(to, "yyyy-MM-dd HH:mm:ss");
 
-    const difference = differenceInDays(_to, _from);
-    const previousFrom = subDays(_from, difference);
-    const previousTo = subDays(_to, difference);
-
-    const _previousFrom = format(previousFrom, "yyyy-MM-dd HH:mm:ss");
-    const _previousTo = format(previousTo, "yyyy-MM-dd HH:mm:ss");
+    const days = differenceInDays(formattedTo, formattedFrom);
+    const previousFrom = format(
+      subDays(formattedFrom, days),
+      "yyyy-MM-dd HH:mm:ss",
+    );
+    const previousTo = format(
+      subDays(formattedTo, days),
+      "yyyy-MM-dd HH:mm:ss",
+    );
 
     const result = await client.query({
       query: `
@@ -35,35 +46,33 @@ export const potentialAmbassadors = protectedProcedure
           (
             SELECT count(DISTINCT m.id)
             FROM member m FINAL
-            LEFT JOIN level l ON m.levelId = l.id
             WHERE 
               m.workspaceId = '${workspaceId}'
               AND m.isStaff = 0
-              AND l.number >= 7
-              AND l.number <= 9
+              AND m.pulse >= 150
+              AND m.pulse <= 199
               AND m.id IN (
                 SELECT memberId 
                 FROM activity 
                 WHERE
                   workspaceId = '${workspaceId}'
-                  AND createdAt BETWEEN '${_from}' AND '${_to}'
+                  AND createdAt BETWEEN '${formattedFrom}' AND '${formattedTo}'
               )
           ) as currentCount,
           (
             SELECT count(DISTINCT m.id)
             FROM member m FINAL
-            LEFT JOIN level l ON m.levelId = l.id
             WHERE 
               m.workspaceId = '${workspaceId}'
               AND m.isStaff = 0
-              AND l.number >= 7
-              AND l.number <= 9
+              AND m.pulse >= 150
+              AND m.pulse <= 199
               AND m.id IN (
                 SELECT memberId 
                 FROM activity 
                 WHERE
                   workspaceId = '${workspaceId}'
-                  AND createdAt BETWEEN '${_previousFrom}' AND '${_previousTo}'
+                  AND createdAt BETWEEN '${previousFrom}' AND '${previousTo}'
               )
           ) as previousCount
         SELECT 

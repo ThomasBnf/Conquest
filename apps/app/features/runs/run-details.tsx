@@ -1,8 +1,12 @@
+import { useWorkspace } from "@/hooks/useWorkspace";
+import { trpc } from "@/server/client";
 import { timeParser } from "@/utils/time-parser";
 import { Button } from "@conquest/ui/button";
 import { Run } from "@conquest/zod/schemas/run.schema";
+import { skipToken } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { ArrowLeft } from "lucide-react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { RunStatus } from "./run-status";
 
@@ -11,7 +15,8 @@ type Props = {
 };
 
 export const RunDetails = ({ run }: Props) => {
-  const { completedAt, createdAt } = run;
+  const { slug } = useWorkspace();
+  const { memberId, completedAt, createdAt } = run;
   const router = useRouter();
 
   const nodesWithStatus = run.runNodes.filter((node) => node.data.status);
@@ -19,6 +24,10 @@ export const RunDetails = ({ run }: Props) => {
   const runtime = completedAt ? completedAt.getTime() - createdAt.getTime() : 0;
   const error = run.runNodes.find((node) => node.data.status === "FAILED")?.data
     .error;
+
+  const { data: member } = trpc.members.get.useQuery(
+    memberId ? { id: memberId } : skipToken,
+  );
 
   return (
     <div className="divide-y">
@@ -48,6 +57,19 @@ export const RunDetails = ({ run }: Props) => {
           <p className="text-muted-foreground">Run at</p>
           <p>{format(run.createdAt, "PPp")}</p>
         </div>
+        {memberId && (
+          <div className="space-y-1">
+            <p className="text-muted-foreground">Member</p>
+            <p>
+              <Link
+                href={`/${slug}/members/${memberId}/analytics`}
+                className="hover:underline"
+              >
+                {member?.firstName} {member?.lastName}
+              </Link>
+            </p>
+          </div>
+        )}
         {error && (
           <div className="col-span-2 space-y-1">
             <p className="text-muted-foreground">Error</p>

@@ -30,7 +30,7 @@ export const GithubPr = ({ activity, member, github }: Props) => {
         <div className="flex items-center gap-2">
           <Avatar className="size-6">
             <AvatarImage src={avatarUrl ?? ""} />
-            <AvatarFallback className="text-sm">
+            <AvatarFallback>
               {firstName?.charAt(0).toUpperCase()}
               {lastName?.charAt(0).toUpperCase()}
             </AvatarFallback>
