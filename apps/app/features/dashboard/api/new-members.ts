@@ -35,7 +35,8 @@ export const newMembers = protectedProcedure
     const days = differenceInDays(to, from);
     const isWeekly = days > 30;
 
-    const previousTo = format(subDays(to, days), "yyyy-MM-dd HH:mm:ss");
+    const previousFrom = format(subDays(from, days), "yyyy-MM-dd HH:mm:ss");
+    const previousTo = format(subDays(from, 1), "yyyy-MM-dd HH:mm:ss");
 
     const result = await client.query({
       query: `
@@ -62,7 +63,7 @@ export const newMembers = protectedProcedure
           SELECT count() as total
           FROM member FINAL
           WHERE workspaceId = '${workspaceId}'
-            AND createdAt >= '${formattedFrom}'
+            AND createdAt >= '${previousFrom}'
             AND createdAt <= '${previousTo}'
         )
         SELECT 
