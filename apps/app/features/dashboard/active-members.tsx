@@ -81,7 +81,14 @@ export const ActiveMembers = () => {
   );
 
   const { profiles, total, growthRate } = data || {};
-  const maxValue = getMaxValue(profiles as WeeklyProfileData[], sources);
+
+  const chartData =
+    profiles?.map((profile) => ({
+      week: profile.week,
+      ...profile.detail,
+    })) || [];
+
+  const maxValue = getMaxValue(chartData as WeeklyProfileData[], sources);
   const days = getDays(dateRange);
   const dateFormat = days > 30 ? "MMM yyyy" : "MMM dd";
 
@@ -123,7 +130,7 @@ export const ActiveMembers = () => {
                   <p>{source}</p>
                 </div>
                 <p className="font-medium">
-                  {profiles?.reduce((acc, curr) => acc + curr[source], 0) || 0}
+                  {profiles?.at(-1)?.cumulative?.[source] || 0}
                 </p>
               </div>
             ))}
@@ -136,7 +143,7 @@ export const ActiveMembers = () => {
         ) : (
           <ChartContainer config={chartConfig}>
             <LineChart
-              data={profiles}
+              data={chartData}
               margin={{
                 top: 20,
                 left: -25,

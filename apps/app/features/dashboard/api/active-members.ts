@@ -44,7 +44,7 @@ export const activeMembers = protectedProcedure
           SELECT
             ${isWeekly ? "toStartOfWeek(a.createdAt)" : "toDate(a.createdAt)"} AS week,
             p.attributes.source AS source,
-            count(DISTINCT a.memberId) AS activeMembers
+            groupArray(DISTINCT a.memberId) AS memberIds
           FROM activity a
           JOIN profile p FINAL ON p.memberId = a.memberId AND p.workspaceId = a.workspaceId
           WHERE a.createdAt >= '${formattedFrom}'
@@ -83,7 +83,7 @@ export const activeMembers = protectedProcedure
     const { data } = await result.json<{
       week: string;
       source: string;
-      activeMembers: number;
+      memberIds: string[];
       currentTotal: number;
       previousTotal: number;
     }>();
@@ -97,21 +97,44 @@ export const activeMembers = protectedProcedure
         ? ((currentTotal - previousTotal) / previousTotal) * 100
         : 0;
 
-    const profiles: Array<{ week: string } & Record<Source, number>> = [];
+    const profiles: Array<{
+      week: string;
+      cumulative: Record<Source, number>;
+      detail: Record<Source, number>;
+    }> = [];
+    const cumulativeMemberIds = {} as Record<Source, Set<string>>;
+
+    for (const source of sources) {
+      cumulativeMemberIds[source] = new Set();
+    }
 
     for (const period of periods) {
-      const periodData: { week: string } & Record<Source, number> = {
-        week: period,
-      } as { week: string } & Record<Source, number>;
+      const cumulativeData: Record<Source, number> = {} as Record<
+        Source,
+        number
+      >;
+      const detailData: Record<Source, number> = {} as Record<Source, number>;
 
       for (const source of sources) {
         const sourceData = data.find(
           (d) => d.week === period && d.source === source,
         );
-        periodData[source] = Number(sourceData?.activeMembers) || 0;
+
+        detailData[source] = sourceData?.memberIds?.length || 0;
+
+        if (sourceData?.memberIds) {
+          for (const id of sourceData.memberIds) {
+            cumulativeMemberIds[source].add(id);
+          }
+        }
+        cumulativeData[source] = cumulativeMemberIds[source].size;
       }
 
-      profiles.push(periodData);
+      profiles.push({
+        week: period,
+        cumulative: cumulativeData,
+        detail: detailData,
+      });
     }
 
     return {
