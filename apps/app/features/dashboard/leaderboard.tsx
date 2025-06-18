@@ -42,30 +42,36 @@ export const Leaderboard = () => {
           <p className="flex-1">Member</p>
           <p>Pulse Score</p>
         </div>
-        <div className="flex flex-col">
-          {data?.map((member) => (
-            <div key={member.memberId} className="flex items-center py-2">
-              <div className="flex w-full items-center justify-between">
-                <Link
-                  href={`/${slug}/members/${member.memberId}/analytics`}
-                  className="flex items-center gap-2 hover:underline"
-                >
-                  <Avatar className="size-7">
-                    <AvatarImage src={member.avatarUrl ?? ""} />
-                    <AvatarFallback>
-                      {member.firstName?.charAt(0).toUpperCase()}
-                      {member.lastName?.charAt(0).toUpperCase()}
-                    </AvatarFallback>
-                  </Avatar>
-                  <p>
-                    {member.firstName} {member.lastName}
-                  </p>
-                </Link>
-                <p>{member.pulseScore}</p>
+        {data?.length ? (
+          <div className="flex flex-col">
+            {data.map((member) => (
+              <div key={member.memberId} className="flex items-center py-2">
+                <div className="flex w-full items-center justify-between">
+                  <Link
+                    href={`/${slug}/members/${member.memberId}/analytics`}
+                    className="flex items-center gap-2 hover:underline"
+                  >
+                    <Avatar className="size-7">
+                      <AvatarImage src={member.avatarUrl ?? ""} />
+                      <AvatarFallback>
+                        {member.firstName?.charAt(0).toUpperCase()}
+                        {member.lastName?.charAt(0).toUpperCase()}
+                      </AvatarFallback>
+                    </Avatar>
+                    <p>
+                      {member.firstName} {member.lastName}
+                    </p>
+                  </Link>
+                  <p>{member.pulseScore}</p>
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        ) : (
+          <div className="flex h-40 items-center justify-center">
+            <p className="text-muted-foreground">No data available</p>
+          </div>
+        )}
       </div>
     </div>
   );

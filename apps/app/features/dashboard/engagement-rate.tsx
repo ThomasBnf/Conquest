@@ -102,11 +102,11 @@ export const EngagementRate = () => {
         <div className="flex justify-between">
           <div className="space-y-2">
             <p className="text-muted-foreground">Overall engagement rate</p>
-            {!data || isLoading ? (
+            {isLoading ? (
               <Skeleton className="h-8 w-14" />
             ) : (
               <div className="flex items-center gap-2">
-                <p className="font-medium text-2xl">{overallRate}%</p>
+                <p className="font-medium text-2xl">{overallRate ?? 0}%</p>
                 <Percentage variation={growthRate} isLoading={isLoading} />
               </div>
             )}

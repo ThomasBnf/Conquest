@@ -30,6 +30,7 @@ export const totalMembers = protectedProcedure
       };
     }
 
+    const formattedFrom = format(from, "yyyy-MM-dd HH:mm:ss");
     const formattedTo = format(to, "yyyy-MM-dd HH:mm:ss");
     const days = differenceInDays(to, from);
     const isWeekly = days > 30;
@@ -45,9 +46,20 @@ export const totalMembers = protectedProcedure
             count() as count
           FROM profile FINAL
           WHERE workspaceId = '${workspaceId}'
+            AND createdAt >= '${formattedFrom}'
             AND createdAt <= '${formattedTo}'
             AND attributes.source IN (${sources.map((s) => `'${s}'`).join(",")})
           GROUP BY week, source
+        ),
+        initial_totals AS (
+          SELECT 
+            attributes.source as source,
+            count() as initialCount
+          FROM profile FINAL
+          WHERE workspaceId = '${workspaceId}'
+            AND createdAt < '${formattedFrom}'
+            AND attributes.source IN (${sources.map((s) => `'${s}'`).join(",")})
+          GROUP BY source
         ),
         current_total AS (
           SELECT count() as total
@@ -64,8 +76,10 @@ export const totalMembers = protectedProcedure
         SELECT 
           period_data.*,
           (SELECT total FROM current_total) AS currentTotal,
-          (SELECT total FROM previous_total) AS previousTotal
+          (SELECT total FROM previous_total) AS previousTotal,
+          COALESCE(initial_totals.initialCount, 0) as initialCount
         FROM period_data
+        LEFT JOIN initial_totals ON period_data.source = initial_totals.source
       `,
     });
 
@@ -75,6 +89,7 @@ export const totalMembers = protectedProcedure
       count: number;
       currentTotal: number;
       previousTotal: number;
+      initialCount: number;
     }>();
 
     const periods = getUniquePeriods(from, to);
@@ -90,7 +105,8 @@ export const totalMembers = protectedProcedure
     const cumulativeTotals = {} as Record<Source, number>;
 
     for (const source of sources) {
-      cumulativeTotals[source] = 0;
+      const sourceData = data.find((d) => d.source === source);
+      cumulativeTotals[source] = Number(sourceData?.initialCount) || 0;
     }
 
     for (const period of periods) {

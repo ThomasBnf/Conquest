@@ -63,6 +63,8 @@ export const IntegrationsPicker = ({ sources, setSources }: Props) => {
     setSources(allSources ?? []);
   }, [isLoading]);
 
+  if (!integrations?.length) return null;
+
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
