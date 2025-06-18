@@ -39,8 +39,8 @@ export const leaderboard = protectedProcedure
       return [];
     }
 
-    const formattedFrom = format(from, "yyyy-MM-dd");
-    const formattedTo = format(to, "yyyy-MM-dd");
+    const formattedFrom = format(from, "yyyy-MM-dd HH:mm:ss");
+    const formattedTo = format(to, "yyyy-MM-dd HH:mm:ss");
 
     const activitiesResult = await client.query({
       query: `

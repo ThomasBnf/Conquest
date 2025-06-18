@@ -29,16 +29,10 @@ export const potentialAmbassadors = protectedProcedure
 
     const formattedFrom = format(from, "yyyy-MM-dd HH:mm:ss");
     const formattedTo = format(to, "yyyy-MM-dd HH:mm:ss");
+    const days = differenceInDays(to, from);
 
-    const days = differenceInDays(formattedTo, formattedFrom);
-    const previousFrom = format(
-      subDays(formattedFrom, days),
-      "yyyy-MM-dd HH:mm:ss",
-    );
-    const previousTo = format(
-      subDays(formattedTo, days),
-      "yyyy-MM-dd HH:mm:ss",
-    );
+    const previousFrom = format(subDays(from, days), "yyyy-MM-dd HH:mm:ss");
+    const previousTo = format(subDays(from, 1), "yyyy-MM-dd HH:mm:ss");
 
     const result = await client.query({
       query: `

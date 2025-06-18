@@ -33,12 +33,8 @@ export const atRiskMembersTable = protectedProcedure
 
     const orderBy = orderByParser({ id, desc, type: "members" });
 
-    const timeZone = "Europe/Paris";
-    const fromInParis = toZonedTime(from, timeZone);
-    const toInParis = toZonedTime(to, timeZone);
-
-    const _from = format(fromInParis, "yyyy-MM-dd HH:mm:ss");
-    const _to = format(toInParis, "yyyy-MM-dd HH:mm:ss");
+    const formattedFrom = format(from, "yyyy-MM-dd HH:mm:ss");
+    const formattedTo = format(to, "yyyy-MM-dd HH:mm:ss");
 
     const result = await client.query({
       query: `
@@ -66,7 +62,7 @@ export const atRiskMembersTable = protectedProcedure
             SELECT memberId 
             FROM activity 
             WHERE workspaceId = '${workspaceId}'
-            AND createdAt BETWEEN '${_from}' AND '${_to}'
+            AND createdAt BETWEEN '${formattedFrom}' AND '${formattedTo}'
           )
         ${
           search

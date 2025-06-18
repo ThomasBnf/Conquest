@@ -1,6 +1,5 @@
 import { client } from "@conquest/clickhouse/client";
 import { differenceInDays, format, subDays } from "date-fns";
-import { toZonedTime } from "date-fns-tz";
 import { z } from "zod";
 import { protectedProcedure } from "../../../server/trpc";
 
@@ -28,19 +27,12 @@ export const atRiskMembers = protectedProcedure
       };
     }
 
-    const timeZone = "Europe/Paris";
-    const fromInParis = toZonedTime(from, timeZone);
-    const toInParis = toZonedTime(to, timeZone);
+    const formattedFrom = format(from, "yyyy-MM-dd HH:mm:ss");
+    const formattedTo = format(to, "yyyy-MM-dd HH:mm:ss");
+    const days = differenceInDays(to, from);
 
-    const _from = format(fromInParis, "yyyy-MM-dd HH:mm:ss");
-    const _to = format(toInParis, "yyyy-MM-dd HH:mm:ss");
-
-    const difference = differenceInDays(_to, _from);
-    const previousFrom = subDays(_from, difference);
-    const previousTo = subDays(_to, difference);
-
-    const _previousFrom = format(previousFrom, "yyyy-MM-dd HH:mm:ss");
-    const _previousTo = format(previousTo, "yyyy-MM-dd HH:mm:ss");
+    const previousFrom = format(subDays(from, days), "yyyy-MM-dd HH:mm:ss");
+    const previousTo = format(subDays(from, 1), "yyyy-MM-dd HH:mm:ss");
 
     const result = await client.query({
       query: `
@@ -61,7 +53,7 @@ export const atRiskMembers = protectedProcedure
               FROM activity 
               WHERE 
                 workspaceId = '${workspaceId}'
-                AND createdAt BETWEEN '${_from}' AND '${_to}'
+                AND createdAt BETWEEN '${formattedFrom}' AND '${formattedTo}'
             )
         ) as currentCount,
         (
@@ -75,7 +67,7 @@ export const atRiskMembers = protectedProcedure
               SELECT memberId 
               FROM activity 
               WHERE workspaceId = '${workspaceId}'
-                AND createdAt BETWEEN '${_previousFrom}' AND '${_previousTo}'
+                AND createdAt BETWEEN '${previousFrom}' AND '${previousTo}'
             )
         ) as previousCount
       `,
