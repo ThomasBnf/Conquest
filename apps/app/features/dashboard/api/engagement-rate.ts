@@ -25,8 +25,9 @@ export const engagementRate = protectedProcedure
     if (!from || !to) {
       return {
         overallRate: 0,
-        periodRate: [],
         growthRate: 0,
+        week: [],
+        engagementByIntegration: {},
       };
     }
 
@@ -53,11 +54,36 @@ export const engagementRate = protectedProcedure
             AND (p.attributes.source IN (${sources.map((source) => `'${source}'`).join(", ")}) OR p.attributes.source IS NULL)
           GROUP BY week, p.attributes.source
         ),
-        current_total AS (
-          SELECT COUNT(DISTINCT memberId) AS total
-          FROM activity
-          WHERE workspaceId = '${workspaceId}'
-            AND createdAt <= '${formattedTo}'
+        total_members AS (
+          SELECT COUNT(DISTINCT m.id) AS total
+          FROM member m
+          LEFT JOIN profile p FINAL ON p.memberId = m.id AND p.workspaceId = m.workspaceId
+          WHERE m.workspaceId = '${workspaceId}'
+            AND m.createdAt <= '${formattedTo}'
+            AND (p.attributes.source IN (${sources.map((source) => `'${source}'`).join(", ")}) OR p.attributes.source IS NULL)
+        ),
+        total_members_by_source AS (
+          SELECT 
+            p.attributes.source AS source,
+            COUNT(DISTINCT m.id) AS total
+          FROM member m
+          LEFT JOIN profile p FINAL ON p.memberId = m.id AND p.workspaceId = m.workspaceId
+          WHERE m.workspaceId = '${workspaceId}'
+            AND m.createdAt <= '${formattedTo}'
+            AND (p.attributes.source IN (${sources.map((source) => `'${source}'`).join(", ")}) OR p.attributes.source IS NULL)
+          GROUP BY p.attributes.source
+        ),
+        active_members_by_source AS (
+          SELECT 
+            p.attributes.source AS source,
+            count(DISTINCT a.memberId) AS activeMembers
+          FROM activity a
+          LEFT JOIN profile p FINAL ON p.memberId = a.memberId AND p.workspaceId = a.workspaceId
+          WHERE a.workspaceId = '${workspaceId}'
+            AND a.createdAt >= '${formattedFrom}'
+            AND a.createdAt <= '${formattedTo}'
+            AND (p.attributes.source IN (${sources.map((source) => `'${source}'`).join(", ")}) OR p.attributes.source IS NULL)
+          GROUP BY p.attributes.source
         ),
         current_active_total AS (
           SELECT count(DISTINCT a.memberId) AS activeMembers
@@ -69,10 +95,12 @@ export const engagementRate = protectedProcedure
             AND (p.attributes.source IN (${sources.map((source) => `'${source}'`).join(", ")}) OR p.attributes.source IS NULL)
         ),
         previous_total AS (
-          SELECT COUNT(DISTINCT memberId) AS total
-          FROM activity
-          WHERE workspaceId = '${workspaceId}'
-            AND createdAt <= '${previousTo}'
+          SELECT COUNT(DISTINCT m.id) AS total
+          FROM member m
+          LEFT JOIN profile p FINAL ON p.memberId = m.id AND p.workspaceId = m.workspaceId
+          WHERE m.workspaceId = '${workspaceId}'
+            AND m.createdAt <= '${previousTo}'
+            AND (p.attributes.source IN (${sources.map((source) => `'${source}'`).join(", ")}) OR p.attributes.source IS NULL)
         ),
         previous_active_total AS (
           SELECT count(DISTINCT a.memberId) AS activeMembers
@@ -85,12 +113,44 @@ export const engagementRate = protectedProcedure
         )
         SELECT 
           current_period.*,
-          (SELECT total FROM current_total) AS currentTotal,
+          (SELECT total FROM total_members) AS currentTotal,
           (SELECT activeMembers FROM current_active_total) AS currentActiveTotal,
           (SELECT total FROM previous_total) AS previousTotal,
           (SELECT activeMembers FROM previous_active_total) AS previousActiveTotal
         FROM current_period
         ORDER BY week ASC
+      `,
+    });
+
+    const sourceStatsResult = await client.query({
+      query: `
+        SELECT 
+          tmbs.source,
+          tmbs.total AS totalMembers,
+          COALESCE(ambs.activeMembers, 0) AS activeMembers
+        FROM (
+          SELECT 
+            p.attributes.source AS source,
+            COUNT(DISTINCT m.id) AS total
+          FROM member m
+          LEFT JOIN profile p FINAL ON p.memberId = m.id AND p.workspaceId = m.workspaceId
+          WHERE m.workspaceId = '${workspaceId}'
+            AND m.createdAt <= '${formattedTo}'
+            AND (p.attributes.source IN (${sources.map((source) => `'${source}'`).join(", ")}) OR p.attributes.source IS NULL)
+          GROUP BY p.attributes.source
+        ) tmbs
+        LEFT JOIN (
+          SELECT 
+            p.attributes.source AS source,
+            count(DISTINCT a.memberId) AS activeMembers
+          FROM activity a
+          LEFT JOIN profile p FINAL ON p.memberId = a.memberId AND p.workspaceId = a.workspaceId
+          WHERE a.workspaceId = '${workspaceId}'
+            AND a.createdAt >= '${formattedFrom}'
+            AND a.createdAt <= '${formattedTo}'
+            AND (p.attributes.source IN (${sources.map((source) => `'${source}'`).join(", ")}) OR p.attributes.source IS NULL)
+          GROUP BY p.attributes.source
+        ) ambs ON tmbs.source = ambs.source
       `,
     });
 
@@ -104,6 +164,12 @@ export const engagementRate = protectedProcedure
       previousActiveTotal: number;
     }>();
 
+    const { data: sourceStats } = await sourceStatsResult.json<{
+      source: string | null;
+      totalMembers: number;
+      activeMembers: number;
+    }>();
+
     const periods = getUniquePeriods(from, to);
 
     const currentTotal = Number(data[0]?.currentTotal) || 0;
@@ -115,10 +181,12 @@ export const engagementRate = protectedProcedure
       currentTotal > 0
         ? Math.round((currentActiveTotal / currentTotal) * 100 * 100) / 100
         : 0;
+
     const previousOverallRate =
       previousTotal > 0
         ? Math.round((previousActiveTotal / previousTotal) * 100 * 100) / 100
         : 0;
+
     const growthRate =
       previousOverallRate > 0
         ? Math.round(
@@ -128,30 +196,63 @@ export const engagementRate = protectedProcedure
           ) / 100
         : 0;
 
-    const periodRate: Array<{ week: string } & Record<Source, number>> = [];
+    const week: Array<{ week: string } & Record<Source, number>> = [];
+
+    const sourceTotalsMap = new Map<string | null, number>();
+    for (const stat of sourceStats) {
+      sourceTotalsMap.set(stat.source, Number(stat.totalMembers) || 0);
+    }
 
     for (const period of periods) {
       const periodData = data.filter((d) => d.week === period);
-      const periodRateData: { week: string } & Record<Source, number> = {
+
+      const periodRates: { week: string } & Record<Source, number> = {
         week: period,
       } as { week: string } & Record<Source, number>;
 
       for (const source of sources) {
         const sourceData = periodData.find((d) => d.source === source);
         const activeMembers = Number(sourceData?.activeMembers) || 0;
+        const sourceTotal = sourceTotalsMap.get(source) || 0;
+
         const rate =
-          currentTotal > 0
-            ? Math.round((activeMembers / currentTotal) * 100 * 100) / 100
+          sourceTotal > 0
+            ? Math.round((activeMembers / sourceTotal) * 100 * 100) / 100
             : 0;
-        periodRateData[source] = rate;
+        periodRates[source] = rate;
       }
 
-      periodRate.push(periodRateData);
+      week.push(periodRates);
+    }
+
+    const engagementByIntegration: Record<Source, number> = {} as Record<
+      Source,
+      number
+    >;
+
+    for (const stat of sourceStats) {
+      if (stat.source && sources.includes(stat.source as Source)) {
+        const totalMembers = Number(stat.totalMembers) || 0;
+        const activeMembers = Number(stat.activeMembers) || 0;
+        const rate =
+          totalMembers > 0
+            ? Math.round((activeMembers / totalMembers) * 100 * 100) / 100
+            : 0;
+
+        engagementByIntegration[stat.source as Source] = rate;
+      }
+    }
+
+    for (const source of sources) {
+      if (engagementByIntegration[source] === undefined) {
+        engagementByIntegration[source] = 0;
+      }
     }
 
     return {
       overallRate,
-      periodRate,
       growthRate,
+      week,
+      engagementByIntegration,
     };
   });

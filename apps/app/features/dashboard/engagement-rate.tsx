@@ -80,8 +80,8 @@ export const EngagementRate = () => {
       : skipToken,
   );
 
-  const { overallRate, periodRate, growthRate } = data ?? {};
-  const maxValue = getMaxValue(periodRate as EngagementRateData[], sources);
+  const { overallRate, week, growthRate, engagementByIntegration } = data ?? {};
+  const maxValue = getMaxValue(week as EngagementRateData[], sources);
   const days = getDays(dateRange);
   const dateFormat = days > 30 ? "MMM yyyy" : "MMM dd";
 
@@ -129,7 +129,12 @@ export const EngagementRate = () => {
                     <p>{source}</p>
                   </div>
                   <p className="font-medium">
-                    {periodRate?.at(-1)?.[source]?.toFixed(1) || 0}%
+                    {(
+                      (engagementByIntegration as Record<string, number>)?.[
+                        source
+                      ] || 0
+                    ).toFixed(2)}
+                    %
                   </p>
                 </div>
               ))}
@@ -142,7 +147,7 @@ export const EngagementRate = () => {
           ) : (
             <ChartContainer config={chartConfig}>
               <LineChart
-                data={periodRate}
+                data={week}
                 margin={{
                   top: 20,
                   right: 20,
