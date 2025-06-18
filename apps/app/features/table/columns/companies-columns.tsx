@@ -5,6 +5,7 @@ import { useTable } from "@/hooks/useTable";
 import { Checkbox } from "@conquest/ui/checkbox";
 import { Company } from "@conquest/zod/schemas/company.schema";
 import { DateCell } from "../cells/date-cell";
+import { DateDistanceCell } from "../cells/date-distance-cell";
 import { NameCell } from "../cells/name-cell";
 import { TagsCell } from "../cells/tags-cell";
 import { ColumnHeader } from "./column-header";
@@ -129,13 +130,13 @@ export const companiesColumns = (): Column<Company>[] => {
       key: "foundedAt",
       header: ({ table }) => (
         <ColumnHeader
-          columnId="founded_at"
+          columnId="foundedAt"
           title="Founded at"
           type="Date"
           table={table}
         />
       ),
-      cell: ({ item }) => <DateCell date={item.foundedAt} />,
+      cell: ({ item }) => <DateDistanceCell date={item.foundedAt} />,
       width: 250,
     },
     {
@@ -152,10 +153,10 @@ export const companiesColumns = (): Column<Company>[] => {
       width: 250,
     },
     {
-      key: "created_at",
+      key: "createdAt",
       header: ({ table }) => (
         <ColumnHeader
-          columnId="created_at"
+          columnId="createdAt"
           title="Created at"
           type="Date"
           table={table}

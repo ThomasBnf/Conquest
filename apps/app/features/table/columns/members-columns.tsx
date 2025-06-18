@@ -10,6 +10,7 @@ import { Checkbox } from "@conquest/ui/checkbox";
 import { Level } from "@conquest/ui/icons/Level";
 import { FullMember } from "@conquest/zod/schemas/member.schema";
 import { DateCell } from "../cells/date-cell";
+import { DateDistanceCell } from "../cells/date-distance-cell";
 import { FullNameCell } from "../cells/full-name-cell";
 import { ProfilesCell } from "../cells/profiles-cell";
 import { TagsCell } from "../cells/tags-cell";
@@ -217,7 +218,7 @@ export const membersColumns = (): Column<FullMember>[] => {
           table={table}
         />
       ),
-      cell: ({ item }) => <DateCell date={item.firstActivity} />,
+      cell: ({ item }) => <DateDistanceCell date={item.firstActivity} />,
       width: 250,
     },
     {
@@ -230,7 +231,7 @@ export const membersColumns = (): Column<FullMember>[] => {
           table={table}
         />
       ),
-      cell: ({ item }) => <DateCell date={item.lastActivity} />,
+      cell: ({ item }) => <DateDistanceCell date={item.lastActivity} />,
       width: 250,
     },
     {
