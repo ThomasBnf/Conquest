@@ -1,5 +1,6 @@
 "use client";
 
+import { TooltipInfo } from "@/components/badges/tooltip-info";
 import { IsLoading } from "@/components/states/is-loading";
 import { useDateRange } from "@/hooks/useDateRange";
 import { trpc } from "@/server/client";
@@ -99,7 +100,10 @@ export const TotalMembers = () => {
       </div>
       <div className="flex justify-between">
         <div className="space-y-2">
-          <p className="text-muted-foreground">Total unique members</p>
+          <div className="flex items-center gap-2">
+            <p className="text-muted-foreground">Total unique members</p>
+            <TooltipInfo content="A member is counted only once, even if they have profiles on multiple integrations." />
+          </div>
           {isLoading ? (
             <Skeleton className="h-8 w-14" />
           ) : (

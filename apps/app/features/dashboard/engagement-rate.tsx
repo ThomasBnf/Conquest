@@ -1,5 +1,6 @@
 "use client";
 
+import { TooltipInfo } from "@/components/badges/tooltip-info";
 import { IsLoading } from "@/components/states/is-loading";
 import { useDateRange } from "@/hooks/useDateRange";
 import { trpc } from "@/server/client";
@@ -101,7 +102,10 @@ export const EngagementRate = () => {
       <div className="flex flex-col gap-6">
         <div className="flex justify-between">
           <div className="space-y-2">
-            <p className="text-muted-foreground">Overall engagement rate</p>
+            <div className="flex items-center gap-2">
+              <p className="text-muted-foreground">Overall engagement rate</p>
+              <TooltipInfo content="The overall engagement rate is the average of the engagement rates of all integrations." />
+            </div>
             {isLoading ? (
               <Skeleton className="h-8 w-14" />
             ) : (
