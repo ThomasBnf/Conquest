@@ -1,5 +1,5 @@
-import { updateProfile } from "@conquest/clickhouse/profile/updateProfile";
 import { discordClient } from "@conquest/db/discord";
+import { updateProfile } from "@conquest/db/profile/updateProfile";
 import { Profile } from "@conquest/zod/schemas/profile.schema";
 import { APIUser, Routes } from "discord-api-types/v10";
 

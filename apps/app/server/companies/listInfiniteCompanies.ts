@@ -1,4 +1,4 @@
-import { client } from "@conquest/clickhouse/client";
+import { prisma } from "@conquest/db/prisma";
 import { CompanySchema } from "@conquest/zod/schemas/company.schema";
 import { z } from "zod";
 import { protectedProcedure } from "../trpc";
@@ -14,21 +14,17 @@ export const listInfiniteCompanies = protectedProcedure
     const { workspaceId } = user;
     const { cursor, search } = input;
 
-    const searchParsed = search.toLowerCase().trim();
-
-    const result = await client.query({
-      query: `
-        SELECT *
-        FROM company c FINAL
-        WHERE (
-          ${searchParsed ? `positionCaseInsensitive(c.name, '${searchParsed}') > 0` : "true"}
-        )
-        AND c.workspaceId = '${workspaceId}'
-        ORDER BY c.name ASC, c.id ASC
-        ${cursor ? `LIMIT 25 OFFSET ${cursor}` : "LIMIT 25"}
-      `,
+    const companies = await prisma.company.findMany({
+      where: {
+        workspaceId,
+        name: { contains: search, mode: "insensitive" },
+      },
+      orderBy: {
+        name: "asc",
+      },
+      skip: cursor ?? undefined,
+      take: 25,
     });
 
-    const { data } = await result.json();
-    return CompanySchema.array().parse(data);
+    return CompanySchema.array().parse(companies);
   });

@@ -79,7 +79,7 @@ export const TagPicker = ({
       <PopoverTrigger asChild onClick={onClick}>
         <div
           className={cn(
-            "flex w-full cursor-pointer flex-wrap items-center gap-1",
+            "flex flex-wrap gap-1 items-center w-full cursor-pointer",
             className,
           )}
         >
@@ -111,7 +111,7 @@ export const TagPicker = ({
                 ?.map((tag) => (
                   <CommandItem key={tag.id} className="group">
                     <div
-                      className="flex h-full w-full items-center"
+                      className="flex items-center w-full h-full"
                       onClick={() => onSelectTag(tag.id)}
                     >
                       <Checkbox
@@ -130,10 +130,10 @@ export const TagPicker = ({
                   <span className="mr-2">Create</span>
                   <Badge variant="outline">
                     <div
-                      className="size-2 shrink-0 rounded-full"
+                      className="rounded-full size-2 shrink-0"
                       style={{ backgroundColor: "#0070f3" }}
                     />
-                    <p className="whitespace-nowrap leading-none">{value}</p>
+                    <p className="leading-none whitespace-nowrap">{value}</p>
                   </Badge>
                 </CommandItem>
               </CommandGroup>

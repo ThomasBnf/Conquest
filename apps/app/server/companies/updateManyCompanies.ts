@@ -1,4 +1,4 @@
-import { updateCompany } from "@conquest/clickhouse/company/updateCompany";
+import { updateCompany } from "@conquest/db/company/updateCompany";
 import { CompanySchema } from "@conquest/zod/schemas/company.schema";
 import { z } from "zod";
 import { protectedProcedure } from "../trpc";

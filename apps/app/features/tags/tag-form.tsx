@@ -8,8 +8,8 @@ import type { Tag } from "@conquest/zod/schemas/tag.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Check } from "lucide-react";
 import { useSession } from "next-auth/react";
-import { useForm } from "react-hook-form";
 import { v4 as uuid } from "uuid";
+import { useForm } from "react-hook-form";
 import { useCreateTag } from "./mutations/useCreateTag";
 import { useUpdateTag } from "./mutations/useUpdateTag";
 import { type FormTag, FormTagSchema } from "./schema/form.schema";
@@ -74,7 +74,7 @@ export const TagForm = ({ tag, setIsVisible, setIsEditing }: Props) => {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="flex items-center gap-2 rounded-md border bg-muted p-2"
+        className="flex gap-2 items-center p-2 rounded-md border bg-muted"
       >
         <FormField
           control={form.control}
@@ -86,18 +86,18 @@ export const TagForm = ({ tag, setIsVisible, setIsEditing }: Props) => {
                   <PopoverTrigger asChild>
                     <Button variant="outline" className="size-8">
                       <div
-                        className="size-3 rounded-full"
+                        className="rounded-full size-3"
                         style={{ backgroundColor: field.value }}
                       />
                     </Button>
                   </PopoverTrigger>
-                  <PopoverContent className="flex w-fit items-center gap-4 p-2">
+                  <PopoverContent className="flex gap-4 items-center p-2 w-fit">
                     {COLORS.map((color) => (
                       <button
                         type="button"
                         key={color.hex}
                         onClick={() => field.onChange(color.hex)}
-                        className="flex size-4 cursor-pointer items-center justify-center rounded-full text-white transition-transform hover:scale-110"
+                        className="flex justify-center items-center text-white rounded-full transition-transform cursor-pointer size-4 hover:scale-110"
                         style={{
                           backgroundColor: color.hex,
                         }}
@@ -131,7 +131,7 @@ export const TagForm = ({ tag, setIsVisible, setIsEditing }: Props) => {
             </FormItem>
           )}
         />
-        <div className="flex items-center gap-2">
+        <div className="flex gap-2 items-center">
           <Button type="button" variant="outline" onClick={onCancel}>
             Cancel
           </Button>

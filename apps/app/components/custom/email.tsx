@@ -13,12 +13,19 @@ export const Email = ({ member, onUpdate, onCancel }: Props) => {
   const [email, setEmail] = useState("");
 
   const onConfirm = () => {
-    if (!email.trim()) return;
+    const formattedEmail = email.trim().toLowerCase();
+
+    if (!formattedEmail) return;
+
+    if (member.emails.includes(formattedEmail)) {
+      return toast.error("Email already exists");
+    }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) return toast.error("Invalid email format");
 
-    const formattedEmail = email.trim().toLowerCase();
+    if (!emailRegex.test(formattedEmail)) {
+      return toast.error("Invalid email format");
+    }
 
     const updatedEmails = [...member.emails, formattedEmail];
     onUpdate("emails", updatedEmails);

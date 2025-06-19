@@ -1,5 +1,5 @@
 import { FormLevelSchema } from "@/features/levels/schema/form.schema";
-import { createLevel as _createLevel } from "@conquest/clickhouse/level/createLevel";
+import { createLevel as _createLevel } from "@conquest/db/level/createLevel";
 import { protectedProcedure } from "../trpc";
 
 export const createLevel = protectedProcedure

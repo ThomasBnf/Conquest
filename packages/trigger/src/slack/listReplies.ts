@@ -1,5 +1,5 @@
-import { createActivity } from "@conquest/clickhouse/activity/createActivity";
-import { getProfile } from "@conquest/clickhouse/profile/getProfile";
+import { createActivity } from "@conquest/db/activity/createActivity";
+import { getProfile } from "@conquest/db/profile/getProfile";
 import type { Channel } from "@conquest/zod/schemas/channel.schema";
 import type { WebClient } from "@slack/web-api";
 

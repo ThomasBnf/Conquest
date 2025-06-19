@@ -145,7 +145,7 @@ export const ActionPanel = () => {
                   onSelect={() => onSelect(node)}
                   className="space-x-2"
                 >
-                  <div className="rounded-md border bg-background p-1">
+                  <div className="p-1 rounded-md border bg-background">
                     {node.data.icon === "Slack" ? (
                       <Slack size={16} />
                     ) : node.data.icon === "Discord" ? (
@@ -157,7 +157,7 @@ export const ActionPanel = () => {
                       />
                     )}
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex gap-2 items-center">
                     <p className="flex-1">{node.data.label}</p>
                     {node.data.type === "discord-message" && (
                       <Tooltip>
@@ -182,7 +182,7 @@ export const ActionPanel = () => {
                     )}
                   </div>
                   {!hasPermissions && group.category === "Discord" && (
-                    <div className="rounded-md border bg-background p-1">
+                    <div className="p-1 rounded-md border bg-background">
                       <Plus size={16} />
                     </div>
                   )}

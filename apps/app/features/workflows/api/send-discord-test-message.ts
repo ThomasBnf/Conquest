@@ -1,5 +1,5 @@
 import { protectedProcedure } from "@/server/trpc";
-import { getProfileBySource } from "@conquest/clickhouse/profile/getProfileBySource";
+import { getProfileBySource } from "@conquest/db/profile/getProfileBySource";
 import { discordClient } from "@conquest/db/discord";
 import { getIntegrationBySource } from "@conquest/db/integrations/getIntegrationBySource";
 import { decrypt } from "@conquest/db/utils/decrypt";
@@ -49,8 +49,9 @@ export const sendDiscordTestMessage = protectedProcedure
     }
 
     const profile = await getProfileBySource({
-      source: "Discord",
       memberId: member.id,
+      source: "Discord",
+      workspaceId,
     });
 
     if (!profile?.externalId) {

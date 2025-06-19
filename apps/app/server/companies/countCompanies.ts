@@ -1,4 +1,4 @@
-import { client } from "@conquest/clickhouse/client";
+import { prisma } from "@conquest/db/prisma";
 import { z } from "zod";
 import { protectedProcedure } from "../trpc";
 
@@ -12,20 +12,15 @@ export const countCompanies = protectedProcedure
     const { workspaceId } = user;
     const { search } = input;
 
-    const searchParsed = search.toLowerCase().trim();
-
-    const result = await client.query({
-      query: `
-        SELECT count(*) as total
-        FROM company AS c FINAL
-        WHERE (
-          ${searchParsed ? `positionCaseInsensitive(c.name, '${searchParsed}') > 0` : "true"}
-        )
-        AND c.workspaceId = '${workspaceId}'
-      `,
+    const count = await prisma.company.count({
+      where: {
+        workspaceId,
+        name: {
+          contains: search,
+          mode: "insensitive",
+        },
+      },
     });
 
-    const { data } = await result.json();
-    const count = data as Array<{ total: number }>;
-    return Number(count[0]?.total);
+    return count;
   });

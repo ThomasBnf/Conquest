@@ -56,7 +56,7 @@ export const EditLevelDialog = ({ level, open, setOpen }: Props) => {
 
   const onSubmit = async (data: FormLevel) => {
     setLoading(true);
-    await mutateAsync({ id: level.id, data });
+    await mutateAsync({ number: level.number, data });
   };
 
   return (

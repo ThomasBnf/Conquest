@@ -1,7 +1,7 @@
-import { createActivity } from "@conquest/clickhouse/activity/createActivity";
-import { createMember } from "@conquest/clickhouse/member/createMember";
-import { createProfile } from "@conquest/clickhouse/profile/createProfile";
-import { getProfile } from "@conquest/clickhouse/profile/getProfile";
+import { createActivity } from "@conquest/db/activity/createActivity";
+import { createMember } from "@conquest/db/member/createMember";
+import { createProfile } from "@conquest/db/profile/createProfile";
+import { getProfile } from "@conquest/db/profile/getProfile";
 import { decrypt } from "@conquest/db/utils/decrypt";
 import type { Event } from "@conquest/zod/schemas/event.schema";
 import type { LivestormIntegration } from "@conquest/zod/schemas/integration.schema";
@@ -91,6 +91,7 @@ export const createManyPeoples = async ({
     if (is_guest_speaker && endedAt) {
       await createActivity({
         activityTypeKey: "livestorm:co-host",
+        message: `Co-hosted : ${event.title}`,
         memberId: profile.memberId,
         eventId: event.id,
         createdAt: endedAt,
@@ -102,6 +103,7 @@ export const createManyPeoples = async ({
     if (attended && endedAt) {
       await createActivity({
         activityTypeKey: "livestorm:attend",
+        message: `Attended : ${event.title}`,
         memberId: profile.memberId,
         eventId: event.id,
         createdAt: endedAt,
@@ -112,6 +114,7 @@ export const createManyPeoples = async ({
 
     await createActivity({
       activityTypeKey: "livestorm:register",
+      message: `Registered to : ${event.title}`,
       memberId: profile.memberId,
       eventId: event.id,
       createdAt: new Date(created_at * 1000),

@@ -1,10 +1,10 @@
-import { listActivities } from "@conquest/clickhouse/activity/listActivities";
-import { client } from "@conquest/clickhouse/client";
-import { getLevel } from "@conquest/clickhouse/helpers/getLevel";
-import { getPulseScore } from "@conquest/clickhouse/helpers/getPulseScore";
+import { listActivities } from "@conquest/db/activity/listActivities";
+import { getLevel } from "@conquest/db/helpers/getLevel";
+import { getPulseScore } from "@conquest/db/helpers/getPulseScore";
+import { prisma } from "@conquest/db/prisma";
 import { LevelSchema } from "@conquest/zod/schemas/level.schema";
 import type { Log } from "@conquest/zod/schemas/logs.schema";
-import { Member, MemberSchema } from "@conquest/zod/schemas/member.schema";
+import { MemberSchema } from "@conquest/zod/schemas/member.schema";
 import { logger, schemaTask } from "@trigger.dev/sdk/v3";
 import {
   eachWeekOfInterval,
@@ -24,7 +24,6 @@ export const batchMemberMetrics = schemaTask({
     workspaceId: z.string(),
   }),
   run: async ({ members, levels, workspaceId }) => {
-    const updatedMembers: Member[] = [];
     const logs: Log[] = [];
 
     const today = new Date();
@@ -38,7 +37,7 @@ export const batchMemberMetrics = schemaTask({
 
     const activities = await listActivities({ workspaceId, period: 365 });
 
-    for (const [index, member] of members.entries()) {
+    for (const member of members) {
       const memberActivities = activities?.filter(
         (activity) => activity.memberId === member.id,
       );
@@ -60,38 +59,29 @@ export const batchMemberMetrics = schemaTask({
           id: randomUUID(),
           date: interval,
           pulse,
-          levelId: level?.id ?? null,
+          level: level?.number ?? null,
           memberId: member.id,
           workspaceId: member.workspaceId,
         });
       }
 
-      const { pulse, levelId } = logs.at(-1) ?? {};
+      const { pulse, level } = logs.at(-1) ?? {};
 
-      updatedMembers.push({
-        ...member,
-        firstActivity: memberActivities?.at(-1)?.createdAt ?? null,
-        lastActivity: memberActivities?.at(0)?.createdAt ?? null,
-        pulse: pulse ?? 0,
-        levelId: levelId ?? null,
-        updatedAt: new Date(),
+      await prisma.member.update({
+        where: { id: member.id },
+        data: {
+          firstActivity: memberActivities?.at(-1)?.createdAt ?? null,
+          lastActivity: memberActivities?.at(0)?.createdAt ?? null,
+          pulse: pulse ?? 0,
+          levelNumber: level ?? null,
+        },
       });
 
-      logger.info(`${index}`, { member });
+      logger.info(`${member.id}`, { member });
     }
 
-    await client.insert({
-      table: "log",
-      values: logs,
-      format: "JSON",
-    });
-
-    logger.info("updatedMembers", { updatedMembers });
-
-    await client.insert({
-      table: "member",
-      values: updatedMembers,
-      format: "JSON",
+    await prisma.log.createMany({
+      data: logs,
     });
   },
 });

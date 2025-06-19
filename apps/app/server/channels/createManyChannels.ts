@@ -1,4 +1,4 @@
-import { createChannel } from "@conquest/clickhouse/channel/createChannel";
+import { createChannel } from "@conquest/db/channel/createChannel";
 import { SOURCE } from "@conquest/zod/enum/source.enum";
 import { z } from "zod";
 import { protectedProcedure } from "../trpc";

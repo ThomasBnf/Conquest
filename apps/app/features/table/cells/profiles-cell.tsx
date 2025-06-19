@@ -15,10 +15,10 @@ type Props = {
 export const ProfilesCell = ({ member }: Props) => {
   return (
     <div className="flex items-center gap-1">
-      {member.attributes
-        ?.sort((a, b) => a.source.localeCompare(b.source))
+      {member.profiles
+        ?.sort((a, b) => a.attributes.source.localeCompare(b.attributes.source))
         .map((profile) => {
-          const { source } = profile;
+          const { source } = profile.attributes;
           const IconComponent = getIconComponent(source);
 
           return (

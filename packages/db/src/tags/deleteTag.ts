@@ -1,4 +1,3 @@
-import { client } from "@conquest/clickhouse/client";
 import { prisma } from "../prisma";
 
 type Props = {
@@ -10,11 +9,11 @@ export const deleteTag = async ({ id }: Props) => {
     where: { id },
   });
 
-  await client.query({
-    query: `
-      ALTER TABLE member
-      UPDATE tags = arrayFilter(x -> x != '${id}', tags)
-      WHERE hasAny(tags, ['${id}'])
-    `,
-  });
+  // await client.query({
+  //   query: `
+  //     ALTER TABLE member
+  //     UPDATE tags = arrayFilter(x -> x != '${id}', tags)
+  //     WHERE hasAny(tags, ['${id}'])
+  //   `,
+  // });
 };

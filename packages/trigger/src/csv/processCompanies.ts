@@ -1,5 +1,5 @@
-import { client } from "@conquest/clickhouse/client";
-import { getCompanyByName } from "@conquest/clickhouse/company/getCompanyByName";
+import { createCompany } from "@conquest/db/company/createCompany";
+import { getCompanyByName } from "@conquest/db/company/getCompanyByName";
 import { Company, CompanySchema } from "@conquest/zod/schemas/company.schema";
 import { randomUUID } from "node:crypto";
 
@@ -29,26 +29,22 @@ export const processCompanies = async ({
     const newCompany: Company = {
       id: randomUUID(),
       name: companyName,
-      industry: "",
-      address: "",
-      domain: "",
+      industry: null,
+      address: null,
+      domain: null,
       employees: null,
       foundedAt: null,
-      logoUrl: "",
+      logoUrl: null,
       tags: [],
       source: "Manual",
-      customFields: {
-        fields: [],
-      },
+      customFields: [],
       workspaceId,
       createdAt: new Date(),
       updatedAt: new Date(),
     };
 
-    await client.insert({
-      table: "company",
-      values: [newCompany],
-      format: "JSON",
+    await createCompany({
+      ...newCompany,
     });
 
     createdCompanies.push(CompanySchema.parse(newCompany));

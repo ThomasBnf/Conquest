@@ -1,29 +1,27 @@
 import { z } from "zod";
 import { SOURCE } from "../enum/source.enum";
 import { CustomFieldRecordSchema } from "./custom-field.schema";
-import { ProfileAttributesSchema, ProfileSchema } from "./profile.schema";
+import { ProfileSchema } from "./profile.schema";
 
 export const MemberSchema = z.object({
-  id: z.string().uuid(),
+  id: z.string(),
   firstName: z.string(),
   lastName: z.string(),
   primaryEmail: z.string(),
   emails: z.array(z.string()),
   phones: z.array(z.string()),
-  jobTitle: z.string(),
-  avatarUrl: z.string(),
-  country: z.string(),
-  language: z.string(),
-  tags: z.array(z.string().uuid()),
-  linkedinUrl: z.string(),
-  levelId: z.string().nullable(),
+  jobTitle: z.string().nullable(),
+  avatarUrl: z.string().nullable(),
+  country: z.string().nullable(),
+  language: z.string().nullable(),
+  tags: z.array(z.string()),
+  linkedinUrl: z.string().nullable(),
+  levelNumber: z.number().nullable(),
   pulse: z.number(),
   source: SOURCE,
   atRiskMember: z.boolean().optional(),
   potentialAmbassador: z.boolean().optional(),
-  customFields: z.object({
-    fields: z.array(CustomFieldRecordSchema),
-  }),
+  customFields: z.array(CustomFieldRecordSchema),
   companyId: z.string().nullable(),
   isStaff: z.boolean(),
   workspaceId: z.string(),
@@ -38,18 +36,19 @@ export const MemberWithProfilesSchema = MemberSchema.extend({
 });
 
 export const FullMemberSchema = MemberSchema.extend({
-  company: z.string(),
-  level: z.number(),
-  levelName: z.string().optional(),
-  attributes: z.array(ProfileAttributesSchema),
-});
-
-export const MemberWithLevelSchema = MemberSchema.extend({
-  level: z.number(),
-  levelName: z.string().optional(),
+  profiles: z.array(ProfileSchema),
+  company: z
+    .object({
+      name: z.string(),
+    })
+    .nullable(),
+  level: z
+    .object({
+      name: z.string(),
+    })
+    .nullable(),
 });
 
 export type Member = z.infer<typeof MemberSchema>;
 export type MemberWithProfiles = z.infer<typeof MemberWithProfilesSchema>;
 export type FullMember = z.infer<typeof FullMemberSchema>;
-export type MemberWithLevel = z.infer<typeof MemberWithLevelSchema>;

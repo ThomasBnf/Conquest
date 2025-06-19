@@ -1,5 +1,5 @@
-import { getMember } from "@conquest/clickhouse/member/getMember";
-import { getProfile } from "@conquest/clickhouse/profile/getProfile";
+import { getMember } from "@conquest/db/member/getMember";
+import { getProfile } from "@conquest/db/profile/getProfile";
 import { Member } from "@conquest/zod/schemas/member.schema";
 import { Profile } from "@conquest/zod/schemas/profile.schema";
 

@@ -1,6 +1,6 @@
 import { protectedProcedure } from "@/server/trpc";
-import { getProfileBySource } from "@conquest/clickhouse/profile/getProfileBySource";
 import { getIntegrationBySource } from "@conquest/db/integrations/getIntegrationBySource";
+import { getProfileBySource } from "@conquest/db/profile/getProfileBySource";
 import { decrypt } from "@conquest/db/utils/decrypt";
 import { replaceVariables } from "@conquest/utils/replace-variables";
 import { SlackIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
@@ -50,8 +50,9 @@ export const sendSlackTestMessage = protectedProcedure
     const web = new WebClient(decryptedUserToken);
 
     const profile = await getProfileBySource({
-      source: "Slack",
       memberId: member.id,
+      source: "Slack",
+      workspaceId,
     });
 
     if (!profile?.externalId) {

@@ -121,7 +121,12 @@ export const companiesColumns = (): Column<Company>[] => {
     {
       key: "employees",
       header: ({ table }) => (
-        <ColumnHeader columnId="employees" title="Employees" table={table} />
+        <ColumnHeader
+          columnId="employees"
+          title="Employees"
+          type="number"
+          table={table}
+        />
       ),
       cell: ({ item }) => <p className="truncate">{item.employees}</p>,
       width: 250,

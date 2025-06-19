@@ -1,4 +1,4 @@
-import { client } from "@conquest/clickhouse/client";
+import { prisma } from "@conquest/db/prisma";
 import { MemberSchema } from "@conquest/zod/schemas/member.schema";
 import { z } from "zod";
 import { protectedProcedure } from "../trpc";
@@ -13,14 +13,12 @@ export const listMembersById = protectedProcedure
     const { ids } = input;
     const { workspaceId } = user;
 
-    const result = await client.query({
-      query: `
-        SELECT * FROM member FINAL
-        WHERE id IN (${ids.map((id) => `'${id}'`).join(",")}) 
-        AND workspaceId = '${workspaceId}'
-      `,
+    const members = await prisma.member.findMany({
+      where: {
+        workspaceId,
+        id: { in: ids },
+      },
     });
 
-    const { data } = await result.json();
-    return MemberSchema.array().parse(data);
+    return MemberSchema.array().parse(members);
   });

@@ -1,4 +1,8 @@
 {
+  "compilerOptions": {
+    "strict": true,
+    "strictNullChecks": true
+  },
   "extends": "@conquest/tsconfig/base.json",
   "include": ["src/**/*.ts"]
 }

@@ -1,9 +1,10 @@
 import { protectedProcedure } from "@/server/trpc";
-import { client } from "@conquest/clickhouse/client";
+import { prisma } from "@conquest/db/prisma";
 import { SOURCE, Source } from "@conquest/zod/enum/source.enum";
-import { differenceInDays, format, subDays } from "date-fns";
+import { ProfileAttributesSchema } from "@conquest/zod/schemas/profile.schema";
+import { differenceInDays, endOfWeek, startOfWeek, subDays } from "date-fns";
 import z from "zod";
-import { getUniquePeriods } from "../helpers/getUniquePeriods";
+import { listWeeks } from "../helpers/listWeeks";
 
 export const engagementRate = protectedProcedure
   .input(
@@ -24,235 +25,165 @@ export const engagementRate = protectedProcedure
 
     if (!from || !to) {
       return {
-        overallRate: 0,
-        growthRate: 0,
-        week: [],
-        engagementByIntegration: {},
+        engagementRate: 0,
+        previousEngagementRate: 0,
+        weeks: [],
       };
     }
 
-    const formattedFrom = format(from, "yyyy-MM-dd HH:mm:ss");
-    const formattedTo = format(to, "yyyy-MM-dd HH:mm:ss");
     const days = differenceInDays(to, from);
-    const isWeekly = days > 30;
+    const previousFrom = subDays(from, days);
+    const previousTo = subDays(from, 1);
 
-    const previousFrom = format(subDays(from, days), "yyyy-MM-dd HH:mm:ss");
-    const previousTo = format(subDays(from, 1), "yyyy-MM-dd HH:mm:ss");
+    const [
+      total,
+      previousTotal,
+      activeMembers,
+      previousActiveMembers,
+      allMembersData,
+    ] = await Promise.all([
+      prisma.member.count({
+        where: {
+          workspaceId,
+          createdAt: { lte: to },
+        },
+      }),
+      prisma.member.count({
+        where: {
+          workspaceId,
+          createdAt: { lte: previousTo },
+        },
+      }),
+      prisma.activity.findMany({
+        where: {
+          workspaceId,
+          createdAt: { gte: from, lte: to },
+        },
+        select: { memberId: true },
+        distinct: ["memberId"],
+      }),
+      prisma.activity.findMany({
+        where: {
+          workspaceId,
+          createdAt: { gte: previousFrom, lte: previousTo },
+        },
+        select: { memberId: true },
+        distinct: ["memberId"],
+      }),
+      prisma.member.findMany({
+        where: {
+          workspaceId,
+          createdAt: { lte: to },
+          profiles: {
+            some: {
+              OR: sources.map((source) => ({
+                attributes: {
+                  path: ["source"],
+                  equals: source,
+                },
+              })),
+            },
+          },
+        },
+        select: {
+          id: true,
+          createdAt: true,
+          profiles: {
+            where: {
+              OR: sources.map((source) => ({
+                attributes: {
+                  path: ["source"],
+                  equals: source,
+                },
+              })),
+            },
+            select: {
+              attributes: true,
+            },
+          },
+          activities: {
+            where: {
+              createdAt: { gte: from, lte: to },
+            },
+            select: {
+              createdAt: true,
+            },
+          },
+        },
+      }),
+    ]);
 
-    const result = await client.query({
-      query: `
-        WITH current_period AS (
-          SELECT
-            ${isWeekly ? "toStartOfWeek(a.createdAt)" : "toDate(a.createdAt)"} AS week,
-            p.attributes.source AS source,
-            count(DISTINCT a.memberId) AS activeMembers
-          FROM activity a
-          LEFT JOIN profile p FINAL ON p.memberId = a.memberId AND p.workspaceId = a.workspaceId
-          WHERE a.workspaceId = '${workspaceId}'
-            AND a.createdAt >= '${formattedFrom}'
-            AND a.createdAt <= '${formattedTo}'
-            AND (p.attributes.source IN (${sources.map((source) => `'${source}'`).join(", ")}) OR p.attributes.source IS NULL)
-          GROUP BY week, p.attributes.source
-        ),
-        total_members AS (
-          SELECT COUNT(DISTINCT m.id) AS total
-          FROM member m
-          LEFT JOIN profile p FINAL ON p.memberId = m.id AND p.workspaceId = m.workspaceId
-          WHERE m.workspaceId = '${workspaceId}'
-            AND m.createdAt <= '${formattedTo}'
-            AND (p.attributes.source IN (${sources.map((source) => `'${source}'`).join(", ")}) OR p.attributes.source IS NULL)
-        ),
-        total_members_by_source AS (
-          SELECT 
-            p.attributes.source AS source,
-            COUNT(DISTINCT m.id) AS total
-          FROM member m
-          LEFT JOIN profile p FINAL ON p.memberId = m.id AND p.workspaceId = m.workspaceId
-          WHERE m.workspaceId = '${workspaceId}'
-            AND m.createdAt <= '${formattedTo}'
-            AND (p.attributes.source IN (${sources.map((source) => `'${source}'`).join(", ")}) OR p.attributes.source IS NULL)
-          GROUP BY p.attributes.source
-        ),
-        active_members_by_source AS (
-          SELECT 
-            p.attributes.source AS source,
-            count(DISTINCT a.memberId) AS activeMembers
-          FROM activity a
-          LEFT JOIN profile p FINAL ON p.memberId = a.memberId AND p.workspaceId = a.workspaceId
-          WHERE a.workspaceId = '${workspaceId}'
-            AND a.createdAt >= '${formattedFrom}'
-            AND a.createdAt <= '${formattedTo}'
-            AND (p.attributes.source IN (${sources.map((source) => `'${source}'`).join(", ")}) OR p.attributes.source IS NULL)
-          GROUP BY p.attributes.source
-        ),
-        current_active_total AS (
-          SELECT count(DISTINCT a.memberId) AS activeMembers
-          FROM activity a
-          LEFT JOIN profile p FINAL ON p.memberId = a.memberId AND p.workspaceId = a.workspaceId
-          WHERE a.workspaceId = '${workspaceId}'
-            AND a.createdAt >= '${formattedFrom}'
-            AND a.createdAt <= '${formattedTo}'
-            AND (p.attributes.source IN (${sources.map((source) => `'${source}'`).join(", ")}) OR p.attributes.source IS NULL)
-        ),
-        previous_total AS (
-          SELECT COUNT(DISTINCT m.id) AS total
-          FROM member m
-          LEFT JOIN profile p FINAL ON p.memberId = m.id AND p.workspaceId = m.workspaceId
-          WHERE m.workspaceId = '${workspaceId}'
-            AND m.createdAt <= '${previousTo}'
-            AND (p.attributes.source IN (${sources.map((source) => `'${source}'`).join(", ")}) OR p.attributes.source IS NULL)
-        ),
-        previous_active_total AS (
-          SELECT count(DISTINCT a.memberId) AS activeMembers
-          FROM activity a
-          LEFT JOIN profile p FINAL ON p.memberId = a.memberId AND p.workspaceId = a.workspaceId
-          WHERE a.workspaceId = '${workspaceId}'
-            AND a.createdAt >= '${previousFrom}'
-            AND a.createdAt <= '${previousTo}'
-            AND (p.attributes.source IN (${sources.map((source) => `'${source}'`).join(", ")}) OR p.attributes.source IS NULL)
-        )
-        SELECT 
-          current_period.*,
-          (SELECT total FROM total_members) AS currentTotal,
-          (SELECT activeMembers FROM current_active_total) AS currentActiveTotal,
-          (SELECT total FROM previous_total) AS previousTotal,
-          (SELECT activeMembers FROM previous_active_total) AS previousActiveTotal
-        FROM current_period
-        ORDER BY week ASC
-      `,
-    });
+    const uniqueActiveMembers = activeMembers.length;
+    const previousUniqueActiveMembers = previousActiveMembers.length;
 
-    const sourceStatsResult = await client.query({
-      query: `
-        SELECT 
-          tmbs.source,
-          tmbs.total AS totalMembers,
-          COALESCE(ambs.activeMembers, 0) AS activeMembers
-        FROM (
-          SELECT 
-            p.attributes.source AS source,
-            COUNT(DISTINCT m.id) AS total
-          FROM member m
-          LEFT JOIN profile p FINAL ON p.memberId = m.id AND p.workspaceId = m.workspaceId
-          WHERE m.workspaceId = '${workspaceId}'
-            AND m.createdAt <= '${formattedTo}'
-            AND (p.attributes.source IN (${sources.map((source) => `'${source}'`).join(", ")}) OR p.attributes.source IS NULL)
-          GROUP BY p.attributes.source
-        ) tmbs
-        LEFT JOIN (
-          SELECT 
-            p.attributes.source AS source,
-            count(DISTINCT a.memberId) AS activeMembers
-          FROM activity a
-          LEFT JOIN profile p FINAL ON p.memberId = a.memberId AND p.workspaceId = a.workspaceId
-          WHERE a.workspaceId = '${workspaceId}'
-            AND a.createdAt >= '${formattedFrom}'
-            AND a.createdAt <= '${formattedTo}'
-            AND (p.attributes.source IN (${sources.map((source) => `'${source}'`).join(", ")}) OR p.attributes.source IS NULL)
-          GROUP BY p.attributes.source
-        ) ambs ON tmbs.source = ambs.source
-      `,
-    });
-
-    const { data } = await result.json<{
-      week: string;
-      source: string | null;
-      activeMembers: number;
-      currentTotal: number;
-      currentActiveTotal: number;
-      previousTotal: number;
-      previousActiveTotal: number;
-    }>();
-
-    const { data: sourceStats } = await sourceStatsResult.json<{
-      source: string | null;
-      totalMembers: number;
-      activeMembers: number;
-    }>();
-
-    const periods = getUniquePeriods(from, to);
-
-    const currentTotal = Number(data[0]?.currentTotal) || 0;
-    const currentActiveTotal = Number(data[0]?.currentActiveTotal) || 0;
-    const previousTotal = Number(data[0]?.previousTotal) || 0;
-    const previousActiveTotal = Number(data[0]?.previousActiveTotal) || 0;
-
-    const overallRate =
-      currentTotal > 0
-        ? Math.round((currentActiveTotal / currentTotal) * 100 * 100) / 100
-        : 0;
-
-    const previousOverallRate =
+    const engagementRate = total > 0 ? (uniqueActiveMembers / total) * 100 : 0;
+    const previousEngagementRate =
       previousTotal > 0
-        ? Math.round((previousActiveTotal / previousTotal) * 100 * 100) / 100
+        ? (previousUniqueActiveMembers / previousTotal) * 100
         : 0;
-
     const growthRate =
-      previousOverallRate > 0
-        ? Math.round(
-            ((overallRate - previousOverallRate) / previousOverallRate) *
-              100 *
-              100,
-          ) / 100
+      previousEngagementRate > 0
+        ? ((engagementRate - previousEngagementRate) / previousEngagementRate) *
+          100
         : 0;
 
-    const week: Array<{ week: string } & Record<Source, number>> = [];
+    const weeks = listWeeks(from, to);
 
-    const sourceTotalsMap = new Map<string | null, number>();
-    for (const stat of sourceStats) {
-      sourceTotalsMap.set(stat.source, Number(stat.totalMembers) || 0);
-    }
+    const chartData = weeks.map((week) => {
+      const weekStart = startOfWeek(new Date(week));
+      const weekEnd = endOfWeek(new Date(week));
+      const weekData: Partial<Record<Source, number>> = {};
 
-    for (const period of periods) {
-      const periodData = data.filter((d) => d.week === period);
-
-      const periodRates: { week: string } & Record<Source, number> = {
-        week: period,
-      } as { week: string } & Record<Source, number>;
+      const membersBySource: Record<
+        string,
+        { total: Set<string>; active: Set<string> }
+      > = {};
 
       for (const source of sources) {
-        const sourceData = periodData.find((d) => d.source === source);
-        const activeMembers = Number(sourceData?.activeMembers) || 0;
-        const sourceTotal = sourceTotalsMap.get(source) || 0;
-
-        const rate =
-          sourceTotal > 0
-            ? Math.round((activeMembers / sourceTotal) * 100 * 100) / 100
-            : 0;
-        periodRates[source] = rate;
+        membersBySource[source] = { total: new Set(), active: new Set() };
       }
 
-      week.push(periodRates);
-    }
+      for (const member of allMembersData) {
+        if (member.createdAt > weekEnd) continue;
 
-    const engagementByIntegration: Record<Source, number> = {} as Record<
-      Source,
-      number
-    >;
+        const memberSources = new Set<string>();
 
-    for (const stat of sourceStats) {
-      if (stat.source && sources.includes(stat.source as Source)) {
-        const totalMembers = Number(stat.totalMembers) || 0;
-        const activeMembers = Number(stat.activeMembers) || 0;
-        const rate =
-          totalMembers > 0
-            ? Math.round((activeMembers / totalMembers) * 100 * 100) / 100
-            : 0;
+        for (const profile of member.profiles) {
+          const attributes = ProfileAttributesSchema.parse(profile.attributes);
+          if (attributes.source && sources.includes(attributes.source)) {
+            memberSources.add(attributes.source);
+          }
+        }
 
-        engagementByIntegration[stat.source as Source] = rate;
+        const hasWeekActivity = member.activities.some(
+          (activity) =>
+            activity.createdAt >= weekStart && activity.createdAt <= weekEnd,
+        );
+
+        for (const source of memberSources) {
+          membersBySource[source]?.total.add(member.id);
+          if (hasWeekActivity) {
+            membersBySource[source]?.active.add(member.id);
+          }
+        }
       }
-    }
 
-    for (const source of sources) {
-      if (engagementByIntegration[source] === undefined) {
-        engagementByIntegration[source] = 0;
+      for (const source of sources) {
+        const totalCount = membersBySource[source]?.total.size ?? 0;
+        const activeCount = membersBySource[source]?.active.size ?? 0;
+        const rate = totalCount > 0 ? (activeCount / totalCount) * 100 : 0;
+        weekData[source] = Math.round(rate * 100) / 100;
       }
-    }
+
+      return {
+        week,
+        ...weekData,
+      };
+    });
 
     return {
-      overallRate,
+      engagementRate,
       growthRate,
-      week,
-      engagementByIntegration,
+      weeks: chartData,
     };
   });

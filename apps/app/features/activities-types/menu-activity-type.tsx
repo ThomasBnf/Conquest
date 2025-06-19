@@ -34,7 +34,7 @@ export const MenuActivityType = ({ activityType }: Props) => {
   });
 
   const onConfirm = async () => {
-    await mutateAsync({ id: activityType.id });
+    await mutateAsync({ key: activityType.key });
   };
 
   return (

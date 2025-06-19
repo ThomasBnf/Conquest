@@ -209,7 +209,9 @@ const LanguageGroup = ({
 
   const { data: languages, isLoading } = trpc.members.listLanguages.useQuery();
 
-  const onSelect = (language: string) => {
+  const onSelect = (language: string | null) => {
+    if (!language) return;
+
     const hasLanguage = values.some((value) => value === language);
 
     const newFilter = FilterSelectSchema.parse({
@@ -228,12 +230,11 @@ const LanguageGroup = ({
       <CommandGroup>
         {isLoading && <Skeleton className="h-8 w-full" />}
         {languages?.map((language) => (
-          <CommandItem
-            key={language}
-            value={language}
-            onSelect={() => onSelect(language)}
-          >
-            <Checkbox checked={values.includes(language)} className="mr-2" />
+          <CommandItem key={language} onSelect={() => onSelect(language)}>
+            <Checkbox
+              checked={values.includes(language ?? "")}
+              className="mr-2"
+            />
             <LanguageBadge language={language} transparent />
           </CommandItem>
         ))}

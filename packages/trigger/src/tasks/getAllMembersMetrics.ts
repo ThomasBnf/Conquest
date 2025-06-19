@@ -1,6 +1,6 @@
-import { listLevels } from "@conquest/clickhouse/level/listLevels";
-import { deleteAllLogs } from "@conquest/clickhouse/log/deleteAllLogs";
-import { listMembers } from "@conquest/clickhouse/member/listMembers";
+import { listLevels } from "@conquest/db/level/listLevels";
+import { deleteAllLogs } from "@conquest/db/log/deleteAllLogs";
+import { listMembers } from "@conquest/db/member/listMembers";
 import { type Context, logger, runs, schemaTask } from "@trigger.dev/sdk/v3";
 import { z } from "zod";
 import { batchMemberMetrics } from "./batchMemberMetrics";

@@ -1,25 +1,23 @@
 import { sleep } from "@/utils/sleep";
-import { getActivityTypeByKey } from "@conquest/clickhouse/activity-type/getActivityTypeByKey";
-import { createActivity } from "@conquest/clickhouse/activity/createActivity";
-import { deleteActivity } from "@conquest/clickhouse/activity/deleteActivity";
-import { getActivity } from "@conquest/clickhouse/activity/getActivity";
-import { updateActivity } from "@conquest/clickhouse/activity/updateActivity";
-import { upsertActivity } from "@conquest/clickhouse/activity/upsertActivity";
-import { createChannel } from "@conquest/clickhouse/channel/createChannel";
-import { deleteChannel } from "@conquest/clickhouse/channel/deleteChannel";
-import { getChannel } from "@conquest/clickhouse/channel/getChannel";
-import { updateChannel } from "@conquest/clickhouse/channel/updateChannel";
-import { client } from "@conquest/clickhouse/client";
-import { createMember } from "@conquest/clickhouse/member/createMember";
-import { deleteMember } from "@conquest/clickhouse/member/deleteMember";
-import { getMember } from "@conquest/clickhouse/member/getMember";
-import { updateMember } from "@conquest/clickhouse/member/updateMember";
-import { createProfile } from "@conquest/clickhouse/profile/createProfile";
-import { deleteProfile } from "@conquest/clickhouse/profile/deleteProfile";
-import { getProfile } from "@conquest/clickhouse/profile/getProfile";
-import { updateProfile } from "@conquest/clickhouse/profile/updateProfile";
+import { createActivity } from "@conquest/db/activity/createActivity";
+import { deleteActivity } from "@conquest/db/activity/deleteActivity";
+import { getActivity } from "@conquest/db/activity/getActivity";
+import { updateActivity } from "@conquest/db/activity/updateActivity";
+import { upsertActivity } from "@conquest/db/activity/upsertActivity";
+import { createChannel } from "@conquest/db/channel/createChannel";
+import { deleteChannel } from "@conquest/db/channel/deleteChannel";
+import { getChannel } from "@conquest/db/channel/getChannel";
+import { updateChannel } from "@conquest/db/channel/updateChannel";
 import { discourseClient } from "@conquest/db/discourse";
+import { createMember } from "@conquest/db/member/createMember";
+import { deleteMember } from "@conquest/db/member/deleteMember";
+import { getMember } from "@conquest/db/member/getMember";
+import { updateMember } from "@conquest/db/member/updateMember";
 import { prisma } from "@conquest/db/prisma";
+import { createProfile } from "@conquest/db/profile/createProfile";
+import { deleteProfile } from "@conquest/db/profile/deleteProfile";
+import { getProfile } from "@conquest/db/profile/getProfile";
+import { updateProfile } from "@conquest/db/profile/updateProfile";
 import { createTag } from "@conquest/db/tags/createTag";
 import { listTags } from "@conquest/db/tags/listTags";
 import { decrypt } from "@conquest/db/utils/decrypt";
@@ -27,8 +25,7 @@ import { env } from "@conquest/env";
 import { DiscourseIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
 import type { DiscourseWebhook } from "@conquest/zod/types/discourse";
 import { type NextRequest, NextResponse } from "next/server";
-import { createHmac } from "node:crypto";
-import { v4 as uuid } from "uuid";
+import { createHmac, randomUUID } from "node:crypto";
 
 export async function POST(request: NextRequest) {
   const rawBody = await request.text();
@@ -95,7 +92,7 @@ export async function POST(request: NextRequest) {
 
     await updateActivity({
       ...data,
-      activityTypeId: activityType.id,
+      activityTypeKey: activityType.key,
       title,
     });
   }
@@ -109,13 +106,15 @@ export async function POST(request: NextRequest) {
       workspaceId,
     });
 
-    await client.query({
-      query: `
-        ALTER TABLE activity
-        DELETE WHERE reactTo LIKE 't/${id}'
-        OR reply_to LIKE 't/${id}'
-      `,
-    });
+    //TODO
+
+    // await client.query({
+    //   query: `
+    //     ALTER TABLE activity
+    //     DELETE WHERE reactTo LIKE 't/${id}'
+    //     OR reply_to LIKE 't/${id}'
+    //   `,
+    // });
   }
 
   if (post && (event === "post_created" || event === "post_recovered")) {
@@ -156,18 +155,11 @@ export async function POST(request: NextRequest) {
 
       if (!activity) return NextResponse.json({ status: 200 });
 
-      const result = await getActivityTypeByKey({
-        key: "discourse:topic",
-        workspaceId,
-      });
-
-      if (!result) return NextResponse.json({ status: 200 });
-
       const { activityType, ...data } = activity;
 
       await updateActivity({
         ...data,
-        activityTypeId: activityType.id,
+        activityTypeKey: activityType.key,
         message: post.cooked,
       });
 
@@ -212,18 +204,12 @@ export async function POST(request: NextRequest) {
 
     if (!activity) return NextResponse.json({ status: 200 });
 
-    const result = await getActivityTypeByKey({
-      key: post_number === 1 ? "discourse:topic" : "discourse:reply",
-      workspaceId,
-    });
-
-    if (!result) return NextResponse.json({ status: 200 });
-
     const { activityType, ...data } = activity;
 
     await updateActivity({
       ...data,
-      activityTypeId: activityType.id,
+      activityTypeKey:
+        post_number === 1 ? "discourse:topic" : "discourse:reply",
       message: post.cooked,
     });
   }
@@ -466,13 +452,15 @@ export async function POST(request: NextRequest) {
 
     if (!channel) return NextResponse.json({ status: 200 });
 
-    await client.query({
-      query: `
-        ALTER TABLE activity
-        DELETE WHERE channelId = '${channel.id}'
-        AND workspaceId = '${workspaceId}'
-      `,
-    });
+    //TODO
+
+    // await client.query({
+    //   query: `
+    //     ALTER TABLE activity
+    //     DELETE WHERE channelId = '${channel.id}'
+    //     AND workspaceId = '${workspaceId}'
+    //   `,
+    // });
 
     await deleteChannel({
       externalId: String(id),
@@ -536,7 +524,7 @@ export async function POST(request: NextRequest) {
     const color = colorMap[String(badge_type_id) as keyof typeof colorMap];
 
     const newTag = {
-      id: uuid(),
+      id: randomUUID(),
       externalId: null,
       name,
       color,
@@ -607,19 +595,12 @@ export async function POST(request: NextRequest) {
 
     if (!activity) return NextResponse.json({ status: 200 });
 
-    const result = await getActivityTypeByKey({
-      key:
-        event === "accepted_solution" ? "discourse:solved" : "discourse:reply",
-      workspaceId,
-    });
-
-    if (!result) return NextResponse.json({ status: 200 });
-
     const { activityType, ...data } = activity;
 
     await updateActivity({
       ...data,
-      activityTypeId: activityType.id,
+      activityTypeKey:
+        event === "accepted_solution" ? "discourse:solved" : "discourse:reply",
     });
   }
 

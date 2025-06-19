@@ -1,8 +1,8 @@
-import { listActivities } from "@conquest/clickhouse/activity/listActivities";
-import { getLevel } from "@conquest/clickhouse/helpers/getLevel";
-import { getPulseScore } from "@conquest/clickhouse/helpers/getPulseScore";
-import { createManyLogs } from "@conquest/clickhouse/log/createManyLogs";
-import { updateMember } from "@conquest/clickhouse/member/updateMember";
+import { listActivities } from "@conquest/db/activity/listActivities";
+import { getLevel } from "@conquest/db/helpers/getLevel";
+import { getPulseScore } from "@conquest/db/helpers/getPulseScore";
+import { createManyLogs } from "@conquest/db/log/createManyLogs";
+import { updateMember } from "@conquest/db/member/updateMember";
 import { LevelSchema } from "@conquest/zod/schemas/level.schema";
 import type { Log } from "@conquest/zod/schemas/logs.schema";
 import { MemberSchema } from "@conquest/zod/schemas/member.schema";
@@ -63,7 +63,7 @@ export const getMemberMetrics = schemaTask({
         id: randomUUID(),
         date: interval,
         pulse: pulseScore,
-        levelId: level?.id ?? null,
+        level: level?.number ?? null,
         memberId: member.id,
         workspaceId: member.workspaceId,
       });
@@ -71,14 +71,14 @@ export const getMemberMetrics = schemaTask({
 
     await createManyLogs({ logs });
 
-    const { pulse, levelId } = logs.at(-1) ?? {};
+    const { pulse, level } = logs.at(-1) ?? {};
 
     return await updateMember({
       ...member,
       firstActivity: activities?.at(-1)?.createdAt ?? null,
       lastActivity: activities?.at(0)?.createdAt ?? null,
       pulse: pulse ?? 0,
-      levelId: levelId ?? null,
+      levelNumber: level ?? null,
     });
   },
 });

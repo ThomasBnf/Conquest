@@ -1,5 +1,5 @@
-import { getCompany } from "@conquest/clickhouse/company/getCompany";
-import { getLevelById } from "@conquest/clickhouse/level/getLevelById";
+import { getCompany } from "@conquest/db/company/getCompany";
+import { getLevel } from "@conquest/db/level/getLevelById";
 import { listTags } from "@conquest/db/tags/listTags";
 import { type Member, MemberSchema } from "@conquest/zod/schemas/member.schema";
 import { z } from "zod";
@@ -29,7 +29,10 @@ export const exportMembers = protectedProcedure
             continue;
           }
 
-          const level = await getLevelById({ id: value as string });
+          const level = await getLevel({
+            number: Number(value),
+            workspaceId,
+          });
 
           if (!level) {
             transformed[key] = "";

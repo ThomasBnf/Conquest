@@ -1,24 +1,20 @@
-import { client } from "@conquest/clickhouse/client";
-import { SOURCE } from "@conquest/zod/enum/source.enum";
+import { prisma } from "@conquest/db/prisma";
 import { protectedProcedure } from "../trpc";
 
 export const listSourcesMember = protectedProcedure.query(
   async ({ ctx: { user } }) => {
     const { workspaceId } = user;
 
-    const result = await client.query({
-      query: `
-        SELECT DISTINCT source
-        FROM member FINAL
-        WHERE workspaceId = '${workspaceId}'
-        ORDER BY source ASC
-      `,
+    const members = await prisma.member.findMany({
+      where: {
+        workspaceId,
+      },
+      select: {
+        source: true,
+      },
+      distinct: ["source"],
     });
 
-    const { data } = (await result.json()) as {
-      data: Array<{ source: string }>;
-    };
-
-    return SOURCE.array().parse(data.map((row) => row.source));
+    return members.map((member) => member.source);
   },
 );

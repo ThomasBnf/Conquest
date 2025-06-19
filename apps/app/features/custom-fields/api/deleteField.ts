@@ -1,9 +1,9 @@
 import { protectedProcedure } from "@/server/trpc";
-import { listAllCompanies } from "@conquest/clickhouse/company/listAllCompanies";
-import { updateManyCompanies } from "@conquest/clickhouse/company/updateManyCompanies";
-import { listAllMembers } from "@conquest/clickhouse/member/listAllMembers";
-import { updateManyMembers } from "@conquest/clickhouse/member/updateManyMembers";
+import { listAllCompanies } from "@conquest/db/company/listAllCompanies";
+import { updateManyCompanies } from "@conquest/db/company/updateManyCompanies";
 import { deleteField as _deleteField } from "@conquest/db/custom-fields/deleteField";
+import { listAllMembers } from "@conquest/db/member/listAllMembers";
+import { updateManyMembers } from "@conquest/db/member/updateManyMembers";
 import z from "zod";
 
 export const deleteField = protectedProcedure
@@ -31,15 +31,12 @@ const updateMembers = async ({ id, workspaceId }: Props) => {
   const members = await listAllMembers({ workspaceId });
 
   const membersWithField = members.filter((member) =>
-    member.customFields.fields.some((field) => field.id === id),
+    member.customFields.some((field) => field.id === id),
   );
 
   const updatedMembers = membersWithField.map((member) => ({
     ...member,
-    customFields: {
-      fields: member.customFields.fields.filter((field) => field.id !== id),
-    },
-    updatedAt: new Date(),
+    customFields: member.customFields.filter((field) => field.id !== id),
   }));
 
   await updateManyMembers({
@@ -51,15 +48,12 @@ const updateCompanies = async ({ id, workspaceId }: Props) => {
   const companies = await listAllCompanies({ workspaceId });
 
   const companiesWithField = companies.filter((company) =>
-    company.customFields.fields.some((field) => field.id === id),
+    company.customFields.some((field) => field.id === id),
   );
 
   const updatedCompanies = companiesWithField.map((company) => ({
     ...company,
-    customFields: {
-      fields: company.customFields.fields.filter((field) => field.id !== id),
-    },
-    updatedAt: new Date(),
+    customFields: company.customFields.filter((field) => field.id !== id),
   }));
 
   await updateManyCompanies({

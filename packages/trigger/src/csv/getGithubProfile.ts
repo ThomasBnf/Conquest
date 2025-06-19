@@ -1,6 +1,6 @@
-import { createProfile } from "@conquest/clickhouse/profile/createProfile";
-import { getProfile } from "@conquest/clickhouse/profile/getProfile";
-import { updateProfile } from "@conquest/clickhouse/profile/updateProfile";
+import { createProfile } from "@conquest/db/profile/createProfile";
+import { getProfile } from "@conquest/db/profile/getProfile";
+import { updateProfile } from "@conquest/db/profile/updateProfile";
 import { Profile } from "@conquest/zod/schemas/profile.schema";
 import type { Octokit } from "octokit";
 import { checkRateLimit } from "../github/checkRateLimit";

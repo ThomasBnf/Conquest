@@ -32,9 +32,9 @@ import { Task } from "@conquest/zod/schemas/task.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Plus } from "lucide-react";
 import { useSession } from "next-auth/react";
+import { v4 as uuid } from "uuid";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { v4 as uuid } from "uuid";
 import { useCreateTask } from "./mutations/useCreateTask";
 import {
   FormCreateTask,
@@ -116,8 +116,8 @@ export const CreateTaskDialog = () => {
                 )}
               />
             </DialogBody>
-            <DialogFooter className="flex items-center justify-between">
-              <div className="flex flex-1 items-center gap-2">
+            <DialogFooter className="flex justify-between items-center">
+              <div className="flex flex-1 gap-2 items-center">
                 <FormField
                   control={form.control}
                   name="dueDate"
@@ -176,7 +176,7 @@ export const CreateTaskDialog = () => {
                   )}
                 />
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex gap-2 items-center">
                 <DialogTrigger asChild>
                   <Button variant="outline">Cancel</Button>
                 </DialogTrigger>

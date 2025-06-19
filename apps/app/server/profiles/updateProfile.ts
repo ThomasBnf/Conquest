@@ -1,4 +1,4 @@
-import { updateProfile as _updateProfile } from "@conquest/clickhouse/profile/updateProfile";
+import { updateProfile as _updateProfile } from "@conquest/db/profile/updateProfile";
 import { ProfileAttributesSchema } from "@conquest/zod/schemas/profile.schema";
 import { z } from "zod";
 import { protectedProcedure } from "../trpc";

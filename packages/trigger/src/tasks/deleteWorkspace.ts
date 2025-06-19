@@ -1,4 +1,3 @@
-import { client } from "@conquest/clickhouse/client";
 import { prisma } from "@conquest/db/prisma";
 import { IntegrationSchema } from "@conquest/zod/schemas/integration.schema";
 import { schemaTask } from "@trigger.dev/sdk/v3";
@@ -30,62 +29,6 @@ export const deleteWorkspace = schemaTask({
 
       await deleteIntegration.trigger({ integration, jwt });
     }
-
-    await client.query({
-      query: `
-        ALTER TABLE activity
-        DELETE WHERE workspaceId = '${workspaceId}'
-      `,
-    });
-
-    await client.query({
-      query: `
-          ALTER TABLE activityType
-          DELETE WHERE workspaceId = '${workspaceId}'
-        `,
-    });
-
-    await client.query({
-      query: `
-          ALTER TABLE channel
-          DELETE WHERE workspaceId = '${workspaceId}'
-        `,
-    });
-
-    await client.query({
-      query: `
-          ALTER TABLE company
-          DELETE WHERE workspaceId = '${workspaceId}'
-        `,
-    });
-
-    await client.query({
-      query: `
-          ALTER TABLE level
-          DELETE WHERE workspaceId = '${workspaceId}'
-        `,
-    });
-
-    await client.query({
-      query: `
-          ALTER TABLE log
-          DELETE WHERE workspaceId = '${workspaceId}'
-        `,
-    });
-
-    await client.query({
-      query: `
-          ALTER TABLE member
-          DELETE WHERE workspaceId = '${workspaceId}'
-        `,
-    });
-
-    await client.query({
-      query: `
-          ALTER TABLE profile
-          DELETE WHERE workspaceId = '${workspaceId}'
-        `,
-    });
 
     await prisma.workspace.delete({
       where: {

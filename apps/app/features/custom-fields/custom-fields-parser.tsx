@@ -39,7 +39,7 @@ export const CustomFieldsParser = ({ member, company, record }: Props) => {
 
       return await updateMember({
         ...member,
-        customFields: { fields },
+        customFields: fields,
       });
     }
 
@@ -47,7 +47,7 @@ export const CustomFieldsParser = ({ member, company, record }: Props) => {
 
     await updateCompany({
       ...company,
-      customFields: { fields },
+      customFields: fields,
     });
   };
 
@@ -55,8 +55,8 @@ export const CustomFieldsParser = ({ member, company, record }: Props) => {
     field: CustomField,
     value: string | string[] | number | null,
   ) => {
-    const isExistingField = customFields?.fields.some((f) => f.id === field.id);
-    let updatedFields = [...(customFields?.fields ?? [])];
+    const isExistingField = customFields?.some((f) => f.id === field.id);
+    let updatedFields = customFields ?? [];
 
     if (isExistingField) {
       updatedFields = updatedFields.map((f) => {
@@ -135,7 +135,7 @@ export const CustomFieldsParser = ({ member, company, record }: Props) => {
   };
 
   const renderField = (field: CustomField) => {
-    const memberField = customFields?.fields.find((f) => f.id === field.id);
+    const memberField = customFields?.find((f) => f.id === field.id);
 
     switch (field.type) {
       case "TEXT": {

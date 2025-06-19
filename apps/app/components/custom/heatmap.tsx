@@ -206,10 +206,10 @@ const DayCell = ({
         ) : (
           <>
             <p>{format(day, "MMM d, yyyy")}</p>
-            <p className="mt-1">
+            {/* <p className="mt-1">
               {activities?.length ?? 0}{" "}
               {(activities?.length ?? 0) === 1 ? "activity" : "activities"}
-            </p>
+            </p> */}
             {activities && <ActivitySummaryDisplay activities={activities} />}
           </>
         )}

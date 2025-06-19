@@ -8,7 +8,6 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@conquest/clickhouse": "workspace:*",
     "@conquest/db": "workspace:*",
     "@conquest/env": "workspace:*",
     "@conquest/utils": "workspace:*",

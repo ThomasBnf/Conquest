@@ -1,5 +1,5 @@
-import { createMember } from "@conquest/clickhouse/member/createMember";
-import { createProfile } from "@conquest/clickhouse/profile/createProfile";
+import { createMember } from "@conquest/db/member/createMember";
+import { createProfile } from "@conquest/db/profile/createProfile";
 import type { WebClient } from "@slack/web-api";
 import { logger } from "@trigger.dev/sdk/v3";
 import ISO6391 from "iso-639-1";

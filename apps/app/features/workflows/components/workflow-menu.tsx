@@ -14,9 +14,9 @@ import {
 import { Workflow } from "@conquest/zod/schemas/workflow.schema";
 import { Archive, Copy, MoreHorizontal, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { v4 as uuid } from "uuid";
 import { useState } from "react";
 import { toast } from "sonner";
-import { v4 as uuid } from "uuid";
 import { useDeleteWorkflow } from "../mutations/useDeleteWorkflow";
 import { useUpdateWorkflow } from "../mutations/useUpdateWorkflow";
 

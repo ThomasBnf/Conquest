@@ -1,9 +1,10 @@
 import { protectedProcedure } from "@/server/trpc";
-import { client } from "@conquest/clickhouse/client";
+import { prisma } from "@conquest/db/prisma";
 import { SOURCE, Source } from "@conquest/zod/enum/source.enum";
-import { differenceInDays, format, subDays } from "date-fns";
+import { ProfileAttributesSchema } from "@conquest/zod/schemas/profile.schema";
+import { differenceInDays, endOfWeek, startOfWeek, subDays } from "date-fns";
 import z from "zod";
-import { getUniquePeriods } from "../helpers/getUniquePeriods";
+import { listWeeks } from "../helpers/listWeeks";
 
 export const activeMembers = protectedProcedure
   .input(
@@ -24,165 +25,161 @@ export const activeMembers = protectedProcedure
 
     if (!from || !to) {
       return {
-        profiles: [],
         total: 0,
-        growthRate: 0,
-        byIntegration: {},
+        previousTotal: 0,
+        weeks: [],
       };
     }
 
-    const formattedFrom = format(from, "yyyy-MM-dd HH:mm:ss");
-    const formattedTo = format(to, "yyyy-MM-dd HH:mm:ss");
     const days = differenceInDays(to, from);
-    const isWeekly = days > 30;
+    const previousFrom = subDays(from, days);
+    const previousTo = subDays(from, 1);
 
-    const previousFrom = format(subDays(from, days), "yyyy-MM-dd HH:mm:ss");
-    const previousTo = format(subDays(from, 1), "yyyy-MM-dd HH:mm:ss");
+    const [membersData, total, previousTotal] = await Promise.all([
+      prisma.member.findMany({
+        where: {
+          workspaceId,
+          profiles: {
+            some: {
+              OR: sources.map((source) => ({
+                attributes: {
+                  path: ["source"],
+                  equals: source,
+                },
+              })),
+            },
+          },
+          activities: {
+            some: {
+              createdAt: {
+                gte: previousFrom,
+                lte: to,
+              },
+            },
+          },
+        },
+        select: {
+          id: true,
+          profiles: {
+            where: {
+              OR: sources.map((source) => ({
+                attributes: {
+                  path: ["source"],
+                  equals: source,
+                },
+              })),
+            },
+            select: {
+              attributes: true,
+            },
+          },
+          activities: {
+            where: {
+              createdAt: {
+                gte: previousFrom,
+                lte: to,
+              },
+            },
+            select: {
+              createdAt: true,
+            },
+          },
+        },
+      }),
+      prisma.member.count({
+        where: {
+          workspaceId,
+          activities: {
+            some: {
+              createdAt: {
+                gte: from,
+                lte: to,
+              },
+            },
+          },
+          profiles: {
+            some: {
+              OR: sources.map((source) => ({
+                attributes: {
+                  path: ["source"],
+                  equals: source,
+                },
+              })),
+            },
+          },
+        },
+      }),
+      prisma.member.count({
+        where: {
+          workspaceId,
+          activities: {
+            some: {
+              createdAt: {
+                gte: previousFrom,
+                lte: previousTo,
+              },
+            },
+          },
+          profiles: {
+            some: {
+              OR: sources.map((source) => ({
+                attributes: {
+                  path: ["source"],
+                  equals: source,
+                },
+              })),
+            },
+          },
+        },
+      }),
+    ]);
 
-    const totalsResult = await client.query({
-      query: `
-        WITH current_total AS (
-          SELECT countDistinct(a.memberId) AS total
-          FROM activity a
-          JOIN profile p FINAL ON p.memberId = a.memberId AND p.workspaceId = a.workspaceId
-          WHERE a.createdAt >= '${formattedFrom}'
-            AND a.createdAt <= '${formattedTo}'
-            AND a.workspaceId = '${workspaceId}'
-            AND p.attributes.source IN (${sources.map((source) => `'${source}'`).join(", ")})
-        ),
-        previous_total AS (
-          SELECT countDistinct(a.memberId) AS total
-          FROM activity a
-          JOIN profile p FINAL ON p.memberId = a.memberId AND p.workspaceId = a.workspaceId
-          WHERE a.createdAt >= '${previousFrom}'
-            AND a.createdAt <= '${previousTo}'
-            AND a.workspaceId = '${workspaceId}'
-            AND p.attributes.source IN (${sources.map((source) => `'${source}'`).join(", ")})
-        )
-        SELECT 
-          (SELECT total FROM current_total) AS currentTotal,
-          (SELECT total FROM previous_total) AS previousTotal
-      `,
-    });
+    const weeks = listWeeks(from, to);
 
-    const periodDataResult = await client.query({
-      query: `
-        SELECT
-          ${isWeekly ? "toStartOfWeek(a.createdAt)" : "toDate(a.createdAt)"} AS week,
-          p.attributes.source AS source,
-          groupArray(DISTINCT a.memberId) AS memberIds
-        FROM activity a
-        JOIN profile p FINAL ON p.memberId = a.memberId AND p.workspaceId = a.workspaceId
-        WHERE a.createdAt >= '${formattedFrom}'
-          AND a.createdAt <= '${formattedTo}'
-          AND a.workspaceId = '${workspaceId}'
-          AND p.attributes.source IN (${sources.map((source) => `'${source}'`).join(", ")})
-        GROUP BY week, source
-        ORDER BY week ASC
-      `,
-    });
+    const chartData = weeks.map((week) => {
+      const weekStart = startOfWeek(new Date(week));
+      const weekEnd = endOfWeek(new Date(week));
+      const weekData: Partial<Record<Source, number>> = {};
 
-    const totalsBySourceResult = await client.query({
-      query: `
-        SELECT 
-          p.attributes.source AS source,
-          countDistinct(a.memberId) AS total
-        FROM activity a
-        JOIN profile p FINAL ON p.memberId = a.memberId AND p.workspaceId = a.workspaceId
-        WHERE a.createdAt >= '${formattedFrom}'
-          AND a.createdAt <= '${formattedTo}'
-          AND a.workspaceId = '${workspaceId}'
-          AND p.attributes.source IN (${sources.map((source) => `'${source}'`).join(", ")})
-        GROUP BY source
-      `,
-    });
-
-    const { data: totals } = await totalsResult.json<{
-      currentTotal: number;
-      previousTotal: number;
-    }>();
-
-    const { data: periodData } = await periodDataResult.json<{
-      week: string;
-      source: string;
-      memberIds: string[];
-    }>();
-
-    const { data: totalsBySource } = await totalsBySourceResult.json<{
-      source: string;
-      total: number;
-    }>();
-
-    const periods = getUniquePeriods(from, to);
-
-    const currentTotal = Number(totals[0]?.currentTotal) || 0;
-    const previousTotal = Number(totals[0]?.previousTotal) || 0;
-
-    const growthRate =
-      previousTotal > 0
-        ? Math.round(
-            ((currentTotal - previousTotal) / previousTotal) * 100 * 100,
-          ) / 100
-        : currentTotal > 0
-          ? 100
-          : 0;
-
-    const byIntegration: Record<Source, number> = {} as Record<Source, number>;
-
-    for (const item of totalsBySource) {
-      byIntegration[item.source as Source] = Number(item.total) || 0;
-    }
-
-    for (const source of sources) {
-      if (byIntegration[source] === undefined) {
-        byIntegration[source] = 0;
-      }
-    }
-
-    const profiles: Array<{
-      week: string;
-      cumulative: Record<Source, number>;
-      detail: Record<Source, number>;
-    }> = [];
-    const cumulativeMemberIds = {} as Record<Source, Set<string>>;
-
-    for (const source of sources) {
-      cumulativeMemberIds[source] = new Set();
-    }
-
-    for (const period of periods) {
-      const cumulativeData: Record<Source, number> = {} as Record<
-        Source,
-        number
-      >;
-      const detailData: Record<Source, number> = {} as Record<Source, number>;
-
+      const membersBySource: Record<string, Set<string>> = {};
       for (const source of sources) {
-        const sourceData = periodData.find(
-          (d) => d.week === period && d.source === source,
+        membersBySource[source] = new Set();
+      }
+
+      for (const member of membersData) {
+        const hasWeekActivity = member.activities.some(
+          (activity) =>
+            activity.createdAt >= weekStart && activity.createdAt <= weekEnd,
         );
 
-        detailData[source] = sourceData?.memberIds?.length || 0;
-
-        if (sourceData?.memberIds) {
-          for (const id of sourceData.memberIds) {
-            cumulativeMemberIds[source].add(id);
+        if (hasWeekActivity) {
+          for (const profile of member.profiles) {
+            const attributes = ProfileAttributesSchema.parse(
+              profile.attributes,
+            );
+            if (attributes.source && sources.includes(attributes.source)) {
+              membersBySource[attributes.source]?.add(member.id);
+            }
           }
         }
-        cumulativeData[source] = cumulativeMemberIds[source].size;
       }
 
-      profiles.push({
-        week: period,
-        cumulative: cumulativeData,
-        detail: detailData,
-      });
-    }
+      for (const source of sources) {
+        weekData[source] = membersBySource[source]?.size ?? 0;
+      }
+
+      return {
+        week,
+        ...weekData,
+      };
+    });
+
+    const growthRate =
+      previousTotal > 0 ? (total - previousTotal) / previousTotal : 0;
 
     return {
-      total: currentTotal,
+      total,
       growthRate,
-      profiles,
-      byIntegration,
+      weeks: chartData,
     };
   });

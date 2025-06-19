@@ -1,4 +1,4 @@
-import { client } from "@conquest/clickhouse/client";
+import { prisma } from "@conquest/db/prisma";
 import { CompanySchema } from "@conquest/zod/schemas/company.schema";
 import { z } from "zod";
 import { protectedProcedure } from "../trpc";
@@ -13,16 +13,15 @@ export const getAllCompanies = protectedProcedure
     const { workspaceId } = user;
     const { search } = input;
 
-    const companies = await client.query({
-      query: `
-        SELECT *
-        FROM company FINAL
-        WHERE workspaceId = '${workspaceId}'
-        ${search ? `AND name ILIKE '%${search}%'` : ""}
-        ORDER BY name ASC
-      `,
+    const companies = await prisma.company.findMany({
+      where: {
+        workspaceId,
+        name: {
+          contains: search,
+          mode: "insensitive",
+        },
+      },
     });
 
-    const { data } = await companies.json();
-    return CompanySchema.array().parse(data);
+    return CompanySchema.array().parse(companies);
   });

@@ -21,7 +21,6 @@ export const EditableNumber = ({
   const [isHover, setIsHover] = useState(false);
 
   const onBlur = (value: string) => {
-    console.log("onBlur", value);
     onUpdate(value ? Number(value) : null);
     onCancel();
   };

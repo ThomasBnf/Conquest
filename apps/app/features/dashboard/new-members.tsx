@@ -25,7 +25,6 @@ import {
 } from "recharts";
 import { DateRangePicker } from "./date-range-picker";
 import { getDays } from "./helpers/getDays";
-import { getMaxValue } from "./helpers/getMaxValue";
 import { IntegrationsPicker } from "./integrations-picker";
 import { Percentage } from "./percentage";
 
@@ -81,8 +80,12 @@ export const NewMembers = () => {
       : skipToken,
   );
 
-  const { profiles, total, growthRate } = data || {};
-  const maxValue = getMaxValue(profiles as WeeklyProfileData[], sources);
+  const { total, growthRate, weeks } = data ?? {
+    total: 0,
+    growthRate: 0,
+    weeks: [],
+  };
+
   const days = getDays(dateRange);
   const dateFormat = days > 30 ? "MMM yyyy" : "MMM dd";
 
@@ -117,7 +120,7 @@ export const NewMembers = () => {
           </div>
           <div className="space-y-2">
             <p className="text-muted-foreground">New members by integration</p>
-            <div>
+            <div className="space-y-0.5">
               {sources.map((source) => (
                 <div key={source} className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
@@ -127,7 +130,7 @@ export const NewMembers = () => {
                     />
                     <p>{source}</p>
                   </div>
-                  <p className="font-medium">{profiles?.at(-1)?.[source]}</p>
+                  <p className="font-medium">{weeks?.at(-1)?.[source] ?? 0}</p>
                 </div>
               ))}
             </div>
@@ -139,7 +142,7 @@ export const NewMembers = () => {
           ) : (
             <ChartContainer config={chartConfig}>
               <LineChart
-                data={profiles}
+                data={weeks}
                 margin={{
                   top: 20,
                   right: 20,
@@ -158,7 +161,6 @@ export const NewMembers = () => {
                   axisLine={false}
                   tickMargin={10}
                   stroke="hsl(var(--border))"
-                  domain={[0, maxValue]}
                 />
                 <ChartTooltip
                   content={
@@ -185,19 +187,4 @@ export const NewMembers = () => {
       </div>
     </div>
   );
-};
-
-const calculateMaxValue = (
-  data: WeeklyProfileData[] | undefined,
-  sources: Source[],
-): number => {
-  if (!data) return 0;
-
-  return data.reduce((max, entry) => {
-    const weekMax = sources.reduce((weekMax, source) => {
-      const value = Number(entry[source] || 0);
-      return Math.max(weekMax, value);
-    }, 0);
-    return Math.max(max, weekMax);
-  }, 0);
 };

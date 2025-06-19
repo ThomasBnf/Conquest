@@ -1,9 +1,8 @@
 import { z } from "zod";
 
 export const LevelSchema = z.object({
-  id: z.string().uuid(),
-  name: z.string(),
   number: z.number(),
+  name: z.string(),
   from: z.number(),
   to: z.number().nullable(),
   workspaceId: z.string(),

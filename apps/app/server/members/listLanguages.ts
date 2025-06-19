@@ -1,24 +1,21 @@
-import { client } from "@conquest/clickhouse/client";
+import { prisma } from "@conquest/db/prisma";
 import { protectedProcedure } from "../trpc";
 
 export const listLanguages = protectedProcedure.query(
   async ({ ctx: { user } }) => {
     const { workspaceId } = user;
 
-    const result = await client.query({
-      query: `
-        SELECT DISTINCT language
-        FROM member FINAL
-        WHERE 
-          workspaceId = '${workspaceId}'
-          AND language IS NOT NULL; 
-      `,
+    const members = await prisma.member.findMany({
+      where: {
+        workspaceId,
+        language: { not: null },
+      },
+      select: {
+        language: true,
+      },
+      distinct: ["language"],
     });
 
-    const { data } = (await result.json()) as {
-      data: Array<{ language: string }>;
-    };
-
-    return data.filter((row) => row.language !== "").map((row) => row.language);
+    return members.map((member) => member.language);
   },
 );

@@ -1,14 +1,6 @@
 import { trpc } from "@/server/client";
-import { Avatar, AvatarFallback, AvatarImage } from "@conquest/ui/avatar";
 import { Button } from "@conquest/ui/button";
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@conquest/ui/command";
+import { Command, CommandInput, CommandList } from "@conquest/ui/command";
 import {
   Dialog,
   DialogBody,
@@ -19,10 +11,9 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@conquest/ui/dialog";
-import { Skeleton } from "@conquest/ui/skeleton";
 import { Member } from "@conquest/zod/schemas/member.schema";
-import { Check, Loader2, Send } from "lucide-react";
-import { useEffect, useState } from "react";
+import { Loader2, Send } from "lucide-react";
+import { useState } from "react";
 import { useInView } from "react-intersection-observer";
 import { toast } from "sonner";
 
@@ -51,44 +42,45 @@ export const TestSlackMessage = ({ message }: Props) => {
       },
     });
 
-  const { data, isLoading, fetchNextPage } = trpc.members.list.useInfiniteQuery(
-    {
-      search,
-      id: "firstName",
-      desc: true,
-      groupFilters: {
-        filters: [
-          {
-            id: "756b6873-1012-4b9e-b146-d28f8033a6a0",
-            type: "select",
-            field: "profiles",
-            label: "Profiles",
-            values: ["Slack"],
-            operator: "contains",
-          },
-        ],
-        operator: "AND",
-      },
-    },
-    { getNextPageParam: (_, allPages) => allPages.length * 25 },
-  );
+  //TODO
+  // const { data, isLoading, fetchNextPage } = trpc.members.list.useInfiniteQuery(
+  //   {
+  //     search,
+  //     id: "firstName",
+  //     desc: true,
+  //     groupFilters: {
+  //       filters: [
+  //         {
+  //           id: "756b6873-1012-4b9e-b146-d28f8033a6a0",
+  //           type: "select",
+  //           field: "profiles",
+  //           label: "Profiles",
+  //           values: ["Slack"],
+  //           operator: "contains",
+  //         },
+  //       ],
+  //       operator: "AND",
+  //     },
+  //   },
+  //   { getNextPageParam: (_, allPages) => allPages.length * 25 },
+  // );
 
-  const members = data?.pages.flat();
-  const hasNextPage = data?.pages.at(-1)?.length === 25;
+  // const members = data?.pages.flat();
+  // const hasNextPage = data?.pages.at(-1)?.length === 25;
 
-  const onSelectMember = (member: Member) => {
-    if (selectedMember?.id === member.id) {
-      setSelectedMember(null);
-    } else {
-      setSelectedMember(member);
-    }
-  };
+  // const onSelectMember = (member: Member) => {
+  //   if (selectedMember?.id === member.id) {
+  //     setSelectedMember(null);
+  //   } else {
+  //     setSelectedMember(member);
+  //   }
+  // };
 
-  useEffect(() => {
-    if (inView && hasNextPage) {
-      fetchNextPage();
-    }
-  }, [inView]);
+  // useEffect(() => {
+  //   if (inView && hasNextPage) {
+  //     fetchNextPage();
+  //   }
+  // }, [inView]);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -113,13 +105,13 @@ export const TestSlackMessage = ({ message }: Props) => {
               placeholder="Search..."
             />
             <CommandList>
-              <CommandGroup>
-                {isLoading && <Skeleton className="h-8 w-full" />}
+              {/* <CommandGroup>
+                {isLoading && <Skeleton className="w-full h-8" />}
                 {!isLoading && <CommandEmpty>No members found</CommandEmpty>}
                 {members?.map((member) => (
                   <CommandItem
                     key={member.id}
-                    className="flex items-center gap-2"
+                    className="flex gap-2 items-center"
                     onSelect={() => onSelectMember(member)}
                   >
                     <Avatar className="size-7">
@@ -129,7 +121,7 @@ export const TestSlackMessage = ({ message }: Props) => {
                         {member.lastName?.charAt(0).toUpperCase()}
                       </AvatarFallback>
                     </Avatar>
-                    <div className="flex w-full flex-col text-xs">
+                    <div className="flex flex-col w-full text-xs">
                       {member.firstName} {member.lastName}
                       <span className="text-muted-foreground">
                         {member.primaryEmail}
@@ -141,7 +133,7 @@ export const TestSlackMessage = ({ message }: Props) => {
                   </CommandItem>
                 ))}
                 <div ref={ref} />
-              </CommandGroup>
+              </CommandGroup> */}
             </CommandList>
           </Command>
         </DialogBody>

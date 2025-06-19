@@ -21,6 +21,7 @@ import { useQueryStates } from "nuqs";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { v4 as uuid } from "uuid";
+
 type Props<TData extends Member | Company> = {
   data: TData;
 };
@@ -54,19 +55,19 @@ export const TagsCell = <TData extends Member | Company>({
   );
 
   const { mutateAsync: updateMember } = trpc.members.update.useMutation({
-    onMutate: async (newData) => {
+    onMutate: async (updatedMember) => {
       await utils.members.list.cancel();
       const prevData = utils.members.list.getInfiniteData();
 
       utils.members.list.setInfiniteData(
         { search, id, desc, groupFilters },
         (old) => {
-          if (!old) return;
+          if (!old) return old;
 
           const newPages = old.pages.map((page) =>
             page.map((member) =>
-              member.id === newData.id
-                ? { ...member, tags: newData.tags }
+              member.id === updatedMember.id
+                ? { ...member, tags: updatedMember.tags }
                 : member,
             ),
           );
@@ -90,17 +91,17 @@ export const TagsCell = <TData extends Member | Company>({
   });
 
   const { mutateAsync: updateCompany } = trpc.companies.update.useMutation({
-    onMutate: async (newData) => {
+    onMutate: async (updatedCompany) => {
       await utils.companies.list.cancel();
       const prevData = utils.companies.list.getInfiniteData();
 
       utils.companies.list.setInfiniteData({ search, id, desc }, (old) => {
-        if (!old) return;
+        if (!old) return old;
 
         const newPages = old.pages.map((page) =>
           page.map((company) =>
-            company.id === newData.id
-              ? { ...company, tags: newData.tags }
+            company.id === updatedCompany.id
+              ? { ...company, tags: updatedCompany.tags }
               : company,
           ),
         );
@@ -113,7 +114,7 @@ export const TagsCell = <TData extends Member | Company>({
 
       return { prevData };
     },
-    onError: (error) => {
+    onError: () => {
       toast.error("Failed to update company");
       utils.companies.get.invalidate({ id: data.id });
     },

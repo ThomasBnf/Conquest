@@ -1,12 +1,11 @@
-import { client } from "@conquest/clickhouse/client";
-import { createMember } from "@conquest/clickhouse/member/createMember";
-import { createProfile } from "@conquest/clickhouse/profile/createProfile";
-import { getProfile } from "@conquest/clickhouse/profile/getProfile";
 import { getIntegrationBySource } from "@conquest/db/integrations/getIntegrationBySource";
+import { createMember } from "@conquest/db/member/createMember";
+import { getMember } from "@conquest/db/member/getMember";
+import { createProfile } from "@conquest/db/profile/createProfile";
+import { getProfile } from "@conquest/db/profile/getProfile";
 import { decrypt } from "@conquest/db/utils/decrypt";
 import { listWorkspaces } from "@conquest/db/workspaces/listWorkspaces";
 import { SlackIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
-import { MemberSchema } from "@conquest/zod/schemas/member.schema";
 import { WebClient } from "@slack/web-api";
 import { logger } from "@trigger.dev/sdk/v3";
 import ISO6391 from "iso-639-1";
@@ -78,20 +77,10 @@ export const checkSlackProfiles = async () => {
 
           if (existingProfile) continue;
 
-          const sanitizedEmail =
-            email.toLowerCase().trim()?.replace(/'/g, "\\'") ?? "";
-
-          const result = await client.query({
-            query: `
-              SELECT * 
-              FROM member FINAL
-              WHERE primaryEmail = '${sanitizedEmail}'
-              AND workspaceId = '${workspaceId}'
-            `,
+          const existingMember = await getMember({
+            primaryEmail: email,
+            workspaceId,
           });
-
-          const { data } = await result.json();
-          const existingMember = data[0];
 
           let memberId: string | undefined;
 
@@ -119,7 +108,7 @@ export const checkSlackProfiles = async () => {
 
             memberId = createdMember.id;
           } else {
-            memberId = MemberSchema.parse(data[0]).id;
+            memberId = existingMember.id;
           }
 
           if (!memberId) continue;

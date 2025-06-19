@@ -25,14 +25,8 @@ import {
 } from "recharts";
 import { DateRangePicker } from "./date-range-picker";
 import { getDays } from "./helpers/getDays";
-import { getMaxValue } from "./helpers/getMaxValue";
 import { IntegrationsPicker } from "./integrations-picker";
 import { Percentage } from "./percentage";
-
-type WeeklyProfileData = {
-  week: string;
-  [key: string]: string | number;
-};
 
 type SourceConfig = {
   label: string;
@@ -80,8 +74,12 @@ export const TotalMembers = () => {
       : skipToken,
   );
 
-  const { profiles, total, growthRate } = data || {};
-  const maxValue = getMaxValue(profiles as WeeklyProfileData[], sources);
+  const { total, growthRate, weeks } = data ?? {
+    total: 0,
+    growthRate: 0,
+    weeks: [],
+  };
+
   const days = getDays(dateRange);
   const dateFormat = days > 30 ? "MMM yyyy" : "MMM dd";
 
@@ -125,7 +123,7 @@ export const TotalMembers = () => {
                   />
                   <p>{source}</p>
                 </div>
-                <p className="font-medium">{profiles?.at(-1)?.[source]}</p>
+                <p className="font-medium">{weeks?.at(-1)?.[source] ?? 0}</p>
               </div>
             ))}
           </div>
@@ -137,7 +135,7 @@ export const TotalMembers = () => {
         ) : (
           <ChartContainer config={chartConfig}>
             <LineChart
-              data={profiles}
+              data={weeks}
               margin={{
                 top: 20,
                 right: 20,
@@ -156,7 +154,6 @@ export const TotalMembers = () => {
                 axisLine={false}
                 tickMargin={10}
                 stroke="hsl(var(--border))"
-                domain={[0, maxValue]}
               />
               <ChartTooltip
                 content={

@@ -1,4 +1,4 @@
-import { updateActivityType as _updateActivityType } from "@conquest/clickhouse/activity-type/updateActivityType";
+import { updateActivityType as _updateActivityType } from "@conquest/db/activity-type/updateActivityType";
 import { getAllMembersMetrics } from "@conquest/trigger/tasks/getAllMembersMetrics";
 import { ActivityTypeSchema } from "@conquest/zod/schemas/activity-type.schema";
 import { z } from "zod";

@@ -1,4 +1,4 @@
-import { listChannels } from "@conquest/clickhouse/channel/listChannels";
+import { listChannels } from "@conquest/db/channel/listChannels";
 import { updateIntegration } from "@conquest/db/integrations/updateIntegration";
 import { prisma } from "@conquest/db/prisma";
 import { DiscordIntegrationSchema } from "@conquest/zod/schemas/integration.schema";

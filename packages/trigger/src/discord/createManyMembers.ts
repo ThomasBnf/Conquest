@@ -1,5 +1,5 @@
-import { createMember } from "@conquest/clickhouse/member/createMember";
-import { createProfile } from "@conquest/clickhouse/profile/createProfile";
+import { createMember } from "@conquest/db/member/createMember";
+import { createProfile } from "@conquest/db/profile/createProfile";
 import { discordClient } from "@conquest/db/discord";
 import type { DiscordIntegration } from "@conquest/zod/schemas/integration.schema";
 import type { Tag } from "@conquest/zod/schemas/tag.schema";

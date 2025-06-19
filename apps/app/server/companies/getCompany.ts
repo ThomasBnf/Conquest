@@ -1,4 +1,4 @@
-import { getCompany as _getCompany } from "@conquest/clickhouse/company/getCompany";
+import { getCompany as _getCompany } from "@conquest/db/company/getCompany";
 import { z } from "zod";
 import { protectedProcedure } from "../trpc";
 

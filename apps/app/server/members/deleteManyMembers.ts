@@ -1,4 +1,4 @@
-import { deleteManyMembers as _deleteManyMembers } from "@conquest/clickhouse/member/deleteManyMembers";
+import { deleteManyMembers as _deleteManyMembers } from "@conquest/db/member/deleteManyMembers";
 import { z } from "zod";
 import { protectedProcedure } from "../trpc";
 

@@ -27,7 +27,7 @@ export const ActivityMenu = ({ activity, href }: Props) => {
 
   const { mutateAsync } = trpc.activities.delete.useMutation({
     onSuccess: () => {
-      utils.dashboard.heatmap.invalidate({ memberId: activity.memberId });
+      // utils.dashboard.heatmap.invalidate({ memberId: activity.memberId });
       utils.activities.listInfinite.invalidate();
       toast.success("Activity deleted");
     },

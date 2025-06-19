@@ -1,10 +1,10 @@
-import { getProfileBySource } from "@conquest/clickhouse/profile/getProfileBySource";
 import { discordClient } from "@conquest/db/discord";
 import { getIntegrationBySource } from "@conquest/db/integrations/getIntegrationBySource";
+import { getProfileBySource } from "@conquest/db/profile/getProfileBySource";
 import { decrypt } from "@conquest/db/utils/decrypt";
 import { replaceVariables } from "@conquest/utils/replace-variables";
 import { DiscordIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
-import { MemberWithLevel } from "@conquest/zod/schemas/member.schema";
+import { Member } from "@conquest/zod/schemas/member.schema";
 import {
   Node,
   NodeDiscordMessageSchema,
@@ -15,7 +15,7 @@ import { nodeStatus } from "./nodeStatus";
 
 type Props = {
   node: Node;
-  member: MemberWithLevel;
+  member: Member;
 };
 
 export const discordMessage = async ({
@@ -58,8 +58,9 @@ export const discordMessage = async ({
   }
 
   const profile = await getProfileBySource({
-    source: "Discord",
     memberId,
+    source: "Discord",
+    workspaceId,
   });
 
   if (!profile?.externalId) {

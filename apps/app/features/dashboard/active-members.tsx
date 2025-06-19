@@ -25,7 +25,6 @@ import {
 } from "recharts";
 import { DateRangePicker } from "./date-range-picker";
 import { getDays } from "./helpers/getDays";
-import { getMaxValue } from "./helpers/getMaxValue";
 import { IntegrationsPicker } from "./integrations-picker";
 import { Percentage } from "./percentage";
 
@@ -81,15 +80,14 @@ export const ActiveMembers = () => {
       : skipToken,
   );
 
-  const { profiles, total, growthRate } = data || {};
+  const { total, growthRate, weeks } = data ?? {
+    total: 0,
+    growthRate: 0,
+    weeks: [],
+  };
 
-  const chartData =
-    profiles?.map((profile) => ({
-      week: profile.week,
-      ...profile.detail,
-    })) || [];
+  console.log(data);
 
-  const maxValue = getMaxValue(chartData as WeeklyProfileData[], sources);
   const days = getDays(dateRange);
   const dateFormat = days > 30 ? "MMM yyyy" : "MMM dd";
 
@@ -133,9 +131,7 @@ export const ActiveMembers = () => {
                   />
                   <p>{source}</p>
                 </div>
-                <p className="font-medium">
-                  {profiles?.at(-1)?.cumulative?.[source] || 0}
-                </p>
+                <p className="font-medium">{weeks?.at(-1)?.[source] ?? 0}</p>
               </div>
             ))}
           </div>
@@ -147,7 +143,7 @@ export const ActiveMembers = () => {
         ) : (
           <ChartContainer config={chartConfig}>
             <LineChart
-              data={chartData}
+              data={weeks}
               margin={{
                 top: 20,
                 right: 20,
@@ -166,7 +162,6 @@ export const ActiveMembers = () => {
                 axisLine={false}
                 tickMargin={10}
                 stroke="hsl(var(--border))"
-                domain={[0, maxValue]}
               />
               <ChartTooltip
                 content={

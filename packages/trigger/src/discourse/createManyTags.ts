@@ -1,7 +1,7 @@
 import { createTag } from "@conquest/db/tags/createTag";
 import type { Tag } from "@conquest/zod/schemas/tag.schema";
 import type DiscourseAPI from "discourse2";
-import { v4 as uuidv4 } from "uuid";
+import { randomUUID } from "node:crypto";
 
 export const createManyTags = async ({
   client,
@@ -26,7 +26,7 @@ export const createManyTags = async ({
     const color = colorMap[String(badge_type_id) as keyof typeof colorMap];
 
     const createdTag = await createTag({
-      id: uuidv4(),
+      id: randomUUID(),
       externalId: String(id),
       name,
       color,

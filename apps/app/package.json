@@ -11,8 +11,6 @@
     "@ai-sdk/openai": "^1.3.22",
     "@ai-sdk/react": "^1.2.12",
     "@auth/core": "^0.37.4",
-    "@clickhouse/client-web": "^1.10.1",
-    "@conquest/clickhouse": "workspace:*",
     "@conquest/db": "workspace:*",
     "@conquest/env": "workspace:*",
     "@conquest/resend": "workspace:*",
@@ -67,6 +65,7 @@
     "superjson": "^2.2.2",
     "use-debounce": "^10.0.4",
     "use-places-autocomplete": "^4.0.1",
+    "uuid": "^11.1.0",
     "zod": "^3.24.1",
     "zod-validation-error": "^3.4.0",
     "zustand": "^5.0.1"

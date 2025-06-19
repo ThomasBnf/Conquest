@@ -1,6 +1,6 @@
-import { client } from "@conquest/clickhouse/client";
-import { getMemberWithLevel } from "@conquest/clickhouse/member/getMemberWithLevel";
-import { updateManyMembers } from "@conquest/clickhouse/member/updateManyMembers";
+import { updateManyMembers } from "@conquest/db/member/updateManyMembers";
+import { prisma } from "@conquest/db/prisma";
+import { MemberSchema } from "@conquest/zod/schemas/member.schema";
 import { logger } from "@trigger.dev/sdk/v3";
 import { format, subDays } from "date-fns";
 import { triggerWorkflows } from "./tasks/triggerWorkflows";
@@ -17,26 +17,26 @@ export const potentialAmbassadors = async () => {
 };
 
 const tagAmbassadors = async ({ from, to }: { from: string; to: string }) => {
-  const result = await client.query({
-    query: `
-      SELECT DISTINCT m.id as memberId
-      FROM member m FINAL
-      LEFT JOIN level l ON m.levelId = l.id
-      WHERE 
-        m.potentialAmbassador = false
-        AND m.pulse >= 150
-        AND m.pulse <= 199
-        AND m.id IN (
-          SELECT memberId 
-          FROM activity 
-          WHERE 
-            createdAt BETWEEN '${from}' AND '${to}'
-        )
-    `,
+  const members = await prisma.member.findMany({
+    where: {
+      pulse: {
+        gte: 150,
+        lte: 199,
+      },
+      isStaff: false,
+      potentialAmbassador: false,
+      activities: {
+        some: {
+          createdAt: {
+            gte: from,
+            lte: to,
+          },
+        },
+      },
+    },
   });
 
-  const { data } = await result.json();
-  const members = data as Array<{ memberId: string }>;
+  const parsedMembers = MemberSchema.array().parse(members);
 
   logger.info("potential-ambassadors", {
     count: members.length,
@@ -45,13 +45,9 @@ const tagAmbassadors = async ({ from, to }: { from: string; to: string }) => {
 
   const updatedMembers = [];
 
-  for (const member of members) {
-    const currentMember = await getMemberWithLevel({ id: member.memberId });
-
-    if (!currentMember) continue;
-
+  for (const member of parsedMembers) {
     const updatedMember = {
-      ...currentMember,
+      ...member,
       potentialAmbassador: true,
     };
 
@@ -70,26 +66,26 @@ const removeAmbassadors = async ({
   from,
   to,
 }: { from: string; to: string }) => {
-  const result = await client.query({
-    query: `
-      SELECT DISTINCT m.id as memberId
-      FROM member m FINAL
-      LEFT JOIN level l ON m.levelId = l.id
-      WHERE 
-        m.potentialAmbassador = true
-        AND m.pulse >= 150
-        AND m.pulse <= 199
-        AND m.id NOT IN (
-          SELECT memberId 
-          FROM activity 
-          WHERE 
-            createdAt BETWEEN '${from}' AND '${to}'
-        )
-    `,
+  const members = await prisma.member.findMany({
+    where: {
+      pulse: {
+        gte: 150,
+        lte: 199,
+      },
+      isStaff: false,
+      potentialAmbassador: true,
+      activities: {
+        some: {
+          createdAt: {
+            gte: from,
+            lte: to,
+          },
+        },
+      },
+    },
   });
 
-  const { data } = await result.json();
-  const members = data as Array<{ memberId: string }>;
+  const parsedMembers = MemberSchema.array().parse(members);
 
   logger.info("remove-potential-ambassadors", {
     count: members.length,
@@ -98,13 +94,9 @@ const removeAmbassadors = async ({
 
   const updatedMembers = [];
 
-  for (const member of members) {
-    const currentMember = await getMemberWithLevel({ id: member.memberId });
-
-    if (!currentMember) continue;
-
+  for (const member of parsedMembers) {
     const updatedMember = {
-      ...currentMember,
+      ...member,
       potentialAmbassador: false,
     };
 

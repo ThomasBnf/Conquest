@@ -1,4 +1,4 @@
-import { countMembers as _countMembers } from "@conquest/clickhouse/member/countMembers";
+import { countMembers as _countMembers } from "@conquest/db/member/countMembers";
 import { GroupFiltersSchema } from "@conquest/zod/schemas/filters.schema";
 import { z } from "zod";
 import { protectedProcedure } from "../trpc";

@@ -2,16 +2,16 @@ import { createTask } from "@conquest/db/task/createTask";
 import { getUserById } from "@conquest/db/users/getUserById";
 import { resend } from "@conquest/resend";
 import { TaskCreated } from "@conquest/resend/emails/task-created";
-import { MemberWithLevel } from "@conquest/zod/schemas/member.schema";
+import { Member } from "@conquest/zod/schemas/member.schema";
 import { Node, NodeTaskSchema } from "@conquest/zod/schemas/node.schema";
 import { Task } from "@conquest/zod/schemas/task.schema";
 import { addDays, endOfDay, format } from "date-fns";
-import { v4 as uuid } from "uuid";
+import { randomUUID } from "node:crypto";
 import { nodeStatus } from "./nodeStatus";
 
 type Props = {
   node: Node;
-  member: MemberWithLevel;
+  member: Member;
   slug: string;
 };
 
@@ -22,7 +22,7 @@ export const task = async ({ node, member, slug }: Props): Promise<Node> => {
   );
 
   const newTask: Task = {
-    id: uuid(),
+    id: randomUUID(),
     title,
     dueDate: endOfDay(addDays(new Date(), days)),
     assignee: assignee ?? null,
