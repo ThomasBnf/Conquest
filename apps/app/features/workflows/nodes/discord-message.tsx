@@ -128,10 +128,10 @@ export const DiscordMessage = () => {
                       <CommandEmpty>No results found.</CommandEmpty>
                       <CommandGroup>
                         <CommandItem
-                          value="createdMember"
-                          onSelect={() => onClick("{createdMember}")}
+                          value="mention"
+                          onSelect={() => onClick("{@mention}")}
                         >
-                          Created Member
+                          Mention member
                         </CommandItem>
                       </CommandGroup>
                       <CommandSeparator />
@@ -201,7 +201,7 @@ export const DiscordMessage = () => {
             </FixedToolbar>
             <EditorContainer>
               <PlateEditor
-                placeholder="Press $ to display variables"
+                placeholder="Write your message here..."
                 className="text-sm sm:px-2 sm:pt-2 sm:pb-24"
               />
             </EditorContainer>

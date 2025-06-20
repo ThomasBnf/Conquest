@@ -119,9 +119,9 @@ export const SlackMessage = () => {
                       <CommandGroup>
                         <CommandItem
                           value="createdMember"
-                          onSelect={() => onClick("{createdMember}")}
+                          onSelect={() => onClick("{@mention}")}
                         >
-                          Created Member
+                          Mention member
                         </CommandItem>
                       </CommandGroup>
                       <CommandSeparator />
