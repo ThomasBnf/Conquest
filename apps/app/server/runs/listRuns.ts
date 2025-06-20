@@ -18,7 +18,7 @@ export const listRuns = protectedProcedure
       },
     });
 
-    console.log(runs);
+    console.dir(runs, { depth: null });
 
     return RunSchema.array().parse(runs);
   });
