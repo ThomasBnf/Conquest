@@ -18,5 +18,7 @@ export const listRuns = protectedProcedure
       },
     });
 
+    console.log(runs);
+
     return RunSchema.array().parse(runs);
   });
