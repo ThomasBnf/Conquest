@@ -22,20 +22,18 @@ export const MessageSchema = z.array(
             underline: z.boolean().optional(),
             strikethrough: z.boolean().optional(),
           }),
-          z
-            .object({
-              children: z
-                .array(
-                  z.object({
-                    text: z.string(),
-                  }),
-                )
-                .default([]),
-              type: z.enum(["mention", "mention_input", "emoji_input"]),
-              value: z.string().optional(),
-              id: z.string(),
-            })
-            .optional(),
+          z.object({
+            children: z
+              .array(
+                z.object({
+                  text: z.string(),
+                }),
+              )
+              .optional(),
+            type: z.enum(["mention", "mention_input", "emoji_input"]),
+            value: z.string().optional(),
+            id: z.string(),
+          }),
         ]),
       )
       .default([]),
