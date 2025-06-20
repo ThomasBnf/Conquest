@@ -21,10 +21,7 @@ import {
 } from "@conquest/ui/dialog";
 import { Skeleton } from "@conquest/ui/skeleton";
 import { Member } from "@conquest/zod/schemas/member.schema";
-import {
-  Message,
-  NodeDiscordMessageSchema,
-} from "@conquest/zod/schemas/node.schema";
+import { NodeDiscordMessageSchema } from "@conquest/zod/schemas/node.schema";
 import { Check, Loader2, Send } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useInView } from "react-intersection-observer";
@@ -89,7 +86,7 @@ export const TestDiscordMessage = () => {
     if (!selectedMember) return;
 
     const parsedNode = node ? NodeDiscordMessageSchema.parse(node.data) : null;
-    const message = parsedNode?.message as Message;
+    const message = parsedNode?.message;
 
     if (!message) {
       toast.error("Message is required");
@@ -132,12 +129,12 @@ export const TestDiscordMessage = () => {
             />
             <CommandList>
               <CommandGroup>
-                {isLoading && <Skeleton className="w-full h-8" />}
+                {isLoading && <Skeleton className="h-8 w-full" />}
                 {!isLoading && <CommandEmpty>No members found</CommandEmpty>}
                 {members?.map((member) => (
                   <CommandItem
                     key={member.id}
-                    className="flex gap-2 items-center"
+                    className="flex items-center gap-2"
                     onSelect={() => onSelectMember(member)}
                   >
                     <Avatar className="size-7">
@@ -147,7 +144,7 @@ export const TestDiscordMessage = () => {
                         {member.lastName?.charAt(0).toUpperCase()}
                       </AvatarFallback>
                     </Avatar>
-                    <div className="flex flex-col w-full text-xs">
+                    <div className="flex w-full flex-col text-xs">
                       {member.firstName} {member.lastName}
                       <span className="text-muted-foreground">
                         {member.primaryEmail}

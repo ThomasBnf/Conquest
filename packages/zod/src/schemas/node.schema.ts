@@ -93,12 +93,12 @@ export const NodeIfElseSchema = NodeBaseDataSchema.extend({
 
 export const NodeSlackMessageSchema = NodeBaseDataSchema.extend({
   type: z.literal("slack-message"),
-  message: z.string().or(MessageSchema),
+  message: MessageSchema,
 });
 
 export const NodeDiscordMessageSchema = NodeBaseDataSchema.extend({
   type: z.literal("discord-message"),
-  message: z.string().or(MessageSchema),
+  message: MessageSchema,
 });
 
 export const NodeTaskSchema = NodeBaseDataSchema.extend({

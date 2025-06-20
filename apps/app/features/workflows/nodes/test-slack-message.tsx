@@ -21,10 +21,7 @@ import {
 } from "@conquest/ui/dialog";
 import { Skeleton } from "@conquest/ui/skeleton";
 import { Member } from "@conquest/zod/schemas/member.schema";
-import {
-  Message,
-  NodeSlackMessageSchema,
-} from "@conquest/zod/schemas/node.schema";
+import { NodeSlackMessageSchema } from "@conquest/zod/schemas/node.schema";
 import { Check, Loader2, Send } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useInView } from "react-intersection-observer";
@@ -89,7 +86,7 @@ export const TestSlackMessage = () => {
     if (!selectedMember) return;
 
     const parsedNode = node ? NodeSlackMessageSchema.parse(node.data) : null;
-    const message = parsedNode?.message as Message;
+    const message = parsedNode?.message;
 
     if (!message) {
       toast.error("Message is required");
