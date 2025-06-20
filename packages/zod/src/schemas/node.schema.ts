@@ -23,13 +23,11 @@ export const MessageSchema = z.array(
             strikethrough: z.boolean().optional(),
           }),
           z.object({
-            children: z
-              .array(
-                z.object({
-                  text: z.string(),
-                }),
-              )
-              .optional(),
+            children: z.array(
+              z.object({
+                text: z.string(),
+              }),
+            ),
             type: z.enum(["mention", "mention_input", "emoji_input"]),
             value: z.string().optional(),
             id: z.string(),
