@@ -58,7 +58,7 @@
     },
     {
       "group": "Workspace",
-      "pages": ["workspace/tags", "workspace/lists", "workspace/merge"]
+      "pages": ["workspace/tags", "workspace/lists"]
     },
     {
       "group": "Conquest Pulse",
