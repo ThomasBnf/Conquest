@@ -15,18 +15,20 @@ export const RunHistory = ({ workflowId }: Props) => {
       <div className="flex h-10 items-center">
         <p className="p-2 font-medium">Runs history</p>
       </div>
-      {data?.length === 0 ? (
-        <EmptyRuns />
-      ) : (
-        <ScrollArea className="flex-1">
-          {data
-            ?.slice()
-            .reverse()
-            .map((run, index) => (
-              <RunItem key={run.id} run={run} index={data.length - index} />
-            ))}
-        </ScrollArea>
-      )}
+      <div className="flex-1">
+        {data?.length === 0 ? (
+          <EmptyRuns />
+        ) : (
+          <ScrollArea className="h-full">
+            {data
+              ?.slice()
+              .reverse()
+              .map((run, index) => (
+                <RunItem key={run.id} run={run} index={data.length - index} />
+              ))}
+          </ScrollArea>
+        )}
+      </div>
     </div>
   );
 };
