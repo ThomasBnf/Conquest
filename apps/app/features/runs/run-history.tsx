@@ -11,24 +11,22 @@ export const RunHistory = ({ workflowId }: Props) => {
   const { data } = trpc.runs.list.useQuery({ workflowId });
 
   return (
-    <div className="flex h-full flex-col">
+    <>
       <div className="flex h-10 items-center">
         <p className="p-2 font-medium">Runs history</p>
       </div>
-      <div className="flex-1">
-        {data?.length === 0 ? (
-          <EmptyRuns />
-        ) : (
-          <ScrollArea className="h-full">
-            {data
-              ?.slice()
-              .reverse()
-              .map((run, index) => (
-                <RunItem key={run.id} run={run} index={data.length - index} />
-              ))}
-          </ScrollArea>
-        )}
-      </div>
-    </div>
+      {data?.length === 0 ? (
+        <EmptyRuns />
+      ) : (
+        <ScrollArea className="h-full">
+          {data
+            ?.slice()
+            .reverse()
+            .map((run, index) => (
+              <RunItem key={run.id} run={run} index={data.length - index} />
+            ))}
+        </ScrollArea>
+      )}
+    </>
   );
 };
