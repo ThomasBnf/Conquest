@@ -10,8 +10,13 @@ type Props = {
 
 export const updateRun = async ({ id, status, runNodes }: Props) => {
   const nodes = Array.from(runNodes.values());
-  const credits = nodes.filter((node) => node.data.status).length;
-  const hasFailed = nodes.some((node) => node.data.status === "FAILED");
+
+  const failed = status === "FAILED";
+  const credits = nodes.filter((node) => {
+    if (node.data.type === "wait") return false;
+    if ("isTrigger" in node.data) return false;
+    return true;
+  }).length;
 
   const run = await prisma.run.update({
     where: {
@@ -20,7 +25,7 @@ export const updateRun = async ({ id, status, runNodes }: Props) => {
     data: {
       status,
       runNodes: Array.from(runNodes.values()),
-      credits: hasFailed ? 0 : credits,
+      credits: failed ? 0 : credits,
       completedAt: new Date(),
     },
   });

@@ -16,10 +16,8 @@ type Props = {
 
 export const RunDetails = ({ run }: Props) => {
   const { slug } = useWorkspace();
-  const { memberId, completedAt, createdAt } = run;
+  const { memberId, completedAt, credits, createdAt } = run;
   const router = useRouter();
-
-  const nodesWithStatus = run.runNodes.filter((node) => node.data.status);
 
   const runtime = completedAt ? completedAt.getTime() - createdAt.getTime() : 0;
   const error = run.runNodes.find((node) => node.data.status === "FAILED")?.data
@@ -51,7 +49,7 @@ export const RunDetails = ({ run }: Props) => {
         </div>
         <div className="space-y-1">
           <p className="text-muted-foreground">Credits</p>
-          <p>{nodesWithStatus.length - 1}</p>
+          <p>{credits}</p>
         </div>
         <div className="space-y-1">
           <p className="text-muted-foreground">Run at</p>
