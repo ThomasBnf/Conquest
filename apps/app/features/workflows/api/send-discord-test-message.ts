@@ -3,7 +3,7 @@ import { getProfileBySource } from "@conquest/clickhouse/profile/getProfileBySou
 import { discordClient } from "@conquest/db/discord";
 import { getIntegrationBySource } from "@conquest/db/integrations/getIntegrationBySource";
 import { decrypt } from "@conquest/db/utils/decrypt";
-import { plateToDiscordMarkdown } from "@conquest/utils/plateToDiscordMarkdown";
+// import { plateToDiscordMarkdown } from "@conquest/utils/plateToDiscordMarkdown";
 import { replaceVariables } from "@conquest/utils/replace-variables";
 import { DiscordIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
 import { MemberSchema } from "@conquest/zod/schemas/member.schema";
@@ -75,19 +75,19 @@ export const sendDiscordTestMessage = protectedProcedure
       });
     }
 
-    const markdown = plateToDiscordMarkdown(message);
+    // const markdown = plateToDiscordMarkdown(message);
 
-    const parsedMessage = await replaceVariables({
-      message: markdown,
-      member,
-      source: "Discord",
-    });
+    // const parsedMessage = await replaceVariables({
+    //   message: markdown,
+    //   member,
+    //   source: "Discord",
+    // });
 
-    await discordClient.post(Routes.channelMessages(channel.id), {
-      body: {
-        content: parsedMessage,
-      },
-    });
+    // await discordClient.post(Routes.channelMessages(channel.id), {
+    //   body: {
+    //     content: parsedMessage,
+    //   },
+    // });
 
     return { success: true };
   });

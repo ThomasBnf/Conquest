@@ -1,8 +1,6 @@
 import { getProfileBySource } from "@conquest/clickhouse/profile/getProfileBySource";
 import { getIntegrationBySource } from "@conquest/db/integrations/getIntegrationBySource";
 import { decrypt } from "@conquest/db/utils/decrypt";
-import { plateToSlackMarkdown } from "@conquest/utils/plateToSlackMarkdown";
-import { replaceVariables } from "@conquest/utils/replace-variables";
 import { SlackIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
 import { MemberWithLevel } from "@conquest/zod/schemas/member.schema";
 import {
@@ -75,27 +73,27 @@ export const slackMessage = async ({ node, member }: Props): Promise<Node> => {
     });
   }
 
-  const markdown = plateToSlackMarkdown(message);
+  // const markdown = plateToSlackMarkdown(message);
 
-  const parsedMessage = await replaceVariables({
-    message: markdown,
-    member,
-    source: "Slack",
-  });
+  // const parsedMessage = await replaceVariables({
+  //   message: markdown,
+  //   member,
+  //   source: "Slack",
+  // });
 
-  try {
-    await web.chat.postMessage({
-      channel: channel?.id,
-      text: parsedMessage,
-      as_user: true,
-    });
-  } catch (error) {
-    return nodeStatus({
-      node,
-      status: "FAILED",
-      error: `Failed to send Slack message: ${error instanceof Error ? error.message : "Unknown error"}`,
-    });
-  }
+  // try {
+  //   await web.chat.postMessage({
+  //     channel: channel?.id,
+  //     text: parsedMessage,
+  //     as_user: true,
+  //   });
+  // } catch (error) {
+  //   return nodeStatus({
+  //     node,
+  //     status: "FAILED",
+  //     error: `Failed to send Slack message: ${error instanceof Error ? error.message : "Unknown error"}`,
+  //   });
+  // }
 
   return nodeStatus({ node, status: "COMPLETED" });
 };
