@@ -11,30 +11,28 @@ export const TriggerSchema = z.enum([
 
 export const MessageSchema = z.array(
   z.object({
-    children: z
-      .array(
-        z.union([
-          z.object({
-            key: z.string().optional(),
-            text: z.string(),
-            bold: z.boolean().optional(),
-            italic: z.boolean().optional(),
-            underline: z.boolean().optional(),
-            strikethrough: z.boolean().optional(),
-          }),
-          z.object({
-            children: z.array(
-              z.object({
-                text: z.string(),
-              }),
-            ),
-            type: z.enum(["mention", "mention_input", "emoji_input"]),
-            value: z.string().optional(),
-            id: z.string(),
-          }),
-        ]),
-      )
-      .default([]),
+    children: z.array(
+      z.union([
+        z.object({
+          key: z.string().optional(),
+          text: z.string(),
+          bold: z.boolean().optional(),
+          italic: z.boolean().optional(),
+          underline: z.boolean().optional(),
+          strikethrough: z.boolean().optional(),
+        }),
+        z.object({
+          children: z.array(
+            z.object({
+              text: z.string(),
+            }),
+          ),
+          type: z.enum(["mention", "mention_input", "emoji_input"]),
+          value: z.string().optional(),
+          id: z.string(),
+        }),
+      ]),
+    ),
     type: z.string(),
     id: z.string(),
   }),
