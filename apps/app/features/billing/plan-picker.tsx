@@ -13,6 +13,7 @@ import { ScrollArea } from "@conquest/ui/scroll-area";
 import type { Plan } from "@conquest/zod/enum/plan.enum";
 import { Check, Loader2 } from "lucide-react";
 import { type Dispatch, type SetStateAction, useState } from "react";
+import { toast } from "sonner";
 import { PeriodToggle } from "./period-toggle";
 import { plans } from "./plans";
 import { PlansTable } from "./plans-table";
@@ -51,7 +52,8 @@ export const PlanPicker = ({
     plan: Plan;
     priceId: string;
   }) => {
-    if (priceId.includes("custom")) return;
+    if (priceId.includes("custom"))
+      return toast.error("Please contact us to upgrade your plan");
 
     onSelectPlan({ plan, priceId });
   };

@@ -14,7 +14,7 @@ export const createWorkspace = async (props: Props) => {
   const workspace = await prisma.workspace.create({
     data: {
       ...props,
-      plan: "ACTIVE",
+      plan: "TRIAL",
       trialEnd: addDays(new Date(), 7),
     },
   });

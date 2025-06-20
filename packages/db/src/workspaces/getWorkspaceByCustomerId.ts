@@ -5,7 +5,7 @@ type Props = {
   stripeCustomerId: string;
 };
 
-export const getWorkspaceStripe = async ({ stripeCustomerId }: Props) => {
+export const getWorkspaceByCustomerId = async ({ stripeCustomerId }: Props) => {
   const workspace = await prisma.workspace.findFirst({
     where: {
       stripeCustomerId,

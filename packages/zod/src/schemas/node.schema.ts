@@ -9,6 +9,35 @@ export const TriggerSchema = z.enum([
   "potential-ambassador",
 ]);
 
+export const MessageSchema = z.array(
+  z.object({
+    children: z.array(
+      z.union([
+        z.object({
+          key: z.string().optional(),
+          text: z.string(),
+          bold: z.boolean().optional(),
+          italic: z.boolean().optional(),
+          underline: z.boolean().optional(),
+          strikethrough: z.boolean().optional(),
+        }),
+        z.object({
+          children: z.array(
+            z.object({
+              text: z.string(),
+            }),
+          ),
+          type: z.enum(["mention", "mention_input", "emoji_input"]),
+          value: z.string().optional(),
+          id: z.string(),
+        }),
+      ]),
+    ),
+    type: z.string(),
+    id: z.string(),
+  }),
+);
+
 // NODES
 
 export const NodeBaseSchema = z.object({
@@ -64,12 +93,12 @@ export const NodeIfElseSchema = NodeBaseDataSchema.extend({
 
 export const NodeSlackMessageSchema = NodeBaseDataSchema.extend({
   type: z.literal("slack-message"),
-  message: z.string(),
+  message: z.string().or(MessageSchema),
 });
 
 export const NodeDiscordMessageSchema = NodeBaseDataSchema.extend({
   type: z.literal("discord-message"),
-  message: z.string(),
+  message: z.string().or(MessageSchema),
 });
 
 export const NodeTaskSchema = NodeBaseDataSchema.extend({
@@ -142,3 +171,5 @@ export type NodeTagMember = z.infer<typeof NodeTagMemberSchema>;
 export type NodeTask = z.infer<typeof NodeTaskSchema>;
 export type NodeWait = z.infer<typeof NodeWaitSchema>;
 export type NodeWebhook = z.infer<typeof NodeWebhookSchema>;
+
+export type Message = z.infer<typeof MessageSchema>;

@@ -1,3 +1,4 @@
+import { useWorkspace } from "@/hooks/useWorkspace";
 import { trpc } from "@/server/client";
 import { Badge } from "@conquest/ui/badge";
 import { Button } from "@conquest/ui/button";
@@ -8,7 +9,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 
 export const TrialCard = () => {
-  const { data: workspace } = trpc.workspaces.get.useQuery();
+  const { workspace } = useWorkspace();
   const { trialEnd, isPastDue } = workspace ?? {};
   const [loading, setLoading] = useState(false);
   const router = useRouter();
@@ -17,14 +18,14 @@ export const TrialCard = () => {
     onMutate: () => setLoading(true),
     onSuccess: (url) => router.push(url),
     onError: (error) => {
-      toast.error(error.message);
       setLoading(false);
+      toast.error(error.message);
     },
   });
 
-  if (isPastDue) return;
-  if (!trialEnd) return;
-  const differenceInDay = differenceInDays(trialEnd, new Date());
+  if (isPastDue || !trialEnd) return;
+
+  const differenceInDay = differenceInDays(trialEnd, new Date()) + 1;
 
   return (
     <Button

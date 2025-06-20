@@ -112,3 +112,42 @@ export const LEVELS: LEVEL[] = [
   { number: 11, name: "Ambassador II", from: 900, to: 1299 },
   { number: 12, name: "Ambassador I", from: 1300, to: null },
 ];
+
+export const VARIABLES = [
+  {
+    label: "First Name",
+    text: "{firstName}",
+  },
+  {
+    label: "Last Name",
+    text: "{lastName}",
+  },
+  {
+    label: "Primary Email",
+    text: "{primaryEmail}",
+  },
+  {
+    label: "Country",
+    text: "{country}",
+  },
+  {
+    label: "Language",
+    text: "{language}",
+  },
+  {
+    label: "Job Title",
+    text: "{jobTitle}",
+  },
+  {
+    label: "Linkedin URL",
+    text: "{linkedinUrl}",
+  },
+  {
+    label: "Emails",
+    text: "{emails}",
+  },
+  {
+    label: "Phones",
+    text: "{phones}",
+  },
+];

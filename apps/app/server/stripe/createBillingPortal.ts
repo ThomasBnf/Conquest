@@ -30,6 +30,7 @@ export const createBillingPortal = protectedProcedure
         flow_data: { type: "payment_method_update" },
       }),
     });
+
     if (!portal) {
       throw new TRPCError({
         code: "INTERNAL_SERVER_ERROR",

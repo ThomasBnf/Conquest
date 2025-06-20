@@ -2,9 +2,11 @@ import { protectedProcedure } from "@/server/trpc";
 import { getProfileBySource } from "@conquest/clickhouse/profile/getProfileBySource";
 import { getIntegrationBySource } from "@conquest/db/integrations/getIntegrationBySource";
 import { decrypt } from "@conquest/db/utils/decrypt";
+import { plateToSlackMarkdown } from "@conquest/utils/plateToSlackMarkdown";
 import { replaceVariables } from "@conquest/utils/replace-variables";
 import { SlackIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
 import { MemberSchema } from "@conquest/zod/schemas/member.schema";
+import { MessageSchema } from "@conquest/zod/schemas/node.schema";
 import { WebClient } from "@slack/web-api";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
@@ -13,7 +15,7 @@ export const sendSlackTestMessage = protectedProcedure
   .input(
     z.object({
       member: MemberSchema,
-      message: z.string(),
+      message: MessageSchema,
     }),
   )
   .mutation(async ({ ctx: { user }, input }) => {
@@ -72,8 +74,12 @@ export const sendSlackTestMessage = protectedProcedure
       });
     }
 
+    const text = plateToSlackMarkdown(message);
+
+    console.log(text);
+
     const parsedMessage = await replaceVariables({
-      message,
+      message: text,
       member,
       source: "Slack",
     });

@@ -1,5 +1,4 @@
 import { trpc } from "@/server/client";
-import { getSubscriptionDetails } from "@/utils/getSubscriptionDetails";
 import { Button } from "@conquest/ui/button";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -7,13 +6,8 @@ import { useState } from "react";
 import { toast } from "sonner";
 
 export const ButtonBillingPortal = () => {
-  const { data: workspace } = trpc.workspaces.get.useQuery();
-  const { priceId } = workspace ?? {};
-
   const [loading, setLoading] = useState(false);
   const router = useRouter();
-
-  const subscription = getSubscriptionDetails(priceId);
 
   const { mutateAsync } = trpc.stripe.createBillingPortal.useMutation({
     onMutate: () => setLoading(true),
@@ -25,24 +19,12 @@ export const ButtonBillingPortal = () => {
   });
 
   return (
-    <div className="space-y-2 rounded-md border p-4">
-      <p className="text-muted-foreground">
-        Current plan:{" "}
-        <span className="font-medium text-foreground">
-          {subscription?.name}
-        </span>
-      </p>
-      <Button
-        onClick={() => mutateAsync({})}
-        disabled={loading}
-        className="w-full"
-      >
-        {loading ? (
-          <Loader2 size={16} className="animate-spin" />
-        ) : (
-          "Billing Portal"
-        )}
-      </Button>
-    </div>
+    <Button onClick={() => mutateAsync({})} disabled={loading}>
+      {loading ? (
+        <Loader2 size={16} className="animate-spin" />
+      ) : (
+        "Manage Payment"
+      )}
+    </Button>
   );
 };

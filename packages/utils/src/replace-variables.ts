@@ -14,9 +14,9 @@ export const replaceVariables = async ({ message, member, source }: Props) => {
   const { workspaceId } = member;
   let processedMessage = message;
 
-  if (processedMessage.includes("{{#")) {
+  if (processedMessage.includes("{#")) {
     const channels = await listChannels({ source, workspaceId });
-    const channelRegex = /\{\{#([a-zA-Z0-9_-]+)\}\}/g;
+    const channelRegex = /\{#([a-zA-Z0-9_-]+)\}/g;
     const channelMatches = [...processedMessage.matchAll(channelRegex)];
 
     for (const match of channelMatches) {
@@ -25,21 +25,21 @@ export const replaceVariables = async ({ message, member, source }: Props) => {
 
       if (channel?.externalId) {
         processedMessage = processedMessage.replace(
-          `{{#${channelName}}}`,
+          `{#${channelName}}`,
           `<#${channel.externalId}>`,
         );
       }
     }
   }
 
-  if (source && processedMessage.includes("{{@")) {
+  if (source && processedMessage.includes("{@mention}")) {
     const profile = await getProfileBySource({
       source,
       memberId: member.id,
     });
 
     if (profile?.externalId) {
-      const profileRegex = /\{\{@([a-zA-Z0-9_-]+)\}\}/g;
+      const profileRegex = /\{@([a-zA-Z0-9_-]+)\}/g;
       processedMessage = processedMessage.replace(
         profileRegex,
         `<@${profile.externalId}>`,
@@ -47,23 +47,23 @@ export const replaceVariables = async ({ message, member, source }: Props) => {
     }
   }
 
-  if (processedMessage.includes("{{createdMember}}")) {
+  if (processedMessage.includes("{createdMember}")) {
     processedMessage = processedMessage.replaceAll(
-      "{{createdMember}}",
+      "{createdMember}",
       JSON.stringify(member, null, 2),
     );
   }
 
   const variables = {
-    "{{firstName}}": member.firstName,
-    "{{lastName}}": member.lastName,
-    "{{primaryEmail}}": member.primaryEmail,
-    "{{country}}": member.country,
-    "{{language}}": member.language,
-    "{{jobTitle}}": member.jobTitle,
-    "{{linkedinUrl}}": member.linkedinUrl,
-    "{{emails}}": member.emails.join(", "),
-    "{{phones}}": member.phones.join(", "),
+    "{firstName}": member.firstName,
+    "{lastName}": member.lastName,
+    "{primaryEmail}": member.primaryEmail,
+    "{country}": member.country,
+    "{language}": member.language,
+    "{jobTitle}": member.jobTitle,
+    "{linkedinUrl}": member.linkedinUrl,
+    "{emails}": member.emails.join(", "),
+    "{phones}": member.phones.join(", "),
   };
 
   return Object.entries(variables).reduce(
@@ -71,3 +71,4 @@ export const replaceVariables = async ({ message, member, source }: Props) => {
     processedMessage,
   );
 };
+// Hello tu vas bien ? tu veux aller @#feature-requests\n\nTu peux ici @first\\_name\n<br />\n\nN'hésite pas à @@mention\n",

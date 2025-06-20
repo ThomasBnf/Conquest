@@ -3,9 +3,11 @@ import { getProfileBySource } from "@conquest/clickhouse/profile/getProfileBySou
 import { discordClient } from "@conquest/db/discord";
 import { getIntegrationBySource } from "@conquest/db/integrations/getIntegrationBySource";
 import { decrypt } from "@conquest/db/utils/decrypt";
+import { plateToDiscordMarkdown } from "@conquest/utils/plateToDiscordMarkdown";
 import { replaceVariables } from "@conquest/utils/replace-variables";
 import { DiscordIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
 import { MemberSchema } from "@conquest/zod/schemas/member.schema";
+import { MessageSchema } from "@conquest/zod/schemas/node.schema";
 import { TRPCError } from "@trpc/server";
 import { APIDMChannel, Routes } from "discord-api-types/v10";
 import { z } from "zod";
@@ -14,7 +16,7 @@ export const sendDiscordTestMessage = protectedProcedure
   .input(
     z.object({
       member: MemberSchema,
-      message: z.string(),
+      message: MessageSchema,
     }),
   )
   .mutation(async ({ ctx: { user }, input }) => {
@@ -69,12 +71,14 @@ export const sendDiscordTestMessage = protectedProcedure
     if (!channel?.id) {
       throw new TRPCError({
         code: "INTERNAL_SERVER_ERROR",
-        message: "Failed to open Slack conversation with user",
+        message: "Failed to open Discord conversation with user",
       });
     }
 
+    const markdown = plateToDiscordMarkdown(message);
+
     const parsedMessage = await replaceVariables({
-      message,
+      message: markdown,
       member,
       source: "Discord",
     });

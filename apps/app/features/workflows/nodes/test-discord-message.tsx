@@ -21,16 +21,18 @@ import {
 } from "@conquest/ui/dialog";
 import { Skeleton } from "@conquest/ui/skeleton";
 import { Member } from "@conquest/zod/schemas/member.schema";
+import {
+  Message,
+  NodeDiscordMessageSchema,
+} from "@conquest/zod/schemas/node.schema";
 import { Check, Loader2, Send } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useInView } from "react-intersection-observer";
 import { toast } from "sonner";
+import { useWorkflow } from "../context/workflowContext";
 
-type Props = {
-  message: string;
-};
-
-export const TestDiscordMessage = ({ message }: Props) => {
+export const TestDiscordMessage = () => {
+  const { node } = useWorkflow();
   const { ref, inView } = useInView();
   const [search, setSearch] = useState("");
   const [open, setOpen] = useState(false);
@@ -47,7 +49,6 @@ export const TestDiscordMessage = ({ message }: Props) => {
       onSettled: () => {
         setOpen(false);
         setSelectedMember(null);
-        setSearch("");
       },
     });
 
@@ -84,6 +85,23 @@ export const TestDiscordMessage = ({ message }: Props) => {
     }
   };
 
+  const onClick = () => {
+    if (!selectedMember) return;
+
+    const parsedNode = node ? NodeDiscordMessageSchema.parse(node.data) : null;
+    const message = parsedNode?.message as Message;
+
+    if (!message) {
+      toast.error("Message is required");
+      return;
+    }
+
+    mutateAsync({
+      member: selectedMember,
+      message,
+    });
+  };
+
   useEffect(() => {
     if (inView && hasNextPage) {
       fetchNextPage();
@@ -114,12 +132,12 @@ export const TestDiscordMessage = ({ message }: Props) => {
             />
             <CommandList>
               <CommandGroup>
-                {isLoading && <Skeleton className="h-8 w-full" />}
+                {isLoading && <Skeleton className="w-full h-8" />}
                 {!isLoading && <CommandEmpty>No members found</CommandEmpty>}
                 {members?.map((member) => (
                   <CommandItem
                     key={member.id}
-                    className="flex items-center gap-2"
+                    className="flex gap-2 items-center"
                     onSelect={() => onSelectMember(member)}
                   >
                     <Avatar className="size-7">
@@ -129,7 +147,7 @@ export const TestDiscordMessage = ({ message }: Props) => {
                         {member.lastName?.charAt(0).toUpperCase()}
                       </AvatarFallback>
                     </Avatar>
-                    <div className="flex w-full flex-col text-xs">
+                    <div className="flex flex-col w-full text-xs">
                       {member.firstName} {member.lastName}
                       <span className="text-muted-foreground">
                         {member.primaryEmail}
@@ -149,17 +167,7 @@ export const TestDiscordMessage = ({ message }: Props) => {
           <DialogTrigger asChild>
             <Button variant="outline">Cancel</Button>
           </DialogTrigger>
-          <Button
-            onClick={() => {
-              if (!selectedMember) return;
-
-              mutateAsync({
-                member: selectedMember,
-                message,
-              });
-            }}
-            disabled={!selectedMember || !message || isPending}
-          >
+          <Button onClick={onClick} disabled={!selectedMember || isPending}>
             {isPending ? (
               <Loader2 size={16} className="animate-spin" />
             ) : (

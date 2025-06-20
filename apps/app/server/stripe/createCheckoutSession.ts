@@ -1,5 +1,5 @@
 import { stripe } from "@/lib/stripe";
-import { updateWorkspace } from "@conquest/db/workspaces/updateWorkspace";
+import { getWorkspace } from "@conquest/db/workspaces/getWorkspace";
 import { env } from "@conquest/env";
 import { PLAN } from "@conquest/zod/enum/plan.enum";
 import { TRPCError } from "@trpc/server";
@@ -14,42 +14,31 @@ export const createCheckoutSession = protectedProcedure
     }),
   )
   .mutation(async ({ ctx: { user }, input: { plan, priceId } }) => {
-    const { workspaceId, email, firstName, lastName } = user;
+    const { workspaceId } = user;
+    const { stripeCustomerId } = await getWorkspace({ id: workspaceId });
 
-    const customer = await stripe.customers.create({
-      email,
-      name: `${firstName} ${lastName}`,
-      metadata: {
-        workspaceId,
-      },
-    });
-
-    if (!customer) {
+    if (!stripeCustomerId) {
       throw new TRPCError({
         code: "INTERNAL_SERVER_ERROR",
-        message: "Failed to create Stripe customer",
+        message: "Stripe customer not found",
       });
     }
 
-    const workspace = await updateWorkspace({
-      id: workspaceId,
-      stripeCustomerId: customer.id,
-    });
-
-    const { trialEnd } = workspace;
-
     const session = await stripe.checkout.sessions.create({
       mode: "subscription",
-      customer: customer.id,
+      customer: stripeCustomerId,
       line_items: [
         {
           price: priceId,
           quantity: 1,
         },
       ],
-      payment_method_types: ["card", "link"],
-      allow_promotion_codes: true,
-      billing_address_collection: "auto",
+      metadata: {
+        plan,
+        priceId,
+        workspaceId,
+      },
+      billing_address_collection: "required",
       customer_update: {
         address: "auto",
         name: "auto",
@@ -57,16 +46,9 @@ export const createCheckoutSession = protectedProcedure
       automatic_tax: {
         enabled: true,
       },
-      metadata: {
-        plan,
-        priceId,
-        workspaceId,
-      },
       tax_id_collection: {
         enabled: true,
-      },
-      subscription_data: {
-        trial_end: trialEnd ? Math.floor(trialEnd.getTime() / 1000) : undefined,
+        required: "if_supported",
       },
       success_url: `${env.NEXT_PUBLIC_URL}/settings/billing`,
       cancel_url: `${env.NEXT_PUBLIC_URL}/settings/billing`,

@@ -9,11 +9,11 @@ export const plans: Plan[] = [
     reduction: 15,
     priceIdMonthly:
       process.env.NODE_ENV === "development"
-        ? "price_1R3JRgCa7sC12ar1IGHNN0yF"
+        ? "price_1Rc5eDCa7sC12ar1NU49CVxk"
         : "price_1R6prFCa7sC12ar17Xqa08mM",
     priceIdAnnually:
       process.env.NODE_ENV === "development"
-        ? "price_1R3JRrCa7sC12ar1QDd1Bytj"
+        ? "price_1Rc5evCa7sC12ar1uznFR0QO"
         : "price_1R3eeMCa7sC12ar1KUbWniox",
     seats: "1 seat",
     members: "Up to 5,000 members",
@@ -29,11 +29,11 @@ export const plans: Plan[] = [
     reduction: 15,
     priceIdMonthly:
       process.env.NODE_ENV === "development"
-        ? "price_1R3JSFCa7sC12ar1rxPAFqGE"
+        ? "price_1Rc5fuCa7sC12ar1lUTIuAAv"
         : "price_1R6puICa7sC12ar1r0UQH46a",
     priceIdAnnually:
       process.env.NODE_ENV === "development"
-        ? "price_1R3JSOCa7sC12ar1B7u13ua9"
+        ? "price_1Rc5gRCa7sC12ar1UHb8VBOv"
         : "price_1R3ef2Ca7sC12ar12m2YZcKa",
     seats: "2 seats",
     members: "Up to 30,000 members",

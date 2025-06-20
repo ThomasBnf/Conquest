@@ -12,7 +12,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useReactFlow } from "@xyflow/react";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { MemberVariablePicker } from "../components/member-variable-picker";
 import { useWorkflow } from "../context/workflowContext";
 import {
   type FormWebhook,
@@ -109,7 +108,6 @@ export const Webhook = () => {
               </FormItem>
             )}
           />
-          <MemberVariablePicker onClick={onSetVariable} />
         </div>
       </form>
     </Form>

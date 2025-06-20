@@ -12,6 +12,8 @@ type workflowContext = {
   setPanel: (panel: Panel) => void;
   condition: "true" | "false" | undefined;
   setCondition: (condition: "true" | "false") => void;
+  focus: boolean;
+  setFocus: (focus: boolean) => void;
 };
 
 const WorkflowContext = createContext<workflowContext>({} as workflowContext);
@@ -24,6 +26,7 @@ export const WorkflowProvider = ({ children }: Props) => {
   const [node, setNode] = useState<WorkflowNode | undefined>(undefined);
   const [panel, setPanel] = useState<Panel>();
   const [condition, setCondition] = useState<"true" | "false">();
+  const [focus, setFocus] = useState(false);
 
   return (
     <WorkflowContext.Provider
@@ -34,6 +37,8 @@ export const WorkflowProvider = ({ children }: Props) => {
         setPanel,
         condition,
         setCondition,
+        focus,
+        setFocus,
       }}
     >
       {children}

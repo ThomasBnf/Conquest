@@ -1,97 +1,201 @@
+import { VARIABLES } from "@/constant";
+import { trpc } from "@/server/client";
 import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@conquest/ui/form";
-import { TextField } from "@conquest/ui/text-field";
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+  CommandSeparator,
+} from "@conquest/ui/command";
+import { Label } from "@conquest/ui/label";
+import { EditorContainer, PlateEditor } from "@conquest/ui/plate/editor";
+import { EmojiToolbarButton } from "@conquest/ui/plate/emoji-toolbar";
+import { FixedToolbar } from "@conquest/ui/plate/fixed-toolbar";
+import { MarkToolbarButton } from "@conquest/ui/plate/mark-toolbar-button";
+import { MentionElement } from "@conquest/ui/plate/mention-node";
+import { ToolbarButton } from "@conquest/ui/plate/toolbar";
+import { Popover, PopoverContent, PopoverTrigger } from "@conquest/ui/popover";
 import { NodeSlackMessageSchema } from "@conquest/zod/schemas/node.schema";
-import { zodResolver } from "@hookform/resolvers/zod";
+import emojiMartData from "@emoji-mart/data";
+import {
+  BoldPlugin,
+  ItalicPlugin,
+  StrikethroughPlugin,
+} from "@platejs/basic-nodes/react";
+import { EmojiPlugin } from "@platejs/emoji/react";
+import { MentionPlugin } from "@platejs/mention/react";
 import { useReactFlow } from "@xyflow/react";
-import { useEffect } from "react";
-import { useForm } from "react-hook-form";
-import { ChannelVariablePicker } from "../components/channel-variable-picker";
-import { MemberVariablePicker } from "../components/member-variable-picker";
+import { Bold, CurlyBraces, Hash, Italic, Strikethrough } from "lucide-react";
+import { Plate, createPlateEditor } from "platejs/react";
+import { useMemo, useState } from "react";
+import { v4 as uuid } from "uuid";
 import { useWorkflow } from "../context/workflowContext";
-import { type FormSlack, FormSlackSchema } from "./schemas/form-slack.schema";
 import { TestSlackMessage } from "./test-slack-message";
 
 export const SlackMessage = () => {
-  const { node } = useWorkflow();
+  const { node, setFocus } = useWorkflow();
   const { updateNodeData } = useReactFlow();
   const { message } = NodeSlackMessageSchema.parse(node?.data);
+  const [open, setOpen] = useState(false);
+  const [openChannel, setOpenChannel] = useState(false);
 
-  const form = useForm<FormSlack>({
-    resolver: zodResolver(FormSlackSchema),
-    defaultValues: {
-      message,
-    },
-  });
+  const editor = useMemo(
+    () =>
+      createPlateEditor({
+        plugins: [
+          BoldPlugin,
+          ItalicPlugin,
+          StrikethroughPlugin,
+          MentionPlugin.configure({
+            options: {
+              trigger: uuid(),
+            },
+          }).withComponent(MentionElement),
+          EmojiPlugin.configure({
+            options: {
+              trigger: uuid(),
+              // @ts-expect-error - emojiMartData is not typed
+              data: emojiMartData as unknown,
+            },
+          }),
+        ],
+        handlers: {
+          onFocus: () => setFocus(true),
+          onBlur: ({ editor }) => {
+            if (!node) return;
 
-  const onChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    if (!node) return;
+            setFocus(false);
+            updateNodeData(node.id, { ...node.data, message: editor.children });
+          },
+        },
+        value: message,
+      }),
+    [node?.id],
+  );
 
-    form.setValue("message", e.target.value);
-  };
+  const { data } = trpc.channels.list.useQuery({ source: "Slack" });
 
-  const onBlur = () => {
-    if (!node) return;
+  const channels = data?.map((channel) => ({
+    label: channel.name,
+    text: `{#${channel.name}}`,
+  }));
 
-    const message = form.getValues("message");
+  const onClick = (text: string) => {
+    editor.tf.focus();
 
-    updateNodeData(node?.id, {
-      ...node.data,
-      message,
+    editor.tf.insertNode({
+      type: "mention",
+      value: text,
+      children: [{ text: "" }],
     });
+
+    editor.tf.insertText(" ");
   };
-
-  const onSetVariable = (variable: string) => {
-    if (!node) return;
-
-    const currentMessage = form.getValues("message");
-    const newMessage = currentMessage + variable;
-
-    form.setValue("message", newMessage);
-
-    updateNodeData(node?.id, {
-      ...node.data,
-      message: newMessage,
-    });
-  };
-
-  useEffect(() => {
-    form.setValue("message", message ?? "");
-  }, [message]);
 
   return (
-    <Form {...form}>
-      <form className="space-y-2">
-        <FormField
-          control={form.control}
-          name="message"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Message</FormLabel>
-              <FormControl>
-                <TextField
-                  {...field}
-                  placeholder="Add a message"
-                  onChange={onChange}
-                  onBlur={onBlur}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <div className="flex gap-2">
-          <MemberVariablePicker onClick={onSetVariable} />
-          <ChannelVariablePicker source="Slack" onClick={onSetVariable} />
-          <TestSlackMessage message={message ?? ""} />
+    <>
+      <div className="space-y-1">
+        <Label>Message</Label>
+        <div className="rounded-md border">
+          <Plate editor={editor}>
+            <FixedToolbar className="flex justify-start gap-1">
+              <Popover open={open} onOpenChange={setOpen}>
+                <PopoverTrigger asChild>
+                  <ToolbarButton
+                    pressed={open}
+                    tooltip="Member variables"
+                    isDropdown
+                  >
+                    <CurlyBraces size={16} />
+                  </ToolbarButton>
+                </PopoverTrigger>
+                <PopoverContent className="p-0" align="start">
+                  <Command>
+                    <CommandInput placeholder="Search..." />
+                    <CommandList>
+                      <CommandEmpty>No results found.</CommandEmpty>
+                      <CommandGroup>
+                        <CommandItem
+                          value="createdMember"
+                          onSelect={() => onClick("{createdMember}")}
+                        >
+                          Created Member
+                        </CommandItem>
+                      </CommandGroup>
+                      <CommandSeparator />
+                      <CommandGroup>
+                        {VARIABLES.map((item) => (
+                          <CommandItem
+                            key={item.label}
+                            value={item.label}
+                            onSelect={() => onClick(item.text)}
+                          >
+                            {item.label}
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
+                    </CommandList>
+                  </Command>
+                </PopoverContent>
+              </Popover>
+              <Popover open={openChannel} onOpenChange={setOpenChannel}>
+                <PopoverTrigger asChild>
+                  <ToolbarButton
+                    pressed={openChannel}
+                    tooltip="Channel variables"
+                    isDropdown
+                  >
+                    <Hash size={16} />
+                  </ToolbarButton>
+                </PopoverTrigger>
+                <PopoverContent className="p-0" align="start">
+                  <Command>
+                    <CommandInput placeholder="Search..." />
+                    <CommandList>
+                      <CommandEmpty>No results found.</CommandEmpty>
+                      <CommandGroup>
+                        {channels?.map((channel) => (
+                          <CommandItem
+                            key={channel.label}
+                            value={channel.label}
+                            onSelect={() => onClick(channel.text)}
+                          >
+                            <Hash size={16} className="mr-1" />
+                            {channel.label}
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
+                    </CommandList>
+                  </Command>
+                </PopoverContent>
+              </Popover>
+              <div className="h-6 w-px bg-border" />
+              <MarkToolbarButton nodeType="bold" tooltip="Bold (⌘+B)">
+                <Bold size={16} />
+              </MarkToolbarButton>
+              <MarkToolbarButton nodeType="italic" tooltip="Italic (⌘+I)">
+                <Italic size={16} />
+              </MarkToolbarButton>
+              <MarkToolbarButton
+                nodeType="strikethrough"
+                tooltip="Strikethrough (⌘+⇧+M)"
+              >
+                <Strikethrough size={16} />
+              </MarkToolbarButton>
+              <EmojiToolbarButton />
+            </FixedToolbar>
+            <EditorContainer>
+              <PlateEditor
+                placeholder="Write your message here..."
+                className="text-sm sm:px-2 sm:pt-2 sm:pb-24"
+              />
+            </EditorContainer>
+          </Plate>
         </div>
-      </form>
-    </Form>
+      </div>
+      <TestSlackMessage />
+    </>
   );
 };

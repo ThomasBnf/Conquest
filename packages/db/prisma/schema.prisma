@@ -278,7 +278,7 @@ model Workspace {
     slug             String    @unique
     source           String?
     companySize      String?
-    plan             PLAN?     @default(ACTIVE)
+    plan             PLAN?     @default(TRIAL)
     stripeCustomerId String?
     priceId          String?
     trialEnd         DateTime?
@@ -304,6 +304,7 @@ model Workspace {
 }
 
 enum PLAN {
+    TRIAL
     EXPLORER
     ACTIVE
     CONTRIBUTOR

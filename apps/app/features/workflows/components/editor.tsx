@@ -2,7 +2,7 @@
 
 import { Button } from "@conquest/ui/button";
 import { EdgeSchema } from "@conquest/zod/schemas/edge.schema";
-import { NodeSchema } from "@conquest/zod/schemas/node.schema";
+import { NodeDataSchema, NodeSchema } from "@conquest/zod/schemas/node.schema";
 import { Workflow } from "@conquest/zod/schemas/workflow.schema";
 import {
   Background,
@@ -45,7 +45,7 @@ const edgeTypes = {
 };
 
 export const Editor = ({ workflow }: Props) => {
-  const { node, setNode, panel, setPanel } = useWorkflow();
+  const { setNode, panel, setPanel, focus } = useWorkflow();
   const { toObject, getNode } = useReactFlow();
   const [nodes, setNodes] = useNodesState<WorkflowNode>(workflow.nodes);
   const [edges, setEdges] = useEdgesState<Edge>(workflow.edges);
@@ -55,6 +55,8 @@ export const Editor = ({ workflow }: Props) => {
     (changes: NodeChange[]) => {
       setNodes((prev) => {
         if (changes[0]?.type === "remove") {
+          if (focus) return prev;
+
           const { id } = changes[0];
           const node = getNode(id);
 
@@ -68,6 +70,21 @@ export const Editor = ({ workflow }: Props) => {
             if (isTrigger) return prev;
           }
         }
+        if (changes[0]?.type === "replace") {
+          const { id, item } = changes[0];
+          const node = getNode(id);
+
+          console.log(changes[0]);
+
+          const data = NodeDataSchema.parse(item.data);
+
+          if (node && item) {
+            setNode({
+              ...node,
+              data,
+            });
+          }
+        }
         return applyNodeChanges(changes, prev) as WorkflowNode[];
       });
 
@@ -79,6 +96,8 @@ export const Editor = ({ workflow }: Props) => {
   );
 
   const onEdgesChange = useCallback((changes: EdgeChange[]) => {
+    if (focus) return;
+
     setEdges((eds) => applyEdgeChanges(changes, eds) as Edge[]);
     setTimeout(() => onSave(), 100);
   }, []);

@@ -21,16 +21,18 @@ import {
 } from "@conquest/ui/dialog";
 import { Skeleton } from "@conquest/ui/skeleton";
 import { Member } from "@conquest/zod/schemas/member.schema";
+import {
+  Message,
+  NodeSlackMessageSchema,
+} from "@conquest/zod/schemas/node.schema";
 import { Check, Loader2, Send } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useInView } from "react-intersection-observer";
 import { toast } from "sonner";
+import { useWorkflow } from "../context/workflowContext";
 
-type Props = {
-  message: string;
-};
-
-export const TestSlackMessage = ({ message }: Props) => {
+export const TestSlackMessage = () => {
+  const { node } = useWorkflow();
   const { ref, inView } = useInView();
   const [search, setSearch] = useState("");
   const [open, setOpen] = useState(false);
@@ -47,7 +49,6 @@ export const TestSlackMessage = ({ message }: Props) => {
       onSettled: () => {
         setOpen(false);
         setSelectedMember(null);
-        setSearch("");
       },
     });
 
@@ -82,6 +83,23 @@ export const TestSlackMessage = ({ message }: Props) => {
     } else {
       setSelectedMember(member);
     }
+  };
+
+  const onClick = () => {
+    if (!selectedMember) return;
+
+    const parsedNode = node ? NodeSlackMessageSchema.parse(node.data) : null;
+    const message = parsedNode?.message as Message;
+
+    if (!message) {
+      toast.error("Message is required");
+      return;
+    }
+
+    mutateAsync({
+      member: selectedMember,
+      message,
+    });
   };
 
   useEffect(() => {
@@ -149,17 +167,7 @@ export const TestSlackMessage = ({ message }: Props) => {
           <DialogTrigger asChild>
             <Button variant="outline">Cancel</Button>
           </DialogTrigger>
-          <Button
-            onClick={() => {
-              if (!selectedMember) return;
-
-              mutateAsync({
-                member: selectedMember,
-                message,
-              });
-            }}
-            disabled={!selectedMember || !message || isPending}
-          >
+          <Button onClick={onClick} disabled={!selectedMember || isPending}>
             {isPending ? (
               <Loader2 size={16} className="animate-spin" />
             ) : (

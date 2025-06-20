@@ -38,25 +38,25 @@ export const getSubscriptionDetails = (
 
     // DEVELOPMENT
 
-    case "price_1R3JRgCa7sC12ar1IGHNN0yF": {
+    case "price_1Rc5eDCa7sC12ar1NU49CVxk": {
       return {
         name: "Explorer",
         period: "monthly",
       };
     }
-    case "price_1R3JRrCa7sC12ar1QDd1Bytj": {
+    case "price_1Rc5evCa7sC12ar1uznFR0QO": {
       return {
         name: "Explorer",
         period: "annually",
       };
     }
-    case "price_1R3JSFCa7sC12ar1rxPAFqGE": {
+    case "price_1Rc5fuCa7sC12ar1lUTIuAAv": {
       return {
         name: "Active",
         period: "monthly",
       };
     }
-    case "price_1R3JSOCa7sC12ar1B7u13ua9": {
+    case "price_1Rc5gRCa7sC12ar1UHb8VBOv": {
       return {
         name: "Active",
         period: "annually",

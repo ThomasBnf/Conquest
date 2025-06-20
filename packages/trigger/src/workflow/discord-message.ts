@@ -2,6 +2,7 @@ import { getProfileBySource } from "@conquest/clickhouse/profile/getProfileBySou
 import { discordClient } from "@conquest/db/discord";
 import { getIntegrationBySource } from "@conquest/db/integrations/getIntegrationBySource";
 import { decrypt } from "@conquest/db/utils/decrypt";
+import { plateToDiscordMarkdown } from "@conquest/utils/plateToDiscordMarkdown";
 import { replaceVariables } from "@conquest/utils/replace-variables";
 import { DiscordIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
 import { MemberWithLevel } from "@conquest/zod/schemas/member.schema";
@@ -86,8 +87,10 @@ export const discordMessage = async ({
     });
   }
 
+  const markdown = plateToDiscordMarkdown(message);
+
   const parsedMessage = await replaceVariables({
-    message,
+    message: markdown,
     member,
     source: "Discord",
   });
