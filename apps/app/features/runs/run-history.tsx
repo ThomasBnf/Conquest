@@ -11,10 +11,11 @@ export const RunHistory = ({ workflowId }: Props) => {
   const { data } = trpc.runs.list.useQuery({ workflowId });
 
   return (
-    <div className="flex flex-col h-full">
-      <div className="flex items-center h-10">
+    <div className="flex h-full flex-col">
+      <div className="flex h-10 items-center">
         <p className="p-2 font-medium">Runs history</p>
       </div>
+
       {data?.length === 0 ? (
         <EmptyRuns />
       ) : (
