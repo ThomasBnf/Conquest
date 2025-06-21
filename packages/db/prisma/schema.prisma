@@ -147,7 +147,7 @@ model Run {
     completedAt DateTime?
     failedAt    DateTime?
     status      RUN_STATUS @default(RUNNING)
-    runNodes    Json[]
+    runNodes    Json[]     @default([])
     credits     Int        @default(0)
 
     createdAt DateTime @default(now())

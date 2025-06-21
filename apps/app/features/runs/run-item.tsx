@@ -1,7 +1,7 @@
 import { useWorkspace } from "@/hooks/useWorkspace";
-import { Run } from "@conquest/db/prisma";
 import { Button } from "@conquest/ui/button";
 import { cn } from "@conquest/ui/cn";
+import { Run } from "@conquest/zod/schemas/run.schema";
 import { formatDistance } from "date-fns";
 import Link from "next/link";
 import { usePathname } from "next/navigation";

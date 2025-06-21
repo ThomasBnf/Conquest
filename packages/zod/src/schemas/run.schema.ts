@@ -10,7 +10,7 @@ export const RunSchema = z.object({
   completedAt: z.date().nullable(),
   failedAt: z.date().nullable(),
   status: RUN_STATUS,
-  runNodes: z.array(NodeSchema).nullable(),
+  runNodes: z.array(NodeSchema),
   credits: z.number(),
   createdAt: z.date(),
   updatedAt: z.date(),
