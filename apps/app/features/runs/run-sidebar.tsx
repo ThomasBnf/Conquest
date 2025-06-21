@@ -8,7 +8,7 @@ type Props = {
 export const RunSidebar = ({ workflowId, children }: Props) => {
   return (
     <div className="flex h-full w-full max-w-sm flex-col divide-y border-l bg-background">
-      {children}
+      <div className="h-full flex-1 overflow-hidden">{children}</div>
       <RunOverview workflowId={workflowId} />
     </div>
   );
