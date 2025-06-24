@@ -19,7 +19,7 @@ export const DataTable = <TData extends FullMember | Company>({
 }: Props<TData>) => {
   const { ref, inView } = useInView();
   const pathname = usePathname();
-  const isMembers = pathname.includes("members");
+  const isCompanies = pathname.includes("companies");
 
   const {
     data,
@@ -98,13 +98,13 @@ export const DataTable = <TData extends FullMember | Company>({
       <p className="space-x-1 border-t px-3 py-2">
         <span className="font-medium">{count}</span>
         <span className="text-muted-foreground">
-          {isMembers
-            ? count === 1
-              ? "Member"
-              : "Members"
-            : count === 1
-              ? "Company"
-              : "Companies"}
+          {isCompanies
+            ? count && count > 1
+              ? "Companies"
+              : "Company"
+            : count && count > 1
+              ? "Members"
+              : "Member"}
         </span>
       </p>
     </div>

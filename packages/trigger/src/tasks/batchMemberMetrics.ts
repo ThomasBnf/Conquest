@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto";
 import { listActivities } from "@conquest/db/activity/listActivities";
 import { getLevel } from "@conquest/db/helpers/getLevel";
 import { getPulseScore } from "@conquest/db/helpers/getPulseScore";
@@ -13,7 +14,6 @@ import {
   subDays,
   subWeeks,
 } from "date-fns";
-import { randomUUID } from "node:crypto";
 import { z } from "zod";
 
 export const batchMemberMetrics = schemaTask({
@@ -70,8 +70,8 @@ export const batchMemberMetrics = schemaTask({
       await prisma.member.update({
         where: { id: member.id },
         data: {
-          firstActivity: memberActivities?.at(-1)?.createdAt ?? null,
-          lastActivity: memberActivities?.at(0)?.createdAt ?? null,
+          firstActivity: memberActivities?.at(0)?.createdAt ?? null,
+          lastActivity: memberActivities?.at(-1)?.createdAt ?? null,
           pulse: pulse ?? 0,
           levelNumber: level ?? null,
         },

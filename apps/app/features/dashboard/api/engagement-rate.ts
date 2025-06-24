@@ -2,9 +2,16 @@ import { protectedProcedure } from "@/server/trpc";
 import { prisma } from "@conquest/db/prisma";
 import { SOURCE, Source } from "@conquest/zod/enum/source.enum";
 import { ProfileAttributesSchema } from "@conquest/zod/schemas/profile.schema";
-import { differenceInDays, endOfWeek, startOfWeek, subDays } from "date-fns";
+import {
+  compareAsc,
+  differenceInDays,
+  endOfDay,
+  format,
+  parseISO,
+  startOfDay,
+  subDays,
+} from "date-fns";
 import z from "zod";
-import { listWeeks } from "../helpers/listWeeks";
 
 export const engagementRate = protectedProcedure
   .input(
@@ -26,54 +33,73 @@ export const engagementRate = protectedProcedure
     if (!from || !to) {
       return {
         engagementRate: 0,
-        previousEngagementRate: 0,
-        weeks: [],
+        growthRate: 0,
+        days: [],
       };
     }
 
-    const days = differenceInDays(to, from);
-    const previousFrom = subDays(from, days);
-    const previousTo = subDays(from, 1);
+    const difference = differenceInDays(to, from);
+    const previousFrom = startOfDay(subDays(from, difference));
+    const previousTo = endOfDay(subDays(from, 1));
+    const currentFrom = startOfDay(from);
+    const currentTo = endOfDay(to);
 
     const [
-      total,
-      previousTotal,
+      totalMembers,
+      previousTotalMembers,
       activeMembers,
       previousActiveMembers,
-      allMembersData,
+      members,
+      activities,
     ] = await Promise.all([
       prisma.member.count({
         where: {
+          createdAt: { lte: currentTo },
           workspaceId,
-          createdAt: { lte: to },
         },
       }),
+
       prisma.member.count({
         where: {
-          workspaceId,
           createdAt: { lte: previousTo },
-        },
-      }),
-      prisma.activity.findMany({
-        where: {
           workspaceId,
-          createdAt: { gte: from, lte: to },
         },
-        select: { memberId: true },
-        distinct: ["memberId"],
       }),
-      prisma.activity.findMany({
+
+      prisma.member.count({
         where: {
+          activities: {
+            some: {
+              createdAt: {
+                gte: currentFrom,
+                lte: currentTo,
+              },
+            },
+          },
           workspaceId,
-          createdAt: { gte: previousFrom, lte: previousTo },
         },
-        select: { memberId: true },
-        distinct: ["memberId"],
       }),
+
+      prisma.member.count({
+        where: {
+          activities: {
+            some: {
+              createdAt: {
+                gte: previousFrom,
+                lte: previousTo,
+              },
+            },
+          },
+          workspaceId,
+        },
+      }),
+
       prisma.member.findMany({
         where: {
-          workspaceId,
-          createdAt: { lte: to },
+          createdAt: {
+            gte: currentFrom,
+            lte: currentTo,
+          },
           profiles: {
             some: {
               OR: sources.map((source) => ({
@@ -84,106 +110,124 @@ export const engagementRate = protectedProcedure
               })),
             },
           },
+          workspaceId,
         },
-        select: {
-          id: true,
-          createdAt: true,
-          profiles: {
-            where: {
-              OR: sources.map((source) => ({
-                attributes: {
-                  path: ["source"],
-                  equals: source,
-                },
-              })),
-            },
-            select: {
-              attributes: true,
-            },
+        include: {
+          profiles: true,
+        },
+      }),
+
+      prisma.activity.findMany({
+        where: {
+          createdAt: {
+            gte: currentFrom,
+            lte: currentTo,
           },
-          activities: {
-            where: {
-              createdAt: { gte: from, lte: to },
-            },
-            select: {
-              createdAt: true,
-            },
+          source: {
+            in: sources,
           },
+          workspaceId,
         },
       }),
     ]);
 
-    const uniqueActiveMembers = activeMembers.length;
-    const previousUniqueActiveMembers = previousActiveMembers.length;
-
-    const engagementRate = total > 0 ? (uniqueActiveMembers / total) * 100 : 0;
+    const engagementRate =
+      totalMembers > 0 ? (activeMembers / totalMembers) * 100 : 0;
     const previousEngagementRate =
-      previousTotal > 0
-        ? (previousUniqueActiveMembers / previousTotal) * 100
+      previousTotalMembers > 0
+        ? (previousActiveMembers / previousTotalMembers) * 100
         : 0;
+
     const growthRate =
-      previousEngagementRate > 0
-        ? ((engagementRate - previousEngagementRate) / previousEngagementRate) *
-          100
-        : 0;
+      previousEngagementRate === 0
+        ? 0
+        : ((engagementRate - previousEngagementRate) / previousEngagementRate) *
+          100;
 
-    const weeks = listWeeks(from, to);
+    const calculateDailyEngagementRate = () => {
+      const activitiesBySourceDate: Record<string, Record<string, number>> = {};
+      const membersBySourceDate: Record<string, Record<string, number>> = {};
+      const dates: string[] = [];
 
-    const chartData = weeks.map((week) => {
-      const weekStart = startOfWeek(new Date(week));
-      const weekEnd = endOfWeek(new Date(week));
-      const weekData: Partial<Record<Source, number>> = {};
+      for (const activity of activities) {
+        if (!activity.source) continue;
 
-      const membersBySource: Record<
-        string,
-        { total: Set<string>; active: Set<string> }
-      > = {};
+        const date = format(activity.createdAt, "MMM dd");
 
-      for (const source of sources) {
-        membersBySource[source] = { total: new Set(), active: new Set() };
+        if (!dates.includes(date)) {
+          dates.push(date);
+        }
+
+        if (!activitiesBySourceDate[activity.source]) {
+          activitiesBySourceDate[activity.source] = {};
+        }
+
+        activitiesBySourceDate[activity.source]![date] =
+          (activitiesBySourceDate[activity.source]![date] || 0) + 1;
       }
 
-      for (const member of allMembersData) {
-        if (member.createdAt > weekEnd) continue;
+      for (const member of members) {
+        const date = format(member.createdAt, "MMM dd");
 
-        const memberSources = new Set<string>();
+        if (!dates.includes(date)) {
+          dates.push(date);
+        }
+
+        const memberSources: Source[] = [];
 
         for (const profile of member.profiles) {
           const attributes = ProfileAttributesSchema.parse(profile.attributes);
-          if (attributes.source && sources.includes(attributes.source)) {
-            memberSources.add(attributes.source);
+          if (sources.includes(attributes.source)) {
+            memberSources.push(attributes.source);
           }
         }
-
-        const hasWeekActivity = member.activities.some(
-          (activity) =>
-            activity.createdAt >= weekStart && activity.createdAt <= weekEnd,
-        );
 
         for (const source of memberSources) {
-          membersBySource[source]?.total.add(member.id);
-          if (hasWeekActivity) {
-            membersBySource[source]?.active.add(member.id);
+          if (!membersBySourceDate[source]) {
+            membersBySourceDate[source] = {};
           }
+
+          membersBySourceDate[source][date] =
+            (membersBySourceDate[source][date] || 0) + 1;
         }
       }
 
-      for (const source of sources) {
-        const totalCount = membersBySource[source]?.total.size ?? 0;
-        const activeCount = membersBySource[source]?.active.size ?? 0;
-        const rate = totalCount > 0 ? (activeCount / totalCount) * 100 : 0;
-        weekData[source] = Math.round(rate * 100) / 100;
+      const sortedDates = dates.sort((a, b) => {
+        const year = format(currentFrom, "yyyy");
+        const dateA = parseISO(`${year} ${a}`);
+        const dateB = parseISO(`${year} ${b}`);
+        return compareAsc(dateA, dateB);
+      });
+
+      const dailyEngagement: { day: string; [key: string]: string | number }[] =
+        [];
+
+      for (const date of sortedDates) {
+        const dayData: { day: string; [key: string]: string | number } = {
+          day: date,
+        };
+
+        for (const source of sources) {
+          const memberCount = membersBySourceDate[source]?.[date] || 0;
+          const activityCount = activitiesBySourceDate[source]?.[date] || 0;
+
+          dayData[source] =
+            memberCount > 0
+              ? Math.round((activityCount / memberCount) * 100) / 100
+              : 0;
+        }
+
+        dailyEngagement.push(dayData);
       }
 
-      return {
-        week,
-        ...weekData,
-      };
-    });
+      return dailyEngagement;
+    };
+
+    const days = calculateDailyEngagementRate();
 
     return {
-      engagementRate,
-      growthRate,
-      weeks: chartData,
+      engagementRate: Math.round(engagementRate * 100) / 100,
+      growthRate: Math.round(growthRate * 100) / 100,
+      days,
     };
   });

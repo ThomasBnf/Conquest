@@ -37,7 +37,7 @@ type Props = {
   member: Member;
 };
 
-export const CreateActivityDialog = ({ member }: Props) => {
+export const AddActivityDialog = ({ member }: Props) => {
   const [open, setOpen] = useState(false);
   const utils = trpc.useUtils();
 
@@ -45,7 +45,8 @@ export const CreateActivityDialog = ({ member }: Props) => {
   const { mutateAsync, isPending } = trpc.activities.post.useMutation({
     onSuccess: () => {
       setOpen(false);
-      utils.activities.list.invalidate();
+      utils.members.get.invalidate({ id: member.id });
+      utils.activities.listInfinite.invalidate();
       toast.success("Activity created successfully");
       form.reset();
     },

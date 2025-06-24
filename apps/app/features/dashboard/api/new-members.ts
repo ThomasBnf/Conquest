@@ -2,9 +2,9 @@ import { protectedProcedure } from "@/server/trpc";
 import { prisma } from "@conquest/db/prisma";
 import { SOURCE, Source } from "@conquest/zod/enum/source.enum";
 import { ProfileAttributesSchema } from "@conquest/zod/schemas/profile.schema";
-import { differenceInDays, endOfWeek, startOfWeek, subDays } from "date-fns";
+import { addDays, differenceInDays, endOfDay, subDays } from "date-fns";
 import z from "zod";
-import { listWeeks } from "../helpers/listWeeks";
+import { listDays } from "../helpers/listDays";
 
 export const newMembers = protectedProcedure
   .input(
@@ -26,13 +26,13 @@ export const newMembers = protectedProcedure
     if (!from || !to) {
       return {
         total: 0,
-        previousTotal: 0,
+        growthRate: 0,
         weeks: [],
       };
     }
 
-    const days = differenceInDays(to, from);
-    const previousFrom = subDays(from, days);
+    const daysCount = differenceInDays(to, from);
+    const previousFrom = subDays(from, daysCount);
     const previousTo = subDays(from, 1);
 
     const [total, previousTotal, profiles] = await Promise.all([
@@ -76,38 +76,47 @@ export const newMembers = protectedProcedure
       }),
     ]);
 
-    const weeks = listWeeks(from, to);
+    const days = listDays(from, to);
 
-    const chartData = weeks.map((week) => {
-      const weekStart = startOfWeek(new Date(week));
-      const weekEnd = endOfWeek(new Date(week));
-      const weekData: Partial<Record<Source, number>> = {};
-
-      const weekProfiles = profiles.filter(
-        (profile) =>
-          profile.createdAt >= weekStart && profile.createdAt <= weekEnd,
-      );
-
-      const profilesBySource: Record<string, number> = {};
-      for (const source of sources) {
-        profilesBySource[source] = 0;
-      }
-
-      for (const profile of weekProfiles) {
+    const profilesBySource = profiles.reduce(
+      (acc, profile) => {
         const attributes = ProfileAttributesSchema.parse(profile.attributes);
-        if (attributes.source && sources.includes(attributes.source)) {
-          profilesBySource[attributes.source] =
-            (profilesBySource[attributes.source] ?? 0) + 1;
+        const source = attributes.source;
+
+        if (source && sources.includes(source)) {
+          acc[source] = acc[source] || [];
+          acc[source].push(profile);
         }
-      }
+        return acc;
+      },
+      {} as Record<string, typeof profiles>,
+    );
+
+    const chartData = days.map((day) => {
+      const dayData: Partial<Record<Source, number>> = {};
 
       for (const source of sources) {
-        weekData[source] = profilesBySource[source];
+        const sourceProfiles = profilesBySource[source] || [];
+
+        const dayIndex = days.indexOf(day);
+        const currentDate = new Date(from);
+        const adjustedDate = addDays(currentDate, dayIndex);
+
+        const count = sourceProfiles.filter((profile) => {
+          const profileDate = new Date(profile.createdAt);
+          return (
+            profileDate.getDate() === adjustedDate.getDate() &&
+            profileDate.getMonth() === adjustedDate.getMonth() &&
+            profileDate.getFullYear() === adjustedDate.getFullYear()
+          );
+        }).length;
+
+        dayData[source] = count;
       }
 
       return {
-        week,
-        ...weekData,
+        day,
+        ...dayData,
       };
     });
 
@@ -117,6 +126,6 @@ export const newMembers = protectedProcedure
     return {
       total,
       growthRate,
-      weeks: chartData,
+      days: chartData,
     };
   });

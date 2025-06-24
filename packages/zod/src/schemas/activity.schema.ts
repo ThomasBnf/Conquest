@@ -26,7 +26,7 @@ export const ActivityWithTypeSchema = ActivitySchema.extend({
 
 export const ActivityHeatmapSchema = z.object({
   date: z.string(),
-  count: z.string(),
+  count: z.number(),
 });
 
 export type Activity = z.infer<typeof ActivitySchema>;

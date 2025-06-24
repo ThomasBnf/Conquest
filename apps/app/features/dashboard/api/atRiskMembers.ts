@@ -1,90 +1,83 @@
-// import { client } from "@conquest/clickhouse/client";
-// import { differenceInDays, format, subDays } from "date-fns";
-// import { z } from "zod";
-// import { protectedProcedure } from "../../../server/trpc";
+import { prisma } from "@conquest/db/prisma";
+import { differenceInDays, subDays } from "date-fns";
+import { z } from "zod";
+import { protectedProcedure } from "../../../server/trpc";
 
-// export const atRiskMembers = protectedProcedure
-//   .input(
-//     z.object({
-//       dateRange: z
-//         .object({
-//           from: z.coerce.date().optional(),
-//           to: z.coerce.date().optional(),
-//         })
-//         .optional(),
-//     }),
-//   )
-//   .query(async ({ ctx: { user }, input }) => {
-//     const { workspaceId } = user;
-//     const { dateRange } = input;
-//     const { from, to } = dateRange ?? {};
+export const atRiskMembers = protectedProcedure
+  .input(
+    z.object({
+      dateRange: z
+        .object({
+          from: z.coerce.date().optional(),
+          to: z.coerce.date().optional(),
+        })
+        .optional(),
+    }),
+  )
+  .query(async ({ ctx: { user }, input }) => {
+    const { workspaceId } = user;
+    const { dateRange } = input;
+    const { from, to } = dateRange ?? {};
 
-//     if (!from || !to) {
-//       return {
-//         current: 0,
-//         previous: 0,
-//         variation: 0,
-//       };
-//     }
+    if (!from || !to) {
+      return {
+        current: 0,
+        previous: 0,
+        variation: 0,
+      };
+    }
 
-//     const formattedFrom = format(from, "yyyy-MM-dd HH:mm:ss");
-//     const formattedTo = format(to, "yyyy-MM-dd HH:mm:ss");
-//     const days = differenceInDays(to, from);
+    const days = differenceInDays(to, from);
+    const previousFrom = subDays(from, days);
+    const previousTo = subDays(from, 1);
 
-//     const previousFrom = format(subDays(from, days), "yyyy-MM-dd HH:mm:ss");
-//     const previousTo = format(subDays(from, 1), "yyyy-MM-dd HH:mm:ss");
+    const [currentCount, previousCount] = await Promise.all([
+      prisma.member.count({
+        where: {
+          workspaceId,
+          isStaff: false,
+          pulse: {
+            gte: 20,
+          },
+          activities: {
+            none: {
+              workspaceId,
+              createdAt: {
+                gte: from,
+                lte: to,
+              },
+            },
+          },
+        },
+      }),
+      prisma.member.count({
+        where: {
+          workspaceId,
+          isStaff: false,
+          pulse: {
+            gte: 20,
+          },
+          activities: {
+            none: {
+              workspaceId,
+              createdAt: {
+                gte: previousFrom,
+                lte: previousTo,
+              },
+            },
+          },
+        },
+      }),
+    ]);
 
-//     const result = await client.query({
-//       query: `
-//         SELECT
-//           currentCount.count as current,
-//           previousCount.count as previous,
-//           ((currentCount.count - previousCount.count) / nullIf(previousCount.count, 0)) * 100 as variation_rate
-//         FROM
-//         (
-//           SELECT count(*) as count
-//           FROM member m FINAL
-//           WHERE
-//             m.workspaceId = '${workspaceId}'
-//             AND m.isStaff = 0
-//             AND m.pulse >= 20
-//             AND m.id NOT IN (
-//               SELECT memberId
-//               FROM activity
-//               WHERE
-//                 workspaceId = '${workspaceId}'
-//                 AND createdAt BETWEEN '${formattedFrom}' AND '${formattedTo}'
-//             )
-//         ) as currentCount,
-//         (
-//           SELECT count(*) as count
-//           FROM member m FINAL
-//           WHERE
-//             m.workspaceId = '${workspaceId}'
-//             AND m.isStaff = 0
-//             AND m.pulse >= 20
-//             AND m.id NOT IN (
-//               SELECT memberId
-//               FROM activity
-//               WHERE workspaceId = '${workspaceId}'
-//                 AND createdAt BETWEEN '${previousFrom}' AND '${previousTo}'
-//             )
-//         ) as previousCount
-//       `,
-//       format: "JSON",
-//     });
+    const variation =
+      previousCount > 0
+        ? ((currentCount - previousCount) / previousCount) * 100
+        : 0;
 
-//     const { data } = (await result.json()) as {
-//       data: Array<{
-//         current: number;
-//         previous: number;
-//         variation_rate: number;
-//       }>;
-//     };
-
-//     return {
-//       current: data[0]?.current ?? 0,
-//       previous: data[0]?.previous ?? 0,
-//       variation: data[0]?.variation_rate ?? 0,
-//     };
-//   });
+    return {
+      current: currentCount,
+      previous: previousCount,
+      variation,
+    };
+  });

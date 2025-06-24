@@ -1,9 +1,17 @@
 "use client";
 
+import { IsLoading } from "@/components/states/is-loading";
 import { useDateRange } from "@/hooks/useDateRange";
+import { trpc } from "@/server/client";
+import { getIcon } from "@/utils/getIcon";
+import { Badge } from "@conquest/ui/badge";
+import { ScrollArea, ScrollBar } from "@conquest/ui/scroll-area";
 import { Source } from "@conquest/zod/enum/source.enum";
-import { useState } from "react";
+import { Hash } from "lucide-react";
+import { useEffect, useState } from "react";
 import { type DateRange } from "react-day-picker";
+import { DateRangePicker } from "./date-range-picker";
+import { IntegrationsPicker } from "./integrations-picker";
 
 export const TopActivityTypes = () => {
   const { globalDateRange } = useDateRange();
@@ -12,22 +20,22 @@ export const TopActivityTypes = () => {
     globalDateRange,
   );
 
-  // const { data, isLoading } = trpc.dashboard.activityTypesByChannel.useQuery({
-  //   dateRange,
-  //   sources,
-  // });
+  const { data, isLoading } = trpc.dashboard.activityTypesByChannel.useQuery({
+    dateRange,
+    sources,
+  });
 
-  // useEffect(() => {
-  //   setDateRange(globalDateRange);
-  // }, [globalDateRange]);
+  useEffect(() => {
+    setDateRange(globalDateRange);
+  }, [globalDateRange]);
 
   return (
     <div className="flex flex-col gap-4 rounded-md border p-4 shadow-sm">
-      {/* <div className="flex gap-2 justify-between">
-        <p className="text-lg font-medium">
+      <div className="flex justify-between gap-2">
+        <p className="font-medium text-lg">
           Top activity types by top channels
         </p>
-        <div className="flex gap-2 items-center">
+        <div className="flex items-center gap-2">
           <IntegrationsPicker sources={sources} setSources={setSources} />
           <DateRangePicker dateRange={dateRange} setDateRange={setDateRange} />
         </div>
@@ -36,14 +44,14 @@ export const TopActivityTypes = () => {
         <IsLoading />
       ) : data?.length ? (
         <div className="flex rounded-md border">
-          <div className="border-r divide-y">
+          <div className="divide-y border-r">
             {data.map((group) => {
               const IconComponent = getIcon(group.source);
 
               return (
                 <div
                   key={group.channel}
-                  className="flex flex-1 gap-1 items-center p-2 pr-6 min-w-max h-12"
+                  className="flex h-12 min-w-max flex-1 items-center gap-1 p-2 pr-6"
                 >
                   <Hash size={16} />
                   <p className="mr-1">{group.channel}</p>
@@ -53,10 +61,10 @@ export const TopActivityTypes = () => {
             })}
           </div>
           <ScrollArea className="flex-1">
-            <div className="flex flex-col flex-1 divide-y">
+            <div className="flex flex-1 flex-col divide-y">
               {data.map((group) => (
-                <div key={group.channel} className="flex gap-4 h-12 divide-x">
-                  <div className="flex gap-2 items-center p-2 min-w-44 shrink-0">
+                <div key={group.channel} className="flex h-12 gap-4 divide-x">
+                  <div className="flex min-w-44 shrink-0 items-center gap-2 p-2">
                     <p>Total activities</p>
                     <Badge variant="secondary">
                       {group.activityTypes.reduce(
@@ -68,7 +76,7 @@ export const TopActivityTypes = () => {
                   {group.activityTypes.map((activityType) => (
                     <div
                       key={activityType.name}
-                      className="flex gap-1 items-center p-2 min-w-44 shrink-0"
+                      className="flex min-w-44 shrink-0 items-center gap-1 p-2"
                     >
                       <p className="shrink-0">{activityType.name}</p>
                       <Badge variant="secondary">{activityType.count}</Badge>
@@ -81,10 +89,10 @@ export const TopActivityTypes = () => {
           </ScrollArea>
         </div>
       ) : (
-        <div className="flex justify-center items-center h-40">
+        <div className="flex h-40 items-center justify-center">
           <p className="text-muted-foreground">No data available</p>
         </div>
-      )} */}
+      )}
     </div>
   );
 };

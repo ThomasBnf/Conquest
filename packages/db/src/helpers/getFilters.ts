@@ -239,7 +239,10 @@ export const getFilters = async ({
 
           let paramIndex = 1;
 
-          if (activityTypes.length > 0) {
+          if (
+            activityTypes.length > 0 &&
+            activityTypes[0]?.key !== "any_activity"
+          ) {
             const activityTypeKeys = activityTypes.map((at) => at.key);
             const placeholders = activityTypeKeys
               .map(() => `$${paramIndex++}`)

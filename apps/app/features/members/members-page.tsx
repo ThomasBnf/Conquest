@@ -26,13 +26,10 @@ export const MembersPage = () => {
   const params = useQueryStates(tableMembersParams);
   const [{ search, id, desc }, setParams] = params;
 
-  const { data, isLoading, failureReason, fetchNextPage } =
-    trpc.members.list.useInfiniteQuery(
-      { search, id, desc, groupFilters },
-      { getNextPageParam: (_, allPages) => allPages.length * 50 },
-    );
-
-  console.dir(failureReason, { depth: null });
+  const { data, isLoading, fetchNextPage } = trpc.members.list.useInfiniteQuery(
+    { search, id, desc, groupFilters },
+    { getNextPageParam: (_, allPages) => allPages.length * 50 },
+  );
 
   const { data: count } = trpc.members.count.useQuery({
     search,

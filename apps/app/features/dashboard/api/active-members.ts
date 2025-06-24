@@ -2,9 +2,9 @@ import { protectedProcedure } from "@/server/trpc";
 import { prisma } from "@conquest/db/prisma";
 import { SOURCE, Source } from "@conquest/zod/enum/source.enum";
 import { ProfileAttributesSchema } from "@conquest/zod/schemas/profile.schema";
-import { differenceInDays, endOfWeek, startOfWeek, subDays } from "date-fns";
+import { addDays, differenceInDays, isSameDay, subDays } from "date-fns";
 import z from "zod";
-import { listWeeks } from "../helpers/listWeeks";
+import { listDays } from "../helpers/listDays";
 
 export const activeMembers = protectedProcedure
   .input(
@@ -26,13 +26,13 @@ export const activeMembers = protectedProcedure
     if (!from || !to) {
       return {
         total: 0,
-        previousTotal: 0,
+        growthRate: 0,
         weeks: [],
       };
     }
 
-    const days = differenceInDays(to, from);
-    const previousFrom = subDays(from, days);
+    const daysCount = differenceInDays(to, from);
+    const previousFrom = subDays(from, daysCount);
     const previousTo = subDays(from, 1);
 
     const [membersData, total, previousTotal] = await Promise.all([
@@ -134,43 +134,54 @@ export const activeMembers = protectedProcedure
       }),
     ]);
 
-    const weeks = listWeeks(from, to);
+    const days = listDays(from, to);
+    const membersBySource: Record<string, Record<string, Date[]>> = {};
 
-    const chartData = weeks.map((week) => {
-      const weekStart = startOfWeek(new Date(week));
-      const weekEnd = endOfWeek(new Date(week));
-      const weekData: Partial<Record<Source, number>> = {};
+    for (const member of membersData) {
+      const memberSources = member.profiles
+        .map((profile) => {
+          const attributes = ProfileAttributesSchema.parse(profile.attributes);
+          return attributes.source;
+        })
+        .filter((source) => sources.includes(source));
 
-      const membersBySource: Record<string, Set<string>> = {};
-      for (const source of sources) {
-        membersBySource[source] = new Set();
-      }
+      const activityDates = member.activities.map(
+        (activity) => activity.createdAt,
+      );
 
-      for (const member of membersData) {
-        const hasWeekActivity = member.activities.some(
-          (activity) =>
-            activity.createdAt >= weekStart && activity.createdAt <= weekEnd,
-        );
+      for (const source of memberSources) {
+        if (!membersBySource[source]) {
+          membersBySource[source] = {};
+        }
 
-        if (hasWeekActivity) {
-          for (const profile of member.profiles) {
-            const attributes = ProfileAttributesSchema.parse(
-              profile.attributes,
-            );
-            if (attributes.source && sources.includes(attributes.source)) {
-              membersBySource[attributes.source]?.add(member.id);
-            }
-          }
+        if (!membersBySource[source][member.id]) {
+          membersBySource[source][member.id] = activityDates;
         }
       }
+    }
+
+    const chartData = days.map((day) => {
+      const dayData: Partial<Record<Source, number>> = {};
+      const dayIndex = days.indexOf(day);
+      const currentDate = new Date(from);
+      const dayDate = addDays(currentDate, dayIndex);
 
       for (const source of sources) {
-        weekData[source] = membersBySource[source]?.size ?? 0;
+        let activeMembersCount = 0;
+
+        for (const memberId in membersBySource[source]) {
+          const activityDates = membersBySource[source][memberId];
+          if (activityDates?.some((date) => isSameDay(date, dayDate))) {
+            activeMembersCount++;
+          }
+        }
+
+        dayData[source] = activeMembersCount;
       }
 
       return {
-        week,
-        ...weekData,
+        day,
+        ...dayData,
       };
     });
 
@@ -180,6 +191,6 @@ export const activeMembers = protectedProcedure
     return {
       total,
       growthRate,
-      weeks: chartData,
+      days: chartData,
     };
   });

@@ -1,93 +1,87 @@
-// import { client } from "@conquest/clickhouse/client";
-// import { differenceInDays, format, subDays } from "date-fns";
-// import { z } from "zod";
-// import { protectedProcedure } from "../../../server/trpc";
+import { protectedProcedure } from "@/server/trpc";
+import { prisma } from "@conquest/db/prisma";
+import { differenceInDays, subDays } from "date-fns";
+import { z } from "zod";
 
-// export const potentialAmbassadors = protectedProcedure
-//   .input(
-//     z.object({
-//       dateRange: z
-//         .object({
-//           from: z.coerce.date().optional(),
-//           to: z.coerce.date().optional(),
-//         })
-//         .optional(),
-//     }),
-//   )
-//   .query(async ({ ctx: { user }, input }) => {
-//     const { workspaceId } = user;
-//     const { dateRange } = input;
-//     const { from, to } = dateRange ?? {};
+export const potentialAmbassadors = protectedProcedure
+  .input(
+    z.object({
+      dateRange: z
+        .object({
+          from: z.coerce.date().optional(),
+          to: z.coerce.date().optional(),
+        })
+        .optional(),
+    }),
+  )
+  .query(async ({ ctx: { user }, input }) => {
+    const { workspaceId } = user;
+    const { dateRange } = input;
+    const { from, to } = dateRange ?? {};
 
-//     if (!from || !to) {
-//       return {
-//         current: 0,
-//         previous: 0,
-//         variation: 0,
-//       };
-//     }
+    if (!from || !to) {
+      return {
+        current: 0,
+        previous: 0,
+        variation: 0,
+      };
+    }
 
-//     const formattedFrom = format(from, "yyyy-MM-dd HH:mm:ss");
-//     const formattedTo = format(to, "yyyy-MM-dd HH:mm:ss");
-//     const days = differenceInDays(to, from);
+    const days = differenceInDays(to, from);
+    const previousFrom = subDays(from, days);
+    const previousTo = subDays(from, 1);
 
-//     const previousFrom = format(subDays(from, days), "yyyy-MM-dd HH:mm:ss");
-//     const previousTo = format(subDays(from, 1), "yyyy-MM-dd HH:mm:ss");
+    const [currentCount, previousCount] = await Promise.all([
+      prisma.member.count({
+        where: {
+          workspaceId,
+          isStaff: false,
+          pulse: {
+            gte: 150,
+            lte: 199,
+          },
+          activities: {
+            some: {
+              workspaceId,
+              createdAt: {
+                gte: from,
+                lte: to,
+              },
+            },
+          },
+        },
+      }),
+      prisma.member.count({
+        where: {
+          workspaceId,
+          isStaff: false,
+          pulse: {
+            gte: 150,
+            lte: 199,
+          },
+          activities: {
+            some: {
+              workspaceId,
+              createdAt: {
+                gte: previousFrom,
+                lte: previousTo,
+              },
+            },
+          },
+        },
+      }),
+    ]);
 
-//     const result = await client.query({
-//       query: `
-//         WITH
-//           (
-//             SELECT count(DISTINCT m.id)
-//             FROM member m FINAL
-//             WHERE
-//               m.workspaceId = '${workspaceId}'
-//               AND m.isStaff = 0
-//               AND m.pulse >= 150
-//               AND m.pulse <= 199
-//               AND m.id IN (
-//                 SELECT memberId
-//                 FROM activity
-//                 WHERE
-//                   workspaceId = '${workspaceId}'
-//                   AND createdAt BETWEEN '${formattedFrom}' AND '${formattedTo}'
-//               )
-//           ) as currentCount,
-//           (
-//             SELECT count(DISTINCT m.id)
-//             FROM member m FINAL
-//             WHERE
-//               m.workspaceId = '${workspaceId}'
-//               AND m.isStaff = 0
-//               AND m.pulse >= 150
-//               AND m.pulse <= 199
-//               AND m.id IN (
-//                 SELECT memberId
-//                 FROM activity
-//                 WHERE
-//                   workspaceId = '${workspaceId}'
-//                   AND createdAt BETWEEN '${previousFrom}' AND '${previousTo}'
-//               )
-//           ) as previousCount
-//         SELECT
-//           currentCount as current,
-//           previousCount as previous,
-//           CASE
-//             WHEN previousCount = 0 AND currentCount > 0 THEN 100
-//             WHEN previousCount = 0 THEN 0
-//             ELSE ((currentCount - previousCount) / previousCount) * 100
-//           END as variation
-//       `,
-//       format: "JSON",
-//     });
+    const variation =
+      previousCount > 0
+        ? ((currentCount - previousCount) / previousCount) * 100
+        : currentCount > 0
+          ? 100
+          : 0;
 
-//     const { data } = (await result.json()) as {
-//       data: Array<{ current: number; previous: number; variation: number }>;
-//     };
-
-//     return {
-//       current: data[0]?.current ?? 0,
-//       previous: data[0]?.previous ?? 0,
-//       variation: data[0]?.variation ?? 0,
-//     };
-//   });
+    return {
+      current: currentCount,
+      previous: previousCount,
+      variation,
+    };
+  });

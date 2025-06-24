@@ -45,7 +45,7 @@ export const listActivities = async ({
       }),
     },
     orderBy: {
-      createdAt: "desc",
+      createdAt: "asc",
     },
     ...(limit && { take: limit }),
     ...(cursor && { skip: cursor }),

@@ -1,5 +1,6 @@
-import { endOfDay, format, startOfDay } from "date-fns";
-import { toZonedTime } from "date-fns-tz";
+import { prisma } from "@conquest/db/prisma";
+import { ActivityWithTypeSchema } from "@conquest/zod/schemas/activity.schema";
+import { endOfDay, startOfDay } from "date-fns";
 import { z } from "zod";
 import { protectedProcedure } from "../trpc";
 
@@ -14,58 +15,31 @@ export const listDayActivities = protectedProcedure
     const { workspaceId } = user;
     const { date, memberId } = input;
 
-    const timeZone = "Europe/Paris";
-    const dateInParis = toZonedTime(date, timeZone);
+    const startDay = startOfDay(date);
+    const endDay = endOfDay(date);
 
-    const startDay = format(startOfDay(dateInParis), "yyyy-MM-dd HH:mm:ss");
-    const endDay = format(endOfDay(dateInParis), "yyyy-MM-dd HH:mm:ss");
+    const activities = await prisma.activity.findMany({
+      where: {
+        workspaceId,
+        createdAt: {
+          gte: startDay,
+          lte: endDay,
+        },
+        ...(memberId
+          ? { memberId }
+          : {
+              member: {
+                isStaff: false,
+              },
+            }),
+      },
+      include: {
+        activityType: true,
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
 
-    // const result = await client.query({
-    //   query: `
-    //     SELECT
-    //       a.*,
-    //       activityType.*
-    //     FROM activity a
-    //     LEFT JOIN activityType ON a.activityTypeId = activityType.id
-    //     WHERE a.workspaceId = '${workspaceId}'
-    //       AND a.createdAt >= '${startDay}'
-    //       AND a.createdAt <= '${endDay}'
-    //       ${memberId ? `AND a.memberId = '${memberId}'` : ""}
-    //     ORDER BY a.createdAt DESC
-    //   `,
-    //   format: "JSON",
-    // });
-
-    // const { data } = await result.json();
-
-    // if (!data?.length) return [];
-
-    // const transformFlatActivity = (row: Record<string, unknown>) => {
-    //   const result: Record<string, unknown> = {};
-    //   const activityType: Record<string, unknown> = {};
-
-    //   for (const [key, value] of Object.entries(row)) {
-    //     if (key.startsWith("activityType.")) {
-    //       activityType[key.substring(13)] = value;
-    //     } else if (
-    //       ["name", "key", "points", "conditions", "deletable"].includes(key)
-    //     ) {
-    //       activityType[key] = value;
-    //     } else if (key.startsWith("a.")) {
-    //       result[key.substring(2)] = value;
-    //     } else {
-    //       result[key] = value;
-    //     }
-    //   }
-
-    //   result.activityType = activityType;
-    //   return result;
-    // };
-
-    // const activities = data.map((row: unknown) =>
-    //   transformFlatActivity(row as Record<string, unknown>),
-    // );
-
-    // if (!activities?.length) return [];
-    // return ActivityWithTypeSchema.array().parse(activities);
+    return ActivityWithTypeSchema.array().parse(activities);
   });

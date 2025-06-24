@@ -114,7 +114,6 @@ export const EditTaskDialog = ({ open, setOpen, task }: Props) => {
 
     await updateTask(updatedTask);
     setOpen(false);
-    form.reset();
   };
 
   useEffect(() => {

@@ -1,3 +1,4 @@
+import { createHmac, randomUUID } from "node:crypto";
 import { sleep } from "@/utils/sleep";
 import { createActivity } from "@conquest/db/activity/createActivity";
 import { deleteActivity } from "@conquest/db/activity/deleteActivity";
@@ -25,7 +26,6 @@ import { env } from "@conquest/env";
 import { DiscourseIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
 import type { DiscourseWebhook } from "@conquest/zod/types/discourse";
 import { type NextRequest, NextResponse } from "next/server";
-import { createHmac, randomUUID } from "node:crypto";
 
 export async function POST(request: NextRequest) {
   const rawBody = await request.text();
@@ -106,15 +106,19 @@ export async function POST(request: NextRequest) {
       workspaceId,
     });
 
-    //TODO
-
-    // await client.query({
-    //   query: `
-    //     ALTER TABLE activity
-    //     DELETE WHERE reactTo LIKE 't/${id}'
-    //     OR reply_to LIKE 't/${id}'
-    //   `,
-    // });
+    await prisma.activity.deleteMany({
+      where: {
+        workspaceId,
+        OR: [
+          {
+            reactTo: `t/${id}`,
+          },
+          {
+            replyTo: `t/${id}`,
+          },
+        ],
+      },
+    });
   }
 
   if (post && (event === "post_created" || event === "post_recovered")) {
@@ -452,15 +456,12 @@ export async function POST(request: NextRequest) {
 
     if (!channel) return NextResponse.json({ status: 200 });
 
-    //TODO
-
-    // await client.query({
-    //   query: `
-    //     ALTER TABLE activity
-    //     DELETE WHERE channelId = '${channel.id}'
-    //     AND workspaceId = '${workspaceId}'
-    //   `,
-    // });
+    await prisma.activity.deleteMany({
+      where: {
+        channelId: channel.id,
+        workspaceId,
+      },
+    });
 
     await deleteChannel({
       externalId: String(id),

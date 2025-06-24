@@ -2,9 +2,9 @@ import { protectedProcedure } from "@/server/trpc";
 import { prisma } from "@conquest/db/prisma";
 import { SOURCE, Source } from "@conquest/zod/enum/source.enum";
 import { ProfileAttributesSchema } from "@conquest/zod/schemas/profile.schema";
-import { endOfDay, endOfWeek, subDays } from "date-fns";
+import { addDays, differenceInDays, endOfDay, subDays } from "date-fns";
 import z from "zod";
-import { listWeeks } from "../helpers/listWeeks";
+import { listDays } from "../helpers/listDays";
 
 export const totalMembers = protectedProcedure
   .input(
@@ -33,45 +33,45 @@ export const totalMembers = protectedProcedure
 
     const previousFrom = endOfDay(subDays(from, 1));
 
-    const total = await prisma.member.count({
-      where: {
-        workspaceId,
-        createdAt: {
-          lte: to,
-        },
-      },
-    });
-
-    const previousTotal = await prisma.member.count({
-      where: {
-        workspaceId,
-        createdAt: {
-          lte: previousFrom,
-        },
-      },
-    });
-
-    const profiles = await prisma.profile.findMany({
-      where: {
-        workspaceId,
-        createdAt: {
-          lte: to,
-        },
-        OR: sources.map((source) => ({
-          attributes: {
-            path: ["source"],
-            equals: source,
+    const [total, previousTotal, profiles] = await Promise.all([
+      prisma.member.count({
+        where: {
+          workspaceId,
+          createdAt: {
+            lte: to,
           },
-        })),
-      },
-      select: {
-        memberId: true,
-        attributes: true,
-        createdAt: true,
-      },
-    });
+        },
+      }),
+      prisma.member.count({
+        where: {
+          workspaceId,
+          createdAt: {
+            lte: previousFrom,
+          },
+        },
+      }),
+      prisma.profile.findMany({
+        where: {
+          workspaceId,
+          createdAt: {
+            lte: to,
+          },
+          OR: sources.map((source) => ({
+            attributes: {
+              path: ["source"],
+              equals: source,
+            },
+          })),
+        },
+        select: {
+          memberId: true,
+          attributes: true,
+          createdAt: true,
+        },
+      }),
+    ]);
 
-    const weeks = listWeeks(from, to);
+    const days = listDays(from, to);
 
     const profilesBySource = profiles.reduce(
       (acc, profile) => {
@@ -87,22 +87,31 @@ export const totalMembers = protectedProcedure
       {} as Record<string, typeof profiles>,
     );
 
-    const chartData = weeks.map((week) => {
-      const weekData: Partial<Record<Source, number>> = {};
+    const chartData = days.map((day) => {
+      const dayData: Partial<Record<Source, number>> = {};
 
       for (const source of sources) {
         const sourceProfiles = profilesBySource[source] || [];
 
-        const cumulativeCount = sourceProfiles.filter(
-          (profile) => profile.createdAt <= endOfWeek(new Date(week)),
-        ).length;
+        const cumulativeCount = sourceProfiles.filter((profile) => {
+          const dayIndex = days.indexOf(day);
 
-        weekData[source] = cumulativeCount;
+          if (dayIndex === 0) {
+            const firstDate = new Date(from);
+            return profile.createdAt <= endOfDay(firstDate);
+          }
+
+          const currentDate = new Date(from);
+          const adjustedDate = addDays(currentDate, dayIndex);
+          return profile.createdAt <= endOfDay(adjustedDate);
+        }).length;
+
+        dayData[source] = cumulativeCount;
       }
 
       return {
-        week,
-        ...weekData,
+        day,
+        ...dayData,
       };
     });
 
@@ -112,6 +121,6 @@ export const totalMembers = protectedProcedure
     return {
       total,
       growthRate,
-      weeks: chartData,
+      days: chartData,
     };
   });

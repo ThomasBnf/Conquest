@@ -13,6 +13,7 @@ import { createMember } from "@conquest/db/member/createMember";
 import { deleteMember } from "@conquest/db/member/deleteMember";
 import { getMember } from "@conquest/db/member/getMember";
 import { updateMember } from "@conquest/db/member/updateMember";
+import { prisma } from "@conquest/db/prisma";
 import { createProfile } from "@conquest/db/profile/createProfile";
 import { getProfile } from "@conquest/db/profile/getProfile";
 import { updateProfile } from "@conquest/db/profile/updateProfile";
@@ -30,10 +31,6 @@ import {
 import ISO6391 from "iso-639-1";
 import { type NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-
-const escapeSqlString = (str: string): string => {
-  return str.replace(/'/g, "''");
-};
 
 const WebhookSchema = z.object({
   token: z.string(),
@@ -182,18 +179,15 @@ export async function POST(req: NextRequest) {
 
       if (!channel) return NextResponse.json({ status: 200 });
 
-      //TODO
-
-      // await client.query({
-      //   query: `
-      //     ALTER TABLE activity
-      //     DELETE WHERE memberId = '${profile.memberId}'
-      //     AND channelId = '${channel.id}'
-      //     AND reactTo = '${ts}'
-      //     AND message = '${escapeSqlString(reaction)}'
-      //     AND workspaceId = '${workspaceId}'
-      //   `,
-      // });
+      await prisma.activity.deleteMany({
+        where: {
+          memberId: profile.memberId,
+          channelId: channel.id,
+          reactTo: ts,
+          message: reaction,
+          workspaceId,
+        },
+      });
 
       return NextResponse.json({ status: 200 });
     }
@@ -354,7 +348,7 @@ export async function POST(req: NextRequest) {
             await updateActivity({
               ...activity,
               activityTypeKey: thread_ts ? "slack:reply" : "slack:message",
-              message: text ? escapeSqlString(text) : "",
+              message: text ?? "",
               replyTo: thread_ts ?? "",
             });
 
@@ -406,7 +400,7 @@ export async function POST(req: NextRequest) {
       await createActivity({
         externalId: ts,
         activityTypeKey: thread_ts ? "slack:reply" : "slack:message",
-        message: text ? escapeSqlString(text) : "",
+        message: text,
         replyTo: thread_ts ?? "",
         memberId: profile.memberId,
         channelId: channel.id,

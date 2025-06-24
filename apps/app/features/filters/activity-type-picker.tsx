@@ -99,12 +99,12 @@ export const ActivityTypePicker = ({ filter }: Props) => {
               {!isLoading && (
                 <CommandItem
                   onSelect={() =>
-                    onUpdateActivityTypes("anyActivity", "Any activity")
+                    onUpdateActivityTypes("any_activity", "Any activity")
                   }
                 >
                   <Checkbox
                     checked={filterActivity.activityTypes.some(
-                      (type) => type.key === "anyActivity",
+                      (type) => type.key === "any_activity",
                     )}
                     className="mr-2"
                   />

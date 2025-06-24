@@ -74,14 +74,11 @@ export const TotalMembers = () => {
       : skipToken,
   );
 
-  const { total, growthRate, weeks } = data ?? {
+  const { total, growthRate, days } = data ?? {
     total: 0,
     growthRate: 0,
-    weeks: [],
+    days: [],
   };
-
-  const days = getDays(dateRange);
-  const dateFormat = days > 30 ? "MMM yyyy" : "MMM dd";
 
   useEffect(() => {
     setDateRange(globalDateRange);
@@ -123,7 +120,7 @@ export const TotalMembers = () => {
                   />
                   <p>{source}</p>
                 </div>
-                <p className="font-medium">{weeks?.at(-1)?.[source] ?? 0}</p>
+                <p className="font-medium">{days?.at(-1)?.[source] ?? 0}</p>
               </div>
             ))}
           </div>
@@ -135,7 +132,7 @@ export const TotalMembers = () => {
         ) : (
           <ChartContainer config={chartConfig}>
             <LineChart
-              data={weeks}
+              data={days}
               margin={{
                 top: 20,
                 right: 20,
@@ -144,11 +141,10 @@ export const TotalMembers = () => {
             >
               <CartesianGrid vertical={false} />
               <XAxis
-                dataKey="week"
+                dataKey="day"
                 tickMargin={10}
-                tickFormatter={(value) => format(value, dateFormat)}
                 stroke="#D1D1D1"
-                interval={days === 7 ? "preserveStartEnd" : 4}
+                interval="equidistantPreserveStart"
               />
               <YAxis
                 axisLine={false}
@@ -156,12 +152,7 @@ export const TotalMembers = () => {
                 stroke="hsl(var(--border))"
               />
               <ChartTooltip
-                content={
-                  <ChartTooltipContent
-                    indicator="line"
-                    labelFormatter={(value) => format(value, dateFormat)}
-                  />
-                }
+                content={<ChartTooltipContent indicator="line" />}
               />
               {sources.map((source) => (
                 <Line

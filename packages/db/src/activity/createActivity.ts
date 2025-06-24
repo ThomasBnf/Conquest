@@ -8,16 +8,20 @@ import { prisma } from "../prisma";
 type Props = {
   activityTypeKey: string;
   message?: string;
+  memberId: string;
   source: Source;
   workspaceId: string;
 } & Partial<Activity>;
 
 export const createActivity = async (props: Props) => {
-  const { message, ...rest } = props;
+  const { message, title, ...rest } = props;
+
+  // const sentiment = await analyzeActivity(message, title);
 
   const activity = await prisma.activity.create({
     data: {
       ...rest,
+      title: title ?? null,
       message: message ?? null,
     },
   });

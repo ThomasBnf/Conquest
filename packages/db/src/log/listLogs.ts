@@ -11,7 +11,7 @@ export const listLogs = async ({ memberId }: Props) => {
       memberId,
     },
     orderBy: {
-      date: "desc",
+      date: "asc",
     },
   });
 
