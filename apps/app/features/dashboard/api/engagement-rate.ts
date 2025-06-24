@@ -44,15 +44,15 @@ export const engagementRate = protectedProcedure
         WITH current_period AS (
           SELECT
             ${isWeekly ? "toStartOfWeek(a.createdAt)" : "toDate(a.createdAt)"} AS week,
-            p.attributes.source AS source,
+            JSONExtractString(toString(p.attributes), 'source') AS source,
             count(DISTINCT a.memberId) AS activeMembers
           FROM activity a
           LEFT JOIN profile p FINAL ON p.memberId = a.memberId AND p.workspaceId = a.workspaceId
           WHERE a.workspaceId = '${workspaceId}'
             AND a.createdAt >= '${formattedFrom}'
             AND a.createdAt <= '${formattedTo}'
-            AND (p.attributes.source IN (${sources.map((source) => `'${source}'`).join(", ")}) OR p.attributes.source IS NULL)
-          GROUP BY week, p.attributes.source
+            AND (JSONExtractString(toString(p.attributes), 'source') IN (${sources.map((source) => `'${source}'`).join(", ")}) OR JSONExtractString(toString(p.attributes), 'source') IS NULL)
+          GROUP BY week, JSONExtractString(toString(p.attributes), 'source')
         ),
         total_members AS (
           SELECT COUNT(DISTINCT m.id) AS total
@@ -60,30 +60,30 @@ export const engagementRate = protectedProcedure
           LEFT JOIN profile p FINAL ON p.memberId = m.id AND p.workspaceId = m.workspaceId
           WHERE m.workspaceId = '${workspaceId}'
             AND m.createdAt <= '${formattedTo}'
-            AND (p.attributes.source IN (${sources.map((source) => `'${source}'`).join(", ")}) OR p.attributes.source IS NULL)
+            AND (JSONExtractString(toString(p.attributes), 'source') IN (${sources.map((source) => `'${source}'`).join(", ")}) OR JSONExtractString(toString(p.attributes), 'source') IS NULL)
         ),
         total_members_by_source AS (
           SELECT 
-            p.attributes.source AS source,
+            JSONExtractString(toString(p.attributes), 'source') AS source,
             COUNT(DISTINCT m.id) AS total
           FROM member m
           LEFT JOIN profile p FINAL ON p.memberId = m.id AND p.workspaceId = m.workspaceId
           WHERE m.workspaceId = '${workspaceId}'
             AND m.createdAt <= '${formattedTo}'
-            AND (p.attributes.source IN (${sources.map((source) => `'${source}'`).join(", ")}) OR p.attributes.source IS NULL)
-          GROUP BY p.attributes.source
+            AND (JSONExtractString(toString(p.attributes), 'source') IN (${sources.map((source) => `'${source}'`).join(", ")}) OR JSONExtractString(toString(p.attributes), 'source') IS NULL)
+          GROUP BY JSONExtractString(toString(p.attributes), 'source')
         ),
         active_members_by_source AS (
           SELECT 
-            p.attributes.source AS source,
+            JSONExtractString(toString(p.attributes), 'source') AS source,
             count(DISTINCT a.memberId) AS activeMembers
           FROM activity a
           LEFT JOIN profile p FINAL ON p.memberId = a.memberId AND p.workspaceId = a.workspaceId
           WHERE a.workspaceId = '${workspaceId}'
             AND a.createdAt >= '${formattedFrom}'
             AND a.createdAt <= '${formattedTo}'
-            AND (p.attributes.source IN (${sources.map((source) => `'${source}'`).join(", ")}) OR p.attributes.source IS NULL)
-          GROUP BY p.attributes.source
+            AND (JSONExtractString(toString(p.attributes), 'source') IN (${sources.map((source) => `'${source}'`).join(", ")}) OR JSONExtractString(toString(p.attributes), 'source') IS NULL)
+          GROUP BY JSONExtractString(toString(p.attributes), 'source')
         ),
         current_active_total AS (
           SELECT count(DISTINCT a.memberId) AS activeMembers
@@ -92,7 +92,7 @@ export const engagementRate = protectedProcedure
           WHERE a.workspaceId = '${workspaceId}'
             AND a.createdAt >= '${formattedFrom}'
             AND a.createdAt <= '${formattedTo}'
-            AND (p.attributes.source IN (${sources.map((source) => `'${source}'`).join(", ")}) OR p.attributes.source IS NULL)
+            AND (JSONExtractString(toString(p.attributes), 'source') IN (${sources.map((source) => `'${source}'`).join(", ")}) OR JSONExtractString(toString(p.attributes), 'source') IS NULL)
         ),
         previous_total AS (
           SELECT COUNT(DISTINCT m.id) AS total
@@ -100,7 +100,7 @@ export const engagementRate = protectedProcedure
           LEFT JOIN profile p FINAL ON p.memberId = m.id AND p.workspaceId = m.workspaceId
           WHERE m.workspaceId = '${workspaceId}'
             AND m.createdAt <= '${previousTo}'
-            AND (p.attributes.source IN (${sources.map((source) => `'${source}'`).join(", ")}) OR p.attributes.source IS NULL)
+            AND (JSONExtractString(toString(p.attributes), 'source') IN (${sources.map((source) => `'${source}'`).join(", ")}) OR JSONExtractString(toString(p.attributes), 'source') IS NULL)
         ),
         previous_active_total AS (
           SELECT count(DISTINCT a.memberId) AS activeMembers
@@ -109,7 +109,7 @@ export const engagementRate = protectedProcedure
           WHERE a.workspaceId = '${workspaceId}'
             AND a.createdAt >= '${previousFrom}'
             AND a.createdAt <= '${previousTo}'
-            AND (p.attributes.source IN (${sources.map((source) => `'${source}'`).join(", ")}) OR p.attributes.source IS NULL)
+            AND (JSONExtractString(toString(p.attributes), 'source') IN (${sources.map((source) => `'${source}'`).join(", ")}) OR JSONExtractString(toString(p.attributes), 'source') IS NULL)
         )
         SELECT 
           current_period.*,
@@ -130,26 +130,26 @@ export const engagementRate = protectedProcedure
           COALESCE(ambs.activeMembers, 0) AS activeMembers
         FROM (
           SELECT 
-            p.attributes.source AS source,
+            JSONExtractString(toString(p.attributes), 'source') AS source,
             COUNT(DISTINCT m.id) AS total
           FROM member m
           LEFT JOIN profile p FINAL ON p.memberId = m.id AND p.workspaceId = m.workspaceId
           WHERE m.workspaceId = '${workspaceId}'
             AND m.createdAt <= '${formattedTo}'
-            AND (p.attributes.source IN (${sources.map((source) => `'${source}'`).join(", ")}) OR p.attributes.source IS NULL)
-          GROUP BY p.attributes.source
+            AND (JSONExtractString(toString(p.attributes), 'source') IN (${sources.map((source) => `'${source}'`).join(", ")}) OR JSONExtractString(toString(p.attributes), 'source') IS NULL)
+          GROUP BY JSONExtractString(toString(p.attributes), 'source')
         ) tmbs
         LEFT JOIN (
           SELECT 
-            p.attributes.source AS source,
+            JSONExtractString(toString(p.attributes), 'source') AS source,
             count(DISTINCT a.memberId) AS activeMembers
           FROM activity a
           LEFT JOIN profile p FINAL ON p.memberId = a.memberId AND p.workspaceId = a.workspaceId
           WHERE a.workspaceId = '${workspaceId}'
             AND a.createdAt >= '${formattedFrom}'
             AND a.createdAt <= '${formattedTo}'
-            AND (p.attributes.source IN (${sources.map((source) => `'${source}'`).join(", ")}) OR p.attributes.source IS NULL)
-          GROUP BY p.attributes.source
+            AND (JSONExtractString(toString(p.attributes), 'source') IN (${sources.map((source) => `'${source}'`).join(", ")}) OR JSONExtractString(toString(p.attributes), 'source') IS NULL)
+          GROUP BY JSONExtractString(toString(p.attributes), 'source')
         ) ambs ON tmbs.source = ambs.source
       `,
     });

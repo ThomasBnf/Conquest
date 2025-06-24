@@ -43,7 +43,7 @@ export const activityTypesByChannel = protectedProcedure
           AND activity.source IN (${sources.map((s) => `'${s}'`).join(",")})
           AND activity.createdAt >= '${formattedFrom}'
           AND activity.createdAt <= '${formattedTo}'
-          AND channel.name IS NOT NULL
+          AND channel.name != ''
           AND activityType.name IS NOT NULL
         GROUP BY channel.name, channel.source, activityType.name, channel.id
         ORDER BY channel.name, count DESC
@@ -51,8 +51,6 @@ export const activityTypesByChannel = protectedProcedure
     });
 
     const { data } = await activitiesResult.json();
-
-    console.log(data);
 
     type ActivityData = {
       channel: string;

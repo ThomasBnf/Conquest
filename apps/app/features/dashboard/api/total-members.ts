@@ -42,23 +42,23 @@ export const totalMembers = protectedProcedure
         WITH period_data AS (
           SELECT 
             ${isWeekly ? "toStartOfWeek(createdAt)" : "toDate(createdAt)"} as week,
-            attributes.source as source,
+            JSONExtractString(toString(attributes), 'source') as source,
             count() as count
           FROM profile FINAL
           WHERE workspaceId = '${workspaceId}'
             AND createdAt >= '${formattedFrom}'
             AND createdAt <= '${formattedTo}'
-            AND attributes.source IN (${sources.map((s) => `'${s}'`).join(",")})
+            AND JSONExtractString(toString(attributes), 'source') IN (${sources.map((s) => `'${s}'`).join(",")})
           GROUP BY week, source
         ),
         initial_totals AS (
           SELECT 
-            attributes.source as source,
+            JSONExtractString(toString(attributes), 'source') as source,
             count() as initialCount
           FROM profile FINAL
           WHERE workspaceId = '${workspaceId}'
             AND createdAt < '${formattedFrom}'
-            AND attributes.source IN (${sources.map((s) => `'${s}'`).join(",")})
+            AND JSONExtractString(toString(attributes), 'source') IN (${sources.map((s) => `'${s}'`).join(",")})
           GROUP BY source
         ),
         current_total AS (

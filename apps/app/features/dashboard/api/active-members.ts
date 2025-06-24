@@ -48,7 +48,7 @@ export const activeMembers = protectedProcedure
           WHERE a.createdAt >= '${formattedFrom}'
             AND a.createdAt <= '${formattedTo}'
             AND a.workspaceId = '${workspaceId}'
-            AND p.attributes.source IN (${sources.map((source) => `'${source}'`).join(", ")})
+            AND JSONExtractString(toString(p.attributes), 'source') IN (${sources.map((source) => `'${source}'`).join(", ")})
         ),
         previous_total AS (
           SELECT countDistinct(a.memberId) AS total
@@ -57,7 +57,7 @@ export const activeMembers = protectedProcedure
           WHERE a.createdAt >= '${previousFrom}'
             AND a.createdAt <= '${previousTo}'
             AND a.workspaceId = '${workspaceId}'
-            AND p.attributes.source IN (${sources.map((source) => `'${source}'`).join(", ")})
+            AND JSONExtractString(toString(p.attributes), 'source') IN (${sources.map((source) => `'${source}'`).join(", ")})
         )
         SELECT 
           (SELECT total FROM current_total) AS currentTotal,
@@ -69,14 +69,14 @@ export const activeMembers = protectedProcedure
       query: `
         SELECT
           ${isWeekly ? "toStartOfWeek(a.createdAt)" : "toDate(a.createdAt)"} AS week,
-          p.attributes.source AS source,
+          JSONExtractString(toString(p.attributes), 'source') AS source,
           groupArray(DISTINCT a.memberId) AS memberIds
         FROM activity a
         JOIN profile p FINAL ON p.memberId = a.memberId AND p.workspaceId = a.workspaceId
         WHERE a.createdAt >= '${formattedFrom}'
           AND a.createdAt <= '${formattedTo}'
           AND a.workspaceId = '${workspaceId}'
-          AND p.attributes.source IN (${sources.map((source) => `'${source}'`).join(", ")})
+          AND JSONExtractString(toString(p.attributes), 'source') IN (${sources.map((source) => `'${source}'`).join(", ")})
         GROUP BY week, source
         ORDER BY week ASC
       `,
@@ -85,14 +85,14 @@ export const activeMembers = protectedProcedure
     const totalsBySourceResult = await client.query({
       query: `
         SELECT 
-          p.attributes.source AS source,
+          JSONExtractString(toString(p.attributes), 'source') AS source,
           countDistinct(a.memberId) AS total
         FROM activity a
         JOIN profile p FINAL ON p.memberId = a.memberId AND p.workspaceId = a.workspaceId
         WHERE a.createdAt >= '${formattedFrom}'
           AND a.createdAt <= '${formattedTo}'
           AND a.workspaceId = '${workspaceId}'
-          AND p.attributes.source IN (${sources.map((source) => `'${source}'`).join(", ")})
+          AND JSONExtractString(toString(p.attributes), 'source') IN (${sources.map((source) => `'${source}'`).join(", ")})
         GROUP BY source
       `,
     });

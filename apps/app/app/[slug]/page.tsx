@@ -20,20 +20,20 @@ export default async function Page() {
       </Header>
       <ScrollArea>
         <div className="space-y-4 p-4">
-          <div className="grid grid-cols-2 gap-4 ">
+          <div className="grid grid-cols-2 gap-4">
             <TotalMembers />
             <ActiveMembers />
           </div>
-          <div className="grid grid-cols-2 gap-4 ">
+          <div className="grid grid-cols-2 gap-4">
             <NewMembers />
             <EngagementRate />
           </div>
-          <div className="grid grid-cols-2 gap-4 ">
+          <div className="grid grid-cols-2 gap-4">
             <AtRiskMembers />
             <PotentialAmbassadors />
           </div>
           <WorkspaceHeatmap />
-          <div className="grid grid-cols-2 gap-4 ">
+          <div className="grid grid-cols-2 gap-4">
             <TopActivityTypes />
             <Leaderboard />
           </div>
