@@ -74,10 +74,12 @@ export const sendSlackTestMessage = protectedProcedure
       });
     }
 
-    const text = plateToSlackMarkdown(message);
+    const markdown = plateToSlackMarkdown(message);
+
+    console.log(markdown);
 
     const parsedMessage = await replaceVariables({
-      message: text,
+      message: markdown,
       member,
       source: "Slack",
     });
