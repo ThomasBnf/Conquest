@@ -1,7 +1,7 @@
 import { getProfileBySource } from "@conquest/clickhouse/profile/getProfileBySource";
 import { getIntegrationBySource } from "@conquest/db/integrations/getIntegrationBySource";
 import { decrypt } from "@conquest/db/utils/decrypt";
-import { plateToSlackMarkdown } from "@conquest/utils/plateToSlackMarkdown";
+import { plateToSlackBlocks } from "@conquest/utils/plateToSlackBlocks";
 import { replaceVariables } from "@conquest/utils/replace-variables";
 import { SlackIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
 import { MemberWithLevel } from "@conquest/zod/schemas/member.schema";
@@ -75,18 +75,18 @@ export const slackMessage = async ({ node, member }: Props): Promise<Node> => {
     });
   }
 
-  const markdown = plateToSlackMarkdown(message);
+  const blocks = plateToSlackBlocks(message);
 
-  const parsedMessage = await replaceVariables({
-    message: markdown,
-    member,
-    source: "Slack",
-  });
+  // const parsedMessage = await replaceVariables({
+  //   message: blocks,
+  //   member,
+  //   source: "Slack",
+  // });
 
   try {
     await web.chat.postMessage({
       channel: channel?.id,
-      text: parsedMessage,
+      blocks,
       as_user: true,
     });
   } catch (error) {

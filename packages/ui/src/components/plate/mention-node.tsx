@@ -1,6 +1,5 @@
 "use client";
 
-import { useMounted } from "@/hooks/useMounted";
 import { cn } from "@conquest/ui/cn";
 import type { TMentionElement } from "platejs";
 import { IS_APPLE, KEYS } from "platejs";
@@ -12,6 +11,7 @@ import {
   useSelected,
 } from "platejs/react";
 import * as React from "react";
+import { useMounted } from "../../hooks/use-mounted";
 
 export function MentionElement(
   props: PlateElementProps<TMentionElement> & {
@@ -29,7 +29,7 @@ export function MentionElement(
     <PlateElement
       {...props}
       className={cn(
-        "inline-block rounded-md bg-muted px-1 py-0.5 align-baseline text-sm",
+        "inline-block rounded-md bg-blue-50 px-1 py-0.5 align-baseline text-blue-600",
         !readOnly && "cursor-pointer",
         selected && focused && "ring-1 ring-ring",
         element.children[0]?.[KEYS.bold] === true && "font-bold",
