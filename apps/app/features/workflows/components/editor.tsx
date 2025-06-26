@@ -74,8 +74,6 @@ export const Editor = ({ workflow }: Props) => {
           const { id, item } = changes[0];
           const node = getNode(id);
 
-          console.log(changes[0]);
-
           const data = NodeDataSchema.parse(item.data);
 
           if (node && item) {

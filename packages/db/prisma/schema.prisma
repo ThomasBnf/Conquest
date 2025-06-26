@@ -303,7 +303,7 @@ model Member {
     updatedAt DateTime @updatedAt
 
     @@index([workspaceId, levelNumber(desc), pulse(desc), id(desc)])
-    @@index([workspaceId, createdAt(desc)])
+    @@index([workspaceId, createdAt])
     @@index([workspaceId, lastActivity(desc)])
     @@index([workspaceId, firstActivity(desc)])
 }
@@ -323,6 +323,8 @@ model Profile {
     @@unique([externalId, workspaceId])
     @@index([externalId, workspaceId])
     @@index([memberId, workspaceId])
+    @@index([workspaceId, createdAt])
+    @@index([attributes(ops: JsonbOps)], type: Gin)
     @@index([workspaceId])
 }
 

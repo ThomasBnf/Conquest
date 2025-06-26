@@ -74,15 +74,11 @@ export const EngagementRate = () => {
       : skipToken,
   );
 
-  console.log(data);
-
   const { engagementRate, growthRate, days } = data ?? {
     engagementRate: 0,
     growthRate: 0,
     days: [],
   };
-
-  console.log(data);
 
   useEffect(() => {
     setDateRange(globalDateRange);

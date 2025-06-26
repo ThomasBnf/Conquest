@@ -1,7 +1,7 @@
 import { protectedProcedure } from "@/server/trpc";
 import { prisma } from "@conquest/db/prisma";
 import { ActivityHeatmapSchema } from "@conquest/zod/schemas/activity.schema";
-import { format, subDays } from "date-fns";
+import { format, startOfDay, subDays } from "date-fns";
 import { z } from "zod";
 
 export const heatmap = protectedProcedure
@@ -17,8 +17,7 @@ export const heatmap = protectedProcedure
     const today = new Date();
     const last365days = subDays(today, 365);
 
-    const result = await prisma.activity.groupBy({
-      by: ["createdAt"],
+    const activities = await prisma.activity.findMany({
       where: {
         workspaceId,
         member: {
@@ -29,15 +28,26 @@ export const heatmap = protectedProcedure
           gte: last365days,
         },
       },
-      _count: {
-        id: true,
+      select: {
+        createdAt: true,
       },
     });
 
-    const formattedData = result.map((item) => ({
-      date: format(item.createdAt, "yyyy-MM-dd"),
-      count: item._count.id,
-    }));
+    const groupedByDate = activities.reduce(
+      (acc, activity) => {
+        const dateKey = format(startOfDay(activity.createdAt), "yyyy-MM-dd");
+        acc[dateKey] = (acc[dateKey] || 0) + 1;
+        return acc;
+      },
+      {} as Record<string, number>,
+    );
+
+    const formattedData = Object.entries(groupedByDate).map(
+      ([date, count]) => ({
+        date,
+        count,
+      }),
+    );
 
     return ActivityHeatmapSchema.array().parse(formattedData);
   });

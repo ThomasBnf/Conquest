@@ -5,7 +5,7 @@ import { env } from "@conquest/env";
 import { TooltipProvider } from "@conquest/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import { httpBatchLink } from "@trpc/client";
+import { httpLink } from "@trpc/client";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { type ReactNode, useState } from "react";
 import { Toaster } from "sonner";
@@ -30,7 +30,7 @@ export const Providers = ({ children }: Props) => {
   const [trpcClient] = useState(() =>
     trpc.createClient({
       links: [
-        httpBatchLink({
+        httpLink({
           url: `${env.NEXT_PUBLIC_URL}/api/trpc`,
           transformer: superjson,
         }),
