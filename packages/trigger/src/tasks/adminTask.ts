@@ -267,8 +267,20 @@ export const adminTask = schemaTask({
 
     console.log("activityTypes", activityTypes.length);
 
+    const activityTypeMap = new Map();
+
+    for (const activityType of activityTypes) {
+      const key = `${activityType.key}_${activityType.workspaceId}`;
+      if (!activityTypeMap.has(key)) {
+        activityTypeMap.set(key, activityType);
+      }
+    }
+
+    const uniqueActivityTypes = Array.from(activityTypeMap.values());
+    console.log("unique activity types", uniqueActivityTypes.length);
+
     await prisma.activityType.createMany({
-      data: activityTypes.map((activityType) => {
+      data: uniqueActivityTypes.map((activityType) => {
         const { id, ...rest } = activityType;
 
         return {
