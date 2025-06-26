@@ -1,17 +1,19 @@
 import { FormActivityTypeSchema } from "@/features/activities-types/schema/form.schema";
-import { createActivityType as _createActivityType } from "@conquest/clickhouse/activity-type/createActivityType";
+import { createActivityType as _createActivityType } from "@conquest/db/activity-type/createActivityType";
 import { protectedProcedure } from "../trpc";
 
 export const createActivityType = protectedProcedure
   .input(FormActivityTypeSchema)
   .mutation(async ({ ctx: { user }, input }) => {
     const { workspaceId } = user;
-    const { source, key, conditions } = input;
+    const { key, name, source, conditions, points } = input;
 
     return await _createActivityType({
-      ...input,
       key: `${source.toLowerCase()}:${key}`,
-      conditions: { rules: conditions.rules },
+      name,
+      source,
+      points,
+      conditions,
       workspaceId,
     });
   });

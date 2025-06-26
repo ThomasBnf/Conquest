@@ -1,11 +1,11 @@
-import { updateMember } from "@conquest/clickhouse/member/updateMember";
-import { MemberWithLevel } from "@conquest/zod/schemas/member.schema";
+import { updateMember } from "@conquest/db/member/updateMember";
+import { Member } from "@conquest/zod/schemas/member.schema";
 import { Node, NodeTagMemberSchema } from "@conquest/zod/schemas/node.schema";
 import { nodeStatus } from "./nodeStatus";
 
 type Props = {
   node: Node;
-  member: MemberWithLevel;
+  member: Member;
 };
 
 export const addTags = async ({ node, member }: Props): Promise<Node> => {

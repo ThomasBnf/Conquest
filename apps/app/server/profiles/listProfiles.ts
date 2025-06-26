@@ -1,4 +1,4 @@
-import { listProfiles as _listProfiles } from "@conquest/clickhouse/profile/listProfiles";
+import { listProfiles as _listProfiles } from "@conquest/db/profile/listProfiles";
 import { z } from "zod";
 import { protectedProcedure } from "../trpc";
 
@@ -8,8 +8,9 @@ export const listProfiles = protectedProcedure
       memberId: z.string(),
     }),
   )
-  .query(async ({ input }) => {
+  .query(async ({ ctx: { user }, input }) => {
+    const { workspaceId } = user;
     const { memberId } = input;
 
-    return await _listProfiles({ memberId });
+    return await _listProfiles({ memberId, workspaceId });
   });

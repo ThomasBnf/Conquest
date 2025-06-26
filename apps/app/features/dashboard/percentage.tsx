@@ -9,7 +9,7 @@ type Props = {
 };
 
 export const Percentage = ({ variation, isLoading, inverse }: Props) => {
-  const fixedVariation = Number(variation?.toFixed(0));
+  const fixedVariation = Number(variation?.toFixed(2));
 
   if (isLoading) {
     return <Skeleton className="h-[25.5px] w-14 shrink-0" />;

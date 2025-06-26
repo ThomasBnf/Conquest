@@ -1,6 +1,6 @@
-import { client } from "@conquest/clickhouse/client";
-import { getMemberWithLevel } from "@conquest/clickhouse/member/getMemberWithLevel";
-import { updateManyMembers } from "@conquest/clickhouse/member/updateManyMembers";
+import { updateManyMembers } from "@conquest/db/member/updateManyMembers";
+import { prisma } from "@conquest/db/prisma";
+import { MemberSchema } from "@conquest/zod/schemas/member.schema";
 import { logger } from "@trigger.dev/sdk/v3";
 import { format, subDays } from "date-fns";
 import { triggerWorkflows } from "./tasks/triggerWorkflows";
@@ -17,40 +17,36 @@ export const atRisksMembers = async () => {
 };
 
 const tagAtRiskMembers = async ({ from, to }: { from: string; to: string }) => {
-  const result = await client.query({
-    query: `
-      SELECT DISTINCT m.id as memberId
-      FROM member m FINAL
-      LEFT JOIN level l ON m.levelId = l.id
-      WHERE 
-        m.pulse >= 20
-        AND m.atRiskMember = false
-        AND m.id NOT IN (
-          SELECT memberId 
-          FROM activity 
-          WHERE 
-            createdAt BETWEEN '${from}' AND '${to}'
-        )
-    `,
+  const members = await prisma.member.findMany({
+    where: {
+      pulse: {
+        gte: 20,
+      },
+      isStaff: false,
+      atRiskMember: false,
+      activities: {
+        some: {
+          createdAt: {
+            gte: from,
+            lte: to,
+          },
+        },
+      },
+    },
   });
 
-  const { data } = await result.json();
-  const members = data as Array<{ memberId: string }>;
+  const parsedMembers = MemberSchema.array().parse(members);
 
   logger.info("at-risks-members", {
-    count: members.length,
-    members,
+    count: parsedMembers.length,
+    members: parsedMembers,
   });
 
   const updatedMembers = [];
 
-  for (const member of members) {
-    const currentMember = await getMemberWithLevel({ id: member.memberId });
-
-    if (!currentMember) continue;
-
+  for (const member of parsedMembers) {
     const updatedMember = {
-      ...currentMember,
+      ...member,
       atRiskMember: true,
     };
 
@@ -69,25 +65,24 @@ const removeTagAtRiskMembers = async ({
   from,
   to,
 }: { from: string; to: string }) => {
-  const result = await client.query({
-    query: `
-      SELECT DISTINCT m.id as memberId
-      FROM member m FINAL
-      LEFT JOIN level l ON m.levelId = l.id
-      WHERE 
-        m.pulse < 20
-        AND m.atRiskMember = true
-        AND m.id IN (
-          SELECT memberId 
-          FROM activity 
-          WHERE 
-            createdAt BETWEEN '${from}' AND '${to}'
-        )
-    `,
+  const members = await prisma.member.findMany({
+    where: {
+      pulse: {
+        lt: 20,
+      },
+      atRiskMember: true,
+      activities: {
+        some: {
+          createdAt: {
+            gte: from,
+            lte: to,
+          },
+        },
+      },
+    },
   });
 
-  const { data } = await result.json();
-  const members = data as Array<{ memberId: string }>;
+  const parsedMembers = MemberSchema.array().parse(members);
 
   logger.info("remove-at-risks-members", {
     count: members.length,
@@ -96,14 +91,10 @@ const removeTagAtRiskMembers = async ({
 
   const updatedMembers = [];
 
-  for (const member of members) {
-    const currentMember = await getMemberWithLevel({ id: member.memberId });
-
-    if (!currentMember) continue;
-
+  for (const member of parsedMembers) {
     const updatedMember = {
-      ...currentMember,
-      atRisksMembers: false,
+      ...member,
+      atRiskMember: false,
     };
 
     updatedMembers.push(updatedMember);

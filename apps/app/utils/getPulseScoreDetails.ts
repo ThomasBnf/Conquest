@@ -31,7 +31,7 @@ export const getPulseScoreDetails = ({ activities, channels }: Props) => {
       const { source, name, points } = activityType;
 
       const parsedConditions = ActivityTypeRuleSchema.array().parse(
-        activityType.conditions.rules,
+        activityType.conditions,
       );
       const condition = parsedConditions.find(
         (condition) => condition.channelId === activity.channelId,

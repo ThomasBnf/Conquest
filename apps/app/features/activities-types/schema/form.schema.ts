@@ -7,9 +7,7 @@ export const FormActivityTypeSchema = z.object({
   name: z.string().min(1),
   key: z.string().min(1),
   points: z.coerce.number().int().min(0),
-  conditions: z.object({
-    rules: ActivityTypeRuleSchema.array(),
-  }),
+  conditions: ActivityTypeRuleSchema.array(),
   deletable: z.boolean().optional(),
 });
 

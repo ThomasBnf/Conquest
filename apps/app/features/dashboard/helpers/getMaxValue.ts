@@ -1,19 +1,12 @@
 import { Source } from "@conquest/zod/enum/source.enum";
+import { Profile } from "@conquest/zod/schemas/profile.schema";
 
-type WeeklyProfileData = {
-  week: string;
-  [key: string]: string | number;
-};
+export const getMaxValue = (profiles: Profile[], sources: Source[]): number => {
+  if (!profiles) return 0;
 
-export const getMaxValue = (
-  data: WeeklyProfileData[] | undefined,
-  sources: Source[],
-): number => {
-  if (!data) return 0;
-
-  return data.reduce((max, entry) => {
-    const weekMax = sources.reduce((weekMax, source) => {
-      const value = Number(entry[source] || 0);
+  return profiles.reduce((max, profile) => {
+    const weekMax = sources.reduce((weekMax) => {
+      const value = Number(profile.attributes?.source || 0);
       return Math.max(weekMax, value);
     }, 0);
     return Math.max(max, weekMax);

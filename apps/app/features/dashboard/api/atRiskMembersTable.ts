@@ -1,11 +1,11 @@
-import { client } from "@conquest/clickhouse/client";
-import { cleanPrefix } from "@conquest/clickhouse/helpers/cleanPrefix";
-import { orderByParser } from "@conquest/clickhouse/helpers/orderByParser";
-import { FullMemberSchema } from "@conquest/zod/schemas/member.schema";
-import { format } from "date-fns";
-import { toZonedTime } from "date-fns-tz";
+import { protectedProcedure } from "@/server/trpc";
+import { orderByParser } from "@conquest/db/helpers/orderByParser";
+import { Prisma, prisma } from "@conquest/db/prisma";
+import {
+  FullMemberSchema,
+  MemberSchema,
+} from "@conquest/zod/schemas/member.schema";
 import { z } from "zod";
-import { protectedProcedure } from "../../../server/trpc";
 
 export const atRiskMembersTable = protectedProcedure
   .input(
@@ -31,55 +31,50 @@ export const atRiskMembersTable = protectedProcedure
       return [];
     }
 
-    const orderBy = orderByParser({ id, desc, type: "members" });
+    const orderBy = orderByParser({
+      id,
+      desc,
+      type: "members",
+    }) as Prisma.MemberOrderByWithRelationInput[];
 
-    const formattedFrom = format(from, "yyyy-MM-dd HH:mm:ss");
-    const formattedTo = format(to, "yyyy-MM-dd HH:mm:ss");
-
-    const result = await client.query({
-      query: `
-        SELECT
-          m.*,
-          c.name as company,
-          l.number as level,
-          l.name as levelName,
-          p.attributes
-        FROM member m FINAL
-        LEFT JOIN level l ON m.levelId = l.id
-        LEFT JOIN company c ON m.companyId = c.id
-        LEFT JOIN (
-          SELECT 
-            memberId,
-            groupArray(attributes) as attributes
-          FROM profile FINAL
-          GROUP BY memberId
-        ) p ON m.id = p.memberId
-        WHERE 
-          m.workspaceId = '${workspaceId}'
-          AND m.isStaff = 0
-          AND m.pulse >= 20
-          AND m.id NOT IN (
-            SELECT memberId 
-            FROM activity 
-            WHERE workspaceId = '${workspaceId}'
-            AND createdAt BETWEEN '${formattedFrom}' AND '${formattedTo}'
-          )
-        ${
-          search
-            ? `AND (
-                positionCaseInsensitive(concat(firstName, ' ', lastName), LOWER(trim('${search}'))) > 0
-                OR positionCaseInsensitive(primaryEmail, LOWER(trim('${search}'))) > 0
-                OR arrayExists(attr -> attr.source = 'Github' AND positionCaseInsensitive(toString(attr.login), LOWER(trim('${search}'))) > 0, p.attributes)
-              )`
-            : ""
-        }
-        ${orderBy}
-        ${cursor ? `LIMIT 25 OFFSET ${cursor}` : "LIMIT 25"}
-      `,
-      format: "JSON",
+    const members = await prisma.member.findMany({
+      where: {
+        workspaceId,
+        isStaff: false,
+        pulse: {
+          gte: 20,
+        },
+        activities: {
+          none: {
+            createdAt: {
+              gte: from,
+              lte: to,
+            },
+          },
+        },
+        OR: [
+          { firstName: { contains: search, mode: "insensitive" } },
+          { lastName: { contains: search, mode: "insensitive" } },
+          { primaryEmail: { contains: search, mode: "insensitive" } },
+        ],
+      },
+      include: {
+        profiles: true,
+        company: {
+          select: {
+            name: true,
+          },
+        },
+        level: {
+          select: {
+            name: true,
+          },
+        },
+      },
+      take: 50,
+      skip: cursor ? cursor : 0,
+      orderBy,
     });
 
-    const { data } = await result.json();
-    const cleanData = cleanPrefix("m.", data);
-    return FullMemberSchema.array().parse(cleanData);
+    return FullMemberSchema.array().parse(members);
   });

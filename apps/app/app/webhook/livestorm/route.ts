@@ -1,10 +1,10 @@
-import { createActivity } from "@conquest/clickhouse/activity/createActivity";
-import { createMember } from "@conquest/clickhouse/member/createMember";
-import { createProfile } from "@conquest/clickhouse/profile/createProfile";
-import { getProfile } from "@conquest/clickhouse/profile/getProfile";
+import { createActivity } from "@conquest/db/activity/createActivity";
 import { createEvent } from "@conquest/db/events/createEvent";
 import { getEvent } from "@conquest/db/events/getEvent";
 import { getIntegration } from "@conquest/db/integrations/getIntegration";
+import { createMember } from "@conquest/db/member/createMember";
+import { createProfile } from "@conquest/db/profile/createProfile";
+import { getProfile } from "@conquest/db/profile/getProfile";
 import { decrypt } from "@conquest/db/utils/decrypt";
 import { getEvent as getLivestormEvent } from "@conquest/trigger/livestorm/getEvent";
 import { getRefreshToken } from "@conquest/trigger/livestorm/getRefreshToken";

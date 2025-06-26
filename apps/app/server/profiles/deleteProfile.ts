@@ -1,4 +1,4 @@
-import { deleteProfile as _deleteProfile } from "@conquest/clickhouse/profile/deleteProfile";
+import { deleteProfile as _deleteProfile } from "@conquest/db/profile/deleteProfile";
 import { z } from "zod";
 import { protectedProcedure } from "../trpc";
 

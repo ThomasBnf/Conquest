@@ -1,24 +1,21 @@
-import { client } from "@conquest/clickhouse/client";
-import { SOURCE } from "@conquest/zod/enum/source.enum";
+import { prisma } from "@conquest/db/prisma";
+import { ProfileSchema } from "@conquest/zod/schemas/profile.schema";
 import { protectedProcedure } from "../trpc";
 
 export const listSourcesProfile = protectedProcedure.query(
   async ({ ctx: { user } }) => {
     const { workspaceId } = user;
 
-    const result = await client.query({
-      query: `
-        SELECT DISTINCT toString(attributes.source) as source
-        FROM profile FINAL
-        WHERE workspaceId = '${workspaceId}'
-        ORDER BY source ASC
-      `,
+    const profiles = await prisma.profile.findMany({
+      where: {
+        workspaceId,
+      },
     });
 
-    const { data } = (await result.json()) as {
-      data: Array<{ source: string }>;
-    };
+    const parsedProfiles = ProfileSchema.array().parse(profiles);
 
-    return SOURCE.array().parse(data.map((row) => row.source));
+    return [
+      ...new Set(parsedProfiles.map((profile) => profile.attributes.source)),
+    ];
   },
 );

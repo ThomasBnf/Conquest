@@ -4,7 +4,7 @@ export const LogSchema = z.object({
   id: z.string().uuid(),
   date: z.coerce.date(),
   pulse: z.number(),
-  levelId: z.string().nullable(),
+  level: z.number().nullable(),
   memberId: z.string(),
   workspaceId: z.string(),
 });

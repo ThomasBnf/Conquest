@@ -22,13 +22,13 @@ import { PanelRight, TriangleAlert } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { useQueryStates } from "nuqs";
 import { useEffect, useState } from "react";
-import { Percentage } from "../dashboard/percentage";
-import { PeriodFormatter } from "../dashboard/period-formatter";
 import { ExportListMembers } from "../members/import-export-members";
 import { membersColumns } from "../table/columns/members-columns";
 import { DataTable } from "../table/data-table";
 import { ColumnSettings } from "../table/settings/columnSettings";
 import { DateRangePicker } from "./date-range-picker";
+import { Percentage } from "./percentage";
+import { PeriodFormatter } from "./period-formatter";
 
 export const AtRiskMembers = () => {
   const { globalDateRange } = useDateRange();

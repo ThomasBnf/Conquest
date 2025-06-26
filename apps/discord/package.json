@@ -16,7 +16,6 @@
     "express": "^4.21.2"
   },
   "devDependencies": {
-    "@conquest/clickhouse": "workspace:*",
     "@conquest/db": "workspace:*",
     "@conquest/env": "workspace:*",
     "@conquest/trigger": "workspace:*",

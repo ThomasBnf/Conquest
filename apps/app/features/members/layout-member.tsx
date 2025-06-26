@@ -3,7 +3,7 @@
 import { HeaderSubPage } from "@/components/layouts/header-subpage";
 import { PageLayout } from "@/components/layouts/page-layout";
 import { IsLoading } from "@/components/states/is-loading";
-import { CreateActivityDialog } from "@/features/activities/create-activity-dialog";
+import { AddActivityDialog } from "@/features/activities/add-activity-dialog";
 import { MenuMember } from "@/features/members/menu-member";
 import { trpc } from "@/server/client";
 import { redirect } from "next/navigation";
@@ -38,7 +38,7 @@ export const LayoutMember = ({
       <PageLayout className="flex h-full rounded-lg border shadow-lg">
         <HeaderSubPage>
           <div className="flex items-center gap-2">
-            <CreateActivityDialog member={member} />
+            <AddActivityDialog member={member} />
             <MenuMember member={member} />
           </div>
         </HeaderSubPage>

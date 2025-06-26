@@ -1,25 +1,24 @@
-import { getActivityTypeByKey } from "@conquest/clickhouse/activity-type/getActivityTypeByKey";
-import { createActivity } from "@conquest/clickhouse/activity/createActivity";
-import { deleteActivity } from "@conquest/clickhouse/activity/deleteActivity";
-import { getActivity } from "@conquest/clickhouse/activity/getActivity";
-import { updateActivity } from "@conquest/clickhouse/activity/updateActivity";
-import { createChannel } from "@conquest/clickhouse/channel/createChannel";
-import { deleteChannel } from "@conquest/clickhouse/channel/deleteChannel";
-import { getChannel } from "@conquest/clickhouse/channel/getChannel";
-import { updateChannel } from "@conquest/clickhouse/channel/updateChannel";
-import { client as clickhouseClient } from "@conquest/clickhouse/client";
-import { createMember } from "@conquest/clickhouse/member/createMember";
-import { deleteMember } from "@conquest/clickhouse/member/deleteMember";
-import { getMember } from "@conquest/clickhouse/member/getMember";
-import { updateMember } from "@conquest/clickhouse/member/updateMember";
-import { createProfile } from "@conquest/clickhouse/profile/createProfile";
-import { deleteProfile } from "@conquest/clickhouse/profile/deleteProfile";
-import { getProfile } from "@conquest/clickhouse/profile/getProfile";
-import { updateProfile } from "@conquest/clickhouse/profile/updateProfile";
+import { getActivityType } from "@conquest/db/activity-type/getActivityType";
+import { createActivity } from "@conquest/db/activity/createActivity";
+import { deleteActivity } from "@conquest/db/activity/deleteActivity";
+import { getActivity } from "@conquest/db/activity/getActivity";
+import { updateActivity } from "@conquest/db/activity/updateActivity";
+import { createChannel } from "@conquest/db/channel/createChannel";
+import { deleteChannel } from "@conquest/db/channel/deleteChannel";
+import { getChannel } from "@conquest/db/channel/getChannel";
+import { updateChannel } from "@conquest/db/channel/updateChannel";
 import { getIntegration } from "@conquest/db/integrations/getIntegration";
+import { createMember } from "@conquest/db/member/createMember";
+import { deleteMember } from "@conquest/db/member/deleteMember";
+import { getMember } from "@conquest/db/member/getMember";
+import { updateMember } from "@conquest/db/member/updateMember";
 import { prisma } from "@conquest/db/prisma";
+import { createProfile } from "@conquest/db/profile/createProfile";
+import { deleteProfile } from "@conquest/db/profile/deleteProfile";
+import { getProfile } from "@conquest/db/profile/getProfile";
+import { updateProfile } from "@conquest/db/profile/updateProfile";
+import { deleteTag } from "@conquest/db/tags/deleteTag";
 import { triggerWorkflows } from "@conquest/trigger/tasks/triggerWorkflows";
-import { ActivitySchema } from "@conquest/zod/schemas/activity.schema";
 import {
   ActivityType,
   ChannelType,
@@ -487,7 +486,7 @@ client.on(Events.ThreadCreate, async (thread) => {
   if (activityWithType) {
     const { activityType, ...activity } = activityWithType;
 
-    const newActivityType = await getActivityTypeByKey({
+    const newActivityType = await getActivityType({
       key: "discord:thread",
       workspaceId,
     });
@@ -497,7 +496,7 @@ client.on(Events.ThreadCreate, async (thread) => {
     return await updateActivity({
       ...activity,
       title: name,
-      activityTypeId: newActivityType?.id,
+      activityTypeKey: newActivityType.key,
     });
   }
 
@@ -532,38 +531,23 @@ client.on(Events.ThreadDelete, async (thread) => {
   const { workspaceId } = integration;
 
   try {
-    const result = await clickhouseClient.query({
-      query: `
-        SELECT * FROM activity
-        WHERE replyTo = '${id}'
-        AND workspaceId = '${workspaceId}'
-      `,
+    const activities = await prisma.activity.findMany({
+      where: {
+        replyTo: id,
+        workspaceId,
+      },
     });
-
-    const { data } = await result.json();
-    const activities = ActivitySchema.array().parse(data);
 
     for (const activity of activities) {
       const { externalId } = activity;
 
-      await clickhouseClient.query({
-        query: `
-          ALTER TABLE activity
-          DELETE WHERE reactTo = '${externalId}'
-          OR replyTo = '${externalId}'
-          AND workspaceId = '${workspaceId}'
-        `,
+      await prisma.activity.deleteMany({
+        where: {
+          OR: [{ reactTo: externalId }, { replyTo: externalId }],
+          workspaceId,
+        },
       });
     }
-
-    await clickhouseClient.query({
-      query: `
-        ALTER TABLE activity
-        DELETE WHERE reactTo = '${id}'
-        OR replyTo = '${id}'
-        AND workspaceId = '${workspaceId}'
-      `,
-    });
 
     await deleteActivity({
       externalId: id,
@@ -644,33 +628,7 @@ client.on(Events.GuildRoleDelete, async (role) => {
   const { workspaceId } = integration;
 
   try {
-    const tag = await prisma.tag.findFirst({
-      where: {
-        externalId: id,
-        workspaceId,
-      },
-    });
-
-    if (!tag) return;
-
-    await prisma.tag.delete({
-      where: {
-        externalId_workspaceId: {
-          externalId: id,
-          workspaceId,
-        },
-      },
-    });
-
-    await clickhouseClient.query({
-      query: `
-        ALTER TABLE member
-        UPDATE tags = arrayFilter(x -> x != '${tag.id}', tags)
-        WHERE workspaceId = '${workspaceId}'
-        AND has(tags, '${tag.id}')
-      `,
-      format: "JSON",
-    });
+    await deleteTag({ externalId: id, workspaceId });
   } catch (error) {
     console.error("GuildRoleDelete", error);
   }
@@ -743,14 +701,13 @@ client.on(Events.MessageReactionRemove, async (reaction, user) => {
   if (!profile) return;
 
   try {
-    await clickhouseClient.query({
-      query: `
-        ALTER TABLE activity
-        DELETE WHERE reactTo = '${messageId}'
-        AND message = '${emoji.name}'
-        AND memberId = '${profile.memberId}'
-        AND workspaceId = '${workspaceId}'
-      `,
+    await prisma.activity.deleteMany({
+      where: {
+        reactTo: messageId,
+        message: emoji.name,
+        memberId: profile.memberId,
+        workspaceId,
+      },
     });
   } catch (error) {
     console.error("MessageReactionRemove", error);

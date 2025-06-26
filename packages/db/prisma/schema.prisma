@@ -1,6 +1,5 @@
 generator client {
-    provider        = "prisma-client-js"
-    previewFeatures = ["relationJoins"]
+    provider = "prisma-client-js"
 }
 
 datasource db {
@@ -28,6 +27,59 @@ model Account {
     @@unique([provider, providerAccountId])
 }
 
+model Activity {
+    id              String       @id @default(uuid())
+    externalId      String?
+    activityTypeKey String
+    activityType    ActivityType @relation(fields: [activityTypeKey, workspaceId], references: [key, workspaceId], onDelete: Cascade)
+    title           String?
+    message         String?
+    replyTo         String?
+    reactTo         String?
+    inviteTo        String?
+    sentimentScore  Float?
+    sentiment       String?
+    keywords        String[]
+    category        String?
+    topics          String[]
+    source          SOURCE
+    channelId       String?
+    channel         Channel?     @relation(fields: [channelId], references: [id])
+    eventId         String?
+    event           Event?       @relation(fields: [eventId], references: [id])
+    memberId        String
+    member          Member       @relation(fields: [memberId], references: [id], onDelete: Cascade)
+
+    workspaceId String
+    workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@unique([externalId, workspaceId])
+    @@index([workspaceId, createdAt(desc)])
+    @@index([memberId, createdAt(desc)])
+}
+
+model ActivityType {
+    key         String
+    name        String
+    source      SOURCE
+    points      Int
+    conditions  Json[]
+    deletable   Boolean   @default(false)
+    workspaceId String
+    workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+    activities Activity[]
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@id([key, workspaceId])
+    @@index([key, workspaceId])
+}
+
 model ApiKey {
     id    String @id @default(uuid())
     name  String
@@ -39,6 +91,46 @@ model ApiKey {
     createdAt DateTime @default(now())
 
     @@index([id])
+    @@index([workspaceId])
+}
+
+model Channel {
+    id          String    @id @default(uuid())
+    externalId  String    @unique
+    name        String
+    source      SOURCE
+    workspaceId String
+    workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+    createdAt DateTime   @default(now())
+    updatedAt DateTime   @updatedAt
+    Activity  Activity[]
+
+    @@index([externalId, workspaceId])
+    @@index([source, workspaceId])
+}
+
+model Company {
+    id           String    @id @default(uuid())
+    name         String
+    industry     String?
+    address      String?
+    domain       String?
+    employees    Int?
+    foundedAt    DateTime?
+    logoUrl      String?
+    tags         String[]  @default([])
+    source       SOURCE
+    customFields Json[]
+    workspaceId  String
+    workspace    Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    Member    Member[]
+    Tag       Tag[]
+
+    @@index([workspaceId, name, createdAt(desc)])
     @@index([workspaceId])
 }
 
@@ -58,7 +150,7 @@ model CustomField {
 
 model Duplicate {
     id          String    @id @default(uuid())
-    memberIds   String[]
+    memberIds   String[]  @default([])
     reason      REASON
     state       STATE
     totalPulse  Int       @default(0)
@@ -81,6 +173,8 @@ model Event {
 
     workspaceId String
     workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+    activities Activity[]
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
@@ -122,6 +216,23 @@ model Invitation {
     @@index([workspaceId])
 }
 
+model Level {
+    number      Int
+    name        String
+    from        Int
+    to          Int?
+    workspaceId String
+    workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+    members Member[]
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@id([number, workspaceId])
+    @@index([number, workspaceId])
+}
+
 model List {
     id           String @id @default(uuid())
     emoji        String
@@ -137,6 +248,82 @@ model List {
 
     @@index([createdBy, workspaceId])
     @@index([id, workspaceId])
+}
+
+model Log {
+    id          String    @id @default(uuid())
+    date        DateTime
+    pulse       Int
+    level       Int?
+    memberId    String
+    member      Member    @relation(fields: [memberId], references: [id], onDelete: Cascade)
+    workspaceId String
+    workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@index([memberId, date(desc)])
+}
+
+model Member {
+    id                  String    @id @default(uuid())
+    firstName           String
+    lastName            String
+    primaryEmail        String
+    emails              String[]  @default([])
+    phones              String[]  @default([])
+    jobTitle            String?
+    avatarUrl           String?
+    country             String?
+    language            String?
+    tags                String[]  @default([])
+    linkedinUrl         String?
+    levelNumber         Int?
+    level               Level?    @relation(fields: [levelNumber, workspaceId], references: [number, workspaceId])
+    pulse               Int       @default(0)
+    source              SOURCE
+    companyId           String?
+    company             Company?  @relation(fields: [companyId], references: [id], onDelete: SetNull)
+    firstActivity       DateTime?
+    lastActivity        DateTime?
+    isStaff             Boolean   @default(false)
+    customFields        Json      @default("[]")
+    atRiskMember        Boolean?  @default(false)
+    potentialAmbassador Boolean?  @default(false)
+    workspaceId         String
+    workspace           Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+    activities Activity[]
+    logs       Log[]
+    profiles   Profile[]
+    Tags       Tag[]
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@index([workspaceId, levelNumber(desc), pulse(desc), id(desc)])
+    @@index([workspaceId, createdAt(desc)])
+    @@index([workspaceId, lastActivity(desc)])
+    @@index([workspaceId, firstActivity(desc)])
+}
+
+model Profile {
+    id          String    @id @default(uuid())
+    externalId  String
+    attributes  Json
+    memberId    String
+    member      Member    @relation(fields: [memberId], references: [id], onDelete: Cascade)
+    workspaceId String
+    workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@unique([externalId, workspaceId])
+    @@index([externalId, workspaceId])
+    @@index([memberId, workspaceId])
+    @@index([workspaceId])
 }
 
 model Run {
@@ -176,6 +363,10 @@ model Tag {
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
+    Company   Company? @relation(fields: [companyId], references: [id])
+    companyId String?
+    Member    Member?  @relation(fields: [memberId], references: [id])
+    memberId  String?
 
     @@unique([externalId, workspaceId])
     @@index([id, workspaceId])
@@ -284,21 +475,29 @@ model Workspace {
     trialEnd         DateTime?
     isPastDue        DateTime?
 
+    activities       Activity[]
+    activityTypes    ActivityType[]
     apiKeys          ApiKey[]
-    events           Event[]
+    channels         Channel[]
+    companies        Company[]
     customFields     CustomField[]
+    duplicates       Duplicate[]
+    events           Event[]
     integrations     Integration[]
     invitations      Invitation[]
+    levels           Level[]
     lists            List[]
+    logs             Log[]
+    members          Member[]
     tags             Tag[]
     tasks            Task[]
+    userInWorkspaces UserInWorkspace[]
     users            User[]
     workflows        Workflow[]
-    duplicates       Duplicate[]
-    userInWorkspaces UserInWorkspace[]
 
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+    createdAt DateTime  @default(now())
+    updatedAt DateTime  @updatedAt
+    Profile   Profile[]
 
     @@index([id])
 }

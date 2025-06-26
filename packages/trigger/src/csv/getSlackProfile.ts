@@ -1,4 +1,4 @@
-import { updateProfile } from "@conquest/clickhouse/profile/updateProfile";
+import { updateProfile } from "@conquest/db/profile/updateProfile";
 import { Profile } from "@conquest/zod/schemas/profile.schema";
 import type { WebClient } from "@slack/web-api";
 

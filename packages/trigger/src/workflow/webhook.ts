@@ -1,12 +1,12 @@
 import { replaceVariables } from "@conquest/utils/replace-variables";
-import { MemberWithLevel } from "@conquest/zod/schemas/member.schema";
+import { Member } from "@conquest/zod/schemas/member.schema";
 import { Node, NodeWebhookSchema } from "@conquest/zod/schemas/node.schema";
 
 import { nodeStatus } from "./nodeStatus";
 
 type Props = {
   node: Node;
-  member: MemberWithLevel;
+  member: Member;
 };
 
 export const webhook = async ({ node, member }: Props): Promise<Node> => {

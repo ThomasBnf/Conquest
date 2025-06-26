@@ -95,7 +95,7 @@ export const membersColumns = (): Column<FullMember>[] => {
           table={table}
         />
       ),
-      cell: ({ item }) => <p className="truncate">{item.company}</p>,
+      cell: ({ item }) => <p className="truncate">{item.company?.name}</p>,
       width: 250,
     },
     {
@@ -124,9 +124,9 @@ export const membersColumns = (): Column<FullMember>[] => {
       cell: ({ item }) => (
         <Badge variant="outline">
           <Level size={18} />
-          {item.level ? (
+          {item.levelNumber ? (
             <p>
-              {item.level} • {item.levelName}
+              {item.levelNumber} • {item.level?.name}
             </p>
           ) : (
             <p className="text-muted-foreground">No level</p>

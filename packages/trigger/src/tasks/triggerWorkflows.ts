@@ -1,5 +1,5 @@
 import { prisma } from "@conquest/db/prisma";
-import { MemberWithLevelSchema } from "@conquest/zod/schemas/member.schema";
+import { MemberSchema } from "@conquest/zod/schemas/member.schema";
 import { TriggerSchema } from "@conquest/zod/schemas/node.schema";
 import { WorkflowSchema } from "@conquest/zod/schemas/workflow.schema";
 import { logger, schemaTask } from "@trigger.dev/sdk/v3";
@@ -11,7 +11,7 @@ export const triggerWorkflows = schemaTask({
   machine: "small-2x",
   schema: z.object({
     trigger: TriggerSchema,
-    member: MemberWithLevelSchema,
+    member: MemberSchema,
   }),
   run: async ({ trigger, member }) => {
     const { workspaceId } = member;

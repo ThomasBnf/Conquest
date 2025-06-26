@@ -101,27 +101,6 @@ export const plansTable: PlanTable[] = [
       activityTypes: "Unlimited",
     },
   },
-  // {
-  //   name: "CONTRIBUTOR",
-  //   priceMonthly: 299,
-  //   priceAnnually: 254,
-  //   seats: 5,
-  //   members: "Up to 100,000",
-  //   integrations: {
-  //     count: 5,
-  //     community: true,
-  //     github: true,
-  //     api: true,
-  //     socials: true,
-  //     events: true,
-  //   },
-  //   features: {
-  //     memberLevel: true,
-  //     tags: "Unlimited",
-  //     lists: "Unlimited",
-  //     activityTypes: "Unlimited",
-  //   },
-  // },
   {
     name: "AMBASSADOR",
     priceMonthly: "Custom",

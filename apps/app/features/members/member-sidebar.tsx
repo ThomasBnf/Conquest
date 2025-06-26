@@ -86,17 +86,15 @@ export const MemberSidebar = ({ member, profiles }: Props) => {
         </div>
         <Separator />
         <div className="space-y-4 p-4">
-          <FieldCard label="Tags">
-            <TagPicker
-              variant="ghost"
-              tags={member.tags}
-              onUpdate={(value) => onUpdateMember("tags", value)}
-              className={cn(
-                "text-muted-foreground",
-                member.tags.length > 0 ? "min-h-8" : "-ml-[7px]",
-              )}
-            />
-          </FieldCard>
+          <TagPicker
+            variant="ghost"
+            tags={member.tags}
+            onUpdate={(value) => onUpdateMember("tags", value)}
+            className={cn(
+              "min-h-8 text-muted-foreground",
+              member.tags.length === 0 ? "-ml-[7px]" : "",
+            )}
+          />
         </div>
         <Separator />
         <ProfilesParser profiles={profiles} />

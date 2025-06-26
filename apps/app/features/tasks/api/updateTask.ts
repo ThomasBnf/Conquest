@@ -1,5 +1,4 @@
 import { protectedProcedure } from "@/server/trpc";
-import { client } from "@conquest/clickhouse/client";
 import { prisma } from "@conquest/db/prisma";
 import { TaskSchema } from "@conquest/zod/schemas/task.schema";
 import { z } from "zod";

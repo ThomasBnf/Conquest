@@ -30,7 +30,7 @@ export const MenuLevel = ({ level }: Props) => {
   });
 
   const onDeleteLevel = async () => {
-    await mutateAsync({ id: level.id });
+    await mutateAsync({ number: level.number });
     toast.error("Level deleted");
   };
 

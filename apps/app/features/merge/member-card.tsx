@@ -101,7 +101,7 @@ export const MemberCard = ({ memberChecked, onCheckChange }: Props) => {
                     <Dialog>
                       <DialogTrigger asChild className="cursor-zoom-in">
                         <Avatar className="size-9">
-                          <AvatarImage src={avatarUrl} />
+                          <AvatarImage src={avatarUrl ?? ""} />
                           <AvatarFallback>
                             {firstName?.charAt(0).toUpperCase()}
                             {lastName?.charAt(0).toUpperCase()}
@@ -114,7 +114,7 @@ export const MemberCard = ({ memberChecked, onCheckChange }: Props) => {
                         </DialogHeader>
                         <DialogBody className="mb-0.5 flex items-center justify-center">
                           <Avatar className="size-96">
-                            <AvatarImage src={avatarUrl} />
+                            <AvatarImage src={avatarUrl ?? ""} />
                             <AvatarFallback>
                               {firstName?.charAt(0).toUpperCase()}
                               {lastName?.charAt(0).toUpperCase()}

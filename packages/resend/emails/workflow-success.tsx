@@ -1,5 +1,5 @@
 import { env } from "@conquest/env";
-import { MemberWithLevel } from "@conquest/zod/schemas/member.schema";
+import { Member } from "@conquest/zod/schemas/member.schema";
 import { Workflow } from "@conquest/zod/schemas/workflow.schema";
 import {
   Body,
@@ -17,7 +17,7 @@ import { Logo } from "../components/logo";
 
 type Props = {
   slug: string;
-  member: MemberWithLevel;
+  member: Member;
   workflow: Workflow;
   runId: string;
 };

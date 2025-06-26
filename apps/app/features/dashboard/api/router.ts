@@ -13,8 +13,8 @@ import { totalMembers } from "./total-members";
 
 export const dashboardRouter = router({
   totalMembers,
-  activeMembers,
   newMembers,
+  activeMembers,
   engagementRate,
   activityTypesByChannel,
   leaderboard,

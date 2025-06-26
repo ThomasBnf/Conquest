@@ -1,4 +1,4 @@
-import { listLevels as _listLevels } from "@conquest/clickhouse/level/listLevels";
+import { listLevels as _listLevels } from "@conquest/db/level/listLevels";
 import { protectedProcedure } from "../trpc";
 
 export const listLevels = protectedProcedure.query(

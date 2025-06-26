@@ -1,4 +1,3 @@
-import { client } from "@conquest/clickhouse/client";
 import { deleteManyEvents } from "@conquest/db/events/deleteManyEvents";
 import { prisma } from "@conquest/db/prisma";
 import { decrypt } from "@conquest/db/utils/decrypt";
@@ -67,16 +66,6 @@ export const deleteIntegration = schemaTask({
       } catch (error) {
         console.error("Erreur lors de la suppression du repository:", error);
       }
-
-      await client.query({
-        query: `
-          ALTER TABLE profile DELETE
-          WHERE memberId IN (
-            SELECT id FROM member FINAL
-            WHERE source = '${source}'
-            AND workspaceId = '${workspaceId}'
-          );`,
-      });
     }
 
     if (source === "Livestorm") {
@@ -114,72 +103,32 @@ export const deleteIntegration = schemaTask({
       where: { source, workspaceId },
     });
 
-    logger.info("ALTER TABLE activity DELETE");
-
-    await client.query({
-      query: `
-        ALTER TABLE activity DELETE 
-        WHERE source = '${source}'
-        AND workspaceId = '${workspaceId}'`,
+    await prisma.activityType.deleteMany({
+      where: {
+        source,
+        workspaceId,
+      },
     });
 
-    logger.info("ALTER TABLE log DELETE");
-
-    await client.query({
-      query: `
-        ALTER TABLE log DELETE 
-        WHERE memberId IN (
-          SELECT id FROM member FINAL
-          WHERE source = '${source}'
-          AND workspaceId = '${workspaceId}'
-        );`,
+    await prisma.channel.deleteMany({
+      where: {
+        source,
+        workspaceId,
+      },
     });
 
-    logger.info("ALTER TABLE activityType DELETE");
-
-    await client.query({
-      query: `
-      ALTER TABLE activityType DELETE 
-      WHERE source = '${source}'
-      AND workspaceId = '${workspaceId}'`,
+    await prisma.company.deleteMany({
+      where: {
+        source,
+        workspaceId,
+      },
     });
 
-    logger.info("ALTER TABLE channel DELETE");
-
-    await client.query({
-      query: `
-        ALTER TABLE channel DELETE
-        WHERE source = '${source}'
-        AND workspaceId = '${workspaceId}'`,
+    await prisma.member.deleteMany({
+      where: {
+        source,
+        workspaceId,
+      },
     });
-
-    logger.info("ALTER TABLE company DELETE");
-
-    await client.query({
-      query: `
-        ALTER TABLE company DELETE
-        WHERE source = '${source}'
-        AND workspaceId = '${workspaceId}'`,
-    });
-
-    logger.info("ALTER TABLE member DELETE");
-
-    await client.query({
-      query: `
-        ALTER TABLE member DELETE
-        WHERE source = '${source}'
-        AND workspaceId = '${workspaceId}'`,
-    });
-
-    logger.info("ALTER TABLE profile DELETE");
-
-    await client.query({
-      query: `
-        ALTER TABLE profile DELETE
-        WHERE JSONExtractString(CAST(attributes AS String), 'source') = '${source}'
-        AND workspaceId = '${workspaceId}'`,
-    });
-
-    logger.info("ALTER TABLE tag DELETE");
   },
 });

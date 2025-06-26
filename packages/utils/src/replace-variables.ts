@@ -1,10 +1,10 @@
-import { listChannels } from "@conquest/clickhouse/channel/listChannels";
-import { getProfileBySource } from "@conquest/clickhouse/profile/getProfileBySource";
-import { Member, MemberWithLevel } from "@conquest/zod/schemas/member.schema";
+import { listChannels } from "@conquest/db/channel/listChannels";
+import { getProfileBySource } from "@conquest/db/profile/getProfileBySource";
+import { Member } from "@conquest/zod/schemas/member.schema";
 
 type Props = {
   message: string | undefined;
-  member: Member | MemberWithLevel;
+  member: Member;
   source?: "Slack" | "Discord";
 };
 
@@ -34,8 +34,9 @@ export const replaceVariables = async ({ message, member, source }: Props) => {
 
   if (source && processedMessage.includes("{@mention}")) {
     const profile = await getProfileBySource({
-      source,
       memberId: member.id,
+      source,
+      workspaceId,
     });
 
     if (profile?.externalId) {
@@ -53,6 +54,8 @@ export const replaceVariables = async ({ message, member, source }: Props) => {
       JSON.stringify(member, null, 2),
     );
   }
+
+  //TO DO REPLACE WITH LEVEL
 
   const variables = {
     "{firstName}": member.firstName,

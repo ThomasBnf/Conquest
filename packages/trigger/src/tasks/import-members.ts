@@ -1,5 +1,5 @@
-import { client } from "@conquest/clickhouse/client";
-import { getMember } from "@conquest/clickhouse/member/getMember";
+import { getMember } from "@conquest/db/member/getMember";
+import { prisma } from "@conquest/db/prisma";
 import { getWorkspace } from "@conquest/db/workspaces/getWorkspace";
 import { resend } from "@conquest/resend";
 import ImportFailure from "@conquest/resend/emails/import-failure";
@@ -99,9 +99,7 @@ export const importMembers = schemaTask({
           companyId: _company?.id ?? existingMember.companyId,
           emails: _emails.filter(Boolean) as string[],
           phones: _phones.filter(Boolean) as string[],
-          customFields: {
-            fields: [...(existingMember.customFields?.fields ?? []), ...fields],
-          },
+          customFields: [...existingMember.customFields, ...fields],
           updatedAt: new Date(),
         };
 
@@ -119,7 +117,7 @@ export const importMembers = schemaTask({
         });
 
         if (existingMember) {
-          const updatedMember = {
+          const updatedMember: Member = {
             ...existingMember,
             firstName: firstName ?? existingMember.firstName,
             lastName: lastName ?? existingMember.lastName,
@@ -132,12 +130,7 @@ export const importMembers = schemaTask({
             companyId: _company?.id ?? existingMember.companyId,
             emails: _emails.filter(Boolean) as string[],
             phones: _phones.filter(Boolean) as string[],
-            customFields: {
-              fields: [
-                ...(existingMember.customFields?.fields ?? []),
-                ...fields,
-              ],
-            },
+            customFields: [...existingMember.customFields, ...fields],
             updatedAt: new Date(),
           };
 
@@ -149,7 +142,7 @@ export const importMembers = schemaTask({
 
           updatedMembers.push(updatedMember);
         } else {
-          const newMember = {
+          const newMember: Member = {
             id: randomUUID(),
             firstName: firstName ?? "",
             lastName: lastName ?? "",
@@ -163,11 +156,11 @@ export const importMembers = schemaTask({
             tags: _tags.map((tag) => tag.id),
             companyId: _company?.id ?? null,
             linkedinUrl: linkedinUrl ?? "",
-            levelId: null,
+            levelNumber: null,
             pulse: 0,
             source: "Manual" as const,
             isStaff: false,
-            customFields: { fields },
+            customFields: fields,
             atRiskMember: false,
             potentialAmbassador: false,
             firstActivity: null,
@@ -192,18 +185,14 @@ export const importMembers = schemaTask({
     logger.info("updatedMembers", { count: updatedMembers.length });
 
     if (importedMembers.length > 0) {
-      await client.insert({
-        table: "member",
-        values: importedMembers,
-        format: "JSON",
+      await prisma.member.createMany({
+        data: importedMembers,
       });
     }
 
     if (updatedMembers.length > 0) {
-      await client.insert({
-        table: "member",
-        values: updatedMembers,
-        format: "JSON",
+      await prisma.member.createMany({
+        data: updatedMembers,
       });
     }
 

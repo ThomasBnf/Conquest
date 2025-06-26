@@ -77,11 +77,11 @@ export const FinalMemberCard = ({
                         className="flex items-center gap-2"
                       >
                         <RadioGroupItem
-                          value={avatarUrl}
+                          value={avatarUrl ?? ""}
                           checked={finalMember?.avatarUrl === avatarUrl}
                         />
                         <Avatar className="size-9">
-                          <AvatarImage src={avatarUrl} />
+                          <AvatarImage src={avatarUrl ?? ""} />
                           <AvatarFallback>
                             <AvatarFallback>
                               {firstName?.charAt(0).toUpperCase()}
@@ -233,7 +233,7 @@ export const FinalMemberCard = ({
                   {uniqueJobTitles.map((member) => {
                     const { id, jobTitle } = member;
 
-                    if (jobTitle === "") return;
+                    if (!jobTitle) return;
 
                     return (
                       <div
@@ -274,7 +274,7 @@ export const FinalMemberCard = ({
                   {uniqueLinkedinUrls.map((member) => {
                     const { id, linkedinUrl } = member;
 
-                    if (linkedinUrl === "") return;
+                    if (!linkedinUrl) return;
 
                     return (
                       <div
@@ -350,7 +350,7 @@ export const FinalMemberCard = ({
                   {uniqueCountries.map((member) => {
                     const { id, country } = member;
 
-                    if (country === "") return;
+                    if (!country) return;
 
                     return (
                       <div
@@ -391,7 +391,7 @@ export const FinalMemberCard = ({
                   {uniqueLanguages.map((member) => {
                     const { id, language } = member;
 
-                    if (language === "") return;
+                    if (!language) return;
 
                     return (
                       <div

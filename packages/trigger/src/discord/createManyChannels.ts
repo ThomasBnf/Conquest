@@ -1,4 +1,4 @@
-import { createChannel } from "@conquest/clickhouse/channel/createChannel";
+import { createChannel } from "@conquest/db/channel/createChannel";
 import type { Channel } from "@conquest/zod/schemas/channel.schema";
 import type { Integration } from "@conquest/zod/schemas/integration.schema";
 import type { APIGuildCategoryChannel } from "discord-api-types/v10";

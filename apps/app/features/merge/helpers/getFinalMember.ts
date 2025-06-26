@@ -1,4 +1,4 @@
-import { getOldestMember } from "@conquest/clickhouse/helpers/getOldestMember";
+import { getOldestMember } from "@conquest/db/helpers/getOldestMember";
 import { Member } from "@conquest/zod/schemas/member.schema";
 
 type Props = {

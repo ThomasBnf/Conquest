@@ -1,4 +1,4 @@
-import { mergeMembers as _mergeMembers } from "@conquest/clickhouse/member/mergeMembers";
+import { mergeMembers as _mergeMembers } from "@conquest/db/member/mergeMembers";
 import { DuplicateSchema } from "@conquest/zod/schemas/duplicate.schema";
 import { MemberSchema } from "@conquest/zod/schemas/member.schema";
 import { z } from "zod";

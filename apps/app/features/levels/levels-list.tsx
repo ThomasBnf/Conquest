@@ -44,7 +44,7 @@ export const LevelsList = () => {
           </TableHeader>
           <TableBody className="divide-y">
             {filteredLevels.map((level) => (
-              <TableRow key={level.id}>
+              <TableRow key={level.number}>
                 <TableCell className="font-medium">{level.name}</TableCell>
                 <TableCell className="font-mono">{level.number}</TableCell>
                 <TableCell className="text-muted-foreground">

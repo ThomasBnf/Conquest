@@ -28,7 +28,7 @@ export const MembersPage = () => {
 
   const { data, isLoading, fetchNextPage } = trpc.members.list.useInfiniteQuery(
     { search, id, desc, groupFilters },
-    { getNextPageParam: (_, allPages) => allPages.length * 25 },
+    { getNextPageParam: (_, allPages) => allPages.length * 50 },
   );
 
   const { data: count } = trpc.members.count.useQuery({
@@ -37,7 +37,7 @@ export const MembersPage = () => {
   });
 
   const members = data?.pages.flat();
-  const hasNextPage = data?.pages.at(-1)?.length === 25;
+  const hasNextPage = data?.pages.at(-1)?.length === 50;
 
   const table = useTable({
     columns,

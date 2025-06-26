@@ -1,4 +1,4 @@
-import { createManyActivityTypes as _createManyActivityTypes } from "@conquest/clickhouse/activity-type/createManyActivityTypes";
+import { createManyActivityTypes as _createManyActivityTypes } from "@conquest/db/activity-type/createManyActivityTypes";
 import { SOURCE } from "@conquest/zod/enum/source.enum";
 import { ActivityTypeRuleSchema } from "@conquest/zod/schemas/activity-type.schema";
 import { z } from "zod";
@@ -13,9 +13,7 @@ export const createManyActivityTypes = protectedProcedure
           source: SOURCE,
           key: z.string(),
           points: z.number(),
-          conditions: z.object({
-            rules: ActivityTypeRuleSchema.array(),
-          }),
+          conditions: z.array(ActivityTypeRuleSchema),
           deletable: z.boolean(),
         }),
       ),

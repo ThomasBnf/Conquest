@@ -21,16 +21,18 @@ export const CompaniesPage = () => {
   const [{ search, id, desc }, setParams] = params;
   const columns = companiesColumns();
 
-  const { data, isLoading, fetchNextPage } =
+  const { data, isLoading, failureReason, fetchNextPage } =
     trpc.companies.list.useInfiniteQuery(
       { search, id, desc },
-      { getNextPageParam: (_, allPages) => allPages.length * 25 },
+      { getNextPageParam: (_, allPages) => allPages.length * 50 },
     );
+
+  console.dir(failureReason, { depth: null });
 
   const { data: count } = trpc.companies.count.useQuery({ search });
 
   const companies = data?.pages.flat();
-  const hasNextPage = data?.pages.at(-1)?.length === 25;
+  const hasNextPage = data?.pages.at(-1)?.length === 50;
 
   const table = useTable({
     columns,

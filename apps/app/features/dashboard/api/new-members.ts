@@ -1,9 +1,10 @@
 import { protectedProcedure } from "@/server/trpc";
-import { client } from "@conquest/clickhouse/client";
+import { prisma } from "@conquest/db/prisma";
 import { SOURCE, Source } from "@conquest/zod/enum/source.enum";
-import { differenceInDays, format, subDays } from "date-fns";
+import { ProfileAttributesSchema } from "@conquest/zod/schemas/profile.schema";
+import { addDays, differenceInDays, endOfDay, subDays } from "date-fns";
 import z from "zod";
-import { getUniquePeriods } from "../helpers/getUniquePeriods";
+import { listDays } from "../helpers/listDays";
 
 export const newMembers = protectedProcedure
   .input(
@@ -24,101 +25,107 @@ export const newMembers = protectedProcedure
 
     if (!from || !to) {
       return {
-        profiles: [],
         total: 0,
         growthRate: 0,
+        weeks: [],
       };
     }
 
-    const formattedFrom = format(from, "yyyy-MM-dd HH:mm:ss");
-    const formattedTo = format(to, "yyyy-MM-dd HH:mm:ss");
-    const days = differenceInDays(to, from);
-    const isWeekly = days > 30;
+    const daysCount = differenceInDays(to, from);
+    const previousFrom = subDays(from, daysCount);
+    const previousTo = subDays(from, 1);
 
-    const previousFrom = format(subDays(from, days), "yyyy-MM-dd HH:mm:ss");
-    const previousTo = format(subDays(from, 1), "yyyy-MM-dd HH:mm:ss");
+    const [total, previousTotal, profiles] = await Promise.all([
+      prisma.member.count({
+        where: {
+          workspaceId,
+          createdAt: {
+            gte: from,
+            lte: to,
+          },
+        },
+      }),
+      prisma.member.count({
+        where: {
+          workspaceId,
+          createdAt: {
+            gte: previousFrom,
+            lte: previousTo,
+          },
+        },
+      }),
+      prisma.profile.findMany({
+        where: {
+          workspaceId,
+          createdAt: {
+            gte: from,
+            lte: to,
+          },
+          OR: sources.map((source) => ({
+            attributes: {
+              path: ["source"],
+              equals: source,
+            },
+          })),
+        },
+        select: {
+          memberId: true,
+          attributes: true,
+          createdAt: true,
+        },
+      }),
+    ]);
 
-    const result = await client.query({
-      query: `
-        WITH period_data AS (
-          SELECT
-            ${isWeekly ? "toStartOfWeek(createdAt)" : "toDate(createdAt)"} AS week,
-            JSONExtractString(toString(attributes), 'source') AS source,
-            count() AS count
-          FROM profile FINAL
-          WHERE createdAt >= '${formattedFrom}'
-            AND createdAt <= '${formattedTo}'
-            AND workspaceId = '${workspaceId}'
-            AND JSONExtractString(toString(attributes), 'source') IN (${sources.map((source) => `'${source}'`).join(", ")})
-          GROUP BY week, source
-        ),
-        current_total AS (
-          SELECT count() as total
-          FROM member FINAL
-          WHERE workspaceId = '${workspaceId}'
-            AND createdAt >= '${formattedFrom}'
-            AND createdAt <= '${formattedTo}'
-        ),
-        previous_total AS (
-          SELECT count() as total
-          FROM member FINAL
-          WHERE workspaceId = '${workspaceId}'
-            AND createdAt >= '${previousFrom}'
-            AND createdAt <= '${previousTo}'
-        )
-        SELECT 
-          period_data.*,
-          (SELECT total FROM current_total) AS currentTotal,
-          (SELECT total FROM previous_total) AS previousTotal
-        FROM period_data
-        ORDER BY week ASC
-      `,
-    });
+    const days = listDays(from, to);
 
-    const { data } = await result.json<{
-      week: string;
-      source: string;
-      count: number;
-      currentTotal: number;
-      previousTotal: number;
-    }>();
+    const profilesBySource = profiles.reduce(
+      (acc, profile) => {
+        const attributes = ProfileAttributesSchema.parse(profile.attributes);
+        const source = attributes.source;
 
-    const periods = getUniquePeriods(from, to);
+        if (source && sources.includes(source)) {
+          acc[source] = acc[source] || [];
+          acc[source].push(profile);
+        }
+        return acc;
+      },
+      {} as Record<string, typeof profiles>,
+    );
 
-    const currentTotal = Number(data[0]?.currentTotal) || 0;
-    const previousTotal = Number(data[0]?.previousTotal) || 0;
-    const growthRate =
-      previousTotal > 0
-        ? ((currentTotal - previousTotal) / previousTotal) * 100
-        : 0;
-
-    const profiles: Array<{ week: string } & Record<Source, number>> = [];
-    const cumulativeTotals = {} as Record<Source, number>;
-
-    for (const source of sources) {
-      cumulativeTotals[source] = 0;
-    }
-
-    for (const period of periods) {
-      const periodData: { week: string } & Record<Source, number> = {
-        week: period,
-      } as { week: string } & Record<Source, number>;
+    const chartData = days.map((day) => {
+      const dayData: Partial<Record<Source, number>> = {};
 
       for (const source of sources) {
-        const sourceData = data.find(
-          (d) => d.week === period && d.source === source,
-        );
-        const count = Number(sourceData?.count) || 0;
-        cumulativeTotals[source] += count;
-        periodData[source] = cumulativeTotals[source];
+        const sourceProfiles = profilesBySource[source] || [];
+
+        const dayIndex = days.indexOf(day);
+        const currentDate = new Date(from);
+        const adjustedDate = addDays(currentDate, dayIndex);
+
+        const count = sourceProfiles.filter((profile) => {
+          const profileDate = new Date(profile.createdAt);
+          return (
+            profileDate.getDate() === adjustedDate.getDate() &&
+            profileDate.getMonth() === adjustedDate.getMonth() &&
+            profileDate.getFullYear() === adjustedDate.getFullYear()
+          );
+        }).length;
+
+        dayData[source] = count;
       }
 
-      profiles.push(periodData);
-    }
+      return {
+        day,
+        ...dayData,
+      };
+    });
+
+    const growthRate =
+      previousTotal > 0 ? (total - previousTotal) / previousTotal : 0;
 
     return {
-      total: currentTotal,
+      total,
       growthRate,
-      profiles,
+      days: chartData,
     };
   });

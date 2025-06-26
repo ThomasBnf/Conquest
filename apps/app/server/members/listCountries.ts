@@ -1,24 +1,21 @@
-import { client } from "@conquest/clickhouse/client";
+import { prisma } from "@conquest/db/prisma";
 import { protectedProcedure } from "../trpc";
 
 export const listCountries = protectedProcedure.query(
   async ({ ctx: { user } }) => {
     const { workspaceId } = user;
 
-    const result = await client.query({
-      query: `
-        SELECT DISTINCT country
-        FROM member FINAL
-        WHERE 
-          workspaceId = '${workspaceId}'
-          AND country IS NOT NULL; 
-      `,
+    const members = await prisma.member.findMany({
+      where: {
+        workspaceId,
+        country: { not: null },
+      },
+      select: {
+        country: true,
+      },
+      distinct: ["country"],
     });
 
-    const { data } = (await result.json()) as {
-      data: Array<{ country: string }>;
-    };
-
-    return data.filter((row) => row.country !== "").map((row) => row.country);
+    return members.map((member) => member.country);
   },
 );

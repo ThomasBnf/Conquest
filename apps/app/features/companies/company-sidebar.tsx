@@ -40,7 +40,6 @@ export const CompanySidebar = ({ company }: Props) => {
     field: keyof Company,
     value: string | string[] | Date | number | null,
   ) => {
-    console.log(field, value);
     if (company[field] === value) return;
     updateCompany({ ...company, [field]: value });
   };
@@ -58,17 +57,15 @@ export const CompanySidebar = ({ company }: Props) => {
       </div>
       <Separator />
       <div className="space-y-4 p-4">
-        <FieldCard label="Tags">
-          <TagPicker
-            variant="ghost"
-            tags={company.tags}
-            onUpdate={(value) => onUpdateCompany("tags", value)}
-            className={cn(
-              "text-muted-foreground",
-              company.tags.length > 0 ? "min-h-8" : "-ml-[7px]",
-            )}
-          />
-        </FieldCard>
+        <TagPicker
+          variant="ghost"
+          tags={company.tags}
+          onUpdate={(value) => onUpdateCompany("tags", value)}
+          className={cn(
+            "min-h-8 text-muted-foreground",
+            company.tags.length === 0 ? "-ml-[7px]" : "",
+          )}
+        />
       </div>
       <Separator />
       <ScrollArea className="flex-1">

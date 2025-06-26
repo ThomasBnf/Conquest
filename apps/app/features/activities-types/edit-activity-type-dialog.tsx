@@ -87,24 +87,22 @@ export const EditActivityTypeDialog = ({
   const addCondition = () => {
     const conditions = form.getValues("conditions");
 
-    form.setValue("conditions", {
+    form.setValue("conditions", [
       ...conditions,
-      rules: [
-        ...conditions.rules,
-        {
-          id: uuid(),
-          channelId: "",
-          points: 2,
-        },
-      ],
-    });
+      {
+        id: uuid(),
+        channelId: "",
+        points: 2,
+      },
+    ]);
   };
 
   const removeCondition = (index: number) => {
     const conditions = form.getValues("conditions");
-    form.setValue("conditions", {
-      rules: conditions.rules.filter((_, i) => i !== index),
-    });
+    form.setValue(
+      "conditions",
+      conditions.filter((_, i) => i !== index),
+    );
   };
 
   const hasNoConditions = !["Api", "Manual", "Livestorm"].includes(
@@ -206,7 +204,7 @@ export const EditActivityTypeDialog = ({
               {hasNoConditions && !isInviteOrJoin && (
                 <div className="flex flex-col items-start gap-2">
                   <FormLabel>Channels</FormLabel>
-                  {form.watch("conditions").rules.map((_, index) => (
+                  {form.watch("conditions").map((_, index) => (
                     <div key={index} className="flex w-full gap-2">
                       <ConditionChannel
                         form={form}
@@ -215,7 +213,7 @@ export const EditActivityTypeDialog = ({
                       />
                       <FormField
                         control={form.control}
-                        name={`conditions.rules.${index}.points`}
+                        name={`conditions.${index}.points`}
                         render={({ field }) => (
                           <FormItem className="w-full">
                             <FormControl>

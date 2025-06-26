@@ -56,12 +56,6 @@ export const SettingsSidebar = () => {
           href: "/settings/billing",
           isActive: pathname === "/settings/billing",
         },
-        // {
-        //   icon: <Members size={18} />,
-        //   label: "Team",
-        //   href: "/settings/team",
-        //   isActive: pathname === "/settings/team",
-        // },
       ],
     },
     {

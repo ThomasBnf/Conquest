@@ -13,7 +13,6 @@ import {
 import { Skeleton } from "@conquest/ui/skeleton";
 import { Source } from "@conquest/zod/enum/source.enum";
 import { skipToken } from "@tanstack/react-query";
-import { format } from "date-fns";
 import { ReactNode, useEffect, useState } from "react";
 import {
   CartesianGrid,
@@ -24,15 +23,8 @@ import {
   YAxis,
 } from "recharts";
 import { DateRangePicker } from "./date-range-picker";
-import { getDays } from "./helpers/getDays";
-import { getMaxValue } from "./helpers/getMaxValue";
 import { IntegrationsPicker } from "./integrations-picker";
 import { Percentage } from "./percentage";
-
-type WeeklyProfileData = {
-  week: string;
-  [key: string]: string | number;
-};
 
 type SourceConfig = {
   label: string;
@@ -81,17 +73,11 @@ export const ActiveMembers = () => {
       : skipToken,
   );
 
-  const { profiles, total, growthRate } = data || {};
-
-  const chartData =
-    profiles?.map((profile) => ({
-      week: profile.week,
-      ...profile.detail,
-    })) || [];
-
-  const maxValue = getMaxValue(chartData as WeeklyProfileData[], sources);
-  const days = getDays(dateRange);
-  const dateFormat = days > 30 ? "MMM yyyy" : "MMM dd";
+  const { total, growthRate, days } = data ?? {
+    total: 0,
+    growthRate: 0,
+    days: [],
+  };
 
   useEffect(() => {
     setDateRange(globalDateRange);
@@ -133,9 +119,7 @@ export const ActiveMembers = () => {
                   />
                   <p>{source}</p>
                 </div>
-                <p className="font-medium">
-                  {profiles?.at(-1)?.cumulative?.[source] || 0}
-                </p>
+                <p className="font-medium">{days?.at(-1)?.[source] ?? 0}</p>
               </div>
             ))}
           </div>
@@ -147,7 +131,7 @@ export const ActiveMembers = () => {
         ) : (
           <ChartContainer config={chartConfig}>
             <LineChart
-              data={chartData}
+              data={days}
               margin={{
                 top: 20,
                 right: 20,
@@ -156,25 +140,18 @@ export const ActiveMembers = () => {
             >
               <CartesianGrid vertical={false} />
               <XAxis
-                dataKey="week"
+                dataKey="day"
                 tickMargin={10}
-                tickFormatter={(value) => format(value, dateFormat)}
                 stroke="#D1D1D1"
-                interval={days === 7 ? "preserveStartEnd" : 4}
+                interval="equidistantPreserveStart"
               />
               <YAxis
                 axisLine={false}
                 tickMargin={10}
                 stroke="hsl(var(--border))"
-                domain={[0, maxValue]}
               />
               <ChartTooltip
-                content={
-                  <ChartTooltipContent
-                    indicator="line"
-                    labelFormatter={(value) => format(value, dateFormat)}
-                  />
-                }
+                content={<ChartTooltipContent indicator="line" />}
               />
               {sources.map((source) => (
                 <Line

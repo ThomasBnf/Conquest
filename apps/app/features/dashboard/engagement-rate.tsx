@@ -24,15 +24,8 @@ import {
   YAxis,
 } from "recharts";
 import { DateRangePicker } from "./date-range-picker";
-import { getDays } from "./helpers/getDays";
-import { getMaxValue } from "./helpers/getMaxValue";
 import { IntegrationsPicker } from "./integrations-picker";
 import { Percentage } from "./percentage";
-
-type EngagementRateData = {
-  week: string;
-  [key: string]: string | number;
-};
 
 type SourceConfig = {
   label: string;
@@ -81,10 +74,15 @@ export const EngagementRate = () => {
       : skipToken,
   );
 
-  const { overallRate, week, growthRate, engagementByIntegration } = data ?? {};
-  const maxValue = getMaxValue(week as EngagementRateData[], sources);
-  const days = getDays(dateRange);
-  const dateFormat = days > 30 ? "MMM yyyy" : "MMM dd";
+  console.log(data);
+
+  const { engagementRate, growthRate, days } = data ?? {
+    engagementRate: 0,
+    growthRate: 0,
+    days: [],
+  };
+
+  console.log(data);
 
   useEffect(() => {
     setDateRange(globalDateRange);
@@ -110,7 +108,9 @@ export const EngagementRate = () => {
               <Skeleton className="h-8 w-14" />
             ) : (
               <div className="flex items-center gap-2">
-                <p className="font-medium text-2xl">{overallRate ?? 0}%</p>
+                <p className="font-medium text-2xl">
+                  {engagementRate.toFixed(0)}%
+                </p>
                 <Percentage variation={growthRate} isLoading={isLoading} />
               </div>
             )}
@@ -132,14 +132,9 @@ export const EngagementRate = () => {
                     />
                     <p>{source}</p>
                   </div>
-                  <p className="font-medium">
-                    {(
-                      (engagementByIntegration as Record<string, number>)?.[
-                        source
-                      ] || 0
-                    ).toFixed(2)}
-                    %
-                  </p>
+                  {/* <p className="font-medium">
+                    {days?.at(-1)?.[source]?.toFixed(0) ?? 0}%
+                  </p> */}
                 </div>
               ))}
             </div>
@@ -151,7 +146,7 @@ export const EngagementRate = () => {
           ) : (
             <ChartContainer config={chartConfig}>
               <LineChart
-                data={week}
+                data={days}
                 margin={{
                   top: 20,
                   right: 20,
@@ -160,24 +155,21 @@ export const EngagementRate = () => {
               >
                 <CartesianGrid vertical={false} />
                 <XAxis
-                  dataKey="week"
+                  dataKey="day"
                   tickMargin={10}
-                  tickFormatter={(value) => format(value, dateFormat)}
                   stroke="#D1D1D1"
-                  interval={days === 7 ? "preserveStartEnd" : 4}
+                  interval="equidistantPreserveStart"
                 />
                 <YAxis
                   axisLine={false}
                   tickMargin={10}
                   stroke="hsl(var(--border))"
-                  domain={[0, maxValue]}
                   tickFormatter={(value) => `${value}%`}
                 />
                 <ChartTooltip
                   content={
                     <ChartTooltipContent
                       indicator="line"
-                      labelFormatter={(value) => format(value, dateFormat)}
                       formatter={(value, name, item) => {
                         const sourceConfig = chartConfig[name];
                         return (

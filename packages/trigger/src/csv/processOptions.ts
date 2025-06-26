@@ -3,7 +3,7 @@ import { updateField } from "@conquest/db/custom-fields/updateField";
 import { getRandomColor } from "@conquest/utils/getRandomColor";
 import { Option } from "@conquest/zod/schemas/custom-field.schema";
 import { logger } from "@trigger.dev/sdk/v3";
-import { v4 as uuid } from "uuid";
+import { randomUUID } from "node:crypto";
 
 type Props = {
   members: Record<string, string>[];
@@ -41,7 +41,7 @@ export const processOptions = async ({
     if (newOptionsLabels.length === 0) return field;
 
     const newOptions: Option[] = newOptionsLabels.map((option) => ({
-      id: uuid(),
+      id: randomUUID(),
       label: option as string,
       color: getRandomColor(),
     }));

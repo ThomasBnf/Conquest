@@ -79,29 +79,3 @@ export const listChannels = protectedProcedure.query(
     return filteredChannels;
   },
 );
-
-// function(props) {
-//   const { useState, useEffect } = props.context.libraries['react'];
-//   const { TextInput } = props.context.libraries['react-native'];
-
-//   const { defaultValue, disabled } = props.properties
-//   const [value, setValue] = useState(defaultValue || "");
-
-//   const onChange = (value) => {
-//  props.instance.publishState("value", value)
-//     setValue(value)
-//   }
-
-//   useEffect(() => {
-//    props.instance.publishState("value", defaultValue)
-//    setValue(defaultValue || "")
-//   },[defaultValue])
-
-//   return (
-//     <TextInput
-//      editable={disabled}
-//      value={value}
-//      onChangeText={onChange}
-//     />
-//   )
-// }

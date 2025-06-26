@@ -8,14 +8,11 @@ export const ActivityTypeRuleSchema = z.object({
 });
 
 export const ActivityTypeSchema = z.object({
-  id: z.string().uuid(),
+  key: z.string(),
   name: z.string(),
   source: SOURCE,
-  key: z.string(),
   points: z.coerce.number().int().min(0),
-  conditions: z.object({
-    rules: z.array(ActivityTypeRuleSchema),
-  }),
+  conditions: z.array(ActivityTypeRuleSchema),
   deletable: z.boolean(),
   workspaceId: z.string(),
   createdAt: z.coerce.date(),

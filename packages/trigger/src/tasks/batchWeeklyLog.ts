@@ -1,4 +1,4 @@
-import { client } from "@conquest/clickhouse/client";
+import { prisma } from "@conquest/db/prisma";
 import type { Log } from "@conquest/zod/schemas/logs.schema";
 import { MemberSchema } from "@conquest/zod/schemas/member.schema";
 import { schemaTask } from "@trigger.dev/sdk/v3";
@@ -14,21 +14,19 @@ export const batchWeeklyLog = schemaTask({
     const logs: Omit<Log, "id">[] = [];
 
     for (const member of members) {
-      const { levelId, pulse } = member;
+      const { levelNumber, pulse } = member;
 
       logs.push({
         date: startOfWeek(new Date(), { weekStartsOn: 1 }),
         pulse,
-        levelId: levelId ?? null,
+        level: levelNumber,
         memberId: member.id,
         workspaceId: member.workspaceId,
       });
     }
 
-    await client.insert({
-      table: "log",
-      values: logs,
-      format: "JSON",
+    await prisma.log.createMany({
+      data: logs,
     });
   },
 });

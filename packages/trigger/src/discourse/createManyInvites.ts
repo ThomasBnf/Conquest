@@ -1,5 +1,5 @@
-import { createActivity } from "@conquest/clickhouse/activity/createActivity";
-import { getProfile } from "@conquest/clickhouse/profile/getProfile";
+import { createActivity } from "@conquest/db/activity/createActivity";
+import { getProfile } from "@conquest/db/profile/getProfile";
 import { decrypt } from "@conquest/db/utils/decrypt";
 import type { DiscourseIntegration } from "@conquest/zod/schemas/integration.schema";
 import type { DiscourseProfile } from "@conquest/zod/schemas/profile.schema";

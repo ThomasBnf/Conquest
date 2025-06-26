@@ -3,6 +3,7 @@ import { cn } from "@conquest/ui/cn";
 import { ScrollArea, ScrollBar } from "@conquest/ui/scroll-area";
 import { Company } from "@conquest/zod/schemas/company.schema";
 import { FullMember } from "@conquest/zod/schemas/member.schema";
+import { usePathname } from "next/navigation";
 import { useEffect } from "react";
 import { useInView } from "react-intersection-observer";
 import { LoadMore } from "./load-more";
@@ -17,6 +18,8 @@ export const DataTable = <TData extends FullMember | Company>({
   table,
 }: Props<TData>) => {
   const { ref, inView } = useInView();
+  const pathname = usePathname();
+  const isCompanies = pathname.includes("companies");
 
   const {
     data,
@@ -95,7 +98,13 @@ export const DataTable = <TData extends FullMember | Company>({
       <p className="space-x-1 border-t px-3 py-2">
         <span className="font-medium">{count}</span>
         <span className="text-muted-foreground">
-          Member{count === 1 ? "" : "s"}
+          {isCompanies
+            ? count && count > 1
+              ? "Companies"
+              : "Company"
+            : count && count > 1
+              ? "Members"
+              : "Member"}
         </span>
       </p>
     </div>

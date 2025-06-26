@@ -1,30 +1,31 @@
-import { client } from "@conquest/clickhouse/client";
-import { getPulseAndLevel } from "@conquest/clickhouse/member/getPulseAndLevel";
+import { prisma } from "@conquest/db/prisma";
+import { MemberSchema } from "@conquest/zod/schemas/member.schema";
 import { logger } from "@trigger.dev/sdk/v3";
-import { endOfHour, format, startOfHour, subHours } from "date-fns";
+import { endOfHour, startOfHour, subHours } from "date-fns";
+import { getPulseAndLevel } from "@conquest/db/member/getPulseAndLevel";
 
 export const updatePulseScore = async () => {
   const now = new Date();
   const start = startOfHour(subHours(now, 1));
   const end = endOfHour(subHours(now, 1));
 
-  const startFormatted = format(start, "yyyy-MM-dd HH:mm:ss");
-  const endFormatted = format(end, "yyyy-MM-dd HH:mm:ss");
-
-  const result = await client.query({
-    query: `
-        SELECT DISTINCT memberId
-        FROM activity
-        WHERE createdAt >= '${startFormatted}'
-        AND createdAt <= '${endFormatted}'
-      `,
+  const members = await prisma.member.findMany({
+    where: {
+      activities: {
+        some: {
+          createdAt: {
+            gte: start,
+            lte: end,
+          },
+        },
+      },
+    },
   });
 
-  const { data } = await result.json();
-  const members = data as Array<{ memberId: string }>;
+  const parsedMembers = MemberSchema.array().parse(members);
 
-  for (const member of members) {
+  for (const member of parsedMembers) {
     logger.info("member", { member });
-    await getPulseAndLevel({ memberId: member.memberId });
+    await getPulseAndLevel({ memberId: member.id });
   }
 };

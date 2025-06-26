@@ -1,8 +1,8 @@
-import { client } from "@conquest/clickhouse/client";
+import { protectedProcedure } from "@/server/trpc";
+import { prisma } from "@conquest/db/prisma";
 import { ActivityHeatmapSchema } from "@conquest/zod/schemas/activity.schema";
 import { format, subDays } from "date-fns";
 import { z } from "zod";
-import { protectedProcedure } from "../../../server/trpc";
 
 export const heatmap = protectedProcedure
   .input(
@@ -15,24 +15,29 @@ export const heatmap = protectedProcedure
     const { memberId } = input;
 
     const today = new Date();
-    const last365days = format(subDays(today, 365), "yyyy-MM-dd");
+    const last365days = subDays(today, 365);
 
-    const result = await client.query({
-      query: `
-        SELECT 
-          toDate(createdAt) as date,
-          count() as count
-        FROM activity a
-        JOIN member m FINAL ON a.memberId = m.id
-        WHERE 
-        m.workspaceId = '${workspaceId}'
-        AND a.createdAt >= '${last365days}'
-        ${memberId ? `AND a.memberId = '${memberId}'` : ""}
-        ${memberId ? "" : "AND m.isStaff = false"}
-        GROUP BY date
-      `,
+    const result = await prisma.activity.groupBy({
+      by: ["createdAt"],
+      where: {
+        workspaceId,
+        member: {
+          ...(memberId ? {} : { isStaff: false }),
+        },
+        ...(memberId ? { memberId } : {}),
+        createdAt: {
+          gte: last365days,
+        },
+      },
+      _count: {
+        id: true,
+      },
     });
 
-    const { data } = await result.json();
-    return ActivityHeatmapSchema.array().parse(data);
+    const formattedData = result.map((item) => ({
+      date: format(item.createdAt, "yyyy-MM-dd"),
+      count: item._count.id,
+    }));
+
+    return ActivityHeatmapSchema.array().parse(formattedData);
   });

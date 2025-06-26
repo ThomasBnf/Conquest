@@ -22,10 +22,10 @@ export default async function Page() {
         <div className="space-y-4 p-4">
           <div className="grid grid-cols-2 gap-4">
             <TotalMembers />
-            <ActiveMembers />
+            <NewMembers />
           </div>
           <div className="grid grid-cols-2 gap-4">
-            <NewMembers />
+            <ActiveMembers />
             <EngagementRate />
           </div>
           <div className="grid grid-cols-2 gap-4">

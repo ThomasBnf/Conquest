@@ -25,7 +25,7 @@ export const PulseBadge = ({
   const [hover, setHover] = useState(false);
 
   const { data: levels } = trpc.levels.list.useQuery();
-  const level = levels?.find((level) => level.id === member?.levelId);
+  const level = levels?.find((level) => level.number === member?.levelNumber);
   const { from, to } = level ?? {};
 
   const { data: channels } = trpc.channels.list.useQuery({});

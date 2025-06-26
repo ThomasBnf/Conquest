@@ -1,4 +1,4 @@
-import { createActivity } from "@conquest/clickhouse/activity/createActivity";
+import { createActivity } from "@conquest/db/activity/createActivity";
 import { GithubIntegration } from "@conquest/zod/schemas/integration.schema";
 import { Octokit } from "octokit";
 import { checkRateLimit } from "./checkRateLimit";

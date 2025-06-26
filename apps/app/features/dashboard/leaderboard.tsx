@@ -4,6 +4,7 @@ import { useDateRange } from "@/hooks/useDateRange";
 import { useWorkspace } from "@/hooks/useWorkspace";
 import { trpc } from "@/server/client";
 import { Source } from "@conquest/zod/enum/source.enum";
+import { MemberSchema } from "@conquest/zod/schemas/member.schema";
 import { useEffect, useState } from "react";
 import { type DateRange } from "react-day-picker";
 import { FullNameCell } from "../table/cells/full-name-cell";
@@ -11,16 +12,20 @@ import { DateRangePicker } from "./date-range-picker";
 import { IntegrationsPicker } from "./integrations-picker";
 
 export const Leaderboard = () => {
-  const { slug } = useWorkspace();
   const { globalDateRange } = useDateRange();
   const [sources, setSources] = useState<Source[]>([]);
   const [dateRange, setDateRange] = useState<DateRange | undefined>(
     globalDateRange,
   );
 
-  const { data, failureReason } = trpc.dashboard.leaderboard.useQuery({
+  const { data } = trpc.dashboard.leaderboard.useQuery({
     sources,
     dateRange,
+  });
+
+  const members = data?.map((item) => {
+    const { activities, ...member } = item;
+    return MemberSchema.parse(member);
   });
 
   useEffect(() => {
@@ -41,9 +46,9 @@ export const Leaderboard = () => {
           <p className="flex-1">Member</p>
           <p>Pulse Score</p>
         </div>
-        {data?.length ? (
+        {members?.length ? (
           <div className="flex flex-col">
-            {data.map((member) => (
+            {members.map((member) => (
               <div key={member.id} className="flex items-center py-2">
                 <div className="flex w-full items-center justify-between">
                   <FullNameCell member={member} />

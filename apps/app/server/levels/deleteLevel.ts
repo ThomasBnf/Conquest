@@ -1,15 +1,16 @@
-import { deleteLevel as _deleteLevel } from "@conquest/clickhouse/level/deleteLevel";
+import { deleteLevel as _deleteLevel } from "@conquest/db/level/deleteLevel";
 import { z } from "zod";
 import { protectedProcedure } from "../trpc";
 
 export const deleteLevel = protectedProcedure
   .input(
     z.object({
-      id: z.string().uuid(),
+      number: z.number(),
     }),
   )
-  .mutation(async ({ input }) => {
-    const { id } = input;
+  .mutation(async ({ ctx: { user }, input }) => {
+    const { workspaceId } = user;
+    const { number } = input;
 
-    return _deleteLevel({ id });
+    return _deleteLevel({ number, workspaceId });
   });

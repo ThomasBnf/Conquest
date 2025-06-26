@@ -30,6 +30,7 @@ export const useUpdateTask = ({ task }: Props) => {
       }
     },
     onSettled: () => {
+      utils;
       utils.tasks.invalidate();
     },
   });

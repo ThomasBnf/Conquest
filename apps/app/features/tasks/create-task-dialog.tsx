@@ -54,6 +54,7 @@ export const CreateTaskDialog = () => {
       title: "",
       dueDate: new Date(),
       assignee: id,
+      member: null,
     },
   });
 

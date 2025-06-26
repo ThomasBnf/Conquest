@@ -60,8 +60,7 @@ export const LevelPicker = ({ filter }: Props) => {
               {isLoading && <Skeleton className="h-8 w-full" />}
               {levels?.map((level) => (
                 <CommandItem
-                  key={level.id}
-                  value={level.id}
+                  key={level.number}
                   onSelect={() => onSelect(level)}
                 >
                   {level.number} • {level.name}

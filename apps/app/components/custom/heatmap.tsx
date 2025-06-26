@@ -45,14 +45,14 @@ export const Heatmap = ({ activities, memberId }: Props) => {
                 className="grid grid-rows-7 gap-1"
               >
                 {week.map((day) => {
-                  const dateStr = format(day, "yyyy-MM-dd");
+                  const formattedDay = format(day, "yyyy-MM-dd");
                   const dayActivity = activities?.find(
-                    (a) => a.date === dateStr,
+                    (a) => a.date === formattedDay,
                   );
 
                   return (
                     <DayCell
-                      key={dateStr}
+                      key={formattedDay}
                       day={day}
                       count={Number(dayActivity?.count ?? 0)}
                       allActivities={activities}
@@ -158,10 +158,10 @@ const ActivitySummaryDisplay = ({
   return (
     <div className="mt-1">
       {Object.entries(summary).map(([source, data]) => (
-        <div key={source}>
-          <p className="mb-2 font-medium">{source}</p>
+        <div key={source} className="mt-2">
+          <p className="mb-1 font-medium">{source}</p>
           {Array.from(data.activities.entries()).map(([activity, count]) => (
-            <p key={activity}>
+            <p key={activity} className="text-muted/70">
               {count} <span>x</span> {activity}
             </p>
           ))}

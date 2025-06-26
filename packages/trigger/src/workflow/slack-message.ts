@@ -1,10 +1,10 @@
-import { getProfileBySource } from "@conquest/clickhouse/profile/getProfileBySource";
 import { getIntegrationBySource } from "@conquest/db/integrations/getIntegrationBySource";
+import { getProfileBySource } from "@conquest/db/profile/getProfileBySource";
 import { decrypt } from "@conquest/db/utils/decrypt";
 import { plateToSlackBlocks } from "@conquest/utils/plateToSlackBlocks";
 import { replaceVariables } from "@conquest/utils/replace-variables";
 import { SlackIntegrationSchema } from "@conquest/zod/schemas/integration.schema";
-import { MemberWithLevel } from "@conquest/zod/schemas/member.schema";
+import { Member } from "@conquest/zod/schemas/member.schema";
 import {
   Node,
   NodeSlackMessageSchema,
@@ -14,7 +14,7 @@ import { nodeStatus } from "./nodeStatus";
 
 type Props = {
   node: Node;
-  member: MemberWithLevel;
+  member: Member;
 };
 
 export const slackMessage = async ({ node, member }: Props): Promise<Node> => {
@@ -51,8 +51,9 @@ export const slackMessage = async ({ node, member }: Props): Promise<Node> => {
   const web = new WebClient(decryptedUserToken);
 
   const profile = await getProfileBySource({
-    source: "Slack",
     memberId,
+    source: "Slack",
+    workspaceId,
   });
 
   if (!profile?.externalId) {
@@ -75,13 +76,7 @@ export const slackMessage = async ({ node, member }: Props): Promise<Node> => {
     });
   }
 
-  const blocks = plateToSlackBlocks(message);
-
-  // const parsedMessage = await replaceVariables({
-  //   message: blocks,
-  //   member,
-  //   source: "Slack",
-  // });
+  const blocks = await plateToSlackBlocks({ message, member });
 
   try {
     await web.chat.postMessage({

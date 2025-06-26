@@ -1,4 +1,4 @@
-import { createActivity } from "@conquest/clickhouse/activity/createActivity";
+import { createActivity } from "@conquest/db/activity/createActivity";
 import { logger } from "@trigger.dev/sdk/v3";
 import { subDays } from "date-fns";
 import { Octokit } from "octokit";

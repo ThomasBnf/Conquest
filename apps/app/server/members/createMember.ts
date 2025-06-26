@@ -1,5 +1,5 @@
 import { MemberFormSchema } from "@/features/members/schema/member-form.schema";
-import { createMember as _createMember } from "@conquest/clickhouse/member/createMember";
+import { createMember as _createMember } from "@conquest/db/member/createMember";
 import { checkDuplicates } from "@conquest/trigger/tasks/checkDuplicates";
 import { triggerWorkflows } from "@conquest/trigger/tasks/triggerWorkflows";
 import { protectedProcedure } from "../trpc";

@@ -1,4 +1,4 @@
-import { getFilteredMember } from "@conquest/clickhouse/member/getFilteredMember";
+import { getFilteredMember } from "@conquest/db/member/getFilteredMember";
 import { Run, User } from "@conquest/db/prisma";
 import { createRun } from "@conquest/db/runs/createRun";
 import { updateRun } from "@conquest/db/runs/updateRun";
@@ -8,10 +8,7 @@ import { resend } from "@conquest/resend";
 import WorkflowFailed from "@conquest/resend/emails/workflow-failed";
 import WorkflowSuccess from "@conquest/resend/emails/workflow-success";
 import { Edge } from "@conquest/zod/schemas/edge.schema";
-import {
-  MemberWithLevel,
-  MemberWithLevelSchema,
-} from "@conquest/zod/schemas/member.schema";
+import { Member, MemberSchema } from "@conquest/zod/schemas/member.schema";
 import {
   Node,
   NodeIfElseSchema,
@@ -37,7 +34,7 @@ export const runWorkflow = schemaTask({
   machine: "small-2x",
   schema: z.object({
     workflow: WorkflowSchema,
-    member: MemberWithLevelSchema,
+    member: MemberSchema,
   }),
   run: async ({ workflow, member }) => {
     const {
@@ -48,6 +45,7 @@ export const runWorkflow = schemaTask({
       alertOnSuccess,
       alertOnFailure,
     } = workflow;
+
     const { slug } = await getWorkspace({ id: workspaceId });
     const user = await getUserById({ id: createdBy });
     const run = await createRun({
@@ -186,24 +184,22 @@ const IfElse = async ({
   nodes,
 }: {
   node: Node;
-  member: MemberWithLevel;
+  member: Member;
   edges: Edge[];
   nodes: Node[];
 }) => {
   const parsedNode = NodeIfElseSchema.parse(node.data);
   const { groupFilters } = parsedNode;
 
-  const result = await getFilteredMember({
+  const passCondition = await getFilteredMember({
     member,
     groupFilters,
   });
 
-  const condition = Boolean(result);
-
   const nextEdge = edges.find(
     (edge) =>
       edge.source === node.id &&
-      edge.data?.condition === (condition ? "true" : "false"),
+      edge.data?.condition === (passCondition ? "true" : "false"),
   );
 
   if (nextEdge) {
@@ -227,7 +223,7 @@ const sendAlertyByEmail = async ({
   slug: string;
   state: "success" | "failure";
   user: User | null;
-  member: MemberWithLevel;
+  member: Member;
   workflow: Workflow;
   run: Run;
 }) => {

@@ -64,7 +64,7 @@ export const ActivityTypesList = ({ source, disableHeader = false }: Props) => {
               const { source, name, key, conditions, points } = activityType;
 
               return (
-                <Fragment key={activityType.id}>
+                <Fragment key={activityType.key}>
                   <TableRow className="hover:bg-transparent">
                     <TableCell className="font-medium">
                       <SourceBadge source={source} />
@@ -79,11 +79,11 @@ export const ActivityTypesList = ({ source, disableHeader = false }: Props) => {
                     </TableCell>
                   </TableRow>
                   <TableRow className="border-b hover:bg-transparent">
-                    {conditions.rules.length > 0 && (
+                    {conditions.length > 0 && (
                       <TableCell colSpan={5} className="pb-4">
                         <div className="flex flex-col gap-2">
                           <Label>Conditions</Label>
-                          {conditions.rules.map((condition) => (
+                          {conditions.map((condition) => (
                             <ConditionCard
                               key={condition.channelId}
                               activityType={activityType}

@@ -5,14 +5,13 @@ import type {
   AdapterSession,
   AdapterUser,
 } from "@auth/core/adapters";
-import { client } from "@conquest/clickhouse/client";
 import { PrismaClientKnownRequestError } from "@conquest/db/enum";
 import type { Prisma } from "@conquest/db/types";
 import { createWorkspace } from "@conquest/db/workspaces/createWorkspace";
 import { resend } from "@conquest/resend";
 import { UserSchema } from "@conquest/zod/schemas/user.schema";
 import { isBefore, subHours } from "date-fns";
-import { v4 as uuid } from "uuid";
+import { randomUUID } from "node:crypto";
 
 export const createAuthPrismaAdapter = (
   prisma: Prisma.PrismaClient,
@@ -24,7 +23,7 @@ export const createAuthPrismaAdapter = (
 
     const workspace = await createWorkspace({
       name: "",
-      slug: uuid(),
+      slug: randomUUID(),
     });
 
     const user = UserSchema.parse(
@@ -45,13 +44,11 @@ export const createAuthPrismaAdapter = (
       },
     });
 
-    await client.insert({
-      table: "level",
-      values: LEVELS.map((level) => ({
+    await prisma.level.createMany({
+      data: LEVELS.map((level) => ({
         ...level,
         workspaceId: workspace.id,
       })),
-      format: "JSON",
     });
 
     if (process.env.NODE_ENV === "development") return user as AdapterUser;

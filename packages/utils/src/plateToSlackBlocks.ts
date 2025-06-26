@@ -1,18 +1,16 @@
-import { Member, MemberWithLevel } from "@conquest/zod/schemas/member.schema";
+import { Member } from "@conquest/zod/schemas/member.schema";
 import { Message } from "@conquest/zod/schemas/node.schema";
 import { SectionBlock } from "@slack/web-api";
 import { replaceVariables } from "./replace-variables";
 
 type Props = {
   message: Message;
-  member: Member | MemberWithLevel;
-  source?: "Slack" | "Discord";
+  member: Member;
 };
 
 export const plateToSlackBlocks = async ({
   message,
   member,
-  source,
 }: Props): Promise<SectionBlock[]> => {
   const processNode = async (node: Message[0]): Promise<string> => {
     if (!node.children || node.children.length === 0) return "";
@@ -26,14 +24,18 @@ export const plateToSlackBlocks = async ({
             child.type === "emoji_input")
         ) {
           const value = child.value || "";
-          return await replaceVariables({ message: value, member, source });
+          return await replaceVariables({
+            message: value,
+            member,
+            source: "Slack",
+          });
         }
 
         if ("text" in child && child.text !== undefined) {
           let text = await replaceVariables({
             message: child.text,
             member,
-            source,
+            source: "Slack",
           });
 
           if (!text.trim()) return "";

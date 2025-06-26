@@ -1,4 +1,4 @@
-import { getProfile } from "@conquest/clickhouse/profile/getProfile";
+import { getProfile } from "@conquest/db/profile/getProfile";
 import { getIntegrationBySource } from "@conquest/db/integrations/getIntegrationBySource";
 import { decrypt } from "@conquest/db/utils/decrypt";
 import { SlackIntegrationSchema } from "@conquest/zod/schemas/integration.schema";

@@ -1,4 +1,4 @@
-import { deleteActivity as _deleteActivity } from "@conquest/clickhouse/activity/deleteActivity";
+import { deleteActivity as _deleteActivity } from "@conquest/db/activity/deleteActivity";
 import { z } from "zod";
 import { protectedProcedure } from "../trpc";
 

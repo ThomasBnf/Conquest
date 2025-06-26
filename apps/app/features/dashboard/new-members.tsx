@@ -25,14 +25,8 @@ import {
 } from "recharts";
 import { DateRangePicker } from "./date-range-picker";
 import { getDays } from "./helpers/getDays";
-import { getMaxValue } from "./helpers/getMaxValue";
 import { IntegrationsPicker } from "./integrations-picker";
 import { Percentage } from "./percentage";
-
-type WeeklyProfileData = {
-  week: string;
-  [key: string]: string | number;
-};
 
 type SourceConfig = {
   label: string;
@@ -81,10 +75,11 @@ export const NewMembers = () => {
       : skipToken,
   );
 
-  const { profiles, total, growthRate } = data || {};
-  const maxValue = getMaxValue(profiles as WeeklyProfileData[], sources);
-  const days = getDays(dateRange);
-  const dateFormat = days > 30 ? "MMM yyyy" : "MMM dd";
+  const { total, growthRate, days } = data ?? {
+    total: 0,
+    growthRate: 0,
+    days: [],
+  };
 
   useEffect(() => {
     setDateRange(globalDateRange);
@@ -117,7 +112,7 @@ export const NewMembers = () => {
           </div>
           <div className="space-y-2">
             <p className="text-muted-foreground">New members by integration</p>
-            <div>
+            <div className="space-y-0.5">
               {sources.map((source) => (
                 <div key={source} className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
@@ -127,7 +122,7 @@ export const NewMembers = () => {
                     />
                     <p>{source}</p>
                   </div>
-                  <p className="font-medium">{profiles?.at(-1)?.[source]}</p>
+                  <p className="font-medium">{days?.at(-1)?.[source] ?? 0}</p>
                 </div>
               ))}
             </div>
@@ -139,7 +134,7 @@ export const NewMembers = () => {
           ) : (
             <ChartContainer config={chartConfig}>
               <LineChart
-                data={profiles}
+                data={days}
                 margin={{
                   top: 20,
                   right: 20,
@@ -148,25 +143,18 @@ export const NewMembers = () => {
               >
                 <CartesianGrid vertical={false} />
                 <XAxis
-                  dataKey="week"
+                  dataKey="day"
                   tickMargin={10}
-                  tickFormatter={(value) => format(value, dateFormat)}
                   stroke="#D1D1D1"
-                  interval={days === 7 ? "preserveStartEnd" : 4}
+                  interval="equidistantPreserveStart"
                 />
                 <YAxis
                   axisLine={false}
                   tickMargin={10}
                   stroke="hsl(var(--border))"
-                  domain={[0, maxValue]}
                 />
                 <ChartTooltip
-                  content={
-                    <ChartTooltipContent
-                      indicator="line"
-                      labelFormatter={(value) => format(value, dateFormat)}
-                    />
-                  }
+                  content={<ChartTooltipContent indicator="line" />}
                 />
                 {sources.map((source) => (
                   <Line
@@ -185,19 +173,4 @@ export const NewMembers = () => {
       </div>
     </div>
   );
-};
-
-const calculateMaxValue = (
-  data: WeeklyProfileData[] | undefined,
-  sources: Source[],
-): number => {
-  if (!data) return 0;
-
-  return data.reduce((max, entry) => {
-    const weekMax = sources.reduce((weekMax, source) => {
-      const value = Number(entry[source] || 0);
-      return Math.max(weekMax, value);
-    }, 0);
-    return Math.max(max, weekMax);
-  }, 0);
 };

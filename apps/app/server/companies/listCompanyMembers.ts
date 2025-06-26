@@ -1,4 +1,4 @@
-import { listMembers } from "@conquest/clickhouse/member/listMembers";
+import { listMembers } from "@conquest/db/member/listMembers";
 import { z } from "zod";
 import { protectedProcedure } from "../trpc";
 

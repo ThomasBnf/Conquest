@@ -1,7 +1,8 @@
-import { client } from "@conquest/clickhouse/client";
-import { listMembers } from "@conquest/clickhouse/member/listMembers";
+import { listMembers } from "@conquest/db/member/listMembers";
+import { prisma } from "@conquest/db/prisma";
 import { listWorkspaces } from "@conquest/db/workspaces/listWorkspaces";
 import { logger, schedules } from "@trigger.dev/sdk/v3";
+import { subWeeks } from "date-fns";
 import { batchWeeklyLog } from "./batchWeeklyLog";
 
 export const cronWeekly = schedules.task({
@@ -39,11 +40,12 @@ export const cronWeekly = schedules.task({
       }
     }
 
-    await client.query({
-      query: `
-        ALTER TABLE log
-        DELETE WHERE date < subtractWeeks(now(), 53)
-      `,
+    await prisma.log.deleteMany({
+      where: {
+        date: {
+          lt: subWeeks(new Date(), 53),
+        },
+      },
     });
   },
 });
