@@ -25,8 +25,6 @@ export const getFilters = async ({
         const { value, operator } = FilterTextSchema.parse(filter);
 
         if (field === "phones") {
-          if (!value) return {};
-
           switch (operator) {
             case "contains":
               return { phones: { hasSome: [value] } };
@@ -79,8 +77,6 @@ export const getFilters = async ({
       if (field === "tags") {
         const { values, operator } = FilterSelectSchema.parse(filter);
 
-        if (!values.length) return {};
-
         switch (operator) {
           case "contains":
             return { tags: { hasSome: values } };
@@ -97,8 +93,6 @@ export const getFilters = async ({
 
       if (field === "profiles") {
         const { values, operator } = FilterSelectSchema.parse(filter);
-
-        if (!values.length) return {};
 
         const attributes = values.map((value) => ({
           attributes: { path: ["source"], equals: value },
@@ -118,7 +112,7 @@ export const getFilters = async ({
           case "not_empty":
             return {
               profiles: {
-                some: { attributes: { path: ["source"], not: { equals: "" } } },
+                some: {},
               },
             };
           default:
@@ -128,8 +122,6 @@ export const getFilters = async ({
 
       if (type === "select") {
         const { values, operator } = FilterSelectSchema.parse(filter);
-
-        if (!values.length) return {};
 
         switch (operator) {
           case "contains":
