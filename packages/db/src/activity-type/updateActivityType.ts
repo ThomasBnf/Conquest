@@ -10,8 +10,10 @@ export const updateActivityType = async ({
 }: Props) => {
   return await prisma.activityType.update({
     where: {
-      key,
-      workspaceId,
+      key_workspaceId: {
+        key,
+        workspaceId,
+      },
     },
     data: {
       ...data,

@@ -9,8 +9,10 @@ type Props = {
 export const getActivityType = async ({ key, workspaceId }: Props) => {
   const activityType = await prisma.activityType.findUnique({
     where: {
-      key,
-      workspaceId,
+      key_workspaceId: {
+        key,
+        workspaceId,
+      },
     },
   });
 

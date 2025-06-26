@@ -8,8 +8,10 @@ type Props = {
 export const deleteActivityType = async ({ key, workspaceId }: Props) => {
   return await prisma.activityType.delete({
     where: {
-      key,
-      workspaceId,
+      key_workspaceId: {
+        key,
+        workspaceId,
+      },
     },
   });
 };

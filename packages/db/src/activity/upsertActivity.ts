@@ -24,8 +24,10 @@ export const upsertActivity = async (props: Props) => {
 
   await prisma.activity.upsert({
     where: {
-      externalId,
-      workspaceId,
+      externalId_workspaceId: {
+        externalId,
+        workspaceId,
+      },
     },
     update: {
       message,

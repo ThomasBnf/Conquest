@@ -216,6 +216,8 @@
     "packages/trigger": {
       "name": "@conquest/trigger",
       "dependencies": {
+        "@clickhouse/client": "^1.11.2",
+        "@clickhouse/client-web": "^1.11.2",
         "@conquest/db": "workspace:*",
         "@conquest/resend": "workspace:*",
         "@conquest/utils": "workspace:*",
@@ -388,6 +390,12 @@
     "@clack/core": ["@clack/core@0.3.5", "", { "dependencies": { "picocolors": "^1.0.0", "sisteransi": "^1.0.5" } }, "sha512-5cfhQNH+1VQ2xLQlmzXMqUoiaH0lRBq9/CLW9lTyMbuKLC3+xEK01tHVvyut++mLOn5urSHmkm6I0Lg9MaJSTQ=="],
 
     "@clack/prompts": ["@clack/prompts@0.10.1", "", { "dependencies": { "@clack/core": "0.4.2", "picocolors": "^1.0.0", "sisteransi": "^1.0.5" } }, "sha512-Q0T02vx8ZM9XSv9/Yde0jTmmBQufZhPJfYAg2XrrrxWWaZgq1rr8nU8Hv710BQ1dhoP8rtY7YUdpGej2Qza/cw=="],
+
+    "@clickhouse/client": ["@clickhouse/client@1.11.2", "", { "dependencies": { "@clickhouse/client-common": "1.11.2" } }, "sha512-ZE7Q1qxsDNXCkGPf1zqmhpZpwAKxKT+1s4Z432J1Mb2Gm26Y4tG/sJoug81AfAJTt6s7taO2vzNBAKfSR3SStg=="],
+
+    "@clickhouse/client-common": ["@clickhouse/client-common@1.11.2", "", {}, "sha512-H4ECHqaipzMgiZKqpb1Z4N3Ofq+lVTCn8I59XsSynqrsfR4jWZD3PipXVvIzMpDmTMvrlJWrOwAdm0DMNiMQbA=="],
+
+    "@clickhouse/client-web": ["@clickhouse/client-web@1.11.2", "", { "dependencies": { "@clickhouse/client-common": "1.11.2" } }, "sha512-VyV0Wx/EZKJwKRgujc9ve8ad7+pVgXOIlCJsGltzU1h6bW7pQKWEAD9Y7eHWkbN3+6nokxUPDgQI0w0BWym6MQ=="],
 
     "@colors/colors": ["@colors/colors@1.5.0", "", {}, "sha512-ooWCrlZP11i8GImSjTHYHLkvFDP48nS4+204nGb1RiX/WXYHmJA2III9/e2DWVabCESdW7hBAEzHRqUn9OUVvQ=="],
 

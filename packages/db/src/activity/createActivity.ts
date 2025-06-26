@@ -16,8 +16,6 @@ type Props = {
 export const createActivity = async (props: Props) => {
   const { message, title, ...rest } = props;
 
-  // const sentiment = await analyzeActivity(message, title);
-
   const activity = await prisma.activity.create({
     data: {
       ...rest,

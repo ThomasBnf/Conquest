@@ -9,8 +9,10 @@ type Props = {
 export const getLevel = async ({ number, workspaceId }: Props) => {
   const level = await prisma.level.findUnique({
     where: {
-      number,
-      workspaceId,
+      number_workspaceId: {
+        number,
+        workspaceId,
+      },
     },
   });
 

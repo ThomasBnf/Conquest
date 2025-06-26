@@ -191,17 +191,15 @@ const IfElse = async ({
   const parsedNode = NodeIfElseSchema.parse(node.data);
   const { groupFilters } = parsedNode;
 
-  const result = await getFilteredMember({
+  const passCondition = await getFilteredMember({
     member,
     groupFilters,
   });
 
-  const condition = Boolean(result);
-
   const nextEdge = edges.find(
     (edge) =>
       edge.source === node.id &&
-      edge.data?.condition === (condition ? "true" : "false"),
+      edge.data?.condition === (passCondition ? "true" : "false"),
   );
 
   if (nextEdge) {

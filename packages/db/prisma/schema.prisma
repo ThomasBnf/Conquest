@@ -29,9 +29,9 @@ model Account {
 
 model Activity {
     id              String       @id @default(uuid())
-    externalId      String?      @unique
+    externalId      String?
     activityTypeKey String
-    activityType    ActivityType @relation(fields: [activityTypeKey], references: [key], onDelete: Cascade)
+    activityType    ActivityType @relation(fields: [activityTypeKey, workspaceId], references: [key, workspaceId], onDelete: Cascade)
     title           String?
     message         String?
     replyTo         String?
@@ -56,12 +56,13 @@ model Activity {
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 
+    @@unique([externalId, workspaceId])
     @@index([workspaceId, createdAt(desc)])
     @@index([memberId, createdAt(desc)])
 }
 
 model ActivityType {
-    key         String    @id
+    key         String
     name        String
     source      SOURCE
     points      Int
@@ -70,11 +71,12 @@ model ActivityType {
     workspaceId String
     workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
 
-    createdAt DateTime   @default(now())
-    updatedAt DateTime   @updatedAt
-    Activity  Activity[]
+    activities Activity[]
 
-    @@unique([key, workspaceId])
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@id([key, workspaceId])
     @@index([key, workspaceId])
 }
 
@@ -215,18 +217,19 @@ model Invitation {
 }
 
 model Level {
-    number      Int       @id
+    number      Int
     name        String
     from        Int
     to          Int?
     workspaceId String
     workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
 
+    members Member[]
+
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
-    Member    Member[]
 
-    @@unique([number, workspaceId])
+    @@id([number, workspaceId])
     @@index([number, workspaceId])
 }
 
@@ -277,7 +280,7 @@ model Member {
     tags                String[]  @default([])
     linkedinUrl         String?
     levelNumber         Int?
-    level               Level?    @relation(fields: [levelNumber], references: [number], onDelete: SetNull)
+    level               Level?    @relation(fields: [levelNumber, workspaceId], references: [number, workspaceId])
     pulse               Int       @default(0)
     source              SOURCE
     companyId           String?
@@ -307,7 +310,7 @@ model Member {
 
 model Profile {
     id          String    @id @default(uuid())
-    externalId  String    @unique
+    externalId  String
     attributes  Json
     memberId    String
     member      Member    @relation(fields: [memberId], references: [id], onDelete: Cascade)
@@ -316,6 +319,11 @@ model Profile {
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
+
+    @@unique([externalId, workspaceId])
+    @@index([externalId, workspaceId])
+    @@index([memberId, workspaceId])
+    @@index([workspaceId])
 }
 
 model Run {

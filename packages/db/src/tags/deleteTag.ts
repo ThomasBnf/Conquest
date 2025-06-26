@@ -9,11 +9,16 @@ export const deleteTag = async ({ id }: Props) => {
     where: { id },
   });
 
-  // await client.query({
-  //   query: `
-  //     ALTER TABLE member
-  //     UPDATE tags = arrayFilter(x -> x != '${id}', tags)
-  //     WHERE hasAny(tags, ['${id}'])
-  //   `,
-  // });
+  const members = await prisma.member.findMany({
+    where: { tags: { has: id } },
+  });
+
+  for (const member of members) {
+    await prisma.member.update({
+      where: { id: member.id },
+      data: {
+        tags: member.tags.filter((tagId) => tagId !== id),
+      },
+    });
+  }
 };

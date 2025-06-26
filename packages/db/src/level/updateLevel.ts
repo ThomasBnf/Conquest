@@ -9,8 +9,10 @@ type Props = {
 export const updateLevel = async ({ number, workspaceId, ...data }: Props) => {
   await prisma.level.update({
     where: {
-      number,
-      workspaceId,
+      number_workspaceId: {
+        number,
+        workspaceId,
+      },
     },
     data: {
       ...data,

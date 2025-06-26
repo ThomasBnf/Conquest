@@ -8,8 +8,10 @@ type Props = {
 export const deleteLevel = async ({ number, workspaceId }: Props) => {
   await prisma.level.delete({
     where: {
-      number,
-      workspaceId,
+      number_workspaceId: {
+        number,
+        workspaceId,
+      },
     },
   });
 };

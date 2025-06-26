@@ -22,7 +22,6 @@ export const listFilteredMembers = async ({
   workspaceId,
 }: Props) => {
   const { operator } = groupFilters;
-
   const filterBy = await getFilters({ groupFilters });
 
   const orderBy = orderByParser({

@@ -46,7 +46,7 @@ export const leaderboard = protectedProcedure
       .map((member) => ({
         ...member,
         pulse: getPulseScore({
-          activities: member.activities as ActivityWithType[],
+          activities: member.activities as unknown as ActivityWithType[],
         }),
       }))
       .sort((a, b) => b.pulse - a.pulse)

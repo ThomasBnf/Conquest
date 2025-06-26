@@ -1,5 +1,7 @@
 import { GroupFilters } from "@conquest/zod/schemas/filters.schema";
 import { Member } from "@conquest/zod/schemas/member.schema";
+import { getFilters } from "../helpers/getFilters";
+import { prisma } from "../prisma";
 
 type Props = {
   member: Member;
@@ -8,28 +10,14 @@ type Props = {
 
 export const getFilteredMember = async ({ member, groupFilters }: Props) => {
   const { operator } = groupFilters;
+  const filterBy = await getFilters({ groupFilters });
 
-  // const filterBy = getFilters({ groupFilters });
-  // const filtersStr = filterBy.join(operator === "OR" ? " OR " : " AND ");
+  const hasMember = await prisma.member.count({
+    where: {
+      id: member.id,
+      [operator]: filterBy,
+    },
+  });
 
-  // const result = await client.query({
-  //   query: `
-  //     SELECT
-  //       if(${filtersStr || "1"}, 1, 0) as result
-  //     FROM member m FINAL
-  //     LEFT JOIN level l ON m.levelId = l.id
-  //     LEFT JOIN company c ON m.companyId = c.id
-  //     LEFT JOIN (
-  //       SELECT
-  //         memberId,
-  //         groupArray(attributes) as attributes
-  //       FROM profile FINAL
-  //       GROUP BY memberId
-  //     ) p ON m.id = p.memberId
-  //     WHERE m.id = '${member.id}'
-  //   `,
-  // });
-
-  // const { data } = (await result.json()) as { data: { result: number }[] };
-  // return data[0]?.result;
+  return hasMember > 0;
 };
