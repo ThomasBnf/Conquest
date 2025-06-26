@@ -8,3 +8,11 @@ export const COLORS = [
   { name: "Pink", hex: "#EB5756" },
   { name: "Red", hex: "#F38E82" },
 ];
+
+export const ACTIVITY_COLORS = {
+  0: "bg-gray-100",
+  1: "bg-main-200",
+  2: "bg-main-500",
+  3: "bg-main-700",
+  4: "bg-black",
+} as const;

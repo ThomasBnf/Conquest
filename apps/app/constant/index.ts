@@ -47,14 +47,6 @@ export const MONTHS = [
   "December",
 ] as const;
 
-export const ACTIVITY_COLORS = {
-  0: "bg-gray-100",
-  1: "bg-main-200",
-  2: "bg-main-500",
-  3: "bg-main-700",
-  4: "bg-black",
-} as const;
-
 export const EUROPEAN_COUNTRIES = [
   "AT",
   "BE",

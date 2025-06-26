@@ -1,10 +1,11 @@
 "use client";
 
-import { ACTIVITY_COLORS, WEEKDAYS } from "@/constant";
+import { WEEKDAYS } from "@/constant";
 import { trpc } from "@/server/client";
 import { cn } from "@conquest/ui/cn";
 import { ScrollArea, ScrollBar } from "@conquest/ui/scroll-area";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@conquest/ui/tooltip";
+import { ACTIVITY_COLORS } from "@conquest/utils/colors";
 import type {
   ActivityHeatmap,
   ActivityWithType,
