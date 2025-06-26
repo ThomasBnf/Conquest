@@ -22,7 +22,7 @@ export const ProfilesCell = ({ member }: Props) => {
           const IconComponent = getIconComponent(source);
 
           return (
-            <Badge key={source} variant="outline">
+            <Badge key={profile.id} variant="outline">
               <IconComponent size={16} />
             </Badge>
           );

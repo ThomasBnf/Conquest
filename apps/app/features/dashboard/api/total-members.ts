@@ -68,6 +68,7 @@ export const totalMembers = protectedProcedure
           attributes: true,
           createdAt: true,
         },
+        distinct: ["memberId"],
       }),
     ]);
 

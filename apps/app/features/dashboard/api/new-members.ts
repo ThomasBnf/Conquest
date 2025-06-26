@@ -73,6 +73,7 @@ export const newMembers = protectedProcedure
           attributes: true,
           createdAt: true,
         },
+        distinct: ["memberId"],
       }),
     ]);
 
