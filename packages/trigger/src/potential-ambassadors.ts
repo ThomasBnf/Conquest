@@ -7,16 +7,13 @@ import { triggerWorkflows } from "./tasks/triggerWorkflows";
 
 export const potentialAmbassadors = async () => {
   const now = new Date();
-  const thirtyDaysAgo = subDays(now, 30);
+  const from = subDays(now, 30);
 
-  const from = format(thirtyDaysAgo, "yyyy-MM-dd HH:mm:ss");
-  const to = format(now, "yyyy-MM-dd HH:mm:ss");
-
-  await tagAmbassadors({ from, to });
-  await removeAmbassadors({ from, to });
+  await tagAmbassadors({ from, to: now });
+  await removeAmbassadors({ from, to: now });
 };
 
-const tagAmbassadors = async ({ from, to }: { from: string; to: string }) => {
+const tagAmbassadors = async ({ from, to }: { from: Date; to: Date }) => {
   const members = await prisma.member.findMany({
     where: {
       pulse: {
@@ -62,10 +59,7 @@ const tagAmbassadors = async ({ from, to }: { from: string; to: string }) => {
   await updateManyMembers({ members: updatedMembers });
 };
 
-const removeAmbassadors = async ({
-  from,
-  to,
-}: { from: string; to: string }) => {
+const removeAmbassadors = async ({ from, to }: { from: Date; to: Date }) => {
   const members = await prisma.member.findMany({
     where: {
       pulse: {

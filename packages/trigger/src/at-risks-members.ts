@@ -7,16 +7,13 @@ import { triggerWorkflows } from "./tasks/triggerWorkflows";
 
 export const atRisksMembers = async () => {
   const now = new Date();
-  const thirtyDaysAgo = subDays(now, 30);
+  const from = subDays(now, 30);
 
-  const from = format(thirtyDaysAgo, "yyyy-MM-dd HH:mm:ss");
-  const to = format(now, "yyyy-MM-dd HH:mm:ss");
-
-  await tagAtRiskMembers({ from, to });
-  await removeTagAtRiskMembers({ from, to });
+  await tagAtRiskMembers({ from, to: now });
+  await removeTagAtRiskMembers({ from, to: now });
 };
 
-const tagAtRiskMembers = async ({ from, to }: { from: string; to: string }) => {
+const tagAtRiskMembers = async ({ from, to }: { from: Date; to: Date }) => {
   const members = await prisma.member.findMany({
     where: {
       pulse: {
@@ -64,7 +61,7 @@ const tagAtRiskMembers = async ({ from, to }: { from: string; to: string }) => {
 const removeTagAtRiskMembers = async ({
   from,
   to,
-}: { from: string; to: string }) => {
+}: { from: Date; to: Date }) => {
   const members = await prisma.member.findMany({
     where: {
       pulse: {
