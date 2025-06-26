@@ -20,10 +20,7 @@ export const heatmap = protectedProcedure
     const activities = await prisma.activity.findMany({
       where: {
         workspaceId,
-        member: {
-          ...(memberId ? {} : { isStaff: false }),
-        },
-        ...(memberId ? { memberId } : {}),
+        ...(memberId ? { memberId } : { member: { isStaff: false } }),
         createdAt: {
           gte: last365days,
         },

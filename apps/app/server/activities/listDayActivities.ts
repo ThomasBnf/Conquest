@@ -1,6 +1,7 @@
 import { prisma } from "@conquest/db/prisma";
 import { ActivityWithTypeSchema } from "@conquest/zod/schemas/activity.schema";
 import { endOfDay, startOfDay } from "date-fns";
+import { toZonedTime } from "date-fns-tz";
 import { z } from "zod";
 import { protectedProcedure } from "../trpc";
 
@@ -15,8 +16,8 @@ export const listDayActivities = protectedProcedure
     const { workspaceId } = user;
     const { date, memberId } = input;
 
-    const startDay = startOfDay(date);
-    const endDay = endOfDay(date);
+    const startDay = toZonedTime(startOfDay(date), "Europe/Paris");
+    const endDay = toZonedTime(endOfDay(date), "Europe/Paris");
 
     const activities = await prisma.activity.findMany({
       where: {

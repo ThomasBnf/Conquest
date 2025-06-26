@@ -112,7 +112,7 @@ export const getFilters = async ({
           case "empty":
             return {
               profiles: {
-                some: { attributes: { path: ["source"], equals: "" } },
+                none: {},
               },
             };
           case "not_empty":

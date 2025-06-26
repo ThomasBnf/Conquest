@@ -13,6 +13,7 @@ import type {
 import { skipToken } from "@tanstack/react-query";
 import {
   addDays,
+  endOfDay,
   format,
   isFirstDayOfMonth,
   startOfWeek,
@@ -110,7 +111,7 @@ const getActivityLevel = (
 const generateCalendarGrid = () => {
   const today = new Date();
   const startDate = subDays(today, 365);
-  const endDate = today;
+  const endDate = endOfDay(today);
   const startOfCalendar = startOfWeek(startDate, { weekStartsOn: 1 });
 
   const weeks = [];

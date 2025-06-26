@@ -11,7 +11,6 @@ import { listMessages } from "../slack/listMessages";
 import { checkDuplicates } from "./checkDuplicates";
 import { getAllMembersMetrics } from "./getAllMembersMetrics";
 import { integrationSuccessEmail } from "./integrationSuccessEmail";
-import { Block } from "@slack/web-api";
 
 export const installSlack = schemaTask({
   id: "install-slack",
