@@ -116,7 +116,7 @@ type CHActivity = z.infer<typeof CHActivitySchema>;
 
 export const adminTask = schemaTask({
   id: "admin",
-  machine: "small-2x",
+  machine: "large-2x",
   schema: z.object({
     user: UserSchema,
   }),
