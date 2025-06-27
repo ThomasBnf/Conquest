@@ -49,7 +49,7 @@ export const GithubPr = ({ activity, member, github }: Props) => {
       <div className="mt-2 ml-7 rounded-md border p-3">
         <p className="font-medium">{title}</p>
         <p
-          dangerouslySetInnerHTML={{ __html: message }}
+          dangerouslySetInnerHTML={{ __html: message ?? "" }}
           className="whitespace-pre-wrap break-words"
         />
       </div>

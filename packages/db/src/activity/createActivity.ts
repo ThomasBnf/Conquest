@@ -7,7 +7,7 @@ import { prisma } from "../prisma";
 
 type Props = {
   activityTypeKey: string;
-  message?: string;
+  message?: string | null;
   memberId: string;
   source: Source;
   workspaceId: string;

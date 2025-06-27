@@ -57,7 +57,7 @@ export const SlackReply = ({ activity, member }: Props) => {
       </div>
       <div className="mt-2 ml-7 rounded-md border p-3">
         <ReactMarkdown className="whitespace-pre-wrap break-words">
-          {parseSlackMessage(message)}
+          {parseSlackMessage(message ?? "")}
         </ReactMarkdown>
       </div>
     </div>

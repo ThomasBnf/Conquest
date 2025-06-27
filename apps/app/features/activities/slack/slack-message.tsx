@@ -88,7 +88,7 @@ export const SlackMessage = ({ activity, member }: Props) => {
             ),
           }}
         >
-          {parseSlackMessage(message)}
+          {parseSlackMessage(message ?? "")}
         </ReactMarkdown>
       </div>
     </div>

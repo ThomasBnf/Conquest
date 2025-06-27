@@ -42,7 +42,7 @@ export const SlackReaction = ({ activity, member }: Props) => {
           <span className="font-medium text-foreground">
             {firstName} {lastName}
           </span>{" "}
-          added reaction {emojiParser(message)}
+          added reaction {emojiParser(message ?? "")}
           <span className="font-medium text-foreground">
             {" "}
             in #{channel?.name}
