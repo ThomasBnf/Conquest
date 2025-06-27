@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto";
 import { createTask } from "@conquest/db/task/createTask";
 import { getUserById } from "@conquest/db/users/getUserById";
 import { resend } from "@conquest/resend";
@@ -6,7 +7,6 @@ import { Member } from "@conquest/zod/schemas/member.schema";
 import { Node, NodeTaskSchema } from "@conquest/zod/schemas/node.schema";
 import { Task } from "@conquest/zod/schemas/task.schema";
 import { addDays, endOfDay, format } from "date-fns";
-import { randomUUID } from "node:crypto";
 import { nodeStatus } from "./nodeStatus";
 
 type Props = {

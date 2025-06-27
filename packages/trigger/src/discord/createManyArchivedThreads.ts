@@ -1,6 +1,6 @@
 import { createActivity } from "@conquest/db/activity/createActivity";
-import { getProfile } from "@conquest/db/profile/getProfile";
 import { discordClient } from "@conquest/db/discord";
+import { getProfile } from "@conquest/db/profile/getProfile";
 import type { Channel } from "@conquest/zod/schemas/channel.schema";
 import type { DiscordIntegration } from "@conquest/zod/schemas/integration.schema";
 import { logger } from "@trigger.dev/sdk/v3";
@@ -124,7 +124,7 @@ export const createManyArchivedThreads = async ({
             externalId: thread.id,
             activityTypeKey: "discord:thread",
             title: name,
-            message: type === 21 ? (message_content ?? "") : content,
+            message: type === 21 ? message_content : content,
             memberId: profile.memberId,
             channelId: channel.id,
             createdAt: new Date(firstMessage.timestamp),

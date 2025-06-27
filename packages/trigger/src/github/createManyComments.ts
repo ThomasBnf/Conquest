@@ -45,7 +45,7 @@ export const createManyComments = async ({
     await createActivity({
       externalId: String(commentId),
       activityTypeKey: "github:comment",
-      message: body ?? "",
+      message: body,
       memberId: member.id,
       replyTo: String(issueNumber),
       createdAt: new Date(created_at),

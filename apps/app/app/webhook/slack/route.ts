@@ -348,8 +348,8 @@ export async function POST(req: NextRequest) {
             await updateActivity({
               ...activity,
               activityTypeKey: thread_ts ? "slack:reply" : "slack:message",
-              message: text ?? "",
-              replyTo: thread_ts ?? "",
+              message: text ?? null,
+              replyTo: thread_ts ?? null,
             });
 
             return NextResponse.json({ status: 200 });
@@ -400,8 +400,8 @@ export async function POST(req: NextRequest) {
       await createActivity({
         externalId: ts,
         activityTypeKey: thread_ts ? "slack:reply" : "slack:message",
-        message: text,
-        replyTo: thread_ts ?? "",
+        message: text ?? null,
+        replyTo: thread_ts ?? null,
         memberId: profile.memberId,
         channelId: channel.id,
         source: "Slack",

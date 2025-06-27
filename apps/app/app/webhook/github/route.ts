@@ -1,3 +1,4 @@
+import { createHmac } from "node:crypto";
 import { createActivity } from "@conquest/db/activity/createActivity";
 import { deleteActivity } from "@conquest/db/activity/deleteActivity";
 import { getActivity } from "@conquest/db/activity/getActivity";
@@ -16,7 +17,6 @@ import {
   WebhookEvent,
 } from "@octokit/webhooks-types";
 import { NextRequest, NextResponse } from "next/server";
-import { createHmac } from "node:crypto";
 import { Octokit } from "octokit";
 
 export async function POST(request: NextRequest) {
@@ -87,7 +87,7 @@ export async function POST(request: NextRequest) {
               externalId: String(number),
               activityTypeKey: "github:issue",
               title: `#${number} - ${title}`,
-              message: message ?? "",
+              message: message ?? null,
               memberId: member.id,
               createdAt: new Date(created_at),
               updatedAt: new Date(updated_at),
@@ -110,7 +110,7 @@ export async function POST(request: NextRequest) {
             await updateActivity({
               ...data,
               title: `#${number} - ${title}`,
-              message: message ?? "",
+              message: message ?? null,
             });
 
             break;
@@ -144,7 +144,7 @@ export async function POST(request: NextRequest) {
             await createActivity({
               activityTypeKey: "github:pr",
               title: `#${number} - ${title}`,
-              message: message ?? "",
+              message: message ?? null,
               memberId: member.id,
               source: "Github",
               workspaceId,
@@ -165,7 +165,7 @@ export async function POST(request: NextRequest) {
             await updateActivity({
               ...data,
               title: `#${number} - ${title}`,
-              message: message ?? "",
+              message: message ?? null,
             });
 
             break;
@@ -215,7 +215,7 @@ export async function POST(request: NextRequest) {
 
             await updateActivity({
               ...data,
-              message: message ?? "",
+              message: message ?? null,
             });
 
             break;

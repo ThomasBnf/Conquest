@@ -69,7 +69,7 @@ export async function POST(request: NextRequest) {
       externalId: `t/${id}`,
       activityTypeKey: "discourse:topic",
       title,
-      message: "",
+      message: null,
       memberId: profile.memberId,
       channelId: channel.id,
       source: "Discourse",

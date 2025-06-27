@@ -57,7 +57,7 @@ export const createManyIssues = async (tokenManager: TokenManager) => {
         externalId: String(number),
         activityTypeKey: "github:issue",
         title: `#${number} - ${title}`,
-        message: body ?? "",
+        message: body,
         memberId: member?.id,
         createdAt: new Date(created_at),
         updatedAt: new Date(updated_at),

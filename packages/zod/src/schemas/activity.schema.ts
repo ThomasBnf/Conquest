@@ -7,7 +7,7 @@ export const ActivitySchema = z.object({
   externalId: z.string().nullable(),
   activityTypeKey: z.string(),
   title: z.string().nullable(),
-  message: z.string(),
+  message: z.string().nullable(),
   replyTo: z.string().nullable(),
   reactTo: z.string().nullable(),
   inviteTo: z.string().nullable(),
