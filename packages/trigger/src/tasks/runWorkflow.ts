@@ -61,7 +61,6 @@ export const runWorkflow = schemaTask({
 
     const run = await createRun({
       memberId: member.id,
-      runId: triggerRun.id,
       workflowId: workflow.id,
     });
 
