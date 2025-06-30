@@ -6,23 +6,42 @@ export const useUpdateWorkflow = () => {
   const utils = trpc.useUtils();
 
   const { mutateAsync } = trpc.workflows.update.useMutation({
-    onMutate: (updatedWorkflow) => {
+    onMutate: async (updatedWorkflow) => {
+      await utils.workflows.list.cancel();
+      await utils.workflows.get.cancel();
+
       const parsedWorkflow = WorkflowSchema.parse(updatedWorkflow);
       const { id } = parsedWorkflow;
 
-      utils.workflows.get.cancel({ id });
+      const previousWorkflows = utils.workflows.list.getData();
       const previousWorkflow = utils.workflows.get.getData({ id });
-      utils.workflows.get.setData({ id }, parsedWorkflow);
 
-      return { previousWorkflow };
+      utils.workflows.list.setData(undefined, (old) => {
+        if (!old) return old;
+
+        return old.map((w) => (w.id === id ? { ...w, ...parsedWorkflow } : w));
+      });
+      utils.workflows.get.setData({ id }, (old) => {
+        if (!old) return parsedWorkflow;
+        return { ...old, ...parsedWorkflow };
+      });
+
+      return { previousWorkflows, previousWorkflow };
     },
-    onError: (_, { id }, context) => {
-      toast.error("Failed to update workflow");
-      utils.workflows.get.setData({ id }, context?.previousWorkflow);
+    onError: (error, __, context) => {
+      utils.workflows.list.setData(undefined, context?.previousWorkflows);
+
+      if (context?.previousWorkflow?.id) {
+        utils.workflows.get.setData(
+          { id: context.previousWorkflow.id },
+          context.previousWorkflow,
+        );
+      }
+      toast.error(error.message);
     },
-    onSettled: (_, __, { id }) => {
-      utils.workflows.get.invalidate({ id });
+    onSettled: () => {
       utils.workflows.list.invalidate();
+      utils.workflows.get.invalidate();
     },
   });
 

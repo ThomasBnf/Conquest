@@ -530,6 +530,7 @@ enum ROLE {
 
 enum RUN_STATUS {
     RUNNING
+    WAITING
     COMPLETED
     FAILED
 }

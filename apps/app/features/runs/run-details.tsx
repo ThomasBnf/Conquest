@@ -2,10 +2,11 @@ import { useWorkspace } from "@/hooks/useWorkspace";
 import { trpc } from "@/server/client";
 import { timeParser } from "@/utils/time-parser";
 import { Button } from "@conquest/ui/button";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@conquest/ui/tooltip";
 import { Run } from "@conquest/zod/schemas/run.schema";
 import { skipToken } from "@tanstack/react-query";
 import { format } from "date-fns";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Info } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { RunStatus } from "./run-status";
@@ -33,14 +34,24 @@ export const RunDetails = ({ run }: Props) => {
         <Button variant="ghost" size="icon" onClick={() => router.back()}>
           <ArrowLeft size={16} />
         </Button>
+        <p className="flex h-10 items-center p-2 font-medium">Runs details</p>
       </div>
-      <p className="flex h-10 items-center p-2 font-medium">Runs details</p>
       <div className="grid grid-cols-2 gap-y-4 p-4">
         <div className="space-y-1">
           <p className="text-muted-foreground">Status</p>
           <div className="flex items-center">
             <RunStatus status={run.status} />
             <p className="capitalize">{run.status.toLowerCase()}</p>
+            {run.status === "WAITING" && (
+              <Tooltip>
+                <TooltipTrigger className="ml-2">
+                  <Info size={16} className="text-muted-foreground" />
+                </TooltipTrigger>
+                <TooltipContent side="bottom" align="center">
+                  Waiting for the next action to be triggered
+                </TooltipContent>
+              </Tooltip>
+            )}
           </div>
         </div>
         <div className="space-y-1">
@@ -56,7 +67,7 @@ export const RunDetails = ({ run }: Props) => {
           <p>{format(run.createdAt, "PPp")}</p>
         </div>
         {memberId && (
-          <div className="space-y-1">
+          <div className="col-span-2 space-y-1">
             <p className="text-muted-foreground">Member</p>
             <p>
               <Link

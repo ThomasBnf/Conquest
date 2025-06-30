@@ -21,11 +21,23 @@ export const RunOverview = ({ workflowId }: Props) => {
   }, 0);
 
   const avgDurationMs = totalDuration / (completedRuns.length || 1);
-  const minutes = Math.floor(avgDurationMs / 60000);
-  const seconds = Math.round((avgDurationMs % 60000) / 1000);
+
+  const formatDuration = (ms: number) => {
+    const days = Math.floor(ms / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((ms % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((ms % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.round((ms % (1000 * 60)) / 1000);
+
+    if (days > 0) return hours > 0 ? `${days}d ${hours}h` : `${days}d`;
+    if (hours > 0) return minutes > 0 ? `${hours}h ${minutes}m` : `${hours}h`;
+    if (minutes > 0) return `${minutes}m`;
+    return `${seconds}s`;
+  };
+
+  const duration = formatDuration(avgDurationMs);
 
   return (
-    <div className="mt-auto p-4">
+    <div className="mt-auto border-t p-4">
       <p className="font-medium">Overview</p>
       <div className="mt-2 grid grid-cols-2 gap-2">
         <div className="relative rounded-md border border-green-100 bg-green-50 p-2 text-green-700">
@@ -53,7 +65,8 @@ export const RunOverview = ({ workflowId }: Props) => {
           <p>In progress</p>
         </div>
         <div className="rounded-md border p-2">
-          {minutes}m {seconds}s<p>Avg. duration</p>
+          {duration}
+          <p>Avg. duration</p>
         </div>
       </div>
     </div>

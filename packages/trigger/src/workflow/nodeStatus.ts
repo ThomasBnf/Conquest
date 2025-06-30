@@ -3,7 +3,7 @@ import { logger } from "@trigger.dev/sdk/v3";
 
 type Props = {
   node: Node;
-  status: "COMPLETED" | "FAILED";
+  status: "RUNNING" | "WAITING" | "COMPLETED" | "FAILED";
   error?: string;
 };
 

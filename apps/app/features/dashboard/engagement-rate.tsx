@@ -13,7 +13,6 @@ import {
 import { Skeleton } from "@conquest/ui/skeleton";
 import { Source } from "@conquest/zod/enum/source.enum";
 import { skipToken } from "@tanstack/react-query";
-import { format } from "date-fns";
 import { ReactNode, useEffect, useState } from "react";
 import {
   CartesianGrid,
@@ -113,7 +112,7 @@ export const EngagementRate = () => {
           </div>
           <div className="space-y-2">
             <p className="text-muted-foreground">
-              Engagement rate by integration
+              Average engagement rate by integration
             </p>
             <div>
               {sources.map((source) => (
@@ -128,9 +127,17 @@ export const EngagementRate = () => {
                     />
                     <p>{source}</p>
                   </div>
-                  {/* <p className="font-medium">
-                    {days?.at(-1)?.[source]?.toFixed(0) ?? 0}%
-                  </p> */}
+                  <p className="font-medium">
+                    {days?.length
+                      ? (
+                          days.reduce(
+                            (sum, day) => sum + Number(day[source] ?? 0),
+                            0,
+                          ) / days.length
+                        ).toFixed(2)
+                      : "0.00"}
+                    %
+                  </p>
                 </div>
               ))}
             </div>

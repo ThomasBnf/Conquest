@@ -13,7 +13,6 @@ import {
 import { Skeleton } from "@conquest/ui/skeleton";
 import { Source } from "@conquest/zod/enum/source.enum";
 import { skipToken } from "@tanstack/react-query";
-import { format } from "date-fns";
 import { ReactNode, useEffect, useState } from "react";
 import {
   CartesianGrid,
@@ -24,7 +23,6 @@ import {
   YAxis,
 } from "recharts";
 import { DateRangePicker } from "./date-range-picker";
-import { getDays } from "./helpers/getDays";
 import { IntegrationsPicker } from "./integrations-picker";
 import { Percentage } from "./percentage";
 
@@ -122,7 +120,9 @@ export const NewMembers = () => {
                     />
                     <p>{source}</p>
                   </div>
-                  <p className="font-medium">{days?.at(-1)?.[source] ?? 0}</p>
+                  <p className="font-medium">
+                    {days?.reduce((sum, day) => sum + (day[source] ?? 0), 0)}
+                  </p>
                 </div>
               ))}
             </div>

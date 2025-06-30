@@ -12,14 +12,13 @@ export const RunHistory = ({ workflowId }: Props) => {
 
   return (
     <div className="flex h-full flex-col">
-      <div className="flex h-10 items-center">
+      <div className="flex h-10 items-center border-b">
         <p className="p-2 font-medium">Runs history</p>
       </div>
-
       {data?.length === 0 ? (
         <EmptyRuns />
       ) : (
-        <ScrollArea className="flex-1">
+        <ScrollArea className="max-h-[calc(100vh-320px)]">
           {data
             ?.slice()
             .reverse()

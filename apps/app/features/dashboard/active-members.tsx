@@ -108,7 +108,9 @@ export const ActiveMembers = () => {
           )}
         </div>
         <div className="space-y-2">
-          <p className="text-muted-foreground">Active members by integration</p>
+          <p className="text-muted-foreground">
+            Average active members by integration
+          </p>
           <div className="space-y-0.5">
             {sources.map((source) => (
               <div key={source} className="flex items-center justify-between">
@@ -119,7 +121,16 @@ export const ActiveMembers = () => {
                   />
                   <p>{source}</p>
                 </div>
-                <p className="font-medium">{days?.at(-1)?.[source] ?? 0}</p>
+                <p className="font-medium">
+                  {days?.length
+                    ? (
+                        days.reduce(
+                          (sum, day) => sum + Number(day[source] ?? 0),
+                          0,
+                        ) / days.length
+                      ).toFixed(0)
+                    : "0.00"}
+                </p>
               </div>
             ))}
           </div>

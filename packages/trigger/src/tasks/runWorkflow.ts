@@ -1,5 +1,6 @@
 import { getFilteredMember } from "@conquest/db/member/getFilteredMember";
-import { Run, User } from "@conquest/db/prisma";
+import { User } from "@conquest/db/prisma";
+import { prisma } from "@conquest/db/prisma";
 import { createRun } from "@conquest/db/runs/createRun";
 import { updateRun } from "@conquest/db/runs/updateRun";
 import { getUserById } from "@conquest/db/users/getUserById";
@@ -14,6 +15,7 @@ import {
   NodeIfElseSchema,
   NodeSchema,
 } from "@conquest/zod/schemas/node.schema";
+import { Run } from "@conquest/zod/schemas/run.schema";
 import {
   Workflow,
   WorkflowSchema,
@@ -36,8 +38,9 @@ export const runWorkflow = schemaTask({
     workflow: WorkflowSchema,
     member: MemberSchema,
   }),
-  run: async ({ workflow, member }) => {
+  run: async ({ workflow, member }, { ctx: { run: triggerRun } }) => {
     const {
+      id: workflowId,
       nodes,
       edges,
       createdBy,
@@ -46,10 +49,19 @@ export const runWorkflow = schemaTask({
       alertOnFailure,
     } = workflow;
 
+    const published = await isPublished(workflowId);
+
+    if (!published) {
+      logger.info("Workflow is no longer published, stopping execution");
+      return;
+    }
+
     const { slug } = await getWorkspace({ id: workspaceId });
     const user = await getUserById({ id: createdBy });
+
     const run = await createRun({
       memberId: member.id,
+      runId: triggerRun.id,
       workflowId: workflow.id,
     });
 
@@ -59,14 +71,26 @@ export const runWorkflow = schemaTask({
     let hasNextNode = true;
 
     while (hasNextNode && node) {
+      const published = await isPublished(workflowId);
+
+      if (!published) {
+        logger.info("Workflow is no longer published, stopping execution");
+
+        return await updateRun({
+          id: run.id,
+          status: "COMPLETED",
+          runNodes,
+        });
+      }
+
       const parsedNode = NodeSchema.parse(node);
       const { type } = parsedNode.data;
       const isTrigger = "isTrigger" in parsedNode.data;
 
-      if (isTrigger) {
+      if (!isTrigger) {
         runNodes.set(parsedNode.id, {
           ...parsedNode,
-          data: { ...parsedNode.data, status: "COMPLETED" },
+          data: { ...parsedNode.data, status: "RUNNING" },
         });
       }
 
@@ -123,7 +147,7 @@ export const runWorkflow = schemaTask({
           break;
         }
         case "wait": {
-          const result = await waitFor({ node: parsedNode });
+          const result = await waitFor({ run, node: parsedNode, runNodes });
           runNodes.set(parsedNode.id, result);
           break;
         }
@@ -254,4 +278,17 @@ const sendAlertyByEmail = async ({
       runId: run.id,
     }),
   });
+};
+
+const isPublished = async (workflowId: string) => {
+  const workflow = await prisma.workflow.findUnique({
+    where: {
+      id: workflowId,
+    },
+    select: {
+      published: true,
+    },
+  });
+
+  return workflow?.published ?? false;
 };

@@ -12,6 +12,7 @@ import { Switch } from "@conquest/ui/switch";
 import { TextField } from "@conquest/ui/text-field";
 import { Workflow } from "@conquest/zod/schemas/workflow.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useUpdateWorkflow } from "../mutations/useUpdateWorkflow";
 import {
@@ -51,6 +52,10 @@ export const WorkflowPanel = ({ workflow }: Props) => {
       alertOnFailure,
     });
   };
+
+  useEffect(() => {
+    form.setValue("name", name);
+  }, [name]);
 
   return (
     <>

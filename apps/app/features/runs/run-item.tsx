@@ -17,13 +17,12 @@ export const RunItem = ({ run, index }: Props) => {
   const pathname = usePathname();
   const currentRun = pathname.split("/").pop();
 
-  const { workflowId, status } = run;
-  const isRunning = status === "RUNNING";
+  const { workflowId } = run;
 
   return (
     <Link
       key={run.id}
-      href={isRunning ? "" : `/${slug}/workflows/${workflowId}/runs/${run.id}`}
+      href={`/${slug}/workflows/${workflowId}/runs/${run.id}`}
       prefetch
     >
       <Button

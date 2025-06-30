@@ -53,7 +53,7 @@ export const NodeBaseDataSchema = z.object({
   icon: z.string(),
   label: z.string(),
   description: z.string(),
-  status: z.enum(["COMPLETED", "FAILED"]).optional(),
+  status: z.enum(["RUNNING", "WAITING", "COMPLETED", "FAILED"]).optional(),
   error: z.string().optional(),
 });
 

@@ -8,6 +8,7 @@ import { trpc } from "@/server/client";
 import { skipToken } from "@tanstack/react-query";
 import {
   Background,
+  Controls,
   type EdgeProps,
   type NodeProps,
   ReactFlow,
@@ -53,7 +54,7 @@ export const RunWorkflow = ({ workflowId, runId }: Props) => {
     <PageLayout>
       <Header workflow={data} />
       <WorkflowTabs workflowId={workflowId} />
-      <div className="relative flex h-full">
+      <div className="flex h-full">
         <ReactFlow
           nodes={runNodes ?? nodes}
           edges={edges}
@@ -65,8 +66,14 @@ export const RunWorkflow = ({ workflowId, runId }: Props) => {
           edgeTypes={edgeTypes}
           proOptions={{ hideAttribution: true }}
           fitView
-          className="relative"
         >
+          <Controls
+            showInteractive={false}
+            className="overflow-hidden rounded border"
+            style={{
+              boxShadow: "0 1px 2px 0 rgb(0 0 0 / 0.05)",
+            }}
+          />
           <Background />
         </ReactFlow>
         <RunSidebar workflowId={workflowId}>
