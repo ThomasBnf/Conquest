@@ -19,5 +19,5 @@ export default defineConfig({
       maxAttempts: 1,
     },
   },
-  maxDuration: 60 * 60 * 10,
+  maxDuration: 60 * 60 * 30,
 });

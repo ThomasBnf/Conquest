@@ -7,7 +7,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { httpLink } from "@trpc/client";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
-import { type ReactNode, useState } from "react";
+import { type ReactNode, useEffect, useState } from "react";
 import { Toaster } from "sonner";
 import superjson from "superjson";
 
@@ -16,6 +16,8 @@ type Props = {
 };
 
 export const Providers = ({ children }: Props) => {
+  const [isClient, setIsClient] = useState(false);
+
   const [queryClient] = useState(
     () =>
       new QueryClient({
@@ -37,6 +39,12 @@ export const Providers = ({ children }: Props) => {
       ],
     }),
   );
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  if (!isClient) return null;
 
   return (
     <trpc.Provider client={trpcClient} queryClient={queryClient}>
