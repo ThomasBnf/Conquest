@@ -36,11 +36,17 @@ export const PlansTable = ({ period, setPeriod }: Props) => {
           </div>
           <div className="space-y-3 p-3">
             <p className="font-medium">Integrations</p>
-            <p>Community Platforms</p>
+            <p>Discord</p>
+            <p>Discourse</p>
+            <p>Slack</p>
             <p>GitHub</p>
+            <p>Livestorm</p>
             <p>API</p>
-            <p>Socials</p>
-            <p>Events platform</p>
+          </div>
+          <div className="space-y-3 p-3">
+            <p className="font-medium">Workflows</p>
+            <p>Included</p>
+            <p>Additional credits</p>
           </div>
           <div className="space-y-3 p-3">
             <p className="font-medium">Features</p>
@@ -48,6 +54,7 @@ export const PlansTable = ({ period, setPeriod }: Props) => {
             <p>Tags</p>
             <p>Lists</p>
             <p>Activity types</p>
+            <p>Tasks</p>
           </div>
         </div>
         <div className="flex h-auto flex-1 divide-x">

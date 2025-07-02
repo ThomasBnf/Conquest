@@ -23,7 +23,7 @@ export const ButtonBillingPortal = () => {
       {loading ? (
         <Loader2 size={16} className="animate-spin" />
       ) : (
-        "Manage Payment"
+        "Billing Portal"
       )}
     </Button>
   );

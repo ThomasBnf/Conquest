@@ -26,12 +26,13 @@ import { LoadingIntegrations } from "../states/loading-integrations";
 import { TrialCard } from "./trial-card";
 
 export const SettingsSidebar = () => {
-  const { slug } = useWorkspace();
+  const { workspace, slug } = useWorkspace();
   const pathname = usePathname();
 
   const menu = [
     {
       label: "Account",
+      isVisible: true,
       routes: [
         {
           icon: <User size={18} />,
@@ -43,6 +44,7 @@ export const SettingsSidebar = () => {
     },
     {
       label: "Workspace",
+      isVisible: true,
       routes: [
         {
           icon: <General size={18} />,
@@ -60,6 +62,7 @@ export const SettingsSidebar = () => {
     },
     {
       label: "System",
+      isVisible: true,
       routes: [
         {
           icon: <Tags size={18} />,
@@ -89,6 +92,7 @@ export const SettingsSidebar = () => {
     },
     {
       label: "Developer",
+      isVisible: workspace?.plan === "ACTIVE",
       routes: [
         {
           icon: <APIKey size={18} />,
@@ -115,23 +119,25 @@ export const SettingsSidebar = () => {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        {menu.map((group) => (
-          <SidebarGroup key={group.label}>
-            <SidebarGroupLabel>{group.label}</SidebarGroupLabel>
-            <SidebarMenu>
-              {group.routes.map((route) => (
-                <SidebarMenuItem key={route.label}>
-                  <SidebarMenuButton asChild isActive={route.isActive}>
-                    <Link href={route.href} prefetch>
-                      {route.icon}
-                      <span>{route.label}</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroup>
-        ))}
+        {menu
+          .filter((group) => group.isVisible)
+          .map((group) => (
+            <SidebarGroup key={group.label}>
+              <SidebarGroupLabel>{group.label}</SidebarGroupLabel>
+              <SidebarMenu>
+                {group.routes.map((route) => (
+                  <SidebarMenuItem key={route.label}>
+                    <SidebarMenuButton asChild isActive={route.isActive}>
+                      <Link href={route.href} prefetch>
+                        {route.icon}
+                        <span>{route.label}</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarGroup>
+          ))}
       </SidebarContent>
       <LoadingIntegrations />
       <TrialCard />

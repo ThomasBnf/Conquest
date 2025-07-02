@@ -6,7 +6,6 @@ import { PlansTable } from "@/features/billing/plans-table";
 import type { PlanPeriod } from "@/features/billing/types";
 import { trpc } from "@/server/client";
 import type { Plan } from "@conquest/zod/enum/plan.enum";
-import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";

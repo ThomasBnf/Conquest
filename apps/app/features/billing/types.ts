@@ -1,13 +1,13 @@
 import { z } from "zod";
 
-export const planSchema = z.object({
+export const PlansSchema = z.object({
   name: z.string(),
   description: z.string(),
   priceMonthly: z.union([z.number(), z.string()]),
   priceAnnually: z.union([z.number(), z.string()]),
   reduction: z.number().optional(),
-  priceIdMonthly: z.string(),
-  priceIdAnnually: z.string(),
+  priceIdMonthly: z.array(z.string()),
+  priceIdAnnually: z.array(z.string()),
   seats: z.string(),
   members: z.string(),
   integrations: z.string(),
@@ -17,11 +17,12 @@ export const planSchema = z.object({
 
 export const integrationsSchema = z.object({
   count: z.union([z.number(), z.string()]),
-  community: z.boolean(),
+  discord: z.boolean(),
+  discourse: z.boolean(),
+  slack: z.boolean(),
   github: z.boolean(),
   api: z.boolean(),
-  socials: z.boolean(),
-  events: z.boolean(),
+  livestorm: z.boolean(),
 });
 
 export const featuresSchema = z.object({
@@ -29,19 +30,24 @@ export const featuresSchema = z.object({
   tags: z.string(),
   lists: z.string(),
   activityTypes: z.string(),
+  tasks: z.string(),
 });
 
-export const plansTableSchema = z.object({
+export const PlansTableSchema = z.object({
   name: z.string(),
   priceMonthly: z.union([z.number(), z.string()]),
   priceAnnually: z.union([z.number(), z.string()]),
   reduction: z.number().nullable(),
   seats: z.union([z.number(), z.string()]),
   members: z.string(),
+  workflows: z.object({
+    included: z.string(),
+    additional: z.union([z.number(), z.string()]),
+  }),
   integrations: integrationsSchema,
   features: featuresSchema,
 });
 
-export type Plan = z.infer<typeof planSchema>;
-export type PlanTable = z.infer<typeof plansTableSchema>;
+export type Plans = z.infer<typeof PlansSchema>;
+export type PlansTable = z.infer<typeof PlansTableSchema>;
 export type PlanPeriod = "monthly" | "annually";

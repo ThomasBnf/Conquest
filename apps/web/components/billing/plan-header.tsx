@@ -1,10 +1,10 @@
 import { cn } from "@conquest/ui/cn";
-import type { Plan, PlanPeriod } from "./types";
+import type { PlanPeriod, PlansTable } from "./types";
 
 export const PlanHeader = ({
   plan,
   period,
-}: { plan: Plan; period: PlanPeriod }) => {
+}: { plan: PlansTable; period: PlanPeriod }) => {
   const isAnnually = period === "annually";
 
   return (

@@ -52,8 +52,9 @@ export const PlanPicker = ({
     plan: Plan;
     priceId: string;
   }) => {
-    if (priceId.includes("custom"))
+    if (priceId.includes("custom")) {
       return toast.error("Please contact us to upgrade your plan");
+    }
 
     onSelectPlan({ plan, priceId });
   };
@@ -134,10 +135,10 @@ export const PlanPicker = ({
                 variant={plan.popular ? "default" : "outline"}
                 disabled={
                   (!isPastDue &&
-                    priceId === plan.priceIdMonthly &&
+                    plan.priceIdMonthly.includes(priceId ?? "") &&
                     period === "monthly") ||
                   (!isPastDue &&
-                    priceId === plan.priceIdAnnually &&
+                    plan.priceIdAnnually.includes(priceId ?? "") &&
                     period === "annually") ||
                   loading
                 }
@@ -146,8 +147,8 @@ export const PlanPicker = ({
                     plan: plan.name as Plan,
                     priceId:
                       period === "annually"
-                        ? plan.priceIdAnnually
-                        : plan.priceIdMonthly,
+                        ? (plan.priceIdAnnually[0] ?? "")
+                        : (plan.priceIdMonthly[0] ?? ""),
                   })
                 }
               >
@@ -162,10 +163,10 @@ export const PlanPicker = ({
                 ) : (
                   <>
                     {(!isPastDue &&
-                      priceId === plan.priceIdMonthly &&
+                      plan.priceIdMonthly.includes(priceId ?? "") &&
                       period === "monthly") ||
                     (!isPastDue &&
-                      priceId === plan.priceIdAnnually &&
+                      plan.priceIdAnnually.includes(priceId ?? "") &&
                       period === "annually") ? (
                       <span>Current plan</span>
                     ) : (
@@ -208,14 +209,16 @@ export const PlanPicker = ({
                     </div>
                     <p className="text-muted-foreground">{plan.integrations}</p>
                   </div>
-                  <div className="flex items-start gap-2">
-                    <div className="rounded-md bg-main-100 p-0.5">
-                      <Check size={13} />
+                  {plan.api ? (
+                    <div className="flex items-start gap-2">
+                      <div className="rounded-md bg-main-100 p-0.5">
+                        <Check size={13} />
+                      </div>
+                      <p className="text-muted-foreground">API & Webhooks</p>
                     </div>
-                    <p className="text-muted-foreground">
-                      {plan.api && "API & Webhooks"}
-                    </p>
-                  </div>
+                  ) : (
+                    <div className="h-5" />
+                  )}
                 </div>
               </div>
             </div>

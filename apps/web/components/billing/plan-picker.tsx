@@ -88,8 +88,8 @@ export const PlanPicker = ({ period, setPeriod }: Props) => {
                     plan: plan.name as Plan,
                     priceId:
                       period === "annually"
-                        ? plan.priceIdAnnually
-                        : plan.priceIdMonthly,
+                        ? (plan.priceIdAnnually[0] ?? "")
+                        : (plan.priceIdMonthly[0] ?? ""),
                   })
                 }
               >
@@ -119,14 +119,16 @@ export const PlanPicker = ({ period, setPeriod }: Props) => {
                     </div>
                     <p className="text-muted-foreground">{plan.integrations}</p>
                   </div>
-                  <div className="flex items-start gap-2">
-                    <div className="rounded-md bg-main-100 p-0.5">
-                      <Check size={13} />
+                  {plan.api ? (
+                    <div className="flex items-start gap-2">
+                      <div className="rounded-md bg-main-100 p-0.5">
+                        <Check size={13} />
+                      </div>
+                      <p className="text-muted-foreground">API & Webhooks</p>
                     </div>
-                    <p className="text-muted-foreground">
-                      {plan.api && "API & Webhooks"}
-                    </p>
-                  </div>
+                  ) : (
+                    <div className="h-5" />
+                  )}
                 </div>
               </div>
             </div>

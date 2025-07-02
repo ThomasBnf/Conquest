@@ -1,13 +1,13 @@
 import { stripe } from "@/lib/stripe";
 import { prisma } from "@conquest/db/prisma";
-import { getWorkspace } from "@conquest/db/workspaces/getWorkspace";
+import { getWorkspaceByCustomerId } from "@conquest/db/workspaces/getWorkspaceByCustomerId";
 import { updateWorkspace } from "@conquest/db/workspaces/updateWorkspace";
 import { env } from "@conquest/env";
-import { PLAN } from "@conquest/zod/enum/plan.enum";
+import { PLAN, Plan } from "@conquest/zod/enum/plan.enum";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import type Stripe from "stripe";
-import { z } from "zod";
+import z from "zod";
 
 const signingSecret = env.STRIPE_WEBHOOK_SECRET;
 
@@ -38,28 +38,27 @@ export const POST = async (request: NextRequest) => {
     switch (event.type) {
       case "invoice.paid": {
         const invoice = event.data.object as Stripe.Invoice;
-        console.log("invoice", invoice);
+        console.log("<--- invoice --->");
+        console.dir(invoice, { depth: null });
 
-        const metadata = invoice.subscription_details?.metadata;
-        const parsedMetadata = MetadataSchema.safeParse(metadata);
+        const customer = invoice.customer as string;
 
-        if (parsedMetadata.error) {
-          return NextResponse.json(
-            { error: "Subscription.updated: Invalid metadata" },
-            { status: 400 },
-          );
-        }
-
-        const { plan, priceId, workspaceId } = parsedMetadata.data;
-
-        const workspace = await getWorkspace({ id: workspaceId });
+        const workspace = await getWorkspaceByCustomerId({
+          stripeCustomerId: customer,
+        });
 
         if (!workspace) {
+          console.log("Invoice.paid: Workspace not found");
           return NextResponse.json(
             { error: "Invoice.paid: Workspace not found" },
             { status: 400 },
           );
         }
+
+        const priceId = invoice.lines.data[0]?.plan?.id as string;
+        const productId = invoice.lines.data[0]?.plan?.product as string;
+        const product = await stripe.products.retrieve(productId);
+        const plan = product.name.toUpperCase() as Plan;
 
         await prisma.workspace.update({
           where: {
@@ -77,28 +76,25 @@ export const POST = async (request: NextRequest) => {
       }
       case "checkout.session.completed": {
         const session = event.data.object as Stripe.Checkout.Session;
-        console.log("session", session);
+        console.log("<--- session --->");
+        console.dir(session, { depth: null });
 
-        const metadata = session.metadata;
-        const parsedMetadata = MetadataSchema.safeParse(metadata);
+        const customer = session.customer as string;
 
-        if (parsedMetadata.error) {
-          return NextResponse.json(
-            { error: "Checkout.session.completed: Invalid metadata" },
-            { status: 400 },
-          );
-        }
-
-        const { plan, priceId, workspaceId } = parsedMetadata.data;
-
-        const workspace = await getWorkspace({ id: workspaceId });
+        const workspace = await getWorkspaceByCustomerId({
+          stripeCustomerId: customer,
+        });
 
         if (!workspace) {
+          console.log("Checkout.session.completed: Workspace not found");
           return NextResponse.json(
             { error: "Checkout.session.completed: Workspace not found" },
             { status: 400 },
           );
         }
+
+        const metadata = session.metadata;
+        const { plan, priceId } = MetadataSchema.parse(metadata);
 
         await prisma.workspace.update({
           where: {
@@ -116,39 +112,47 @@ export const POST = async (request: NextRequest) => {
       }
       case "customer.subscription.updated": {
         const subscription = event.data.object as Stripe.Subscription;
-        console.log("subscription", subscription);
+        console.log("<--- subscription --->");
+        console.dir(subscription, { depth: null });
 
-        const metadata = subscription.metadata;
-        const parsedMetadata = MetadataSchema.safeParse(metadata);
+        const customer = subscription.customer as string;
 
-        if (parsedMetadata.error) {
-          return NextResponse.json(
-            { error: "Subscription.updated: Invalid metadata" },
-            { status: 400 },
-          );
-        }
-
-        const { plan, priceId, workspaceId } = parsedMetadata.data;
-
-        const workspace = await getWorkspace({ id: workspaceId });
+        const workspace = await getWorkspaceByCustomerId({
+          stripeCustomerId: customer,
+        });
 
         if (!workspace) {
+          console.log("customer.subscription.updated: Workspace not found");
           return NextResponse.json(
-            { error: "Subscription.updated: Workspace not found" },
+            { error: "customer.subscription.updated: Workspace not found" },
             { status: 400 },
           );
         }
 
-        const failed = ["past_due", "canceled", "unpaid"].includes(
-          subscription.status,
-        );
-        const success = ["active"].includes(subscription.status);
+        const priceId = subscription.items.data[0]?.plan.id as string;
+        const productId = subscription.items.data[0]?.plan.product as string;
+        const product = await stripe.products.retrieve(productId);
+        const plan = product.name.toUpperCase() as Plan;
 
-        const { trialEnd } = await getWorkspace({ id: workspaceId });
+        console.log("priceId", priceId);
+        console.log("productId", productId);
+        console.log("product", product);
+        console.log("plan", plan);
+
+        const { trialEnd } = workspace;
+        const success = subscription.status === "active";
+        const failed = [
+          "incompleted",
+          "incompleted_expired",
+          "past_due",
+          "canceled",
+          "unpaid",
+          "paused",
+        ].includes(subscription.status);
 
         await prisma.workspace.update({
           where: {
-            id: workspaceId,
+            id: workspace.id,
           },
           data: {
             plan,
@@ -162,32 +166,37 @@ export const POST = async (request: NextRequest) => {
       }
       case "customer.subscription.deleted": {
         const subscription = event.data.object as Stripe.Subscription;
-        console.log("subscriptionDeleted", subscription);
+        console.log("<--- subscriptionDeleted --->");
+        console.dir(subscription, { depth: null });
 
-        const metadata = subscription.metadata;
-        const parsedMetadata = MetadataSchema.safeParse(metadata);
+        const customer = subscription.customer as string;
 
-        if (parsedMetadata.error) {
-          return NextResponse.json(
-            { error: "Subscription.deleted: Invalid metadata" },
-            { status: 400 },
-          );
-        }
-
-        const { workspaceId } = parsedMetadata.data;
-
-        const workspace = await getWorkspace({ id: workspaceId });
+        const workspace = await getWorkspaceByCustomerId({
+          stripeCustomerId: customer,
+        });
 
         if (!workspace) {
+          console.log("Subscription.deleted: Workspace not found");
           return NextResponse.json(
             { error: "Subscription.deleted: Workspace not found" },
             { status: 400 },
           );
         }
 
+        const isPastDue = [
+          "incompleted",
+          "incompleted_expired",
+          "past_due",
+          "canceled",
+          "unpaid",
+          "paused",
+        ].includes(subscription.status);
+
         await updateWorkspace({
-          id: workspaceId,
-          isPastDue: new Date(),
+          id: workspace.id,
+          priceId: isPastDue ? null : workspace.priceId,
+          plan: isPastDue ? "TRIAL" : workspace.plan,
+          isPastDue: isPastDue ? new Date() : workspace.isPastDue,
         });
 
         break;
