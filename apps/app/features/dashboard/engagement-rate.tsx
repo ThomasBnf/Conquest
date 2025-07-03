@@ -79,6 +79,8 @@ export const EngagementRate = () => {
     days: [],
   };
 
+  console.log(data);
+
   useEffect(() => {
     setDateRange(globalDateRange);
   }, [globalDateRange]);
@@ -104,7 +106,7 @@ export const EngagementRate = () => {
             ) : (
               <div className="flex items-center gap-2">
                 <p className="font-medium text-2xl">
-                  {engagementRate.toFixed(0)}%
+                  {engagementRate.toFixed(2)}%
                 </p>
                 <Percentage variation={growthRate} isLoading={isLoading} />
               </div>
