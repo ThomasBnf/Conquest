@@ -283,6 +283,8 @@ const isPublished = async (workflowId: string) => {
   const workflow = await prisma.workflow.findUnique({
     where: {
       id: workflowId,
+      published: true,
+      archivedAt: null,
     },
     select: {
       published: true,
