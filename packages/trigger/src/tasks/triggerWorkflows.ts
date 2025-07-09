@@ -23,6 +23,7 @@ export const triggerWorkflows = schemaTask({
       await prisma.workflow.findMany({
         where: {
           published: true,
+          archivedAt: null,
           workspaceId,
         },
       }),
