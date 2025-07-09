@@ -286,10 +286,7 @@ const isPublished = async (workflowId: string) => {
       published: true,
       archivedAt: null,
     },
-    select: {
-      published: true,
-    },
   });
 
-  return workflow?.published ?? false;
+  return workflow;
 };
