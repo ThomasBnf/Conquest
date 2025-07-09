@@ -38,7 +38,7 @@ export const runWorkflow = schemaTask({
     workflow: WorkflowSchema,
     member: MemberSchema,
   }),
-  run: async ({ workflow, member }, { ctx: { run: triggerRun } }) => {
+  run: async ({ workflow, member }) => {
     const {
       id: workflowId,
       nodes,
@@ -288,5 +288,5 @@ const isPublished = async (workflowId: string) => {
     },
   });
 
-  return workflow;
+  return !!workflow;
 };
