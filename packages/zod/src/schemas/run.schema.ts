@@ -4,7 +4,7 @@ import { NodeSchema } from "./node.schema";
 export const RUN_STATUS = z.enum(["RUNNING", "WAITING", "COMPLETED", "FAILED"]);
 
 export const RunSchema = z.object({
-  id: z.string().uuid(),
+  id: z.string(),
   memberId: z.string().uuid().nullable(),
   workflowId: z.string(),
   completedAt: z.date().nullable(),
