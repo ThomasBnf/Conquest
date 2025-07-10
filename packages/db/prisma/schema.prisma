@@ -330,7 +330,7 @@ model Profile {
 }
 
 model Run {
-    id          String     @id @default(uuid())
+    id          String     @id
     memberId    String?
     workflowId  String
     workflow    Workflow   @relation(fields: [workflowId], references: [id], onDelete: Cascade)

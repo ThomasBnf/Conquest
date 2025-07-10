@@ -1,6 +1,5 @@
 import { getFilteredMember } from "@conquest/db/member/getFilteredMember";
 import { User } from "@conquest/db/prisma";
-import { prisma } from "@conquest/db/prisma";
 import { createRun } from "@conquest/db/runs/createRun";
 import { updateRun } from "@conquest/db/runs/updateRun";
 import { getUserById } from "@conquest/db/users/getUserById";
@@ -15,7 +14,6 @@ import {
   NodeIfElseSchema,
   NodeSchema,
 } from "@conquest/zod/schemas/node.schema";
-import { Run } from "@conquest/zod/schemas/run.schema";
 import {
   Workflow,
   WorkflowSchema,
@@ -38,9 +36,8 @@ export const runWorkflow = schemaTask({
     workflow: WorkflowSchema,
     member: MemberSchema,
   }),
-  run: async ({ workflow, member }) => {
+  run: async ({ workflow, member }, { ctx: { run } }) => {
     const {
-      id: workflowId,
       nodes,
       edges,
       createdBy,
@@ -49,17 +46,11 @@ export const runWorkflow = schemaTask({
       alertOnFailure,
     } = workflow;
 
-    const published = await isPublished(workflowId);
-
-    if (!published) {
-      logger.info("Workflow is no longer published, stopping execution");
-      return;
-    }
-
     const { slug } = await getWorkspace({ id: workspaceId });
     const user = await getUserById({ id: createdBy });
 
-    const run = await createRun({
+    await createRun({
+      id: run.id,
       memberId: member.id,
       workflowId: workflow.id,
     });
@@ -70,20 +61,9 @@ export const runWorkflow = schemaTask({
     let hasNextNode = true;
 
     while (hasNextNode && node) {
-      const published = await isPublished(workflowId);
-
-      if (!published) {
-        logger.info("Workflow is no longer published, stopping execution");
-
-        return await updateRun({
-          id: run.id,
-          status: "COMPLETED",
-          runNodes,
-        });
-      }
-
       const parsedNode = NodeSchema.parse(node);
       const { type } = parsedNode.data;
+
       const isTrigger = "isTrigger" in parsedNode.data;
 
       if (!isTrigger) {
@@ -146,7 +126,11 @@ export const runWorkflow = schemaTask({
           break;
         }
         case "wait": {
-          const result = await waitFor({ run, node: parsedNode, runNodes });
+          const result = await waitFor({
+            runId: run.id,
+            node: parsedNode,
+            runNodes,
+          });
           runNodes.set(parsedNode.id, result);
           break;
         }
@@ -179,7 +163,7 @@ export const runWorkflow = schemaTask({
             user,
             member,
             workflow,
-            run,
+            runId: run.id,
           });
         }
       }
@@ -194,7 +178,7 @@ export const runWorkflow = schemaTask({
         user,
         member,
         workflow,
-        run,
+        runId: run.id,
       });
     }
   },
@@ -241,14 +225,14 @@ const sendAlertyByEmail = async ({
   user,
   member,
   workflow,
-  run,
+  runId,
 }: {
   slug: string;
   state: "success" | "failure";
   user: User | null;
   member: Member;
   workflow: Workflow;
-  run: Run;
+  runId: string;
 }) => {
   if (!user) return;
 
@@ -261,7 +245,7 @@ const sendAlertyByEmail = async ({
         slug,
         member,
         workflow,
-        runId: run.id,
+        runId,
       }),
     });
   }
@@ -274,19 +258,7 @@ const sendAlertyByEmail = async ({
       slug,
       workflowId: workflow.id,
       workflowName: workflow.name,
-      runId: run.id,
+      runId,
     }),
   });
-};
-
-const isPublished = async (workflowId: string) => {
-  const workflow = await prisma.workflow.findUnique({
-    where: {
-      id: workflowId,
-      published: true,
-      archivedAt: null,
-    },
-  });
-
-  return !!workflow;
 };

@@ -1,12 +1,11 @@
 import { prisma } from "@conquest/db/prisma";
 import { updateRun } from "@conquest/db/runs/updateRun";
 import { Node, NodeWaitSchema } from "@conquest/zod/schemas/node.schema";
-import { Run } from "@conquest/zod/schemas/run.schema";
 import { wait } from "@trigger.dev/sdk/v3";
 import { nodeStatus } from "./nodeStatus";
 
 type Props = {
-  run: Run;
+  runId: string;
   node: Node;
   runNodes: Map<string, Node>;
 };
@@ -19,7 +18,7 @@ const TIME_UNITS = {
 } as const;
 
 export const waitFor = async ({
-  run,
+  runId,
   node,
   runNodes,
 }: Props): Promise<Node> => {
@@ -37,7 +36,7 @@ export const waitFor = async ({
     ],
   ]);
 
-  await updateRun({ id: run.id, status: "WAITING", runNodes: nodes });
+  await updateRun({ id: runId, status: "WAITING", runNodes: nodes });
 
   const seconds = duration * TIME_UNITS[unit];
   await prisma.$disconnect();
