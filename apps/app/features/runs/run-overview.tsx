@@ -9,9 +9,9 @@ type Props = {
 export const RunOverview = ({ workflowId }: Props) => {
   const { data } = trpc.runs.list.useQuery({ workflowId });
 
-  const completedRuns = data?.filter((run) => run.completedAt) ?? [];
+  const completedRuns = data?.filter((run) => run.completedAt && run.status !== "FAILED") ?? [];
   const failedRuns = data?.filter((run) => run.status === "FAILED") ?? [];
-  const inProgressRuns = data?.filter((run) => !run.completedAt) ?? [];
+  const inProgressRuns = data?.filter((run) => !run.completedAt && run.status !== "FAILED") ?? [];
 
   const totalDuration = completedRuns.reduce((acc, run) => {
     if (!run.completedAt) return acc;

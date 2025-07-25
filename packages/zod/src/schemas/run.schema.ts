@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { NodeSchema } from "./node.schema";
 
-export const RUN_STATUS = z.enum(["RUNNING", "WAITING", "COMPLETED", "FAILED"]);
+export const RUN_STATUS = z.enum(["RUNNING", "WAITING", "COMPLETED", "FAILED", "CANCELLED"]);
 
 export const RunSchema = z.object({
   id: z.string(),

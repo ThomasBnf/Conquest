@@ -1,4 +1,5 @@
 import { router } from "@/server/trpc";
+import { cancelRun } from "./cancelRun";
 import { countRuns } from "./countRuns";
 import { getFailedRun } from "./getFailedRun";
 import { getRun } from "./getRun";
@@ -9,4 +10,5 @@ export const runsRouter = router({
   count: countRuns,
   get: getRun,
   getFailedRun: getFailedRun,
+  cancel: cancelRun,
 });

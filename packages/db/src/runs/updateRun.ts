@@ -26,7 +26,7 @@ export const updateRun = async ({ id, status, runNodes }: Props) => {
       status,
       runNodes: Array.from(runNodes.values()),
       credits: failed ? 0 : credits,
-      completedAt: new Date(),
+      ...(status === "COMPLETED" || status === "FAILED" ? { completedAt: new Date() } : {}),
     },
   });
 

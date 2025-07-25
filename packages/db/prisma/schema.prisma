@@ -534,6 +534,7 @@ enum RUN_STATUS {
     WAITING
     COMPLETED
     FAILED
+    CANCELLED
 }
 
 enum SOURCE {

@@ -29,12 +29,16 @@ export const RunStatus = ({ status }: Props) => {
       variant: "success",
       icon: <Check size={14} />,
     },
+    CANCELLED: {
+      variant: "secondary",
+      icon: <X size={14} />,
+    },
   };
 
   const { variant, icon } = statusConfig[status];
 
   return (
-    <Badge variant={variant} className="mr-2 size-5 p-0">
+    <Badge variant={variant} className="p-0 mr-2 size-5">
       {icon}
     </Badge>
   );
