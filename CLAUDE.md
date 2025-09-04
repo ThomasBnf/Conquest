@@ -54,7 +54,7 @@ This is a **Turborepo monorepo** with workspaces in `apps/` and `packages/`:
 
 ### Key Technologies
 - **Frontend**: Next.js 15 with React Server Components, TypeScript
-- **Database**: Prisma ORM with PostgreSQL + ClickHouse for analytics
+- **Database**: Prisma ORM with PostgreSQL
 - **Styling**: Tailwind CSS with Shadcn/UI components
 - **Authentication**: NextAuth.js v5
 - **Background Jobs**: Trigger.dev for workflow automation

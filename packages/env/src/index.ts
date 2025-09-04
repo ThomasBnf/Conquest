@@ -22,15 +22,6 @@ const brevoEnv = {
   },
 };
 
-const clickhouseEnv = {
-  server: {
-    CLICKHOUSE_URL: z.string(),
-    CLICKHOUSE_USER: z.string(),
-    CLICKHOUSE_PASSWORD: z.string(),
-    CLICKHOUSE_DB: z.string(),
-  },
-};
-
 const discordEnv = {
   server: {
     DISCORD_CLIENT_SECRET: z.string(),
@@ -160,9 +151,7 @@ const triggerEnv = {
 export const env = createEnv({
   server: {
     ...baseEnv.server,
-    // ...awsEnv.server,
     ...brevoEnv.server,
-    ...clickhouseEnv.server,
     ...discordEnv.server,
     ...discourseEnv.server,
     ...encryptionEnv.server,
